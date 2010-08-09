@@ -57,9 +57,7 @@ public interface EventLogDao {
                                                          ReadableInstant stopDate,
                                                          Integer start,
                                                          Integer pageCount,
-                                                         String filterString,
-                                                         Double filterNumber,
-                                                         ReadableInstant filterInstant);
+                                                         String filterString);
     
     public RowMapperWithBaseQuery<EventLog> getEventLogRowMapper();
 

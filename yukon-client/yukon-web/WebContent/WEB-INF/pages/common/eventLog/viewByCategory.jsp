@@ -32,7 +32,7 @@
                 </tags:nameValue2>
                 
                 <tags:nameValue2 nameKey=".dateRange">
-                    <span class="nowrapping">
+                    <span class="dateRangeInputField">
                         <tags:dateInputCalendar fieldName="startDate" springInput="true" showErrorOnNextLine="false"/> - 
                         <tags:dateInputCalendar fieldName="stopDate" springInput="true"/>
                     </span>
@@ -48,7 +48,7 @@
     <%-- Event Log Results --%>
     <cti:msg var="eventsTitle" key="yukon.common.events.title"/>
     <tags:pagedBox title="${eventsTitle}" searchResult="${searchResult}" baseUrl="${baseUrl}" pageByHundereds="true">
-        <table class="compactResultsTable rowHighlighting" style="width: 100%;">
+        <table class="compactResultsTable rowHighlighting">
             <tr>
                 <th>
                     <cti:msg key="yukon.common.events.columnHeader.event"/>

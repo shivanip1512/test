@@ -2,7 +2,6 @@ package com.cannontech.common.events.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -73,7 +72,7 @@ public class EventLogDaoImpl implements EventLogDao {
     
     private String insertSql;
     {
-        insertSql = "insert into EventLog values (";
+        insertSql = "INSERT INTO EventLog VALUES (";
         List<String> questionMarks = Collections.nCopies(countOfTotalArguments, "?");
         insertSql += StringUtils.join(questionMarks, ",");
         insertSql += ")";
@@ -135,7 +134,8 @@ public class EventLogDaoImpl implements EventLogDao {
      */
     public Set<String> getAllLoggedTypes() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select distinct EventType from EventLog");
+        sql.append("SELECT DISTINCT EventType"); 
+        sql.append("FROM EventLog");
         
         Set<String> result = Sets.newHashSet();
         yukonJdbcTemplate.query(sql, new StringRowMapper(), result);
@@ -177,9 +177,10 @@ public class EventLogDaoImpl implements EventLogDao {
 
     public List<EventLog> findAllByCategory(EventCategory eventCategory) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from EventLog");
-        sql.append("where EventType like ").appendArgument(eventCategory.getFullName() + "%");
-        sql.append("order by EventTime, EventLogId");
+        sql.append("SELECT *");
+        sql.append("FROM EventLog EL");
+        sql.append("WHERE EL.EventType LIKE ").appendArgument(eventCategory.getFullName() + "%");
+        sql.append("ORDER BY EL.EventTime, EL.EventLogId");
         
         List<EventLog> result = yukonJdbcTemplate.query(sql, eventLogRowMapper);
         return result;
@@ -194,7 +195,7 @@ public class EventLogDaoImpl implements EventLogDao {
         if (slimEventCategories.isEmpty()) return Collections.emptyList();
         
         SqlStatementBuilder sql = findAllSqlStatementBuilder(startDate, stopDate, slimEventCategories);
-        sql.append("ORDER BY EventTime, EventLogId");
+        sql.append("ORDER BY EL.EventTime, EL.EventLogId");
 
         List<EventLog> result = yukonJdbcTemplate.query(sql, eventLogRowMapper);
         return result;
@@ -210,25 +211,25 @@ public class EventLogDaoImpl implements EventLogDao {
         SearchResult<EventLog> result = new SearchResult<EventLog>();
         Set<EventCategory> slimEventCategories = removeDuplicates(eventCategories);
         if (slimEventCategories.isEmpty()){
-            result.setBounds(0, pageCount, 0);
-            result.setResultList(new ArrayList<EventLog> ());
-            return result;
+            return SearchResult.emptyResult();
         }
         
         /* Get row count. */
         SqlStatementBuilder countSql = new SqlStatementBuilder();
-        countSql.append("select count(*) from EventLog");
-        countSql.append("where (");
+        countSql.append("SELECT COUNT(*)");
+        countSql.append("FROM EventLog EL");
+        countSql.append("WHERE (");
         SqlFragmentCollection sqlFragmentCollection = getEventCategorySqlFragment(slimEventCategories);
         countSql.appendFragment(sqlFragmentCollection);
-        countSql.append(  ") and EventTime").lt(stopDate);
-        countSql.append(  "and EventTime").gte(startDate);
+        countSql.append(  ") AND EL.EventTime").lt(stopDate);
+        countSql.append(  "AND EL.EventTime").gte(startDate);
         
         int hitCount = yukonJdbcTemplate.queryForInt(countSql);
         
         /* Get paged data. */
-        SqlStatementBuilder sql = findAllSqlStatementBuilder(startDate, stopDate, slimEventCategories);
-        sql.append("ORDER BY EventTime, EventLogId");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(findAllSqlStatementBuilder(startDate, stopDate, slimEventCategories));
+        sql.append("ORDER BY EL.EventTime, EL.EventLogId");
         
         PagingResultSetExtractor<EventLog> rse = new PagingResultSetExtractor<EventLog>(start, pageCount, eventLogRowMapper);
         yukonJdbcTemplate.query(sql, rse);
@@ -248,25 +249,23 @@ public class EventLogDaoImpl implements EventLogDao {
 
         Iterator<String> iterator = eventLogTypes.iterator();
         if (!iterator.hasNext()){
-            result.setBounds(0, pageCount, 0);
-            result.setResultList(new ArrayList<EventLog> ());
-            return result;
+            return SearchResult.emptyResult();
         }
         
         /* Get row count. */
         SqlStatementBuilder countSql = new SqlStatementBuilder();
-        countSql.append("select count(*) from EventLog");
-        countSql.append("where EventType").in(eventLogTypes);
-        countSql.append(  "and EventTime").lt(stopDate);
-        countSql.append(  "and EventTime").gte(startDate);
+        countSql.append("SELECT COUNT(*)");
+        countSql.append("FROM EventLog EL");
+        countSql.append("WHERE EL.EventType").in(eventLogTypes);
+        countSql.append(  "AND EL.EventTime").lt(stopDate);
+        countSql.append(  "AND EL.EventTime").gte(startDate);
         
         int hitCount = yukonJdbcTemplate.queryForInt(countSql);
         
         /* Get paged data. */
-        SqlStatementBuilder sql = findAllSqlStatementBuilder(startDate, 
-                                                             stopDate,
-                                                             eventLogTypes);
-        sql.append("order by EventTime, EventLogId");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(findAllSqlStatementBuilder(startDate, stopDate, eventLogTypes));
+        sql.append("ORDER BY EL.EventTime, EL.EventLogId");
 
         PagingResultSetExtractor<EventLog> rse = new PagingResultSetExtractor<EventLog>(start, pageCount, eventLogRowMapper);
         yukonJdbcTemplate.query(sql, rse);
@@ -284,37 +283,28 @@ public class EventLogDaoImpl implements EventLogDao {
                                                          ReadableInstant stopDate,
                                                          Integer start,
                                                          Integer pageCount,
-                                                         String filterString,
-                                                         Double filterDouble,
-                                                         ReadableInstant filterDate) {
+                                                         String filterString) {
 
         SearchResult<EventLog> result = new SearchResult<EventLog>();
         Set<EventCategory> slimEventCategories = removeDuplicates(eventCategories);
         if (slimEventCategories.isEmpty()){
-            result.setBounds(0, pageCount, 0);
-            result.setResultList(new ArrayList<EventLog> ());
-            return result;
+            return SearchResult.emptyResult();
         }
-        
+
         /* Get row count. */
         SqlStatementBuilder countSql = new SqlStatementBuilder();
         countSql.append("SELECT COUNT(*)");
         countSql.append("FROM EventLog EL");
         countSql.append("WHERE").appendFragment(getEventCategorySqlFragment(slimEventCategories));
+        countSql.append("AND").appendFragment(getEventLogColumnSqlFragment(filterString));
         countSql.append("AND EL.EventTime").lt(stopDate);
         countSql.append("AND EL.EventTime").gte(startDate);
-        countSql.append("AND").appendFragment(getEventLogColumnSqlFragment(filterString,
-                                                                           filterDouble,
-                                                                           filterDate));
-        
         int hitCount = yukonJdbcTemplate.queryForInt(countSql);
         
         /* Get paged data. */
         SqlStatementBuilder sql = findAllSqlStatementBuilder(startDate, stopDate, slimEventCategories);
-        sql.append("AND").appendFragment(getEventLogColumnSqlFragment(filterString,
-                                                                      filterDouble,
-                                                                      filterDate));
-        sql.append("ORDER BY EventTime, EventLogId");
+        sql.append("AND").appendFragment(getEventLogColumnSqlFragment(filterString));
+        sql.append("ORDER BY EL.EventTime, EL.EventLogId");
         
         PagingResultSetExtractor<EventLog> rse = 
             new PagingResultSetExtractor<EventLog>(start, pageCount, eventLogRowMapper);
@@ -341,7 +331,7 @@ public class EventLogDaoImpl implements EventLogDao {
         SqlFragmentCollection sqlFragmentCollection = SqlFragmentCollection.newOrCollection();
         for (EventCategory eventCategory : slimEventCategories) {
             SqlStatementBuilder whereFragment = new SqlStatementBuilder();
-            whereFragment.append("EventType like ").appendArgument(eventCategory.getFullName() + "%");
+            whereFragment.append("EL.EventType LIKE ").appendArgument(eventCategory.getFullName() + "%");
             sqlFragmentCollection.add(whereFragment);
             
         }
@@ -354,80 +344,63 @@ public class EventLogDaoImpl implements EventLogDao {
      * 
      * EX: The user wants to see if the number 987654 exists in the EventLog table.  In order
      * to figure this out they would supply the values ("987654",987654, null) as method parameters.
-     *     In return they would get the sql fragment (( UPPER(String1) = UPPER('987654' )  OR  
-     *                                                  UPPER(String2) = UPPER('987654' )  OR  
-     *                                                  UPPER(String3) = UPPER('987654' )  OR  
-     *                                                  UPPER(String4) = UPPER('987654' )  OR  
-     *                                                  UPPER(String5) = UPPER('987654' )  OR  
-     *                                                  UPPER(String6) = UPPER('987654' ) ) OR 
-     *                                                ( Int7 = 987654  OR  
-     *                                                  Int8 = 987654  OR  
-     *                                                  Int9 = 987654  OR  
-     *                                                  Int10 = 987654 )) 
+     *     In return they would get the sql fragment (UPPER(String1) = UPPER('987654' ) OR  
+     *                                                UPPER(String2) = UPPER('987654' ) OR  
+     *                                                UPPER(String3) = UPPER('987654' ) OR  
+     *                                                UPPER(String4) = UPPER('987654' ) OR  
+     *                                                UPPER(String5) = UPPER('987654' ) OR  
+     *                                                UPPER(String6) = UPPER('987654' ) OR 
+     *                                                Int7 = 987654  OR  
+     *                                                Int8 = 987654  OR  
+     *                                                Int9 = 987654  OR  
+     *                                                Int10 = 987654 )) 
      *     
      */
-    private SqlFragmentCollection getEventLogColumnSqlFragment(String filterString,
-                                                               Double filterDouble,
-                                                               ReadableInstant filterDate) {
-        SqlFragmentCollection sqlFragmentCollection = SqlFragmentCollection.newOrCollection();
-        
-        SqlFragmentCollection varcharColumnsSql = getColumnsSql(filterString, Types.VARCHAR);
-        if (varcharColumnsSql != null) {
-            sqlFragmentCollection.add(varcharColumnsSql);
-        }
-
-        SqlFragmentCollection doubleColumnsSql = getColumnsSql(filterDouble, Types.NUMERIC);
-        if (doubleColumnsSql != null) {
-            sqlFragmentCollection.add(doubleColumnsSql);
-        }
-        
-        SqlFragmentCollection timestampColumnSql = getColumnsSql(filterDate, Types.TIMESTAMP);
-        if (timestampColumnSql != null) {
-            sqlFragmentCollection.add(getColumnsSql(filterDate, Types.TIMESTAMP));
-        }
-        
-        return sqlFragmentCollection;
-    }
-
-    /**
-     * This method will return all needed sql fragments to compare the value to a supplied 
-     * Types value.
-     * 
-     * EX: If you supply (25, Types.NUMERIC) you will get (Int7 = 25 OR
-     *                                                     Int8 = 25 OR
-     *                                                     Int9 = 25 OR
-     *                                                     Int10 = 25)
-     * 
-     * NOTE: This method is case insensitive for Varchars. 
-     * EX. (user = USER)
-     * 
-     */
-    private SqlFragmentCollection getColumnsSql(Object filter, int type) {
-        
-        if (filter == null) {
+    private SqlFragmentCollection getEventLogColumnSqlFragment(String filterText) {
+        if (filterText == null) {
             return null;
         }
-        
-        SqlFragmentCollection sqlFragmentCollection = SqlFragmentCollection.newOrCollection();
-        for (ArgumentColumn argumentColumn : argumentColumns) {
-            if (argumentColumn.sqlType != type ) {
-                continue;
-            }
 
+        SqlFragmentCollection sqlFragmentCollection = SqlFragmentCollection.newOrCollection();
+
+        // we can represent everything as a varchar
+        String varCharValue = filterText;
+
+
+        // now let's see if we can represent it as a numeric as well
+        Double numericValue = null;
+        try {
+            numericValue = Double.parseDouble(filterText);
+        } catch (NumberFormatException e) {
+            // This is fine.  It just means the filter text cannot be used a numeric value.
+        }
+
+        // Build up SQL fragment
+        for (ArgumentColumn argumentColumn : argumentColumns) {
             // Removes case sensitivity for strings.
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            if (type == Types.VARCHAR) {
-                sql.append("UPPER("+argumentColumn.columnName+")").eq(String.valueOf(filter).toUpperCase());
-                sqlFragmentCollection.add(sql);
-            } else {
-                sql.append(argumentColumn.columnName).eq(filter);
-                sqlFragmentCollection.add(sql);
+            switch(argumentColumn.sqlType) {
+            case Types.VARCHAR:
+                if (varCharValue != null) {
+                    sql.append("UPPER("+argumentColumn.columnName+")").eq(String.valueOf(varCharValue).toUpperCase());
+                    sqlFragmentCollection.add(sql);
+                    //                sqlFragmentCollection.add(sql);
+                }
+                break;
+            case Types.NUMERIC:
+                if (numericValue != null) {
+                    sql.append(argumentColumn.columnName).eq(numericValue);
+                    sqlFragmentCollection.add(sql);
+                    //                    sqlFragmentCollection.add(sql);
+                }
+                break;
             }
+
         }
-        
+
         return sqlFragmentCollection;
     }
-    
+
     private SqlStatementBuilder findAllSqlStatementBuilder(ReadableInstant startDate,
                                                            ReadableInstant stopDate,
                                                            Iterable<String> eventLogTypes) {

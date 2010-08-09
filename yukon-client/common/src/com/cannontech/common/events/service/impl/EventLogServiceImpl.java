@@ -3,7 +3,6 @@ package com.cannontech.common.events.service.impl;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.sql.Types;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -369,32 +368,13 @@ public class EventLogServiceImpl implements EventLogService {
                                                                 stopDate, start, pageCount);
         }
 
-        // Check to see if the filter text can be used as a number.
-        Double filterDouble = null;
-        try {
-            filterDouble = Double.parseDouble(filterText);
-        } catch (NumberFormatException e) {
-            // This is fine.  It just means the filter text cannot be used a numeric value.
-        }
-        
-        // Check to see if the filter text can be used as a date
-        Instant filterInstant = null;
-        try {
-            filterInstant = 
-                new Instant(dateFormattingService.flexibleDateParser(filterText, userContext));
-        } catch (ParseException e) {
-            // This is fine.  It just means the filter text cannot be used as a date.
-        }
-        
         SearchResult<EventLog> pagedSearchResultByCategories = 
             eventLogDao.getFilteredPagedSearchResultByCategories(eventCategories, 
                                                                  startDate, 
                                                                  stopDate, 
                                                                  start, 
                                                                  pageCount,
-                                                                 filterText,
-                                                                 filterDouble,
-                                                                 filterInstant);
+                                                                 filterText);
         
         return pagedSearchResultByCategories;
         

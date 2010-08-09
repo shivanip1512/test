@@ -106,9 +106,7 @@ public class EventLogFactoryBeanTest {
                                                                                    ReadableInstant stopDate,
                                                                                    Integer start,
                                                                                    Integer pageCount,
-                                                                                   String filterString,
-                                                                                   Double filterNumber,
-                                                                                   ReadableInstant filterInstant) {
+                                                                                   String filterText) {
                 return null;
             }
             @Override
@@ -208,9 +206,7 @@ public class EventLogFactoryBeanTest {
                                                                                    ReadableInstant stopDate,
                                                                                    Integer start,
                                                                                    Integer pageCount,
-                                                                                   String filterString,
-                                                                                   Double filterNumber,
-                                                                                   ReadableInstant filterInstant) {
+                                                                                   String filterText) {
                 return null;
             }
             @Override

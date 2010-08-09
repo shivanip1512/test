@@ -14,7 +14,6 @@ public class EventLogCategoryBackingBean {
         return categories;
     }
     public void setCategories(String[] categories) {
-        System.out.println("accessing setter");
         this.categories = categories;
     }
     
