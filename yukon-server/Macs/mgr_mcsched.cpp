@@ -368,7 +368,7 @@ bool CtiMCScheduleManager::retrieveSimpleSchedules(
                                    "MAC.stoppolicy, MAC.lastruntime, MAC.lastrunstatus, MAC.startday, MAC.startmonth, "
                                    "MAC.startyear, MAC.starttime, MAC.stoptime, MAC.validweekdays, MAC.duration, "
                                    "MAC.manualstarttime, MAC.manualstoptime, MAC.template, MSS.scheduleid, "
-                                   "MSS.targetpaobjectid, MSS.startcommand, MSS.stopcommand, MSS.repeatinterval "
+                                   "MSS.targetselect, MSS.startcommand, MSS.stopcommand, MSS.repeatinterval "
                                "FROM YukonPAObject YP, MACSchedule MAC, MACSimpleSchedule MSS "
                                "WHERE YP.category = 'Schedule' AND YP.type = 'Simple' AND "
                                    "MAC.scheduleid = YP.paobjectid AND MSS.scheduleid = YP.paobjectid AND "
