@@ -51,22 +51,20 @@ public class WaitableCrfMeterReadCompletionCallback implements CrfMeterReadCompl
     
     public void waitForStatusResponse() throws InterruptedException {
         
-        long startTime = System.currentTimeMillis();
-        log.debug("Starting await status response on " + Thread.currentThread() + " at " + startTime);
+        log.debug("Starting await status response");
         
         statusLatch.await();
         
-        log.debug("Finished await status response on " + Thread.currentThread());
+        log.debug("Finished await status response");
     }
     
     public void waitForCompletion() throws InterruptedException {
         
-        long startTime = System.currentTimeMillis();
-        log.debug("Starting await completion on " + Thread.currentThread() + " at " + startTime);
+        log.debug("Starting await completion");
         
         completeLatch.await();
         
-        log.debug("Finished await completion on " + Thread.currentThread());
+        log.debug("Finished await completion");
     }
 
 }
