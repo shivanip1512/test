@@ -1,6 +1,6 @@
 package com.cannontech.web.capcontrol.filter;
 
-import java.sql.Date;
+//import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -36,10 +36,8 @@ public class ScheduleAssignmentRowMapper extends
         assignment.setDisableOvUv(disableOvUv);
         int eventId = rs.getInt("EventID");
         assignment.setEventId(eventId);
-        Date lastRunTime = rs.getDate("LastRunTime");
-        assignment.setLastRunTime(lastRunTime);
-        Date nextRunTime = rs.getDate("NextRunTime");
-        assignment.setNextRunTime(nextRunTime);
+        assignment.setLastRunTime(rs.getTimestamp("LastRunTime"));
+        assignment.setNextRunTime(rs.getTimestamp("NextRunTime"));
         int paoId = rs.getInt("PaoID");
         assignment.setPaoId(paoId);
         int scheduleId = rs.getInt("ScheduleID");
