@@ -121,7 +121,7 @@ public class CrfMeterReadService {
                             if(statusReply == null) {
                                 callback.receivedStatus(CrfMeterReadingReplyType.TIMEOUT);
                             } else {
-                                callback.receivedError(statusReply.getReplyType());
+                                callback.receivedStatusError(statusReply.getReplyType());
                                 callback.receivedStatus(statusReply.getReplyType());
                             }
                         } else {
@@ -136,13 +136,13 @@ public class CrfMeterReadService {
                             
                             if (!dataReplyMessage.isSuccess()) {
                                 /* Data response failed */
-                                callback.receivedError(dataReplyMessage.getReplyType());
+                                callback.receivedDataError(dataReplyMessage.getReplyType());
                             } else {
                                 /* Data response successful, process point data */
                                 processMeterReadingDataMessage(dataReplyMessage.getData(), pointDatas);
                                 
                                 for (PointValueHolder pointValueHolder : pointDatas) {
-                                    callback.receivedValue(pointValueHolder);
+                                    callback.receivedData(dataReplyMessage.getReplyType(), pointValueHolder);
                                 }
                             }
                         }

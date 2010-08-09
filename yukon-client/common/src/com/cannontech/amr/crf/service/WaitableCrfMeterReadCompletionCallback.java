@@ -4,6 +4,7 @@ import java.util.concurrent.CountDownLatch;
 
 import org.apache.log4j.Logger;
 
+import com.cannontech.amr.crf.message.CrfMeterReadingDataReplyType;
 import com.cannontech.amr.crf.message.CrfMeterReadingReplyType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -28,19 +29,24 @@ public class WaitableCrfMeterReadCompletionCallback implements CrfMeterReadCompl
     }
 
     @Override
-    public void receivedError(CrfMeterReadingReplyType reason) {
-        delegate.receivedError(reason);
+    public void receivedStatusError(CrfMeterReadingReplyType reason) {
+        delegate.receivedStatusError(reason);
     }
 
     @Override
-    public void receivedValue(PointValueHolder value) {
-        delegate.receivedValue(value);
+    public void receivedData(CrfMeterReadingDataReplyType replyType, PointValueHolder value) {
+        delegate.receivedData(replyType, value);
     }
 
     @Override
     public void receivedStatus(CrfMeterReadingReplyType status) {
         delegate.receivedStatus(status);
         statusLatch.countDown();
+    }
+    
+    @Override
+    public void receivedDataError(CrfMeterReadingDataReplyType replyType) {
+        delegate.receivedDataError(replyType);
     }
     
     public void waitForStatusResponse() throws InterruptedException {

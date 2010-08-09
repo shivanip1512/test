@@ -6,19 +6,19 @@ public class CrfMeterReadDataReply implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
-    private CrfMeterReadingReplyType replyType = CrfMeterReadingReplyType.TIMEOUT;
+    private CrfMeterReadingDataReplyType replyType = CrfMeterReadingDataReplyType.TIMEOUT;
     private CrfMeterReadingData data;
     
-    public void setReplyType(CrfMeterReadingReplyType replyType) {
+    public void setReplyType(CrfMeterReadingDataReplyType replyType) {
         this.replyType = replyType;
     }
     
-    public CrfMeterReadingReplyType getReplyType() {
+    public CrfMeterReadingDataReplyType getReplyType() {
         return replyType;
     }
     
     public boolean isSuccess() {
-        return replyType == CrfMeterReadingReplyType.OK;
+        return replyType == CrfMeterReadingDataReplyType.OK;
     }
 
     public CrfMeterReadingData getData() {

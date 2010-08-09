@@ -8,6 +8,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.crf.dao.CrfMeterDao;
+import com.cannontech.amr.crf.message.CrfMeterReadingDataReplyType;
 import com.cannontech.amr.crf.message.CrfMeterReadingReplyType;
 import com.cannontech.amr.crf.model.CrfMeter;
 import com.cannontech.amr.crf.service.CrfMeterReadCompletionCallback;
@@ -57,15 +58,19 @@ public class CrfMeterInfoWidget extends WidgetControllerBase {
             }
             
             @Override
-            public void receivedValue(PointValueHolder value) {
+            public void receivedData(CrfMeterReadingDataReplyType replyType, PointValueHolder value) {
             }
             
             @Override
-            public void receivedError(CrfMeterReadingReplyType reason) {
+            public void receivedDataError(CrfMeterReadingDataReplyType replyType) {
             }
             
             @Override
             public void complete() {
+            }
+
+            @Override
+            public void receivedStatusError(CrfMeterReadingReplyType replyType) {
             }
         });
         
