@@ -5,13 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-
-import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupPredicateEnum;
-import com.cannontech.common.util.predicate.AggregateAndPredicate;
-import com.cannontech.common.util.predicate.Predicate;
-
 public class ExtTreeNode {
 
     private Map<String, Object> attributes;
@@ -124,19 +117,6 @@ public class ExtTreeNode {
         
         info.put(key, data);
         node.setAttribute("info", info);
-    }
-    
-    public static AggregateAndPredicate<DeviceGroup> getAggregratePredicateFromString(String predicatesStr) {
-        
-        String[] predicateStrs = StringUtils.split(predicatesStr, ",");
-        List<Predicate<DeviceGroup>> predicates = new ArrayList<Predicate<DeviceGroup>>();
-        for (String predicateStr : predicateStrs) {
-            Predicate<DeviceGroup> predicate = DeviceGroupPredicateEnum.valueOf(predicateStr.trim()).getPredicate();
-            predicates.add(predicate);
-        }
-        AggregateAndPredicate<DeviceGroup> aggregatePredicate = new AggregateAndPredicate<DeviceGroup>(predicates);
-        
-        return aggregatePredicate;
     }
 	
 }
