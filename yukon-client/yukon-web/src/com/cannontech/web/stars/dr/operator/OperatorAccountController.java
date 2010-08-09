@@ -274,7 +274,7 @@ public class OperatorAccountController {
 	}
 	
 	// ACCOUNT UPDATE
-	@RequestMapping
+	@RequestMapping(method=RequestMethod.POST)
     public String accountUpdate(@ModelAttribute("accountGeneral") AccountGeneral accountGeneral, 
 								BindingResult bindingResult,
 								int accountId,
