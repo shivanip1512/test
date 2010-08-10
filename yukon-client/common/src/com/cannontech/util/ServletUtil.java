@@ -69,7 +69,7 @@ public class ServletUtil {
      * if used in session, this attribute should be passed a CtiNavObject
 	 */
 	public static final String NAVIGATE = "CtiNavObject";
-
+	
     /**
      * if used in session, this attribute should be passed an ArrayList of FilterWrappers
      */
@@ -98,6 +98,7 @@ public class ServletUtil {
 	public static final String PREVONEWEEK= "Prev 1 Week";
     public static final String PREVTHIRTYDAYS= "Prev 30 Days";
     public static final String EVENT = "Event";
+    public static final String SESSION_INFO = "Session Info";
     
 
 //	private static String[] validPeriods =

@@ -92,6 +92,7 @@ public enum YukonRoleProperty {
     THEME_NAME(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.THEME_NAME, stringType()),
     VIEW_ALARMS_AS_ALERTS(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.VIEW_ALARMS_AS_ALERTS, booleanType()),
     DEFAULT_TIMEZONE(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.DEFAULT_TIMEZONE, stringType()),
+    SESSION_TIMEOUT(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.SESSION_TIMEOUT, integerType()),
     
     HOME_DIRECTORY(WEB_GRAPH, com.cannontech.roles.application.WebGraphRole.HOME_DIRECTORY, stringType()),
     RUN_INTERVAL(WEB_GRAPH, com.cannontech.roles.application.WebGraphRole.RUN_INTERVAL, stringType()),

@@ -86,7 +86,7 @@ public class LoginServiceImpl implements LoginService {
         HttpSession session = request.getSession(false);
         if (session != null) session.invalidate();
         session = request.getSession(true);
-        initSession(user, session);
+        initSession(user, session, request);
         systemEventLogService.loginWeb(user, request.getRemoteAddr());
     }
     
@@ -98,7 +98,7 @@ public class LoginServiceImpl implements LoginService {
         try {
             LiteYukonUser user = authenticationService.login(username, password);
             HttpSession session = request.getSession(true);
-            initSession(user, session);
+            initSession(user, session, request);
             ActivityLogger.logEvent(user.getUserID(), LOGIN_CLIENT_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
             systemEventLogService.loginClient(user, request.getRemoteAddr());
         } catch (BadAuthenticationException e) {
@@ -170,7 +170,7 @@ public class LoginServiceImpl implements LoginService {
                 session = request.getSession(true);
             }                   
 
-            initSession(user, session);
+            initSession(user, session, request);
             ActivityLogger.logEvent(
                                     INBOUND_LOGIN_VOICE_ACTIVITY_ACTION, 
                                     "INBOUND VOICE User " + user.getUsername() + " (userid=" + 
@@ -220,7 +220,7 @@ public class LoginServiceImpl implements LoginService {
                 session = request.getSession(true);
             }                   
 
-            initSession(user, session);
+            initSession(user, session, request);
             session.setAttribute( TOKEN, request.getParameter(TOKEN) );
             ActivityLogger.logEvent(user.getUserID(), OUTBOUND_LOGIN_VOICE_ACTIVITY_ACTION, "VOICE User " + user.getUsername() + " (userid=" + user.getUserID() + ") (Contact=" + lContact.toString() + ") has logged in from " + request.getRemoteAddr());
             systemEventLogService.loginOutboundVoice(user, request.getRemoteAddr());
@@ -273,7 +273,7 @@ public class LoginServiceImpl implements LoginService {
         if (oldContext != null)
             session.setAttribute( SAVED_YUKON_USERS, new Pair(oldContext, referer) );
 
-        initSession(user, session);
+        initSession(user, session, request);
         ActivityLogger.logEvent(user.getUserID(), LoginService.LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
         systemEventLogService.loginWeb(user, request.getRemoteAddr());
         CtiNavObject nav = (CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE);
@@ -294,11 +294,17 @@ public class LoginServiceImpl implements LoginService {
         return  redirect;
     }
 
-    private void initSession(final LiteYukonUser user, final HttpSession session) {
+    private void initSession(final LiteYukonUser user, final HttpSession session, final HttpServletRequest request) {
         session.setAttribute(YUKON_USER, user);
         for (final SessionInitializer initializer : sessionInitializers) {
             initializer.initSession(user, session);
         }
+        
+        /* Add tracking for last activity time. */
+        SessionInfo sessionInfo = new SessionInfo(request.getRemoteAddr());
+        
+        session.setAttribute(ServletUtil.SESSION_INFO, sessionInfo);
+        
         CTILogger.info("Created session " + session.getId() + " for " + user);
     }
     

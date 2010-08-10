@@ -28,6 +28,6 @@ public interface WebClientRole {
     public static final int STD_PAGE_STYLE_SHEET = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 16;  // Standard Page CSS
     public static final int THEME_NAME = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 17;  // Theme Name
     public static final int VIEW_ALARMS_AS_ALERTS = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 18;
-    
     public static final int DEFAULT_TIMEZONE = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 19; //client timezone
+    public static final int SESSION_TIMEOUT = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 20;
 }
