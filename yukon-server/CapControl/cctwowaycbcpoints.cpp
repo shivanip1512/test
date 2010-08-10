@@ -2610,7 +2610,7 @@ int CtiCCTwoWayPoints::operator!=(const CtiCCTwoWayPoints& right) const
 
 string CtiCCTwoWayPoints::getLastControlText() const
 {
-    string retVal = "";
+    string retVal = "Uninitialized";
 
     if (_lastControlLocal > 0 )
         retVal = "Local";
