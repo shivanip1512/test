@@ -195,7 +195,7 @@ public class AccountServiceImpl implements AccountService {
          * Create the address
          */
         LiteAddress liteAddress = new LiteAddress();
-        if(streetAddress != null && StringUtils.isNotBlank(streetAddress.getLocationAddress1())) {
+        if(streetAddress != null) {
             setAddressFieldsFromDTO(liteAddress, streetAddress);
         }else {
             setAddressDefaults(liteAddress);
@@ -206,7 +206,7 @@ public class AccountServiceImpl implements AccountService {
          * Create billing address
          */
         LiteAddress liteBillingAddress = new LiteAddress();
-        if(billingAddress != null && StringUtils.isNotBlank(billingAddress.getLocationAddress1())) {
+        if(billingAddress != null) {
             setAddressFieldsFromDTO(liteBillingAddress, billingAddress);
         }else {
             setAddressDefaults(liteBillingAddress);
@@ -283,7 +283,7 @@ public class AccountServiceImpl implements AccountService {
          */
         if(liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
             LiteAddress companyAddress = new LiteAddress();
-            if(streetAddress != null && StringUtils.isNotBlank(streetAddress.getLocationAddress1())) {
+            if(streetAddress != null) {
                 setAddressFieldsFromDTO(companyAddress, streetAddress);
             }else {
                 setAddressDefaults(companyAddress);
@@ -678,14 +678,14 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Update the address
          */
-        if(streetAddress != null && StringUtils.isNotBlank(streetAddress.getLocationAddress1())) {
+        if(streetAddress != null) {
             setAddressFieldsFromDTO(liteStreetAddress, streetAddress);
             addressDao.update(liteStreetAddress);
         }
         /*
          * Update the billing address if supplied
          */
-        if(billingAddress != null && StringUtils.isNotBlank(billingAddress.getLocationAddress1())) {
+        if(billingAddress != null) {
             setAddressFieldsFromDTO(liteBillingAddress, billingAddress);
             addressDao.update(liteBillingAddress);
         }
@@ -844,7 +844,7 @@ public class AccountServiceImpl implements AccountService {
             if(accountDto.getIsCommercial()) {
                 // was residential, now commercial
                 LiteAddress companyAddress = new LiteAddress();
-                if(streetAddress != null && StringUtils.isNotBlank(streetAddress.getLocationAddress1())) {
+                if(streetAddress != null) {
                     setAddressFieldsFromDTO(companyAddress, streetAddress);
                 }
                 addressDao.add(companyAddress);
@@ -1089,21 +1089,17 @@ public class AccountServiceImpl implements AccountService {
     
     // we store "(none)" in the database for some reason
     private void setAddressDefaults(LiteAddress liteAddress) {
-        liteAddress.setLocationAddress1(CtiUtilities.STRING_NONE);
-        liteAddress.setLocationAddress2(CtiUtilities.STRING_NONE);
-        liteAddress.setCityName(CtiUtilities.STRING_NONE);
-        liteAddress.setCounty(CtiUtilities.STRING_NONE);
+        liteAddress.setLocationAddress1("");
+        liteAddress.setLocationAddress2("");
+        liteAddress.setCityName("");
+        liteAddress.setCounty("");
         liteAddress.setStateCode("  ");
-        liteAddress.setZipCode(CtiUtilities.STRING_NONE);
+        liteAddress.setZipCode("");
     }
     
     private void setAddressFieldsFromDTO(LiteAddress lite, Address address) {
         lite.setLocationAddress1(address.getLocationAddress1());
-        if (StringUtils.isBlank(address.getLocationAddress2())) {
-        	lite.setLocationAddress2(CtiUtilities.STRING_NONE);
-        } else {
-        	lite.setLocationAddress2(address.getLocationAddress2());
-        }
+       	lite.setLocationAddress2(address.getLocationAddress2());
         lite.setCityName(address.getCityName());
         lite.setStateCode(address.getStateCode());
         lite.setZipCode(address.getZipCode());

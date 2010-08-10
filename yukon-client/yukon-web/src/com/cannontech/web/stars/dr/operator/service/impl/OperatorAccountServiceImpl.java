@@ -2,6 +2,7 @@ package com.cannontech.web.stars.dr.operator.service.impl;
 
 import java.util.List;
 
+
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.model.ContactNotificationType;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
@@ -102,11 +102,7 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
 	private void copyAddress(LiteAddress from, LiteAddress to) {
 		
 		to.setLocationAddress1(from.getLocationAddress1());
-        if (StringUtils.isBlank(from.getLocationAddress2())) {
-        	to.setLocationAddress2(CtiUtilities.STRING_NONE);
-        } else {
-        	to.setLocationAddress2(from.getLocationAddress2());
-        }
+       	to.setLocationAddress2(from.getLocationAddress2());
         to.setCityName(from.getCityName());
         to.setStateCode(from.getStateCode());
         to.setZipCode(from.getZipCode());

@@ -4,12 +4,12 @@ import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.data.lite.LiteAddress;
 
 public class Address {
-    private String cityName;
-    private String stateCode;
-    private String zipCode;
-    private String locationAddress1;
-    private String locationAddress2;
-    private String county;
+    private String cityName = "";
+    private String stateCode = "";
+    private String zipCode = "";
+    private String locationAddress1 = "";
+    private String locationAddress2 = "";
+    private String county = "";
     
     public Address() {
     }
