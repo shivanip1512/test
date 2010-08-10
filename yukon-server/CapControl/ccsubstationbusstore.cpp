@@ -3691,14 +3691,13 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
                                                   "FROM ccseasonstrategyassignment SSA, dateofseason DS, ? "
                                                   "WHERE SSA.seasonscheduleid = DS.seasonscheduleid AND "
                                                         "SSA.seasonname = DS.seasonname AND SSA.strategyid = ? "
-                                                        "AND SSA.paobjectid = ?";
+                                                        "AND SSA.paobjectid = " + paObjectColumn;
 
                         Cti::Database::DatabaseConnection connection;
                         Cti::Database::DatabaseReader dbRdr(connection, sql);
 
                         dbRdr << capControlObjectTable
-                              << strategyId
-                              << paObjectColumn;
+                              << strategyId;
 
                         dbRdr.execute();
 
@@ -3955,14 +3954,13 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
                                                       "DH.holidayname, DH.holidaymonth, DH.holidayday, DH.holidayyear "
                                                     "FROM ccholidaystrategyassignment HSA, dateofholiday DH, ? ";
                                                     "WHERE HSA.holidayscheduleid = DH.holidayscheduleid AND "
-                                                      "HSA.strategyid = ? AND HSA.paobjectid = ?";
+                                                      "HSA.strategyid = ? AND HSA.paobjectid = " + paObjectColumn;
 
                      Cti::Database::DatabaseConnection connection;
                      Cti::Database::DatabaseReader rdr(connection, sqlMain);
 
                      rdr << capControlObjectTable
-                         << strategyId
-                         << paObjectColumn;
+                         << strategyId;
 
                      rdr.execute();
 
@@ -4172,23 +4170,18 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                 }
                 if ( !paObjectColumn.empty() )
                 {
-                   static const string sqlMain =  "SELECT SSA.paobjectid, SSA.seasonscheduleid, SSA.seasonname, "
-                                                    "SSA.strategyid, DS.seasonstartmonth, DS.seasonendmonth, "
-                                                    "DS.seasonstartday, DS.seasonendday "
-                                                  "FROM ccseasonstrategyassignment SSA, dateofseason DS, ";
-                   static const string sqlWhere = "WHERE SSA.seasonscheduleid = DS.seasonscheduleid AND "
-                                                    "SSA.seasonname = DS.seasonname AND SSA.strategyid = ? "
-                                                  "AND SSA.paobjectid = ?";
-
-                   std::stringstream ss;
-
-                   ss << sqlMain << capControlObjectTable << sqlWhere;
+                   static const string sql =  "SELECT SSA.paobjectid, SSA.seasonscheduleid, SSA.seasonname, "
+                                                "SSA.strategyid, DS.seasonstartmonth, DS.seasonendmonth, "
+                                                "DS.seasonstartday, DS.seasonendday "
+                                              "FROM ccseasonstrategyassignment SSA, dateofseason DS "
+                                              "WHERE SSA.seasonscheduleid = DS.seasonscheduleid AND "
+                                                "SSA.seasonname = DS.seasonname AND SSA.strategyid = ? "
+                                                "AND SSA.paobjectid = " + paObjectColumn;
                                                   
                    Cti::Database::DatabaseConnection connection;
-                   Cti::Database::DatabaseReader dbRdr(connection, ss.str());
+                   Cti::Database::DatabaseReader dbRdr(connection, sql);
 
-                   dbRdr << strategyId
-                         << paObjectColumn;
+                   dbRdr << strategyId;
 
                    dbRdr.execute();
 
@@ -4529,7 +4522,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
             if( substationId > 0 )
             {
-                static const string sqlID = string(sqlNoID + " WHERE CSR.subsationbusid = ?");
+                static const string sqlID = string(sqlNoID + " WHERE CSR.substationbusid = ?");
                 rdr.setCommandText(sqlID);
                 rdr << substationId;
             }
@@ -6252,7 +6245,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
 
             if( subBusId > 0 )
             {
-                static const string sqlID = string(sqlNoID + " AND CSB.substationid = ?");
+                static const string sqlID = string(sqlNoID + " AND CSB.substationbusid = ?");
                 rdr.setCommandText(sqlID);
                 rdr << subBusId;
             }
