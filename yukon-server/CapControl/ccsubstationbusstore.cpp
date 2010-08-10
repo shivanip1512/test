@@ -3688,7 +3688,7 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
                         static const string sql = "SELECT SSA.paobjectid, SSA.seasonscheduleid, SSA.seasonname, "
                                                         "SSA.strategyid, DS.seasonstartmonth, DS.seasonendmonth, "
                                                         "DS.seasonstartday, DS.seasonendday "
-                                                  "FROM ccseasonstrategyassignment SSA, dateofseason DS, ? ";
+                                                  "FROM ccseasonstrategyassignment SSA, dateofseason DS, ? "
                                                   "WHERE SSA.seasonscheduleid = DS.seasonscheduleid AND "
                                                         "SSA.seasonname = DS.seasonname AND SSA.strategyid = ? "
                                                         "AND SSA.paobjectid = ?";
