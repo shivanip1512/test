@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/4/2010 11:05:54 AM                         */
+/* Created on:     8/10/2010 5:40:44 PM                         */
 /*==============================================================*/
 
 
@@ -12487,6 +12487,7 @@ INSERT INTO YukonRoleProperty VALUES(-10816, -108,'Standard Page Style Sheet',' 
 INSERT INTO YukonRoleProperty VALUES(-10817, -108,'Theme Name',' ','The name of the theme to be applied to this group');
 INSERT INTO YukonRoleProperty VALUES(-10818, -108, 'View Alarms Alerts','false','Ability to receive point alarms as alerts');
 INSERT INTO YukonRoleProperty VALUES(-10819, -108, 'Default TimeZone',' ','Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)');
+INSERT INTO YukonRoleProperty VALUES(-10820, -108, 'Session Timeout (minutes)','30','The amount of idle time (in minutes) before a user''s session will expire.');
 
 /* Reporting Analysis role properties */
 INSERT INTO YukonRoleProperty VALUES(-10903,-109,'Admin Reports Group','true','Access to administrative group reports.');

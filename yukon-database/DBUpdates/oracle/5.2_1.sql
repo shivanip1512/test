@@ -429,6 +429,10 @@ ALTER TABLE SurveyResultAnswer
             ON DELETE CASCADE;
 /* End YUK-8932 */
 
+/* Start YUK-8976 */
+INSERT INTO YukonRoleProperty VALUES(-10820, -108, 'Session Timeout (minutes)','30','The amount of idle time (in minutes) before a user''s session will expire.');
+/* End YUK-8976 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
