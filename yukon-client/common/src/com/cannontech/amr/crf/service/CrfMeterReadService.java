@@ -100,54 +100,58 @@ public class CrfMeterReadService {
                     
                     @Override
                     public Object doInJms(Session session) throws JMSException {
-                        DynamicDestinationResolver resolver = new DynamicDestinationResolver();
-                        MessageProducer producer = session.createProducer(resolver.resolveDestinationName(session, "yukon.rr.obj.amr.crf.MeterReadRequest", false));
-                        
-                        TemporaryQueue replyQueue = session.createTemporaryQueue();
-                        MessageConsumer replyConsumer = session.createConsumer(replyQueue);
-                        
-                        ObjectMessage requestMessage = session.createObjectMessage(new CrfMeterReadRequest(meter));
-                        
-                        requestMessage.setJMSReplyTo(replyQueue);
-                        producer.send(requestMessage);
-                        
-                        /* Blocks for status response or until timeout*/
-                        Message replyMessage = replyConsumer.receive(Duration.standardSeconds(statusTimeout).getMillis());
-                        
-                        CrfMeterReadReply statusReply = (CrfMeterReadReply) replyMessage;
-                        
-                        if (statusReply == null || !statusReply.isSuccess()) {
-                            /* Request failed */
-                            if(statusReply == null) {
-                                callback.receivedStatus(CrfMeterReadingReplyType.TIMEOUT);
+                        try {
+                            DynamicDestinationResolver resolver = new DynamicDestinationResolver();
+                            MessageProducer producer = session.createProducer(resolver.resolveDestinationName(session, "yukon.rr.obj.amr.crf.MeterReadRequest", false));
+                            
+                            TemporaryQueue replyQueue = session.createTemporaryQueue();
+                            MessageConsumer replyConsumer = session.createConsumer(replyQueue);
+                            
+                            ObjectMessage requestMessage = session.createObjectMessage(new CrfMeterReadRequest(meter));
+                            
+                            requestMessage.setJMSReplyTo(replyQueue);
+                            producer.send(requestMessage);
+                            
+                            /* Blocks for status response or until timeout*/
+                            Message replyMessage = replyConsumer.receive(Duration.standardSeconds(statusTimeout).getMillis());
+                            
+                            CrfMeterReadReply statusReply = (CrfMeterReadReply) replyMessage;
+                            
+                            if (statusReply == null || !statusReply.isSuccess()) {
+                                /* Request failed */
+                                if(statusReply == null) {
+                                    callback.receivedStatus(CrfMeterReadingReplyType.TIMEOUT);
+                                } else {
+                                    callback.receivedStatusError(statusReply.getReplyType());
+                                    callback.receivedStatus(statusReply.getReplyType());
+                                }
                             } else {
-                                callback.receivedStatusError(statusReply.getReplyType());
+                                /* Request successful */
                                 callback.receivedStatus(statusReply.getReplyType());
-                            }
-                        } else {
-                            /* Request successful */
-                            callback.receivedStatus(statusReply.getReplyType());
-                            List<PointValueHolder> pointDatas = Lists.newArrayList();
-                            
-                            /* Blocks for reading point data or until timeout*/
-                            Message dataReply = replyConsumer.receive(Duration.standardMinutes(dataTimeout).getMillis());
-                            
-                            CrfMeterReadDataReply dataReplyMessage = (CrfMeterReadDataReply) dataReply;
-                            
-                            if (!dataReplyMessage.isSuccess()) {
-                                /* Data response failed */
-                                callback.receivedDataError(dataReplyMessage.getReplyType());
-                            } else {
-                                /* Data response successful, process point data */
-                                processMeterReadingDataMessage(dataReplyMessage.getData(), pointDatas);
+                                List<PointValueHolder> pointDatas = Lists.newArrayList();
                                 
-                                for (PointValueHolder pointValueHolder : pointDatas) {
-                                    callback.receivedData(dataReplyMessage.getReplyType(), pointValueHolder);
+                                /* Blocks for reading point data or until timeout*/
+                                Message dataReply = replyConsumer.receive(Duration.standardMinutes(dataTimeout).getMillis());
+                                
+                                CrfMeterReadDataReply dataReplyMessage = (CrfMeterReadDataReply) dataReply;
+                                
+                                if (!dataReplyMessage.isSuccess()) {
+                                    /* Data response failed */
+                                    callback.receivedDataError(dataReplyMessage.getReplyType());
+                                } else {
+                                    /* Data response successful, process point data */
+                                    processMeterReadingDataMessage(dataReplyMessage.getData(), pointDatas);
+                                    
+                                    for (PointValueHolder pointValueHolder : pointDatas) {
+                                        callback.receivedData(dataReplyMessage.getReplyType(), pointValueHolder);
+                                    }
                                 }
                             }
+                        } catch (Exception e) {
+                            callback.processingExceptionOccured(e.getMessage());
+                        } finally {
+                            callback.complete();
                         }
-                        
-                        callback.complete();
                         return null;
                     }
                 });

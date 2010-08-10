@@ -37,5 +37,11 @@ public interface CrfMeterReadCompletionCallback {
      * @param replyType
      */
     public void receivedStatusError(CrfMeterReadingReplyType replyType);
+
+    /**
+     * Method to keep track of processing exceptions that occur.
+     * @param message
+     */
+    public void processingExceptionOccured(String message);
     
 }

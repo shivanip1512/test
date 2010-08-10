@@ -3,6 +3,7 @@ package com.cannontech.web.widget;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
@@ -14,6 +15,7 @@ import com.cannontech.amr.crf.model.CrfMeter;
 import com.cannontech.amr.crf.service.CrfMeterReadCompletionCallback;
 import com.cannontech.amr.crf.service.CrfMeterReadService;
 import com.cannontech.amr.crf.service.WaitableCrfMeterReadCompletionCallback;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -22,6 +24,7 @@ public class CrfMeterInfoWidget extends WidgetControllerBase {
 
     private CrfMeterDao crfMeterDao;
     private CrfMeterReadService crfMeterReadService;
+    private static final Logger log = YukonLogManager.getLogger(CrfMeterInfoWidget.class);
 
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
@@ -71,6 +74,11 @@ public class CrfMeterInfoWidget extends WidgetControllerBase {
 
             @Override
             public void receivedStatusError(CrfMeterReadingReplyType replyType) {
+            }
+
+            @Override
+            public void processingExceptionOccured(String message) {
+                log.error(message);
             }
         });
         

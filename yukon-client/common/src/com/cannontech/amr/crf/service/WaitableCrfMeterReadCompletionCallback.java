@@ -49,6 +49,11 @@ public class WaitableCrfMeterReadCompletionCallback implements CrfMeterReadCompl
         delegate.receivedDataError(replyType);
     }
     
+    @Override
+    public void processingExceptionOccured(String message) {
+        log.error(message);
+    }
+    
     public void waitForStatusResponse() throws InterruptedException {
         
         log.debug("Starting await status response");
