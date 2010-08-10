@@ -2,7 +2,6 @@ package com.cannontech.dr.program.service.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
@@ -37,6 +36,7 @@ import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.dr.program.dao.ProgramDao;
 import com.cannontech.dr.program.filter.ForLoadGroupFilter;
 import com.cannontech.dr.program.model.GearAdjustment;
+import com.cannontech.dr.program.service.ConstraintContainer;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
@@ -45,6 +45,7 @@ import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
+import com.cannontech.loadcontrol.messages.ConstraintViolation;
 import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.messages.LMManualControlResponse;
@@ -359,19 +360,27 @@ public class ProgramServiceImpl implements ProgramService {
             return null;
         }
 
-        List<String> violations = new ArrayList<String>();
+        List<ConstraintContainer> violations = Lists.newArrayList();
         LMManualControlResponse lmResp =
             (LMManualControlResponse) serverResponse.getPayload();
         if (lmResp != null) {
-            for (Object violation : lmResp.getConstraintViolations()) {
-                violations.add(violation.toString());
-            }
+            violations = convertViolationsToContainers(lmResp.getConstraintViolations());
         } else {
             // use the message from the response for our violation
-            violations.add(serverResponse.getMessage());
+            return new ConstraintViolations(serverResponse.getMessage());
         }
         return new ConstraintViolations(violations);
     }
+
+    @Override
+	public List<ConstraintContainer> convertViolationsToContainers(List<ConstraintViolation> violations) {
+		List<ConstraintContainer> containerList = Lists.newArrayList();
+		for (ConstraintViolation violation : violations) {
+			ConstraintContainer constraintContainer = new ConstraintContainer(violation);
+			containerList.add(constraintContainer);
+		}
+		return containerList;
+	}
 
     @Override
     public DisplayablePao getProgram(int programId) {

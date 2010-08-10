@@ -3,7 +3,7 @@ package com.cannontech.loadcontrol.messages;
 /**
  * This type was created in VisualAge.
  */
-import java.util.Vector;
+import java.util.List;
 
 import com.cannontech.message.util.VectorExtract;
 import com.roguewave.tools.v2_0.Comparator;
@@ -57,7 +57,7 @@ public String getCxxStringId() {
 /**
  * getJavaClass method comment.
  */
-public Class getJavaClass() {
+public Class<?> getJavaClass() {
 	return LMManualControlResponse.class;
 }
 /**
@@ -69,7 +69,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	LMManualControlResponse lmManualControlResponse = (LMManualControlResponse) obj;
 	int programID = (int) vstr.extractUnsignedInt();
 	//Vector v = (Vector) vstr.restoreObject(polystr);
-    Vector v = VectorExtract.extractVector(vstr,polystr);
+    List<ConstraintViolation> v = VectorExtract.<ConstraintViolation>extractList(vstr, polystr);
 	String bestFitAction = (String) vstr.restoreObject( SimpleMappings.CString );
 	
 	lmManualControlResponse.setConstraintViolations(v);

@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.dr.program.service.ConstraintContainer;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.dynamic.receive.LMProgramChanged;
@@ -58,7 +59,7 @@ public class ProgramChangeBlocker implements MessageListener {
         
         this.afterTime = System.currentTimeMillis();
         log.info("Executing program update for programId " + this.programId);
-        List<String> executeViolations = loadControlCommandService.executeManualCommand(controlRequest);
+        List<ConstraintContainer> executeViolations = loadControlCommandService.executeManualCommand(controlRequest);
         programStatus.setConstraintViolations(executeViolations);
         
         try {

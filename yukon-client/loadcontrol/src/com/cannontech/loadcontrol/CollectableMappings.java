@@ -25,6 +25,7 @@ public class CollectableMappings
 		new com.cannontech.message.dispatch.message.DefineCollectableMulti(),
 		
 		new com.cannontech.loadcontrol.messages.DefineCollectableLMManualControlResponse(),
+		new com.cannontech.loadcontrol.messages.DefineCollectableConstraintViolation(),
 		
 		new com.cannontech.loadcontrol.data.DefColl_LMControlArea(),
 		new com.cannontech.loadcontrol.data.DefColl_LMProgramDirect(),

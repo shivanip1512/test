@@ -14,8 +14,8 @@ import java.util.List;
 public class LMManualControlResponse extends LMMessage 
 {
 	private int _programID;
-	// List<String> - A String for each constraint violated
-	private List _constraintViolations;
+	// List<ConstraintViolation> - An object containing the constraint information for each constraint violated
+	private List<ConstraintViolation> _constraintViolations;
 	// If a constraint is violated and the server is forced to
 	// determine a "best fit" time period for a program to 
 	// run, this field will contain info about the compromise made.
@@ -32,14 +32,14 @@ public LMManualControlResponse() {
 	/**
 	 * @return
 	 */
-	public List getConstraintViolations() {
+	public List<ConstraintViolation> getConstraintViolations() {
 		return _constraintViolations;
 	}
 
 	/**
 	 * @param set
 	 */
-	public void setConstraintViolations(List set) {
+	public void setConstraintViolations(List<ConstraintViolation> set) {
 		_constraintViolations = set;
 	}
 

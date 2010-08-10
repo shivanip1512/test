@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.dr.program.service.ConstraintContainer;
+import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.messages.LMManualControlResponse;
@@ -15,15 +17,15 @@ public class LoadControlCommandServiceImpl implements LoadControlCommandService 
 
     private LoadControlClientConnection loadControlClientConnection;
     private ServerRequest serverRequest;
+    private ProgramService programService;
     
-    @SuppressWarnings("unchecked")
-    public List<String> executeManualCommand(LMManualControlRequest request) {
+    public List<ConstraintContainer> executeManualCommand(LMManualControlRequest request) {
         
         ServerResponseMsg response = serverRequest.makeServerRequest(loadControlClientConnection, request); 
         
         LMManualControlResponse lmResponse = (LMManualControlResponse)response.getPayload();
         
-        return lmResponse.getConstraintViolations();
+        return programService.convertViolationsToContainers(lmResponse.getConstraintViolations());
     }
 
     @Autowired
@@ -36,4 +38,9 @@ public class LoadControlCommandServiceImpl implements LoadControlCommandService 
     public void setServerRequest(ServerRequest serverRequest) {
         this.serverRequest = serverRequest;
     }
+    
+    @Autowired
+    public void setProgramService(ProgramService programService) {
+		this.programService = programService;
+	}
 }

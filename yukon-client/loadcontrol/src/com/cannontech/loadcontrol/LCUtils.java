@@ -13,6 +13,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.dr.program.service.ConstraintContainer;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.ILMGroup;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -27,6 +28,7 @@ import com.cannontech.loadcontrol.datamodels.ProgramTableModel;
 import com.cannontech.loadcontrol.displays.ControlAreaActionListener;
 import com.cannontech.loadcontrol.gui.MultiLineControlAreaRenderer;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
+import com.cannontech.loadcontrol.messages.ConstraintViolation;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.messages.LMManualControlResponse;
 import com.cannontech.message.server.ServerResponseMsg;
@@ -35,6 +37,7 @@ import com.cannontech.message.util.ServerRequestImpl;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.google.common.collect.Lists;
 
 
 /**
@@ -754,14 +757,16 @@ public class LCUtils
     				if(lmResp != null)
     				{
     					//do something interesting.
-    					List violationStrs = lmResp.getConstraintViolations();
-    					for( int j = 0; j < violationStrs.size(); j++ )
-    						programResp[i].addViolation( violationStrs.get(j).toString() );
+    					List<ConstraintContainer> violationList = Lists.newArrayList();
+    					for( ConstraintViolation violation : lmResp.getConstraintViolations() ) {
+    						violationList.add(new ConstraintContainer(violation));
+    					}
+    					programResp[i].setViolations(violationList);
     				}
                     else
                     {
                         //add the message from the response to out list of problems
-                        programResp[i].addViolation( responseMsgs[i].getMessage() );
+                        programResp[i].setServerResponse( responseMsgs[i].getMessage() );
                     }
                 }
                 

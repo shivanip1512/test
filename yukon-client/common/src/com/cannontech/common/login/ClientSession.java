@@ -7,6 +7,8 @@ import java.awt.Frame;
 import java.net.CookieHandler;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.swing.JOptionPane;
 
@@ -24,8 +26,11 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.ThemeUtils;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.UserUtils;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * Holds session information for client programs.
@@ -51,6 +56,12 @@ public class ClientSession {
 	 */
 	public LiteYukonUser getUser() {
 		return user;	
+	}
+	
+	public static YukonUserContext getUserContext() {
+		LiteYukonUser thisUser = getInstance().getUser();
+		SimpleYukonUserContext result = new SimpleYukonUserContext(thisUser, Locale.getDefault(), TimeZone.getDefault(), ThemeUtils.getDefaultThemeName());
+		return result;
 	}
 	
 	/**

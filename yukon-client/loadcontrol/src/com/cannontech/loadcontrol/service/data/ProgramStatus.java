@@ -7,23 +7,24 @@ import java.util.Set;
 
 import org.springframework.core.style.ToStringCreator;
 
+import com.cannontech.dr.program.service.ConstraintContainer;
 import com.cannontech.loadcontrol.ProgramUtils;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 
 public class ProgramStatus {
 
     private LMProgramBase program;
-    private Set<String> constraintViolations = new HashSet<String>();
+    private Set<ConstraintContainer> constraintViolations = new HashSet<ConstraintContainer>();
     
     public ProgramStatus(LMProgramBase program) {
         this.program = program;
     }
     
-    public void addConstraintViolation(String violation) {
+    public void addConstraintViolation(ConstraintContainer violation) {
         this.constraintViolations.add(violation);
     }
     
-    public void setConstraintViolations(List<String> violations) {
+    public void setConstraintViolations(List<ConstraintContainer> violations) {
         this.constraintViolations.clear();
         this.constraintViolations.addAll(violations);
     }
@@ -56,7 +57,7 @@ public class ProgramStatus {
         return ProgramUtils.getCurrentGearName(program);
     }
     
-    public Set<String> getConstraintViolations() {
+    public Set<ConstraintContainer> getConstraintViolations() {
         return constraintViolations;
     }
     
