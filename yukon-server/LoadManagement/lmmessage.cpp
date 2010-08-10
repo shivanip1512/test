@@ -493,14 +493,17 @@ void CtiLMManualControlResponse::restoreGuts(RWvistream& strm)
 {
     CtiLMMessage::restoreGuts(strm);
     vector<RWCollectableString*>* rw_ordered = CTIDBG_new vector<RWCollectableString*>;
+    vector<ConstraintViolation> vec;
 
     strm >> _paoid;
-    strm >> rw_ordered;
+    //strm >> rw_ordered;
+    strm >> vec;
     strm >> _best_fit_action;
 
-    for( int i = 0; i < rw_ordered->size(); i++ )
+    for( int i = 0; i < vec.size(); i++ )
     {
-        _constraintViolations.push_back(  ((RWCollectableString*) (*rw_ordered)[i])->data());
+        //_constraintViolations.push_back(  ((RWCollectableString*) (*rw_ordered)[i])->data());
+        _constraintViolations.push_back(vec.at(i));
     }
     return;
 }
@@ -515,12 +518,12 @@ void CtiLMManualControlResponse::saveGuts(RWvostream& strm) const
 
 /* NEW */
     CtiLMMessage::saveGuts(strm);
-    vector<RWCollectableString*>* vect = CTIDBG_new vector<RWCollectableString*>;
-    for( std::vector< std::string >::const_iterator iter = _constraintViolations.begin();
+    vector<ConstraintViolation> vect;
+    for( std::vector< ConstraintViolation >::const_iterator iter = _constraintViolations.begin();
        iter != _constraintViolations.end();
        iter++ )
     {
-        vect->push_back(CTIDBG_new RWCollectableString(iter->c_str()));
+        vect.push_back(*iter);
     }
     strm << _paoid;
     strm << vect;
@@ -568,7 +571,7 @@ const string& CtiLMManualControlResponse::getBestFitAction() const
 
   Returns the contraint violations
 ----------------------------------------------------------------------------*/
-const vector<string>& CtiLMManualControlResponse::getConstraintViolations() const
+const vector<ConstraintViolation>& CtiLMManualControlResponse::getConstraintViolations() const
 {
     return _constraintViolations;
 }
@@ -598,7 +601,7 @@ CtiLMManualControlResponse& CtiLMManualControlResponse::setBestFitAction(const s
 
   Sets the constraint violations
 ----------------------------------------------------------------------------*/
-CtiLMManualControlResponse& CtiLMManualControlResponse::setConstraintViolations(const vector<string>& constraintViolations)
+CtiLMManualControlResponse& CtiLMManualControlResponse::setConstraintViolations(const vector<ConstraintViolation>& constraintViolations)
 {
     _constraintViolations = constraintViolations;
     return *this;

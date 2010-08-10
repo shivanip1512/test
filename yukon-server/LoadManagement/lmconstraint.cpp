@@ -112,6 +112,10 @@ bool CtiLMProgramConstraintChecker::checkSeason(ULONG proposed_start_from_1901,
             result += CtiNumStr(_lm_program.getSeasonScheduleId());
             _results.push_back(result);
 
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_OutsideSeasonSchedule, 
+                                                                CtiTime(startTime), 
+                                                                _lm_program.getSeasonScheduleId()));
+
             return false;
         }
     } while( ++startDate <= stopDate );
@@ -175,6 +179,9 @@ bool CtiLMProgramConstraintChecker::checkWeekDays(ULONG proposed_start_from_1901
                 result += ", which is a holiday";
                 _results.push_back(result);
 
+                _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ProhibitedHolidayRun, 
+                                                                    CtiTime(startDate)));
+
                 violated = true;
                 break;
             }
@@ -188,6 +195,9 @@ bool CtiLMProgramConstraintChecker::checkWeekDays(ULONG proposed_start_from_1901
             {
                 result = "The program is not allowed to run on " + startDate.weekDayName();
                 _results.push_back(result);
+
+                _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ProhibitedWeekdayRun, 
+                                                                    startDate.weekDayName()));
 
                 violated = true;
                 break;
@@ -214,12 +224,25 @@ bool CtiLMProgramConstraintChecker::checkMaxHoursDaily(ULONG proposed_gear, ULON
         int diff_minutes = (estimated_control_time + (double) lm_group->getCurrentHoursDaily()/60.0) - ((double) _lm_program.getMaxHoursDaily()/60.0);
         if( diff_minutes > 0 )
         {
-            string result = "load group, '" + lm_group->getPAOName() + "' would exceed its maximum daily control hours by an estimated " + CtiNumStr((double)diff_minutes/60.0) + " hours";
+            string paoName  = lm_group->getPAOName();
+            double numHours = (double)diff_minutes/60.0;
+
+            string result = "load group, '" + paoName + "' would exceed its maximum daily control hours by an estimated " + CtiNumStr(numHours) + " hours";
             _results.push_back(result);
-            result = "load group, '" + lm_group->getPAOName() + "' maximum daily control hours: " + CtiNumStr(_lm_program.getMaxHoursDaily()/60.0/60.0);
+            result = "load group, '" + paoName + "' maximum daily control hours: " + CtiNumStr(_lm_program.getMaxHoursDaily()/60.0/60.0);
             _results.push_back(result);
-            result = "load group, '" + lm_group->getPAOName() + "' current daily control hours: " + CtiNumStr((double)lm_group->getCurrentHoursDaily()/60.0/60.0);
+            result = "load group, '" + paoName + "' current daily control hours: " + CtiNumStr((double)lm_group->getCurrentHoursDaily()/60.0/60.0);
             _results.push_back(result);
+
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ExceededDailyControlHours, 
+                                                                paoName, 
+                                                                numHours));
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ExceededDailyControlHoursMsg2, 
+                                                                paoName, 
+                                                                _lm_program.getMaxHoursDaily()/60.0/60.0));
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ExceededDailyControlHoursMsg3, 
+                                                                paoName, 
+                                                                (double)lm_group->getCurrentHoursDaily()/60.0/60.0));
 
             violated = true;
         }
@@ -243,12 +266,25 @@ bool CtiLMProgramConstraintChecker::checkMaxHoursMonthly(ULONG proposed_gear, UL
         int diff_minutes = estimated_control_time + lm_group->getCurrentHoursMonthly()/60.0 - _lm_program.getMaxHoursMonthly()/60.0;
         if( diff_minutes > 0 )
         {
-            string result = "load group, '" + lm_group->getPAOName() + "' would exceed its maximum monthly control hours by an estimated " + CtiNumStr((double)diff_minutes/60.0) + " hours";
+            string paoName  = lm_group->getPAOName();
+            double numHours = (double)diff_minutes/60.0;
+
+            string result = "load group, '" + paoName + "' would exceed its maximum monthly control hours by an estimated " + CtiNumStr(numHours) + " hours";
+            _results.push_back(result); 
+            result = "load group, '" + paoName + "' maximum monthly control hours: " + CtiNumStr(_lm_program.getMaxHoursMonthly()/60.0/60.0);
+            _results.push_back(result); 
+            result = "load group, '" + paoName + "' current monthly control hours: " + CtiNumStr((double)lm_group->getCurrentHoursMonthly()/60.0/60.0);
             _results.push_back(result);
-            result = "load group, '" + lm_group->getPAOName() + "' maximum monthly control hours: " + CtiNumStr(_lm_program.getMaxHoursMonthly()/60.0/60.0);
-            _results.push_back(result);
-            result = "load group, '" + lm_group->getPAOName() + "' current monthly control hours: " + CtiNumStr((double)lm_group->getCurrentHoursMonthly()/60.0/60.0);
-            _results.push_back(result);
+
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ExceededMonthlyControlHours, 
+                                                                paoName, 
+                                                                numHours));
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ExceededMonthlyControlHoursMsg2, 
+                                                                paoName, 
+                                                                _lm_program.getMaxHoursMonthly()/60.0/60.0));
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ExceededMonthlyControlHoursMsg3, 
+                                                                paoName, 
+                                                                (double)lm_group->getCurrentHoursMonthly()/60.0/60.0));
 
             violated = true;
         }
@@ -272,12 +308,25 @@ bool CtiLMProgramConstraintChecker::checkMaxHoursSeasonal(ULONG proposed_gear, U
         int diff_minutes = estimated_control_time + lm_group->getCurrentHoursSeasonal()/60.0 - _lm_program.getMaxHoursSeasonal()/60.0;
         if( diff_minutes > 0 )
         {
-            string result = "load group, '" + lm_group->getPAOName() + "' would exceed its maximum seasonal control hours by an estimated " + CtiNumStr((double)diff_minutes/60.0) + " hours";
+            string paoName  = lm_group->getPAOName();
+            double numHours = (double)diff_minutes/60.0;
+
+            string result = "load group, '" + paoName + "' would exceed its maximum seasonal control hours by an estimated " + CtiNumStr(numHours) + " hours";
             _results.push_back(result);
-            result = "load group, '" + lm_group->getPAOName() + "' maximum seasonal control hours: " + CtiNumStr(_lm_program.getMaxHoursSeasonal()/60.0/60.0);
+            result = "load group, '" + paoName + "' maximum seasonal control hours: " + CtiNumStr(_lm_program.getMaxHoursSeasonal()/60.0/60.0);
             _results.push_back(result);
-            result = "load group, '" + lm_group->getPAOName() + "' current seasonal control hours: " + CtiNumStr((double)lm_group->getCurrentHoursSeasonal()/60.0/60.0);
+            result = "load group, '" + paoName + "' current seasonal control hours: " + CtiNumStr((double)lm_group->getCurrentHoursSeasonal()/60.0/60.0);
             _results.push_back(result);
+
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ExceededSeasonalControlHours, 
+                                                                paoName, 
+                                                                numHours));
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ExceededSeasonalControlHoursMsg2, 
+                                                                paoName, 
+                                                                _lm_program.getMaxHoursSeasonal()/60.0/60.0));
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ExceededSeasonalControlHoursMsg3, 
+                                                                paoName, 
+                                                                (double)lm_group->getCurrentHoursSeasonal()/60.0/60.0));
 
             violated = true;
         }
@@ -301,15 +350,25 @@ bool CtiLMProgramConstraintChecker::checkMaxHoursAnnually(ULONG proposed_gear, U
         int diff_minutes = estimated_control_time + lm_group->getCurrentHoursAnnually()/60.0 - _lm_program.getMaxHoursAnnually()/60.0;
         if( diff_minutes > 0 )
         {
-            string result = "load group, '" + lm_group->getPAOName() + "' would exceed its maximum annual control hours by an estimated " + CtiNumStr((double)diff_minutes/60.0) + " hours";
+            string paoName  = lm_group->getPAOName();
+            double numHours = (double)diff_minutes/60.0;
 
+            string result = "load group, '" + paoName + "' would exceed its maximum annual control hours by an estimated " + CtiNumStr(numHours) + " hours";
+            _results.push_back(result);
+            result = "load group, '" + paoName + "' maximum annual control hours: " + CtiNumStr(_lm_program.getMaxHoursAnnually()/60.0/60.0);
+            _results.push_back(result);
+            result = "load group, '" + paoName + "' current annual control hours: " + CtiNumStr((double)lm_group->getCurrentHoursAnnually()/60.0/60.0);
             _results.push_back(result);
 
-            result = "load group, '" + lm_group->getPAOName() + "' maximum annual control hours: " + CtiNumStr(_lm_program.getMaxHoursAnnually()/60.0/60.0);
-            _results.push_back(result);
-            result = "load group, '" + lm_group->getPAOName() + "' current annual control hours: " + CtiNumStr((double)lm_group->getCurrentHoursAnnually()/60.0/60.0);
-
-            _results.push_back(result);
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ExceededAnnualControlHours, 
+                                                                paoName, 
+                                                                numHours));
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ExceededAnnualControlHoursMsg2, 
+                                                                paoName, 
+                                                                _lm_program.getMaxHoursAnnually()/60.0/60.0));
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ExceededAnnualControlHoursMsg3, 
+                                                                paoName, 
+                                                                (double)lm_group->getCurrentHoursAnnually()/60.0/60.0));
 
             violated = true;
         }
@@ -331,8 +390,10 @@ bool CtiLMProgramConstraintChecker::checkMinActivateTime(ULONG proposed_start_fr
     if( !(run_time >= _lm_program.getMinActivateTime()) )
     {
         string result = "Load groups might be controlled less than their minimum activate time, which is " + CtiNumStr(_lm_program.getMinActivateTime()/60.0/60.0) + " hours.";
-
         _results.push_back(result);
+
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ControlledLessThanMinimum, 
+                                                            (double)_lm_program.getMinActivateTime()/60.0/60.0));
 
         return false;
     }
@@ -358,6 +419,11 @@ bool CtiLMProgramConstraintChecker::checkMinRestartTime(ULONG proposed_start_fro
         {
             string result = "Load group: " + lm_group->getPAOName() + " might violate its minimum restart time, which is " + CtiNumStr((double)_lm_program.getMinRestartTime()/60.0/60.0) + " hours.";
             _results.push_back(result);
+
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_MinRestartTimeViolation, 
+                                                                lm_group->getPAOName(), 
+                                                                (double)_lm_program.getMinRestartTime()/60.0/60.0));
+
             found_violation = true;
         }
     }
@@ -385,6 +451,11 @@ bool CtiLMProgramConstraintChecker::checkMaxDailyOps()
                             lm_group->getPAOName() +
                             " has reached its maximum daily operations which is " + CtiNumStr(_lm_program.getMaxDailyOps());
             _results.push_back(result);
+
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_MaximumDailyOperationsReached, 
+                                                                lm_group->getPAOName(),
+                                                                _lm_program.getMaxDailyOps()));
+
             found_violation = true;
         }
     }
@@ -405,8 +476,10 @@ bool CtiLMProgramConstraintChecker::checkMaxActivateTime(ULONG proposed_start_fr
     if( !(run_time <= _lm_program.getMaxActivateTime()) )
     {
         string result = "Load groups might control longer than their maximum activate time, which is " + CtiNumStr((double)_lm_program.getMaxActivateTime()/60.0/60.0) + " hours.";
-
         _results.push_back(result);
+
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ControlledMoreThanMaximum, 
+                                                            (double)_lm_program.getMaxActivateTime()/60.0/60.0));
 
         return false;
     }
@@ -446,14 +519,22 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
         }
         else
         {
-            _results.push_back("The program cannot run outside of its prescribed control windows.  The proposed start and stop times span different control windows");
+            string result = "The program cannot run outside of its prescribed control windows.  The proposed start and stop times span different control windows";
+            _results.push_back(result);
+
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ProposedTimesSpanMultipleWindows));
+
             return false;
         }
     }
 
     if( start_ctrl_window == 0 && stop_ctrl_window == 0 ) //start and stop outside any control windows
     {
-        _results.push_back("The program cannot run outside of its prescribed control windows");
+        string result = "The program cannot run outside of its prescribed control windows";
+        _results.push_back(result);
+
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_CannotRunOutsideControlWindows));
+
         return false;
     }
 
@@ -467,6 +548,11 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
         result += start_ctrl_window->getAvailableStopTime().asString();
         _results.push_back(result);
 
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_StopTimeOutsideControlWindow,
+                                                            CtiTime(proposed_stop_from_1901),
+                                                            start_ctrl_window->getAvailableStartTime(),
+                                                            start_ctrl_window->getAvailableStopTime()));
+
         return false;
     }
 
@@ -479,6 +565,11 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
         result += " to ";
         result += stop_ctrl_window->getAvailableStopTime().asString();
         _results.push_back(result);
+
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_StartTimeOutsideControlWindow,
+                                                            CtiTime(proposed_start_from_1901),
+                                                            start_ctrl_window->getAvailableStartTime(),
+                                                            start_ctrl_window->getAvailableStopTime()));
 
         return false;
     }
@@ -520,6 +611,10 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
         result += proposedStopTime.asString();
         _results.push_back(result);
 
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ProposedStartAfterStop, 
+                                                            proposedStartTime, 
+                                                            proposedStopTime));
+
         return false;
     }
 
@@ -540,14 +635,26 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
     {
         if( proposedStartTime < controlAreaStartTime || proposedStartTime > controlAreaStopTime )
         {
-            _results.push_back( ControlWindowErrorMessage(controlAreaStartTime, controlAreaStopTime, proposedStartTime, "start", "CONTROL AREA") );
+            string result = ControlWindowErrorMessage(controlAreaStartTime, controlAreaStopTime, proposedStartTime, "start", "CONTROL AREA");
+            _results.push_back( result );
+
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_InvalidProposedCAStartTimeSameDate,
+                                                                proposedStartTime,
+                                                                controlAreaStartTime,
+                                                                controlAreaStopTime));
 
             return false;
         }
 
         if( proposedStopTime < controlAreaStartTime || proposedStopTime > controlAreaStopTime )
         {
-            _results.push_back( ControlWindowErrorMessage(controlAreaStartTime, controlAreaStopTime, proposedStopTime, "stop", "CONTROL AREA") );
+            string result = ControlWindowErrorMessage(controlAreaStartTime, controlAreaStopTime, proposedStopTime, "stop", "CONTROL AREA");
+            _results.push_back( result );
+
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_InvalidProposedCAStopTimeSameDate,
+                                                                proposedStopTime,
+                                                                controlAreaStartTime,
+                                                                controlAreaStopTime));
 
             return false;
         }
@@ -561,21 +668,39 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
 
         if( todayControlAreaStopTime < proposedStartTime && proposedStartTime < controlAreaStartTime )
         {
-            _results.push_back( ControlWindowErrorMessage(controlAreaStartTime, controlAreaStopTime, proposedStartTime, "start", "CONTROL AREA") );
+            string result = ControlWindowErrorMessage(controlAreaStartTime, controlAreaStopTime, proposedStartTime, "start", "CONTROL AREA");
+            _results.push_back( result );
+
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_InvalidProposedCAStartTimeOverMidnight,
+                                                                proposedStartTime,
+                                                                controlAreaStartTime,
+                                                                controlAreaStopTime));
 
             return false;
         }
 
         if( proposedStartTime <= todayControlAreaStopTime && proposedStopTime > todayControlAreaStopTime )
         {
-            _results.push_back( ControlWindowErrorMessage(yesterdayControlAreaStartTime, todayControlAreaStopTime, proposedStopTime, "stop", "CONTROL AREA") );
+            string result = ControlWindowErrorMessage(yesterdayControlAreaStartTime, todayControlAreaStopTime, proposedStopTime, "stop", "CONTROL AREA");
+            _results.push_back( result );
+
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight,
+                                                                proposedStopTime,
+                                                                yesterdayControlAreaStartTime,
+                                                                todayControlAreaStopTime));
 
             return false;
         }
 
         if( proposedStartTime >= controlAreaStartTime && (proposedStopTime < controlAreaStartTime || proposedStopTime > controlAreaStopTime) )
         {
-            _results.push_back( ControlWindowErrorMessage(controlAreaStartTime, controlAreaStopTime, proposedStopTime, "stop", "CONTROL AREA") );
+            string result = ControlWindowErrorMessage(controlAreaStartTime, controlAreaStopTime, proposedStopTime, "stop", "CONTROL AREA");
+            _results.push_back( result );
+
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight,
+                                                                proposedStopTime,
+                                                                controlAreaStartTime,
+                                                                controlAreaStopTime));
 
             return false;
         }
@@ -611,6 +736,11 @@ bool CtiLMProgramConstraintChecker::checkNotifyActiveOffset(ULONG proposed_start
         result += " minutes.";
         _results.push_back(result);
 
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_ProposedStartTooSoon,
+                                                            CtiTime(proposed_start_from_1901),
+                                                            (proposed_start_from_1901 - _seconds_from_1901)/60.0,
+                                                            _lm_program.getNotifyActiveOffset() / 60.0));
+
         return false;
     }
     else
@@ -635,20 +765,23 @@ bool CtiLMProgramConstraintChecker::checkMasterActive()
             result += ", is active";
             _results.push_back(result);
 
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_MasterProgramActive, 
+                                                                (*master_iter)->getPAOName()));
+
             master_active = true;
         }
     }
     return !master_active;
 }
 
-const vector<string>& CtiLMProgramConstraintChecker::getViolations()
+const vector<ConstraintViolation>& CtiLMProgramConstraintChecker::getViolations()
 {
-    return _results;
+    return _constraintViolations;
 }
 
 void CtiLMProgramConstraintChecker::clearViolations()
 {
-    _results.clear();
+    _constraintViolations.clear();
 }
 
 void CtiLMProgramConstraintChecker::dumpViolations()
@@ -756,6 +889,8 @@ bool CtiLMGroupConstraintChecker::checkEnabled()
     {
         string result = "Load Group: " + _lm_group->getPAOName() + " is disabled.";
         _results.push_back(result);
+
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_LoadGroupDisabled, _lm_group->getPAOName()));
     }
     return false;
 }
@@ -769,6 +904,8 @@ bool CtiLMGroupConstraintChecker::checkMaxActivateTime(LONG& control_duration, b
     {
         string result = "Load Group: " + _lm_group->getPAOName() + " maximum activate violation.";
         _results.push_back(result);
+
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_LoadGroupMaxActivateViolation, _lm_group->getPAOName()));
         return false;
     }
     return true;
@@ -785,6 +922,8 @@ bool CtiLMGroupConstraintChecker::checkMinActivateTime()
     {
         string result = "Load Group: " + _lm_group->getPAOName() + " minimum activate violation.";
         _results.push_back(result);
+
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_LoadGroupMinActivateViolation, _lm_group->getPAOName()));
     }
     return false;
 }
@@ -800,6 +939,8 @@ bool CtiLMGroupConstraintChecker::checkMinRestartTime()
     {
         string result = "Load Group: " + _lm_group->getPAOName() + " minimum restart violation.";
         _results.push_back(result);
+
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_LoadGroupMinRestartViolation, _lm_group->getPAOName()));
     }
     return false;
 }
@@ -816,6 +957,8 @@ bool CtiLMGroupConstraintChecker::checkMaxDailyOps()
     {
         string result = "Load Group: " + _lm_group->getPAOName() + " max daily ops violation.";
         _results.push_back(result);
+
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_LoadGroupMaxDailyOpsViolation, _lm_group->getPAOName()));
     }
     return false;
 }
@@ -833,6 +976,8 @@ bool CtiLMGroupConstraintChecker::checkMaxHoursDaily(LONG& control_duration, boo
     {
         string result = "Load Group: " + _lm_group->getPAOName() + " max hours daily violation.";
         _results.push_back(result);
+
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_LoadGroupMaxDailyHoursViolation, _lm_group->getPAOName()));
     }
     return false;
 }
@@ -846,6 +991,8 @@ bool CtiLMGroupConstraintChecker::checkMaxHoursMonthly(LONG& control_duration, b
     {
         string result = "Load Group: " + _lm_group->getPAOName() + " max hours monthly violation.";
         _results.push_back(result);
+
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_LoadGroupMaxMonthlyHoursViolation, _lm_group->getPAOName()));
         return false;
     }
     return true;
@@ -860,6 +1007,8 @@ bool CtiLMGroupConstraintChecker::checkMaxHoursSeasonal(LONG& control_duration, 
     {
         string result = "Load Group: " + _lm_group->getPAOName() + " max hours seasonal  violation.";
         _results.push_back(result);
+
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_LoadGroupMaxSeasonalHoursViolation, _lm_group->getPAOName()));
         return false;
     }
     return true;
@@ -874,6 +1023,8 @@ bool CtiLMGroupConstraintChecker::checkMaxHoursAnnually(LONG& control_duration, 
     {
         string result = "Load Group: " + _lm_group->getPAOName() + " max hours annually violation.";
         _results.push_back(result);
+
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_LoadGroupMaxAnnualHoursViolation, _lm_group->getPAOName()));
         return false;
     }
     return true;
@@ -948,6 +1099,15 @@ bool CtiLMGroupConstraintChecker::checkControlAreaControlWindow(CtiLMControlArea
                     result += adjust_duration ? "Y" : "N";
                     _results.push_back(result);
                     retVal = false;
+
+                    _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_LoadGroupCannotControlInWindow, 
+                                                                        _lm_group->getPAOName()));
+
+                    ConstraintViolation::CV_Enum_TimeTimeInt code = adjust_duration ? ConstraintViolation::CV_LoadGroupCannotControlInWindowAdjust : ConstraintViolation::CV_LoadGroupCannotControlInWindowNoAdjust;
+                    _constraintViolations.push_back(ConstraintViolation(code, 
+                                                                        controlAreaStart, 
+                                                                        controlAreaStop, 
+                                                                        control_duration));
                 }
             }
         }
@@ -977,6 +1137,8 @@ bool CtiLMGroupConstraintChecker::checkProgramControlWindow(LONG& control_durati
         {
             string result = "Load Group: " + _lm_group->getPAOName() + " not in program control window.";
             _results.push_back(result);
+
+            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_LoadGroupNotInProgramControlWindow, _lm_group->getPAOName()));
             retVal = false;
         }
         else
@@ -999,6 +1161,9 @@ bool CtiLMGroupConstraintChecker::checkProgramControlWindow(LONG& control_durati
                     {
                         string result = "Load Group: " + _lm_group->getPAOName() + " not enough control time left in program control window.";
                         _results.push_back(result);
+
+                        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_LoadGroupNotEnoughTimeLeftInWindow, 
+                                                                            _lm_group->getPAOName()));
                         retVal = false;
                     }
                     else
@@ -1071,6 +1236,10 @@ bool CtiLMProgramConstraintChecker::checkManualGearChangeConstraints(ULONG propo
         result += " You cannot override this constraint error.";
         _results.push_back(result);
 
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_CannotExtendStopTime,
+                                                            _lm_program.getDirectStopTime(),
+                                                            CtiTime(proposed_stop_seconds)));
+
         ret_val = false;
     }
 
@@ -1078,6 +1247,8 @@ bool CtiLMProgramConstraintChecker::checkManualGearChangeConstraints(ULONG propo
     {
         string result = "New gear id is identical to the current running gear. You cannot override this constraint error.";
         _results.push_back(result);
+
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_IdenticalGearID));
 
         ret_val = false;
     }
@@ -1089,6 +1260,9 @@ bool CtiLMProgramConstraintChecker::checkManualGearChangeConstraints(ULONG propo
         result += " Gear cannot be changed when program is not active. You cannot override this constraint error.";
         _results.push_back(result);
 
+        ConstraintViolation::CV_Enum_Empty error = _lm_program.getProgramState() == CtiLMProgramBase::StoppingState ? ConstraintViolation::CV_GearCannotChangeStopping : ConstraintViolation::CV_GearCannotChangeInactive;
+        _constraintViolations.push_back(ConstraintViolation(error));
+
         ret_val = false;
     }
 
@@ -1096,6 +1270,8 @@ bool CtiLMProgramConstraintChecker::checkManualGearChangeConstraints(ULONG propo
     {
         string result = "Latching method currently in use, you cannot change from latching method.";
         _results.push_back(result);
+
+        _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_CannotChangeFromLatching));
     }
 
     return ret_val;

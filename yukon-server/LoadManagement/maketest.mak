@@ -48,6 +48,7 @@ LOADMANAGEMENTBASEOBJS= \
 $(OBJ)\clientconn.obj \
 $(OBJ)\clistener.obj \
 $(OBJ)\executor.obj \
+$(OBJ)\ConstraintViolation.obj \
 $(OBJ)\lmconstraint.obj \
 $(OBJ)\lmcontrolarea.obj \
 $(OBJ)\lmcontrolareastore.obj \
@@ -127,22 +128,22 @@ deps:
 
 ######################################################################################
 #UPDATE#
-test_lmprogram.obj:	yukon.h precompiled.h ctidbgmem.h \
+test_lmprogram.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		lmprogramdirect.h boostutil.h utility.h ctitime.h dlldefs.h \
-		queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		sorted_vector.h lmprogrambase.h dbmemobject.h observe.h \
-		msg_multi.h collectable.h msg_pdata.h pointdefs.h \
-		pointtypes.h message.h rwutil.h database_connection.h \
-		dbaccess.h dllbase.h dsm2.h mutex.h guard.h cticonnect.h \
-		netports.h dsm2err.h words.h sema.h database_reader.h \
-		row_reader.h boost_time.h lmgroupbase.h msg_pcrequest.h \
-		msg_cmd.h lmcontrolareatrigger.h ctidate.h logger.h thread.h \
+		queues.h cticalls.h os2_2w32.h numstr.h sorted_vector.h \
+		lmprogrambase.h dbmemobject.h observe.h msg_multi.h \
+		collectable.h msg_pdata.h pointdefs.h pointtypes.h message.h \
+		rwutil.h database_connection.h dbaccess.h dllbase.h dsm2.h \
+		mutex.h guard.h cticonnect.h netports.h dsm2err.h words.h \
+		sema.h database_reader.h row_reader.h boost_time.h \
+		lmgroupbase.h msg_pcrequest.h msg_cmd.h \
+		lmcontrolareatrigger.h ctidate.h logger.h thread.h \
 		CtiPCPtrQueue.h lmprogramdirectgear.h lmcontrolarea.h \
 		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h configkey.h configval.h tbl_lmprogramhistory.h \
 		lmprogramcontrolwindow.h lmutility.h lmconstraint.h \
-		executor.h ctdpcptrq.h msg_server_req.h lmmessage.h \
-		clientconn.h lmprogramcurtailment.h lmcurtailcustomer.h \
-		lmcicustomerbase.h
+		lmmessage.h clientconn.h ctdpcptrq.h ConstraintViolation.h \
+		executor.h msg_server_req.h lmprogramcurtailment.h \
+		lmcurtailcustomer.h lmcicustomerbase.h
 #ENDUPDATE#
 

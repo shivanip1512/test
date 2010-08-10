@@ -26,6 +26,8 @@
 #include "lmcontrolarea.h"
 #include "lmprogramdirect.h"
 
+#include "ConstraintViolation.h"
+
 #define HOURS_IN_DAY    24
 
 class CtiLMMessage : public CtiMessage
@@ -189,11 +191,11 @@ public:
     virtual ~CtiLMManualControlResponse() { };
 
     LONG getPAOId() const;
-    const vector< string >& getConstraintViolations() const;
+    const vector< ConstraintViolation >& getConstraintViolations() const;
     const string& getBestFitAction() const;
 
     CtiLMManualControlResponse& setPAOId(LONG pao_id);
-    CtiLMManualControlResponse& setConstraintViolations(const vector< string >& constraintViolations);
+    CtiLMManualControlResponse& setConstraintViolations(const vector< ConstraintViolation >& constraintViolations);
     CtiLMManualControlResponse& setBestFitAction(const string& best_fit_action);
 
     virtual CtiMessage* replicateMessage() const;
@@ -204,7 +206,8 @@ public:
     CtiLMManualControlResponse& operator=(const CtiLMManualControlResponse& right);
 private:
     LONG _paoid;
-    vector< string > _constraintViolations;
+    //vector< string > _constraintViolations;
+    vector< ConstraintViolation > _constraintViolations;
     string _best_fit_action;
 };
 

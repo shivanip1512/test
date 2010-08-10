@@ -12,6 +12,8 @@
 #include "lmconstraint.h"
 #include "executor.h"
 
+#include "ConstraintViolation.h"
+
 #include <string>
 #include <vector>
 
@@ -450,10 +452,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed start time of 07/01/2009 04:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/01/2009 08:00:00 to 07/01/2009 16:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeSameDate, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( startTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
 }
 
 
@@ -477,10 +488,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed start time of 07/01/2009 04:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/01/2009 08:00:00 to 07/01/2009 16:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeSameDate, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( startTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
 }
 
 
@@ -504,10 +524,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed start time of 07/01/2009 04:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/01/2009 08:00:00 to 07/01/2009 16:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeSameDate, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( startTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
 }
 
 
@@ -553,11 +582,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed stop time of 07/01/2009 18:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/01/2009 08:00:00 to 07/01/2009 16:00:00");
-}
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeSameDate, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( stopTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));}
 
 
 BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_start_and_stop_after)
@@ -580,10 +617,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed start time of 07/01/2009 18:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/01/2009 08:00:00 to 07/01/2009 16:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeSameDate, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( startTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
 }
 
 BOOST_AUTO_TEST_CASE(test_program_control_area_constraint_check_infinite_stop)
@@ -630,6 +676,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
+    CtiDate tomorrow(CtiTime(today).addDays(1));
 
     // define control area window from 08:00 to 16:00
     controlArea.setCurrentDailyStartTime(28800);    // 08:00 == 8 * 3600 == 28800
@@ -643,10 +690,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
 
     // since our window is tomorrow the constraint error message should report tomorrows control window
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed start time of 07/02/2009 04:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/02/2009 08:00:00 to 07/02/2009 16:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeSameDate, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( startTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(tomorrow), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(tomorrow), times.at(2));
 }
 
 
@@ -659,6 +715,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
+    CtiDate tomorrow(CtiTime(today).addDays(1));
 
     // define control area window from 08:00 to 16:00
     controlArea.setCurrentDailyStartTime(28800);    // 08:00 == 8 * 3600 == 28800
@@ -672,10 +729,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
 
     // since our window is tomorrow the constraint error message should report tomorrows control window
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed start time of 07/02/2009 04:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/02/2009 08:00:00 to 07/02/2009 16:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeSameDate, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( startTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(tomorrow), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(tomorrow), times.at(2));
 }
 
 
@@ -688,6 +754,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
+    CtiDate tomorrow(CtiTime(today).addDays(1));
 
     // define control area window from 08:00 to 16:00
     controlArea.setCurrentDailyStartTime(28800);    // 08:00 == 8 * 3600 == 28800
@@ -701,10 +768,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
 
     // since our window is tomorrow the constraint error message should report tomorrows control window
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed start time of 07/02/2009 04:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/02/2009 08:00:00 to 07/02/2009 16:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeSameDate, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( startTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(tomorrow), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(tomorrow), times.at(2));
 }
 
 
@@ -739,6 +815,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
+    CtiDate tomorrow(CtiTime(today).addDays(1));
 
     // define control area window from 08:00 to 16:00
     controlArea.setCurrentDailyStartTime(28800);    // 08:00 == 8 * 3600 == 28800
@@ -752,10 +829,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
 
     // since our window is tomorrow the constraint error message should report tomorrows control window
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed stop time of 07/02/2009 18:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/02/2009 08:00:00 to 07/02/2009 16:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeSameDate, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( stopTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(tomorrow), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(tomorrow), times.at(2));
 }
 
 
@@ -768,6 +854,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
+    CtiDate tomorrow(CtiTime(today).addDays(1));
 
     // define control area window from 08:00 to 16:00
     controlArea.setCurrentDailyStartTime(28800);    // 08:00 == 8 * 3600 == 28800
@@ -781,10 +868,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
 
     // since our window is tomorrow the constraint error message should report tomorrows control window
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed start time of 07/02/2009 18:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/02/2009 08:00:00 to 07/02/2009 16:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeSameDate, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( startTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(tomorrow), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(tomorrow), times.at(2));
 }
 
 
@@ -825,6 +921,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
+    CtiDate yesterday(CtiTime(today).addDays(-1));
 
     // define control area window from 20:00 to 06:00
     controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
@@ -838,10 +935,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed stop time of 07/01/2009 12:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 06/30/2009 20:00:00 to 07/01/2009 06:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( stopTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(yesterday), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(yesterday), times.at(2));
 }
 
 
@@ -854,6 +960,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
+    CtiDate yesterday(CtiTime(today).addDays(-1));
 
     // define control area window from 20:00 to 06:00
     controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
@@ -867,10 +974,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed stop time of 07/01/2009 22:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 06/30/2009 20:00:00 to 07/01/2009 06:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( stopTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(yesterday), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(yesterday), times.at(2));
 }
 
 
@@ -883,6 +999,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
+    CtiDate yesterday(CtiTime(today).addDays(-1));
 
     // define control area window from 20:00 to 06:00
     controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
@@ -896,10 +1013,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed stop time of 07/02/2009 05:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 06/30/2009 20:00:00 to 07/01/2009 06:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( stopTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(yesterday), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(yesterday), times.at(2));
 }
 
 
@@ -912,6 +1038,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
+    CtiDate yesterday(CtiTime(today).addDays(-1));
 
     // define control area window from 20:00 to 06:00
     controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
@@ -925,10 +1052,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed stop time of 07/02/2009 12:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 06/30/2009 20:00:00 to 07/01/2009 06:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( stopTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(yesterday), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(yesterday), times.at(2));
 }
 
 
@@ -941,6 +1077,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
+    CtiDate yesterday(CtiTime(today).addDays(-1));
 
     // define control area window from 20:00 to 06:00
     controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
@@ -954,10 +1091,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed stop time of 07/02/2009 22:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 06/30/2009 20:00:00 to 07/01/2009 06:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( stopTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(yesterday), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(yesterday), times.at(2));
 }
 
 
@@ -970,6 +1116,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
+    CtiDate tomorrow(CtiTime(today).addDays(1));
 
     // define control area window from 20:00 to 06:00
     controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
@@ -981,10 +1128,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed start time of 07/01/2009 12:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/01/2009 20:00:00 to 07/02/2009 06:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( startTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
 }
 
 
@@ -1008,10 +1164,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed start time of 07/01/2009 12:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/01/2009 20:00:00 to 07/02/2009 06:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( startTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
 }
 
 
@@ -1035,10 +1200,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed start time of 07/01/2009 12:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/01/2009 20:00:00 to 07/02/2009 06:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( startTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
 }
 
 
@@ -1062,10 +1236,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed start time of 07/01/2009 12:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/01/2009 20:00:00 to 07/02/2009 06:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( startTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
 }
 
 
@@ -1089,10 +1272,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed start time of 07/01/2009 12:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/01/2009 20:00:00 to 07/02/2009 06:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( startTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
 }
 
 
@@ -1160,10 +1352,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed stop time of 07/02/2009 12:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/01/2009 20:00:00 to 07/02/2009 06:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( stopTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
 }
 
 
@@ -1187,10 +1388,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed stop time of 07/02/2009 22:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/01/2009 20:00:00 to 07/02/2009 06:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( stopTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
 }
 
 
@@ -1236,10 +1446,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed stop time of 07/02/2009 12:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/01/2009 20:00:00 to 07/02/2009 06:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( stopTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
 }
 
 
@@ -1263,10 +1482,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed stop time of 07/02/2009 22:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/01/2009 20:00:00 to 07/02/2009 06:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( stopTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
 }
 
 
@@ -1279,6 +1507,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
+    CtiTime tomorrow(CtiTime(today).addDays(1));
 
     // define control area window from 20:00 to 06:00
     controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
@@ -1292,10 +1521,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // since our start time has moved out beyond todays window, we compare to tomorrows, error message reflects that
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed start time of 07/02/2009 12:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/02/2009 20:00:00 to 07/03/2009 06:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( startTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(tomorrow), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(tomorrow), times.at(2));
 }
 
 
@@ -1308,6 +1546,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
+    CtiTime tomorrow(CtiTime(today).addDays(1));
 
     // define control area window from 20:00 to 06:00
     controlArea.setCurrentDailyStartTime(72000);    // 20:00 == 20 * 3600 == 72000
@@ -1321,10 +1560,19 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // since our start time has moved out beyond todays window, we compare to tomorrows, error message reflects that
 
-    BOOST_CHECK_EQUAL( constraints.getViolations()[0],
-                       "The program cannot run outside of its prescribed control windows.  "
-                       "The proposed start time of 07/02/2009 12:00:00 is outside the CONTROL AREA control window "
-                       "that runs from 07/02/2009 20:00:00 to 07/03/2009 06:00:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 3,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( startTime, times.at(0));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(tomorrow), times.at(1));
+    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(tomorrow), times.at(2));
 }
 
 
@@ -1392,14 +1640,27 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, stopTime.seconds(), startTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    BOOST_CHECK_EQUAL(constraints.getViolations()[0],
-                      "The proposed start time of 07/01/2009 12:00:00 is after the stop time of 07/01/2009 00:30:00");
+    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
+    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
+    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
+    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
+    BOOST_CHECK_EQUAL( 0, doubles.size());
+    BOOST_CHECK_EQUAL( 0,    ints.size());
+    BOOST_CHECK_EQUAL( 0, strings.size());
+    BOOST_CHECK_EQUAL( 2,   times.size());
+
+    BOOST_CHECK_EQUAL( ConstraintViolation::CV_ProposedStartAfterStop, constraints.getViolations()[0].getErrorCode());
+    BOOST_CHECK_EQUAL( stopTime,  times.at(0));
+    BOOST_CHECK_EQUAL( startTime, times.at(1));
 }
 
 
 /*
-*** TESTING: controlWindowErrorMessage()
-*/
+*** TESTING: controlWindowErrorMessage() 
+ 
+    This may not be necessary to test anymore since all it does is builds a string which isn't even used anymore.
+    The function itself probably can be removed.
+
 BOOST_AUTO_TEST_CASE(test_control_window_error_message_start_program_window)
 {
     CtiDate date(1, 7, 2009);
@@ -1428,6 +1689,7 @@ BOOST_AUTO_TEST_CASE(test_control_window_error_message_stop_control_area_window)
                        "The proposed stop time of 07/01/2009 12:00:00 is outside the CONTROL AREA control window "
                        "that runs from 07/01/2009 04:00:00 to 07/01/2009 08:00:00");
 }
+*/
 
 class Test_CtiLMManualControlRequestExecutor : public CtiLMManualControlRequestExecutor
 {

@@ -9,6 +9,9 @@
 #include "lmprogramdirect.h"
 #include "lmcontrolarea.h"
 #include "lmutility.h"
+#include "lmmessage.h"
+
+#include "ConstraintViolation.h"
 
 using std::vector;
 using std::string;
@@ -16,9 +19,10 @@ using std::string;
 class CtiLMProgramConstraintChecker
 {
 public:
+
     CtiLMProgramConstraintChecker(CtiLMProgramDirect& lm_program, ULONG seconds_from_1901);
 
-    const vector<string>& getViolations();
+    const vector<ConstraintViolation>& getViolations();
     void clearViolations();
 
     void dumpViolations();
@@ -56,11 +60,13 @@ private:
     CtiLMProgramDirect& _lm_program;
     ULONG _seconds_from_1901;
     vector<string> _results;
+    vector<ConstraintViolation> _constraintViolations;
 };
 
 class CtiLMGroupConstraintChecker
 {
 public:
+
     CtiLMGroupConstraintChecker(CtiLMProgramBase& lm_program, CtiLMGroupPtr& lm_group, ULONG control_start_from_1901); 
 
     const vector<string>& getViolations();
@@ -92,5 +98,6 @@ private:
     ULONG _seconds_from_1901;
     
     vector<string> _results;
+    vector<ConstraintViolation> _constraintViolations;
 };
 #endif
