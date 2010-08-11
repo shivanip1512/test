@@ -507,7 +507,7 @@ void CtiCCOperationStats::dumpDynamicData(Cti::Database::DatabaseConnection& con
             {
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << insertSql << endl;
+                    dout << CtiTime() << " - " << inserter.asString() << endl;
                 }
             }
 
