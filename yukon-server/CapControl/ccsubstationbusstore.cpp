@@ -3685,14 +3685,14 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
                     }
                     if ( !paObjectColumn.empty() )
                     {
-                        static const string sql = "SELECT SSA.paobjectid, SSA.seasonscheduleid, SSA.seasonname, "
-                                                        "SSA.strategyid, DS.seasonstartmonth, DS.seasonendmonth, "
-                                                        "DS.seasonstartday, DS.seasonendday "
-                                                  "FROM ccseasonstrategyassignment SSA, dateofseason DS, " 
-                                                    + capControlObjectTable +
-                                                  "WHERE SSA.seasonscheduleid = DS.seasonscheduleid AND "
-                                                        "SSA.seasonname = DS.seasonname AND SSA.strategyid = ? "
-                                                        "AND SSA.paobjectid = " + paObjectColumn;
+                        const string sql = "SELECT SSA.paobjectid, SSA.seasonscheduleid, SSA.seasonname, "
+                                                 "SSA.strategyid, DS.seasonstartmonth, DS.seasonendmonth, "
+                                                 "DS.seasonstartday, DS.seasonendday "
+                                           "FROM ccseasonstrategyassignment SSA, dateofseason DS, "
+                                             + capControlObjectTable +
+                                           "WHERE SSA.seasonscheduleid = DS.seasonscheduleid AND "
+                                                 "SSA.seasonname = DS.seasonname AND SSA.strategyid = ? "
+                                                 "AND SSA.paobjectid = " + paObjectColumn;
 
                         Cti::Database::DatabaseConnection connection;
                         Cti::Database::DatabaseReader dbRdr(connection, sql);
@@ -3950,12 +3950,12 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
                 if ( !paObjectColumn.empty() )
                 {
 
-                     static const string sqlMain =  "SELECT HSA.paobjectid, HSA.holidayscheduleid, HSA.strategyid, "
-                                                      "DH.holidayname, DH.holidaymonth, DH.holidayday, DH.holidayyear "
-                                                    "FROM ccholidaystrategyassignment HSA, dateofholiday DH, " 
-                                                      + capControlObjectTable + 
-                                                    "WHERE HSA.holidayscheduleid = DH.holidayscheduleid AND "
-                                                      "HSA.strategyid = ? AND HSA.paobjectid = " + paObjectColumn;
+                     const string sqlMain =  "SELECT HSA.paobjectid, HSA.holidayscheduleid, HSA.strategyid, "
+                                               "DH.holidayname, DH.holidaymonth, DH.holidayday, DH.holidayyear "
+                                             "FROM ccholidaystrategyassignment HSA, dateofholiday DH, " 
+                                               + capControlObjectTable + 
+                                             "WHERE HSA.holidayscheduleid = DH.holidayscheduleid AND "
+                                               "HSA.strategyid = ? AND HSA.paobjectid = " + paObjectColumn;
 
                      Cti::Database::DatabaseConnection connection;
                      Cti::Database::DatabaseReader rdr(connection, sqlMain);
@@ -4170,13 +4170,13 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                 }
                 if ( !paObjectColumn.empty() )
                 {
-                   static const string sql =  "SELECT SSA.paobjectid, SSA.seasonscheduleid, SSA.seasonname, "
-                                                "SSA.strategyid, DS.seasonstartmonth, DS.seasonendmonth, "
-                                                "DS.seasonstartday, DS.seasonendday "
-                                              "FROM ccseasonstrategyassignment SSA, dateofseason DS "
-                                              "WHERE SSA.seasonscheduleid = DS.seasonscheduleid AND "
-                                                "SSA.seasonname = DS.seasonname AND SSA.strategyid = ? "
-                                                "AND SSA.paobjectid = " + paObjectColumn;
+                   const string sql =  "SELECT SSA.paobjectid, SSA.seasonscheduleid, SSA.seasonname, "
+                                         "SSA.strategyid, DS.seasonstartmonth, DS.seasonendmonth, "
+                                         "DS.seasonstartday, DS.seasonendday "
+                                       "FROM ccseasonstrategyassignment SSA, dateofseason DS, " + capControlObjectTable +
+                                       "WHERE SSA.seasonscheduleid = DS.seasonscheduleid AND "
+                                         "SSA.seasonname = DS.seasonname AND SSA.strategyid = ? "
+                                         "AND SSA.paobjectid = " + paObjectColumn;
                                                   
                    Cti::Database::DatabaseConnection connection;
                    Cti::Database::DatabaseReader dbRdr(connection, sql);
