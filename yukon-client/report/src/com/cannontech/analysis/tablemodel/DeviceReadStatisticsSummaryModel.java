@@ -142,7 +142,7 @@ public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<D
                     sql.append(", COUNT(rph.changeId) reads");
                     sql.append("from YukonPAObject ypo");
                     sql.append("  left outer join Point p on p.PAObjectID = ypo.PAObjectID and p.POINTOFFSET = ");
-                    sql.appendArgument(pointIdentifier.getOffset()).append(" and p.POINTTYPE = ").appendArgument(pointIdentifier.getPointType().getPointTypeString());
+                    sql.appendArgument(pointIdentifier.getOffset()).append(" and p.POINTTYPE = ").appendArgument(pointIdentifier.getPointType());
                     sql.append("  left outer join RAWPOINTHISTORY rph on rph.POINTID = p.POINTID");
                     sql.append("and rph.TIMESTAMP").gt(getStartDate());
                     sql.append("and rph.TIMESTAMP").lte(getStopDate());
