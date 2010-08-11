@@ -54,7 +54,7 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
         if( scheduleIds.size() > 0 )
             schedule.setScheduleID(scheduleIds.get(0));
         else{
-            CTILogger.error("Error: No schedule in database for paoid: " + paoId );
+            CTILogger.warn("Error: No schedule in database for paoid: " + paoId );
             schedule.setScheduleID(-1);
         }
         Connection connection = null;

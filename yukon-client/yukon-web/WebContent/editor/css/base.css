@@ -99,8 +99,10 @@ legend, .legendLikeLabel{
 }
 
 .stdButton {
-	margin-left: 3px;
-	margin-right: 3px;
+	padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 3px;
+    margin-right: 3px;
 }
 
 /* red */
@@ -119,8 +121,12 @@ legend, .legendLikeLabel{
 
 
 .fieldSet {
-    padding: 2px;
+    padding: 5px;
     border: 1px solid #cccccc;
+}
+
+label {
+	padding-right: 2px;
 }
 
 .scrollerDiv {

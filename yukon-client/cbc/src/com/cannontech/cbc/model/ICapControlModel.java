@@ -22,8 +22,6 @@ public interface ICapControlModel {
 
     public abstract void initWizard(int paoType);
 
-    public abstract void resetForm();
-
     public abstract DBPersistent getPAOBase();
 
     public abstract void clearfaces();

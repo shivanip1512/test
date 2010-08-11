@@ -7,38 +7,41 @@
 	<x:panelGrid id="capbankBody" columns="2" styleClass="gridLayout" columnClasses="gridCell,gridCell">
 		<x:column>
             
-            <x:panelGrid columns="2">
-            
-				<x:outputLabel for="CapBank_MaintAreaID" value="Maintenance Area Id " title="" />
-				<x:inputText id="CapBank_MaintAreaID" value="#{capBankEditor.additionalInfo.maintAreaID}" required="true" maxlength="10" size="10">
-					<f:validateLongRange minimum="-9999999999" maximum="9999999999" />
-				</x:inputText>
-	
-				<x:outputLabel for="CapBank_PoleNum" value="Pole Number " title="" />
-				<x:inputText id="CapBank_PoleNum"
-					value="#{capBankEditor.additionalInfo.poleNumber}" required="true"
-					maxlength="10" size="10">
-					<f:validateLongRange minimum="-9999999999" maximum="9999999999" />
-				</x:inputText>
-	
-				<x:outputLabel for="SelectConfig" value="Config " title="Select Cap Bank Configuration" />
-				<x:selectOneMenu id="SelectConfig" value="#{capBankEditor.additionalInfo.capBankConfig}" onchange="submit();"
-				    disabled="#{!capControlForm.editingAuthorized}">
-					<f:selectItems id="ConfigList" value="#{selLists.capBankConfigs}" />
-				</x:selectOneMenu>
-				
-				<x:outputLabel for="SelectPotentTrans" value="Potential Transformer " title="Select Cap Bank Potential Transformer" />
-				<x:selectOneMenu id="SelectPotentTrans" value="#{capBankEditor.additionalInfo.potentTransformer}" onchange="submit();"
-				    disabled="#{!capControlForm.editingAuthorized}">
-					<f:selectItems id="PotentTransList" value="#{selLists.potentialTransformer}" />
-				</x:selectOneMenu>
-			
-			</x:panelGrid>
+            <x:htmlTag value="fieldset" styleClass="fieldSet">
+                <x:htmlTag value="legend"><x:outputText value="Configuration"/></x:htmlTag>
+                
+                <x:panelGrid columns="2">
+                
+    				<x:outputLabel for="CapBank_MaintAreaID" value="Maintenance Area Id " title="" />
+    				<x:inputText id="CapBank_MaintAreaID" value="#{capBankEditor.additionalInfo.maintAreaID}" required="true" maxlength="10" size="10">
+    					<f:validateLongRange minimum="-9999999999" maximum="9999999999" />
+    				</x:inputText>
+    	
+    				<x:outputLabel for="CapBank_PoleNum" value="Pole Number " title="" />
+    				<x:inputText id="CapBank_PoleNum"
+    					value="#{capBankEditor.additionalInfo.poleNumber}" required="true"
+    					maxlength="10" size="10">
+    					<f:validateLongRange minimum="-9999999999" maximum="9999999999" />
+    				</x:inputText>
+    	
+    				<x:outputLabel for="SelectConfig" value="Config " title="Select Cap Bank Configuration" />
+    				<x:selectOneMenu id="SelectConfig" value="#{capBankEditor.additionalInfo.capBankConfig}" onchange="submit();"
+    				    disabled="#{!capControlForm.editingAuthorized}">
+    					<f:selectItems id="ConfigList" value="#{selLists.capBankConfigs}" />
+    				</x:selectOneMenu>
+    				
+    				<x:outputLabel for="SelectPotentTrans" value="Potential Transformer " title="Select Cap Bank Potential Transformer" />
+    				<x:selectOneMenu id="SelectPotentTrans" value="#{capBankEditor.additionalInfo.potentTransformer}" onchange="submit();"
+    				    disabled="#{!capControlForm.editingAuthorized}">
+    					<f:selectItems id="PotentTransList" value="#{selLists.potentialTransformer}" />
+    				</x:selectOneMenu>
+                </x:panelGrid>
+            </x:htmlTag>
 			
 			<x:htmlTag value="br"/>
 
             <x:htmlTag value="fieldset" styleClass="fieldSet">
-                <x:htmlTag value="legend"><x:outputText value="Communication"/></x:htmlTag>			
+                <x:htmlTag value="legend"><x:outputText value="Communication"/></x:htmlTag>
                 
                 <x:panelGrid columns="2">
                     <x:outputLabel for="SelectCommMed" value="Comm. Medium " title="" />

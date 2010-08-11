@@ -114,6 +114,7 @@ import com.cannontech.yukon.cbc.SubStation;
 import com.google.common.collect.Lists;
 
 public class CapControlForm extends DBEditorForm implements ICapControlModel{
+    
     private int specialAreaTab = -1;
     private int areaTab = -1;
     private int substationTab = -1;
@@ -124,25 +125,26 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	private String childLabel = "Children";
 	private boolean editingCBCStrategy = false;
 	private boolean editingController = false;
-	private int itemID = -1;
-	private HashMap<Integer, CapControlStrategy> cbcStrategiesMap = null;
-	private HashMap<Integer, CapControlStrategy> cbcHolidayStrategiesMap = null;
-	private List<LiteYukonPAObject> unassignedBanks = null;
-	private List<LiteYukonPAObject> unassignedFeeders = null;
-	private List<LiteYukonPAObject> unassignedSubBuses = null;
-	private CapControlCreationModel wizData = null;
-	private ICBControllerModel cbControllerEditor = null;
-	private PointTreeForm pointTreeForm = null;
-	private List<SelectItem> cbcStrategies = null;
-	protected List<LiteYukonPAObject> subBusList = null;
-    private Integer oldSubBus = null;
+	private int itemId = -1;
+	private int editorType = -1;
+	private HashMap<Integer, CapControlStrategy> cbcStrategiesMap;
+	private HashMap<Integer, CapControlStrategy> cbcHolidayStrategiesMap;
+	private List<LiteYukonPAObject> unassignedBanks;
+	private List<LiteYukonPAObject> unassignedFeeders;
+	private List<LiteYukonPAObject> unassignedSubBuses;
+	private CapControlCreationModel wizData;
+	private ICBControllerModel cbControllerEditor;
+	private PointTreeForm pointTreeForm;
+	private List<SelectItem> cbcStrategies;
+	protected List<LiteYukonPAObject> subBusList;
+    private Integer oldSubBus;
     private Boolean enableDualBus = Boolean.FALSE;
 	private boolean isDualSubBusEdited;
-    private SelectItem[] controlMethods = null;
-    private Map<Integer, String> paoNameMap = null;
-    private Map<Integer, String> pointNameMap = null;
-    private Map<Season, Integer> assignedStratMap = null;
-    private EditorDataModel dataModel = null;
+    private SelectItem[] controlMethods;
+    private Map<Integer, String> paoNameMap;
+    private Map<Integer, String> pointNameMap;
+    private Map<Season, Integer> assignedStratMap;
+    private EditorDataModel dataModel;
     private SeasonScheduleDao seasonScheduleDao;
     private HolidayScheduleDao holidayScheduleDao;
     private Integer scheduleId = -1000;
@@ -150,25 +152,17 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private Integer holidayStrategyId = -1000;
     private CapControlCreationService capControlCreationService;
     private CapbankControllerDao capbankControllerDao;
-    
-    private static CapControlCache cache = (CapControlCache)YukonSpringHook.getBean("capControlCache");
-    private static CapbankDao capbankDao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
-    private static FeederDao feederDao = YukonSpringHook.getBean("feederDao",FeederDao.class);
-    private static SubstationBusDao substationBusDao = YukonSpringHook.getBean("substationBusDao", SubstationBusDao.class);
-    private static PointDao pointDao = YukonSpringHook.getBean("pointDao",PointDao.class);
-    private static PaoDao paoDao = YukonSpringHook.getBean("paoDao",PaoDao.class);
-    private static RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao",RolePropertyDao.class);
-    private CBCSelectionLists selectionLists = null;
+    private CapControlCache capControlCache;
+    private StrategyDao strategyDao;
+    private CapbankDao capbankDao;
+    private FeederDao feederDao;
+    private SubstationBusDao substationBusDao;
+    private PointDao pointDao;
+    private PaoDao paoDao;
+    private RolePropertyDao rolePropertyDao;
+    private CBCSelectionLists selectionLists;
     
     Logger log = YukonLogManager.getLogger(CapControlForm.class);
-    private StrategyDao strategyDao;
-    
-    /**
-	 * default constructor
-	 */
-	public CapControlForm() {
-		super();
-    }
     
     /**
      * Returns a Season object for each season of the current schedule.
@@ -474,9 +468,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	}
 	
 	public void initItem(int id, int type) {
-	    resetForm();
+	    clearBeanState();
 		DBPersistent dbObj = null;
         
+		editorType = type;
+		
 		switch (type) {
 
     		case DBEditorTypes.EDITOR_CAPCONTROL:
@@ -519,7 +515,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		// decide what editor type should be used
 		if (getDbPersistent() instanceof YukonPAObject) {
 			YukonPAObject pao = (YukonPAObject) getDbPersistent();
-		    itemID = pao.getPAObjectID().intValue();
+		    itemId = pao.getPAObjectID().intValue();
            
 			if (getDbPersistent() instanceof CapBankController 
                    || getDbPersistent() instanceof CapBankController702x 
@@ -541,19 +537,19 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         } else if (getDbPersistent() instanceof PointBase) {
             
             PointBase point = (PointBase) getDbPersistent();
-			itemID = point.getPoint().getPointID().intValue();
+			itemId = point.getPoint().getPointID().intValue();
 			initPanels(PointTypes.getType(point.getPoint().getPointType()));
 			
 		} else if (getDbPersistent() instanceof PAOSchedule) {
 		    
 		    PAOSchedule schedule = (PAOSchedule) getDbPersistent();
-			itemID = schedule.getScheduleID().intValue();
+			itemId = schedule.getScheduleID().intValue();
             initPanels(CapControlTypes.CAP_CONTROL_SCHEDULE);
             
 		} else if (getDbPersistent() instanceof CapControlStrategy) {
 		    
             CapControlStrategy strat = (CapControlStrategy)getDbPersistent();
-            itemID = strat.getStrategyID().intValue();
+            itemId = strat.getStrategyID().intValue();
             editingCBCStrategy = true;
             initPanels(CapControlTypes.CAP_CONTROL_STRATEGY);
         }
@@ -564,7 +560,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             editingCBCStrategy = false;
         }
         initEditorPanels();
-        getPointTreeForm().init(itemID);
+        getPointTreeForm().init(itemId);
 	}
 
     //initiatiates data model for our specific object
@@ -577,25 +573,34 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             dataModel = DataModelFactory.createModel(dbPersistent);
         }
     }
+	
+	/**
+	 * Resets the bean's state holding member fields.
+	 */
+	private void clearBeanState() {
+	    assignedStratMap = null;
+        cbControllerEditor = null;
+        cbcStrategies = null;
+        cbcStrategiesMap = null;
+        editingCBCStrategy = false;
+        editingController = false;
+        isDualSubBusEdited = false;
+        pointTreeForm = null; 
+        scheduleId = -1000;
+        holidayScheduleId = -1000;
+        holidayStrategyId = -1000;
+        unassignedBanks = null;
+        unassignedFeeders = null;
+        unassignedSubBuses = null;
+	}
 
 	/**
 	 * Resets bean objects and flags.
 	 */
-	public void resetForm() {
-	    assignedStratMap = null;
-	    cbControllerEditor = null;
-	    cbcStrategies = null;
-	    cbcStrategiesMap = null;
-	    editingCBCStrategy = false;
-        editingController = false;
-        isDualSubBusEdited = false;
-		pointTreeForm = null; 
-		scheduleId = -1000;
-		holidayScheduleId = -1000;
-	    holidayStrategyId = -1000;
-		unassignedBanks = null;
-		unassignedFeeders = null;
-		unassignedSubBuses = null;
+	@Override
+    public void resetForm() {
+	    clearBeanState();
+	    initItem(getItemId(), getEditorType());
 	}
 
     /**
@@ -920,9 +925,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             
             for(CBCSpecialAreaData data: assignedAreas) {
                 try {
-                    SubStation substation = cache.getSubstation(data.getSubID());
+                    SubStation substation = capControlCache.getSubstation(data.getSubID());
                     if(substation.getSpecialAreaEnabled() && substation.getSpecialAreaId().intValue() != area.getPAObjectID().intValue()) {
-                        duplicates.add(cache.getCBCSpecialArea(substation.getSpecialAreaId()).getCcName() + ": " + substation.getCcName());
+                        duplicates.add(capControlCache.getCBCSpecialArea(substation.getSpecialAreaId()).getCcName() + ": " + substation.getCcName());
                     }
                 } catch(NotFoundException nfe) {
                     // if it's not in the cache then it's an orphan and there are no duplicates.
@@ -984,15 +989,15 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 String cbcName = cbcWizard.getName();
                 int cbcPortId = cbcWizard.getPortID();
                 int controllerId = capControlCreationService.create(cbcType, cbcName, cbcDisabled, cbcPortId);
-                itemID = capControlCreationService.create(type, name, disabled, portId);
-                capbankControllerDao.assignController(itemID, controllerId);
+                itemId = capControlCreationService.create(type, name, disabled, portId);
+                capbankControllerDao.assignController(itemId, controllerId);
             } else {
-                itemID = capControlCreationService.create(type, name, disabled, portId);
+                itemId = capControlCreationService.create(type, name, disabled, portId);
             }
             
             /* Redirect to the editor after creation */
             facesMsg.setDetail("Database add was SUCCESSFUL");
-            String url = "/editor/cbcBase.jsf?type=" + getEditorType(type) + "&itemid=" + itemID;
+            String url = "/editor/cbcBase.jsf?type=" + getEditorType(type) + "&itemid=" + itemId;
             
             /* Sets the navigation history so the return buttons work */
             HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
@@ -1034,7 +1039,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
 	public PointTreeForm getPointTreeForm() {
         if (pointTreeForm == null) {
-            int paoId = itemID;         
+            int paoId = itemId;         
             pointTreeForm = new PointTreeForm(paoId);
         }
         return pointTreeForm;
@@ -1046,7 +1051,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
 	public ICBControllerModel getCBControllerEditor() {
 		if (cbControllerEditor == null) {
-            int paoId = itemID;			
+            int paoId = itemId;			
             if ((getDbPersistent() instanceof CapBankController702x) || (getDbPersistent() instanceof CapBankController) || (getDbPersistent() instanceof CapBankControllerDNP)){
                 setEditingController(true);
                 cbControllerEditor = new CBControllerEditor(paoId);
@@ -1105,7 +1110,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             }
 			// decide if we need to do any special handling of this transaction based on what other PAOs use this Strategy
             
-			List<String> otherPaosUsingStrategy = strategyDao.getAllOtherPaoNamesUsingStrategyAssignment(stratID, itemID);
+			List<String> otherPaosUsingStrategy = strategyDao.getAllOtherPaoNamesUsingStrategyAssignment(stratID, itemId);
 			if (otherPaosUsingStrategy.isEmpty()) {
 				// update the current PAOBase object just in case it uses the strategy we are deleting
 				updateDBObject(getDbPersistent(), null);
@@ -1144,26 +1149,26 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		int parentID = CtiUtilities.NONE_ZERO_ID;
 		if (getDbPersistent() instanceof CapControlFeeder) {
 		    try{
-		        parentID = feederDao.getParentSubBusID(itemID);
+		        parentID = feederDao.getParentSubBusID(itemId);
 		    }catch( EmptyResultDataAccessException e ){
 		        //do nothing
 		    }
 		} else if (getDbPersistent() instanceof CapBank) {
 		    try{
-		        parentID = capbankDao.getParentFeederId(itemID);
+		        parentID = capbankDao.getParentFeederId(itemId);
             }catch( EmptyResultDataAccessException e ){
                 //do nothing
             }
         } else if (getDbPersistent() instanceof CapControlSubBus) {
             try{
-                parentID = cache.getSubBus(itemID).getParentID();
+                parentID = capControlCache.getSubBus(itemId).getParentID();
             }catch( NotFoundException e ){
                 //do nothing
                 parentID = 0;
             }
         } else if (getDbPersistent() instanceof CapControlSubstation) {
             try{
-                parentID = cache.getSubstation(itemID).getParentID();
+                parentID = capControlCache.getSubstation(itemId).getParentID();
             }catch( NotFoundException e ){
                 //do nothing
                 parentID = 0;
@@ -1195,7 +1200,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 						// Add the mapping for the given CapBank id to this Feeder
 						CapControlFeeder currFdr = (CapControlFeeder) getDbPersistent();
                         float order = maxDispOrderOnList (currFdr.getChildList()) + 1;
-                        CCFeederBankList bankList = new CCFeederBankList(itemID,elemID,order,order,order);
+                        CCFeederBankList bankList = new CCFeederBankList(itemId,elemID,order,order,order);
                         currFdr.getChildList().add(bankList);
                         updateTripOrder (currFdr);
 						unassignedBanks.remove(i);
@@ -1211,7 +1216,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 						// Add the mapping for the given Feeders id to this Sub
 						CapControlSubBus currSub = (CapControlSubBus) getDbPersistent();
                         //NOTE: casting maxDispOrderOnList. if we change this to float later need to remove cast.
-                        CCFeederSubAssignment sa = new CCFeederSubAssignment(elemID,itemID,(int)maxDispOrderOnList (currSub.getChildList())+ 1); 
+                        CCFeederSubAssignment sa = new CCFeederSubAssignment(elemID,itemId,(int)maxDispOrderOnList (currSub.getChildList())+ 1); 
 						currSub.getChildList().add(sa);
 						unassignedFeeders.remove(i);
 						break;
@@ -1223,7 +1228,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 for (int i = 0; i < unassignedSubBuses.size(); i++) {
                     if (elemID == unassignedSubBuses.get(i).getLiteID()) {
                         CapControlSubstation currSub = (CapControlSubstation) getDbPersistent();
-                        CCSubstationSubBusList sa = new CCSubstationSubBusList(itemID,elemID,(int)maxDispOrderOnList (currSub.getChildList())+ 1); 
+                        CCSubstationSubBusList sa = new CCSubstationSubBusList(itemId,elemID,(int)maxDispOrderOnList (currSub.getChildList())+ 1); 
                         currSub.getChildList().add(sa);
                         unassignedSubBuses.remove(i);
                         break;
@@ -1976,6 +1981,22 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         return items;
     }
     
+    public void setItemId(int itemId) {
+        this.itemId = itemId;
+    }
+    
+    public int getItemId() {
+        return itemId;
+    }
+    
+    public void setEditorType(int editorType) {
+        this.editorType = editorType;
+    }
+    
+    public int getEditorType() {
+        return editorType;
+    }
+    
     /**
      * Returns true if the user has the CapControl Settings > Database Editing role property.
      * @return
@@ -2061,6 +2082,34 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     public void setStrategyDao (StrategyDao strategyDao) {
         this.strategyDao = strategyDao;
+    }
+    
+    public void setCapControlCache(CapControlCache capControlCache) {
+        this.capControlCache = capControlCache;
+    }
+    
+    public void setCapbankDao(CapbankDao capbankDao) {
+        this.capbankDao = capbankDao;
+    }
+    
+    public void setFeederDao(FeederDao feederDao) {
+        this.feederDao = feederDao;
+    }
+    
+    public void setSubstationBusDao(SubstationBusDao substationBusDao) {
+        this.substationBusDao = substationBusDao;
+    }
+    
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
+    }
+    
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
+    }
+    
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
     
 }

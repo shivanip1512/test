@@ -44,6 +44,41 @@
             <property-name>selectionLists</property-name>
             <value>#{selLists}</value>
         </managed-property>
+        
+        <managed-property>
+            <property-name>capControlCache</property-name>
+            <value>#{capControlCache}</value>
+        </managed-property>
+        
+        <managed-property>
+            <property-name>capbankDao</property-name>
+            <value>#{capbankDao}</value>
+        </managed-property>
+
+        <managed-property>
+            <property-name>feederDao</property-name>
+            <value>#{feederDao}</value>
+        </managed-property>
+
+        <managed-property>
+            <property-name>substationBusDao</property-name>
+            <value>#{substationBusDao}</value>
+        </managed-property>
+
+        <managed-property>
+            <property-name>paoDao</property-name>
+            <value>#{paoDao}</value>
+        </managed-property>
+
+        <managed-property>
+            <property-name>pointDao</property-name>
+            <value>#{pointDao}</value>
+        </managed-property>
+
+        <managed-property>
+            <property-name>rolePropertyDao</property-name>
+            <value>#{rolePropertyDao}</value>
+        </managed-property>
     </managed-bean>
     
      <managed-bean>
@@ -75,13 +110,12 @@
         <managed-bean-class>com.cannontech.web.editor.PAOScheduleForm</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
+    
     <managed-bean>
         <managed-bean-name>cbcCopyForm</managed-bean-name>
         <managed-bean-class>com.cannontech.web.copy.DBCopyForm</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-    
-    
     
     <!-- page navigation rules -->
     <navigation-rule>

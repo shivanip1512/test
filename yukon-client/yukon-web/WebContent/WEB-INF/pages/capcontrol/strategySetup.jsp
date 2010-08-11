@@ -7,7 +7,7 @@
             <x:htmlTag value="fieldset" styleClass="fieldSet">
                 <x:htmlTag value="legend"><x:outputText value="Season Strategy"/></x:htmlTag> 
             
-                <h:outputText value="Season Schedule:"></h:outputText>
+                <h:outputLabel for="Season_Schedule_Selection" value="Season Schedule:"/>
                 <x:selectOneMenu id="Season_Schedule_Selection" onchange="submit();"
 				    disabled="#{capControlForm.editingCBCStrategy}"
 				    value="#{capControlForm.scheduleId}"
@@ -63,8 +63,7 @@
 			<x:htmlTag value="fieldset" styleClass="fieldSet">
                 <x:htmlTag value="legend"><x:outputText value="Holiday Strategy"/></x:htmlTag>
                 
-                <h:outputText value="Holiday Schedule:"></h:outputText>
-                
+                <h:outputLabel for="Holiday_Schedule_Selection" value="Holiday Schedule:"/>
                 <x:selectOneMenu id="Holiday_Schedule_Selection" onchange="submit();"
 				    disabled="#{capControlForm.editingCBCStrategy}"
 				    value="#{capControlForm.holidayScheduleId}"
@@ -77,7 +76,7 @@
                 
                 <x:panelGrid columns="3">
                 
-	                <h:outputText value="Strategy:" rendered="#{capControlForm.holidayScheduleId > 0}"/>
+	                <h:outputLabel for="Holiday_Strategy_Selection" value="Strategy:" rendered="#{capControlForm.holidayScheduleId > 0}"/>
 	                <x:selectOneMenu id="Holiday_Strategy_Selection"
 					    onchange="submit();"
 					    disabled="#{capControlForm.editingCBCStrategy}"

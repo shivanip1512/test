@@ -188,9 +188,4 @@ public class DBCopyForm extends DBEditorForm {
         return showCopyPoints;
     }
 
-    @Override
-    public void resetForm() {
-
-    }
-
 }

@@ -42,7 +42,7 @@ public abstract class DBEditorForm {
     /**
      * Resets this form with the original values from the database
      */
-    public abstract void resetForm();
+    public void resetForm() {/* Override this if needed */}
 
     /**
      * Updates a given DB object.
@@ -54,8 +54,7 @@ public abstract class DBEditorForm {
             facesMsg = new FacesMessage();
 
         try {
-            Transaction t = Transaction.createTransaction(Transaction.UPDATE,
-                                                          db);
+            Transaction<DBPersistent> t = Transaction.createTransaction(Transaction.UPDATE, db);
             t.execute();
 
             generateDBChangeMsg(db, DBChangeMsg.CHANGE_TYPE_UPDATE);
@@ -87,8 +86,7 @@ public abstract class DBEditorForm {
             facesMsg = new FacesMessage();
 
         try {
-            Transaction t = Transaction.createTransaction(Transaction.INSERT,
-                                                          db);
+            Transaction<DBPersistent> t = Transaction.createTransaction(Transaction.INSERT, db);
             t.execute();
         }
 
@@ -131,8 +129,7 @@ public abstract class DBEditorForm {
             facesMsg = new FacesMessage();
 
         try {
-            Transaction t = Transaction.createTransaction(Transaction.DELETE,
-                                                          db);
+            Transaction<DBPersistent> t = Transaction.createTransaction(Transaction.DELETE, db);
             t.execute();
 
             generateDBChangeMsg(db, DBChangeMsg.CHANGE_TYPE_DELETE);
