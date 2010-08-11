@@ -215,7 +215,13 @@ public class YukonUserDaoImpl implements YukonUserDao {
         String deleteEnergyCompanyOperatorLoginList = "DELETE FROM EnergyCompanyOperatorLoginList WHERE OperatorLoginId = ?";
         yukonJdbcOperations.update(deleteEnergyCompanyOperatorLoginList, userId);
         userPaoPermissionDao.removeAllPermissions(userId);
-
+        
+        SqlStatementBuilder zeroOutEventBaseUserIdsSql = new SqlStatementBuilder();
+        zeroOutEventBaseUserIdsSql.append("UPDATE EventBase");
+        zeroOutEventBaseUserIdsSql.append("SET UserId").eq(UserUtils.USER_DEFAULT_ID);
+        zeroOutEventBaseUserIdsSql.append("WHERE UserId").eq(userId);
+        yukonJdbcOperations.update(zeroOutEventBaseUserIdsSql);
+        
         String deleteYukonUser = "DELETE FROM YukonUser WHERE UserId = ?";
         yukonJdbcOperations.update(deleteYukonUser, userId);
 
