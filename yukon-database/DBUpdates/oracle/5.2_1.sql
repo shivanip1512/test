@@ -433,6 +433,11 @@ ALTER TABLE SurveyResultAnswer
 INSERT INTO YukonRoleProperty VALUES(-10820, -108, 'Session Timeout (minutes)','30','The amount of idle time (in minutes) before a user''s session will expire.');
 /* End YUK-8976 */
 
+/* Start YUK-8960 */
+DELETE FROM DeviceTypeCommand WHERE CommandId = -123;
+DELETE FROM Command WHERE CommandId = -123;
+/* End YUK-8960 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
