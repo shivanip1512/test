@@ -3654,25 +3654,25 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
                         case SpecialArea:
                             {
                                 paObjectColumn = "CSA.areaid";
-                                capControlObjectTable = "capcontrolspecialarea CSA";
+                                capControlObjectTable = "capcontrolspecialarea CSA ";
                             }
                             break;
                         case Area:
                             {
                                 paObjectColumn = "CCA.areaid";
-                                capControlObjectTable = "capcontrolarea CCA";
+                                capControlObjectTable = "capcontrolarea CCA ";
                             }
                             break;
                         case SubBus:
                             {
                                 paObjectColumn = "SSB.substationbusid";
-                                capControlObjectTable = "capcontrolsubstationbus SSB";
+                                capControlObjectTable = "capcontrolsubstationbus SSB ";
                             }
                             break;
                         case Feeder:
                             {
                                 paObjectColumn = "CCF.feederid";
-                                capControlObjectTable = "capcontrolfeeder CCF";
+                                capControlObjectTable = "capcontrolfeeder CCF ";
                             }
                             break;
                         case Undefined:
@@ -3688,7 +3688,8 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
                         static const string sql = "SELECT SSA.paobjectid, SSA.seasonscheduleid, SSA.seasonname, "
                                                         "SSA.strategyid, DS.seasonstartmonth, DS.seasonendmonth, "
                                                         "DS.seasonstartday, DS.seasonendday "
-                                                  "FROM ccseasonstrategyassignment SSA, dateofseason DS, ? "
+                                                  "FROM ccseasonstrategyassignment SSA, dateofseason DS, " 
+                                                    + capControlObjectTable +
                                                   "WHERE SSA.seasonscheduleid = DS.seasonscheduleid AND "
                                                         "SSA.seasonname = DS.seasonname AND SSA.strategyid = ? "
                                                         "AND SSA.paobjectid = " + paObjectColumn;
@@ -3696,8 +3697,7 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
                         Cti::Database::DatabaseConnection connection;
                         Cti::Database::DatabaseReader dbRdr(connection, sql);
 
-                        dbRdr << capControlObjectTable
-                              << strategyId;
+                        dbRdr << strategyId;
 
                         dbRdr.execute();
 
@@ -3918,25 +3918,25 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
                     case SpecialArea:
                         {
                             paObjectColumn = "CSA.areaid";
-                            capControlObjectTable = "capcontrolspecialarea CSA";
+                            capControlObjectTable = "capcontrolspecialarea CSA ";
                         }
                         break;
                     case Area:
                         {
                             paObjectColumn = "CCA.areaid";
-                            capControlObjectTable = "capcontrolarea CCA";
+                            capControlObjectTable = "capcontrolarea CCA ";
                         }
                         break;
                     case SubBus:
                         {
                             paObjectColumn = "SSB.substationbusid";
-                            capControlObjectTable = "capcontrolsubstationbus SSB";
+                            capControlObjectTable = "capcontrolsubstationbus SSB ";
                         }
                         break;
                     case Feeder:
                         {
                             paObjectColumn = "CCF.feederid";
-                            capControlObjectTable = "capcontrolfeeder CCF";
+                            capControlObjectTable = "capcontrolfeeder CCF ";
                         }
                         break;
                     case Undefined:
@@ -3952,15 +3952,15 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
 
                      static const string sqlMain =  "SELECT HSA.paobjectid, HSA.holidayscheduleid, HSA.strategyid, "
                                                       "DH.holidayname, DH.holidaymonth, DH.holidayday, DH.holidayyear "
-                                                    "FROM ccholidaystrategyassignment HSA, dateofholiday DH, ? ";
+                                                    "FROM ccholidaystrategyassignment HSA, dateofholiday DH, " 
+                                                      + capControlObjectTable + 
                                                     "WHERE HSA.holidayscheduleid = DH.holidayscheduleid AND "
                                                       "HSA.strategyid = ? AND HSA.paobjectid = " + paObjectColumn;
 
                      Cti::Database::DatabaseConnection connection;
                      Cti::Database::DatabaseReader rdr(connection, sqlMain);
 
-                     rdr << capControlObjectTable
-                         << strategyId;
+                     rdr << strategyId;
 
                      rdr.execute();
 
