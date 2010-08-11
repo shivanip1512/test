@@ -3,25 +3,18 @@ package com.cannontech.amr.crf.message;
 import java.io.Serializable;
 import java.util.List;
 
-
 public class CrfMeterReadingData implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private List<ChannelData> channelDataList;
-    private CrfMeterReadingType crfMeterReadingType;
     private String sensorManufacturer;
     private String sensorModel;
     private String sensorSerialNumber;
-
     private long timeStamp;
 
     public List<ChannelData> getChannelDataList() {
         return channelDataList;
-    }
-
-    public CrfMeterReadingType getMeterReadingType() {
-        return crfMeterReadingType;
     }
 
     public String getSensorManufacturer() {
@@ -44,10 +37,6 @@ public class CrfMeterReadingData implements Serializable {
         this.channelDataList = channelDataList;
     }
 
-    public void setMeterReadingType(CrfMeterReadingType crfMeterReadingType) {
-        this.crfMeterReadingType = crfMeterReadingType;
-    }
-
     public void setSensorManufacturer(String sensorManufacturer) {
         this.sensorManufacturer = sensorManufacturer;
     }
@@ -63,13 +52,12 @@ public class CrfMeterReadingData implements Serializable {
     public void setTimeStamp(long timeStamp) {
         this.timeStamp = timeStamp;
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((channelDataList == null) ? 0 : channelDataList.hashCode());
-        result = prime * result + ((crfMeterReadingType == null) ? 0 : crfMeterReadingType.hashCode());
         result = prime * result + ((sensorManufacturer == null) ? 0 : sensorManufacturer.hashCode());
         result = prime * result + ((sensorModel == null) ? 0 : sensorModel.hashCode());
         result = prime * result + ((sensorSerialNumber == null) ? 0 : sensorSerialNumber.hashCode());
@@ -90,11 +78,6 @@ public class CrfMeterReadingData implements Serializable {
             if (other.channelDataList != null)
                 return false;
         } else if (!channelDataList.equals(other.channelDataList))
-            return false;
-        if (crfMeterReadingType == null) {
-            if (other.crfMeterReadingType != null)
-                return false;
-        } else if (!crfMeterReadingType.equals(other.crfMeterReadingType))
             return false;
         if (sensorManufacturer == null) {
             if (other.sensorManufacturer != null)
@@ -118,14 +101,12 @@ public class CrfMeterReadingData implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("MeterReadingDataMessage [channelDataList=%s, meterReadingType=%s, sensorManufacturer=%s, sensorModel=%s, sensorSerialNumber=%s, timeStamp=%tc]",
+        return String.format("MeterReadingDataMessage [channelDataList=%s, sensorManufacturer=%s, sensorModel=%s, sensorSerialNumber=%s, timeStamp=%tc]",
                              channelDataList,
-                             crfMeterReadingType,
                              sensorManufacturer,
                              sensorModel,
                              sensorSerialNumber,
                              timeStamp);
     }
-    
-    
+
 }

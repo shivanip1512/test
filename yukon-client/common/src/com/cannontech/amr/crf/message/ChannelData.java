@@ -3,7 +3,6 @@ package com.cannontech.amr.crf.message;
 import java.io.Serializable;
 import java.util.Set;
 
-
 public class ChannelData implements Serializable {
     private static final long serialVersionUID = 2L;
 
@@ -109,5 +108,4 @@ public class ChannelData implements Serializable {
                              status);
     }
 
-    
 }

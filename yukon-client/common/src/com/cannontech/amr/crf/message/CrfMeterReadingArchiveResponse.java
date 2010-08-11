@@ -5,11 +5,10 @@ import java.io.Serializable;
 /**
  * JMS Queue name: yukon.rr.obj.amr.crf.MeterReadingArchiveResponse
  */
-public class CrfMeterReadingArchiveRequest implements Serializable {
+public class CrfMeterReadingArchiveResponse implements Serializable {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 1L;
 
-    private CrfMeterReadingData data;
     private CrfMeterReadingType readingType;
     private long dataPointId;
 
@@ -29,19 +28,10 @@ public class CrfMeterReadingArchiveRequest implements Serializable {
         this.dataPointId = dataPointId;
     }
 
-    public void setData(CrfMeterReadingData data) {
-        this.data = data;
-    }
-
-    public CrfMeterReadingData getData() {
-        return data;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((data == null) ? 0 : data.hashCode());
         result = prime * result + (int) (dataPointId ^ (dataPointId >>> 32));
         result = prime * result + ((readingType == null) ? 0 : readingType.hashCode());
         return result;
@@ -55,12 +45,7 @@ public class CrfMeterReadingArchiveRequest implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        CrfMeterReadingArchiveRequest other = (CrfMeterReadingArchiveRequest) obj;
-        if (data == null) {
-            if (other.data != null)
-                return false;
-        } else if (!data.equals(other.data))
-            return false;
+        CrfMeterReadingArchiveResponse other = (CrfMeterReadingArchiveResponse) obj;
         if (dataPointId != other.dataPointId)
             return false;
         if (readingType == null) {
@@ -73,8 +58,7 @@ public class CrfMeterReadingArchiveRequest implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("CrfMeterReadingArchiveRequest [data=%s, dataPointId=%s, readingType=%s]",
-                             data,
+        return String.format("CrfMeterReadingArchiveResponse [dataPointId=%s, readingType=%s]",
                              dataPointId,
                              readingType);
     }

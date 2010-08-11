@@ -4,16 +4,19 @@ import java.io.Serializable;
 
 import com.cannontech.amr.crf.model.CrfMeterIdentifier;
 
+/**
+ * JMS Queue name: yukon.rr.obj.amr.crf.MeterReadRequest
+ */
 public class CrfMeterReadRequest implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     private CrfMeterIdentifier crfMeterIdentifier;
-    
+
     public CrfMeterReadRequest(CrfMeterIdentifier meter) {
         setCrfMeterIdentifier(meter);
     }
-  
+
     public CrfMeterIdentifier getCrfMeterIdentifier() {
         return crfMeterIdentifier;
     }
@@ -24,7 +27,8 @@ public class CrfMeterReadRequest implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("CrfMeterReadRequestMessage [crfMeterIdentifier=%s]", crfMeterIdentifier);
+        return String.format("CrfMeterReadRequestMessage [crfMeterIdentifier=%s]",
+                             crfMeterIdentifier);
     }
 
     @Override
@@ -51,4 +55,5 @@ public class CrfMeterReadRequest implements Serializable {
             return false;
         return true;
     }
+
 }

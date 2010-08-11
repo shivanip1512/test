@@ -32,6 +32,7 @@ import com.cannontech.amr.crf.message.CrfMeterReadReply;
 import com.cannontech.amr.crf.message.CrfMeterReadRequest;
 import com.cannontech.amr.crf.message.CrfMeterReadingData;
 import com.cannontech.amr.crf.message.CrfMeterReadingReplyType;
+import com.cannontech.amr.crf.message.CrfMeterReadingType;
 import com.cannontech.amr.crf.model.CrfMeter;
 import com.cannontech.amr.crf.model.CrfMeterIdentifier;
 import com.cannontech.clientutils.LogHelper;
@@ -140,7 +141,7 @@ public class CrfMeterReadService {
                                     callback.receivedDataError(dataReplyMessage.getReplyType());
                                 } else {
                                     /* Data response successful, process point data */
-                                    processMeterReadingDataMessage(dataReplyMessage.getData(), pointDatas);
+                                    processMeterReadingDataMessage(dataReplyMessage.getData(), CrfMeterReadingType.CURRENT, pointDatas);
                                     
                                     for (PointValueHolder pointValueHolder : pointDatas) {
                                         callback.receivedData(dataReplyMessage.getReplyType(), pointValueHolder);
@@ -159,7 +160,7 @@ public class CrfMeterReadService {
         });
     }
     
-    public void processMeterReadingDataMessage(CrfMeterReadingData meterReadingDataNotification, List<? super PointData> pointDatas) {
+    public void processMeterReadingDataMessage(CrfMeterReadingData meterReadingDataNotification, CrfMeterReadingType readingType, List<? super PointData> pointDatas) {
         Instant readingInstant = new Instant(meterReadingDataNotification.getTimeStamp());
         
         CrfMeterIdentifier meterIdentifier = getMeterIdentifier(meterReadingDataNotification);
@@ -179,7 +180,7 @@ public class CrfMeterReadService {
             }
             
             // this call should be a simple hash lookup
-            AttributeConverter attributeConverter = crfAttributeLookupService.findMatch(crfMeter.getPaoIdentifier().getPaoType(), meterReadingDataNotification.getMeterReadingType(), channelData.getUnitOfMeasure(), channelData.getUnitOfMeasureModifiers());
+            AttributeConverter attributeConverter = crfAttributeLookupService.findMatch(crfMeter.getPaoIdentifier().getPaoType(), readingType, channelData.getUnitOfMeasure(), channelData.getUnitOfMeasureModifiers());
             if (attributeConverter == null) {
                 log.debug("No AttributeConverter for this channelData");
                 continue;
