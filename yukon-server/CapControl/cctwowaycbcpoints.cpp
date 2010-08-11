@@ -1570,7 +1570,7 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
                                             "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
                                             "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
                                             "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                                            "?, ?, ?, ?)";
+                                            "?, ?, ?, ?, ?)";
 
             Cti::Database::DatabaseWriter dbInserter(conn, insertSql);
 

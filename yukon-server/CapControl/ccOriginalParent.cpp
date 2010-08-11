@@ -197,7 +197,7 @@ void CtiCCOriginalParent::dumpDynamicData(Cti::Database::DatabaseConnection& con
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Inserted CC Original Parent Info into DynamicCtiCCOriginalParentInfo: " << getPAOId() << endl;
             }
-            static const string inserterSql = "insert into dynamicccoriginalparent values (?, ?, ?, ? ?)";
+            static const string inserterSql = "insert into dynamicccoriginalparent values (?, ?, ?, ?, ?)";
             Cti::Database::DatabaseWriter inserter(conn, inserterSql);
             
             inserter << _paoId

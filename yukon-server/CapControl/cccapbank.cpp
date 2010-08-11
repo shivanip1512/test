@@ -2497,7 +2497,7 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
 
             static const string inserterSql = "insert into dynamiccccapbank values ( "
                                              "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                                             "?, ?, ?, ?, ?, ?, ? ?)";
+                                             "?, ?, ?, ?, ?, ?, ?, ?)";
 
             Cti::Database::DatabaseWriter dbInserter(conn, inserterSql);
 
