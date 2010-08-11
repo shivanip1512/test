@@ -8,11 +8,11 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface MeteringEventLogService {
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="amr.meterReading")
-    public void readNowPushedForReadingsWidget(@Arg(EventLogArgEnum.username) LiteYukonUser user, 
-                                               @Arg(EventLogArgEnum.paoId) long paoId);
+    public void readNowPushedForReadingsWidget(@Arg(ArgEnum.username) LiteYukonUser user, 
+                                               @Arg(ArgEnum.paoId) long paoId);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="amr.schedules")
-    public void scheduleDeleted(@Arg(EventLogArgEnum.username) LiteYukonUser user, 
-                                @Arg(EventLogArgEnum.scheduleName) String scheduleName);
+    public void scheduleDeleted(@Arg(ArgEnum.username) LiteYukonUser user, 
+                                @Arg(ArgEnum.scheduleName) String scheduleName);
 
 }

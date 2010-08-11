@@ -88,6 +88,13 @@ public class ControllableDevicesRequestEndPoint {
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(newControllableDevicesRequest);
         List<StarsControllableDeviceDTO> devices = template.evaluate(newDeviceElementStr, deviceElementMapper);
 
+        // Log hardware addition attempts
+        for (StarsControllableDeviceDTO device : devices) {
+            hardwareEventLogService.hardwareAdditionAttemptedThroughAPI(user,
+                                                                        device.getAccountNumber(),
+                                                                        device.getSerialNumber());
+        }
+        
         // check authorization
         authDao.verifyTrueProperty(user,
                                    ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE);
@@ -95,10 +102,6 @@ public class ControllableDevicesRequestEndPoint {
         // run service
         for (StarsControllableDeviceDTO device : devices) {
             try {
-                hardwareEventLogService.hardwareAdditionAttemptedThroughAPI(user,
-                                                                            device.getAccountNumber(),
-                                                                            device.getSerialNumber());
-                
                 starsControllableDeviceHelper.addDeviceToAccount(device, user);
             } catch (StarsClientRequestException e) {
                 // store error and continue to process all devices

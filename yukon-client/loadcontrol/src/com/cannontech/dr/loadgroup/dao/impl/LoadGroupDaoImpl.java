@@ -6,23 +6,28 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoBase;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
 
 public class LoadGroupDaoImpl implements LoadGroupDao {
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
 
-    private final static String singleLoadGroupByIdQuery = 
-        "SELECT paObjectId, paoName, type FROM yukonPAObject " 
-        + "WHERE category = 'DEVICE' AND paoClass = 'GROUP' AND paObjectId = ?";
-
+    private SqlStatementBuilder loadGroupSelect = new SqlStatementBuilder();{
+        loadGroupSelect.append("SELECT PAObjectId, PAOName, Type ");
+        loadGroupSelect.append("FROM YukonPAObject");
+        loadGroupSelect.append("WHERE Category").eq(PaoCategory.DEVICE);
+        loadGroupSelect.append(  "AND PAOClass").eq(PaoClass.GROUP);
+    }
+    
     private final static ParameterizedRowMapper<DisplayablePao> loadGroupRowMapper =
         new ParameterizedRowMapper<DisplayablePao>() {
         @Override
@@ -46,20 +51,20 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         sql.append("SELECT lmGroupDeviceId FROM lmProgramDirectGroup");
         sql.append("WHERE deviceId").eq(programId).append(")");
 
-        return simpleJdbcTemplate.query(sql.getSql(),
-                                        loadGroupRowMapper,
-                                        sql.getArguments());
+        return yukonJdbcTemplate.query(sql, loadGroupRowMapper);
     }
 
     @Override
     public DisplayablePao getLoadGroup(int loadGroupId) {
-        return simpleJdbcTemplate.queryForObject(singleLoadGroupByIdQuery,
-                                                 loadGroupRowMapper,
-                                                 loadGroupId);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(loadGroupSelect);
+        sql.append("AND PAObjectId").eq(loadGroupId);
+        
+        return yukonJdbcTemplate.queryForObject(sql, loadGroupRowMapper);
     }
-
+    
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 }

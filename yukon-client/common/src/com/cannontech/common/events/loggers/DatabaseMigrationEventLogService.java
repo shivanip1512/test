@@ -8,15 +8,15 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface DatabaseMigrationEventLogService {
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.databaseMigration")
-    public void startingExport(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser,
-                               @Arg(EventLogArgEnum.fileName) String fileName);
+    public void startingExport(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                               @Arg(ArgEnum.fileName) String fileName);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.databaseMigration")
-    public void startingValidation(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
-                                   @Arg(EventLogArgEnum.fileName) String fileName);
+    public void startingValidation(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+                                   @Arg(ArgEnum.fileName) String fileName);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.databaseMigration")
-    public void startingImport(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
-                               @Arg(EventLogArgEnum.fileName) String fileName);
+    public void startingImport(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+                               @Arg(ArgEnum.fileName) String fileName);
 
 }

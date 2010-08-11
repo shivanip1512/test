@@ -12,39 +12,39 @@ import com.cannontech.database.data.point.PointType;
 public interface ValidationEventLogService {
 
     @YukonEventLog(transactionality=ExecutorTransactionality.ASYNCHRONOUS, category="system.rphValidation.validator")
-    public void unreasonableValueCausedReRead(@Arg(EventLogArgEnum.paoId) int paoId, 
-                                              @Arg(EventLogArgEnum.paoName) String paoName, 
-                                              @Arg(EventLogArgEnum.paoType) PaoType paoType, 
-                                              @Arg(EventLogArgEnum.pointId) int pointId, 
-                                              @Arg(EventLogArgEnum.pointType) PointType pointType, 
-                                              @Arg(EventLogArgEnum.pointOffset) int pointOffset);
-//////////////
+    public void unreasonableValueCausedReRead(@Arg(ArgEnum.paoId) int paoId, 
+                                              @Arg(ArgEnum.paoName) String paoName, 
+                                              @Arg(ArgEnum.paoType) PaoType paoType, 
+                                              @Arg(ArgEnum.pointId) int pointId, 
+                                              @Arg(ArgEnum.pointType) PointType pointType, 
+                                              @Arg(ArgEnum.pointOffset) int pointOffset);
+
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation.validator")
-    public void validationEngineStartup(@Arg(EventLogArgEnum.username) long lastChangeIdProcessed,
-                                        @Arg(EventLogArgEnum.username) int tagsCleared);
-////////
+    public void validationEngineStartup(long lastChangeIdProcessed,
+                                        int tagsCleared);
+
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation.validator")
     public void changedQualityOnPeakedValue(int changeId, 
-                                            @Arg(EventLogArgEnum.paoId) int paoId, 
-                                            @Arg(EventLogArgEnum.paoName) String paoName, 
-                                            @Arg(EventLogArgEnum.paoType) PaoType paoType, 
-                                            @Arg(EventLogArgEnum.pointId) int pointId, 
-                                            @Arg(EventLogArgEnum.pointType) PointType pointType, 
-                                            @Arg(EventLogArgEnum.pointOffset) int pointOffset);
+                                            @Arg(ArgEnum.paoId) int paoId, 
+                                            @Arg(ArgEnum.paoName) String paoName, 
+                                            @Arg(ArgEnum.paoType) PaoType paoType, 
+                                            @Arg(ArgEnum.pointId) int pointId, 
+                                            @Arg(ArgEnum.pointType) PointType pointType, 
+                                            @Arg(ArgEnum.pointOffset) int pointOffset);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation.helper")
-    public void validationEngineReset(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser);
+    public void validationEngineReset(@Arg(ArgEnum.username) LiteYukonUser yukonUser);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation.helper")
     public void validationEnginePartialReset(DateTime validationResetDate, 
-                                             @Arg(EventLogArgEnum.username) LiteYukonUser yukonUser);
+                                             @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation.helper")
-    public void deletedAllTaggedRows(@Arg(EventLogArgEnum.tagSet) String tagSet, 
-                                     @Arg(EventLogArgEnum.username) LiteYukonUser yukonUser);
+    public void deletedAllTaggedRows(@Arg(ArgEnum.tagSet) String tagSet, 
+                                     @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation.helper")
-    public void acceptedAllTaggedRows(@Arg(EventLogArgEnum.tagSet) String tagSet, 
-                                      @Arg(EventLogArgEnum.username) LiteYukonUser yukonUser);
+    public void acceptedAllTaggedRows(@Arg(ArgEnum.tagSet) String tagSet, 
+                                      @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 
 }

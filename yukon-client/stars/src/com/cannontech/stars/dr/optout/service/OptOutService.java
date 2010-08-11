@@ -130,7 +130,8 @@ public interface OptOutService {
 	 * don't count any existing opt outs against the limit)
 	 * @param inventoryId - Inventory to reset
 	 * @param accountId - Account for inventory
-	 */
+	 * @param user - User requesting the opt out limit reset
+     */
 	public void resetOptOutLimitForInventory(Integer inventoryId, int accountId, LiteYukonUser user);
 	
 	/**

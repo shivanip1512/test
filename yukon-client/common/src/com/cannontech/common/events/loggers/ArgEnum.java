@@ -1,6 +1,6 @@
 package com.cannontech.common.events.loggers;
 
-public enum EventLogArgEnum {
+public enum ArgEnum {
     accountNumber, 
     applianceType, 
     commandRequestExecutionContextId, 

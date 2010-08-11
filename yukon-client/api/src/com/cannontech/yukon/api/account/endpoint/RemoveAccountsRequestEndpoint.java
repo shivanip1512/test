@@ -45,7 +45,7 @@ public class RemoveAccountsRequestEndpoint {
         removeAccountsResponse.addContent(removeAccountsResultList);
         
         for (String accountNumber : accountNumbers) {
-            accountEventLogService.accountDeletionAttemptedThroughAPI(user, accountNumber);
+            accountEventLogService.accountDeletionAttemptedThroughApi(user, accountNumber);
             
             Element removeAccountResult = addAccountResponse(ns, removeAccountsResultList, accountNumber);
             try {

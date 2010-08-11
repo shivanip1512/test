@@ -814,7 +814,7 @@ public class OperatorHardwareController {
     }
     
     @Autowired
-    public void setLmHardwareBasedao(LMHardwareBaseDao lmHardwareBaseDao) {
+    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
         this.lmHardwareBaseDao = lmHardwareBaseDao;
     }
     

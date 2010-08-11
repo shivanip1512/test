@@ -33,7 +33,7 @@ import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.events.dao.EventLogDao;
-import com.cannontech.common.events.loggers.EventLogArgEnum;
+import com.cannontech.common.events.loggers.ArgEnum;
 import com.cannontech.common.events.model.ArgumentColumn;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
@@ -163,7 +163,7 @@ public class EventLogServiceImpl implements EventLogService {
             Annotation[] parameterTypeAnnotations = parameterAnnotations[i];
         
             // Check for Arg annotation and set the parameter name if it exists
-            EventLogArgEnum parameterName = null;
+            ArgEnum parameterName = null;
             for (Annotation parameterAnnotation : parameterTypeAnnotations) {
                 if (parameterAnnotation instanceof Arg) {
                     Arg argAnnotation = (Arg) parameterAnnotation;

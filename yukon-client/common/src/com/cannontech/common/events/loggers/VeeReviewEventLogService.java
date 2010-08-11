@@ -13,34 +13,34 @@ public interface VeeReviewEventLogService {
 
 	@YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation.helper")
     public void deletePointValue(int changeId, 
-                                 @Arg(EventLogArgEnum.pointValue) double value,
-                                 @Arg(EventLogArgEnum.pointDate) Date timestamp,
-                                 @Arg(EventLogArgEnum.paoName) String paoName,
-                                 @Arg(EventLogArgEnum.paoType) PaoType paoType,
-                                 @Arg(EventLogArgEnum.pointId) int pointId,
-                                 @Arg(EventLogArgEnum.pointType) PointType pointType,
-                                 @Arg(EventLogArgEnum.pointOffset) int pointOffset,
-                                 @Arg(EventLogArgEnum.username) LiteYukonUser user);
+                                 @Arg(ArgEnum.pointValue) double value,
+                                 @Arg(ArgEnum.pointDate) Date timestamp,
+                                 @Arg(ArgEnum.paoName) String paoName,
+                                 @Arg(ArgEnum.paoType) PaoType paoType,
+                                 @Arg(ArgEnum.pointId) int pointId,
+                                 @Arg(ArgEnum.pointType) PointType pointType,
+                                 @Arg(ArgEnum.pointOffset) int pointOffset,
+                                 @Arg(ArgEnum.username) LiteYukonUser user);
 	
 	@YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation.helper")
     public void acceptPointValue(int changeId,
-                                 @Arg(EventLogArgEnum.pointValue) double value,
-                                 @Arg(EventLogArgEnum.pointDate) Date timestamp,
-                                 @Arg(EventLogArgEnum.paoName) String paoName,
-                                 @Arg(EventLogArgEnum.paoType) PaoType paoType,
-                                 @Arg(EventLogArgEnum.pointId) int pointId,
-                                 @Arg(EventLogArgEnum.pointType) PointType pointType,
-                                 @Arg(EventLogArgEnum.pointOffset) int pointOffset,
-                                 @Arg(EventLogArgEnum.username) LiteYukonUser user);
+                                 @Arg(ArgEnum.pointValue) double value,
+                                 @Arg(ArgEnum.pointDate) Date timestamp,
+                                 @Arg(ArgEnum.paoName) String paoName,
+                                 @Arg(ArgEnum.paoType) PaoType paoType,
+                                 @Arg(ArgEnum.pointId) int pointId,
+                                 @Arg(ArgEnum.pointType) PointType pointType,
+                                 @Arg(ArgEnum.pointOffset) int pointOffset,
+                                 @Arg(ArgEnum.username) LiteYukonUser user);
 	
 	@YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation.helper")
     public void updateQuestionableQuality(int changeId,
-                                          @Arg(EventLogArgEnum.pointValue) double value,
-                                          @Arg(EventLogArgEnum.pointDate) Date timestamp,
-                                          @Arg(EventLogArgEnum.paoName) String paoName,
-                                          @Arg(EventLogArgEnum.paoType) PaoType paoType,
-                                          @Arg(EventLogArgEnum.pointId) int pointId,
-                                          @Arg(EventLogArgEnum.pointType) PointType pointType,
-                                          @Arg(EventLogArgEnum.pointOffset) int pointOffset,
-                                          @Arg(EventLogArgEnum.username) LiteYukonUser user);
+                                          @Arg(ArgEnum.pointValue) double value,
+                                          @Arg(ArgEnum.pointDate) Date timestamp,
+                                          @Arg(ArgEnum.paoName) String paoName,
+                                          @Arg(ArgEnum.paoType) PaoType paoType,
+                                          @Arg(ArgEnum.pointId) int pointId,
+                                          @Arg(ArgEnum.pointType) PointType pointType,
+                                          @Arg(ArgEnum.pointOffset) int pointOffset,
+                                          @Arg(ArgEnum.username) LiteYukonUser user);
 }

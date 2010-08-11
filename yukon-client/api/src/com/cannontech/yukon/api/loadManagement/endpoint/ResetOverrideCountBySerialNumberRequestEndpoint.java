@@ -48,7 +48,7 @@ public class ResetOverrideCountBySerialNumberRequestEndpoint {
         Element resultElement;
         try {
             // Log opt out limit reset attempt
-            accountEventLogService.optOutLimitResetAttemptedThroughAPI(user, 
+            accountEventLogService.optOutLimitResetAttemptedThroughApi(user, 
                                                                        accountNumber, 
                                                                        serialNumber);
             

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -189,27 +190,6 @@ public class OperatorEnrollmentController {
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
         
-        // Log Attempt
-        AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
-        DisplayablePao loadGroup = loadGroupDao.getLoadGroup(programEnrollment.getLoadGroupId());
-        List<InventoryEnrollment> inventoryEnrollments = programEnrollment.getInventoryEnrollments();
-        for (InventoryEnrollment inventoryEnrollment : inventoryEnrollments) {
-            LMHardwareBase hardwareBase = 
-                lmHardwareBaseDao.getById(inventoryEnrollment.getInventoryId());
-            
-            if (isAdd) {
-                accountEventLogService.enrollmentAttemptedByOperator(
-                    userContext.getYukonUser(), accountInfoFragment.getAccountNumber(), 
-                    hardwareBase.getManufacturerSerialNumber(), assignedProgram.getProgramName(), 
-                    loadGroup.getName());
-            } else {
-                accountEventLogService.enrollmentEditAttemptedByOperator(
-                    userContext.getYukonUser(), accountInfoFragment.getAccountNumber(), 
-                    hardwareBase.getManufacturerSerialNumber(), assignedProgram.getProgramName(),
-                    loadGroup.getName());
-            }
-        }
-        
         return save(model, assignedProgramId, programEnrollment,
                     isAdd ? "enrollCompleted" : "enrollmentUpdated",
                             userContext, accountInfoFragment, flashScope);
@@ -221,6 +201,67 @@ public class OperatorEnrollmentController {
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment,
             FlashScope flashScope) {
+        
+        // Log enrollment/unenrollment attempts
+        List<DisplayableEnrollmentProgram> enrollmentPrograms =
+            displayableEnrollmentDao.findEnrolledPrograms(accountInfoFragment.getAccountId());
+        
+        // Get list of previous enrollments if they exist.
+        List<DisplayableEnrollmentInventory> previousEnrollments = Lists.newArrayList();
+        for (DisplayableEnrollmentProgram displayableEnrollmentProgram : enrollmentPrograms) {
+            if (displayableEnrollmentProgram.getProgram().getProgramId() == assignedProgramId) {
+                previousEnrollments = displayableEnrollmentProgram.getInventory();
+            }
+        }
+
+        boolean isInPreviousEnrollments = false;
+        for (InventoryEnrollment inventoryEnrollment : programEnrollment.getInventoryEnrollments()) {
+            // Get logging information
+            AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
+            LMHardwareBase hardwareBase = lmHardwareBaseDao.getById(inventoryEnrollment.getInventoryId());
+
+            DisplayablePao loadGroup = new DisplayablePaoBase(null, ""); 
+            if (programEnrollment.getLoadGroupId() != 0) {
+                loadGroupDao.getLoadGroup(programEnrollment.getLoadGroupId());
+            }
+
+            // Check to see if the enrollment previously existed
+            for (DisplayableEnrollmentInventory previousEnrollment : previousEnrollments) {
+                if (previousEnrollment.getInventoryId() == inventoryEnrollment.getInventoryId() &&
+                    previousEnrollment.isEnrolled() != inventoryEnrollment.isEnrolled()) {
+                    
+                    // Log new attempted operator enrollment
+                    if (inventoryEnrollment.isEnrolled()) {
+                        accountEventLogService.enrollmentAttemptedByOperator(userContext.getYukonUser(), 
+                                                                             accountInfoFragment.getAccountNumber(), 
+                                                                             hardwareBase.getManufacturerSerialNumber(), 
+                                                                             assignedProgram.getProgramName(), 
+                                                                             loadGroup.getName());
+                    // Log new attempted operator unenrollment
+                    } else {
+                        accountEventLogService.unenrollmentAttemptedByOperator(userContext.getYukonUser(), 
+                                                                               accountInfoFragment.getAccountNumber(), 
+                                                                               hardwareBase.getManufacturerSerialNumber(),
+                                                                               assignedProgram.getProgramName(), 
+                                                                               loadGroup.getName());
+
+                    }
+
+                    isInPreviousEnrollments = true;
+                }
+            }
+            
+            // Log new enrollment attempts
+            if (!isInPreviousEnrollments && inventoryEnrollment.isEnrolled()) {
+                accountEventLogService.enrollmentAttemptedByOperator(userContext.getYukonUser(), 
+                                                                     accountInfoFragment.getAccountNumber(), 
+                                                                     hardwareBase.getManufacturerSerialNumber(), 
+                                                                     assignedProgram.getProgramName(), 
+                                                                     loadGroup.getName());
+            }
+        }
+
+        
         validateAccountEditing(userContext);
         AssignedProgram assignedProgram =
             assignedProgramDao.getById(assignedProgramId);
@@ -266,21 +307,6 @@ public class OperatorEnrollmentController {
             enrollment.setEnrolled(false);
         }
 
-        // Log Attempt
-        AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
-        DisplayablePao loadGroup = loadGroupDao.getLoadGroup(programEnrollment.getLoadGroupId());
-        List<InventoryEnrollment> inventoryEnrollments = programEnrollment.getInventoryEnrollments();
-        for (InventoryEnrollment inventoryEnrollment : inventoryEnrollments) {
-            LMHardwareBase hardwareBase = 
-                lmHardwareBaseDao.getById(inventoryEnrollment.getInventoryId());
-            
-            accountEventLogService.unenrollmentAttemptedByOperator(
-                userContext.getYukonUser(), accountInfoFragment.getAccountNumber(), 
-                hardwareBase.getManufacturerSerialNumber(), assignedProgram.getProgramName(), 
-                loadGroup.getName());
-        }
-
-        
         return save(model, assignedProgramId, programEnrollment,
                     "unenrollCompleted", userContext, accountInfoFragment,
                     flashScope);

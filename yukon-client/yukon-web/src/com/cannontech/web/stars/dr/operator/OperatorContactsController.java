@@ -148,7 +148,7 @@ public class OperatorContactsController {
 			                                    newContactName);
 		} else {
 		    LiteContact contact = contactDao.getContact(contactDto.getContactId());
-		    String oldContactName = contact.getContFirstName()+" "+contact.getContLastName();
+		    String oldContactName = contact.toString();
 		    accountEventLogService.contactUpdated(userContext.getYukonUser(), 
                                                 accountInfoFragment.getAccountNumber(), 
                                                 contactDto.getFirstName()+" "+contactDto.getLastName());

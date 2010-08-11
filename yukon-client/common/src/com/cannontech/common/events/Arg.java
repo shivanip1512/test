@@ -5,12 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.cannontech.common.events.loggers.EventLogArgEnum;
+import com.cannontech.common.events.loggers.ArgEnum;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 public @interface Arg {
 
-    EventLogArgEnum value();
+    ArgEnum value();
     
 }

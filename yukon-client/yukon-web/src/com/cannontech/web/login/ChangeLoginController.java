@@ -98,7 +98,8 @@ public class ChangeLoginController {
     
     @RequestMapping(value = "/changelogin/updateusername", method = RequestMethod.POST)
     public String updateUsername(String username, String oldPassword,
-            String redirectUrl, HttpServletRequest request) throws Exception {
+                                 String redirectUrl, HttpServletRequest request) 
+    throws Exception {
 
         final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         final LiteYukonUser user = yukonUserContext.getYukonUser();

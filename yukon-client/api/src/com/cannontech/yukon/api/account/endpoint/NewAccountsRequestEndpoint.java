@@ -48,7 +48,7 @@ public class NewAccountsRequestEndpoint {
         newAccountsResponse.addContent(newAccountsResultList);
         
         for (UpdatableAccount account : customerAccounts) {
-            accountEventLogService.accountCreationAttemptedThroughAPI(user,account.getAccountNumber());
+            accountEventLogService.accountCreationAttemptedThroughApi(user,account.getAccountNumber());
             
             Element newAccountResult = addAccountResponse(ns, newAccountsResultList, account);
             try {

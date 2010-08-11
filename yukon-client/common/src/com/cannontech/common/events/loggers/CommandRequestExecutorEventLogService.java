@@ -9,13 +9,13 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface CommandRequestExecutorEventLogService {
 
 	@YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="porterRequests")
-    public void commandFailedToTransmit(@Arg(EventLogArgEnum.commandRequestExecutionId) int creId, 
-                                        @Arg(EventLogArgEnum.commandRequestExecutionContextId) int contextId, 
-                                        @Arg(EventLogArgEnum.commandRequestExecutionType) CommandRequestExecutionType creType,
+    public void commandFailedToTransmit(@Arg(ArgEnum.commandRequestExecutionId) int creId, 
+                                        @Arg(ArgEnum.commandRequestExecutionContextId) int contextId, 
+                                        @Arg(ArgEnum.commandRequestExecutionType) CommandRequestExecutionType creType,
                                         String currentCommandString,
                                         String error,
-                                        @Arg(EventLogArgEnum.username) LiteYukonUser user);
+                                        @Arg(ArgEnum.username) LiteYukonUser user);
 
 	@YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="porterRequests")
-	public void foundFailedCre(@Arg(EventLogArgEnum.commandRequestExecutionId) int creId);
+	public void foundFailedCre(@Arg(ArgEnum.commandRequestExecutionId) int creId);
 }

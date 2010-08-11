@@ -52,7 +52,7 @@ public class EnrollmentRequestEndpoint {
                                                                                              enrollmentResultList, 
                                                                                              enrollmentHelper);
 
-            accountEventLogService.enrollmentAttemptedThroughAPI(user, 
+            accountEventLogService.enrollmentAttemptedThroughApi(user, 
                                                                          enrollmentHelper.getAccountNumber(), 
                                                                          enrollmentHelper.getSerialNumber(), 
                                                                          enrollmentHelper.getProgramName(), 

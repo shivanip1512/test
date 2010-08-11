@@ -72,6 +72,9 @@ public class AssignedProgram {
     }
 
     public String getProgramName() {
+        if (programId == 0 ) {
+            return name.getDisplayName();
+        }
         return name.getProgramName();
     }
 

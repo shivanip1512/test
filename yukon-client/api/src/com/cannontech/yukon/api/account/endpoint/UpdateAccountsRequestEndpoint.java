@@ -52,7 +52,7 @@ public class UpdateAccountsRequestEndpoint {
         updateAccountsResponse.addContent(updateAccountsResultList);
         
         for (UpdatableAccount account : customerAccounts) {
-            accountEventLogService.accountUpdateAttemptedThroughAPI(user,account.getAccountNumber());
+            accountEventLogService.accountUpdateAttemptedThroughApi(user,account.getAccountNumber());
             
             Element updateAccountResult = addAccountResponse(ns, updateAccountsResultList, account);
             try {
@@ -61,7 +61,7 @@ public class UpdateAccountsRequestEndpoint {
                 updateAccountResult.addContent(new Element("success", ns));
             } catch(InvalidAccountNumberException e) {
                 if(add) {
-                    accountEventLogService.accountCreationAttemptedThroughAPI(user,account.getAccountNumber());
+                    accountEventLogService.accountCreationAttemptedThroughApi(user,account.getAccountNumber());
                     
                     // Update didn't work, try to add it.
                     try {

@@ -49,7 +49,7 @@ public class DecrementOverrideLimitRequestEndpoint {
         // run service
         Element resultElement;
         try {
-            accountEventLogService.optOutLimitReductionAttemptedThroughAPI(user,
+            accountEventLogService.optOutLimitReductionAttemptedThroughApi(user,
                                                                            accountNumber,
                                                                            serialNumber);
             
