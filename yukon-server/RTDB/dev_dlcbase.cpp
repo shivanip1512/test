@@ -11,6 +11,8 @@
 #include "porter.h"
 #include "numstr.h"
 
+#include <boost/optional.hpp>
+
 using Cti::Protocols::EmetconProtocol;
 
 namespace Cti {
@@ -93,13 +95,11 @@ string DlcBaseDevice::getSQLCoreStatement() const
 
 void DlcBaseDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    bool validInitAddress = false;
-    int preAddress, postAddress;
+    boost::optional<int> oldAddress;
 
     if( CarrierSettings.isInitialized() )
     {
-        preAddress = CarrierSettings.getAddress();
-        validInitAddress = true;
+        oldAddress = CarrierSettings.getAddress();
     }
 
     Inherited::DecodeDatabaseReader(rdr);       //  get the base class handled
@@ -113,17 +113,13 @@ void DlcBaseDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
     CtiLockGuard<CtiMutex> guard(_classMutex);
     CarrierSettings.DecodeDatabaseReader(rdr);
 
-    if( validInitAddress )
-    {
-        postAddress = CarrierSettings.getAddress();
-        if( preAddress != postAddress )
+    if( oldAddress && *oldAddress != CarrierSettings.getAddress() )
+    {    
+        purgeDynamicPaoInfo();
         {
-            purgeDynamicPaoInfo();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device address has been updated. Purging dynamic PAObject"
-                                  << " info from memory and database." << endl;
-            }
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Device address has been updated. Purging dynamic PAObject"
+                              << " info from memory and database." << endl;
         }
     }
 
