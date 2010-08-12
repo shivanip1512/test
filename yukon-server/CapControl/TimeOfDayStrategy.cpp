@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "TimeOfDayStrategy.h"
+#include "utility.h"
 
 
 TimeOfDayStrategy::TimeOfDayStrategy()
@@ -53,7 +54,7 @@ void TimeOfDayStrategy::restoreParameters( const std::string &name, const std::s
         {
             TimeOfDay & tod = iter->second;
 
-            if (type == "WeekDay")
+            if (!stringCompareIgnoreCase(type, "WeekDay"))
             {
                 tod.weekdayPercent = newValue;
             }
@@ -68,7 +69,7 @@ void TimeOfDayStrategy::restoreParameters( const std::string &name, const std::s
             
             tod.timeOffset = timeOffset;
 
-            if (type == "WeekDay")
+            if (!stringCompareIgnoreCase(type, "WeekDay"))
             {
                 tod.weekdayPercent = newValue;
                 tod.weekendPercent = 0.0;
