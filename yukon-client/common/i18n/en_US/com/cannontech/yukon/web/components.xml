@@ -9,6 +9,7 @@
     <entry key="yukon.web.components.controlHistoryEvent.controlDuration">Control Duration</entry>
 	<entry key="yukon.web.components.controlHistoryEvent.noControlDuringPeriod">There has been no control during this period.</entry>
     <entry key="yukon.web.components.controlHistoryEvent.loading">Loading...</entry>
+    <entry key="yukon.web.components.controlHistoryEvent.na">N/A</entry>
 
 	<!-- ControlHistorySummary.tag -->
     <entry key="yukon.web.components.controlHistorySummary.notEnrolledMessage">You are not enrolled in any viewable programs.</entry>

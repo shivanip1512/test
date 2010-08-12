@@ -31,7 +31,7 @@ public interface ControlHistoryEventDao {
      * a list of the ControlHistoryEvents, which we use in newer stars code.
      * 
      */
-    public List<ControlHistoryEvent> toEventList(Integer programId, StarsLMControlHistory controlHistory);
+    public List<ControlHistoryEvent> toEventList(Integer programId, StarsLMControlHistory controlHistory, YukonUserContext userContext);
  
     /**
      * This method removes any invalid control history in regards to enrollment.

@@ -10,6 +10,7 @@ import com.cannontech.stars.dr.controlhistory.model.ControlHistoryEvent;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistorySummary;
 import com.cannontech.stars.dr.controlhistory.model.ControlPeriod;
 import com.cannontech.stars.dr.controlhistory.service.ControlHistorySummaryService;
+import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.user.YukonUserContext;
 
 public class ControlHistorySummaryServiceImpl implements ControlHistorySummaryService {
@@ -47,14 +48,8 @@ public class ControlHistorySummaryServiceImpl implements ControlHistorySummarySe
                                                boolean past) {
         Duration results = new Duration(0);
         
-        
-        List<ControlHistoryEvent> controlHistoryEventList = 
-            controlHistoryEventDao.toEventList(null, controlHistoryEventDao.getEventsByGroup(customerAccountId, 
-                                                                                       groupId,
-                                                                                       inventoryId,
-                                                                                       period, 
-                                                                                       userContext,
-                                                                                       past));
+        StarsLMControlHistory eventsByGroup = controlHistoryEventDao.getEventsByGroup(customerAccountId, groupId, inventoryId, period, userContext, past);
+        List<ControlHistoryEvent> controlHistoryEventList = controlHistoryEventDao.toEventList(null, eventsByGroup, userContext);
 
         for (ControlHistoryEvent controlHistoryEvent : controlHistoryEventList) {
             results = controlHistoryEvent.getDuration().plus(results);

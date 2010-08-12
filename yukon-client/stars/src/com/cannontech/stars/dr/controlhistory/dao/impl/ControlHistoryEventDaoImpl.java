@@ -10,9 +10,11 @@ import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.StringRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao;
@@ -30,6 +32,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
     private EnrollmentDao enrollmentDao;
     private LoadGroupDao loadGroupDao;
     private YukonJdbcTemplate yukonJdbcTemplate;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     protected static class Holder {
         int groupId;
@@ -49,7 +52,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
 
             removeInvalidEnrollmentControlHistory(starsLMControlHistory, holder, past);
             
-            List<ControlHistoryEvent> controlHistoryEventList = toEventList(programId, starsLMControlHistory);
+            List<ControlHistoryEvent> controlHistoryEventList = toEventList(programId, starsLMControlHistory, userContext);
             for (ControlHistoryEvent controlHistoryEvent : controlHistoryEventList) {
                 if (lastControlHistoryEvent == null ||
                     controlHistoryEvent.getEndDate().isAfter(lastControlHistoryEvent.getEndDate())) {
@@ -170,7 +173,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
     }
 
     @Override
-    public List<ControlHistoryEvent> toEventList(Integer programId, StarsLMControlHistory controlHistory) {
+    public List<ControlHistoryEvent> toEventList(Integer programId, StarsLMControlHistory controlHistory, YukonUserContext userContext) {
         if (controlHistory == null) return Collections.emptyList();
 
         final List<ControlHistoryEvent> eventList = new ArrayList<ControlHistoryEvent>();
@@ -187,6 +190,8 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
             event.setEndDate(endDateTime);
             
             String gears;
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String na = messageSourceAccessor.getMessage("yukon.web.components.controlHistoryEvent.na");
             if(programId != null) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT DISTINCT gh.GearName");
@@ -211,12 +216,12 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
                     sql.append("ORDER BY gh.EventTime desc");
                     
                     gearNames = yukonJdbcTemplate.query(sql, new StringRowMapper());
-                    gears = gearNames.isEmpty() ? "NA" : gearNames.get(0);
+                    gears = gearNames.isEmpty() ? na : gearNames.get(0);
                 } else {
                     gears = StringUtils.join(gearNames, ",");  
                 }
             } else {
-                gears = "NA";
+                gears = na;
             }
             
             event.setGears(gears);
@@ -239,5 +244,10 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
     }
 }
