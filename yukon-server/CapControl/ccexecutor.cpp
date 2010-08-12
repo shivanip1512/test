@@ -4180,7 +4180,7 @@ void CtiCCCommandExecutor::AutoEnableOvUvByArea()
                     {
                         string text1 = string("SubBus: ");
                         text1 += currentSubstationBus->getPaoName();
-                        text1 += string("Auto Enable OvUv");
+                        text1 += string(" Auto Enable OvUv");
 
                         currentSubstationBus->setOvUvDisabledFlag(FALSE);
                         currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
@@ -4367,7 +4367,7 @@ void CtiCCCommandExecutor::AutoDisableOvUvByArea()
                     {
                         string text1 = string("SubBus: ");
                         text1 += currentSubstationBus->getPaoName();
-                        text1 += string("Auto Disable OvUv");
+                        text1 += string(" Auto Disable OvUv");
 
                         currentSubstationBus->setOvUvDisabledFlag(TRUE);
                         currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
@@ -4518,7 +4518,7 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubstation(BOOL disableFlag)
                 if (disableFlag)
                 {
                     currentSubBus->setOvUvDisabledFlag(TRUE);
-                    text1 += string("Auto Disable OvUv");
+                    text1 += string(" Auto Disable OvUv");
 
                     currentSubBus->setEventSequence(currentSubBus->getEventSequence() +1);
                     ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, currentStation->getParentId(), currentStation->getPaoId(), currentSubBus->getPaoId(), 0, capControlDisableOvUv, currentSubBus->getEventSequence(), 0, text1, _command->getUser()));
@@ -4526,7 +4526,7 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubstation(BOOL disableFlag)
                 else
                 {
                     currentSubBus->setOvUvDisabledFlag(FALSE);
-                    text1 += string("Auto Enable OvUv");
+                    text1 += string(" Auto Enable OvUv");
 
                     currentSubBus->setEventSequence(currentSubBus->getEventSequence() +1);
                     ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, currentStation->getParentId(), currentStation->getPaoId(),  currentSubBus->getPaoId(), 0, capControlEnableOvUv, currentSubBus->getEventSequence(), 1, text1, _command->getUser()));
