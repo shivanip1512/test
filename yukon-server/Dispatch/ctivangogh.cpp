@@ -2446,7 +2446,7 @@ INT CtiVanGogh::assembleMultiFromPointDataForConnection(const CtiServer::ptr_typ
                                 {
                                     CtiPointDataMsg *pNewData = (CtiPointDataMsg *)pDat->replicateMessage();
 
-                                    pNewData->resetTags();
+                                    pNewData->resetTags(~TAG_POINT_OLD_TIMESTAMP);            // Dispatch has specifically asked for old timestamp, dont remove it
                                     pNewData->setTags( pDyn->getDispatch().getTags() );       // Report any set tags out to the clients.
 
                                     Ord.push_back(pNewData);
@@ -3742,6 +3742,15 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
                                 aWrap.getMulti()->insert(sigMsg);
                             }
                         }
+                    }
+
+                    if(pData->getTime() < pDyn->getTimeStamp())
+                    {
+                        pData->setTags(TAG_POINT_OLD_TIMESTAMP);
+                    }
+                    else 
+                    {
+                        pData->resetTags(TAG_POINT_OLD_TIMESTAMP); // No one else may set this but us!
                     }
 
                     //  checked here to avoid calling the point manager inside processStalePoint()
