@@ -1944,7 +1944,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     public boolean isTimeOfDay() {
         String strat = getStrategy().getControlMethod();
-        if( strat.equalsIgnoreCase(ControlMethod.TIME_OF_DAY.getDbName())){
+        if( ControlMethod.getForDbString(strat).equals(ControlMethod.TIME_OF_DAY)) {
             return true;
         }
         return false;

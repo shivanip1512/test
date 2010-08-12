@@ -1,6 +1,8 @@
 package com.cannontech.capcontrol;
 
-public enum ControlMethod {
+import com.cannontech.common.util.DatabaseRepresentationSource;
+
+public enum ControlMethod implements DatabaseRepresentationSource{
 	INDIVIDUAL_FEEDER("IndividualFeeder"),
 	SUBSTATION_BUS("SubstationBus"),
 	BUSOPTIMIZED_FEEDER("BusOptimizedFeeder"),
@@ -22,6 +24,11 @@ public enum ControlMethod {
 	}
 	
 	public String getDbName() {
+		return dbName;
+	}
+
+	@Override
+	public Object getDatabaseRepresentation() {
 		return dbName;
 	}
 }

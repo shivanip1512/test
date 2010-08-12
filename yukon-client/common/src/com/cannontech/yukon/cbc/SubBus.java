@@ -3,6 +3,7 @@ package com.cannontech.yukon.cbc;
 import java.util.Arrays;
 import java.util.Vector;
 
+import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
@@ -815,4 +816,7 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
         return ltcId;
     }
 	
+    public ControlMethod getControlMethodEnum() {
+    	return ControlMethod.getForDbString(getControlMethod());
+    }
 }

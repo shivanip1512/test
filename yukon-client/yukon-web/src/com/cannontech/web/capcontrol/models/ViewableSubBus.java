@@ -102,7 +102,7 @@ public class ViewableSubBus {
     
     public boolean isBusControlled() {
     	try {
-	    	ControlMethod method = ControlMethod.getForDbString(getSubBus().getControlMethod());
+	    	ControlMethod method = getSubBus().getControlMethodEnum();
 	    	return method == ControlMethod.BUSOPTIMIZED_FEEDER
 	    		|| method == ControlMethod.SUBSTATION_BUS;
     	} catch (IllegalArgumentException e) {

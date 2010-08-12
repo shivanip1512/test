@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.StrategyDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
@@ -419,15 +420,16 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 	}
 	
 	public static boolean todExists(Integer strategyId) {
-	    String sql = "Select ts.* ";
-	    sql += "from CCStrategyTargetSettings ts, ";
-	    sql +=   "capcontrolstrategy strat ";
-	    sql += "where ts.strategyId = strat.strategyId ";
-	    sql +=   "and strat.controlmethod = 'timeofday ";
-	    sql +=   "and strategyid = ?";
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+	    sql.append("Select ts.* ");
+	    sql.append("from CCStrategyTargetSettings ts, ");
+	    sql.append("capcontrolstrategy strat ");
+	    sql.append("where ts.strategyId = strat.strategyId ");
+	    sql.append("and strat.controlmethod").eq(ControlMethod.TIME_OF_DAY.getDbName());
+	    sql.append("and strategyid").eq(strategyId);
 	    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
 	    todExists = false;
-	    yukonTemplate.query(sql, new Integer[] {strategyId}, new RowCallbackHandler() {
+	    yukonTemplate.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
                 todExists = true;
             }
@@ -666,7 +668,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
     }
     
     public boolean isTimeOfDay(){
-        return getControlMethod().equalsIgnoreCase(ControlMethod.TIME_OF_DAY.getDbName());
+        return ControlMethod.getForDbString(getControlMethod()).equals(ControlMethod.TIME_OF_DAY);
     }
     
     public void controlUnitsChanged(String newValue) {
