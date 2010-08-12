@@ -494,6 +494,25 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                                 "cap control") );
                 }
 
+                std::set<long> rejectedIds = state->getGroupRequest()->getRejectedPoints();
+                for each (long ID in rejectedIds)
+                {
+                    ccEvents.push_back(
+                        new CtiCCEventLogMsg(
+                                0, 
+                                SYS_PID_CAPCONTROL, 
+                                spAreaId, 
+                                areaId, 
+                                stationId, 
+                                subbus->getPaoId(), 
+                                0,
+                                capControlIvvcRejectedPoint, 
+                                0, 
+                                ID, 
+                                "IVVC Rejected Point Response", 
+                                "cap control") );
+                }
+
                 sendEvents(dispatchConnection, ccEvents);
             }
             break;

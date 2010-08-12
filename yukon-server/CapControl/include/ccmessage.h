@@ -55,7 +55,8 @@ enum CtiCCEventType_t
     capControlCommandRetrySent = 14,
     capControlUnexpectedCBCStateReported = 15,
     capControlIvvcCommStatus = 16,
-    capControlIvvcMissingPoint
+    capControlIvvcMissingPoint = 17,
+    capControlIvvcRejectedPoint
 };
 
 
