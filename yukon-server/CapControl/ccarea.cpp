@@ -264,7 +264,7 @@ void CtiCCArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime
             {
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << insertSql << endl;
+                    dout << CtiTime() << " - " << inserter.asString() << endl;
                 }
             }
 
