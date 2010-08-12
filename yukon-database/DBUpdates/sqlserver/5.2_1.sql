@@ -437,6 +437,14 @@ DELETE FROM DeviceTypeCommand WHERE CommandId = -123;
 DELETE FROM Command WHERE CommandId = -123;
 /* End YUK-8960 */
 
+/* Start YUK-6576 */
+DELETE FROM Display WHERE DisplayNum = -4;
+
+UPDATE YukonRoleProperty
+SET Description = 'The following settings are valid: HIDE_MACS(0x00001000), HIDE_CAPCONTROL(0x00002000), HIDE_LOADCONTROL(0x00004000), HIDE_ALL_DISPLAYS(0x0000F000), HIDE_ALARM_COLORS(0x80000000)'
+WHERE RolePropertyId = -10104;
+/* End YUK-6576 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
