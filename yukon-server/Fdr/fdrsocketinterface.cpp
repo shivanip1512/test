@@ -149,6 +149,16 @@ CtiFDRSocketInterface& CtiFDRSocketInterface::setPortNumber (int aPort)
     return *this;
 }
 
+string CtiFDRSocketInterface::getIpMask()
+{
+    return _ipMask;
+}
+
+void CtiFDRSocketInterface::setIpMask(const string& ipMask)
+{
+    _ipMask = ipMask;
+}
+
 int CtiFDRSocketInterface::getLinkTimeout () const
 {
     return iLinkTimeout;

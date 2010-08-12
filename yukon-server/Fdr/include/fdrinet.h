@@ -135,6 +135,7 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
 
         // end getters and setters
         static const CHAR * KEY_LISTEN_PORT_NUMBER;
+        static const CHAR * KEY_IP_MASK;
         static const CHAR * KEY_TIMESTAMP_WINDOW;
         static const CHAR * KEY_DB_RELOAD_RATE;
         static const CHAR * KEY_SOURCE_NAME;

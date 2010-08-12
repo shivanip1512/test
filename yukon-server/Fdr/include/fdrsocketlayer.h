@@ -49,6 +49,9 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
         USHORT getPortNumber () const;
         CtiFDRSocketLayer& setPortNumber (INT aPortNumber);
 
+        string getIpMask();
+        void setIpMask(const string& ipMask);
+
         USHORT getConnectPortNumber () const;
         HEV & getConnectionSem ();
         CtiFDRSocketLayer& setConnectionSem (HEV aSem);

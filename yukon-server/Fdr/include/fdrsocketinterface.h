@@ -51,6 +51,9 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         int  getPortNumber () const;
         CtiFDRSocketInterface& setPortNumber(int aPort);
 
+        string getIpMask();
+        void setIpMask(const string& ipMask);
+
         int  getLinkTimeout () const;
         CtiFDRSocketInterface& setLinkTimeout(int aLinkTimeout);
 
@@ -92,6 +95,8 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
 
         CtiMutex                    iListenerMux;
         CtiFDRSocketConnection      *iListener;
+
+        string _ipMask;
 
         /********************************
         * added for Progress energy to run RCCS and Yukon on the same machine

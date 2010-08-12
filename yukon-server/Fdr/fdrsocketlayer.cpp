@@ -180,6 +180,17 @@ USHORT CtiFDRSocketLayer::getPortNumber () const
     return iParent->getPortNumber();
 }
 
+string CtiFDRSocketLayer::getIpMask ()
+{
+    return iParent->getIpMask();
+}
+
+void CtiFDRSocketLayer::setIpMask (const string& ipMask)
+{
+    return iParent->setIpMask(ipMask);
+}
+
+
 USHORT CtiFDRSocketLayer::getConnectPortNumber () const
 {
     return iParent->getConnectPortNumber();

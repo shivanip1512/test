@@ -240,6 +240,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 CtiFDR_Inet * inetInterface;
 
 const CHAR * CtiFDR_Inet::KEY_LISTEN_PORT_NUMBER = "FDR_INET_PORT_NUMBER";
+const CHAR * CtiFDR_Inet::KEY_IP_MASK = "FDR_INET_IP_MASK";
 const CHAR * CtiFDR_Inet::KEY_TIMESTAMP_WINDOW = "FDR_INET_TIMESTAMP_VALIDITY_WINDOW";
 const CHAR * CtiFDR_Inet::KEY_DB_RELOAD_RATE = "FDR_INET_DB_RELOAD_RATE";
 const CHAR * CtiFDR_Inet::KEY_SOURCE_NAME = "FDR_INET_SOURCE_NAME";
@@ -827,6 +828,15 @@ int CtiFDR_Inet::readConfig( void )
     // connect port number also
     setConnectPortNumber (getPortNumber());
 
+    tempStr = getCparmValueAsString(KEY_IP_MASK);
+    if (tempStr.length() > 0)
+    {
+        setIpMask(tempStr);
+    }
+    else
+    {
+        setIpMask("");
+    }
 
     tempStr = getCparmValueAsString(KEY_TIMESTAMP_WINDOW);
     if (tempStr.length() > 0)
