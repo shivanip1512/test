@@ -16,6 +16,8 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -23,6 +25,7 @@ import com.cannontech.common.gui.tree.CTITreeModel;
 import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
 import com.cannontech.common.gui.tree.CheckRenderer;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -261,6 +264,9 @@ private javax.swing.JTree getJTreeNotifs() {
 			for( int i = 0; i < customers.size(); i++ )
 			{
 			    LiteCICustomer lCust = customers.get(i);
+			    if(StringUtils.isBlank(lCust.getCompanyName())) {
+			        lCust.setCompanyName(CtiUtilities.STRING_NONE);
+			    }
 			    LiteBaseNode custNode = new LiteBaseNode( lCust );
 			    custNode.setUserValue( NotifMap.DEF_ATTRIBS );
 			    root.add( custNode );
@@ -321,13 +327,13 @@ private void addContactNotifsToTree( LiteContact contact, LiteBaseNode parent )
 
 	for (LiteContactNotification lcn : notificationsForContact) {
 		YukonListDao yukonListDao = DaoFactory.getYukonListDao();
-        if ( yukonListDao.isPhoneNumber(lcn.getNotificationCategoryID())
-			|| yukonListDao.isEmail(lcn.getNotificationCategoryID()) 
-            || yukonListDao.isShortEmail(lcn.getNotificationCategoryID()))
-		{
+        if ( lcn.getNotificationCategoryID() != 0 && 
+                (yukonListDao.isPhoneNumber(lcn.getNotificationCategoryID())
+                        || yukonListDao.isEmail(lcn.getNotificationCategoryID()) 
+                        || yukonListDao.isShortEmail(lcn.getNotificationCategoryID())) ) {
+            
 			LiteBaseNode notifNode = new LiteBaseNode( lcn );
 			notifNode.setUserValue( NotifMap.DEF_ATTRIBS );
-
 			parent.add( notifNode );
 		}
 	}

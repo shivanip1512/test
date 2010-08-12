@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.model.ContactNotificationType;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -74,7 +75,8 @@ public class GeneralController extends AbstractConsumerController {
         // if any of the enrolled programs have a chance of control, show notification
         boolean showNotification = false;
         for(DisplayableProgram program : displayablePrograms) {
-        	if(!StringUtils.isEmpty(program.getProgram().getChanceOfControl())) {
+            String chanceOfControl = program.getProgram().getChanceOfControl();
+        	if(!StringUtils.isEmpty(chanceOfControl) && !chanceOfControl.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
         		showNotification = true;
         		break;
         	}
