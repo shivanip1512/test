@@ -3,7 +3,7 @@ package com.cannontech.amr.crf.message;
 import java.io.Serializable;
 
 /**
- * JMS Queue name: yukon.rr.obj.amr.crf.MeterReadingArchiveResponse
+ * JMS Queue name: yukon.rr.obj.amr.crf.MeterReadingArchiveRequest
  */
 public class CrfMeterReadingArchiveRequest implements Serializable {
 
