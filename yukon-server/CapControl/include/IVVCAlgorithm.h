@@ -30,6 +30,8 @@ class IVVCAlgorithm
 
         virtual void operateBank(long bankId, CtiCCSubstationBusPtr subbus, DispatchConnectionPtr dispatchConnection);
         virtual void sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
+        virtual void sendPointChanges(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges);
+        virtual void sendEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& ccEvents);
 
         virtual void sendKeepAlive(CtiCCSubstationBusPtr subbus);
 

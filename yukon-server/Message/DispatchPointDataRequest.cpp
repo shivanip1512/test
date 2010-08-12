@@ -200,6 +200,29 @@ void DispatchPointDataRequest::removePointValue(long pointId)
     }
 }
 
+std::set<long> DispatchPointDataRequest::getMissingPoints()
+{
+    std::set<long>  missingIds;
+
+    // insert missing points
+    for each (long pointId in _points)
+    {
+        PointValueMap::iterator itr = _values.find(pointId);
+        if (itr == _values.end())
+        {
+            missingIds.insert(pointId);
+        }
+    }
+
+    // insert received but rejected points
+    for each (PointValueMap::value_type pv in _rejectedValues)
+    {
+        missingIds.insert(pv.first);
+    }
+
+    return missingIds;
+}
+
 void DispatchPointDataRequest::reportStatusToLog()
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);

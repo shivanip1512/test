@@ -53,8 +53,9 @@ enum CtiCCEventType_t
     capControlDisableOvUv = 12,
     capBankStateUpdateFail = 13,
     capControlCommandRetrySent = 14,
-    capControlUnexpectedCBCStateReported
-
+    capControlUnexpectedCBCStateReported = 15,
+    capControlIvvcCommStatus = 16,
+    capControlIvvcMissingPoint
 };
 
 

@@ -30,6 +30,7 @@ class IM_EX_MSG DispatchPointDataRequest : public PointDataRequest, public Messa
         //MessageListener
         virtual void processNewMessage(CtiMessage* message);
         virtual void reportStatusToLog();
+        virtual std::set<long> getMissingPoints();
 
         void setDispatchConnection(DispatchConnectionPtr connection);
 
