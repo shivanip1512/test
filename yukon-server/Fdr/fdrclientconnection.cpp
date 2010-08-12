@@ -412,6 +412,30 @@ int CtiFDRClientConnection::initializeConnection (SOCKADDR_IN aAddr)
             aAddr.sin_family = AF_INET;
             aAddr.sin_port = htons(getParent()->getConnectPortNumber());
 
+            string hostIp;
+            if ((hostIp = getParent()->getIpMask()) != "")
+            {
+                /* We need to bind this to the given address from master.cfg */
+                SOCKADDR_IN hostAddr;
+                hostAddr.sin_family = AF_INET;
+                hostAddr.sin_addr.s_addr = inet_addr(hostIp.c_str());
+                hostAddr.sin_port = htons(getParent()->getConnectPortNumber());
+
+                retVal = bind(tmpConnection,(struct sockaddr *) &hostAddr,sizeof (hostAddr));
+
+                if (retVal == SOCKET_ERROR)
+                {
+                    int errorCode = WSAGetLastError();
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Error, " << errorCode << ", binding to " << string (inet_ntoa(hostAddr.sin_addr)) << endl;
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Successfull bind on the return connection to " << string (inet_ntoa(hostAddr.sin_addr)) << endl;
+                }
+            }
+
             retVal = connect (tmpConnection,(struct sockaddr *) &aAddr,sizeof (aAddr));
 
             if (retVal == SOCKET_ERROR)
