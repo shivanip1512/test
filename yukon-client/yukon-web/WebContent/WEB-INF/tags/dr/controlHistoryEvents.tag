@@ -12,10 +12,12 @@
     <c:when test="${consumer}">
         <c:set var="widthPercent" value="33%"/>
         <c:set var="columns" value="3"/>
+        <c:set var="keyPrefix" value="yukon.dr.consumer.innercompletecontrolhistory"/>
     </c:when>
     <c:otherwise>
         <c:set var="widthPercent" value="${widthPercent}"/>
         <c:set var="columns" value="4"/>
+        <c:set var="keyPrefix" value="yukon.web.components.controlHistoryEvent"/>
     </c:otherwise>
 </c:choose>
 
@@ -29,10 +31,10 @@
             <table style="border-collapse: collapse;" align="center" width="100%">
               <c:set var="totalDuration" value="${0}" />
               <tr>
-                <th><i18n:inline key=".startDate" /></th>
-                <th><i18n:inline key=".endDate" /></th>
+                <th><i18n:inline key="${keyPrefix}.startDate" /></th>
+                <th><i18n:inline key="${keyPrefix}.endDate" /></th>
                 <c:if test="${not consumer}"><th><i18n:inline key=".gears" /></th></c:if>
-                <th><i18n:inline key=".controlDuration" /></th>
+                <th><i18n:inline key="${keyPrefix}.controlDuration" /></th>
               </tr>
 
               <tags:alternateRowReset/>
@@ -60,7 +62,7 @@
       </c:when>
       <c:otherwise>
         <tr class="${rowClass}">
-          <td class="nowrapping" colspan="${columns}"><i18n:inline key=".noControlDuringPeriod" /></td>
+          <td class="nowrapping" colspan="${columns}"><i18n:inline key="${keyPrefix}.noControlDuringPeriod" /></td>
         </tr>
       </c:otherwise>
     </c:choose>
