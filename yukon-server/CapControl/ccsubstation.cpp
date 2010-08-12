@@ -280,7 +280,7 @@ void CtiCCSubstation::dumpDynamicData(Cti::Database::DatabaseConnection& conn, C
             {
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << inserterSql << endl;
+                    dout << CtiTime() << " - " << inserter.asString() << endl;
                 }
             }
 
