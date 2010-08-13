@@ -4140,25 +4140,25 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                     case SpecialArea:
                         {
                             paObjectColumn = "CSA.areaid";
-                            capControlObjectTable = "capcontrolspecialarea CSA";
+                            capControlObjectTable = "capcontrolspecialarea CSA ";
                         }
                         break;
                     case Area:
                         {
                             paObjectColumn = "CCA.areaid";
-                            capControlObjectTable = "capcontrolarea CCA";
+                            capControlObjectTable = "capcontrolarea CCA ";
                         }
                         break;
                     case SubBus:
                         {
                             paObjectColumn = "SSB.substationbusid";
-                            capControlObjectTable = "capcontrolsubstationbus SSB";
+                            capControlObjectTable = "capcontrolsubstationbus SSB ";
                         }
                         break;
                     case Feeder:
                         {
                             paObjectColumn = "CCF.feederid";
-                            capControlObjectTable = "capcontrolfeeder CCF";
+                            capControlObjectTable = "capcontrolfeeder CCF ";
                         }
                     case Undefined:
                     case CapBank:
