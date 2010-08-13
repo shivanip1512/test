@@ -532,7 +532,7 @@ void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
             }
             
             
-            static const string insertSql = "insert into   values( "
+            static const string insertSql = "insert into dynamicCCMonitorBankHistoryTable values( "
                                             "?, ?, ?, ?, ?)";
 
             Cti::Database::DatabaseWriter dbInserter(conn, insertSql);
