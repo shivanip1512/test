@@ -184,10 +184,10 @@
                                 title="Writes this item to the database"  rendered = "#{!capControlForm.visibleTabs['CBCCapBank'] && capControlForm.editingAuthorized}"/>
                             
                             <x:commandButton id="submit_button2" value="Submit" action="#{capBankEditor.update}" styleClass="stdButton" 
-                                title="Writes this item to the database"  rendered = "#{capControlForm.visibleTabs['CBCCapBank'] && capControlForm.editingAuthorized}"/>
+                                title="Writes this item to the database" rendered = "#{capControlForm.visibleTabs['CBCCapBank'] && capControlForm.editingAuthorized}"/>
                             
-                            <h:commandButton id="reset_button"  type="SUBMIT" value="Reset" action="#{capControlForm.resetForm}" styleClass="stdButton"  
-                                title="Resets all the data to the original settings." rendered="#{capControlForm.editingAuthorized}"/>
+                            <x:commandButton id="reset_button" value="Reset" action="#{capControlForm.resetForm}" styleClass="stdButton"  
+                                title="Resets all the data to the original settings" rendered="#{capControlForm.editingAuthorized}"/>
                             
                             <x:commandButton 	id="return_button" value="Return" action="none" styleClass="stdButton" immediate="true" 
                                 title="Returns to the last module page that was used to enter this editor" >
