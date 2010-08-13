@@ -41,6 +41,12 @@ public interface YukonUserDao {
     public void addLiteYukonUserWithPassword(LiteYukonUser user, String password, int energyCompanyId, List<LiteYukonGroup> groups) throws DataAccessException;
 
     /**
+     * This method sets all of the EventBase userIds of a given user to the default user.  This
+     * allows a user to be deleted.
+     */
+    public void removeUserFromEventBase(int userId);
+    
+    /**
      * Deletes user from YukonUser by user id.
      * @param userId
      */

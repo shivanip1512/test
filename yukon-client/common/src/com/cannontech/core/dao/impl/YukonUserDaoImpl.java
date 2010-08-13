@@ -45,7 +45,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
     private IDatabaseCache databaseCache;
     private NextValueHelper nextValueHelper;
     private PaoPermissionDao<LiteYukonUser> userPaoPermissionDao = null;
-    private DBPersistentDao dbPersistantDao;    
+    private DBPersistentDao dbPersistantDao;
     
     public static final int numberOfRandomChars = 5;
     
@@ -196,6 +196,15 @@ public class YukonUserDaoImpl implements YukonUserDao {
     }
 	
 	@Override
+    public void removeUserFromEventBase(int userId) {
+        SqlStatementBuilder zeroOutEventBaseUserIdsSql = new SqlStatementBuilder();
+        zeroOutEventBaseUserIdsSql.append("UPDATE EventBase");
+        zeroOutEventBaseUserIdsSql.append("SET UserId").eq(UserUtils.USER_DEFAULT_ID);
+        zeroOutEventBaseUserIdsSql.append("WHERE UserId").eq(userId);
+        yukonJdbcOperations.update(zeroOutEventBaseUserIdsSql);
+    }
+	
+	@Override
 	@Transactional
     public void deleteUser(Integer userId) {
 	    
@@ -216,11 +225,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
         yukonJdbcOperations.update(deleteEnergyCompanyOperatorLoginList, userId);
         userPaoPermissionDao.removeAllPermissions(userId);
         
-        SqlStatementBuilder zeroOutEventBaseUserIdsSql = new SqlStatementBuilder();
-        zeroOutEventBaseUserIdsSql.append("UPDATE EventBase");
-        zeroOutEventBaseUserIdsSql.append("SET UserId").eq(UserUtils.USER_DEFAULT_ID);
-        zeroOutEventBaseUserIdsSql.append("WHERE UserId").eq(userId);
-        yukonJdbcOperations.update(zeroOutEventBaseUserIdsSql);
+        removeUserFromEventBase(userId);
         
         String deleteYukonUser = "DELETE FROM YukonUser WHERE UserId = ?";
         yukonJdbcOperations.update(deleteYukonUser, userId);
