@@ -274,8 +274,8 @@ public class CrfMeterReadService {
     @PostConstruct
     public void initialize() {
         meterTemplatePrefix = configurationSource.getString("CRF_METER_TEMPLATE_PREFIX", "*CrfTemplate_");
-        statusTimeout = configurationSource.getInteger("CRF_METER_READ _STATUS_TIMEOUT_SECONDS", 10);
-        dataTimeout = configurationSource.getInteger("CRF_METER_READ _DATA_TIMEOUT_MINUTES", 15);
+        statusTimeout = configurationSource.getInteger("CRF_METER_READ_STATUS_TIMEOUT_SECONDS", 10);
+        dataTimeout = configurationSource.getInteger("CRF_METER_READ_DATA_TIMEOUT_MINUTES", 15);
         readRequestThreadPool = Executors.newFixedThreadPool(6);
     }
 }
