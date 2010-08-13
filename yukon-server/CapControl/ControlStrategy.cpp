@@ -574,7 +574,7 @@ void ControlStrategy::restoreStates(const ControlStrategy * backup)
 }
 
 
-const std::string ControlStrategy::NoControlMethod                  = "(none)";
+const std::string ControlStrategy::NoControlMethod                  = "NONE";
 const std::string ControlStrategy::IndividualFeederControlMethod    = "IndividualFeeder";
 const std::string ControlStrategy::SubstationBusControlMethod       = "SubstationBus";
 const std::string ControlStrategy::BusOptimizedFeederControlMethod  = "BusOptimizedFeeder";
