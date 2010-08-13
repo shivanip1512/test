@@ -1744,8 +1744,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     	String algorithm = getCbcStrategiesMap().get( new Integer ( getCurrentStrategyID() )).getControlUnits();
     	if (algorithm.equalsIgnoreCase(CalcComponentTypes.LABEL_MULTI_VOLT)) {
     		controlMethods = new SelectItem [2];
-    		controlMethods[0] = new SelectItem(ControlMethod.INDIVIDUAL_FEEDER.getDbName(), StringUtils.addCharBetweenWords( ' ', ControlMethod.INDIVIDUAL_FEEDER.getDbName()));
-    		controlMethods[1] = new SelectItem(ControlMethod.SUBSTATION_BUS.getDbName(), StringUtils.addCharBetweenWords( ' ', ControlMethod.SUBSTATION_BUS.getDbName()));
+    		controlMethods[0] = new SelectItem(ControlMethod.INDIVIDUAL_FEEDER.getDatabaseRepresentation(), StringUtils.addCharBetweenWords( ' ', ControlMethod.INDIVIDUAL_FEEDER.getDatabaseRepresentation()));
+    		controlMethods[1] = new SelectItem(ControlMethod.SUBSTATION_BUS.getDatabaseRepresentation(), StringUtils.addCharBetweenWords( ' ', ControlMethod.SUBSTATION_BUS.getDatabaseRepresentation()));
     	} else {
     		controlMethods = new CBCSelectionLists().getCbcControlMethods();
         }
@@ -1943,11 +1943,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     }
     
     public boolean isTimeOfDay() {
-        String strat = getStrategy().getControlMethod();
-        if( ControlMethod.getForDbString(strat).equals(ControlMethod.TIME_OF_DAY)) {
-            return true;
-        }
-        return false;
+        boolean timeOfDay = getStrategy().isTimeOfDay();
+        return timeOfDay;
     }
     
     public String getLtcName(){
@@ -1975,7 +1972,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     public List<SelectItem> getControlAlgorithims(){
         List<SelectItem> items = Lists.newArrayList(selectionLists.getCbcControlAlgorithim());
         String currentMethod = getStrategy().getControlMethod();
-        if(currentMethod.equalsIgnoreCase(ControlMethod.SUBSTATION_BUS.getDbName())) {
+        if(currentMethod.equalsIgnoreCase(ControlMethod.SUBSTATION_BUS.getDatabaseRepresentation())) {
             items.add(new SelectItem(CalcComponentTypes.LABEL_INTEGRATED_VOLT_VAR, CalcComponentTypes.LABEL_INTEGRATED_VOLT_VAR));
         }
         return items;

@@ -7,7 +7,8 @@ public enum ControlMethod implements DatabaseRepresentationSource{
 	SUBSTATION_BUS("SubstationBus"),
 	BUSOPTIMIZED_FEEDER("BusOptimizedFeeder"),
 	MANUAL_ONLY("ManualOnly"),
-	TIME_OF_DAY("TimeOfDay");
+	TIME_OF_DAY("TimeOfDay"),
+	NONE("NONE");
 	
 	private String dbName;
 	private ControlMethod(String type) {
@@ -16,19 +17,15 @@ public enum ControlMethod implements DatabaseRepresentationSource{
 	
 	public static ControlMethod getForDbString(String type){
 		for(ControlMethod controlMethod : ControlMethod.values()) {
-			if( controlMethod.getDbName().equalsIgnoreCase(type)) {
+			if( controlMethod.getDatabaseRepresentation().equalsIgnoreCase(type)) {
 				return controlMethod;
 			}
 		}
 		throw new IllegalArgumentException("Invalid control method: " + type);
 	}
 	
-	public String getDbName() {
-		return dbName;
-	}
-
 	@Override
-	public Object getDatabaseRepresentation() {
+	public String getDatabaseRepresentation() {
 		return dbName;
 	}
 }

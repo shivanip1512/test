@@ -154,16 +154,16 @@ public class CBCSelectionLists {
 
 	private static final SelectItem[] cbcControlMethods =  {
 		//value, label
-		new SelectItem(ControlMethod.INDIVIDUAL_FEEDER.getDbName(),
-				StringUtils.addCharBetweenWords( ' ', ControlMethod.INDIVIDUAL_FEEDER.getDbName())),
-		new SelectItem(ControlMethod.BUSOPTIMIZED_FEEDER.getDbName(),
-				StringUtils.addCharBetweenWords( ' ', ControlMethod.BUSOPTIMIZED_FEEDER.getDbName())),		
-		new SelectItem(ControlMethod.MANUAL_ONLY.getDbName(),
-				StringUtils.addCharBetweenWords( ' ', ControlMethod.MANUAL_ONLY.getDbName())),		
-		new SelectItem(ControlMethod.SUBSTATION_BUS.getDbName(),
-				StringUtils.addCharBetweenWords( ' ', ControlMethod.SUBSTATION_BUS.getDbName())),
-		new SelectItem(ControlMethod.TIME_OF_DAY.getDbName(),
-		        StringUtils.addCharBetweenWords(' ', ControlMethod.TIME_OF_DAY.getDbName()))
+		new SelectItem(ControlMethod.INDIVIDUAL_FEEDER.getDatabaseRepresentation(),
+				StringUtils.addCharBetweenWords( ' ', ControlMethod.INDIVIDUAL_FEEDER.getDatabaseRepresentation())),
+		new SelectItem(ControlMethod.BUSOPTIMIZED_FEEDER.getDatabaseRepresentation(),
+				StringUtils.addCharBetweenWords( ' ', ControlMethod.BUSOPTIMIZED_FEEDER.getDatabaseRepresentation())),		
+		new SelectItem(ControlMethod.MANUAL_ONLY.getDatabaseRepresentation(),
+				StringUtils.addCharBetweenWords( ' ', ControlMethod.MANUAL_ONLY.getDatabaseRepresentation())),		
+		new SelectItem(ControlMethod.SUBSTATION_BUS.getDatabaseRepresentation(),
+				StringUtils.addCharBetweenWords( ' ', ControlMethod.SUBSTATION_BUS.getDatabaseRepresentation())),
+		new SelectItem(ControlMethod.TIME_OF_DAY.getDatabaseRepresentation(),
+		        StringUtils.addCharBetweenWords(' ', ControlMethod.TIME_OF_DAY.getDatabaseRepresentation()))
 	};
 
 

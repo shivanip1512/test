@@ -19,6 +19,7 @@ import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
@@ -35,7 +36,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 	
 	private Integer strategyID = null;
 	private String strategyName = null;
-	private String controlMethod = ControlMethod.INDIVIDUAL_FEEDER.getDbName();
+	private String controlMethod = ControlMethod.INDIVIDUAL_FEEDER.getDatabaseRepresentation();
 	private Integer maxDailyOperation = new Integer(0);
 	private Character maxOperationDisableFlag = new Character('N');
 	private Integer peakStartTime = new Integer(0);
@@ -421,19 +422,14 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 	
 	public static boolean todExists(Integer strategyId) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-	    sql.append("Select ts.* ");
-	    sql.append("from CCStrategyTargetSettings ts, ");
-	    sql.append("capcontrolstrategy strat ");
-	    sql.append("where ts.strategyId = strat.strategyId ");
-	    sql.append("and strat.controlmethod").eq(ControlMethod.TIME_OF_DAY.getDbName());
-	    sql.append("and strategyid").eq(strategyId);
-	    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-	    todExists = false;
-	    yukonTemplate.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
-            public void processRow(ResultSet rs) throws SQLException {
-                todExists = true;
-            }
-        });
+	    sql.append("SELECT count (*)");
+	    sql.append("FROM CCStrategyTargetSettings ts, ");
+	    sql.append(  "JOIN capcontrolstrategy strat ON ts.strategyId = strat.strategyId");
+	    sql.append("WHERE strat.controlmethod").eq(ControlMethod.TIME_OF_DAY);
+	    sql.append(  "AND strategyid").eq(strategyId);
+	    YukonJdbcOperations template = YukonSpringHook.getBean(YukonJdbcOperations.class);
+	    int count = template.queryForInt(sql);
+	    todExists = count > 0;
 	    return todExists;
 	}
 	
