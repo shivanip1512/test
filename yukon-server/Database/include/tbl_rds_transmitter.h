@@ -1,0 +1,31 @@
+#pragma once
+
+#include "dbmemobject.h"
+#include "dlldefs.h"
+#include "dllbase.h"
+#include "row_reader.h"
+
+class IM_EX_CTIYUKONDB CtiTableRDSTransmitter : public CtiMemDBObject
+{
+
+protected:
+
+   unsigned char  _siteAddress;
+   unsigned char  _encoderAddress;
+   unsigned int   _groupID;
+   float          _groupRate;
+
+public:
+
+   CtiTableRDSTransmitter();
+   virtual ~CtiTableRDSTransmitter();
+   CtiTableRDSTransmitter(const CtiTableRDSTransmitter &aRef);
+   CtiTableRDSTransmitter& operator=(const CtiTableRDSTransmitter &aRef);
+
+   unsigned char getSiteAddress() const;
+   unsigned char getEncoderAddress() const;
+   unsigned char getGroupID() const;
+   float         getGroupRate() const;
+
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+};

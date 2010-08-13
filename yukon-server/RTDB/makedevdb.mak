@@ -105,6 +105,7 @@ dev_repeater.obj \
 dev_repeater800.obj \
 dev_rtc.obj \
 dev_rtm.obj \
+dev_rds.obj \
 dev_schlum.obj \
 dev_sentinel.obj \
 dev_seriesv.obj \
@@ -1712,6 +1713,25 @@ dev_quantum.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctidate.h \
 		pt_analog.h pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
 		tbl_pt_analog.h pt_accum.h tbl_pt_accum.h \
 		tbl_pt_accumhistory.h msg_cmd.h
+dev_rds.obj:	yukon.h precompiled.h types.h ctidbgmem.h dev_rds.h \
+		dev_remote.h dev_single.h dsm2.h mutex.h dlldefs.h guard.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
+		sorted_vector.h cticonnect.h netports.h dsm2err.h words.h \
+		dev_base.h boostutil.h cmdparse.h ctitokenizer.h parsevalue.h \
+		counter.h dev_exclusion.h tbl_paoexclusion.h row_reader.h \
+		rwutil.h database_connection.h dbaccess.h dllbase.h sema.h \
+		database_reader.h boost_time.h config_device.h logger.h \
+		thread.h CtiPCPtrQueue.h hashkey.h hash_functions.h \
+		rte_base.h dbmemobject.h ctibase.h ctinexus.h message.h \
+		collectable.h tbl_pao_lite.h tbl_rtcomm.h resolvers.h \
+		pointtypes.h db_entry_defines.h desolvers.h msg_signal.h \
+		tbl_base.h tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
+		pointdefs.h pt_base.h pt_dyn_base.h tbl_pt_base.h \
+		tbl_pt_property.h tbl_pt_trigger.h msg_pcrequest.h \
+		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
+		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
+		queue.h cparms.h configkey.h configval.h prot_base.h xfer.h \
+		tbl_dialup.h tbl_direct.h tbl_rds_transmitter.h
 dev_repeater.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		devicetypes.h dev_repeater.h dev_dlcbase.h dev_single.h \
 		dsm2.h mutex.h dlldefs.h guard.h utility.h ctitime.h queues.h \
@@ -2230,7 +2250,8 @@ mgr_device.obj:	yukon.h precompiled.h types.h ctidbgmem.h mgr_device.h \
 		dev_grp_sa305.h prot_sa305.h tbl_lmg_sa305.h dev_grp_sa205.h \
 		prot_sa205.h dev_grp_sadigital.h dev_grp_versacom.h \
 		tbl_dv_versacom.h dev_grp_xml.h amq_connection.h \
-		dev_grp_mct.h tbl_dv_lmgmct.h dev_mct_broadcast.h dev_xml.h
+		dev_grp_mct.h tbl_dv_lmgmct.h dev_mct_broadcast.h dev_rds.h \
+		tbl_rds_transmitter.h dev_xml.h
 mgr_exclusion.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		mgr_exclusion.h dlldefs.h dev_base.h boostutil.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -2665,6 +2686,15 @@ rte_macro.obj:	yukon.h precompiled.h types.h ctidbgmem.h row_reader.h \
 		ctitokenizer.h parsevalue.h tbl_pao_lite.h tbl_rtcomm.h \
 		msg_signal.h porter.h devicetypes.h msg_pcreturn.h \
 		msg_multi.h msg_pdata.h pointdefs.h
+rte_rds.obj:	yukon.h precompiled.h types.h ctidbgmem.h cmdparse.h \
+		ctitokenizer.h dlldefs.h parsevalue.h msg_pcrequest.h \
+		message.h ctitime.h collectable.h rwutil.h \
+		database_connection.h dbaccess.h dllbase.h os2_2w32.h \
+		cticalls.h dsm2.h mutex.h guard.h utility.h queues.h numstr.h \
+		sorted_vector.h cticonnect.h netports.h dsm2err.h words.h \
+		sema.h database_reader.h row_reader.h boost_time.h \
+		boostutil.h logger.h thread.h CtiPCPtrQueue.h expresscom.h \
+		ctistring.h
 rte_versacom.obj:	yukon.h precompiled.h types.h ctidbgmem.h cmdparse.h \
 		ctitokenizer.h dlldefs.h parsevalue.h dsm2.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -2799,12 +2829,13 @@ slctdev.obj:	yukon.h precompiled.h types.h ctidbgmem.h dev_710.h \
 		prot_ansi_sentinel.h dev_focus.h prot_ansi_focus.h \
 		dev_mark_v.h prot_transdata.h transdata_application.h \
 		transdata_tracker.h transdata_datalink.h prot_ymodem.h \
-		transdata_data.h msg_cmd.h dev_repeater800.h dev_repeater.h \
-		dev_rtc.h tbl_dv_rtc.h dev_sixnet.h prot_sixnet.h rte_macro.h \
-		tbl_rtmacro.h rte_ccu.h rte_xcu.h smartmap.h \
-		readers_writer_lock.h tbl_rtcarrier.h tbl_rtrepeater.h \
-		rte_versacom.h tbl_rtversacom.h master.h rte_expresscom.h \
-		dev_fmu.h dev_xml.h rtdb.h slctdev.h
+		transdata_data.h msg_cmd.h dev_rds.h tbl_rds_transmitter.h \
+		dev_repeater800.h dev_repeater.h dev_rtc.h tbl_dv_rtc.h \
+		dev_sixnet.h prot_sixnet.h rte_macro.h tbl_rtmacro.h \
+		rte_ccu.h rte_xcu.h smartmap.h readers_writer_lock.h \
+		tbl_rtcarrier.h tbl_rtrepeater.h rte_versacom.h \
+		tbl_rtversacom.h master.h rte_expresscom.h dev_fmu.h \
+		dev_xml.h rtdb.h slctdev.h
 slctpnt.obj:	yukon.h precompiled.h types.h ctidbgmem.h rtdb.h \
 		dlldefs.h hashkey.h hash_functions.h utility.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h numstr.h sorted_vector.h \

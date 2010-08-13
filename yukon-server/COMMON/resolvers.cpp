@@ -71,6 +71,10 @@ INT resolveRouteType( const string& _rwsTemp)
     {
         Ret = RouteTypeTap;
     }
+    else if(rwsTemp == "rds terminal route")
+    {
+        Ret = RouteTypeRDS;
+    }
     else if(rwsTemp == "snpp terminal route")
     {
         Ret = RouteTypeSNPP;
@@ -638,6 +642,10 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPE_SNPP;
     }
+    else if(rwsTemp == "rds terminal")
+    {
+        nRet = TYPE_RDS;
+    }
     else if(rwsTemp == "tnpp terminal")
     {
         nRet = TYPE_TNPP;
@@ -1193,6 +1201,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPE_LCUT3026:
         case TYPE_TAPTERM:
         case TYPE_SNPP:
+        case TYPE_RDS:
         case TYPE_TNPP:
         case TYPE_WCTP:
         case TYPE_TCU5000:
@@ -1688,6 +1697,7 @@ INT resolveSlaveAddress(const INT DeviceType, const string& _str)
     case TYPE_RTM:
     case TYPE_FMU:
     case TYPE_SIXNET:
+    case TYPE_RDS:
         {
             slaveAddress = atoi(str.c_str());
             break;

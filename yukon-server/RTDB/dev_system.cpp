@@ -643,6 +643,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                         case RouteTypeVersacom:
                         case RouteTypeExpresscom:
                         case RouteTypeTap:
+                        case RouteTypeRDS:
                         case RouteTypeWCTP:
                         case RouteTypeTNPP:
                         case RouteTypeSNPP:

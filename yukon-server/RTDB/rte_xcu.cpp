@@ -47,6 +47,8 @@
 #include "prot_lmi.h"
 using namespace std;
 
+#define RDS_MAX_EXPRESSCOM_LENGTH 63
+
 CtiRouteXCU::CtiRouteXCU()
 {
 }
@@ -569,6 +571,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 {
     INT            status = NORMAL;
     bool           xmore = true;
+    bool           isAscii = true;
     string      resultString;
     string      byteString;
     ULONG          i, j;
@@ -643,13 +646,27 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 
                 break;
             }
+        case TYPE_RDS:
+            {
+                xcom.setUseASCII(false);
+                isAscii = false;
+                //RDS uniquely uses ascii, then falls through and does the rest identically to paging!
+                // Possibly a ToDo, RDS may need to break apart messages to reduce the max message length.
+                // This message length problem is similar to what is done for CCU expresscom messaging.
+
+                if(xcom.messageSize() + 2 > RDS_MAX_EXPRESSCOM_LENGTH)
+                {
+                    xmore = false;
+                    status = BADRANGE;
+                    resultString = "Message length was too large for expresscom message in RDS. Length: " + CtiNumStr(xcom.messageSize() + 2) + " Maximum: " + CtiNumStr(RDS_MAX_EXPRESSCOM_LENGTH);
+                    break;
+                }
+            }
         case TYPE_SNPP:
         case TYPE_WCTP:
         case TYPE_TAPTERM:
         case TYPE_TNPP:
             {
-                CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)(_transmitterDevice.get());
-
                 OutMessage->OutLength            = xcom.messageSize() +  2;
                 OutMessage->Buffer.TAPSt.Length  = xcom.messageSize() +  2;
 
@@ -690,7 +707,21 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 
                 for(i = 0; i < OutMessage->OutLength; i++)
                 {
-                    byteString += (char)OutMessage->Buffer.TAPSt.Message[i];
+                    if(isAscii)
+                    {
+                        byteString += (char)OutMessage->Buffer.TAPSt.Message[i];
+                    }
+                    else
+                    {
+                        if(i == 0 || i == (OutMessage->OutLength - 1))
+                        {
+                            byteString += (char)OutMessage->Buffer.TAPSt.Message[i];
+                        }
+                        else 
+                        {
+                            byteString += CtiNumStr((unsigned char)OutMessage->Buffer.TAPSt.Message[i]).hex(2);
+                        }
+                    }
                 }
 
 
@@ -712,11 +743,14 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
             }
         }
 
-        resultString = CtiNumStr(xcom.entries()) + string(" Expresscom commands (") + CtiNumStr(xcom.messageSize()) + " bytes) sent on route " + getName();
-
-        if( stringCompareIgnoreCase(gConfigParms.getValueAsString("HIDE_PROTOCOL"), "true") != 0 )
+        if(status == NORMAL)
         {
-            resultString += " \n" + byteString;
+            resultString = CtiNumStr(xcom.entries()) + string(" Expresscom commands (") + CtiNumStr(xcom.messageSize()) + " bytes) sent on route " + getName();
+    
+            if( stringCompareIgnoreCase(gConfigParms.getValueAsString("HIDE_PROTOCOL"), "true") != 0 )
+            {
+                resultString += " \n" + byteString;
+            }
         }
     }
     else

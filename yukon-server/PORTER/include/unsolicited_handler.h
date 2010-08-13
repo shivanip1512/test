@@ -34,7 +34,8 @@ protected:
         {
             ProtocolTypeInvalid,
             ProtocolTypeDnp,
-            ProtocolTypeGpuff
+            ProtocolTypeGpuff,
+            ProtocolTypeUECP
 
         } protocol;
     };
@@ -175,6 +176,7 @@ protected:
 
     static bool isDnpDevice  (const CtiDeviceSingle &ds);
     static bool isGpuffDevice(const CtiDeviceSingle &ds);
+    static bool isUecpDevice (const CtiDeviceSingle &ds);
 
     virtual string ip_to_string(u_long ip) const = 0;
 

@@ -408,8 +408,7 @@ INT ValidateOutMessage(OUTMESS *&OutMessage)
             realignNexus(OutMessage);
         }
 
-
-        if((OutMessage->DeviceID <= 0 && OutMessage->TargetID <= 0) || OutMessage->Remote > MAXIDLC)
+        if((OutMessage->DeviceID <= 0 && OutMessage->TargetID <= 0))
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
 

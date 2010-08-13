@@ -80,6 +80,7 @@
 #include "dev_sentinel.h"
 #include "dev_focus.h"
 #include "dev_mark_v.h"
+#include "dev_rds.h"
 #include "dev_repeater800.h"
 #include "dev_repeater.h"
 #include "dev_rtc.h"
@@ -235,6 +236,8 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
         case TYPE_SNPP:                 NewDevice = CTIDBG_new CtiDeviceSnppPagingTerminal; break;
 
+        case TYPE_RDS:                  NewDevice = CTIDBG_new RDSTransmitter;              break;
+
         case TYPE_PAGING_RECEIVER:      NewDevice = CTIDBG_new CtiDevicePagingReceiver;     break;
 
         case TYPE_TNPP:                 NewDevice = CTIDBG_new CtiDeviceTnppPagingTerminal; break;
@@ -346,6 +349,7 @@ DLLEXPORT CtiRouteBase* RouteFactory(Cti::RowReader &rdr)
             case RouteTypeLCU:
             case RouteTypeTCU:
             case RouteTypeTap:
+            case RouteTypeRDS:
             case RouteTypeWCTP:
             case RouteTypeTNPP:
             case RouteTypeSNPP:

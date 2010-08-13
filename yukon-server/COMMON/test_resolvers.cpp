@@ -44,6 +44,7 @@ BOOST_AUTO_TEST_CASE(test_resolveRouteType)
     BOOST_CHECK_EQUAL(resolveRouteType("versacom"), RouteTypeVersacom);
     BOOST_CHECK_EQUAL(resolveRouteType("tap paging"),     RouteTypeTap);
     BOOST_CHECK_EQUAL(resolveRouteType("tappaging"),      RouteTypeTap);
+    BOOST_CHECK_EQUAL(resolveRouteType("rds terminal route"),   RouteTypeRDS);
     BOOST_CHECK_EQUAL(resolveRouteType("snpp terminal route"),  RouteTypeSNPP);
     BOOST_CHECK_EQUAL(resolveRouteType("wctp terminal route"),  RouteTypeWCTP);
     BOOST_CHECK_EQUAL(resolveRouteType("tnpp terminal route"),  RouteTypeTNPP);
@@ -392,6 +393,9 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "snpp terminal";
     devType = TYPE_SNPP;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "rds terminal";
+    devType = TYPE_RDS;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "tnpp terminal";
     devType = TYPE_TNPP;

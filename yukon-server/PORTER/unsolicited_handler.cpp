@@ -402,14 +402,14 @@ bool UnsolicitedHandler::handleDeviceRequests(void)
             continue;
         }
 
-        device_record *dr = getDeviceRecordById(om->TargetID);
+        device_record *dr = getDeviceRecordById(om->DeviceID);
 
         if( !dr || !dr->device )
         {
             if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Porter::DNPUDP::getOutMessages - no device found for device id (" << om->TargetID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Porter::DNPUDP::getOutMessages - no device found for device id (" << om->DeviceID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             //  return an error - this deletes the OM
@@ -485,6 +485,19 @@ bool UnsolicitedHandler::isDnpDevice(const CtiDeviceSingle &ds)
         case TYPE_DNPRTU:
         case TYPECBC7020:
         case TYPECBCDNP:
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool UnsolicitedHandler::isUecpDevice(const CtiDeviceSingle &ds)
+{
+    switch( ds.getType() )
+    {
+        case TYPE_RDS:
         {
             return true;
         }

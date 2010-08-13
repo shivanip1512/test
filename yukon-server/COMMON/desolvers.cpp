@@ -243,6 +243,7 @@ string desolveDeviceType( INT aType )
 
         case TYPE_TAPTERM:              Ret = "tap terminal";       break;
         case TYPE_SNPP:                 Ret = "snpp terminal";      break;
+        case TYPE_RDS:                  Ret = "rds terminal";       break;
         case TYPE_TNPP:                 Ret = "tnpp terminal";      break;
         case TYPE_WCTP:                 Ret = "wctp terminal";      break;
 
@@ -381,6 +382,7 @@ string desolveRouteType( INT aType )
         case RouteTypeTNPP:         Ret = "tnpp terminal route";    break;
         //paging?
         case RouteTypeSNPP:         Ret = "snpp terminal route";  break;
+        case RouteTypeRDS:          Ret = "rds terminal route"; break;
         case RouteTypeRTC:          Ret = "rtc route";    break;
         case RouteTypeSeriesVLMI:   Ret = "series 5 lmi";   break;
         default:

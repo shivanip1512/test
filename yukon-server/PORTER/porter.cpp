@@ -215,6 +215,7 @@ void attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RM)
                 case RouteTypeVersacom:
                 case RouteTypeExpresscom:
                 case RouteTypeTap:
+                case RouteTypeRDS:
                 case RouteTypeWCTP:
                 case RouteTypeTNPP:
                 case RouteTypeSNPP:

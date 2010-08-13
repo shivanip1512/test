@@ -121,6 +121,7 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
 
     type_lookups[TYPE_TAPTERM]             = "TAP TERMINAL";
     type_lookups[TYPE_SNPP]                = "SNPP TERMINAL";
+    type_lookups[TYPE_RDS]                 = "RDS TERMINAL";
     type_lookups[TYPE_TNPP]                = "TNPP TERMINAL";
     type_lookups[TYPE_WCTP]                = "WCTP TERMINAL";
 

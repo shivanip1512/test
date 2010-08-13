@@ -15,6 +15,7 @@
 #include "mgr_device.h"
 #include "dev_dnp.h"
 #include "dev_gridadvisor.h"
+#include "dev_rds.h"
 #include "cparms.h"
 #include "numstr.h"
 #include "portdecl.h"  //  for statisticsNewCompletion
@@ -141,6 +142,29 @@ void UdpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
     {
         _dnpAddress_to_id.insert(dnp_address_id_bimap::value_type(makeDnpAddressPair(device), device_id));
     }
+    else if( isUecpDevice(device) )
+    {
+        if( !device.hasStaticInfo(CtiTableStaticPaoInfo::Key_IP_Address) ||
+            !device.hasStaticInfo(CtiTableStaticPaoInfo::Key_IP_Port) )
+        {
+            return;
+        }
+    
+        string ip_string;
+        device.getStaticInfo(CtiTableStaticPaoInfo::Key_IP_Address, ip_string);
+    
+        _ip_addresses[device_id] = string_to_ip(ip_string);
+        _ports       [device_id] = device.getStaticInfo(CtiTableStaticPaoInfo::Key_IP_Port);
+    
+        if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Cti::Porter::UdpPortHandler::addDeviceProperties - loading device "
+                 << device.getName() << " "
+                 << ip_to_string(_ip_addresses[device_id]) << ":" << _ports[device_id] << " "
+                 << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
 
     if( !device.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP) ||
         !device.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port) )
@@ -215,6 +239,29 @@ void UdpPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
 
                 _dnpAddress_to_id.insert(dnp_address_id_bimap::value_type(new_address, device_id));
             }
+        }
+    }
+    else if( isUecpDevice(device) )
+    {
+        if( !device.hasStaticInfo(CtiTableStaticPaoInfo::Key_IP_Address) ||
+            !device.hasStaticInfo(CtiTableStaticPaoInfo::Key_IP_Port) )
+        {
+            return;
+        }
+    
+        string ip_string;
+        device.getStaticInfo(CtiTableStaticPaoInfo::Key_IP_Address, ip_string);
+    
+        _ip_addresses[device_id] = string_to_ip(ip_string);
+        _ports       [device_id] = device.getStaticInfo(CtiTableStaticPaoInfo::Key_IP_Port);
+    
+        if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Cti::Porter::UdpPortHandler::addDeviceProperties - loading device "
+                 << device.getName() << " "
+                 << ip_to_string(_ip_addresses[device_id]) << ":" << _ports[device_id] << " "
+                 << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 }
@@ -625,7 +672,6 @@ void UdpPortHandler::handleDnpPacket(packet *&p)
         dout << CtiTime() << " Cti::Porter::UdpPortHandler::handleDnpPacket - can't find DNP master/slave (" << master_address << "/" << slave_address << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
-
 
 void UdpPortHandler::handleGpuffPacket(packet *&p)
 {

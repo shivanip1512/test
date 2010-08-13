@@ -43,7 +43,9 @@
 #include "dev_grp_xml.h"
 #include "dev_grp_mct.h"
 #include "dev_mct_broadcast.h"
+#include "dev_rds.h"
 #include "dev_xml.h"
+#include "tbl_static_paoinfo.h"
 
 #include "devicetypes.h"
 #include "resolvers.h"
@@ -817,6 +819,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
 
                         rowFound |= loadDeviceType(paoid_subset, "TAP devices",            CtiDeviceTapPagingTerminal());
                         rowFound |= loadDeviceType(paoid_subset, "TNPP devices",           CtiDeviceTnppPagingTerminal());
+                        rowFound |= loadDeviceType(paoid_subset, "RDS devices",            Devices::RDSTransmitter());
 
                         //  exclude the CCU 721
                         rowFound |= loadDeviceType(paoid_subset, "IDLC target devices",    CtiDeviceIDLC(),        "CCU-721", false);
@@ -1812,6 +1815,82 @@ void CtiDeviceManager::refreshDynamicPaoInfo(Cti::Database::id_set &paoids)
     }
 }
 
+void CtiDeviceManager::refreshStaticPaoInfo(Cti::Database::id_set &paoids)
+{
+    CtiDeviceSPtr device;
+    long tmp_paobjectid, tmp_entryid;
+
+    CtiTableStaticPaoInfo static_paoinfo;
+
+    {
+        if(DebugLevel & 0x00020000)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Dynamic PAO Info" << endl;
+        }
+
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection);
+
+        string sql = CtiTableStaticPaoInfo::getSQLCoreStatement(_app_id);
+
+        if( !sql.empty() )
+        {
+            if(!paoids.empty())
+            {
+                sql += " AND " + createIdSqlClause(paoids, "SPI", "paobjectid");
+            }
+            rdr.setCommandText(sql);
+            rdr.execute();
+        }
+        else
+        {
+            return;
+        }
+
+        if(DebugLevel & 0x00020000 || !rdr.isValid())
+        {
+            string loggedSQLstring = rdr.asString();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << loggedSQLstring << endl;
+            }
+        }
+
+        if(rdr.isValid())
+        {
+            while( rdr() )
+            {
+                static_paoinfo.DecodeDatabaseReader(rdr);
+
+                rdr["paobjectid"] >> tmp_paobjectid;
+                rdr["entryid"]    >> tmp_entryid;
+
+                device = getDeviceByID(tmp_paobjectid);
+
+                if( device )
+                {
+                    device->setStaticInfo(static_paoinfo);
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - no parent found for static PAO info record (pao " << tmp_paobjectid << ", entryid " << tmp_entryid << ")  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "Error reading Static PAO Info from database. " <<  endl;
+        }
+
+        if(DebugLevel & 0x00020000)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Dynamic PAO Info" << endl;
+        }
+    }
+}
 
 //  This method loads all the device properties/characteristics which must be appended to an already
 //  loaded device.
@@ -1849,6 +1928,11 @@ void CtiDeviceManager::refreshDeviceProperties(Cti::Database::id_set &paoids, in
     {
         Timing::DebugTimer timer("loading dynamic device data");
         refreshDynamicPaoInfo(paoids);
+    }
+
+    {
+        Timing::DebugTimer timer("loading static device data");
+        refreshStaticPaoInfo(paoids);
     }
 }
 

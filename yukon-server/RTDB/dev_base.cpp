@@ -436,6 +436,12 @@ CtiDeviceBase& CtiDeviceBase::operator=(const CtiDeviceBase& aRef)
     return *this;
 }
 
+void CtiDeviceBase::purgeStaticPaoInfo()
+{
+    // We dont own this data, but we can clear our internal stores.
+    _staticPaoInfo.clear();
+}
+
 void CtiDeviceBase::purgeDynamicPaoInfo()
 {
     set<CtiTableDynamicPaoInfo>::iterator itr = _paoInfo.begin();
@@ -480,6 +486,7 @@ void CtiDeviceBase::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     //  Not sure if this is the proper place to do this - perhaps it should be done in the device manager
     resetDirty();
+    purgeStaticPaoInfo();
 }
 
 /**
@@ -809,6 +816,30 @@ bool CtiDeviceBase::hasDynamicInfo(PaoInfoKeys k) const
     return (_paoInfo.find(CtiTableDynamicPaoInfo(getID(), k)) != _paoInfo.end());
 }
 
+bool CtiDeviceBase::hasStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const
+{
+    return (_staticPaoInfo.find(CtiTableStaticPaoInfo(getID(), k)) != _staticPaoInfo.end());
+}
+
+bool CtiDeviceBase::setStaticInfo(const CtiTableStaticPaoInfo &info)
+{
+    bool new_record = false;
+    std::set<CtiTableStaticPaoInfo>::iterator itr;
+
+    itr = _staticPaoInfo.find(info);
+
+    if( itr != _staticPaoInfo.end() )
+    {
+        *itr = info;
+    }
+    else
+    {
+        _staticPaoInfo.insert(info);
+        new_record = true;
+    }
+
+    return new_record;
+}
 
 bool CtiDeviceBase::setDynamicInfo(const CtiTableDynamicPaoInfo &info)
 {
@@ -829,6 +860,35 @@ bool CtiDeviceBase::setDynamicInfo(const CtiTableDynamicPaoInfo &info)
 
     return new_record;
 }
+
+bool CtiDeviceBase::getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k,        string &destination) const    
+{   
+    bool success = false;
+
+    std::set<CtiTableStaticPaoInfo>::const_iterator itr;
+
+    if( (itr = _staticPaoInfo.find(CtiTableStaticPaoInfo(getID(), k))) != _staticPaoInfo.end() )
+    {
+        itr->getValue(destination);
+        success = true;
+    }
+
+    return success;
+}
+
+long CtiDeviceBase::getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const    
+{   
+    std::set<CtiTableStaticPaoInfo>::const_iterator itr;
+
+    long value = 0;
+    if( (itr = _staticPaoInfo.find(CtiTableStaticPaoInfo(getID(), k))) != _staticPaoInfo.end() )
+    {
+        itr->getValue(value);
+    }
+
+    return value;
+}
+
 
 
 //  helper function for overloads

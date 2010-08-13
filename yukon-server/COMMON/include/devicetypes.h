@@ -119,6 +119,7 @@
 #define TYPE_TAPTERM_TESCOM                  1901
 #define TYPE_TAPTERM_EMAIL                   1902
 #define TYPE_WCTP                            1905
+#define TYPE_RDS                             1906
 #define TYPE_SNPP                            1907
 #define TYPE_PAGING_RECEIVER                 1908
 #define TYPE_TNPP                            1909

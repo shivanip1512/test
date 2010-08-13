@@ -404,6 +404,7 @@ enum CtiRoute_t
     RouteTypeSNPP,
     RouteTypeXML,
     RouteTypeTNPP,
+    RouteTypeRDS,
 
     RouteTypeMax
 };

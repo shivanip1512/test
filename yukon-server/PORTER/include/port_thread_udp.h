@@ -29,6 +29,7 @@ private:
     unsigned short _connected_port;
 
     typedef std::pair<unsigned short, unsigned short> dnp_address_pair;
+    typedef std::pair<unsigned short, unsigned short> uecp_address_pair;
     typedef std::pair<unsigned short, unsigned long>  gpuff_type_serial_pair;
 
     static dnp_address_pair       makeDnpAddressPair     (const CtiDeviceSingle &device);

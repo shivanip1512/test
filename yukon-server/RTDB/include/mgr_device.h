@@ -90,6 +90,7 @@ private:
     void refreshMCTConfigs          (Cti::Database::id_set &paoids);
     void refreshMCT400Configs       (Cti::Database::id_set &paoids);
     void refreshDynamicPaoInfo      (Cti::Database::id_set &paoids);
+    void refreshStaticPaoInfo       (Cti::Database::id_set &paoids);
     bool refreshPointGroups         (Cti::Database::id_set &paoids);
 
 protected:
