@@ -386,7 +386,7 @@ void CtiLMControlAreaStore::reset()
             std::map< long, vector<CtiLMGroupPtr> > all_program_group_map;
 
             {
-                static const string sql =  "SELECT groupid = YP.paobjectid, YP.category, YP.paoclass, YP.paoname, "
+                static const string sql =  "SELECT YP.paobjectid as groupid, YP.category, YP.paoclass, YP.paoname, "
                                              "YP.type, YP.description, YP.disableflag, DV.alarminhibit, "
                                              "DV.controlinhibit, LG.kwcapacity "
                                            "FROM yukonpaobject YP, device DV, lmgroup LG "
@@ -423,8 +423,8 @@ void CtiLMControlAreaStore::reset()
             } //end main group loading
 
             { /* Load up any group point specific information */
-                static const string sql =  "SELECT groupid = LGP.deviceid, deviceid = LGP.deviceidusage, "
-                                             "pointid = LGP.pointidusage, LGP.startcontrolrawstate "
+                static const string sql =  "SELECT LGP.deviceid as groupid, LGP.deviceidusage as deviceid, "
+                                             "LGP.pointidusage as pointid, LGP.startcontrolrawstate "
                                            "FROM lmgrouppoint LGP";
 
                 Cti::Database::DatabaseReader rdr(connection);
@@ -462,7 +462,7 @@ void CtiLMControlAreaStore::reset()
             }// end loading group point specific info
 
             { /* Start loading ripple group specific info */
-                static const string sql = "SELECT groupid = LGR.deviceid, LGR.shedtime "
+                static const string sql = "SELECT LGR.deviceid as groupid, LGR.shedtime "
                                           "FROM lmgroupripple LGR";
 
                 Cti::Database::DatabaseReader rdr(connection);
@@ -596,7 +596,7 @@ void CtiLMControlAreaStore::reset()
 
             /* Load dynamic group information */
             {
-                static const string sql =  "SELECT groupid = DLG.deviceid, DLG.groupcontrolstate, DLG.currenthoursdaily, "
+                static const string sql =  "SELECT DLG.deviceid as groupid, DLG.groupcontrolstate, DLG.currenthoursdaily, "
                                                "DLG.currenthoursmonthly, DLG.currenthoursseasonal, DLG.currenthoursannually, "
                                                "DLG.lastcontrolsent, DLG.timestamp, DLG.controlstarttime, "
                                                "DLG.controlcompletetime, DLG.nextcontroltime, DLG.internalstate, "
@@ -712,7 +712,7 @@ void CtiLMControlAreaStore::reset()
 
             /* now lets load info about how groups attach to programs */
             {
-                static const string sql =  "SELECT programid = PDG.deviceid, groupid = PDG.lmgroupdeviceid "
+                static const string sql =  "SELECT PDG.deviceid as programid, PDG.lmgroupdeviceid as groupid "
                                            "FROM lmprogramdirectgroup PDG "
                                            "ORDER BY PDG.grouporder ASC";
 

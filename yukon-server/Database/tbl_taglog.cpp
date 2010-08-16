@@ -407,7 +407,7 @@ int CtiTableTagLog::getMaxInstanceId()
     {
         try
         {
-            static const string sql = "SELECT maxid = MAX (TLG.instanceid) "
+            static const string sql = "SELECT MAX (TLG.instanceid) as maxid "
                                       "FROM TagLog TLG";
 
             Cti::Database::DatabaseConnection connection;
