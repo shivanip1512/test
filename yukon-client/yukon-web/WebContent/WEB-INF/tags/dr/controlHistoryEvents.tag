@@ -41,8 +41,17 @@
               <c:forEach var="event" items="${controlHistoryEventList}">
                 <tr class="<tags:alternateRow odd='' even='altRow'/>">
                   <td class="nowrapping" width="${widthPercent}"><cti:formatDate value="${event.startDate}" type="BOTH"/></td>
-                  <td class="nowrapping" width="${widthPercent}"><cti:formatDate value="${event.endDate}" type="BOTH"/></td>
-                  <c:if test="${not consumer}"><td class="nowrapping" width="${widthPercent}">${event.gears}</td></c:if>
+                  <c:choose>
+                    <c:when test="${event.controlling}">
+                        <td class="nowrapping" width="${widthPercent}">----</td>
+                    </c:when>
+                    <c:otherwise>
+                        <td class="nowrapping" width="${widthPercent}"><cti:formatDate value="${event.endDate}" type="BOTH"/></td>
+                    </c:otherwise>
+                  </c:choose>
+                  <c:if test="${not consumer}">
+                    <td class="nowrapping" width="${widthPercent}">${event.gears}</td>
+                  </c:if>
                   <td class="nowrapping" width="${widthPercent}"><cti:formatDuration type="HM" startDate="${event.startDate}" endDate="${event.endDate}" /></td>
                   <c:set var="totalDuration" value="${event.duration.millis + totalDuration}" />
                 </tr>

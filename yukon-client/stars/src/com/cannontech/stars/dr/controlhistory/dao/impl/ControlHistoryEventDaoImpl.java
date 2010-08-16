@@ -188,6 +188,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
             event.setDuration(history.getControlDuration());
             event.setStartDate(startDateTime);
             event.setEndDate(endDateTime);
+            event.setControlling(history.isCurrentlyControlling());
             
             String gears;
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);

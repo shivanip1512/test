@@ -624,12 +624,13 @@ public class LMControlHistoryUtil {
      * This method returns the control duration for a given control history event and takes
      * in account opt outs and enrollments during the control history event's time period.
      */
-    private static Duration calculateRealControlPeriodTime(Duration controlHistoryTotal, 
-                                                             ReadableInstant controlHistoryStartDateTime, 
-                                                             ReadableInstant controlHistoryStopDateTime,
-                                                             List<LMHardwareControlGroup> enrollments,
-                                                             List<LMHardwareControlGroup> optOuts) {
-        Validate.notNull(controlHistoryStartDateTime);
+    private static Duration calculateRealControlPeriodTime(ControlHistory controlHistory, 
+                                                           Duration controlHistoryTotal, 
+                                                           ReadableInstant controlHistoryStopDateTime,
+                                                           List<LMHardwareControlGroup> enrollments,
+                                                           List<LMHardwareControlGroup> optOuts) {
+
+        Validate.notNull(controlHistory.getStartInstant());
         Validate.notNull(controlHistoryStopDateTime);
         Validate.notNull(enrollments);
         Validate.notNull(optOuts);
@@ -639,21 +640,21 @@ public class LMControlHistoryUtil {
         for(LMHardwareControlGroup enrollmentEntry : enrollments) {
             //wasn't enrolled with this entry at the time
             if (enrollmentEntry.getGroupEnrollStart().isAfter(controlHistoryStopDateTime) 
-                    || (enrollmentEntry.getGroupEnrollStop() != null && enrollmentEntry.getGroupEnrollStop().isBefore(controlHistoryStartDateTime))) {
+                    || (enrollmentEntry.getGroupEnrollStop() != null && enrollmentEntry.getGroupEnrollStop().isBefore(controlHistory.getStartInstant()))) {
             
                 continue;
             
             } else {
                 //period falls cleanly within the enrollment range, total remains the same
-                if (enrollmentEntry.getGroupEnrollStart().isBefore(controlHistoryStartDateTime) 
+                if (enrollmentEntry.getGroupEnrollStart().isBefore(controlHistory.getStartInstant()) 
                         && (enrollmentEntry.getGroupEnrollStop() == null || enrollmentEntry.getGroupEnrollStop().isAfter(controlHistoryStopDateTime))) {
 
                     neverEnrolledDuringThisPeriod = false;
                     
                 //enrollment started after the beginning of the period, subtract the difference
-                } else if (enrollmentEntry.getGroupEnrollStart().isAfter(controlHistoryStartDateTime)) { 
+                } else if (enrollmentEntry.getGroupEnrollStart().isAfter(controlHistory.getStartInstant())) { 
 
-                    Duration priorEnrollmentDuration = new Duration(controlHistoryStartDateTime, enrollmentEntry.getGroupEnrollStart());
+                    Duration priorEnrollmentDuration = new Duration(controlHistory.getStartInstant(), enrollmentEntry.getGroupEnrollStart());
                     controlHistoryTotal = controlHistoryTotal.minus(priorEnrollmentDuration);
                     neverEnrolledDuringThisPeriod = false;
                     
@@ -676,7 +677,7 @@ public class LMControlHistoryUtil {
 
         for (LMHardwareControlGroup optOutEntry : optOuts) {
             // Control occurred entirely during an opt out.  Discard it.
-            if (optOutEntry.getOptOutStart().isBefore(controlHistoryStartDateTime) 
+            if (optOutEntry.getOptOutStart().isBefore(controlHistory.getStartInstant()) 
                     && (optOutEntry.getOptOutStop() == null || optOutEntry.getOptOutStop().isAfter(controlHistoryStopDateTime))) {
                 return Duration.ZERO;
             }
@@ -684,30 +685,31 @@ public class LMControlHistoryUtil {
             // An opt out started during control, control stopped before opt out
             // ended.  Subtract the difference of opt out start and the period's
             // stop from duration.
-            else if (optOutEntry.getOptOutStart().isAfter(controlHistoryStartDateTime) 
+            else if (optOutEntry.getOptOutStart().isAfter(controlHistory.getStartInstant()) 
                     && optOutEntry.getOptOutStart().isBefore(controlHistoryStopDateTime) 
                     && (optOutEntry.getOptOutStop() == null || optOutEntry.getOptOutStop().isAfter(controlHistoryStopDateTime))) {
 
                 Duration priorOptOutDuration = new Duration(optOutEntry.getOptOutStart(), controlHistoryStopDateTime);
+                controlHistory.setCurrentlyControlling(false);
                 controlHistoryTotal = controlHistoryTotal.minus(priorOptOutDuration);
             }
             
             // Control occurred during an already active opt out.  That opt out
             // then ended before control was complete.  Subtract the difference
             // of opt out stop and period start.
-            else if (optOutEntry.getOptOutStart().isBefore(controlHistoryStartDateTime) 
+            else if (optOutEntry.getOptOutStart().isBefore(controlHistory.getStartInstant()) 
                     && optOutEntry.getOptOutStop() != null 
-                    && optOutEntry.getOptOutStop().isAfter(controlHistoryStartDateTime) 
+                    && optOutEntry.getOptOutStop().isAfter(controlHistory.getStartInstant()) 
                     && optOutEntry.getOptOutStop().isBefore(controlHistoryStopDateTime)) {
                 
-                Duration postOptOutDuration = new Duration(controlHistoryStartDateTime, optOutEntry.getOptOutStop());
+                Duration postOptOutDuration = new Duration(controlHistory.getStartInstant(), optOutEntry.getOptOutStop());
                 controlHistoryTotal = controlHistoryTotal.minus(postOptOutDuration);
             }
             
             // An opt out occurred completely in the middle of a control period.
             // Subtract the entire opt out duration from the control history
             // total.
-            else if (optOutEntry.getOptOutStart().isAfter(controlHistoryStartDateTime) 
+            else if (optOutEntry.getOptOutStart().isAfter(controlHistory.getStartInstant()) 
                     && optOutEntry.getOptOutStop() != null 
                     && optOutEntry.getOptOutStop().isBefore(controlHistoryStopDateTime)) {
                 
@@ -817,7 +819,7 @@ public class LMControlHistoryUtil {
         for (ControlHistory controlHistory : starsCtrlHist.getControlHistory()) {
             if (controlHistory.isCurrentlyControlling()) {
                 starsCtrlHist.setBeingControlled(true);
-                Duration currentDuration = new  Duration(now, controlHistory.getStartInstant());
+                Duration currentDuration = new  Duration(controlHistory.getStartInstant(), now);
                 controlHistory.setControlDuration(currentDuration);
             }
         }
@@ -847,8 +849,8 @@ public class LMControlHistoryUtil {
                 cntrlHist.getStartInstant().plus(cntrlHist.getControlDuration());
 
             ArrayList<LMHardwareControlGroup> emptyOptOutList = Lists.newArrayList();
-            Duration newDuration = calculateRealControlPeriodTime(cntrlHist.getControlDuration(), 
-                                                                  cntrlHist.getStartInstant(), 
+            Duration newDuration = calculateRealControlPeriodTime(cntrlHist,
+                                                                  cntrlHist.getControlDuration(), 
                                                                   stopInstant, 
                                                                   enrollments, 
                                                                   emptyOptOutList);
@@ -923,7 +925,9 @@ public class LMControlHistoryUtil {
             ControlHistory controlHistory = unadjustedControlHistory.getControlHistory(i);
             
             Instant stopInstant = controlHistory.getStartInstant().plus(controlHistory.getControlDuration());
-            Duration newDuration = calculateRealControlPeriodTime(controlHistory.getControlDuration(), controlHistory.getStartInstant(), stopInstant, enrollments, optOuts);
+            Duration newDuration = calculateRealControlPeriodTime(controlHistory,
+                                                                  controlHistory.getControlDuration(),
+                                                                  stopInstant, enrollments, optOuts);
 
             if (!newDuration.isEqual(Duration.ZERO)) {
                 controlHistory.setControlDuration(newDuration);

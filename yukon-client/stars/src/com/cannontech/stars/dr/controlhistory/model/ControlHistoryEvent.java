@@ -6,8 +6,9 @@ import org.joda.time.Instant;
 public class ControlHistoryEvent {
     private Instant startDate;
     private Instant endDate;
-    private String gears;
     private Duration duration;
+    private boolean controlling;
+    private String gears;
     
     public ControlHistoryEvent() {
         
@@ -16,7 +17,6 @@ public class ControlHistoryEvent {
     public Instant getStartDate() {
         return startDate;
     }
-
     public void setStartDate(Instant startDate) {
         this.startDate = startDate;
     }
@@ -24,7 +24,6 @@ public class ControlHistoryEvent {
     public Instant getEndDate() {
         return endDate;
     }
-
     public void setEndDate(Instant endDate) {
         this.endDate = endDate;
     }
@@ -35,15 +34,20 @@ public class ControlHistoryEvent {
     public Duration getDuration() {
         return duration;
     }
-
     public void setDuration(Duration duration) {
         this.duration = duration;
     }
-    
+
+    public boolean isControlling() {
+        return controlling;
+    }
+    public void setControlling(boolean controlling) {
+        this.controlling = controlling;
+    }
+
     public String getGears() {
         return gears;
     }
-
     public void setGears(String gears) {
         this.gears = gears;
     }
