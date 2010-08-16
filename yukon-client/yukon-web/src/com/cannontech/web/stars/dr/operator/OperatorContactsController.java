@@ -151,7 +151,7 @@ public class OperatorContactsController {
 		    String oldContactName = contact.toString();
 		    accountEventLogService.contactUpdated(userContext.getYukonUser(), 
                                                 accountInfoFragment.getAccountNumber(), 
-                                                contactDto.getFirstName()+" "+contactDto.getLastName());
+                                                newContactName);
 		    
 		    // Log contact name change
 		    if (!oldContactName.equalsIgnoreCase(newContactName)) {

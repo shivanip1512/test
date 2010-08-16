@@ -922,7 +922,7 @@ public class AccountServiceImpl implements AccountService {
         
         log.info("Account: " +accountNumber + " updated successfully.");
 
-        if  (updatableAccount.getAccountNumber().equalsIgnoreCase(account.getAccountNumber())) {
+        if  (!updatableAccount.getAccountNumber().equalsIgnoreCase(account.getAccountNumber())) {
             accountEventLogService.accountNumberChanged(user, account.getAccountNumber(), 
                                                         updatableAccount.getAccountNumber());
         }

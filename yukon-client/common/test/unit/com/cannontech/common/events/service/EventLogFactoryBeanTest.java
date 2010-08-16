@@ -53,10 +53,10 @@ public class EventLogFactoryBeanTest {
         insertedEventLogs = Lists.newArrayList();
         
         Builder<ArgumentColumn> builder = ImmutableList.builder();
-        builder.add(new ArgumentColumn("String1", 1, Types.VARCHAR));
-        builder.add(new ArgumentColumn("String2", 2, Types.VARCHAR));
-        builder.add(new ArgumentColumn("Number3", 3, Types.NUMERIC));
-        builder.add(new ArgumentColumn("Number4", 4, Types.NUMERIC));
+        builder.add(new ArgumentColumn("String1", Types.VARCHAR));
+        builder.add(new ArgumentColumn("String2", Types.VARCHAR));
+        builder.add(new ArgumentColumn("Number3", Types.NUMERIC));
+        builder.add(new ArgumentColumn("Number4", Types.NUMERIC));
         final List<ArgumentColumn> argumentColumns = builder.build();
         
         EventLogFactoryBean eventLogFactoryBean = new EventLogFactoryBean();
@@ -152,10 +152,10 @@ public class EventLogFactoryBeanTest {
     @Test(expected=BadConfigurationException.class)
     public void testBadInterfaceThrowsException() throws Exception {
         Builder<ArgumentColumn> builder = ImmutableList.builder();
-        builder.add(new ArgumentColumn("String1", 1, Types.VARCHAR));
-        builder.add(new ArgumentColumn("String2", 2, Types.VARCHAR));
-        builder.add(new ArgumentColumn("Number3", 3, Types.NUMERIC));
-        builder.add(new ArgumentColumn("Number4", 4, Types.NUMERIC));
+        builder.add(new ArgumentColumn("String1", Types.VARCHAR));
+        builder.add(new ArgumentColumn("String2", Types.VARCHAR));
+        builder.add(new ArgumentColumn("Number3", Types.NUMERIC));
+        builder.add(new ArgumentColumn("Number4", Types.NUMERIC));
         final List<ArgumentColumn> argumentColumns = builder.build();
         
         

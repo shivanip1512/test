@@ -2,7 +2,6 @@ package com.cannontech.web.stars.dr.operator.validator;
 
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.validation.Errors;
 
@@ -65,8 +64,8 @@ public class EventLogTypeValidator extends SimpleValidator<EventLogTypeBackingBe
         } else if (filterValue instanceof DateFilterValue) {
             DateFilterValue dateFilterValue = (DateFilterValue) filterValue;
             
-            DateTime startDate = dateFilterValue.getStartDate();
-            DateTime stopDate = dateFilterValue.getStopDate();
+            LocalDate startDate = dateFilterValue.getStartDate();
+            LocalDate stopDate = dateFilterValue.getStopDate();
             if (startDate != null && stopDate != null && startDate.isAfter(stopDate)) {
                 YukonValidationUtils.rejectValues(errors,
                                                   "yukon.web.modules.support.startDateMustBeBeforeStopDate",

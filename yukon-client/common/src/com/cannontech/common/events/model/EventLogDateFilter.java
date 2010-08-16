@@ -1,15 +1,9 @@
 package com.cannontech.common.events.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.cannontech.common.bulk.filter.SqlFragmentUiFilter;
+import com.cannontech.common.util.SqlBuilder;
 
-import com.cannontech.common.bulk.filter.PostProcessingFilter;
-import com.cannontech.common.bulk.filter.SqlFilter;
-import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.util.SqlFragmentSource;
-import com.cannontech.common.util.SqlStatementBuilder;
-
-public class EventLogDateFilter implements UiFilter<EventLog> {
+public class EventLogDateFilter extends SqlFragmentUiFilter<EventLog> {
     private DateFilterValue dateFilterValue;
     private ArgumentColumn argumentColumn;
     
@@ -19,25 +13,8 @@ public class EventLogDateFilter implements UiFilter<EventLog> {
     }
 
     @Override
-    public List<SqlFilter> getSqlFilters() {
-        List<SqlFilter> retVal = new ArrayList<SqlFilter>(1);
-        retVal.add(new SqlFilter(){
-
-            @Override
-            public SqlFragmentSource getWhereClauseFragment() {
-                SqlStatementBuilder retVal = new SqlStatementBuilder();
-                retVal.append(argumentColumn.columnName).gte(dateFilterValue.startDate).append(" AND ");
-                retVal.append(argumentColumn.columnName).lte(dateFilterValue.stopDate);
-                
-                return retVal;
-            }});
-
-        return retVal;
+    protected void getSqlFragment(SqlBuilder sql) {
+        sql.append(argumentColumn.getColumnName()).gte(dateFilterValue.getStartDate().toDateTimeAtStartOfDay()).append(" AND ");
+        sql.append(argumentColumn.getColumnName()).lte(dateFilterValue.getStopDate().toDateTimeAtStartOfDay().plusDays(1));
     }
-    
-    @Override
-    public List<PostProcessingFilter<EventLog>> getPostProcessingFilters() {
-        return null;
-    }
-
 }

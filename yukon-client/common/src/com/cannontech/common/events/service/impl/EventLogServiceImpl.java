@@ -3,7 +3,6 @@ package com.cannontech.common.events.service.impl;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -21,8 +20,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.bulk.filter.PostProcessingFilter;
-import com.cannontech.common.bulk.filter.SqlFilter;
+import com.cannontech.common.bulk.filter.SqlFragmentUiFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
@@ -45,8 +43,7 @@ import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.common.util.SqlFragmentSource;
-import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -141,8 +138,8 @@ public class EventLogServiceImpl implements EventLogService {
         }
         
         EventCategory category = EventCategory.createCategory(categoryStr);
-        methodLogDetail.eventCategory = category;
-        methodLogDetail.methodName = method.getName();
+        methodLogDetail.setEventCategory(category);
+        methodLogDetail.setMethodName(method.getName());
 
         final Class<?>[] parameterTypes = method.getParameterTypes();
         
@@ -150,15 +147,13 @@ public class EventLogServiceImpl implements EventLogService {
         
         ListMultimap<Integer,ArgumentColumn> availableArguments = ArrayListMultimap.create();
         for (ArgumentColumn argumentColumn : argumentColumns) {
-            availableArguments.put(argumentColumn.sqlType, argumentColumn);
+            availableArguments.put(argumentColumn.getSqlType(), argumentColumn);
         }
         final List<ArgumentColumn> choosenColumns = Lists.newArrayListWithExpectedSize(parameterTypes.length);
         final List<ArgumentMapper<?>> choosenMappers = Lists.newArrayListWithExpectedSize(parameterTypes.length);
         
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-        int paramNumber = 0;
         for (int i = 0; i < parameterTypes.length; i++) {
-            paramNumber++;
             Class<?> parameterType = parameterTypes[i];
             Annotation[] parameterTypeAnnotations = parameterAnnotations[i];
         
@@ -188,6 +183,15 @@ public class EventLogServiceImpl implements EventLogService {
                     ArgumentColumn argumentColumn = availableArgumentsForType.remove(0);
                     choosenColumns.add(argumentColumn);
                     choosenMappers.add(argumentMapper);
+                    
+                    // Get the parameter number from the list of argument columns 
+                    int paramNumber = 0;
+                    for (;paramNumber < argumentColumns.size(); paramNumber++) {
+                        if (argumentColumns.get(paramNumber).equals(argumentColumn)) {
+                            paramNumber++;
+                            break;
+                        }
+                    }
                     
                     EventParameter eventParameter;
                     if (parameterName != null) {
@@ -298,7 +302,7 @@ public class EventLogServiceImpl implements EventLogService {
         ListMultimap<EventCategory, String> eventLogTypes = ArrayListMultimap.create();
         
         for (MethodLogDetail methodLogDetail : methodLogDetails) {
-            eventLogTypes.put(methodLogDetail.eventCategory, methodLogDetail.methodName);
+            eventLogTypes.put(methodLogDetail.getEventCategory(), methodLogDetail.getMethodName());
         }
         
         return eventLogTypes;
@@ -344,9 +348,7 @@ public class EventLogServiceImpl implements EventLogService {
             Object value = values[i];
             ArgumentColumn column = columns.get(i);
             EventParameter eventParameter = methodLogDetail.getColumnToParameterMapping().get(column);
-            if (eventParameter != null) {
-                mappedEventLog.getParameterMap().put(eventParameter, value);
-            }
+            mappedEventLog.getParameterMap().put(eventParameter, value);
         }
         return mappedEventLog;
     }
@@ -394,9 +396,7 @@ public class EventLogServiceImpl implements EventLogService {
         List<UiFilter<EventLog>> filters = Lists.newArrayList();
         filters.add(new EventLogTypeFilter(eventLogType));
         filters.add(new EventLogDateRangeFilter(startDate, stopDate));
-        if (eventLogSqlFilters != null &&
-            eventLogSqlFilters.getSqlFilters() != null &&
-            eventLogSqlFilters.getSqlFilters().iterator().hasNext()) {
+        if (eventLogSqlFilters != null) {
             filters.add(eventLogSqlFilters);
         }
         UiFilter<EventLog> filter = UiFilterList.wrap(filters);
@@ -440,7 +440,7 @@ public class EventLogServiceImpl implements EventLogService {
     
     
     // UI Filters
-    private static class EventLogTypeFilter implements UiFilter<EventLog> {
+    private static class EventLogTypeFilter extends SqlFragmentUiFilter<EventLog> {
 
         String eventLogType;
         
@@ -449,30 +449,15 @@ public class EventLogServiceImpl implements EventLogService {
         }
         
         @Override
-        public Iterable<PostProcessingFilter<EventLog>> getPostProcessingFilters() {
-            return null;
-        }
-
-        @Override
-        public Iterable<SqlFilter> getSqlFilters() {
-            List<SqlFilter> retVal = new ArrayList<SqlFilter>(1);
-            retVal.add(new SqlFilter(){
-
-                @Override
-                public SqlFragmentSource getWhereClauseFragment() {
-                    SqlStatementBuilder retVal = new SqlStatementBuilder();
-                    retVal.append("EventType").eq(eventLogType);
-                    
-                    return retVal;
-                }});
-            return retVal;
+        protected void getSqlFragment(SqlBuilder sql) {
+            sql.append("EventType").eq(eventLogType);
         }
     };
 
-    private static class EventLogDateRangeFilter implements UiFilter<EventLog> {
+    private static class EventLogDateRangeFilter extends SqlFragmentUiFilter<EventLog> {
 
-        Instant startDate;
-        Instant stopDate;
+        private Instant startDate;
+        private Instant stopDate;
         
         public EventLogDateRangeFilter(ReadableInstant startDate,
                                        ReadableInstant stopDate) {
@@ -481,24 +466,9 @@ public class EventLogServiceImpl implements EventLogService {
         }
         
         @Override
-        public Iterable<PostProcessingFilter<EventLog>> getPostProcessingFilters() {
-            return null;
-        }
-
-        @Override
-        public Iterable<SqlFilter> getSqlFilters() {
-            List<SqlFilter> retVal = new ArrayList<SqlFilter>(1);
-            retVal.add(new SqlFilter(){
-
-                @Override
-                public SqlFragmentSource getWhereClauseFragment() {
-                    SqlStatementBuilder retVal = new SqlStatementBuilder();
-                    retVal.append("EventTime").gte(startDate).append("AND");
-                    retVal.append("EventTime").lte(stopDate);
-                    
-                    return retVal;
-                }});
-            return retVal;
+        protected void getSqlFragment(SqlBuilder sql) {
+            sql.append("EventTime").gte(startDate).append(" AND ");
+            sql.append("EventTime").lte(stopDate);
         }
     };
     

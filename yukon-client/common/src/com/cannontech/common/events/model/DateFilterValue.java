@@ -1,22 +1,22 @@
 package com.cannontech.common.events.model;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 public class DateFilterValue extends FilterValue {
-    DateTime startDate;
-    DateTime stopDate;
+    private LocalDate startDate;
+    private LocalDate stopDate;
     
-    public DateTime getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
-    public void setStartDate(DateTime startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public DateTime getStopDate() {
+    public LocalDate getStopDate() {
         return stopDate;
     }
-    public void setStopDate(DateTime stopDate) {
+    public void setStopDate(LocalDate stopDate) {
         this.stopDate = stopDate;
     }
     

@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -29,14 +28,11 @@ import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.Displayab
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentProgram;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
-import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.stars.dr.operator.enrollment.ProgramEnrollment.InventoryEnrollment;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.google.common.collect.Lists;
@@ -57,7 +53,6 @@ public class OperatorEnrollmentController {
     private EnrollmentDao enrollmentDao;
     private EnrollmentHelperService enrollmentHelperService;
     private RolePropertyDao rolePropertyDao;
-    private LMHardwareBaseDao lmHardwareBaseDao;
 
     /**
      * The main operator "enrollment" page. Lists all current enrollments and
@@ -203,64 +198,8 @@ public class OperatorEnrollmentController {
             FlashScope flashScope) {
         
         // Log enrollment/unenrollment attempts
-        List<DisplayableEnrollmentProgram> enrollmentPrograms =
-            displayableEnrollmentDao.findEnrolledPrograms(accountInfoFragment.getAccountId());
-        
-        // Get list of previous enrollments if they exist.
-        List<DisplayableEnrollmentInventory> previousEnrollments = Lists.newArrayList();
-        for (DisplayableEnrollmentProgram displayableEnrollmentProgram : enrollmentPrograms) {
-            if (displayableEnrollmentProgram.getProgram().getProgramId() == assignedProgramId) {
-                previousEnrollments = displayableEnrollmentProgram.getInventory();
-            }
-        }
-
-        boolean isInPreviousEnrollments = false;
-        for (InventoryEnrollment inventoryEnrollment : programEnrollment.getInventoryEnrollments()) {
-            // Get logging information
-            AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
-            LMHardwareBase hardwareBase = lmHardwareBaseDao.getById(inventoryEnrollment.getInventoryId());
-
-            DisplayablePao loadGroup = new DisplayablePaoBase(null, ""); 
-            if (programEnrollment.getLoadGroupId() != 0) {
-                loadGroupDao.getLoadGroup(programEnrollment.getLoadGroupId());
-            }
-
-            // Check to see if the enrollment previously existed
-            for (DisplayableEnrollmentInventory previousEnrollment : previousEnrollments) {
-                if (previousEnrollment.getInventoryId() == inventoryEnrollment.getInventoryId() &&
-                    previousEnrollment.isEnrolled() != inventoryEnrollment.isEnrolled()) {
-                    
-                    // Log new attempted operator enrollment
-                    if (inventoryEnrollment.isEnrolled()) {
-                        accountEventLogService.enrollmentAttemptedByOperator(userContext.getYukonUser(), 
-                                                                             accountInfoFragment.getAccountNumber(), 
-                                                                             hardwareBase.getManufacturerSerialNumber(), 
-                                                                             assignedProgram.getProgramName(), 
-                                                                             loadGroup.getName());
-                    // Log new attempted operator unenrollment
-                    } else {
-                        accountEventLogService.unenrollmentAttemptedByOperator(userContext.getYukonUser(), 
-                                                                               accountInfoFragment.getAccountNumber(), 
-                                                                               hardwareBase.getManufacturerSerialNumber(),
-                                                                               assignedProgram.getProgramName(), 
-                                                                               loadGroup.getName());
-
-                    }
-
-                    isInPreviousEnrollments = true;
-                }
-            }
-            
-            // Log new enrollment attempts
-            if (!isInPreviousEnrollments && inventoryEnrollment.isEnrolled()) {
-                accountEventLogService.enrollmentAttemptedByOperator(userContext.getYukonUser(), 
-                                                                     accountInfoFragment.getAccountNumber(), 
-                                                                     hardwareBase.getManufacturerSerialNumber(), 
-                                                                     assignedProgram.getProgramName(), 
-                                                                     loadGroup.getName());
-            }
-        }
-
+        accountEventLogService.enrollmentModificationAttemptedByOperator(userContext.getYukonUser(), 
+                                                                         accountInfoFragment.getAccountNumber());
         
         validateAccountEditing(userContext);
         AssignedProgram assignedProgram =
@@ -348,14 +287,12 @@ public class OperatorEnrollmentController {
     }
     
     @Autowired
-    public void setDisplayableEnrollmentDao(
-            DisplayableEnrollmentDao displayableEnrollmentDao) {
+    public void setDisplayableEnrollmentDao(DisplayableEnrollmentDao displayableEnrollmentDao) {
         this.displayableEnrollmentDao = displayableEnrollmentDao;
     }
 
     @Autowired
-    public void setLmHardwareControlGroupDao(
-            LMHardwareControlGroupDao lmHardwareControlGroupDao) {
+    public void setLmHardwareControlGroupDao(LMHardwareControlGroupDao lmHardwareControlGroupDao) {
         this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
     }
 
@@ -380,8 +317,7 @@ public class OperatorEnrollmentController {
     }
 
     @Autowired
-    public void setEnrollmentHelperService(
-            EnrollmentHelperService enrollmentHelperService) {
+    public void setEnrollmentHelperService(EnrollmentHelperService enrollmentHelperService) {
         this.enrollmentHelperService = enrollmentHelperService;
     }
 
@@ -390,8 +326,4 @@ public class OperatorEnrollmentController {
         this.rolePropertyDao = rolePropertyDao;
     }
     
-    @Autowired
-    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
-        this.lmHardwareBaseDao = lmHardwareBaseDao;
-    }
 }

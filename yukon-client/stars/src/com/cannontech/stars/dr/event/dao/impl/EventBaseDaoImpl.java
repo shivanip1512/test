@@ -4,17 +4,17 @@ import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.stars.dr.event.dao.EventBaseDao;
 
 public class EventBaseDaoImpl implements EventBaseDao, InitializingBean {
 
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private ChunkingSqlTemplate chunkingJdbcTemplate;
 
     @Override
@@ -40,12 +40,12 @@ public class EventBaseDaoImpl implements EventBaseDao, InitializingBean {
     }
 
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setSimpleJdbcTemplate(com.cannontech.database.YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        chunkingJdbcTemplate = new ChunkingSqlTemplate(simpleJdbcTemplate);
+        chunkingJdbcTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
     }
 }

@@ -45,18 +45,18 @@ public class EventLogDaoImpl implements EventLogDao {
     private int[] totalArgumentTypes;
     {
         Builder<ArgumentColumn> builder = ImmutableList.builder();
-        builder.add(new ArgumentColumn("String1", 1, Types.VARCHAR));
-        builder.add(new ArgumentColumn("String2", 2, Types.VARCHAR));
-        builder.add(new ArgumentColumn("String3", 3, Types.VARCHAR));
-        builder.add(new ArgumentColumn("String4", 4, Types.VARCHAR));
-        builder.add(new ArgumentColumn("String5", 5, Types.VARCHAR));
-        builder.add(new ArgumentColumn("String6", 6, Types.VARCHAR));
-        builder.add(new ArgumentColumn("Int7", 7, Types.NUMERIC));
-        builder.add(new ArgumentColumn("Int8", 8, Types.NUMERIC));
-        builder.add(new ArgumentColumn("Int9", 9, Types.NUMERIC));
-        builder.add(new ArgumentColumn("Int10", 10, Types.NUMERIC));
-        builder.add(new ArgumentColumn("Date11", 11, Types.TIMESTAMP));
-        builder.add(new ArgumentColumn("Date12", 12, Types.TIMESTAMP));
+        builder.add(new ArgumentColumn("String1",Types.VARCHAR));
+        builder.add(new ArgumentColumn("String2", Types.VARCHAR));
+        builder.add(new ArgumentColumn("String3", Types.VARCHAR));
+        builder.add(new ArgumentColumn("String4", Types.VARCHAR));
+        builder.add(new ArgumentColumn("String5", Types.VARCHAR));
+        builder.add(new ArgumentColumn("String6", Types.VARCHAR));
+        builder.add(new ArgumentColumn("Int7", Types.NUMERIC));
+        builder.add(new ArgumentColumn("Int8", Types.NUMERIC));
+        builder.add(new ArgumentColumn("Int9", Types.NUMERIC));
+        builder.add(new ArgumentColumn("Int10", Types.NUMERIC));
+        builder.add(new ArgumentColumn("Date11", Types.TIMESTAMP));
+        builder.add(new ArgumentColumn("Date12", Types.TIMESTAMP));
         argumentColumns = builder.build();
 
         countOfTotalArguments = argumentColumns.size() + countOfNonVariableColumns; 
@@ -66,7 +66,7 @@ public class EventLogDaoImpl implements EventLogDao {
         totalArgumentTypes[1] = Types.VARCHAR;
         totalArgumentTypes[2] = Types.TIMESTAMP;
         for (int i = 0; i < argumentColumns.size(); ++i) {
-            totalArgumentTypes[i + countOfNonVariableColumns] = argumentColumns.get(i).sqlType;
+            totalArgumentTypes[i + countOfNonVariableColumns] = argumentColumns.get(i).getSqlType();
         }
     }
     
@@ -379,19 +379,18 @@ public class EventLogDaoImpl implements EventLogDao {
         for (ArgumentColumn argumentColumn : argumentColumns) {
             // Removes case sensitivity for strings.
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            switch(argumentColumn.sqlType) {
+            switch(argumentColumn.getSqlType()) {
             case Types.VARCHAR:
                 if (varCharValue != null) {
-                    sql.append("UPPER("+argumentColumn.columnName+")").eq(String.valueOf(varCharValue).toUpperCase());
+                    sql.append("UPPER("+argumentColumn.getColumnName()+")").eq(String.valueOf(varCharValue).toUpperCase());
                     sqlFragmentCollection.add(sql);
                     //                sqlFragmentCollection.add(sql);
                 }
                 break;
             case Types.NUMERIC:
                 if (numericValue != null) {
-                    sql.append(argumentColumn.columnName).eq(numericValue);
+                    sql.append(argumentColumn.getColumnName()).eq(numericValue);
                     sqlFragmentCollection.add(sql);
-                    //                    sqlFragmentCollection.add(sql);
                 }
                 break;
             }
@@ -431,8 +430,6 @@ public class EventLogDaoImpl implements EventLogDao {
         return sql;
     }
 
-
-    
     private Set<EventCategory> removeDuplicates(Iterable<EventCategory> eventCategories) {
         Set<EventCategory> result = Sets.newHashSet(eventCategories);
         Iterator<EventCategory> iter = result.iterator();

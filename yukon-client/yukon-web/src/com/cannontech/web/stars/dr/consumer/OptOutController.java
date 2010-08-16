@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.json.JSONArray;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
@@ -230,14 +229,14 @@ public class OptOutController extends AbstractConsumerController {
 
 
         Date startDateObj = parseDate(startDate, userContext);
-        DateTime optOutStartDate = new LocalDate(startDateObj, userContext.getJodaTimeZone()).toDateTimeAtStartOfDay();
+        Instant optOutStartDateMidnight = new Instant(startDateObj);
         List<Integer> inventoryIds = getInventoryIds(userContext, jsonInventoryIds);
         for (int inventoryId : inventoryIds) {
             LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
             accountEventLogService.optOutAttemptedByConsumer(userContext.getYukonUser(), 
                                                              customerAccount.getAccountNumber(), 
                                                              lmHardwareBase.getManufacturerSerialNumber(),
-                                                             optOutStartDate);
+                                                             optOutStartDateMidnight);
         }
         
     	if (!optOutStatusService.getOptOutEnabled(userContext.getYukonUser())) {

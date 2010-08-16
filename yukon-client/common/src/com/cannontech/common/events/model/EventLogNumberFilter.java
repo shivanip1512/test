@@ -1,15 +1,9 @@
 package com.cannontech.common.events.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.cannontech.common.bulk.filter.SqlFragmentUiFilter;
+import com.cannontech.common.util.SqlBuilder;
 
-import com.cannontech.common.bulk.filter.PostProcessingFilter;
-import com.cannontech.common.bulk.filter.SqlFilter;
-import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.util.SqlFragmentSource;
-import com.cannontech.common.util.SqlStatementBuilder;
-
-public class EventLogNumberFilter implements UiFilter<EventLog> {
+public class EventLogNumberFilter extends SqlFragmentUiFilter<EventLog> {
     private NumberFilterValue numberFilterValue;
     private ArgumentColumn argumentColumn;
     
@@ -20,24 +14,7 @@ public class EventLogNumberFilter implements UiFilter<EventLog> {
     }
 
     @Override
-    public List<SqlFilter> getSqlFilters() {
-        List<SqlFilter> retVal = new ArrayList<SqlFilter>(1);
-        retVal.add(new SqlFilter(){
-
-            @Override
-            public SqlFragmentSource getWhereClauseFragment() {
-                SqlStatementBuilder retVal = new SqlStatementBuilder();
-                retVal.append(argumentColumn.columnName).eq(numberFilterValue.doubleFilterValue);
-                
-                return retVal;
-            }});
-
-        return retVal;
+    protected void getSqlFragment(SqlBuilder sql) {
+        sql.append(argumentColumn.getColumnName()).eq(numberFilterValue.getDoubleFilterValue());
     }
-    
-    @Override
-    public List<PostProcessingFilter<EventLog>> getPostProcessingFilters() {
-        return null;
-    }
-
 }

@@ -342,12 +342,6 @@ public class EventLogViewerController {
                                     OutputStream outputStream,
                                     YukonUserContext userContext) throws IOException {
 
-        // convert from List<List<String>> to List<String[]> that csvWriter likes to eat
-        List<String[]> dataAsArray = Lists.newArrayList();
-        for (List<String> dataRow : dataGrid) {
-            dataAsArray.add((String[])dataRow.toArray(new String[dataRow.size()]));
-        }
-        
         // csv writer setup
         //-----------------------------------------------------------------------------------------
         Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
@@ -357,7 +351,10 @@ public class EventLogViewerController {
         // write to csv
         //-----------------------------------------------------------------------------------------
         csvWriter.writeNext((String[])columnNames.toArray(new String[columnNames.size()]));
-        csvWriter.writeAll(dataAsArray);
+        for (List<String> dataRow : dataGrid) {
+            csvWriter.writeNext((String[])dataRow.toArray(new String[dataRow.size()]));
+        }
+        
         csvWriter.close();
             
     }
@@ -408,13 +405,13 @@ public class EventLogViewerController {
             eventLogFilter.setArgumentColumn(argumentColumn);
             
             // Creates the specific filter value for the FilterValueType
-            if ((argumentColumn.columnName.toUpperCase()).startsWith(EventLogColumnTypeEnum.STRING.toString())) {
+            if (argumentColumn.getSqlType() == EventLogColumnTypeEnum.STRING.getSqlType()) {
                 eventLogFilter.setEventLogColumnType(EventLogColumnTypeEnum.STRING);
                 eventLogFilter.setFilterValue(new StringFilterValue());
-            } else if ((argumentColumn.columnName.toUpperCase()).startsWith(EventLogColumnTypeEnum.NUMBER.toString())) {
+            } else if (argumentColumn.getSqlType() == EventLogColumnTypeEnum.NUMBER.getSqlType()) {
                 eventLogFilter.setEventLogColumnType(EventLogColumnTypeEnum.NUMBER);
                 eventLogFilter.setFilterValue(new NumberFilterValue());
-            } else if ((argumentColumn.columnName.toUpperCase()).startsWith(EventLogColumnTypeEnum.DATE.toString())) {
+            } else if (argumentColumn.getSqlType() == EventLogColumnTypeEnum.DATE.getSqlType()) {
                 eventLogFilter.setEventLogColumnType(EventLogColumnTypeEnum.DATE);
                 eventLogFilter.setFilterValue(new DateFilterValue());
             }
@@ -424,6 +421,7 @@ public class EventLogViewerController {
             try {
                 messageSourceAccessor.getMessage(eventLogColumnKey);
                 eventLogFilter.setKey(eventLogColumnKey);
+                continue;
                 // This is fine.  It just means the message we tried didn't exist.
             } catch (NoSuchMessageException e) {
                 if (!eventParameter.isNamed()) {
@@ -436,7 +434,6 @@ public class EventLogViewerController {
             try {
                 messageSourceAccessor.getMessage(eventLogColumnKey);
                 eventLogFilter.setKey(eventLogColumnKey);
-                // This is fine.  It just means the message we tried didn't exist.
             } catch (NoSuchMessageException e) {
                 throw new IllegalArgumentException("The key "+eventLogColumnKey+" does not exist.");
             }
@@ -458,13 +455,13 @@ public class EventLogViewerController {
 
         for (EventCategory eventCategory : eventLogTypeMultiMap.keySet()) {
             List<String> eventLogTypes = eventLogTypeMultiMap.get(eventCategory);
-            getEventLogHierarchyHelper(eventLogHierarchy, eventCategory, eventLogTypes);
+            eventLogHierarchyHelper(eventLogHierarchy, eventCategory, eventLogTypes);
         }
         
         return eventLogHierarchy;
     }
     
-    private void getEventLogHierarchyHelper(EventCategoryHierarchy eventCategoryHierarchy,
+    private void eventLogHierarchyHelper(EventCategoryHierarchy eventCategoryHierarchy,
                                             EventCategory eventCategory,
                                             List<String> eventLogTypes) {
 
@@ -483,7 +480,7 @@ public class EventLogViewerController {
             echChildFullPath = StringUtils.removeStart(echChildFullPath, ".");
             
             if (eventCategory.getFullName().startsWith(echChildFullPath)) {
-                getEventLogHierarchyHelper(childEventCategoryHierarchy, eventCategory, eventLogTypes);
+                eventLogHierarchyHelper(childEventCategoryHierarchy, eventCategory, eventLogTypes);
                 return;
             }
         }
@@ -529,13 +526,8 @@ public class EventLogViewerController {
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         binder.registerCustomEditor(LocalDate.class, 
-                                    "startDate", 
                                     datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext));
         
-        binder.registerCustomEditor(LocalDate.class, 
-                                    "stopDate", 
-                                    datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext));
-
         binder.registerCustomEditor(EventLogColumnTypeEnum.class,
                                     new EventLogColumnTypePropertyEditor());
     }

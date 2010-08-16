@@ -8,27 +8,45 @@ import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventParameter;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 
 public class MethodLogDetail {
     private ExecutorTransactionality transactionality = ExecutorTransactionality.TRANSACTIONAL;
     private ObjectMapper<Object[], Object[]> valueMapper = null;
-    EventCategory eventCategory = null;
-    String methodName = null;
-    private boolean isLogging = true; 
-    private BiMap<EventParameter, ArgumentColumn> parameterToColumnMapping = HashBiMap.create(15);
+    private EventCategory eventCategory = null;
+    private String methodName = null;
+    private boolean isLogging = true;
+    
+    private Map<EventParameter, ArgumentColumn> parameterToColumnMapping = Maps.newLinkedHashMap() ; 
+    private Map<ArgumentColumn, EventParameter> columnToParameterMapping = Maps.newLinkedHashMap();
     
     public Map<EventParameter, ArgumentColumn> getParameterToColumnMapping() {
         return Collections.unmodifiableMap(parameterToColumnMapping);
     }
     
     public Map<ArgumentColumn, EventParameter> getColumnToParameterMapping() {
-        return Collections.unmodifiableMap(parameterToColumnMapping.inverse());
+        return Collections.unmodifiableMap(columnToParameterMapping);
     }
     
+    public EventCategory getEventCategory() {
+        return eventCategory;
+    }
+
+    public void setEventCategory(EventCategory eventCategory) {
+        this.eventCategory = eventCategory;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
+
     public void addColomnAndParameterMapping(ArgumentColumn argumentColumn, EventParameter eventParameter) {
         parameterToColumnMapping.put(eventParameter, argumentColumn);
+        columnToParameterMapping.put(argumentColumn, eventParameter);
     }
 
     public String getEventType() {

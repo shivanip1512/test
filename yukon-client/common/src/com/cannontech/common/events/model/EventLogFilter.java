@@ -39,7 +39,7 @@ public class EventLogFilter {
     }
 
     public String getFieldName() {
-        return argumentColumn.columnName;
+        return argumentColumn.getColumnName();
     }
 
 }
