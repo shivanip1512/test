@@ -90,7 +90,7 @@ public class ControllableDevicesRequestEndPoint {
 
         // Log hardware addition attempts
         for (StarsControllableDeviceDTO device : devices) {
-            hardwareEventLogService.hardwareAdditionAttemptedThroughAPI(user,
+            hardwareEventLogService.hardwareAdditionAttemptedThroughApi(user,
                                                                         device.getAccountNumber(),
                                                                         device.getSerialNumber());
         }
@@ -133,7 +133,7 @@ public class ControllableDevicesRequestEndPoint {
         // run service
         for (StarsControllableDeviceDTO device : devices) {
             try {
-                hardwareEventLogService.hardwareUpdateAttemptedThroughAPI(user,
+                hardwareEventLogService.hardwareUpdateAttemptedThroughApi(user,
                                                                           device.getAccountNumber(),
                                                                           device.getSerialNumber());
 
@@ -169,7 +169,7 @@ public class ControllableDevicesRequestEndPoint {
         // run service
         for (StarsControllableDeviceDTO device : devices) {
             try {
-                hardwareEventLogService.hardwareRemovalAttemptedThroughAPI(user,
+                hardwareEventLogService.hardwareRemovalAttemptedThroughApi(user,
                                                                            device.getAccountNumber(),
                                                                            device.getSerialNumber());
 

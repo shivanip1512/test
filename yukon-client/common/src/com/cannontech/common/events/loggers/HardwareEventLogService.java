@@ -47,7 +47,7 @@ public interface HardwareEventLogService {
                                                      @Arg(ArgEnum.serialNumber) String serialNumber);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
-    public void hardwareAdditionAttemptedThroughAPI(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+    public void hardwareAdditionAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                     @Arg(ArgEnum.accountNumber) String accountNumber,
                                                     @Arg(ArgEnum.serialNumber) String serialNumber);
     
@@ -61,7 +61,7 @@ public interface HardwareEventLogService {
                                                               @Arg(ArgEnum.serialNumber) String serialNumber);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
-    public void hardwareUpdateAttemptedThroughAPI(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+    public void hardwareUpdateAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                   @Arg(ArgEnum.accountNumber) String accountNumber,
                                                   @Arg(ArgEnum.serialNumber) String serialNumber);
 
@@ -76,7 +76,7 @@ public interface HardwareEventLogService {
                                                                @Arg(ArgEnum.serialNumber) String serialNumber);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
-    public void hardwareRemovalAttemptedThroughAPI(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+    public void hardwareRemovalAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                    @Arg(ArgEnum.accountNumber) String accountNumber,
                                                    @Arg(ArgEnum.serialNumber) String serialNumber);
 

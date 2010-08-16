@@ -23,6 +23,10 @@ public interface AccountEventLogService {
                                                    @Arg(ArgEnum.accountNumber) String accountNumber);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account")
+    public void accountUpdateCreationAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                                         @Arg(ArgEnum.accountNumber) String accountNumber);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account")
     public void accountDeletionAttemptedThroughAccountImporter(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                                @Arg(ArgEnum.accountNumber) String accountNumber);
     
@@ -123,11 +127,8 @@ public interface AccountEventLogService {
                                               @Arg(ArgEnum.loadGroupName) String loadGroupName);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.enrollment")
-    public void unenrollmentAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                @Arg(ArgEnum.accountNumber) String accountNumber,
-                                                @Arg(ArgEnum.deviceName) String deviceName,
-                                                @Arg(ArgEnum.programName) String programName,
-                                                @Arg(ArgEnum.loadGroupName) String loadGroupName);
+    public void enrollmentModificationAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                                          @Arg(ArgEnum.accountNumber) String accountNumber);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.enrollment")
     public void unenrollmentAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
