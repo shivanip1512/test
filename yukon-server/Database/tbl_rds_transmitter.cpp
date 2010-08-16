@@ -4,8 +4,7 @@
 CtiTableRDSTransmitter::CtiTableRDSTransmitter() :
 _groupRate(0),
 _siteAddress(0),
-_encoderAddress(0),
-_groupID(0)
+_encoderAddress(0)
 {
 }
 
@@ -36,9 +35,18 @@ unsigned char CtiTableRDSTransmitter::getEncoderAddress() const
     return _encoderAddress;
 }
 
+// Convert string (11A) to integer ((Number(11) << 1) | A = 0, B =  1)
+// If not specified or there is garbage, assumes  type A.
 unsigned char CtiTableRDSTransmitter::getGroupID() const
 {
-    return _groupID;
+    unsigned char result = (atoi(_groupID.c_str())) << 1;
+
+    if (_groupID.contains("b",CtiString::ignoreCase))
+    {
+        result |= 1;
+    }
+    
+    return result;
 }
 
 float CtiTableRDSTransmitter::getGroupRate() const
@@ -50,6 +58,6 @@ void CtiTableRDSTransmitter::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     rdr["siteaddress"] >>    _siteAddress;
     rdr["encoderaddress"] >> _encoderAddress;
-    rdr["groupnumber"] >>    _groupID;
+    rdr["groupid"] >>        _groupID;
     rdr["transmitspeed"] >>  _groupRate;
 }

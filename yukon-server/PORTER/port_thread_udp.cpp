@@ -144,26 +144,7 @@ void UdpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
     }
     else if( isUecpDevice(device) )
     {
-        if( !device.hasStaticInfo(CtiTableStaticPaoInfo::Key_IP_Address) ||
-            !device.hasStaticInfo(CtiTableStaticPaoInfo::Key_IP_Port) )
-        {
-            return;
-        }
-    
-        string ip_string;
-        device.getStaticInfo(CtiTableStaticPaoInfo::Key_IP_Address, ip_string);
-    
-        _ip_addresses[device_id] = string_to_ip(ip_string);
-        _ports       [device_id] = device.getStaticInfo(CtiTableStaticPaoInfo::Key_IP_Port);
-    
-        if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UdpPortHandler::addDeviceProperties - loading device "
-                 << device.getName() << " "
-                 << ip_to_string(_ip_addresses[device_id]) << ":" << _ports[device_id] << " "
-                 << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        loadStaticDeviceIPAndPort(device);
     }
 
     if( !device.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP) ||
@@ -243,26 +224,8 @@ void UdpPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
     }
     else if( isUecpDevice(device) )
     {
-        if( !device.hasStaticInfo(CtiTableStaticPaoInfo::Key_IP_Address) ||
-            !device.hasStaticInfo(CtiTableStaticPaoInfo::Key_IP_Port) )
-        {
-            return;
-        }
-    
-        string ip_string;
-        device.getStaticInfo(CtiTableStaticPaoInfo::Key_IP_Address, ip_string);
-    
-        _ip_addresses[device_id] = string_to_ip(ip_string);
-        _ports       [device_id] = device.getStaticInfo(CtiTableStaticPaoInfo::Key_IP_Port);
-    
-        if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UdpPortHandler::addDeviceProperties - loading device "
-                 << device.getName() << " "
-                 << ip_to_string(_ip_addresses[device_id]) << ":" << _ports[device_id] << " "
-                 << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        loadStaticDeviceIPAndPort(device);
+        
     }
 }
 
@@ -278,6 +241,33 @@ UdpPortHandler::gpuff_type_serial_pair UdpPortHandler::makeGpuffTypeSerialPair(c
 {
     return gpuff_type_serial_pair(device.getType(),
                                   device.getAddress());
+}
+
+void UdpPortHandler::loadStaticDeviceIPAndPort(const CtiDeviceSingle &device)
+{
+    if( !device.hasStaticInfo(CtiTableStaticPaoInfo::Key_IP_Address) ||
+        !device.hasStaticInfo(CtiTableStaticPaoInfo::Key_IP_Port) )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Unable to load devices IP and Port " << device.getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        return;
+    }
+
+    const long device_id = device.getID();
+    string ip_string;
+    device.getStaticInfo(CtiTableStaticPaoInfo::Key_IP_Address, ip_string);
+
+    _ip_addresses[device_id] = string_to_ip(ip_string);
+    _ports       [device_id] = device.getStaticInfo(CtiTableStaticPaoInfo::Key_IP_Port);
+
+    if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Cti::Porter::UdpPortHandler::addDeviceProperties - loading device "
+             << device.getName() << " "
+             << ip_to_string(_ip_addresses[device_id]) << ":" << _ports[device_id] << " "
+             << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 }
 
 
@@ -578,7 +568,7 @@ UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_bu
 }
 
 
-bool UdpPortHandler::validatePacket(packet *&p) const
+bool UdpPortHandler::validatePacket(packet *&p)
 {
     if( Protocol::DNP::DatalinkLayer::isPacketValid(p->data, p->len) )
     {
@@ -594,6 +584,9 @@ bool UdpPortHandler::validatePacket(packet *&p) const
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " " << __FUNCTION__ << "() - incoming packet from " << ip_to_string(p->ip) <<  ":" << p->port << " is invalid " << __FILE__ << "(" << __LINE__ << ")" << endl;
         }
+
+        //  this packet was unhandled, so we trace it
+        traceInbound(p->ip, p->port, 0, p->data, p->len);
 
         delete p->data;
         delete p;

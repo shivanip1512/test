@@ -54,7 +54,7 @@ private:
 
     packet *recvPacket( unsigned char * const recv_buf, unsigned max_len );
 
-    bool validatePacket(packet *&p) const;
+    bool validatePacket(packet *&p);
 
     void distributePacket(packet *p);
 
@@ -65,6 +65,7 @@ private:
     device_record *getDeviceRecordByGpuffDeviceTypeSerial( unsigned short device_type, unsigned long serial );
 
     void updateDeviceIpAndPort( device_record &dr, const packet &p );
+    void loadStaticDeviceIPAndPort( const CtiDeviceSingle &device);
 
     void setDeviceIp  ( const long device_id, const u_long ip );
     void setDevicePort( const long device_id, const u_short port );

@@ -4,6 +4,7 @@
 #include "dlldefs.h"
 #include "dllbase.h"
 #include "row_reader.h"
+#include "ctistring.h"
 
 class IM_EX_CTIYUKONDB CtiTableRDSTransmitter : public CtiMemDBObject
 {
@@ -12,7 +13,7 @@ protected:
 
    unsigned char  _siteAddress;
    unsigned char  _encoderAddress;
-   unsigned int   _groupID;
+   CtiString      _groupID;
    float          _groupRate;
 
 public:
