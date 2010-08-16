@@ -66,6 +66,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "fdrservice.h"
 #include "thread_monitor.h"
 #include "connection.h"
+#include "msg_cmd.h"
 
 CtiConnection     FdrVanGoghConnection;
 
@@ -279,6 +280,7 @@ void CtiFDRService::OnStop( )
 
 void CtiFDRService::Run( )
 {
+    CtiMessage* msg = NULL;
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::FDR);
     CtiTime NextThreadMonitorReportTime;
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
@@ -301,8 +303,8 @@ void CtiFDRService::Run( )
 
         // Initialize the connection to VanGogh....
         FdrVanGoghConnection.doConnect(VANGOGHNEXUS, FdrVanGoghMachine);
-        FdrVanGoghConnection.setName("FDR to Dispatch");
-        FdrVanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg("FDR", rwThreadId(), TRUE));
+        FdrVanGoghConnection.setName("FDR Service to Dispatch");
+        FdrVanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg("FDR Service", rwThreadId(), TRUE));
 
         do
         {
@@ -318,6 +320,22 @@ void CtiFDRService::Run( )
 
                     FdrVanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
                 }
+            }
+
+            while( msg = FdrVanGoghConnection.ReadConnQue(0) )
+            {
+                if( msg->isA() == MSG_COMMAND && ((CtiCommandMsg*)msg)->getOperation() == CtiCommandMsg::AreYouThere )
+                {
+                    FdrVanGoghConnection.WriteConnQue(msg->replicateMessage());
+
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " FDR Service Replied to Are You There message." << endl;
+                    }
+                }
+
+                delete msg;
+                msg = NULL;
             }
         }
         while ( WAIT_TIMEOUT == WaitForSingleObject( iShutdown, 10000 ) );   // 10 seconds
