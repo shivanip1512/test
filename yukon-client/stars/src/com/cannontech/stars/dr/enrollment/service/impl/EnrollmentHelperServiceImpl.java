@@ -38,6 +38,9 @@ import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
@@ -56,6 +59,8 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private CustomerAccountDao customerAccountDao;
     private EnrollmentDao enrollmentDao;
     private LoadGroupDao loadGroupDao;
+    private LMHardwareBaseDao lmHardwareBaseDao;
+    private ProgramDao programDao;
     private ProgramService programService;
     private ProgramEnrollmentService programEnrollmentService;
     private StarsDatabaseCache starsDatabaseCache;
@@ -89,6 +94,8 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 
         // Go through the list of enrollments we want to update and make
         // sure they are in or out of the enrollmentData list as appropriate.
+        List<ProgramEnrollment> removedEnrollments = Lists.newArrayList();
+        List<ProgramEnrollment> addedEnrollments = Lists.newArrayList();
         for (ProgramEnrollment enrollment : programEnrollments) {
             int assignedProgramId = enrollment.getAssignedProgramId();
             int inventoryId = enrollment.getInventoryId();
@@ -105,13 +112,45 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 
             if (currentEnrollment != null) {
                 enrollments.remove(currentEnrollment);
+                removedEnrollments.add(currentEnrollment);
             }
             if (enrollment.isEnroll()) {
                 enrollments.add(enrollment);
+                addedEnrollments.add(enrollment);
             }
         }
 
         applyEnrollments(enrollments, customerAccount, userContext.getYukonUser());
+        
+        for (ProgramEnrollment programEnrollment : addedEnrollments) {
+            LMHardwareBase lmHardwareBase = 
+                lmHardwareBaseDao.getById(programEnrollment.getInventoryId());
+            LoadGroup loadGroup = 
+                loadGroupDao.getById(programEnrollment.getLmGroupId());
+            Program program = 
+                programDao.getByProgramId(programEnrollment.getAssignedProgramId());
+
+            accountEventLogService.deviceEnrolled(userContext.getYukonUser(), 
+                                                  customerAccount.getAccountNumber(),
+                                                  lmHardwareBase.getManufacturerSerialNumber(),
+                                                  program.getProgramName(),
+                                                  loadGroup.getLoadGroupName());
+        }
+        for (ProgramEnrollment programEnrollment : removedEnrollments) {
+            LMHardwareBase lmHardwareBase = 
+                lmHardwareBaseDao.getById(programEnrollment.getInventoryId());
+            LoadGroup loadGroup = 
+                loadGroupDao.getById(programEnrollment.getLmGroupId());
+            Program program = 
+                programDao.getByProgramId(programEnrollment.getAssignedProgramId());
+
+            accountEventLogService.deviceUnenrolled(userContext.getYukonUser(),
+                                                    customerAccount.getAccountNumber(),
+                                                    lmHardwareBase.getManufacturerSerialNumber(),
+                                                    program.getProgramName(),
+                                                    loadGroup.getLoadGroupName());
+        }
+        
     }
 
     @Override
@@ -462,6 +501,16 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         this.programService = programService;
     }
 
+    @Autowired
+    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
+        this.lmHardwareBaseDao = lmHardwareBaseDao;
+    }
+    
+    @Autowired
+    public void setProgramDao(ProgramDao programDao) {
+        this.programDao = programDao;
+    }
+    
     @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
