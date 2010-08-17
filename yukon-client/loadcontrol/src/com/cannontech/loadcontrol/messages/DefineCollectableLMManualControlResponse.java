@@ -69,7 +69,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	LMManualControlResponse lmManualControlResponse = (LMManualControlResponse) obj;
 	int programID = (int) vstr.extractUnsignedInt();
 	//Vector v = (Vector) vstr.restoreObject(polystr);
-    List<ConstraintViolation> v = VectorExtract.<ConstraintViolation>extractList(vstr, polystr);
+    List<ConstraintViolation> v = VectorExtract.extractList(vstr, polystr, ConstraintViolation.class);
 	String bestFitAction = (String) vstr.restoreObject( SimpleMappings.CString );
 	
 	lmManualControlResponse.setConstraintViolations(v);

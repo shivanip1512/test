@@ -4,30 +4,18 @@ import java.util.List;
 
 public class ConstraintViolations {
     
-	private String serverResponse;
 	private List<ConstraintContainer> violations;
 
 	public ConstraintViolations(List<ConstraintContainer> violations) {
 		this.violations = violations;
 	}
-	
-	public ConstraintViolations(String serverResponse) {
-		this.serverResponse = serverResponse;
-	}
 
-	public List<ConstraintContainer> getViolations() {
+	public List<ConstraintContainer> getViolationContainers() {
 		return violations;
 	}
 
-	public void setViolations(List<ConstraintContainer> violations) {
+	public void setViolationContainers(List<ConstraintContainer> violations) {
 		this.violations = violations;
 	}
-	
-	public void setServerResponse(String serverResponse) {
-		this.serverResponse = serverResponse;
-	}
-	
-	public String getServerResponse() {
-		return serverResponse;
-	}
+
 }

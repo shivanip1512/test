@@ -332,7 +332,7 @@ private ResponseProg[] sendSyncMsg( final WebCmdMsg cmdMsg )
                     programResps[i].setAction(
                         ResponseProg.NO_VIOLATION_ACTION );
 
-                    programResps[i].setNoConstraintsMessage(
+                    programResps[i].setNoViolationsMessage(
                         " No Constraints Violated");
                 }
             }                       

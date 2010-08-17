@@ -132,7 +132,7 @@ public class PopUpPanel {
 									programResp[i].setAction(
 										ResponseProg.NO_VIOLATION_ACTION );
 
-									programResp[i].setNoConstraintsMessage(
+									programResp[i].setNoViolationsMessage(
 										" No Constraints Violated");
 								}
 								
@@ -223,7 +223,7 @@ public class PopUpPanel {
                     // any constraints violated
                     if( currentResponseProg.getViolations().size() <= 0 ) {
                         currentResponseProg.setAction( ResponseProg.NO_VIOLATION_ACTION );
-                        currentResponseProg.setNoConstraintsMessage("No Constraints Violated");
+                        currentResponseProg.setNoViolationsMessage("No Constraints Violated");
                     }
 
                     //set our responses

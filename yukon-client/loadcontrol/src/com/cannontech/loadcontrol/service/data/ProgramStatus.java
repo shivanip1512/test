@@ -1,32 +1,31 @@
 package com.cannontech.loadcontrol.service.data;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.dr.program.service.ConstraintContainer;
 import com.cannontech.loadcontrol.ProgramUtils;
 import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.google.common.collect.Lists;
 
 public class ProgramStatus {
 
     private LMProgramBase program;
-    private Set<ConstraintContainer> constraintViolations = new HashSet<ConstraintContainer>();
+    private List<ConstraintContainer> constraintViolations = Lists.newArrayList();
     
     public ProgramStatus(LMProgramBase program) {
         this.program = program;
     }
     
-    public void addConstraintViolation(ConstraintContainer violation) {
-        this.constraintViolations.add(violation);
+    public void addConstraintViolation(ConstraintContainer constraintContainer) {
+    	this.constraintViolations.add(constraintContainer);
     }
     
-    public void setConstraintViolations(List<ConstraintContainer> violations) {
+    public void setConstraintViolations(List<ConstraintContainer> constraintViolations) {
         this.constraintViolations.clear();
-        this.constraintViolations.addAll(violations);
+        this.constraintViolations.addAll(constraintViolations);
     }
     
     public void setProgram(LMProgramBase program) {
@@ -57,7 +56,7 @@ public class ProgramStatus {
         return ProgramUtils.getCurrentGearName(program);
     }
     
-    public Set<ConstraintContainer> getConstraintViolations() {
+    public List<ConstraintContainer> getConstraintViolations() {
         return constraintViolations;
     }
     

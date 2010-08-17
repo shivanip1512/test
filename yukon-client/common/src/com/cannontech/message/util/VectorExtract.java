@@ -1,7 +1,6 @@
 package com.cannontech.message.util;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
@@ -34,19 +33,12 @@ public class VectorExtract
         }
     }
     
-    public static <T> List<T> extractList(com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws IOException {
-        ArrayList<T> result = Lists.newArrayList();
-        extractVector(result, vstr, polystr);
-        return result;
-    }
-    
-    @SuppressWarnings("unchecked")
-	public static <T> List<T> extractList(com.roguewave.vsj.VirtualInputStream vstr, ObjectStreamer type) throws IOException {
+    public static <T> List<T> extractList(com.roguewave.vsj.VirtualInputStream vstr, ObjectStreamer type, Class<T> expectedType) throws IOException {
         int listSize = (int) vstr.extractUnsignedInt();
 
-        List<T> result = Lists.newArrayListWithExpectedSize(listSize);
+        List<T> result = Lists.newArrayListWithCapacity(listSize);
         for (int index = 0; index < listSize; index++) {
-            result.add((T) vstr.restoreObject(type));
+            result.add(expectedType.cast(vstr.restoreObject(type)));
         }
 
         return result;
@@ -65,7 +57,7 @@ public class VectorExtract
     public static List<Double> extractDoubleList(com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws IOException {
         int listSize = (int) vstr.extractUnsignedInt();
         
-        List<Double> result = Lists.newArrayListWithExpectedSize(listSize);
+        List<Double> result = Lists.newArrayListWithCapacity(listSize);
         for (int i = 0; i < listSize; i++) {
             result.add(vstr.extractDouble());
         }
@@ -75,7 +67,7 @@ public class VectorExtract
     public static List<Integer> extractIntList(com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws IOException {
         int listSize = (int) vstr.extractUnsignedInt();
         
-        List<Integer> result = Lists.newArrayListWithExpectedSize(listSize);
+        List<Integer> result = Lists.newArrayListWithCapacity(listSize);
         for (int i = 0; i < listSize; i++) {
             result.add(vstr.extractInt());
         }

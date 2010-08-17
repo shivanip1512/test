@@ -13,13 +13,13 @@ import java.util.List;
 
 public class LMManualControlResponse extends LMMessage 
 {
-	private int _programID;
+	private int programID;
 	// List<ConstraintViolation> - An object containing the constraint information for each constraint violated
-	private List<ConstraintViolation> _constraintViolations;
+	private List<ConstraintViolation> constraintViolations;
 	// If a constraint is violated and the server is forced to
 	// determine a "best fit" time period for a program to 
 	// run, this field will contain info about the compromise made.
-	private String _bestFitAction;
+	private String bestFitAction;
 	
 
 /**
@@ -33,42 +33,42 @@ public LMManualControlResponse() {
 	 * @return
 	 */
 	public List<ConstraintViolation> getConstraintViolations() {
-		return _constraintViolations;
+		return constraintViolations;
 	}
 
 	/**
 	 * @param set
 	 */
 	public void setConstraintViolations(List<ConstraintViolation> set) {
-		_constraintViolations = set;
+		constraintViolations = set;
 	}
 
 	/**
 	 * @return
 	 */
 	public String getBestFitAction() {
-		return _bestFitAction;
+		return bestFitAction;
 	}
 
 	/**
 	 * @return
 	 */
 	public int getProgramID() {
-		return _programID;
+		return programID;
 	}
 
 	/**
 	 * @param string
 	 */
 	public void setBestFitAction(String string) {
-		_bestFitAction = string;
+		bestFitAction = string;
 	}
 
 	/**
 	 * @param i
 	 */
 	public void setProgramID(int i) {
-		_programID = i;
+		programID = i;
 	}
 
 }

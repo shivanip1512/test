@@ -24,6 +24,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.program.service.ConstraintContainer;
+import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
@@ -448,14 +449,14 @@ public class LoadControlServiceImpl implements LoadControlService {
         if (!force) {
             
             controlRequest.setConstraintFlag(LMManualControlRequest.CONSTRAINTS_FLAG_CHECK);
-            List<ConstraintContainer> checkViolations = loadControlCommandService.executeManualCommand(controlRequest);
+            ConstraintViolations checkViolations = loadControlCommandService.executeManualCommand(controlRequest);
             
             // log violations, add to status, return
-            if (checkViolations.size() > 0) {
-                for (ConstraintContainer violation : checkViolations) {
+            if (checkViolations.getViolationContainers().size() > 0) {
+                for (ConstraintContainer violation : checkViolations.getViolationContainers()) {
                     log.info("Constraint Violation: " + violation.toString() + " for request: " + controlRequest);
                 }
-                programStatus.setConstraintViolations(checkViolations);
+                programStatus.setConstraintViolations(checkViolations.getViolationContainers());
                 
                 // observeConstraintsAndExecute = false, return
                 if (!observeConstraintsAndExecute) {

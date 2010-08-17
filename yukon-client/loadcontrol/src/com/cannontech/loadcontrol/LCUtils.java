@@ -710,6 +710,14 @@ public class LCUtils
 		return msg;				
 	}
 	
+	public static List<ConstraintContainer> convertViolationsToContainers(List<ConstraintViolation> violations) {
+		List<ConstraintContainer> containerList = Lists.newArrayList();
+		for (ConstraintViolation violation : violations) {
+			ConstraintContainer constraintContainer = new ConstraintContainer(violation);
+			containerList.add(constraintContainer);
+		}
+		return containerList;
+	}
 	
 	/**
 	 * Executes a batch of requests and waits for their corresponding responses.
@@ -743,6 +751,7 @@ public class LCUtils
                     serverRequest.makeServerRequest(LoadControlClientConnection.getInstance(), lmRequest); 
 			}
 
+
 			//fill in our responses
 			for( int i = 0; i < responseMsgs.length; i++ )
 			{
@@ -754,20 +763,7 @@ public class LCUtils
                 if( !success )
                 {
     				LMManualControlResponse lmResp = (LMManualControlResponse) responseMsgs[i].getPayload();
-    				if(lmResp != null)
-    				{
-    					//do something interesting.
-    					List<ConstraintContainer> violationList = Lists.newArrayList();
-    					for( ConstraintViolation violation : lmResp.getConstraintViolations() ) {
-    						violationList.add(new ConstraintContainer(violation));
-    					}
-    					programResp[i].setViolations(violationList);
-    				}
-                    else
-                    {
-                        //add the message from the response to out list of problems
-                        programResp[i].setServerResponse( responseMsgs[i].getMessage() );
-                    }
+					programResp[i].setViolations(convertViolationsToContainers(lmResp.getConstraintViolations()));
                 }
                 
 			}

@@ -37,8 +37,8 @@ public class DefineCollectableConstraintViolation extends com.cannontech.message
 		cc.setErrorCode(ConstraintError.getByErrorCode((int) vstr.extractUnsignedInt()));
 		cc.setDoubleParams(VectorExtract.extractDoubleList(vstr, polystr));
 		cc.setIntegerParams(VectorExtract.extractIntList(vstr, polystr));
-		cc.setStringParams(VectorExtract.<String> extractList(vstr, SimpleMappings.CString));
-		cc.setDateTimeParams(VectorExtract.<Date> extractList(vstr, SimpleMappings.Time));
+		cc.setStringParams(VectorExtract.extractList(vstr, SimpleMappings.CString, String.class));
+		cc.setDateTimeParams(VectorExtract.extractList(vstr, SimpleMappings.Time, Date.class));
 	}
 
 	public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {

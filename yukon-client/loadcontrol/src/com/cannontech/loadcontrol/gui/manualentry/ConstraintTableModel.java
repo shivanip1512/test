@@ -192,12 +192,9 @@ public class ConstraintTableModel extends javax.swing.table.AbstractTableModel i
 
 				case COL_VIOLATION:
 					if(!prg.getViolations().isEmpty()) {
-						return prg.getViolations();
+						return prg.getViolationsStringList();
 					}
-					else if (prg.getNoConstraintsMessage() != null) {
-						return prg.getNoConstraintsMessage();
-					}
-					return prg.getServerResponse();
+					return prg.getNoViolationsMessage();
 					
                 //not implemented
                 case COL_STATUS:

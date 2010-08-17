@@ -1,11 +1,9 @@
 package com.cannontech.loadcontrol.service.impl;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.dr.program.service.ConstraintContainer;
-import com.cannontech.dr.program.service.ProgramService;
+import com.cannontech.dr.program.service.ConstraintViolations;
+import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.messages.LMManualControlResponse;
@@ -17,15 +15,14 @@ public class LoadControlCommandServiceImpl implements LoadControlCommandService 
 
     private LoadControlClientConnection loadControlClientConnection;
     private ServerRequest serverRequest;
-    private ProgramService programService;
     
-    public List<ConstraintContainer> executeManualCommand(LMManualControlRequest request) {
+    public ConstraintViolations executeManualCommand(LMManualControlRequest request) {
         
         ServerResponseMsg response = serverRequest.makeServerRequest(loadControlClientConnection, request); 
         
         LMManualControlResponse lmResponse = (LMManualControlResponse)response.getPayload();
         
-        return programService.convertViolationsToContainers(lmResponse.getConstraintViolations());
+        return new ConstraintViolations(LCUtils.convertViolationsToContainers(lmResponse.getConstraintViolations()));
     }
 
     @Autowired
@@ -38,9 +35,4 @@ public class LoadControlCommandServiceImpl implements LoadControlCommandService 
     public void setServerRequest(ServerRequest serverRequest) {
         this.serverRequest = serverRequest;
     }
-    
-    @Autowired
-    public void setProgramService(ProgramService programService) {
-		this.programService = programService;
-	}
 }

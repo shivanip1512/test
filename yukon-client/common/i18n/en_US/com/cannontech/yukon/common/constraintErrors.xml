@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+<entry key="yukon.common.constrainterror.OUTSIDE_SEASON_SCHEDULE">The program is not allowed to run outside of its prescribed season schedule. {startTime|BOTH} is not in a season in schedule id: {scheduleID}</entry>
+<entry key="yukon.common.constrainterror.PROHIBITED_HOLIDAY_RUN">This program is not allowed to run on {date|BOTH}, which is a holiday.</entry>
+<entry key="yukon.common.constrainterror.PROHIBITED_WEEKDAY_RUN">This program is not allowed to run on {weekday}.</entry>
+<entry key="yukon.common.constrainterror.EXCEEDED_DAILY_CONTROL_HOURS">Load group, '{groupName}' would exceed its maximum daily control hours by an estimated {numHours|2} hours.</entry>
+<entry key="yukon.common.constrainterror.EXCEEDED_MONTHLY_CONTROL_HOURS">Load group, '{groupName}' would exceed its maximum monthly control hours by an estimated {numHours|2} hours.</entry>
+<entry key="yukon.common.constrainterror.EXCEEDED_SEASONAL_CONTROL_HOURS">Load group, '{groupName}' would exceed its maximum seasonal control hours by an estimated {numHours|2} hours.</entry>
+<entry key="yukon.common.constrainterror.EXCEEDED_ANNUAL_CONTROL_HOURS">Load group, '{groupName}' would exceed its maximum annual control hours by an estimated {numHours|2} hours.</entry>
+<entry key="yukon.common.constrainterror.CONTROLLED_LESS_THAN_MINIMUM">Load groups might be controlled less than their minimum activate time, which is {numHours|2} hours.</entry>
+<entry key="yukon.common.constrainterror.CONTROLLED_MORE_THAN_MAXIMUM">Load groups might control longer than their maximum activate time, which is {numHours|2} hours.</entry>
+<entry key="yukon.common.constrainterror.MIN_RESTART_TIME_VIOLATION">Load group: {paoName} might violate its minimum restart time, which is {numHours|2} hours.</entry>
+<entry key="yukon.common.constrainterror.MAXIMUM_DAILY_OPERATIONS_REACHED">Load group: {paoName} has reached its maximum daily operations which is {maxDailyOps}.</entry>
+<entry key="yukon.common.constrainterror.PROPOSED_TIMES_SPAN_MULTIPLE_WINDOWS">The program cannot run outside of its prescribed control windows.  The proposed start and stop times span different control windows.</entry>
+<entry key="yukon.common.constrainterror.CANNOT_RUN_OUTSIDE_CONTROL_WINDOWS">The program cannot run outside of its prescribed control windows.</entry>
+<entry key="yukon.common.constrainterror.STOP_TIME_OUTSIDE_CONTROL_WINDOW">The program cannot run outside of its prescribed control windows.  The proposed stop time of {proposedStop|BOTH} is outside the control window that runs from {availableStart|BOTH} to {availableStop|BOTH}.</entry>
+<entry key="yukon.common.constrainterror.START_TIME_OUTSIDE_CONTROL_WINDOW">The program cannot run outside of its prescribed control windows.  The proposed start time of {proposedStart|BOTH} is outside the control window that runs from {availableStart|BOTH} to {availableStop|BOTH}.</entry>
+<entry key="yukon.common.constrainterror.PROPOSED_START_AFTER_STOP">The proposed start time of {proposedStart|BOTH} is after the stop time of {proposedStop|BOTH}.</entry>
+<entry key="yukon.common.constrainterror.PROPOSED_STOP_BEFORE_START">Undefined Load Management Constraint Violation.</entry>
+<entry key="yukon.common.constrainterror.INVALID_PROPOSED_CA_START_TIME_SAME_DATE">The program cannot run outside of its prescribed control windows.  The proposed start time of {proposedStart|BOTH} is outside the CONTROL AREA control window that runs from {availableStart|BOTH} to {availableStop|BOTH}.</entry>
+<entry key="yukon.common.constrainterror.INVALID_PROPOSED_CA_STOP_TIME_SAME_DATE">The program cannot run outside of its prescribed control windows.  The proposed stop time of {proposedStop|BOTH} is outside the CONTROL AREA control window that runs from {availableStart|BOTH} to {availableStop|BOTH}.</entry>
+<entry key="yukon.common.constrainterror.INVALID_PROPOSED_CA_START_TIME_OVER_MIDNIGHT">The program cannot run outside of its prescribed control windows.  The proposed start time of {proposedStart|BOTH} is outside the CONTROL AREA control window that runs from {availableStart|BOTH} to {availableStop|BOTH}.</entry>
+<entry key="yukon.common.constrainterror.INVALID_PROPOSED_CA_STOP_TIME_OVER_MIDNIGHT">The program cannot run outside of its prescribed control windows.  The proposed stop time of {proposedStop|BOTH} is outside the CONTROL AREA control window that runs from {availableStart|BOTH} to {availableStop|BOTH}.</entry>
+<entry key="yukon.common.constrainterror.PROPOSED_START_TOO_SOON">The program cannot start at the proposed start time of {proposedStart|BOTH} because that is only {minutesFromNow|2} minutes from now and the program's notification offset (notify active offset) is set to {offsetMinutes|2} minutes.</entry>
+<entry key="yukon.common.constrainterror.MASTER_PROGRAM_ACTIVE">The program cannot start since its master program, {paoName}, is active.</entry>
+<entry key="yukon.common.constrainterror.CANNOT_EXTEND_STOP_TIME">Gear change does not support extending the stop time. Current stop time: {currentStop} Requested stop time: {proposedStop} You cannot override this constraint error.</entry>
+<entry key="yukon.common.constrainterror.IDENTICAL_GEAR_ID">New gear id is identical to the current running gear. You cannot override this constraint error.</entry>
+<entry key="yukon.common.constrainterror.CANNOT_CHANGE_FROM_LATCHING">Latching method currently in use, you cannot change from latching method.</entry>
+<entry key="yukon.common.constrainterror.GEAR_CANNOT_CHANGE_STOPPING">Program state is set to: Stopping. Gear cannot be changed when program is not active. You cannot override this constraint error.</entry>
+<entry key="yukon.common.constrainterror.GEAR_CANNOT_CHANGE_INACTIVE">Program state is set to: Inactive. Gear cannot be changed when program is not active. You cannot override this constraint error.</entry>
+<entry key="yukon.common.constrainterror.EXCEEDED_DAILY_CONTROL_HOURS_MSG_2">Load group, '{paoName}' maximum daily control hours: {maxHours|2}</entry>
+<entry key="yukon.common.constrainterror.EXCEEDED_DAILY_CONTROL_HOURS_MSG_3">Load group, '{paoName}' current daily control hours: {currentHours|2}</entry>
+<entry key="yukon.common.constrainterror.EXCEEDED_MONTHLY_CONTROL_HOURS_MSG_2">Load group, '{paoName}' maximum monthly control hours: {maxHours|2}</entry>
+<entry key="yukon.common.constrainterror.EXCEEDED_MONTHLY_CONTROL_HOURS_MSG_3">Load group, '{paoName}' current monthly control hours: {currentHours|2}</entry>
+<entry key="yukon.common.constrainterror.EXCEEDED_SEASONAL_CONTROL_HOURS_MSG_2">Load group, '{paoName}' maximum seasonal control hours: {maxHour|2s}</entry>
+<entry key="yukon.common.constrainterror.EXCEEDED_SEASONAL_CONTROL_HOURS_MSG_3">Load group, '{paoName}' current seasonal control hours: {currentHours|2}</entry>
+<entry key="yukon.common.constrainterror.EXCEEDED_ANNUAL_CONTROL_HOURS_MSG_2">Load group, '{paoName}' maximum annual control hours: {maxHours|2}</entry>
+<entry key="yukon.common.constrainterror.EXCEEDED_ANNUAL_CONTROL_HOURS_MSG_3">Load group, '{paoName}' current annual control hours: {currentHours|2}</entry>
+<entry key="yukon.common.constrainterror.LOAD_GROUP_DISABLED">Load group: {paoName} is disabled.</entry>
+<entry key="yukon.common.constrainterror.LOAD_GROUP_MAX_ACTIVATE_VIOLATION">Load group: {paoName} maximum activate violation.</entry>
+<entry key="yukon.common.constrainterror.LOAD_GROUP_MIN_ACTIVATE_VIOLATION">Load group: {paoName} minimum activate violation.</entry>
+<entry key="yukon.common.constrainterror.LOAD_GROUP_MIN_RESTART_VIOLATION">Load group: {paoName} minimum restart violation.</entry>
+<entry key="yukon.common.constrainterror.LOAD_GROUP_MAX_DAILY_OPS_VIOLATION">Load group: {paoName} max daily ops violation.</entry>
+<entry key="yukon.common.constrainterror.LOAD_GROUP_MAX_DAILY_HOURS_VIOLATION">Load group: {paoName} max hours daily violation.</entry>
+<entry key="yukon.common.constrainterror.LOAD_GROUP_MAX_MONTHLY_HOURS_VIOLATION">Load group: {paoName} max hours monthly violation.</entry>
+<entry key="yukon.common.constrainterror.LOAD_GROUP_MAX_SEASONAL_HOURS_VIOLATION">Load group: {paoName} max hours seasonal violation.</entry>
+<entry key="yukon.common.constrainterror.LOAD_GROUP_MAX_ANNUAL_HOURS_VIOLATION">Load group: {paoName} max hours annually violation.</entry>
+<entry key="yukon.common.constrainterror.LOAD_GROUP_CANNOT_CONTROL_IN_WINDOW">Load group: {paoName} not able to control in control area window.</entry>
+<entry key="yukon.common.constrainterror.LOAD_GROUP_CANNOT_CONTROL_IN_WINDOW_ADJUST">CA start: {areaStart|BOTH} CA stop: {areaStop|BOTH} duration {duration} adjust: Y </entry>
+<entry key="yukon.common.constrainterror.LOAD_GROUP_CANNOT_CONTROL_IN_WINDOW_NO_ADJUST">CA start: {areaStart|BOTH} CA stop: {areaStop|BOTH} duration {duration} adjust: N</entry>
+<entry key="yukon.common.constrainterror.LOAD_GROUP_NOT_IN_PROGRAM_CONTROL_WINDOW">Load group: {paoName} not in program control window.</entry>
+<entry key="yukon.common.constrainterror.LOAD_GROUP_NOT_ENOUGH_TIME_LEFT_IN_WINDOW">Load group: {paoName} not enough control time left in program control window.</entry>
+
+</properties>

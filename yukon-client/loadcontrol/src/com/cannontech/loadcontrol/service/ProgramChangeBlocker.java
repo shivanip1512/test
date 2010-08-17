@@ -1,13 +1,12 @@
 package com.cannontech.loadcontrol.service;
 
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.dr.program.service.ConstraintContainer;
+import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.dynamic.receive.LMProgramChanged;
@@ -59,8 +58,8 @@ public class ProgramChangeBlocker implements MessageListener {
         
         this.afterTime = System.currentTimeMillis();
         log.info("Executing program update for programId " + this.programId);
-        List<ConstraintContainer> executeViolations = loadControlCommandService.executeManualCommand(controlRequest);
-        programStatus.setConstraintViolations(executeViolations);
+        ConstraintViolations executeViolations = loadControlCommandService.executeManualCommand(controlRequest);
+        programStatus.setConstraintViolations(executeViolations.getViolationContainers());
         
         try {
             log.info("Waiting for program update for programId " + this.programId + " to occur after " + this.afterTime);

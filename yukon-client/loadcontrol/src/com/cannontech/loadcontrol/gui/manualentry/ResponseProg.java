@@ -11,6 +11,7 @@ import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Lists;
 
 /**
  * @author rneuharth
@@ -21,8 +22,7 @@ import com.cannontech.user.YukonUserContext;
 public class ResponseProg
 {
 	private List<ConstraintContainer> violations = new ArrayList<ConstraintContainer>(8);
-	private String serverResponse;
-	private String noConstraintsMessage = null;
+	private String noViolationsMessage = null;
 	private String action = NONE_ACTION;
 	private int status = ServerResponseMsg.STATUS_UNINIT;
 	private Boolean override = Boolean.FALSE;
@@ -85,18 +85,17 @@ public class ResponseProg
 	/**
 	 * @return
 	 */
-	public String getViolationsAsString()
+	public List<String> getViolationsStringList()
 	{
 		TemplateProcessorFactory processorFactory = YukonSpringHook.getBean(TemplateProcessorFactory.class);
 		YukonUserContext userContext = ClientSession.getUserContext();
 		
-		StringBuffer buff = new StringBuffer();
+		List<String> violationStrings = Lists.newArrayList();
 		for( int i = 0; i < getViolations().size(); i++ ) {
-			String violationString = processorFactory.processResolvableTemplate(getViolations().get(i).getConstraintTemplate(), 
-														   userContext);
-			buff.append("(" + (i+1) + ") " + violationString + '\n');
+			violationStrings.add(processorFactory.processResolvableTemplate(getViolations().get(i).getConstraintTemplate(), 
+														   userContext));
 		}
-		return buff.toString();
+		return violationStrings;
 	}
 
 	/**
@@ -171,20 +170,12 @@ public class ResponseProg
 		lmProgramBase = base;
 	}
 
-	public String getServerResponse() {
-		return serverResponse;
+	public String getNoViolationsMessage() {
+		return noViolationsMessage;
 	}
 
-	public void setServerResponse(String serverResponse) {
-		this.serverResponse = serverResponse;
-	}
-
-	public String getNoConstraintsMessage() {
-		return noConstraintsMessage;
-	}
-
-	public void setNoConstraintsMessage(String noConstraintsMessage) {
-		this.noConstraintsMessage = noConstraintsMessage;
+	public void setNoViolationsMessage(String noViolationsMessage) {
+		this.noViolationsMessage = noViolationsMessage;
 	}
 
 }

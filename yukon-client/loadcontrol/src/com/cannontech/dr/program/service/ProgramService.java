@@ -15,7 +15,6 @@ import com.cannontech.common.util.DatedObject;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.loadcontrol.messages.ConstraintViolation;
 import com.cannontech.user.YukonUserContext;
 
 public interface ProgramService {
@@ -81,13 +80,4 @@ public interface ProgramService {
     public void changeGear(int programId, int gearNumber);
 
     public void setEnabled(int programId, boolean isEnabled);
-    
-    /**
-     * Convert the ConstraintViolations that come in from an LM Response into
-     * a list of containers that hold the ConstraintViolations.
-     * @param violations The constraint violations from the LM Response.
-     * @return The list of ConstraintContainers, each holding a ConstraintViolation.
-     */
-    public List<ConstraintContainer> convertViolationsToContainers(List<ConstraintViolation> violations);
-
 }
