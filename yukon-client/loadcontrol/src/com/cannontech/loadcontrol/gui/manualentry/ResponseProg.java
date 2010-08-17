@@ -85,7 +85,7 @@ public class ResponseProg
 	/**
 	 * @return
 	 */
-	public List<String> getViolationsStringList()
+	public List<String> getViolationsAsString()
 	{
 		TemplateProcessorFactory processorFactory = YukonSpringHook.getBean(TemplateProcessorFactory.class);
 		YukonUserContext userContext = ClientSession.getUserContext();
