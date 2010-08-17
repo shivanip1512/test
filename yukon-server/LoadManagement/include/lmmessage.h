@@ -206,7 +206,6 @@ public:
     CtiLMManualControlResponse& operator=(const CtiLMManualControlResponse& right);
 private:
     LONG _paoid;
-    //vector< string > _constraintViolations;
     vector< ConstraintViolation > _constraintViolations;
     string _best_fit_action;
 };

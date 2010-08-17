@@ -452,19 +452,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeSameDate,
+                                                 startTime,
+                                                 controlArea.getCurrentDailyStartTime(today),
+                                                 controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeSameDate, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( startTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -488,19 +481,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeSameDate,
+                                                 startTime,
+                                                 controlArea.getCurrentDailyStartTime(today),
+                                                 controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeSameDate, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( startTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -524,19 +510,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeSameDate,
+                                                 startTime,
+                                                 controlArea.getCurrentDailyStartTime(today),
+                                                 controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeSameDate, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( startTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -582,19 +561,13 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStopTimeSameDate,
+                                                 stopTime,
+                                                 controlArea.getCurrentDailyStartTime(today),
+                                                 controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeSameDate, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( stopTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));}
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+}
 
 
 BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_start_and_stop_after)
@@ -617,19 +590,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeSameDate,
+                                                 startTime,
+                                                 controlArea.getCurrentDailyStartTime(today),
+                                                 controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeSameDate, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( startTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 BOOST_AUTO_TEST_CASE(test_program_control_area_constraint_check_infinite_stop)
@@ -690,19 +656,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
 
     // since our window is tomorrow the constraint error message should report tomorrows control window
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeSameDate,
+                                                 startTime,
+                                                 controlArea.getCurrentDailyStartTime(tomorrow),
+                                                 controlArea.getCurrentDailyStopTime(tomorrow));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeSameDate, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( startTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(tomorrow), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(tomorrow), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -729,19 +688,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
 
     // since our window is tomorrow the constraint error message should report tomorrows control window
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeSameDate,
+                                                 startTime,
+                                                 controlArea.getCurrentDailyStartTime(tomorrow),
+                                                 controlArea.getCurrentDailyStopTime(tomorrow));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeSameDate, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( startTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(tomorrow), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(tomorrow), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -768,19 +720,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
 
     // since our window is tomorrow the constraint error message should report tomorrows control window
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeSameDate,
+                                                 startTime,
+                                                 controlArea.getCurrentDailyStartTime(tomorrow),
+                                                 controlArea.getCurrentDailyStopTime(tomorrow));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeSameDate, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( startTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(tomorrow), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(tomorrow), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -829,19 +774,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
 
     // since our window is tomorrow the constraint error message should report tomorrows control window
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStopTimeSameDate,
+                                                 stopTime,
+                                                 controlArea.getCurrentDailyStartTime(tomorrow),
+                                                 controlArea.getCurrentDailyStopTime(tomorrow));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeSameDate, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( stopTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(tomorrow), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(tomorrow), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -868,19 +806,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
 
     // since our window is tomorrow the constraint error message should report tomorrows control window
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeSameDate,
+                                                 startTime,
+                                                 controlArea.getCurrentDailyStartTime(tomorrow),
+                                                 controlArea.getCurrentDailyStopTime(tomorrow));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeSameDate, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( startTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(tomorrow), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(tomorrow), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -935,19 +866,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStopTimeOverMidnight,
+                                                 stopTime,
+                                                 controlArea.getCurrentDailyStartTime(yesterday),
+                                                 controlArea.getCurrentDailyStopTime(yesterday));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( stopTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(yesterday), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(yesterday), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -974,19 +898,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStopTimeOverMidnight,
+                                                 stopTime,
+                                                 controlArea.getCurrentDailyStartTime(yesterday),
+                                                 controlArea.getCurrentDailyStopTime(yesterday));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( stopTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(yesterday), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(yesterday), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -1013,19 +930,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStopTimeOverMidnight,
+                                                 stopTime,
+                                                 controlArea.getCurrentDailyStartTime(yesterday),
+                                                 controlArea.getCurrentDailyStopTime(yesterday));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( stopTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(yesterday), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(yesterday), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -1052,19 +962,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStopTimeOverMidnight,
+                                                 stopTime,
+                                                 controlArea.getCurrentDailyStartTime(yesterday),
+                                                 controlArea.getCurrentDailyStopTime(yesterday));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( stopTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(yesterday), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(yesterday), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -1091,19 +994,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStopTimeOverMidnight,
+                                                 stopTime,
+                                                 controlArea.getCurrentDailyStartTime(yesterday),
+                                                 controlArea.getCurrentDailyStopTime(yesterday));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( stopTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(yesterday), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(yesterday), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -1128,19 +1024,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeOverMidnight,
+                                                 startTime,
+                                                 controlArea.getCurrentDailyStartTime(today),
+                                                 controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( startTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -1164,19 +1053,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeOverMidnight,
+                                                 startTime,
+                                                 controlArea.getCurrentDailyStartTime(today),
+                                                 controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( startTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -1200,19 +1082,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeOverMidnight,
+                                                 startTime,
+                                                 controlArea.getCurrentDailyStartTime(today),
+                                                 controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( startTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -1236,19 +1111,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeOverMidnight,
+                                                 startTime,
+                                                 controlArea.getCurrentDailyStartTime(today),
+                                                 controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( startTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -1272,19 +1140,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeOverMidnight,
+                                                 startTime,
+                                                 controlArea.getCurrentDailyStartTime(today),
+                                                 controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( startTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -1352,19 +1213,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStopTimeOverMidnight,
+                                                 stopTime,
+                                                 controlArea.getCurrentDailyStartTime(today),
+                                                 controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( stopTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -1388,19 +1242,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStopTimeOverMidnight,
+                                                 stopTime,
+                                                 controlArea.getCurrentDailyStartTime(today),
+                                                 controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( stopTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -1446,19 +1293,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStopTimeOverMidnight,
+                                                 stopTime,
+                                                 controlArea.getCurrentDailyStartTime(today),
+                                                 controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( stopTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -1482,19 +1322,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStopTimeOverMidnight,
+                                                 stopTime,
+                                                 controlArea.getCurrentDailyStartTime(today),
+                                                 controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStopTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( stopTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(today), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(today), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -1521,19 +1354,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // since our start time has moved out beyond todays window, we compare to tomorrows, error message reflects that
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeOverMidnight,
+                                                 startTime,
+                                                 controlArea.getCurrentDailyStartTime(tomorrow),
+                                                 controlArea.getCurrentDailyStopTime(tomorrow));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( startTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(tomorrow), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(tomorrow), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -1560,19 +1386,12 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
 
     // since our start time has moved out beyond todays window, we compare to tomorrows, error message reflects that
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 3,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeOverMidnight,
+                                                 startTime,
+                                                 controlArea.getCurrentDailyStartTime(tomorrow),
+                                                 controlArea.getCurrentDailyStopTime(tomorrow));
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_InvalidProposedCAStartTimeOverMidnight, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( startTime, times.at(0));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStartTime(tomorrow), times.at(1));
-    BOOST_CHECK_EQUAL( controlArea.getCurrentDailyStopTime(tomorrow), times.at(2));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 
@@ -1640,18 +1459,11 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, stopTime.seconds(), startTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
-    std::vector<double> doubles = constraints.getViolations()[0].getDoubleParams();
-    std::vector<int> ints = constraints.getViolations()[0].getIntegerParams();
-    std::vector<string> strings = constraints.getViolations()[0].getStringParams();
-    std::vector<CtiTime> times = constraints.getViolations()[0].getDateTimeParams();
-    BOOST_CHECK_EQUAL( 0, doubles.size());
-    BOOST_CHECK_EQUAL( 0,    ints.size());
-    BOOST_CHECK_EQUAL( 0, strings.size());
-    BOOST_CHECK_EQUAL( 2,   times.size());
+    ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TT_ProposedStartAfterStop,
+                                                 stopTime,
+                                                 startTime);
 
-    BOOST_CHECK_EQUAL( ConstraintViolation::CV_ProposedStartAfterStop, constraints.getViolations()[0].getErrorCode());
-    BOOST_CHECK_EQUAL( stopTime,  times.at(0));
-    BOOST_CHECK_EQUAL( startTime, times.at(1));
+    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
 }
 
 

@@ -492,19 +492,12 @@ CtiMessage* CtiLMManualControlResponse::replicateMessage() const
 void CtiLMManualControlResponse::restoreGuts(RWvistream& strm)
 {
     CtiLMMessage::restoreGuts(strm);
-    vector<RWCollectableString*>* rw_ordered = CTIDBG_new vector<RWCollectableString*>;
-    vector<ConstraintViolation> vec;
+    _constraintViolations.clear();
 
     strm >> _paoid;
-    //strm >> rw_ordered;
-    strm >> vec;
+    strm >> _constraintViolations;
     strm >> _best_fit_action;
 
-    for( int i = 0; i < vec.size(); i++ )
-    {
-        //_constraintViolations.push_back(  ((RWCollectableString*) (*rw_ordered)[i])->data());
-        _constraintViolations.push_back(vec.at(i));
-    }
     return;
 }
 
@@ -515,21 +508,13 @@ void CtiLMManualControlResponse::restoreGuts(RWvistream& strm)
 ---------------------------------------------------------------------------*/
 void CtiLMManualControlResponse::saveGuts(RWvostream& strm) const
 {
-
-/* NEW */
     CtiLMMessage::saveGuts(strm);
-    vector<ConstraintViolation> vect;
-    for( std::vector< ConstraintViolation >::const_iterator iter = _constraintViolations.begin();
-       iter != _constraintViolations.end();
-       iter++ )
-    {
-        vect.push_back(*iter);
-    }
-    strm << _paoid;
-    strm << vect;
-    strm << _best_fit_action;
-    return;
 
+    strm << _paoid;
+    strm << _constraintViolations;
+    strm << _best_fit_action;
+
+    return;
 }
 
 /*---------------------------------------------------------------------------

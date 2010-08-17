@@ -188,7 +188,12 @@ clistener.obj:	yukon.h precompiled.h types.h ctidbgmem.h clistener.h \
 		msg_server_req.h lmprogramcurtailment.h lmcurtailcustomer.h \
 		lmcicustomerbase.h
 constraintviolation.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		ConstraintViolation.h
+		ConstraintViolation.h ctitime.h dlldefs.h lmid.h rwutil.h \
+		database_connection.h dbaccess.h dllbase.h os2_2w32.h \
+		cticalls.h dsm2.h mutex.h guard.h utility.h queues.h numstr.h \
+		sorted_vector.h cticonnect.h netports.h dsm2err.h words.h \
+		sema.h database_reader.h row_reader.h boost_time.h \
+		boostutil.h
 executor.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		msg_server_req.h dlldefs.h message.h ctitime.h collectable.h \
 		rwutil.h database_connection.h dbaccess.h dllbase.h \
@@ -918,4 +923,6 @@ test_lmprogram.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		lmmessage.h clientconn.h ctdpcptrq.h ConstraintViolation.h \
 		executor.h msg_server_req.h lmprogramcurtailment.h \
 		lmcurtailcustomer.h lmcicustomerbase.h
+test_lm_constraintviolations.obj:	yukon.h precompiled.h types.h \
+		ctidbgmem.h ConstraintViolation.h ctitime.h dlldefs.h
 #ENDUPDATE#

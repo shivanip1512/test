@@ -42,7 +42,8 @@ $(COMPILEBASE)\lib\ctiseasondb.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib
 
 LOADMANAGEMENTTESTOBJS= \
-test_lmprogram.obj
+test_lmprogram.obj \
+test_lm_constraintviolations.obj
 
 LOADMANAGEMENTBASEOBJS= \
 $(OBJ)\clientconn.obj \
@@ -145,5 +146,7 @@ test_lmprogram.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		lmmessage.h clientconn.h ctdpcptrq.h ConstraintViolation.h \
 		executor.h msg_server_req.h lmprogramcurtailment.h \
 		lmcurtailcustomer.h lmcicustomerbase.h
+test_lm_constraintviolations.obj:	yukon.h precompiled.h types.h \
+		ctidbgmem.h ConstraintViolation.h ctitime.h dlldefs.h
 #ENDUPDATE#
 
