@@ -1,22 +1,14 @@
 #include "yukon.h"
 
-
-#include <stdlib.h>
-#include <iostream>
-
-#include <rw\re.h>
-#undef mask_                // Stupid RogueWave re.h
-
-#include <limits.h>
-
 #include "cmdparse.h"
 #include "cparms.h"
-#include "devicetypes.h"
 #include "logger.h"
 #include "numstr.h"
 #include "pointdefs.h"
 #include "utility.h"
 #include "ctistring.h"
+
+#include "boost/regex.hpp"
 
 using namespace std;
 
@@ -323,17 +315,6 @@ void  CtiCommandParser::parse()
         {
             _cmd["device"] = CtiParseValue( -1 );
         }
-
-#if 0
-        {
-            CtiParseValue& pv = CtiParseValue(); // = _cmd["command"];
-            _cmd.findValue("device", pv);
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Device specified " << pv.getString() << " id = " << pv.getInt() << endl;
-            }
-        }
-#endif
     }
 
     resolveProtocolType(CmdStr);
@@ -446,7 +427,12 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     //  getvalue daily read channel n 12/12/2007 12/27/2007
     //  getvalue daily read detail 12/12/2007
     //  getvalue daily read detail channel n 12/12/2007
-    static const boost::regex  re_dailyread(CtiString("daily read( detail)?( channel ") + str_num + CtiString(")?") + CtiString("( ") + str_daterange + CtiString(")?"));
+    static const boost::regex  re_daily_read(CtiString("daily read( detail)?( channel ") + str_num + CtiString(")?") + CtiString("( ") + str_daterange + CtiString(")?"));
+
+    //  getvalue hourly read
+    //  getvalue hourly read 12/12/2007
+    //  getvalue hourly read 12/12/2007 12/27/2007
+    static const boost::regex  re_hourly_read(CtiString("hourly read( channel ") + str_num + CtiString(")?( ") + str_daterange + CtiString(")?"));
 
     static const boost::regex  re_outage(CtiString("outage ") + str_num);
 
@@ -678,7 +664,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         }
         else if(CmdStr.contains(" daily"))
         {
-            if( !(temp = CmdStr.match(re_dailyread)).empty() )
+            if( !(temp = CmdStr.match(re_daily_read)).empty() )
             {
                 //  getvalue daily read 12/12/2007
                 //  getvalue daily read 12/12/2007 12/27/2007
@@ -703,6 +689,31 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                     if( !(temp = cmdtok()).empty() )
                     {
                         _cmd["daily_read_date_end"] = temp;
+                    }
+                }
+            }
+        }
+        else if(CmdStr.contains(" hourly"))
+        {
+            if( !(temp = CmdStr.match(re_hourly_read)).empty() )
+            {
+                //  getvalue hourly read
+                //  getvalue hourly read channel n
+                //  getvalue hourly read 12/12/2007
+                //  getvalue hourly read 12/12/2007 12/27/2007
+                //  getvalue hourly read channel n 12/12/2007 12/27/2007
+
+                _cmd["hourly_read"] = true;
+
+                if( !(temp = temp.match(re_daterange)).empty() )
+                {
+                    CtiTokenizer cmdtok(temp);
+
+                    _cmd["hourly_read_date_begin"] = cmdtok();
+
+                    if( !(temp = cmdtok()).empty() )
+                    {
+                        _cmd["hourly_read_date_end"] = temp;
                     }
                 }
             }
@@ -793,7 +804,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         else if(!(token = CmdStr.match(re_duty_cycle)).empty())
         {
             flag |= CMD_FLAG_GV_DUTYCYCLE;
-            
+
             CtiTokenizer cmdtok(token);
 
             cmdtok(); // Move past "duty"
@@ -1336,12 +1347,9 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
 
     setFlags(flag);
 
-#if 1
-
     doParseControlExpresscom(CmdStr);
     doParseControlSA(CmdStr);
 
-#else
     if(isKeyValid("type"))
     {
         switch( getiValue("type") )
@@ -1376,7 +1384,6 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
             }
         }
     }
-#endif
 }
 
 
@@ -2832,20 +2839,6 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
 
                     rolecount++;
                 }
-
-#if 0
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " Roles found " << rolecount << endl;
-
-                    dout << " First role " << getiValue("multi_rolenum") << endl;
-                    dout << " Fix   bits " << strFixed << endl;
-                    dout << " OD    bits " << strVarOut << endl;
-                    dout << " ID    bits " << strVarIn << endl;
-                    dout << " STF   bits " << strStages << endl;
-                }
-#endif
 
                 _cmd["multi_rolefixed"] = CtiParseValue(strFixed.strip());
                 _cmd["multi_roleout"]   = CtiParseValue(strVarOut.strip());
@@ -5001,7 +4994,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         {
             _cmd["xcdata"] = CtiParseValue( str );
         }
-        
+
         if(!(temp = CmdStr.match((const boost::regex) ( CtiString("configbyte ") + str_anynum) ) ).empty())
         {
             if(!(valStr = temp.match(str_anynum)).empty())
@@ -5897,16 +5890,6 @@ void CtiCommandParser::doParsePutConfigThermostatScheduleDOW(CtiTokenizer &tok, 
             _cmd[heatstr] = heat;
             _cmd[coolstr] = cool;
 
-#if 0
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << hhstr << " " << (int)hh << endl;
-                dout << mmstr << " " << (int)mm << endl;
-                dout << heatstr << " " << (int)heat << endl;
-                dout << coolstr << " " << (int)cool << endl;
-            }
-#endif
-
             component = 0;
             pod++;  // Look for next period of the day!
             hh = 0xff;
@@ -6522,14 +6505,7 @@ void CtiCommandParser::doParsePutConfigUtilityUsage(const string &_CmdStr)
             _cmd[chan]        = CtiParseValue(ch);
             _cmd[chanBucket]      = CtiParseValue(bucket);
             _cmd[chanValue]   = CtiParseValue(val);
-#if 0
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << chan << " " << (int)ch << endl;
-                dout << bucket << " " << (int)bucket << endl;
-                dout << chanValue << " " << (float)val << endl;
-            }
-#endif
+
             chanIndex++;
             token = tok(",");
 

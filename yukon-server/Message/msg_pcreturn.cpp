@@ -1,24 +1,7 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_pcreturn
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pcreturn.cpp-arc  $
-* REVISION     :  $Revision: 1.11.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:45 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-#include <iostream>
 
 #include "msg_pcreturn.h"
 #include "logger.h"
-#include "collectable.h"
-#include "utility.h"
 
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
@@ -209,7 +192,8 @@ CtiReturnMsg::CtiReturnMsg() :
     _attempt_num(0),
     _group_message_id(0),
     _user_message_id(0)
- {};
+{
+}
 
 CtiReturnMsg::CtiReturnMsg(long device_id,
                  const string& command_string,
@@ -233,43 +217,63 @@ CtiReturnMsg::CtiReturnMsg(long device_id,
      _group_message_id(group_message_id),
      _user_message_id(user_message_id),
      Inherited(data)
- {
+{
     Inherited::setSOE(soe);
- }
+}
+
+
+CtiReturnMsg::CtiReturnMsg(long device_id,
+                           const PIL_ECHO &pil_echo,
+                           const string &result_string,
+                           int status) :
+     _expectMore(0),
+     _device_id(device_id),
+     _command_string(pil_echo.CommandStr),
+     _result_string(result_string),
+     _status(status),
+     _routeid(pil_echo.RouteID),
+     _macro_offset(pil_echo.MacroOffset),
+     _attempt_num(pil_echo.Attempt),
+     _group_message_id(pil_echo.GrpMsgID),
+     _user_message_id(pil_echo.UserID)
+{
+    Inherited::setSOE(pil_echo.SOE);
+}
+
 
 CtiReturnMsg::CtiReturnMsg(const CtiReturnMsg &aRef)
- {
+{
     *this = aRef;
- }
+}
 
 CtiReturnMsg& CtiReturnMsg::operator=(const CtiReturnMsg& aRef)
- {
+{
     if(this != &aRef)
     {
-       Inherited::operator=(aRef);
+        Inherited::operator=(aRef);
 
-       _device_id          = aRef.DeviceId();
-       _command_string     = aRef.CommandString();
-       _result_string      = aRef.ResultString();
-       _status             = aRef.Status();
-       _routeid            = aRef.RouteID();
-       _macro_offset       = aRef.MacroOffset();
-       _attempt_num        = aRef.AttemptNum();
-       _group_message_id    = aRef.GroupMessageId();
-       _user_message_id    = aRef.UserMessageId();
-       _expectMore         = aRef.ExpectMore();
+        _device_id          = aRef.DeviceId();
+        _command_string     = aRef.CommandString();
+        _result_string      = aRef.ResultString();
+        _status             = aRef.Status();
+        _routeid            = aRef.RouteID();
+        _macro_offset       = aRef.MacroOffset();
+        _attempt_num        = aRef.AttemptNum();
+        _group_message_id    = aRef.GroupMessageId();
+        _user_message_id    = aRef.UserMessageId();
+        _expectMore         = aRef.ExpectMore();
 
-       delete_container( PointData() );
-       PointData().clear();     // Make sure it is empty!
+        delete_container( PointData() );
+        PointData().clear();     // Make sure it is empty!
 
-       for(int i = 0; i < aRef.PointData().size(); i++)
-       {
-          // This guy creates a copy of himself and returns a CtiMessage pointer to the copy!
-          CtiMessage* newp = ((CtiMessage*)aRef.PointData()[i])->replicateMessage();
-          PointData().push_back(newp);
-       }
+        for(int i = 0; i < aRef.PointData().size(); i++)
+        {
+            // This guy creates a copy of himself and returns a CtiMessage pointer to the copy!
+            CtiMessage* newp = ((CtiMessage*)aRef.PointData()[i])->replicateMessage();
+            PointData().push_back(newp);
+        }
     }
 
     return *this;
- }
+}
 

@@ -440,7 +440,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
                     if(OutMessage != NULL)
                     {
-                        InEchoToOut(InMessage, OutMessage);
+                        InEchoToOut(*InMessage, OutMessage);
 
                         /* This is the Big E so reset the RTU, download the deadbands and clear the demand accums */
                         if((i = WelCoReset(OutMessage, MAXPRIORITY)) != NORMAL)
@@ -510,7 +510,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
                     if(OutMessage != NULL)
                     {
-                        InEchoToOut(InMessage, OutMessage);
+                        InEchoToOut(*InMessage, OutMessage);
 
                         CtiCommandParser parse(InMessage->Return.CommandStr);
 
@@ -1206,7 +1206,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
         if(OutMessage != NULL)
         {
-            InEchoToOut(InMessage, OutMessage);
+            InEchoToOut(*InMessage, OutMessage);
 
             if((i = WelCoContinue (OutMessage, MAXPRIORITY - 4)) != NORMAL)
             {
@@ -1341,7 +1341,7 @@ INT CtiDeviceWelco::WelCoTimeSync(INMESS *InMessage, list< OUTMESS* > &outList, 
 
     if(OutMessage != NULL)
     {
-        InEchoToOut(InMessage, OutMessage);
+        InEchoToOut(*InMessage, OutMessage);
         status = WelCoTimeSync(OutMessage, MAXPRIORITY - 1);
 
         if(status == NORMAL)
@@ -1433,7 +1433,7 @@ INT CtiDeviceWelco::WelCoDeadBands(INMESS *InMessage, list< OUTMESS* > &outList,
 
     if(OutMessage != NULL)
     {
-        InEchoToOut(InMessage, OutMessage);
+        InEchoToOut(*InMessage, OutMessage);
 
         status = WelCoDeadBands(OutMessage, outList, MAXPRIORITY - 1);
     }

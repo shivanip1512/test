@@ -22,6 +22,7 @@ struct test_Mct410Device : Mct410Device
     test_Mct410Device()
     {
         setType(TYPEMCT410);
+        _name = "Test MCT-410";
     }
 
     typedef Mct410Device::point_info point_info;
@@ -308,7 +309,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_invalid_di
     CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
 
     BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
-    BOOST_CHECK_EQUAL( "Invalid display configuration \"5x3\"" , errorMsg->ResultString() );
+    BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid display configuration \"5x3\"" , errorMsg->ResultString() );
 
     delete errorMsg;        // clean up the return message
 }
@@ -334,7 +335,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_displ
     CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
 
     BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
-    BOOST_CHECK_EQUAL( "Invalid display configuration \"5x3\"" , errorMsg->ResultString() );
+    BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid display configuration \"5x3\"" , errorMsg->ResultString() );
 
     delete errorMsg;        // clean up the return message
 }
@@ -360,7 +361,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_invalid_te
     CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
 
     BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
-    BOOST_CHECK_EQUAL( "Invalid test duration \"3\"" , errorMsg->ResultString() );
+    BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid test duration \"3\"" , errorMsg->ResultString() );
 
     delete errorMsg;        // clean up the return message
 }
@@ -386,7 +387,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_test)
     CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
 
     BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
-    BOOST_CHECK_EQUAL( "Invalid test duration \"3\"" , errorMsg->ResultString() );
+    BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid test duration \"3\"" , errorMsg->ResultString() );
 
     delete errorMsg;        // clean up the return message
 }
@@ -412,7 +413,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_out_of_bounds
     CtiReturnMsg *errorMsg = static_cast<CtiReturnMsg*>(retList.front());
 
     BOOST_CHECK_EQUAL( BADPARAM , errorMsg->Status() );
-    BOOST_CHECK_EQUAL( "Invalid transformer ratio (400)" , errorMsg->ResultString() );
+    BOOST_CHECK_EQUAL( "Test MCT-410 / Invalid transformer ratio (400)" , errorMsg->ResultString() );
 
     delete errorMsg;        // clean up the return message
 }

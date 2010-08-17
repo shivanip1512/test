@@ -1,28 +1,8 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   cmdparse
-*
-* Class:  CtiCommandParser
-* Date:   2/22/2000
-*
-* Author:
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __CMDPARSE_H__
-#define __CMDPARSE_H__
-#pragma warning( disable : 4786)
+#pragma once
 
-#include <iomanip>
-#include <functional>
 #include <string>
 #include <list>
 #include <map>
-
-#include <rw/tvhdict.h>
-#include <rw/rwdate.h>
-#include <rw/tvslist.h>
-#include <rw\ctoken.h>
 
 #include "ctitokenizer.h"
 #include "dlldefs.h"
@@ -273,4 +253,3 @@ enum CtiClientRequest_t
    MaxRequest
 };
 
-#endif // #ifndef __CMDPARSE_H__

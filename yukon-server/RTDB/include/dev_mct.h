@@ -25,7 +25,11 @@ protected:
 
     enum
     {
-        MCTConfig_ChannelCount = 4
+        MCTConfig_ChannelCount = 4,
+
+        // Return value to allow non error returns
+        // where error was handled in code.
+        ExecutionComplete = NoError
     };
 
     virtual bool getOperation( const UINT &cmdType, BSTRUCT &b ) const;
@@ -66,6 +70,9 @@ protected:
     CtiTime getLastScheduledFreezeTimestamp(const CtiTime &TimeNow);
     static CtiTime findLastScheduledFreeze(const CtiTime &TimeNow, unsigned freeze_day);
     void    updateFreezeInfo(int freeze_counter, unsigned long freeze_timestamp);
+
+    // Places error onto the retlist, DELETES OUT MESSAGE
+    void returnErrorMessage( int retval, OUTMESS *&om, list< CtiMessage* > &retList, const string &error ) const;
 
     static bool getMCTDebugLevel(int mask);
 

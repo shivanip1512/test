@@ -25,11 +25,13 @@
 #include "cparms.h"
 #include "ctidate.h"
 
+#include "cmd_dlc.h"
+
 using std::list;
+
 using Cti::Protocols::EmetconProtocol;
 
-using std::make_pair;
-using std::set;
+using namespace Cti::Devices::Commands;
 
 namespace Cti {
 namespace Devices {
@@ -94,6 +96,9 @@ bool MctDevice::sspecIsValid( int sspec )
     //  36, 292, 548, 804, 1060, 1316, 1572, 1828, 2084, 2340, 2596, 2852, 3108, 3364, 3620, 3876, ...
 
     bool valid = false;
+
+    using std::make_pair;
+    using std::set;
 
     set< pair<int, int> > mct_sspec;
     pair<int, int> reported;
@@ -434,68 +439,77 @@ INT MctDevice::ExecuteRequest( CtiRequestMsg              *pReq,
         EstablishOutMessagePriority( OutMessage, MAXPRIORITY - 4 );
     }
 
-    switch( parse.getCommand( ) )
+    try
     {
-        case LoopbackRequest:
+        switch( parse.getCommand( ) )
         {
-            nRet = executeLoopback( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            break;
-        }
-        case ScanRequest:
-        {
-            nRet = executeScan( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            break;
-        }
-        case GetValueRequest:
-        {
-            nRet = executeGetValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            break;
-        }
-        case PutValueRequest:
-        {
-            nRet = executePutValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            broadcast = true;
-            break;
-        }
-        case ControlRequest:
-        {
-            nRet = executeControl( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            broadcast = true;
-            break;
-        }
-        case GetStatusRequest:
-        {
-            nRet = executeGetStatus( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            break;
-        }
-        case PutStatusRequest:
-        {
-            nRet = executePutStatus( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            broadcast = true;
-            break;
-        }
-        case GetConfigRequest:
-        {
-            nRet = executeGetConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            break;
-        }
-        case PutConfigRequest:
-        {
-            nRet = executePutConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            broadcast = true;
-            break;
-        }
-        default:
-        {
+            case LoopbackRequest:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unsupported command on EMETCON route. Command = " << parse.getCommand( ) << endl;
+                nRet = executeLoopback( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                break;
             }
-            nRet = NoMethod;
+            case ScanRequest:
+            {
+                nRet = executeScan( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                break;
+            }
+            case GetValueRequest:
+            {
+                nRet = executeGetValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                break;
+            }
+            case PutValueRequest:
+            {
+                nRet = executePutValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                broadcast = true;
+                break;
+            }
+            case ControlRequest:
+            {
+                nRet = executeControl( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                broadcast = true;
+                break;
+            }
+            case GetStatusRequest:
+            {
+                nRet = executeGetStatus( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                break;
+            }
+            case PutStatusRequest:
+            {
+                nRet = executePutStatus( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                broadcast = true;
+                break;
+            }
+            case GetConfigRequest:
+            {
+                nRet = executeGetConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                break;
+            }
+            case PutConfigRequest:
+            {
+                nRet = executePutConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                broadcast = true;
+                break;
+            }
+            default:
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "Unsupported command on EMETCON route. Command = " << parse.getCommand( ) << endl;
+                }
+                nRet = NoMethod;
 
-            break;
+                break;
+            }
         }
+    }
+    catch( BaseCommand::CommandException &e )
+    {
+        returnErrorMessage(e.error_code, OutMessage, retList, e.error_description);
+
+        nRet = ExecutionComplete;
     }
 
     if( nRet != NORMAL )
@@ -547,6 +561,21 @@ INT MctDevice::ExecuteRequest( CtiRequestMsg              *pReq,
 
     return nRet;
 }
+
+
+void MctDevice::returnErrorMessage( int retval, OUTMESS *&om, list< CtiMessage* > &retList, const string &error ) const
+{
+    retList.push_back(
+        new CtiReturnMsg(
+                getID(),
+                om->Request,
+                getName() + " / " + error,
+                retval));
+
+    delete om;
+    om = NULL;
+}
+
 
 /*****************************************************************************************
  *  The general scan for a mct type device is performed and collects DEMAND accumulators
@@ -3614,7 +3643,7 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
 
                     OutTemplate = CTIDBG_new OUTMESS;
 
-                    InEchoToOut( InMessage, OutTemplate );
+                    InEchoToOut( *InMessage, OutTemplate );
 
                     //  reset the meter
                     pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putstatus reset", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);

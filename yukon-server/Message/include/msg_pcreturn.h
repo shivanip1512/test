@@ -1,28 +1,8 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_pcreturn
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_pcreturn.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/08/14 15:57:41 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-
-#ifndef __MSG_PCRETURN_H__
-#define __MSG_PCRETURN_H__
-
-#include <rw/ordcltn.h>
+#pragma once
 
 #include "dlldefs.h"
+
 #include "msg_multi.h"
-#include "message.h"
 
 class IM_EX_MSG CtiReturnMsg : public CtiMultiMsg
 {
@@ -39,23 +19,30 @@ private:
     long       _group_message_id;      // A replica of the request's _group_message_id
     long       _user_message_id;       // A replica of the request's _user_message_id
 
+    typedef CtiMultiMsg Inherited;
+
 public:
     RWDECLARE_COLLECTABLE( CtiReturnMsg );
 
-    typedef CtiMultiMsg Inherited;
-
     CtiReturnMsg();
+
     CtiReturnMsg(long device_id,
-                    const string& command_string = string(),
-                    const string& result_string = string(),
-                    int status       = 0,
-                    int routeid = 0,
-                    int macro_offset = 0,
-                    int attempt_num  = 0,
-                    long group_message_id = -1L,
-                    long user_message_id = -1L,
-                    int soe = 0,
-                    CtiMultiMsg_vec &data = CtiMultiMsg_vec());
+                 const string& command_string = string(),
+                 const string& result_string = string(),
+                 int status       = 0,
+                 int routeid = 0,
+                 int macro_offset = 0,
+                 int attempt_num  = 0,
+                 long group_message_id = -1L,
+                 long user_message_id = -1L,
+                 int soe = 0,
+                 CtiMultiMsg_vec &data = CtiMultiMsg_vec());
+
+    CtiReturnMsg(long device_id,
+                 const PIL_ECHO &pil_echo,
+                 const string &result_string = string(),
+                 int status = NoError);
+
     CtiReturnMsg(const CtiReturnMsg &aRef);
     virtual ~CtiReturnMsg();
 
@@ -103,4 +90,3 @@ public:
     virtual void dump() const;
 };
 
-#endif

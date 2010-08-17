@@ -460,18 +460,18 @@ INT SynchronizedIdGen(string name, int values_needed)
     return(last);
 }
 
-BOOL InEchoToOut(const INMESS *In, OUTMESS *Out)
+BOOL InEchoToOut(const INMESS &In, OUTMESS *Out)
 {
     BOOL bRet = FALSE;
 
-    Out->TargetID = In->TargetID;
-    Out->ReturnNexus = In->ReturnNexus;
-    Out->Sequence = In->Sequence;
-    Out->Priority = In->Priority;
-    // Out->MessageFlags = In->MessageFlags;
+    Out->TargetID = In.TargetID;
+    Out->ReturnNexus = In.ReturnNexus;
+    Out->Sequence = In.Sequence;
+    Out->Priority = In.Priority;
+    // Out->MessageFlags = In.MessageFlags;
 
     /* Lotsa stuff requires the InMessage to be loaded so load it */
-    ::memcpy(&(Out->Request), &(In->Return), sizeof(PIL_ECHO));
+    ::memcpy(&(Out->Request), &(In.Return), sizeof(PIL_ECHO));
 
     return bRet;
 }

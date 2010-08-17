@@ -55,6 +55,11 @@ struct ASTRUCT
 
 struct BSTRUCT
 {
+   enum
+   {
+       MessageLength_Max = 36
+   };
+
    USHORT   Port;             // This is the port the remote transmitter device is connected to.
    USHORT   Remote;           // This is the DeviceID of the transmitter device (CCU etc)
 
@@ -65,16 +70,21 @@ struct BSTRUCT
 
    USHORT Function;           // Indicates the desired operation on the DLC device
    USHORT Length;             // This is the byte count expected from the DLC device based upon the request.
-   BYTE   Message[36];
-   USHORT IO;                 // Input or Outout? In its basic form this is a 2 bit indicator of Cti::Protocol::Emetcon::IO_Write, ::IO_Read, ::IO_Function_Write, ::IO_Function_Read
+   BYTE   Message[MessageLength_Max];
+   USHORT IO;                 // Input or Output? In its basic form this is a 2 bit indicator of Cti::Protocols::Emetcon::IO_Write, ::IO_Read, ::IO_Function_Write, ::IO_Function_Read
                               //    At other times additional bits are attached and stuffed in B_Word (primarily ARM bits?)
 };
 
 struct DSTRUCT
 {
+   enum
+   {
+       MessageLength_Max = 36
+   };
+
    ULONG    Time;
    USHORT   Length;
-   BYTE     Message[36];
+   BYTE     Message[MessageLength_Max];
    USHORT   RepVar;
    ULONG    Address;
    USHORT   Power;

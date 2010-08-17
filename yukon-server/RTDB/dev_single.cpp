@@ -757,7 +757,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
         {
             OUTMESS *OutTemplate = CTIDBG_new OUTMESS;
 
-            InEchoToOut( InMessage, OutTemplate );
+            InEchoToOut( *InMessage, OutTemplate );
 
             CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, string(InMessage->Return.CommandStr), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, 0, InMessage->Priority);
 

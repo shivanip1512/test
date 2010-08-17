@@ -373,7 +373,7 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessag
 
                     if(OutMessage != NULL)
                     {
-                        InEchoToOut(InMessage, OutMessage);
+                        InEchoToOut(*InMessage, OutMessage);
                         CtiCommandParser parse(InMessage->Return.CommandStr);
 
                         if((status = GeneralScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4)) != NORMAL)
@@ -1170,7 +1170,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, list< OUTME
 
         if(OutMessage != NULL)
         {
-            InEchoToOut(InMessage, OutMessage);
+            InEchoToOut(*InMessage, OutMessage);
             CtiCommandParser parse(InMessage->Return.CommandStr);
             lcuReset(OutMessage);
 

@@ -177,13 +177,6 @@ protected:
         PointOffset_TOUBase     = 100,  //  this is okay because TOU only has peak and frozen demand - it must start at 111 anyway
     };
 
-    enum
-    {
-        // Return value to allow non error returns
-        // where error was handled in code.
-        ExecutionComplete = NoError
-    };
-
     struct lp_info_t
     {
         unsigned long collection_point;

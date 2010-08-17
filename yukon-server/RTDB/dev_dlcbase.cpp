@@ -356,7 +356,7 @@ INT DlcBaseDevice::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage* >
 
             if(NewOutMessage)
             {
-                InEchoToOut( InMessage, NewOutMessage);
+                InEchoToOut(*InMessage, NewOutMessage);
                 NewOutMessage->Port = InMessage->Port;
                 NewOutMessage->DeviceID = InMessage->DeviceID;
                 NewOutMessage->TargetID = InMessage->TargetID;

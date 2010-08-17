@@ -7,20 +7,17 @@
 #include "dllyukon.h"  //  for ResolveStateName()
 #include "utility.h"
 
-#include "dev_base.h"
 #include "dev_mct410.h"
+
 #include "tbl_ptdispatch.h"
-#include "tbl_dyn_paoinfo.h"
 #include "pt_status.h"
 
 #include "portglob.h"
 
-#include "ctidate.h"
-#include "ctitime.h"
-
 using namespace std;
 
 using namespace Cti::Config;
+using namespace Cti::Devices::Commands;
 using Cti::Protocols::EmetconProtocol;
 
 namespace Cti {
@@ -32,7 +29,8 @@ const Mct410Device::ConfigPartsList  Mct410Device::_config_parts = Mct410Device:
 
 
 Mct410Device::Mct410Device( ) :
-    _intervalsSent(false)  //  whee!  you're going to be gone soon, sucker!
+    _intervalsSent(false),
+    _activeIndex(EmetconProtocol::DLCCmd_LAST)
 {
     _daily_read_info.request.multi_day_retries = -1;
     _daily_read_info.request.in_progress = false;
@@ -796,6 +794,66 @@ const Mct410Device::read_key_store_t &Mct410Device::getReadKeyStore(void) const
 }
 
 
+int Mct410Device::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    active_command_map::iterator command = _activeCommands.find(InMessage.Sequence);
+
+    if( command == _activeCommands.end() )
+    {
+        return NoResultDecodeMethod;
+    }
+
+    auto_ptr<CtiReturnMsg>
+        ReturnMsg(
+            new CtiReturnMsg(
+                    getID(),
+                    InMessage.Return));
+
+    const DSTRUCT &dst = InMessage.Buffer.DSt;
+
+    const DlcCommand::payload_t
+        payload(
+            dst.Message,
+            dst.Message + min<unsigned short>(dst.Length, DSTRUCT::MessageLength_Max));
+
+    string description;
+    std::vector<DlcCommand::point_data_t> points;
+
+    DlcCommand::request_ptr ptr = command->second->decode(TimeNow, InMessage.Return.ProtocolInfo.Emetcon.Function, payload, description, points);
+
+    for each( const DlcCommand::point_data_t &pdata in points )
+    {
+        point_info pi;
+
+        pi.description  = pdata.description;
+        pi.quality      = pdata.quality;
+        pi.value        = pdata.value;
+        pi.freeze_bit   = false;
+
+        insertPointDataReport(pdata.type, pdata.offset, ReturnMsg.get(), pi, pdata.name, pdata.time);
+    }
+
+    if( ptr.get() )
+    {
+        OUTMESS *OutMessage = new OUTMESS;
+
+        InEchoToOut(InMessage, OutMessage);
+
+        fillOutMessage(*OutMessage, *ptr);
+
+        outList.push_back(OutMessage);
+    }
+    else
+    {
+        _activeCommands.erase(command);
+    }
+
+    retMsgHandler(InMessage.Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList);
+
+    return NORMAL;
+}
+
+
 /*
  *  ModelDecode MUST decode all CtiDLCCommand_t which are defined in the initCommandStore object.  The only exception to this
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
@@ -803,6 +861,30 @@ const Mct410Device::read_key_store_t &Mct410Device::getReadKeyStore(void) const
  */
 INT Mct410Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
+    if( !InMessage )
+    {
+        return MEMORY;
+    }
+
+    if( InMessage->Sequence > EmetconProtocol::DLCCmd_LAST )
+    {
+        try
+        {
+            return decodeCommand(*InMessage, TimeNow, vgList, retList, outList);
+        }
+        catch( BaseCommand::CommandException &e )
+        {
+            retList.push_back(
+                new CtiReturnMsg(
+                    getID(),
+                    InMessage->Return,
+                    getName() + " / " + e.error_description,
+                    e.error_code));
+
+            return ExecutionComplete;
+        }
+    }
+
     INT status = NORMAL;
 
     switch(InMessage->Sequence)
@@ -851,7 +933,7 @@ INT Mct410Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 
         case EmetconProtocol::GetConfig_Multiplier:
         case EmetconProtocol::GetConfig_MeterParameters:    status = decodeGetConfigMeterParameters(InMessage, TimeNow, vgList, retList, outList);      break;
-        // Intentional fall through
+
         case EmetconProtocol::GetConfig_PhaseDetectArchive:
         case EmetconProtocol::GetConfig_PhaseDetect:        status = decodeGetConfigPhaseDetect(InMessage, TimeNow, vgList, retList, outList);      break;
         default:
@@ -965,32 +1047,6 @@ INT Mct410Device::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 }
 
 
-void Mct410Device::returnErrorMessage( int retval, OUTMESS *&om, list< CtiMessage* > &retList, const string &error ) const
-{
-    CtiReturnMsg *errRet;
-
-    errRet = CTIDBG_new CtiReturnMsg(getID(),
-                                     string(om->Request.CommandStr),
-                                     error,
-                                     retval,
-                                     om->Request.RouteID,
-                                     om->Request.MacroOffset,
-                                     om->Request.Attempt,
-                                     om->Request.GrpMsgID,
-                                     om->Request.UserID,
-                                     om->Request.SOE,
-                                     CtiMultiMsg_vec());
-
-    if( errRet )
-    {
-        retList.push_back(errRet);
-    }
-
-    delete om;
-    om = NULL;
-}
-
-
 INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                                        CtiCommandParser           &parse,
                                        OUTMESS                   *&OutMessage,
@@ -1031,7 +1087,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             nRet  = ExecutionComplete;
 
             returnErrorMessage(BADPARAM, OutMessage, retList,
-                               "Invalid address \"" + CtiNumStr(uadd) + "\" for device \"" + getName() + "\", not sending");
+                               "Invalid address \"" + CtiNumStr(uadd) + "\", not sending");
         }
         else
         {
@@ -1243,7 +1299,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             nRet  = ExecutionComplete;
 
             returnErrorMessage(BADPARAM, OutMessage, retList,
-                               "Invalid outage threshold (" + CtiNumStr(threshold) + ") for device \"" + getName() + "\", not sending");
+                               "Invalid outage threshold (" + CtiNumStr(threshold) + "), not sending");
         }
         else
         {
@@ -1267,7 +1323,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             nRet  = ExecutionComplete;
 
             returnErrorMessage(BADPARAM, OutMessage, retList,
-                               "Invalid day of scheduled freeze (" + CtiNumStr(freeze_day) + ") for device \"" + getName() + "\", not sending");
+                               "Invalid day of scheduled freeze (" + CtiNumStr(freeze_day) + "), not sending");
         }
         else
         {
@@ -1425,6 +1481,102 @@ bool Mct410Device::buildPhaseDetectOutMessage(CtiCommandParser & parse, OUTMESS 
     return found;
 }
 
+
+CtiDate Mct410Device::parseDateValue(string date_str)
+{
+    CtiTokenizer date_tokenizer(date_str);
+
+    int month = atoi(date_tokenizer("-/").data());
+    int day   = atoi(date_tokenizer("-/").data());
+    int year  = atoi(date_tokenizer("-/").data());
+
+    if( !year || !month || !day )
+    {
+        return CtiDate::neg_infin;
+    }
+
+    if( year < 100 )
+    {
+        year += 2000;  //  this will need to change in 2100
+    }
+
+    //  naive date construction - no range checking, so we count
+    //    on CtiDate() resetting itself to 1/1/1970
+    return CtiDate(day, month, year);
+}
+
+
+void Mct410Device::readSspec(const OUTMESS &OutMessage, list<OUTMESS *> &outList) const
+{
+    auto_ptr<CtiOutMessage> sspec_om(new CtiOutMessage(OutMessage));
+
+    //  we need to read the IED info byte out of the MCT
+    if( getOperation(EmetconProtocol::GetConfig_Model, sspec_om->Buffer.BSt) )
+    {
+        sspec_om->Sequence      = EmetconProtocol::GetConfig_Model;
+        sspec_om->MessageFlags |= MessageFlag_ExpectMore;
+        sspec_om->Retry         = 2;
+
+        //  Make sure the response doesn't show in Commander.
+        //    Because this OM's response is discarded, it will not affect
+        //    the message count/expect more behavior to the client.
+        //  Otherwise, it would need to be added to the group message count.
+        sspec_om->Request.Connection = 0;
+
+        strncpy(sspec_om->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
+
+        outList.push_back(sspec_om.release());
+    }
+}
+
+
+void Mct410Device::fillOutMessage(OUTMESS &OutMessage, DlcCommand::request_t &request)
+{
+    OutMessage.Buffer.BSt.Function = request.function;
+    OutMessage.Buffer.BSt.IO       = request.io();
+    OutMessage.Buffer.BSt.Length   = request.length();
+
+    DlcCommand::payload_t payload = request.payload();
+
+    std::copy(payload.begin(),
+              payload.begin() + min<unsigned>(payload.size(), BSTRUCT::MessageLength_Max),
+              OutMessage.Buffer.BSt.Message);
+}
+
+
+bool Mct410Device::tryExecuteCommand(OUTMESS &OutMessage, auto_ptr<Mct410Command> command)
+{
+    DlcCommand::request_ptr request = command->execute(CtiTime());
+
+    if( request.get() )
+    {
+        //  this makes me nervous - if we have two calls to ExecuteRequest()/tryExecuteCommand() at once,
+        //    this probably isn't threadsafe
+        if( _activeCommands.empty() )
+        {
+            InterlockedCompareExchange(&_activeIndex, EmetconProtocol::DLCCmd_LAST, _activeIndex);
+        }
+
+        long activeIndex;
+
+        do
+        {
+            activeIndex = InterlockedIncrement(&_activeIndex);
+
+        } while( activeIndex < EmetconProtocol::DLCCmd_LAST
+                 || _activeCommands.find(activeIndex) != _activeCommands.end() );
+
+        fillOutMessage(OutMessage, *request);
+
+        OutMessage.Sequence = activeIndex;
+
+        _activeCommands.insert(activeIndex, command);
+    }
+
+    return request.get();
+}
+
+
 INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                                       CtiCommandParser           &parse,
                                       OUTMESS                   *&OutMessage,
@@ -1438,7 +1590,11 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
     int function;
 
     static const string str_daily_read = "daily_read",
+                        str_hourly_read = "hourly_read",
                         str_outage     = "outage";
+
+    const CtiDate Today     = CtiDate(),
+                  Yesterday = Today - 1;
 
     if( (parse.getFlags() &  CMD_FLAG_GV_KWH) &&
         (parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET)) )
@@ -1512,6 +1668,34 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
             }
         }
     }
+    else if( parse.isKeyValid(str_hourly_read) )
+    {
+        if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) &&
+            !isSupported(Feature_HourlyKwh) )
+        {
+            returnErrorMessage(ErrorInvalidSSPEC, OutMessage, retList,
+                               "Hourly read requires SSPEC rev 4.0 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1));
+
+            return ExecutionComplete;
+        }
+
+        //  read the SSPEC revision if we don't have it yet
+        if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
+        {
+            readSspec(*OutMessage, outList);
+        }
+
+        //  parseDateValue will return CtiDate::neg_infin if the parse is invalid
+        const CtiDate date_begin = parseDateValue(parse.getsValue("hourly_read_date_begin"));
+        const CtiDate date_end   = parseDateValue(parse.getsValue("hourly_read_date_end"));
+        const unsigned channel   = parse.getiValue("channel", 1);
+
+        auto_ptr<Mct410Command> hourlyRead(new Mct410HourlyReadCommand(date_begin, date_end, channel));
+
+        //  this call might be able to move out to ExecuteRequest() at some point - maybe we just return
+        //    a DlcCommand object that it can execute out there
+        found = tryExecuteCommand(*OutMessage, hourlyRead);
+    }
     else if( parse.isKeyValid(str_daily_read) )
     {
         //  if a request is already in progress and we're not submitting a continuation/retry
@@ -1539,26 +1723,13 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
         {
             int channel = parse.getiValue("channel", 1);
 
-            const CtiDate Today     = CtiDate(),
-                          Yesterday = Today - 1;
-
             // If the date is not specified, we use yesterday (last full day)
             CtiDate date_begin = Yesterday;
 
             //  grab the beginning date
             if( parse.isKeyValid("daily_read_date_begin") )
             {
-                CtiTokenizer date_tokenizer(parse.getsValue("daily_read_date_begin"));
-
-                int month = atoi(date_tokenizer("-/").data());
-                int day   = atoi(date_tokenizer("-/").data());
-                int year  = atoi(date_tokenizer("-/").data());
-
-                if( year < 100 )  year += 2000;  //  this will need to change in 2100
-
-                //  naive date construction - no range checking, so we count
-                //    on CtiDate() resetting itself to 1/1/1970
-                date_begin = CtiDate(day, month, year);
+                date_begin = parseDateValue(parse.getsValue("daily_read_date_begin"));
             }
 
             if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision)
@@ -1566,19 +1737,19 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
             {
                 nRet  = ExecutionComplete;
                 returnErrorMessage(ErrorInvalidSSPEC, OutMessage, retList,
-                                   getName() + " / Daily read requires SSPEC rev 2.1 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1));
+                                   "Daily read requires SSPEC rev 2.1 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1));
             }
             else if( channel < 1 || channel > 3 )
             {
                 nRet  = ExecutionComplete;
                 returnErrorMessage(BADPARAM, OutMessage, retList,
-                                   getName() + " / Invalid channel for daily read request; must be 1-3 (" + CtiNumStr(channel) + ")");
+                                   "Invalid channel for daily read request; must be 1-3 (" + CtiNumStr(channel) + ")");
             }
             else if( date_begin > Yesterday )  //  must begin on or before yesterday
             {
                 nRet  = ExecutionComplete;
                 returnErrorMessage(BADPARAM, OutMessage, retList,
-                                   getName() + " / Invalid date for daily read request; must be before today (" + parse.getsValue("daily_read_date_begin") + ")");
+                                   "Invalid date for daily read request; must be before today (" + parse.getsValue("daily_read_date_begin") + ")");
             }
             else if( parse.isKeyValid("daily_read_detail") )
             {
@@ -1592,7 +1763,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                 {
                     nRet  = ExecutionComplete;
                     returnErrorMessage(BADPARAM, OutMessage, retList,
-                                       getName() + " / Date out of range for daily read detail request; must be less than 3 months ago (" + parse.getsValue("daily_read_date_begin") + ")");
+                                       "Date out of range for daily read detail request; must be less than 3 months ago (" + parse.getsValue("daily_read_date_begin") + ")");
                 }
                 else if( channel == 1 )
                 {
@@ -1621,35 +1792,25 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                 //  multi-day read - we'll send the period-of-interest OM later, if needed
 
                 //  grab the end date
-                CtiTokenizer date_tokenizer(parse.getsValue("daily_read_date_end"));
-
-                int month = atoi(date_tokenizer("-/").data());
-                int day   = atoi(date_tokenizer("-/").data());
-                int year  = atoi(date_tokenizer("-/").data());
-
-                if( year < 100 )  year += 2000;  //  this will need to change in 2100
-
-                //  naive date construction - no range checking, so we count
-                //    on CtiDate() resetting itself to 1/1/1970
-                CtiDate date_end = CtiDate(day, month, year);
+                CtiDate date_end = parseDateValue(parse.getsValue("daily_read_date_end"));
 
                 if( date_begin < Today - 92 )
                 {
                     nRet  = ExecutionComplete;
                     returnErrorMessage(BADPARAM, OutMessage, retList,
-                                       getName() + " / Invalid begin date for multi-day daily read request, must be less than 92 days ago (" + parse.getsValue("daily_read_date_begin") + ")");
+                                       "Invalid begin date for multi-day daily read request, must be less than 92 days ago (" + parse.getsValue("daily_read_date_begin") + ")");
                 }
                 else if( date_end < date_begin )
                 {
                     nRet  = ExecutionComplete;
                     returnErrorMessage(BADPARAM, OutMessage, retList,
-                                       getName() + " / Invalid end date for multi-day daily read request; must be after begin date (" + parse.getsValue("daily_read_date_begin") + ", " + parse.getsValue("daily_read_date_end") + ")");
+                                       "Invalid end date for multi-day daily read request; must be after begin date (" + parse.getsValue("daily_read_date_begin") + ", " + parse.getsValue("daily_read_date_end") + ")");
                 }
                 else if( date_end > Yesterday )    //  must end on or before yesterday
                 {
                     nRet  = ExecutionComplete;
                     returnErrorMessage(BADPARAM, OutMessage, retList,
-                                       getName() + " / Invalid end date for multi-day daily read request; must be before today (" + parse.getsValue("daily_read_date_end") + ")");
+                                       "Invalid end date for multi-day daily read request; must be before today (" + parse.getsValue("daily_read_date_end") + ")");
                 }
                 else
                 {
@@ -1679,13 +1840,13 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
             {
                 nRet  = ExecutionComplete;
                 returnErrorMessage(BADPARAM, OutMessage, retList,
-                                   getName() + " / Invalid channel for recent daily read request; only valid for channel 1 (" + CtiNumStr(channel)  + ")");
+                                   "Invalid channel for recent daily read request; only valid for channel 1 (" + CtiNumStr(channel)  + ")");
             }
             else if( date_begin < Today - 8 )  //  must be no more than 8 days ago
             {
                 nRet  = ExecutionComplete;
                 returnErrorMessage(BADPARAM, OutMessage, retList,
-                                   getName() + " / Invalid date for recent daily read request; must be less than 8 days ago (" + parse.getsValue("daily_read_date_begin") + ")");
+                                   "Invalid date for recent daily read request; must be less than 8 days ago (" + parse.getsValue("daily_read_date_begin") + ")");
             }
             else
             {
@@ -1715,25 +1876,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                 //  read the SSPEC revision if we don't have it yet
                 if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
                 {
-                    auto_ptr<CtiOutMessage> sspec_om(new CtiOutMessage(*OutMessage));
-
-                    //  we need to read the IED info byte out of the MCT
-                    if( getOperation(EmetconProtocol::GetConfig_Model, sspec_om->Buffer.BSt) )
-                    {
-                        sspec_om->Sequence      = EmetconProtocol::GetConfig_Model;
-                        sspec_om->MessageFlags |= MessageFlag_ExpectMore;
-                        sspec_om->Retry         = 2;
-
-                        //  Make sure the response doesn't show in Commander.
-                        //    Because this OM's response is discarded, it will not affect
-                        //    the message count/expect more behavior to the client.
-                        //  Otherwise, it would need to be added to the group message count.
-                        sspec_om->Request.Connection = 0;
-
-                        strncpy(sspec_om->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
-
-                        outList.push_back(sspec_om.release());
-                    }
+                    readSspec(*OutMessage, outList);
                 }
 
                 //  we need to set it to the requested interval
@@ -4361,6 +4504,22 @@ INT Mct410Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list
 
 
 bool Mct410Device::isSupported(const Features feature) const
+{
+    switch( feature )
+    {
+        case Feature_HourlyKwh:
+        {
+            return sspecAtLeast(SspecRev_HourlyKwh);
+        }
+        default:
+        {
+            return false;
+        }
+    }
+}
+
+
+bool Mct410Device::isSupported(const Mct4xxDevice::Features feature) const
 {
     switch( feature )
     {

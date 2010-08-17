@@ -242,7 +242,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
 
                     if(OutMessage != NULL)
                     {
-                        InEchoToOut(InMessage, OutMessage);
+                        InEchoToOut(*InMessage, OutMessage);
 
                         CtiCommandParser parse(InMessage->Return.CommandStr);
 
@@ -320,7 +320,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
 
                     if(OutMessage != NULL)
                     {
-                        InEchoToOut(InMessage, OutMessage);
+                        InEchoToOut(*InMessage, OutMessage);
 
                         setIlexSequenceNumber( InMessage->Buffer.InMessage[0] & 0x10 );
 
@@ -475,7 +475,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
 
                                 if(OutMessage != NULL)
                                 {
-                                    InEchoToOut(InMessage, OutMessage);
+                                    InEchoToOut(*InMessage, OutMessage);
 
                                     // CtiCommandParser parse(InMessage->Return.CommandStr);
                                     setIlexSequenceNumber( InMessage->Buffer.InMessage[0] & 0x10 );
@@ -732,7 +732,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
 
                     if(OutMessage != NULL)
                     {
-                        InEchoToOut(InMessage, OutMessage);
+                        InEchoToOut(*InMessage, OutMessage);
 
                         CtiCommandParser parse(InMessage->Return.CommandStr);
                         if((i = IntegrityScan(NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 3)) != NORMAL)

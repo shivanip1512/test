@@ -1,6 +1,9 @@
 #pragma once
 
 #include "dev_mct4xx.h"
+#include "dev_mct410_commands.h"
+
+#include "boost/ptr_container/ptr_map.hpp"
 
 namespace Cti {
 namespace Devices {
@@ -21,6 +24,14 @@ private:
     static       ConfigPartsList  initConfigParts();
 
     static string describeStatusAndEvents(unsigned char *buf);
+
+    static CtiDate parseDateValue(string date_str);
+
+    typedef boost::ptr_map<long, Devices::Commands::Mct410Command> active_command_map;
+
+    active_command_map _activeCommands;
+
+    long _activeIndex;
 
     struct daily_read_info_t
     {
@@ -69,15 +80,31 @@ private:
         SspecRev_Disconnect_Cycle   =   12,  //  rev  1.2
         SspecRev_Disconnect_ConfigReadEnhanced = 20,  //  rev 2.0
         SspecRev_DailyRead          =   21,  //  rev  2.1
+        SspecRev_HourlyKwh          =   32,
 
         SspecRev_BetaLo =    9,  //  rev  0.9
         SspecRev_BetaHi =  200,  //  rev 20.0
     };
 
+    enum Features
+    {
+        Feature_HourlyKwh
+    };
+
+    virtual bool isSupported(const Mct410Device::Features f) const;
+
     virtual bool isSupported(const Mct4xxDevice::Features f) const;
     virtual bool sspecValid(const unsigned sspec, const unsigned rev) const;
 
+    void readSspec(const OUTMESS &OutMessage, list<OUTMESS *> &outList) const;
+
 protected:
+
+    bool tryExecuteCommand(OUTMESS &OutMessage, std::auto_ptr<Devices::Commands::Mct410Command> hourlyRead);
+
+    int decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+
+    void fillOutMessage(OUTMESS &OutMessage, Devices::Commands::DlcCommand::request_t &request);
 
     virtual bool getOperation( const UINT &cmd,  BSTRUCT &bst ) const;
 
@@ -338,9 +365,6 @@ protected:
     point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len);
 
     bool _intervalsSent;
-
-    // Places error onto the retlist, DELETES OUT MESSAGE
-    void returnErrorMessage( int retval, OUTMESS *&om, list< CtiMessage* > &retList, const string &error ) const;
 
     virtual INT executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
     virtual INT executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
