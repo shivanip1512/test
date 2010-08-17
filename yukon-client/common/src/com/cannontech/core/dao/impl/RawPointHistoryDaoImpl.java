@@ -3,7 +3,6 @@ package com.cannontech.core.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -11,11 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.clientutils.LogHelper;
@@ -41,7 +37,6 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.vendor.DatabaseVendor;
-import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.google.common.base.Function;
@@ -50,9 +45,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Ordering;
 import com.google.common.collect.SetMultimap;
 
 /**
@@ -64,33 +57,32 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     private YukonJdbcTemplate yukonTemplate = null;
     private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     private AttributeService attributeService;
-    private DatabaseVendorResolver databaseConnectionVendorResolver;
     
-    private SqlFragmentSource buildSql(boolean startInclusive, int pointId, Date startDate, Date stopDate, boolean reverseOrder) {
+    private SqlFragmentSource buildSql(Clusivity clusivity, int pointId, Date startDate, Date stopDate, Order order) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT rph.pointid, rph.timestamp, rph.value, rph.quality, p.pointtype");
-        appendFromAndWhereClause(sql, pointId, startDate, stopDate, startInclusive);
-        appendOrderByClause(sql, reverseOrder);
+        appendFromAndWhereClause(sql, pointId, startDate, stopDate, clusivity);
+        appendOrderByClause(sql, order);
 
         return sql;
     }
 
-    private SqlFragmentSource buildLimitedSql(boolean startInclusive, int pointId, Date startDate, Date stopDate, int maxRows, boolean reverseOrder) {
+    private SqlFragmentSource buildLimitedSql(Clusivity clusivity, int pointId, Date startDate, Date stopDate, int maxRows, Order order) {
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
         SqlBuilder sqla = builder.buildFor(DatabaseVendor.MS2000);
         sqla.append("SELECT DISTINCT TOP " + maxRows);
         sqla.append(  "rph.pointid, rph.timestamp, rph.value, rph.quality, p.pointtype");
-        appendFromAndWhereClause(sqla, pointId, startDate, stopDate, startInclusive);
-        appendOrderByClause(sqla, reverseOrder);
+        appendFromAndWhereClause(sqla, pointId, startDate, stopDate, clusivity);
+        appendOrderByClause(sqla, order);
 
         SqlBuilder sqlb = builder.buildOther();
         sqlb.append("select * from (");
         sqlb.append(  "SELECT DISTINCT rph.pointid, rph.timestamp,");
         sqlb.append(    "rph.value, rph.quality, p.pointtype,");
         sqlb.append(    "ROW_NUMBER() over (");
-        appendOrderByClause(sqlb, reverseOrder);
+        appendOrderByClause(sqlb, order);
         sqlb.append(    ") rn");
-        appendFromAndWhereClause(sqlb, pointId, startDate, stopDate, startInclusive);
+        appendFromAndWhereClause(sqlb, pointId, startDate, stopDate, clusivity);
         sqlb.append(") numberedRows");
         sqlb.append("where numberedRows.rn").lte(maxRows);
         sqlb.append("ORDER BY numberedRows.rn");
@@ -99,37 +91,35 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
 
     private static void appendFromAndWhereClause(SqlBuilder sql, int pointId, Date startDate,
-            Date stopDate, boolean startInclusive) {
+            Date stopDate, Clusivity clusivity) {
         
         sql.append("FROM rawpointhistory rph");
         sql.append(  "JOIN point p on rph.pointId = p.pointId");
         sql.append("WHERE rph.pointid").eq(pointId); //used to be an IN clause?
         
-        appendTimeStampClause(sql, startDate, stopDate, startInclusive);
+        appendTimeStampClause(sql, startDate, stopDate, clusivity);
     }
 
-    public static void appendTimeStampClause(SqlBuilder sql, Date startDate, Date stopDate,
-            boolean startInclusive) {
-        if (startInclusive) {
-            if (startDate != null) {
+    public static void appendTimeStampClause(SqlBuilder sql, Date startDate, Date stopDate, Clusivity clusivity) {
+        if (startDate != null) {
+            if (clusivity.isStartInclusive()) {
                 sql.append("AND rph.timestamp").gte(startDate);
-            }
-            if (stopDate != null) {
-                sql.append("AND rph.timestamp").lt(stopDate);
-            }
-        } else {
-            if (startDate != null) {
+            } else {
                 sql.append("AND rph.timestamp").gt(startDate);
             }
-            if (stopDate != null) {
+        }
+        if (stopDate != null) {
+            if (clusivity.isEndInclusive()) {
                 sql.append("AND rph.timestamp").lte(stopDate);
+            } else {
+                sql.append("AND rph.timestamp").lt(stopDate);
             }
         }
     }
-    
-    public static void appendOrderByClause(SqlBuilder sql, boolean reverseOrder) {
+
+    public static void appendOrderByClause(SqlBuilder sql, Order order) {
         sql.append("ORDER BY rph.timestamp");
-        if (reverseOrder) {
+        if (order == Order.REVERSE) {
             sql.append("DESC");
         }
     }
@@ -141,21 +131,21 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
     
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate) {
-        return getPointData(pointId, startDate, stopDate, false, false);
+        return getPointData(pointId, startDate, stopDate, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD);
     }
 
-    public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, boolean startInclusive, boolean reverseOrder) {
-        SqlFragmentSource sql = buildSql(startInclusive, pointId, startDate, stopDate, reverseOrder);
+    public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order) {
+        SqlFragmentSource sql = buildSql(clusivity, pointId, startDate, stopDate, order);
         return executeQuery(sql);
     }
 
-    public List<PointValueHolder> getLimitedPointData(int pointId, Date startDate, Date stopDate, boolean startInclusive, boolean reverseOrder, int maxRows) {
-        SqlFragmentSource sql = buildLimitedSql(startInclusive, pointId, startDate, stopDate, maxRows, reverseOrder);
+    public List<PointValueHolder> getLimitedPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order, int maxRows) {
+        SqlFragmentSource sql = buildLimitedSql(clusivity, pointId, startDate, stopDate, maxRows, order);
         return executeQuery(sql);
     }
     
     public Map<PaoIdentifier, PointValueQualityHolder> getSingleAttributeData(Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final boolean excludeDisabledPaos) {
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedStuff = getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledPaos, false, true);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedStuff = getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledPaos, Clusivity.EXCLUSIVE_EXCLUSIVE, Order.REVERSE);
         
         return Maps.transformValues(limitedStuff.asMap(), new Function<Collection<PointValueQualityHolder>, PointValueQualityHolder>() {
             public PointValueQualityHolder apply(Collection<PointValueQualityHolder> from) {
@@ -164,7 +154,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         });
     }
     
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate, final Date stopDate, final int maxRows, final boolean excludeDisabledPaos, final boolean startInclusive, final boolean reverseOrder) {
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate, final Date stopDate, final int maxRows, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order) {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
                 return new SqlFragmentGenerator<Integer>() {
@@ -176,14 +166,14 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         sql.append(  "rph.value, rph.quality, p.pointtype");
                         sql.append(    ", ROW_NUMBER() OVER (");
                         sql.append(      "PARTITION BY rph.pointid");
-                        appendOrderByClause(sql, reverseOrder);
+                        appendOrderByClause(sql, order);
                         sql.append(    ") rn");
                         sql.append("FROM rawpointhistory rph");
                         sql.append(  "JOIN point p ON rph.pointId = p.pointId");
                         sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
                         sql.append("WHERE p.PointOffset").eq(pointIdentifier.getOffset());
                         sql.append(  "AND p.PointType").eq(pointIdentifier.getPointType());
-                        appendTimeStampClause(sql, startDate, stopDate, startInclusive);
+                        appendTimeStampClause(sql, startDate, stopDate, clusivity);
                         sql.append(  "AND yp.PAObjectID").in(subList);
                         if (excludeDisabledPaos) {
                             sql.append(  "AND yp.DisableFlag = 'N'");
@@ -201,7 +191,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         return loadValuesForGeneratorFactory(factory, displayableDevices, attribute, maxRows, excludeDisabledPaos);
     }
 
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable <? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate, final Date stopDate, final boolean excludeDisabledPaos, final boolean startInclusive, final boolean reverseOrder) {
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable <? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate, final Date stopDate, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order) {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
                 return new SqlFragmentGenerator<Integer>() {
@@ -215,12 +205,12 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
                         sql.append("WHERE p.PointOffset").eq(pointIdentifier.getOffset());
                         sql.append(  "AND p.PointType").eq(pointIdentifier.getPointType());
-                        appendTimeStampClause(sql, startDate, stopDate, startInclusive);
+                        appendTimeStampClause(sql, startDate, stopDate, clusivity);
                         sql.append(  "AND yp.PAObjectID").in(subList);
                         if (excludeDisabledPaos) {
                             sql.append(  "AND yp.DisableFlag = 'N'");
                         }
-                        appendOrderByClause(sql, reverseOrder);
+                        appendOrderByClause(sql, order);
                         
                         return sql;
                     }
@@ -340,7 +330,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             ListMultimap<PaoIdentifier, PointValueQualityHolder> rows = template.multimappedQuery(sqlGeneratorFactory.create(pointIdentifier),
                                                                                                   paoPointIdentifiersMap.get(pointIdentifier),
                                                                                                   parameterizedRowMapper,
-                                                                                                  PaoUtils.getPaoIdentifierIdFunction());
+                                                                                                  PaoUtils.getPaoIdFunction());
 
             for (PaoIdentifier pao : rows.keySet()) {
                 List<PointValueQualityHolder> list = rows.get(pao);
@@ -450,143 +440,24 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     	return yukonTemplate.queryForObject(sql, new LiteRPHQualityRowMapper());
     }
 
-    @Override
-    public List<PointValueQualityHolder> getAdjacentPointValues(final int changeId, int ... offsets) throws SQLException {
-    	
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT rph.*, p.PointType");
-    	sql.append("FROM RawPointHistory rph");
-    	sql.append("JOIN Point p ON (rph.PointId = p.PointId)");
-    	sql.append("WHERE rph.PointId = (");
-    	sql.append("	SELECT rph_inner.PointId");
-    	sql.append("	FROM RawPointHistory rph_inner");
-    	sql.append("	WHERE rph_inner.ChangeId ").eq(changeId);
-    	sql.append(")");
-    	appendOrderByClause(sql, true);
-    	
-    	AdjacentPointValuesRse rse = new AdjacentPointValuesRse(changeId, Arrays.asList(ArrayUtils.toObject(offsets)));
-        yukonTemplate.query(sql, rse);
-        
-        int indexOfChange = rse.getIndexOfChange();
-        List<PointValueQualityHolder> resultsTail = rse.getResultsTail();
-        
-        List<PointValueQualityHolder> adjacentPointValues = new ArrayList<PointValueQualityHolder>(offsets.length);
-        for (int offset : offsets) {
-        	int index = indexOfChange - offset;
-        	if (index >= 0 && index < resultsTail.size()) {
-        		adjacentPointValues.add(resultsTail.get(index));
-        	} else {
-        		adjacentPointValues.add(null);
-        	}
-        }
-        
-        return adjacentPointValues;
-    }
-    
     private interface SqlFragmentGeneratorFactory {
         public SqlFragmentGenerator<Integer> create(PointIdentifier pointIdentifier);
     }
     
-    public List<PointValueHolder> getImmediatelyAdjacentPointValues(PointValueHolder pvh) throws SQLException {
+    public AdjacentPointValues getAdjacentPointValues(PointValueHolder pvh) {
         
         int pointId = pvh.getId();
         Date centerDate = pvh.getPointDataTimeStamp();
         
-        List<PointValueHolder> pvhs = Lists.newArrayListWithCapacity(2);
+        List<PointValueHolder> precedingList = getLimitedPointData(pointId, null, centerDate, Clusivity.INCLUSIVE_EXCLUSIVE, Order.REVERSE, 1);
+        PointValueHolder preceding = Iterables.getOnlyElement(precedingList, null);
         
-        pvhs.addAll(getLimitedPointData(pointId, null, centerDate, true, false, 1));
-        pvhs.addAll(getLimitedPointData(pointId, centerDate, null, false, false, 1));
+        List<PointValueHolder> succeedingList = getLimitedPointData(pointId, centerDate, null, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD, 1);
+        PointValueHolder succeeding = Iterables.getOnlyElement(succeedingList, null);
         
-        return pvhs;
+        AdjacentPointValues result = new AdjacentPointValues(preceding, succeeding);
+        return result;
     }
-    
-    public List<PointValueHolder> getImmediatelyAdjacentPointValues(PointValueHolder pvh, int changeId) throws SQLException {
-        
-        DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
-        
-        if (databaseVendor == DatabaseVendor.MS2000) {
-            
-            return getImmediatelyAdjacentPointValues(pvh);
-        
-        } else {
-            
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT *");
-            sql.append("FROM (");
-            sql.append("    SELECT rph_inner1.*, pt.PointType, ROW_NUMBER() OVER (ORDER BY timestamp, changeid) row1");
-            sql.append("    FROM RAWPOINTHISTORY rph_inner1");
-            sql.append("    JOIN Point pt ON (rph_inner1.PointId = pt.PointId)");
-            sql.append("    WHERE rph_inner1.PointId").eq(pvh.getId());
-            sql.append(") rph1");
-            sql.append("WHERE PointId").eq(pvh.getId());
-            sql.append("AND rph1.row1 - (");
-            sql.append("    SELECT rph_inner2.row2 FROM (");
-            sql.append("        SELECT rph_inner3.*, ROW_NUMBER() OVER (ORDER BY timestamp, changeid) row2");
-            sql.append("        FROM RAWPOINTHISTORY rph_inner3");
-            sql.append("        WHERE PointId").eq(pvh.getId());
-            sql.append("    ) rph_inner2");
-            sql.append("    WHERE rph_inner2.changeid").eq(changeId);
-            sql.append(")");
-            sql.append("IN (-1,1)");
-            
-            List<PointValueHolder> pvhs = yukonTemplate.query(sql, new LiteRphRowMapper());
-            return pvhs;
-        }
-    }
-    
-    private final class AdjacentPointValuesRse implements ResultSetExtractor {
-    	
-    	private Integer indexOfChange = null;
-    	private List<PointValueQualityHolder> resultsTail = new ArrayList<PointValueQualityHolder>();
-    	int minimumIndex;
-    	int changeId;
-    	
-    	public AdjacentPointValuesRse(int changeId, List<Integer> offsetsCollection) {
-    		this.changeId = changeId;
-    		this.minimumIndex = Ordering.natural().min(offsetsCollection);
-    	}
-		
-		public int getIndexOfChange() {
-			return this.indexOfChange;
-		}
-		public List<PointValueQualityHolder> getResultsTail() {
-			return resultsTail;
-		}
-		
-		@Override
-		public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
-			
-			int currentChangeId = 0;
-			PointValueQualityHolder prevHolder = null;
-			
-			while (rs.next()) {
-				
-				currentChangeId = rs.getInt("ChangeId");
-				
-				PointValueBuilder builder = PointValueBuilder.create();
-				builder.withResultSet(rs);
-				builder.withType(rs.getString("PointType"));
-				PointValueQualityHolder holder = builder.build();
-				
-				if (prevHolder == null || !holder.equals(prevHolder)) {
-					resultsTail.add(holder);
-					prevHolder = holder;
-				}
-				
-            	if (currentChangeId == changeId) {
-            		indexOfChange = resultsTail.size() - 1;
-            	}
-            	
-            	if (indexOfChange != null && (resultsTail.size() - 1) >= indexOfChange - minimumIndex) {
-            		return indexOfChange;
-            	}
-			}
-			if (indexOfChange == null) {
-				throw new IllegalStateException();
-			}
-			return null;
-		}
-	}
     
     @Override
     public void deleteValue(int changeId) {
@@ -614,9 +485,4 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     public void setAttributeService(AttributeService attributeService) {
         this.attributeService = attributeService;
     }
-
-    @Autowired
-    public void setDatabaseConnectionVendorResolver(DatabaseVendorResolver databaseConnectionVendorResolver) {
-		this.databaseConnectionVendorResolver = databaseConnectionVendorResolver;
-	}
 }

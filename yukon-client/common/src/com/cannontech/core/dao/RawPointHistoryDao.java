@@ -1,6 +1,5 @@
 package com.cannontech.core.dao;
 
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +27,35 @@ public interface RawPointHistoryDao {
     public enum Mode {
         HIGHEST,LAST
     }
+    
+    public enum Order {
+        FORWARD, REVERSE
+    }
+    
+    public enum Clusivity {
+        INCLUSIVE_EXCLUSIVE(true, false),
+        EXCLUSIVE_INCLUSIVE(false, true),
+        INCLUSIVE_INCLUSIVE(true, true),
+        EXCLUSIVE_EXCLUSIVE(false, false),
+        ;
+        
+        private final boolean startInclusive;
+        private final boolean endInclusive;
+
+        private Clusivity(boolean startInclusive, boolean endInclusive) {
+            this.startInclusive = startInclusive;
+            this.endInclusive = endInclusive;
+            
+        }
+
+        public boolean isStartInclusive() {
+            return startInclusive;
+        }
+
+        public boolean isEndInclusive() {
+            return endInclusive;
+        }
+    }
 
     /**
      * Method to get a list of point values for a given point and time period.
@@ -45,11 +73,11 @@ public interface RawPointHistoryDao {
      * @param pointId - Id of point to get values for
      * @param startDate - Start time of period (this is always the first argument in SQL, either > or >=)
      * @param stopDate - End time of period (this is always the second argument in SQL, either < or <=)
-     * @param startInclusive - When true, startDate is inclusive, stopDate is exclusive.  When false, startDate is exclusive, stopDate is inclusive
-     * @param reverseOrder - When true, results are returned from query in timestamp DESC, changeId DESC order
+     * @param clusivity - determines whether each end of range is inclusive or exclusive
+     * @param order - controls ordering by timestamp and changeid
      * @return List of values for the point
      */
-    public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, boolean startInclusive, boolean reverseOrder);
+    public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order);
     
     /**
      * Method to get a list of point values for a given point and time period, 
@@ -59,12 +87,12 @@ public interface RawPointHistoryDao {
      * @param pointId - Id of point to get values for
      * @param startDate - Start time of period (this is always the first argument in SQL, either > or >=)
      * @param stopDate - End time of period (this is always the second argument in SQL, either < or <=)
-     * @param startInclusive - When true, startDate is inclusive, stopDate is exclusive.  When false, startDate is exclusive, stopDate is inclusive
-     * @param reverseOrder - When true, results are returned from query in timestamp DESC, changeId DESC order
+     * @param clusivity - determines whether each end of range is inclusive or exclusive
+     * @param order - controls ordering by timestamp and changeid
      * @param maxRows - Maximum number of rows to return
      * @return List of values for the point
      */
-    public List<PointValueHolder> getLimitedPointData(int pointId, Date startDate, Date stopDate, boolean startInclusive, boolean reverseOrder, int maxRows);
+    public List<PointValueHolder> getLimitedPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order, int maxRows);
     
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned as a ListMultimap
@@ -75,11 +103,11 @@ public interface RawPointHistoryDao {
      * @param startDate The lower limit for the timestamp of the values to return, may be null
      * @param stopDate The upper limit for the timestamp of the values to return, may be null
      * @param excludeDisabledPaos True if disabled PAOs should be omitted from the result
-     * @param startInclusive When true, startDate is inclusive, stopDate is exclusive.  When false, startDate is exclusive, stopDate is inclusive
-     * @param reverseOrder When true, results are returned from query in timestamp DESC (only affects the iteration order of the values)
+     * @param clusivity - determines whether each end of range is inclusive or exclusive
+     * @param order - controls ordering by timestamp (only affects the iteration order of the values)
      * @return
      */
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> paos, Attribute attribute, Date startDate, Date stopDate, boolean excludeDisabledPaos, boolean startInclusive, boolean reverseOrder);
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> paos, Attribute attribute, Date startDate, Date stopDate, boolean excludeDisabledPaos, Clusivity clusivity, Order order);
     
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned as a ListMultimap
@@ -94,11 +122,11 @@ public interface RawPointHistoryDao {
      * @param stopDate The upper limit for the timestamp of the values to return, may be null
      * @param maxRows The maximum number of rows to return for each PAO
      * @param excludeDisabledPaos True if disabled PAOs should be omitted from the result
-     * @param startInclusive When true, startDate is inclusive, stopDate is exclusive.  When false, startDate is exclusive, stopDate is inclusive
-     * @param reverseOrder When true, results are returned from query in timestamp DESC (only affects the iteration order of the values)
+     * @param clusivity - determines whether each end of range is inclusive or exclusive
+     * @param order - controls ordering by timestamp (only affects the iteration order of the values)
      * @return
      */
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> paos, Attribute attribute, Date startDate, Date stopDate, int maxRows, boolean excludeDisabledPaos, boolean startInclusive, boolean reverseOrder);
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> paos, Attribute attribute, Date startDate, Date stopDate, int maxRows, boolean excludeDisabledPaos, Clusivity clusivity, Order order);
     
     /**
      * Equivalent to calling
@@ -145,50 +173,32 @@ public interface RawPointHistoryDao {
      */
     public PointValueQualityHolder getPointValueQualityForChangeId(int changeId);
     
-    /**
-    * Gets values before or after a given changeId.
-    * All values for the point that changeId references are ordered by timestamp and changeId, the those values adjacent to the one with the given changeId are returned.
-    * Offsets are an array of integers that determine which adjacent points to return.
-    * Examples:
-    * offset = 0 => same value that changeId points to
-    * offset = -1 => value previous to value that changeId points to
-    * offset = 1 => value after value that changeId points to
-    * The list of values returned will have the same length as the offset array passed in.
-    * If an offset is out of range of the available values for the point, then null will be returned as its value.
-    * @param changeId
-    * @param offsets
-    * @return
-    * @throws SQLException
-    */
-   public List<PointValueQualityHolder> getAdjacentPointValues(final int changeId, int ... offsets) throws SQLException;
-   
    /**
     * Gets values immediately before and after (with respect to timestamp) of a given point value.
     * Notes: 
     * Implemented by making two calls to getLimitedPointData().
-    * This method seems to perform slightly better the other getImmediatelyAdjacentPointValues() method when run on MSSQL vs Oracle.
-    * @param pvh
-    * @return
-    * @throws SQLException
     */
-   public List<PointValueHolder> getImmediatelyAdjacentPointValues(PointValueHolder pvh) throws SQLException;
-   
-   /**
-    * Gets values immediately before and after (with respect to timestamp) of a given point value and it's rph changeId.
-    * Notes:
-    * Implemented by using a single complex query which is not compatible with MS2000. Will degrade to use the other version of getImmediatelyAdjacentPointValues().
-    * This method seems to perform slightly better than the other getImmediatelyAdjacentPointValues() method when run on Oracle vs MSSQL
-    * @param pvh
-    * @param changeId
-    * @return
-    * @throws SQLException
-    */
-   public List<PointValueHolder> getImmediatelyAdjacentPointValues(PointValueHolder pvh, int changeId) throws SQLException;
+   public AdjacentPointValues getAdjacentPointValues(PointValueHolder pvh);
    
    /**
     * Delete a row of RawPointHistory by ChangeId.
     * @param changeId
     */
    public void deleteValue(int changeId);
+
+   public static class AdjacentPointValues {
+       private PointValueHolder preceding;
+       private PointValueHolder succeeding;
+       public AdjacentPointValues(PointValueHolder preceding, PointValueHolder succeeding) {
+           this.preceding = preceding;
+           this.succeeding = succeeding;
+       }
+       public PointValueHolder getPreceding() {
+           return preceding;
+       }
+       public PointValueHolder getSucceeding() {
+           return succeeding;
+       }
+   }
 
 }

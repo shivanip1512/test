@@ -20,6 +20,7 @@ import com.cannontech.common.validation.model.ReviewPoint;
 import com.cannontech.common.validation.model.RphTag;
 import com.cannontech.common.validation.service.ValidationHelperService;
 import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dao.RawPointHistoryDao.AdjacentPointValues;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -110,8 +111,8 @@ public class VeeReviewController {
         		}
         	}
         	
-        	List<PointValueHolder> adjacentPointValues = rawPointHistoryDao.getImmediatelyAdjacentPointValues(rp.getPointValue());
-        	ExtendedReviewPoint extRp = new ExtendedReviewPoint(rp, adjacentPointValues.get(0), adjacentPointValues.get(1), otherTags);
+        	AdjacentPointValues adjacentPointValues = rawPointHistoryDao.getAdjacentPointValues(rp.getPointValue());
+        	ExtendedReviewPoint extRp = new ExtendedReviewPoint(rp, adjacentPointValues.getPreceding(), adjacentPointValues.getSucceeding(), otherTags);
         	extendedReviewPoints.add(extRp);
         }
         

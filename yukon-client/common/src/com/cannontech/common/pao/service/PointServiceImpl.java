@@ -16,6 +16,8 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
+import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
@@ -86,7 +88,7 @@ public class PointServiceImpl implements PointService {
 
         // first 36 hours - all points
         Date sixMonthsAgo = DateUtils.addMonths(today, -6);
-        List<PointValueHolder> previous36 = rphDao.getLimitedPointData(lp.getPointID(), sixMonthsAgo, today, false, true, 36);
+        List<PointValueHolder> previous36 = rphDao.getLimitedPointData(lp.getPointID(), sixMonthsAgo, today, Clusivity.EXCLUSIVE_INCLUSIVE, Order.REVERSE, 36);
 
         List<PointValueHolder> previous3Months = Collections.emptyList();
         if (previous36.size() == 36) {

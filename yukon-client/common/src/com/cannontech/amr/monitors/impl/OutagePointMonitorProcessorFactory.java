@@ -16,6 +16,8 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
+import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.core.dynamic.RichPointDataListener;
@@ -53,7 +55,7 @@ public class OutagePointMonitorProcessorFactory extends MonitorProcessorFactoryB
                 int pointId = richPointData.getPointValue().getId();
                 Date currentTimeStamp = richPointData.getPointValue().getPointDataTimeStamp();
                 // get the one reading prior to this stopDate is exclusive, so we simply pass the current reading's time
-                List<PointValueHolder> previousPointDatas = rawPointHistoryDao.getLimitedPointData(pointId, null, currentTimeStamp, true, true, 1);
+                List<PointValueHolder> previousPointDatas = rawPointHistoryDao.getLimitedPointData(pointId, null, currentTimeStamp, Clusivity.INCLUSIVE_EXCLUSIVE, Order.REVERSE, 1);
                 if (previousPointDatas.isEmpty()) {
                     return handleNoPriorReading(richPointData.getPointValue());
                 }
@@ -82,7 +84,7 @@ public class OutagePointMonitorProcessorFactory extends MonitorProcessorFactoryB
                 }
 
                 // go back to the database
-                List<PointValueHolder> priorPointDatas = rawPointHistoryDao.getLimitedPointData(pointId, null, latestTimeOfPriorReading.toDate(), true, true, 1);
+                List<PointValueHolder> priorPointDatas = rawPointHistoryDao.getLimitedPointData(pointId, null, latestTimeOfPriorReading.toDate(), Clusivity.INCLUSIVE_EXCLUSIVE, Order.REVERSE, 1);
                 if (priorPointDatas.isEmpty()) {
                     return handleNoPriorReading(richPointData.getPointValue());
                 }

@@ -20,6 +20,8 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
+import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.CachingPointFormattingService;
 import com.cannontech.core.service.PaoLoadingService;
@@ -88,9 +90,9 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
         ListMultimap<PaoIdentifier, PointValueQualityHolder> intermediateResults;
         
         if (getAll) {
-            intermediateResults = rawPointHistoryDao.getAttributeData(displayableDevices, attribute, getStartDate(), getStopDate(), excludeDisabledDevices, false, true);
+            intermediateResults = rawPointHistoryDao.getAttributeData(displayableDevices, attribute, getStartDate(), getStopDate(), excludeDisabledDevices, Clusivity.EXCLUSIVE_INCLUSIVE, Order.REVERSE);
         } else {
-            intermediateResults = rawPointHistoryDao.getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledDevices, false, true);
+            intermediateResults = rawPointHistoryDao.getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledDevices, Clusivity.EXCLUSIVE_INCLUSIVE, Order.REVERSE);
         }
         CachingPointFormattingService cachingPointFormattingService = pointFormattingService.getCachedInstance();            
         for (DisplayablePao displayablePao : displayableDevices) {

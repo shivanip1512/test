@@ -16,6 +16,8 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
+import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.device.MCTBase;
@@ -108,7 +110,7 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
         	Date range2 = DateUtils.addHours(d1, 1);
         	
         	// get rph data for range
-        	List<PointValueHolder> pvhList = rphDao.getPointData(pointId, range1, range2, true, false);
+        	List<PointValueHolder> pvhList = rphDao.getPointData(pointId, range1, range2, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD);
         	
         	Integer rphCount = pvhList.size();
         	Double hourTotal = 0.0;
