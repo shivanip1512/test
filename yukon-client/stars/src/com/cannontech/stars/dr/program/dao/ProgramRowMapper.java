@@ -47,6 +47,7 @@ public class ProgramRowMapper extends AbstractRowMapperWithBaseQuery<Program> {
         program.setProgramId(rs.getInt("ProgramID"));
         
         String chanceOfControl = rs.getString("ChanceOfControl");
+        chanceOfControl = com.cannontech.common.util.StringUtils.stripNone(chanceOfControl);
         program.setChanceOfControl(chanceOfControl);
         
         program.setDescription(rs.getString("Description"));
