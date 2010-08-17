@@ -5,8 +5,8 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.database.RowAndFieldMapper;
@@ -39,7 +39,7 @@ public class CommandRequestExecutionRowAndFieldMapper implements RowAndFieldMapp
     	commandRequestExecution.setStartTime(rs.getTimestamp("StartTime"));
     	commandRequestExecution.setStopTime(rs.getTimestamp("StopTime"));
     	commandRequestExecution.setRequestCount(rs.getInt("RequestCount"));
-    	commandRequestExecution.setCommandRequestExecutionType(CommandRequestExecutionType.valueOf(rs.getString("CommandRequestExecType")));
+    	commandRequestExecution.setCommandRequestExecutionType(DeviceRequestType.valueOf(rs.getString("CommandRequestExecType")));
     	commandRequestExecution.setUserName(rs.getString("UserName"));
     	commandRequestExecution.setCommandRequestType(CommandRequestType.valueOf(rs.getString("CommandRequestType")));
     	commandRequestExecution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.valueOf(rs.getString("ExecutionStatus")));

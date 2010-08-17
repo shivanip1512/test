@@ -3,8 +3,8 @@ package com.cannontech.common.device.commands.dao;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 
 public interface CommandRequestExecutionDao {
@@ -23,6 +23,6 @@ public interface CommandRequestExecutionDao {
 	
 	public List<CommandRequestExecution> getCresByContextId(int commandRequestExecutionContextId);
 	
-	public List<CommandRequestExecution> findByRange(int commandRequestExecutionId, Date startTime, Date stopTime, CommandRequestExecutionType type, boolean acsending);
+	public List<CommandRequestExecution> findByRange(int commandRequestExecutionId, Date startTime, Date stopTime, DeviceRequestType type, boolean acsending);
 	
 }

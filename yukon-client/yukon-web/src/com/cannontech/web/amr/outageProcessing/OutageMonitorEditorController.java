@@ -19,7 +19,7 @@ import com.cannontech.amr.outageProcessing.dao.OutageMonitorDao;
 import com.cannontech.amr.outageProcessing.service.OutageMonitorService;
 import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupRequestExecutionService;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.RetryStrategy;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
@@ -197,7 +197,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         	if (isNewMonitor && scheduleGroupCommand) {
 
         		rolePropertyDao.verifyProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
-            	scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, Collections.singleton(BLINK_COUNT_ATTRIBUTE), CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, expression, userContext, RetryStrategy.noRetryStrategy());
+            	scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, Collections.singleton(BLINK_COUNT_ATTRIBUTE), DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, expression, userContext, RetryStrategy.noRetryStrategy());
         	}
         	
         	// OUTAGE GROUP

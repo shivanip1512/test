@@ -6,8 +6,8 @@ import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.CommandRequestType;
@@ -43,7 +43,7 @@ public class CommandRequestRouteExecutorImpl extends
     }
 
 	@Override
-	public CommandResultHolder execute(int routeId, String command, CommandRequestExecutionType type, LiteYukonUser user) throws CommandCompletionException {
+	public CommandResultHolder execute(int routeId, String command, DeviceRequestType type, LiteYukonUser user) throws CommandCompletionException {
 		
 		CommandRequestRoute commandRequest = new CommandRequestRoute();
         commandRequest.setCommand(command);
@@ -55,7 +55,7 @@ public class CommandRequestRouteExecutorImpl extends
 	@Override
 	public CommandRequestExecutionIdentifier execute(int routeId, String command,
 			CommandCompletionCallback<? super CommandRequestRoute> callback,
-			CommandRequestExecutionType type, LiteYukonUser user) {
+			DeviceRequestType type, LiteYukonUser user) {
 		
 		CommandRequestRoute commandRequest = new CommandRequestRoute();
         commandRequest.setCommand(command);

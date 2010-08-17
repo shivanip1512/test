@@ -17,7 +17,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsFilterType;
@@ -64,7 +64,7 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
 		// FILTER DEFAULTS
 		Date toDate = new Date();
 		Date fromDate = DateUtils.addMonths(toDate, -1);
-		CommandRequestExecutionType typeFilter = null;
+		DeviceRequestType typeFilter = null;
 		
 		// FILTERS
 		String fromDateStr = ServletRequestUtils.getStringParameter(request, "fromDate", null);
@@ -87,7 +87,7 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
 		
 		String typeFilterStr = ServletRequestUtils.getStringParameter(request, "typeFilter", null);
 		if (typeFilterStr != null && !typeFilterStr.equals("ANY")) {
-			typeFilter = CommandRequestExecutionType.valueOf(typeFilterStr);
+			typeFilter = DeviceRequestType.valueOf(typeFilterStr);
 		}
 		
 		// PARAMS
@@ -99,7 +99,7 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
 		mav.addObject("error", error);
 		
 		// TYPES
-		CommandRequestExecutionType[] commandRequestExecutionTypes = CommandRequestExecutionType.values();
+		DeviceRequestType[] commandRequestExecutionTypes = DeviceRequestType.values();
 		mav.addObject("commandRequestExecutionTypes", commandRequestExecutionTypes);
 		if (jobId > 0) {
 			ScheduledGroupRequestExecutionJobWrapper jobWrapper = scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(jobId, null, null, userContext);

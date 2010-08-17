@@ -10,8 +10,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.crf.dao.CrfMeterDao;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -76,7 +76,7 @@ public class MeterInformationWidget extends WidgetControllerBase {
 
         Meter meter = meterDao.getForId(deviceId);
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        CommandResultHolder result = commandRequestExecutor.execute(meter, "ping", CommandRequestExecutionType.METER_INFORMATION_PING_COMMAND, user);
+        CommandResultHolder result = commandRequestExecutor.execute(meter, "ping", DeviceRequestType.METER_INFORMATION_PING_COMMAND, user);
         mav.addObject("isRead", true);
 
         mav.addObject("result", result);

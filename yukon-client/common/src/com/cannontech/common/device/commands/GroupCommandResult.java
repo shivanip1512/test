@@ -3,6 +3,7 @@ package com.cannontech.common.device.commands;
 import java.util.Date;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.util.CancelStatus;
 import com.cannontech.common.util.Completable;
@@ -15,7 +16,7 @@ public class GroupCommandResult implements Completable, CancelStatus, ExceptionS
     private MultipleDeviceResultHolder resultHolder;
     private GroupCommandCompletionCallback callback;
     private Date startTime;
-    private CommandRequestExecutionType commandRequestExecutionType;
+    private DeviceRequestType commandRequestExecutionType;
     private CommandRequestExecutionIdentifier commandRequestExecutionIdentifier;
     private boolean handleUnsupported = false;
     
@@ -87,11 +88,11 @@ public class GroupCommandResult implements Completable, CancelStatus, ExceptionS
         this.successCollection = successCollection;
     }
     
-    public CommandRequestExecutionType getCommandRequestExecutionType() {
+    public DeviceRequestType getCommandRequestExecutionType() {
 		return commandRequestExecutionType;
 	}
     
-    public void setCommandRequestExecutionType(CommandRequestExecutionType commandRequestExecutionType) {
+    public void setCommandRequestExecutionType(DeviceRequestType commandRequestExecutionType) {
 		this.commandRequestExecutionType = commandRequestExecutionType;
 	}
     

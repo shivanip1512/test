@@ -3,6 +3,7 @@ package com.cannontech.common.device.commands;
 import java.util.List;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.util.ResultResultExpiredException;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -22,7 +23,7 @@ public interface GroupCommandExecutor {
 	 * @param user
 	 * @return
 	 */
-    public String execute(DeviceCollection deviceCollection, String command, CommandRequestExecutionType commandRequestExecutionType, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);
+    public String execute(DeviceCollection deviceCollection, String command, DeviceRequestType commandRequestExecutionType, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);
     
     /**
      * Execute a command on a collection of devices.
@@ -35,13 +36,13 @@ public interface GroupCommandExecutor {
      * @param user
      * @return
      */
-    public String execute(DeviceCollection deviceCollection, String command, List<CommandRequestDevice> requests, CommandRequestExecutionType commandRequestExecutionType, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);	
+    public String execute(DeviceCollection deviceCollection, String command, List<CommandRequestDevice> requests, DeviceRequestType commandRequestExecutionType, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);	
     
     public List<GroupCommandResult> getCompleted();
-    public List<GroupCommandResult> getCompletedByType(CommandRequestExecutionType type);
+    public List<GroupCommandResult> getCompletedByType(DeviceRequestType type);
 
     public List<GroupCommandResult> getPending();
-    public List<GroupCommandResult> getPendingByType(CommandRequestExecutionType type);
+    public List<GroupCommandResult> getPendingByType(DeviceRequestType type);
 
     public GroupCommandResult getResult(String id) throws ResultResultExpiredException;
     

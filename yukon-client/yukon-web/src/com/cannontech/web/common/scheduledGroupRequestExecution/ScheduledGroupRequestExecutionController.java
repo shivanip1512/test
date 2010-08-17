@@ -21,7 +21,7 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupReque
 import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupRequestExecutionService;
 import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.RetryStrategy;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -195,7 +195,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	    
 		// request type
 		String requestTypeStr = ServletRequestUtils.getRequiredStringParameter(request, "requestType");
-		CommandRequestExecutionType requestType = CommandRequestExecutionType.valueOf(requestTypeStr);
+		DeviceRequestType requestType = DeviceRequestType.valueOf(requestTypeStr);
 		String formUniqueId = ServletRequestUtils.getRequiredStringParameter(request, "formUniqueId");
 		
 		// validate cron
@@ -341,11 +341,11 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		int editJobId = ServletRequestUtils.getIntParameter(request, "editJobId", 0);
 		
 		// schedule / edit
-		if (requestType.equals(CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ)) {
+		if (requestType.equals(DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ)) {
 			
 			return scheduleAttributeRead(request, scheduleName, cronExpression, deviceGroupName, editJobId, retryCheckbox, retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
 		
-		} else if (requestType.equals(CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND)) {
+		} else if (requestType.equals(DeviceRequestType.SCHEDULED_GROUP_COMMAND)) {
 		
 			return scheduleCommand(request, scheduleName, cronExpression, deviceGroupName, editJobId, retryCheckbox, retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
 		
@@ -364,7 +364,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		// attribute
 		Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
 		if (selectedAttributes.size() == 0) {
-			return makeErrorMav("No Attribute(s) Selected", CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, scheduleName, cronExpression, null, null, null, deviceGroupName,
+			return makeErrorMav("No Attribute(s) Selected", DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, scheduleName, cronExpression, null, null, null, deviceGroupName,
 			                    retryCheckbox, retryCount == 0 ? "" : String.valueOf(retryCount), stopRetryAfterHoursCount == null ? "" : stopRetryAfterHoursCount.toString(), turnOffQueuingAfterRetryCount == null ? "" : turnOffQueuingAfterRetryCount.toString());
 		}
 		
@@ -373,9 +373,9 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		RetryStrategy retryStrategy = new RetryStrategy(retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
 		
 		if (editJobId <= 0) {
-			job = scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, selectedAttributes, CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext, retryStrategy);
+			job = scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, selectedAttributes, DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext, retryStrategy);
 		} else {
-			job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, selectedAttributes, CommandRequestExecutionType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext, retryStrategy);
+			job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, selectedAttributes, DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext, retryStrategy);
 		}
 		
 		mav.addObject("jobId", job.getId());
@@ -420,7 +420,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		
 		if (errorReason != null) {
 		    
-		    return makeErrorMav(errorReason, CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, scheduleName, cronExpression, null, commandSelectValue, commandString, deviceGroupName,
+		    return makeErrorMav(errorReason, DeviceRequestType.SCHEDULED_GROUP_COMMAND, scheduleName, cronExpression, null, commandSelectValue, commandString, deviceGroupName,
                                 retryCheckbox, retryCount == 0 ? "" : String.valueOf(retryCount), stopRetryAfterHoursCount == null ? "" : stopRetryAfterHoursCount.toString(), turnOffQueuingAfterRetryCount == null ? "" : turnOffQueuingAfterRetryCount.toString());
 		}
         
@@ -429,9 +429,9 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
         RetryStrategy retryStrategy = new RetryStrategy(retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
         
         if (editJobId <= 0) {
-        	job = scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, commandString, CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext, retryStrategy);
+        	job = scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, commandString, DeviceRequestType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext, retryStrategy);
         } else {
-        	job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, commandString, CommandRequestExecutionType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext, retryStrategy);
+        	job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, commandString, DeviceRequestType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext, retryStrategy);
         }
 		
         mav.addObject("jobId", job.getId());
@@ -440,7 +440,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	}
 
 	// ERROR MAV
-	private ModelAndView makeErrorMav(String errorMsg, CommandRequestExecutionType requestType, String scheduleName, String cronExpression, String selectedAttributeStrs, String commandSelectValue, String commandString, String deviceGroupName,
+	private ModelAndView makeErrorMav(String errorMsg, DeviceRequestType requestType, String scheduleName, String cronExpression, String selectedAttributeStrs, String commandSelectValue, String commandString, String deviceGroupName,
 	                                  boolean retryCheckbox, String queuedRetryCountStr, String nonQueuedRetryCountStr, String maxTotalRunTimeHoursStr) {
 		
 		ModelAndView mav = new ModelAndView("redirect:home");

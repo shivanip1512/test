@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeHelper;
@@ -93,7 +93,7 @@ public class TouWidget extends WidgetControllerBase {
             Sets.intersection(allExistingAttributes,AttributeHelper.getTouAttributes());
 
         // Reads all the meters in the existing set
-        CommandResultHolder result = meterReadService.readMeter(meter, existingTouAttributes, CommandRequestExecutionType.TOU_WIDGET_ATTRIBUTE_READ, user);
+        CommandResultHolder result = meterReadService.readMeter(meter, existingTouAttributes, DeviceRequestType.TOU_WIDGET_ATTRIBUTE_READ, user);
 
         mav.addObject("result", result);
         

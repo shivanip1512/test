@@ -23,9 +23,9 @@ import com.cannontech.amr.phaseDetect.data.UndefinedPhaseException;
 import com.cannontech.amr.phaseDetect.service.PhaseDetectService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
@@ -108,7 +108,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
                 finishedLatch.countDown();
             }
         };
-        routeBroadcastService.broadcastCommand(command, phaseDetectData.getBroadcastRoutes(), CommandRequestExecutionType.PHASE_DETECT_CLEAR, callback , user);
+        routeBroadcastService.broadcastCommand(command, phaseDetectData.getBroadcastRoutes(), DeviceRequestType.PHASE_DETECT_CLEAR, callback , user);
         try {
             boolean finishedBeforeTimeout = finishedLatch.await(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
             if(!finishedBeforeTimeout){
@@ -141,7 +141,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
                 finishedLatch.countDown();
             }
         };
-        routeBroadcastService.broadcastCommand(command, phaseDetectData.getBroadcastRoutes(), CommandRequestExecutionType.PHASE_DETECT_COMMAND, callback , user);
+        routeBroadcastService.broadcastCommand(command, phaseDetectData.getBroadcastRoutes(), DeviceRequestType.PHASE_DETECT_COMMAND, callback , user);
         try {
             boolean finishedBeforeTimeout = finishedLatch.await(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
             if(!finishedBeforeTimeout){
@@ -218,7 +218,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
             
         };
         
-        CommandRequestExecutionIdentifier id = commandRequestExecutor.execute(requests, callback, CommandRequestExecutionType.PHASE_DETECT_READ, user);
+        CommandRequestExecutionIdentifier id = commandRequestExecutor.execute(requests, callback, DeviceRequestType.PHASE_DETECT_READ, user);
         phaseDetectResult.setCommandRequestExecutionIdentifier(id);
         phaseDetectResult.setCallback(callback);
     }

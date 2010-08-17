@@ -26,7 +26,7 @@ import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -190,7 +190,7 @@ public class GroupMeterReadController extends MultiActionController {
         // read
         try {
         
-        	String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, selectedAttributes, CommandRequestExecutionType.GROUP_ATTRIBUTE_READ, alertCallback, userContext.getYukonUser());
+        	String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, selectedAttributes, DeviceRequestType.GROUP_ATTRIBUTE_READ, alertCallback, userContext.getYukonUser());
         	mav.addObject("resultKey", resultKey);
 		
         } catch (Exception e) {

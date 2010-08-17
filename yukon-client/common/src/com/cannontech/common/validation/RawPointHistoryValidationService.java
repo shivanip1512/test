@@ -24,7 +24,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.service.PointReadService;
 import com.cannontech.common.events.loggers.ValidationEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
@@ -509,7 +509,7 @@ public class RawPointHistoryValidationService {
             
             if (timeSinceReading.isShorterThan(Duration.standardDays(1))) {
                 // re read meter
-                pointReadService.backgroundReadPoint(workUnit.paoPointIdentifier, CommandRequestExecutionType.VEE_RE_READ,  UserUtils.getYukonUser());
+                pointReadService.backgroundReadPoint(workUnit.paoPointIdentifier, DeviceRequestType.VEE_RE_READ,  UserUtils.getYukonUser());
                 LogHelper.debug(log, "Sumbitting reread for a %s old reading for %s", timeSinceReading.toPeriod(), workUnit.paoPointIdentifier);
                 
                 PaoIdentifier paoIdentifier = workUnit.paoPointIdentifier.getPaoIdentifier();

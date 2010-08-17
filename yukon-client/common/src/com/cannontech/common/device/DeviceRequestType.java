@@ -1,7 +1,7 @@
-package com.cannontech.common.device.commands;
+package com.cannontech.common.device;
 
 
-public enum CommandRequestExecutionType {
+public enum DeviceRequestType {
     
     // NOTES:
     // Setting defaultNoqueue = true will cause 'noqueue' to be appended to all commands sent using this type.
@@ -56,7 +56,7 @@ public enum CommandRequestExecutionType {
 	private String description;
 	private boolean scheduled;
 	
-	CommandRequestExecutionType(boolean defaultNoqueue, int defaultPriority, String shortName, String description, boolean scheduled) {
+	DeviceRequestType(boolean defaultNoqueue, int defaultPriority, String shortName, String description, boolean scheduled) {
 		
 	    this.defaultNoqueue = defaultNoqueue;
 	    this.defaultPriority = defaultPriority;

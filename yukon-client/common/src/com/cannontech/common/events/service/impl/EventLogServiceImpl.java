@@ -27,7 +27,7 @@ import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.events.dao.EventLogDao;
@@ -115,7 +115,7 @@ public class EventLogServiceImpl implements EventLogService {
         builder.add(ArgumentMapper.create(LiteYukonUser.class, Types.VARCHAR, new LiteYukonUserToNameMapper()));
         builder.add(ArgumentMapper.createForEnum(PaoType.class));
         builder.add(ArgumentMapper.createForEnum(PointType.class));
-        builder.add(ArgumentMapper.createForEnum(CommandRequestExecutionType.class));
+        builder.add(ArgumentMapper.createForEnum(DeviceRequestType.class));
         builder.add(ArgumentMapper.create(ReadableInstant.class, Types.TIMESTAMP, new ObjectMapper<ReadableInstant, Date>() {
             public Date map(ReadableInstant from) throws ObjectMappingException {
                 return new Instant(from).toDate();

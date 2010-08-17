@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.cannontech.amr.deviceread.CalculatedPointResults;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.user.YukonUserContext;
 
 
@@ -20,5 +20,5 @@ public interface CalculatedPointService {
 	 * @param device
 	 * @param beginDate
 	 */
-	public CalculatedPointResults calculatePoint(Meter meter, Date beginDate, CommandRequestExecutionType type, YukonUserContext userContext);
+	public CalculatedPointResults calculatePoint(Meter meter, Date beginDate, DeviceRequestType type, YukonUserContext userContext);
 }

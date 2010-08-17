@@ -4,9 +4,9 @@ import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
@@ -41,7 +41,7 @@ public class CommandRequestDeviceExecutorImpl extends
     }
 
     @Override
-    public CommandResultHolder execute(YukonDevice device, String command, CommandRequestExecutionType type, LiteYukonUser user) throws Exception {
+    public CommandResultHolder execute(YukonDevice device, String command, DeviceRequestType type, LiteYukonUser user) throws Exception {
 
         CommandRequestDevice cmdRequest = new CommandRequestDevice();
         cmdRequest.setDevice(new SimpleDevice(device.getPaoIdentifier()));

@@ -11,7 +11,7 @@ import com.cannontech.amr.deviceread.dao.CalculatedPointService;
 import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
@@ -44,7 +44,7 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 	 * @param device
 	 * @param beginDate
 	 */
-	public CalculatedPointResults calculatePoint(Meter meter, Date beginDate, CommandRequestExecutionType type, YukonUserContext userContext) {
+	public CalculatedPointResults calculatePoint(Meter meter, Date beginDate, DeviceRequestType type, YukonUserContext userContext) {
 
         CalculatedPointResults results = new CalculatedPointResults();
 

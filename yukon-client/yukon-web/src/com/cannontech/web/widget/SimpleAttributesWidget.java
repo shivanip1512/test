@@ -16,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -102,7 +102,7 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
         allExistingAttributes.retainAll(attributes);
         
-        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, CommandRequestExecutionType.SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ, user);
+        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, DeviceRequestType.SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ, user);
         
         //result
         mav.addObject("result", result);

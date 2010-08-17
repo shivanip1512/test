@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupRequestExecutionService;
 import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.RetryStrategy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -32,7 +32,7 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
 	public YukonJob schedule(String name, 
                              String groupName, 
                              String command, 
-                             CommandRequestExecutionType type, 
+                             DeviceRequestType type, 
                              String cronExpression, 
                              YukonUserContext userContext,
                              RetryStrategy retryStrategy) {
@@ -44,7 +44,7 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
     public YukonJob schedule(String name, 
                              String groupName, 
                              Set<? extends Attribute> attributes, 
-                             CommandRequestExecutionType type, 
+                             DeviceRequestType type, 
                              String cronExpression, 
                              YukonUserContext userContext,
                              RetryStrategy retryStrategy) {
@@ -57,7 +57,7 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
 	                          String groupName, 
 	                          String command, 
 	                          Set<? extends Attribute> attributes, 
-	                          CommandRequestExecutionType type, 
+	                          DeviceRequestType type, 
 	                          String cronExpression, 
 	                          YukonUserContext userContext,
 	                          RetryStrategy retryStrategy) {
@@ -89,7 +89,7 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
                                         String name, 
                                         String groupName, 
                                         String command, 
-                                        CommandRequestExecutionType type, 
+                                        DeviceRequestType type, 
                                         String cronExpression, 
                                         YukonUserContext userContext,
                                         RetryStrategy retryStrategy) {
@@ -102,7 +102,7 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
                                         String name, 
                                         String groupName, 
                                         Set<? extends Attribute> attributes, 
-                                        CommandRequestExecutionType type, 
+                                        DeviceRequestType type, 
                                         String cronExpression, 
                                         YukonUserContext userContext,
                                         RetryStrategy retryStrategy) {
@@ -115,7 +115,7 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
 	                                     String groupName, 
 	                                     String command, 
 	                                     Set<? extends Attribute> attributes, 
-	                                     CommandRequestExecutionType type, 
+	                                     DeviceRequestType type, 
 	                                     String cronExpression, 
 	                                     YukonUserContext userContext,
 	                                     RetryStrategy retryStrategy) {

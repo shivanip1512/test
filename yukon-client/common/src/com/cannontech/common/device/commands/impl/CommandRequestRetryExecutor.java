@@ -8,11 +8,11 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandCompletionRetryCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -47,7 +47,7 @@ public class CommandRequestRetryExecutor<T> {
     // EXECUTE
     public CommandRequestExecutionContextId execute(List<T> commands, 
                                                   CommandCompletionCallback<? super T> callback,
-                                                  CommandRequestExecutionType type,
+                                                  DeviceRequestType type,
                                                   LiteYukonUser user) {
         
         CommandRequestExecutionTemplate<T> template = this.commandRequestExecutor.getExecutionTemplate(type, user);

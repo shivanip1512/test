@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.events.loggers.MeteringEventLogService;
@@ -94,7 +94,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
         meteringEventLogService.readNowPushedForReadingsWidget(user, meter.getDeviceId());
-        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, CommandRequestExecutionType.METER_READINGS_WIDGET_ATTRIBUTE_READ, user);
+        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, DeviceRequestType.METER_READINGS_WIDGET_ATTRIBUTE_READ, user);
         
         mav.addObject("result", result);
         

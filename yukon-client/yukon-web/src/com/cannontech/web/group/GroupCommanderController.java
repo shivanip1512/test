@@ -31,7 +31,7 @@ import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -228,7 +228,7 @@ public class GroupCommanderController implements InitializingBean {
 
         };
 
-        String key = groupCommandExecutor.execute(deviceCollection, commandString, CommandRequestExecutionType.GROUP_COMMAND, callback, userContext.getYukonUser());
+        String key = groupCommandExecutor.execute(deviceCollection, commandString, DeviceRequestType.GROUP_COMMAND, callback, userContext.getYukonUser());
         map.addAttribute("resultKey", key);
         return true;
     }

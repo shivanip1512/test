@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -68,7 +68,7 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     }
     
     // BY RANGE
-    public List<CommandRequestExecution> findByRange(int commandRequestExecutionId, Date beginTime, Date endTime, CommandRequestExecutionType type, boolean ascending) {
+    public List<CommandRequestExecution> findByRange(int commandRequestExecutionId, Date beginTime, Date endTime, DeviceRequestType type, boolean ascending) {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CRE.* FROM CommandRequestExec CRE");

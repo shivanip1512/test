@@ -5,10 +5,10 @@ import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 
 
-public class CommandRequestExecutionTypeType extends BaseEnumeratedType<CommandRequestExecutionType> {
+public class CommandRequestExecutionTypeType extends BaseEnumeratedType<DeviceRequestType> {
 
     private List<InputOption> optionList = new ArrayList<InputOption>();
     
@@ -16,8 +16,8 @@ public class CommandRequestExecutionTypeType extends BaseEnumeratedType<CommandR
 
         // re-get available routes
         optionList = new ArrayList<InputOption>();
-        CommandRequestExecutionType[] types = CommandRequestExecutionType.values();
-        for (CommandRequestExecutionType type : types) {
+        DeviceRequestType[] types = DeviceRequestType.values();
+        for (DeviceRequestType type : types) {
             
             String typeName = type.getShortName();
             
@@ -30,8 +30,8 @@ public class CommandRequestExecutionTypeType extends BaseEnumeratedType<CommandR
         return optionList;
     }
     
-    public Class<CommandRequestExecutionType> getTypeClass() {
-        return CommandRequestExecutionType.class;
+    public Class<DeviceRequestType> getTypeClass() {
+        return DeviceRequestType.class;
     }
 
     public PropertyEditor getPropertyEditor() {
@@ -41,13 +41,13 @@ public class CommandRequestExecutionTypeType extends BaseEnumeratedType<CommandR
             @Override
             public void setAsText(String typeStr) throws IllegalArgumentException {
                 
-                setValue(CommandRequestExecutionType.valueOf(typeStr));
+                setValue(DeviceRequestType.valueOf(typeStr));
             }
             
             @Override
             public String getAsText() {
                 
-                CommandRequestExecutionType type = (CommandRequestExecutionType)getValue();
+                DeviceRequestType type = (DeviceRequestType)getValue();
                 return type.name();
             }
         };

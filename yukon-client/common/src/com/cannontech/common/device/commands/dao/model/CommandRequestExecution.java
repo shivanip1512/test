@@ -2,8 +2,8 @@ package com.cannontech.common.device.commands.dao.model;
 
 import java.util.Date;
 
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestType;
 
 public class CommandRequestExecution {
@@ -13,7 +13,7 @@ public class CommandRequestExecution {
 	private Date startTime;
 	private Date stopTime;
 	private int requestCount;
-	private CommandRequestExecutionType commandRequestExecutionType;
+	private DeviceRequestType commandRequestExecutionType;
 	private String userName;
 	private CommandRequestType commandRequestType;
 	private CommandRequestExecutionStatus commandRequestExecutionStatus;
@@ -48,10 +48,10 @@ public class CommandRequestExecution {
 	public void setRequestCount(int requestCount) {
 		this.requestCount = requestCount;
 	}
-	public CommandRequestExecutionType getCommandRequestExecutionType() {
+	public DeviceRequestType getCommandRequestExecutionType() {
 		return commandRequestExecutionType;
 	}
-	public void setCommandRequestExecutionType(CommandRequestExecutionType commandRequestExecutionType) {
+	public void setCommandRequestExecutionType(DeviceRequestType commandRequestExecutionType) {
 		this.commandRequestExecutionType = commandRequestExecutionType;
 	}
 	public String getUserName() {

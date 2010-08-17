@@ -6,9 +6,9 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.device.service.PointReadService;
@@ -28,7 +28,7 @@ public class PointReadServiceImpl implements PointReadService {
     
     @Override
     public void backgroundReadPoint(PaoPointIdentifier paoPointIdentifier,
-            CommandRequestExecutionType type, LiteYukonUser user) {
+            DeviceRequestType type, LiteYukonUser user) {
         
         Set<PointIdentifier> pointSet = ImmutableSet.of(paoPointIdentifier.getPointIdentifier());
         Set<CommandDefinition> commandsThatAffectPoints = paoDefinitionDao.getCommandsThatAffectPoints(paoPointIdentifier.getPaoIdentifier().getPaoType(), pointSet);

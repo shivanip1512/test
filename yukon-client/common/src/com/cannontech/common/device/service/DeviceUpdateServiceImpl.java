@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
@@ -135,7 +135,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                         CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
                         };
                         
-                        commandRequestDeviceExecutor.execute(Collections.singletonList(configCmd), dummyCallback, CommandRequestExecutionType.ROUTE_DISCOVERY_PUTCONFIG_COMMAND, liteYukonUser);
+                        commandRequestDeviceExecutor.execute(Collections.singletonList(configCmd), dummyCallback, DeviceRequestType.ROUTE_DISCOVERY_PUTCONFIG_COMMAND, liteYukonUser);
                     }
                 }
             }

@@ -16,10 +16,10 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGrou
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.impl.CommandRequestRetryExecutor;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
@@ -38,7 +38,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     private DeviceGroup deviceGroup;
     private Set<? extends Attribute> attributes = null;
     private String command = null;
-    private CommandRequestExecutionType commandRequestExecutionType;
+    private DeviceRequestType commandRequestExecutionType;
     private int retryCount = 0;
     private Integer stopRetryAfterHoursCount = null;
     private Integer turnOffQueuingAfterRetryCount = null;
@@ -171,11 +171,11 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 		this.command = command;
 	}
 	
-	public CommandRequestExecutionType getCommandRequestExecutionType() {
+	public DeviceRequestType getCommandRequestExecutionType() {
 		return commandRequestExecutionType;
 	}
 	
-	public void setCommandRequestExecutionType(CommandRequestExecutionType commandRequestExecutionType) {
+	public void setCommandRequestExecutionType(DeviceRequestType commandRequestExecutionType) {
 		this.commandRequestExecutionType = commandRequestExecutionType;
 	}
 

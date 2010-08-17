@@ -2,8 +2,8 @@ package com.cannontech.amr.deviceread.service;
 
 import java.util.Set;
 
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.google.common.collect.Multimap;
@@ -18,7 +18,7 @@ public interface MeterReadCommandGeneratorService {
      * @param type
      * @return
      */
-    public Multimap<YukonDevice, CommandRequestDevice> getCommandRequests(Iterable<? extends YukonDevice> devices, Set<? extends Attribute> attributes, CommandRequestExecutionType type);
+    public Multimap<YukonDevice, CommandRequestDevice> getCommandRequests(Iterable<? extends YukonDevice> devices, Set<? extends Attribute> attributes, DeviceRequestType type);
 
     public boolean isReadable(YukonDevice device, Set<? extends Attribute> attributes);
 }

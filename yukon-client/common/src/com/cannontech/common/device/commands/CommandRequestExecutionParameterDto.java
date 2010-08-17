@@ -2,17 +2,18 @@ package com.cannontech.common.device.commands;
 
 import org.springframework.core.style.ToStringCreator;
 
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class CommandRequestExecutionParameterDto {
 
     private CommandRequestExecutionContextId contextId;
-    private CommandRequestExecutionType type;
+    private DeviceRequestType type;
     private LiteYukonUser user;
     private boolean noqueue;
     private int priority;
     
-    public CommandRequestExecutionParameterDto(CommandRequestExecutionContextId contextId, CommandRequestExecutionType type, LiteYukonUser user) {
+    public CommandRequestExecutionParameterDto(CommandRequestExecutionContextId contextId, DeviceRequestType type, LiteYukonUser user) {
         this.contextId = contextId;
         this.type = type;
         this.user = user;
@@ -48,7 +49,7 @@ public class CommandRequestExecutionParameterDto {
     public CommandRequestExecutionContextId getContextId() {
         return contextId;
     }
-    public CommandRequestExecutionType getType() {
+    public DeviceRequestType getType() {
         return type;
     }
     public LiteYukonUser getUser() {

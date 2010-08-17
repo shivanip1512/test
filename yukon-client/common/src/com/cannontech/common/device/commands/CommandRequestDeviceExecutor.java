@@ -1,5 +1,6 @@
 package com.cannontech.common.device.commands;
 
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -18,6 +19,6 @@ public interface CommandRequestDeviceExecutor extends
      * @throws Exception
      */
     public CommandResultHolder execute(YukonDevice device, String command,
-    		CommandRequestExecutionType type, LiteYukonUser user) throws Exception;
+    		DeviceRequestType type, LiteYukonUser user) throws Exception;
 
 }

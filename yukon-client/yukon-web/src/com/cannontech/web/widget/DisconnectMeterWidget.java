@@ -14,8 +14,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -103,7 +103,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         ModelAndView mav = getReadModelAndView(meter, true);
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        CommandResultHolder result = meterReadService.readMeter(meter, disconnectAttribute, CommandRequestExecutionType.DISCONNECT_STATUS_ATTRIBUTE_READ,user);
+        CommandResultHolder result = meterReadService.readMeter(meter, disconnectAttribute, DeviceRequestType.DISCONNECT_STATUS_ATTRIBUTE_READ,user);
         
         mav.addObject("state", getDisconnectedState(meter, result));
         String configStr = "";
@@ -165,7 +165,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     	Meter meter = getMeter(request);
     	
     	LiteYukonUser user = ServletUtil.getYukonUser(request);
-        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_CONNECT_COMMAND, CommandRequestExecutionType.CONTROL_CONNECT_DISCONNECT_COMAMND, user);
+        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_CONNECT_COMMAND, DeviceRequestType.CONTROL_CONNECT_DISCONNECT_COMAMND, user);
         
         ModelAndView mav = getControlModelAndView(request, result);
         
@@ -178,7 +178,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     	Meter meter = getMeter(request);
     	
     	LiteYukonUser user = ServletUtil.getYukonUser(request);
-        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_DISCONNECT_COMMAND, CommandRequestExecutionType.CONTROL_CONNECT_DISCONNECT_COMAMND, user);
+        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_DISCONNECT_COMMAND, DeviceRequestType.CONTROL_CONNECT_DISCONNECT_COMAMND, user);
         
         ModelAndView mav = getControlModelAndView(request, result);
         

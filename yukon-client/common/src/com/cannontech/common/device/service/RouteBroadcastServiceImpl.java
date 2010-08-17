@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
 import com.cannontech.common.device.commands.impl.CommandRequestRouteAndDeviceExecutorImpl;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -21,7 +21,7 @@ public class RouteBroadcastServiceImpl implements RouteBroadcastService{
     CommandRequestRouteAndDeviceExecutorImpl executor;
     
     @Override
-    public void broadcastCommand(final String command, List<Route> routes, CommandRequestExecutionType type, final RouteBroadcastService.CompletionCallback callback, LiteYukonUser user) {
+    public void broadcastCommand(final String command, List<Route> routes, DeviceRequestType type, final RouteBroadcastService.CompletionCallback callback, LiteYukonUser user) {
         
         ObjectMapper<Route, CommandRequestRouteAndDevice> objectMapper = new ObjectMapper<Route, CommandRequestRouteAndDevice>() {
             public CommandRequestRouteAndDevice map(Route from) throws ObjectMappingException {

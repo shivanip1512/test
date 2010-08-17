@@ -30,6 +30,7 @@ import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CollectingCommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandPriority;
@@ -38,7 +39,6 @@ import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.CommandRequestExecutionParameterDto;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
@@ -298,14 +298,14 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     }
 
     // EXECUTE SINGLE, WAIT (wraps single command in list then calls execute-multiple-wait)
-    public CommandResultHolder execute(T command, CommandRequestExecutionType type, LiteYukonUser user) throws CommandCompletionException {
+    public CommandResultHolder execute(T command, DeviceRequestType type, LiteYukonUser user) throws CommandCompletionException {
         
         return execute(Collections.singletonList(command), type, user);
     }
     
 
     // EXECUTE MULTIPLE, WAIT (makes a waitable callback then calls execute-multiple-with-callback)
-    public CommandResultHolder execute(List<T> commands, CommandRequestExecutionType type, LiteYukonUser user) throws CommandCompletionException {
+    public CommandResultHolder execute(List<T> commands, DeviceRequestType type, LiteYukonUser user) throws CommandCompletionException {
         
         CollectingCommandCompletionCallback callback = new CollectingCommandCompletionCallback();
         WaitableCommandCompletionCallback<Object> waitableCallback = new WaitableCommandCompletionCallback<Object>(callback);
@@ -326,7 +326,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     // EXECUTE MULTIPLE, CALLBACK (creates a one time use parameterDto and calls executeWithParameterDto)
     public CommandRequestExecutionIdentifier execute(final List<T> commands,
                                                      final CommandCompletionCallback<? super T> callback, 
-                                                     CommandRequestExecutionType type, 
+                                                     DeviceRequestType type, 
                                                      final LiteYukonUser user) {
     
         CommandRequestExecutionTemplate<T> executionTemplate = getExecutionTemplate(type, user);
@@ -358,7 +358,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         
         // create CommandRequestExection record
         final CommandRequestExecutionContextId contextId = parameterDto.getContextId();
-        final CommandRequestExecutionType type = parameterDto.getType();
+        final DeviceRequestType type = parameterDto.getType();
         
         final CommandRequestExecution commandRequestExecution = new CommandRequestExecution();
         commandRequestExecution.setContextId(contextId.getId());
@@ -525,7 +525,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     }
     
     // EXECUTION TEMPLATE
-    public CommandRequestExecutionTemplate<T> getExecutionTemplate(CommandRequestExecutionType type, final LiteYukonUser user) {
+    public CommandRequestExecutionTemplate<T> getExecutionTemplate(DeviceRequestType type, final LiteYukonUser user) {
         
         CommandRequestExecutionContextId contextId = new CommandRequestExecutionContextId(nextValueHelper.getNextValue("CommandRequestExec"));
         CommandRequestExecutionParameterDto parameterDto = new CommandRequestExecutionParameterDto(contextId, type, user);

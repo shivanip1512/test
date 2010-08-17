@@ -27,7 +27,7 @@ import com.cannontech.common.alert.model.SimpleAlert;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -66,8 +66,8 @@ public class OutageProcessingController extends MultiActionController {
 		
 		// read results
 		List<GroupMeterReadResult> allReadsResults = new ArrayList<GroupMeterReadResult>();
-		allReadsResults.addAll(groupMeterReadService.getPendingByType(CommandRequestExecutionType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
-		allReadsResults.addAll(groupMeterReadService.getCompletedByType(CommandRequestExecutionType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
+		allReadsResults.addAll(groupMeterReadService.getPendingByType(DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
+		allReadsResults.addAll(groupMeterReadService.getCompletedByType(DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
 		
 		List<GroupMeterReadResult> readResults = new ArrayList<GroupMeterReadResult>();
 		List<String> readResultKeysForMonitor = monitorToRecentReadKeysCache.get(outageMonitorId);
@@ -134,7 +134,7 @@ public class OutageProcessingController extends MultiActionController {
             }
         };
 	
-        String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, Collections.singleton(BuiltInAttribute.OUTAGE_LOG), CommandRequestExecutionType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ, alertCallback, userContext.getYukonUser());
+        String resultKey = groupMeterReadService.readDeviceCollection(deviceCollection, Collections.singleton(BuiltInAttribute.OUTAGE_LOG), DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ, alertCallback, userContext.getYukonUser());
         monitorToRecentReadKeysCache.put(outageMonitorId, resultKey);
 		
 		mav.addObject("outageMonitorId", outageMonitorId);

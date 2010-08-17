@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDeviceExecutor;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -176,7 +176,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                     
                     // execute
                     try {
-                        commandRequestRouteAndDeviceExecutor.execute(Collections.singletonList(cmdReq), callback, CommandRequestExecutionType.PING_DEVICE_ON_ROUTE_COMMAND, state.getUser());
+                        commandRequestRouteAndDeviceExecutor.execute(Collections.singletonList(cmdReq), callback, DeviceRequestType.PING_DEVICE_ON_ROUTE_COMMAND, state.getUser());
                     } catch (Exception e) {
                         runCallbackWithNull(state, "Unknown exception.", deviceLogStr, "", e);
                     }

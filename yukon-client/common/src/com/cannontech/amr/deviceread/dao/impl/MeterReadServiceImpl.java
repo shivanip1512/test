@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.exception.MeterReadRequestException;
 import com.cannontech.common.pao.YukonDevice;
@@ -32,7 +32,7 @@ public class MeterReadServiceImpl implements MeterReadService {
     	return meterReadCommandGeneratorService.isReadable(device, attributes);
     }
 
-    public CommandResultHolder readMeter(YukonDevice device, Set<? extends Attribute> attributes, CommandRequestExecutionType type, LiteYukonUser user) {
+    public CommandResultHolder readMeter(YukonDevice device, Set<? extends Attribute> attributes, DeviceRequestType type, LiteYukonUser user) {
         log.info("Reading " + attributes + " on device " + device + " for " + user);
         
         if (!meterReadCommandGeneratorService.isReadable(device, attributes)) {
@@ -44,7 +44,7 @@ public class MeterReadServiceImpl implements MeterReadService {
         return execute(new ArrayList<CommandRequestDevice>(commandRequests.values()), type, user);
     }
     
-    private CommandResultHolder execute(List<CommandRequestDevice> commands, CommandRequestExecutionType type, LiteYukonUser user) {
+    private CommandResultHolder execute(List<CommandRequestDevice> commands, DeviceRequestType type, LiteYukonUser user) {
         
         CommandResultHolder holder;
         try {

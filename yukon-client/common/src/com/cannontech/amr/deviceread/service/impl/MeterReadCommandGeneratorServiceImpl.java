@@ -12,8 +12,8 @@ import com.cannontech.amr.deviceread.dao.impl.SetCoveringSolver;
 import com.cannontech.amr.deviceread.dao.impl.UnreadableException;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
@@ -43,7 +43,7 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
 	
 	
 	
-	public Multimap<YukonDevice, CommandRequestDevice> getCommandRequests(Iterable<? extends YukonDevice> devices, Set<? extends Attribute> attributes, CommandRequestExecutionType type) {
+	public Multimap<YukonDevice, CommandRequestDevice> getCommandRequests(Iterable<? extends YukonDevice> devices, Set<? extends Attribute> attributes, DeviceRequestType type) {
 	    
 	    ListMultimap<YukonDevice, CommandRequestDevice> list = ArrayListMultimap.create();
 	    
@@ -124,7 +124,7 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
         return requiredCommands;
     }
 	
-	private List<CommandRequestDevice> getCommandRequests(PaoIdentifier device, Iterable<CommandWrapper> commands, CommandRequestExecutionType type) {
+	private List<CommandRequestDevice> getCommandRequests(PaoIdentifier device, Iterable<CommandWrapper> commands, DeviceRequestType type) {
         List<CommandRequestDevice> commandRequests = new ArrayList<CommandRequestDevice>();
         for (CommandWrapper wrapper : commands) {
             List<String> commandStringList = wrapper.getCommandDefinition().getCommandStringList();

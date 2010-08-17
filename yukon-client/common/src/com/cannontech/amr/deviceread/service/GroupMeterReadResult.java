@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.Set;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.device.commands.MultipleDeviceResultHolder;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
@@ -21,7 +21,7 @@ public class GroupMeterReadResult implements Completable, ExceptionStatus, Compa
     private MultipleDeviceResultHolder resultHolder;
     private GroupCommandCompletionCallback callback;
     private Date startTime;
-    private CommandRequestExecutionType commandRequestExecutionType;
+    private DeviceRequestType commandRequestExecutionType;
     private CommandRequestExecutionIdentifier commandRequestExecutionIdentifier;
     
     private DeviceCollection successCollection;
@@ -40,10 +40,10 @@ public class GroupMeterReadResult implements Completable, ExceptionStatus, Compa
     public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
-    public CommandRequestExecutionType getCommandRequestExecutionType() {
+    public DeviceRequestType getCommandRequestExecutionType() {
 		return commandRequestExecutionType;
 	}
-    public void setCommandRequestExecutionType(CommandRequestExecutionType commandRequestExecutionType) {
+    public void setCommandRequestExecutionType(DeviceRequestType commandRequestExecutionType) {
 		this.commandRequestExecutionType = commandRequestExecutionType;
 	}
     public CommandRequestExecutionIdentifier getCommandRequestExecutionIdentifier() {

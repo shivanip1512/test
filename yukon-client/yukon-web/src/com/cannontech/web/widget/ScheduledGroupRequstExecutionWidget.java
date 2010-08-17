@@ -15,7 +15,7 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupReques
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoOnetimeFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoPendingFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -44,8 +44,8 @@ public class ScheduledGroupRequstExecutionWidget extends WidgetControllerBase {
 		ModelAndView mav = new ModelAndView("scheduledGroupRequestExecution/render.jsp");
 		final YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		
-		List<CommandRequestExecutionType> types = new ArrayList<CommandRequestExecutionType>();
-		for (CommandRequestExecutionType type : CommandRequestExecutionType.values()) {
+		List<DeviceRequestType> types = new ArrayList<DeviceRequestType>();
+		for (DeviceRequestType type : DeviceRequestType.values()) {
 			if (type.isScheduled()) {
 				types.add(type);
 			}

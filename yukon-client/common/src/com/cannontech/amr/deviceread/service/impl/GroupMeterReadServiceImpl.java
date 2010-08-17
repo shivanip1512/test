@@ -15,11 +15,11 @@ import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.commands.impl.CommandRequestRetryExecutor;
@@ -49,7 +49,7 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
 	
 	public CommandRequestExecutionContextId backgroundReadDeviceCollection(DeviceCollection deviceCollection, 
                                                                    Set<? extends Attribute> attributes, 
-                                                                   CommandRequestExecutionType type, 
+                                                                   DeviceRequestType type, 
                                                                    CommandCompletionCallback<CommandRequestDevice> callback, 
                                                                    LiteYukonUser user,
                                                                    int retryCount,
@@ -70,7 +70,7 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
 	
 	public String readDeviceCollection(DeviceCollection deviceCollection, 
 										Set<? extends Attribute> attributes, 
-										CommandRequestExecutionType type, 
+										DeviceRequestType type, 
 										final SimpleCallback<GroupMeterReadResult> callback, 
 										LiteYukonUser user) {
     	
@@ -156,7 +156,7 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
     }
 	
 	@Override
-	public List<GroupMeterReadResult> getCompletedByType(CommandRequestExecutionType type) {
+	public List<GroupMeterReadResult> getCompletedByType(DeviceRequestType type) {
         List<GroupMeterReadResult> completed = getCompleted();
         List<GroupMeterReadResult> completeOfType = new ArrayList<GroupMeterReadResult>();
         for (GroupMeterReadResult result : completed) {
@@ -173,7 +173,7 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
     }
 	
 	@Override
-    public List<GroupMeterReadResult> getPendingByType(CommandRequestExecutionType type) {
+    public List<GroupMeterReadResult> getPendingByType(DeviceRequestType type) {
         List<GroupMeterReadResult> pending = getPending();
         List<GroupMeterReadResult> pendingOfType = new ArrayList<GroupMeterReadResult>();
         for (GroupMeterReadResult result : pending) {

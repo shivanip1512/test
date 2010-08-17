@@ -18,9 +18,9 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupReque
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionStatus;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionPair;
 import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionRowAndFieldMapper;
@@ -88,7 +88,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
 	public List<ScheduledRepeatingJob> getJobs(int jobId, 
 												Date startTime, 
 												Date stopTime, 
-												List<CommandRequestExecutionType> types, 
+												List<DeviceRequestType> types, 
 												ScheduleGroupRequestExecutionDaoEnabledFilter enabled, 
 												ScheduleGroupRequestExecutionDaoPendingFilter pending,
 												ScheduleGroupRequestExecutionDaoOnetimeFilter onetime,
@@ -185,7 +185,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         		sql.append("AND JP.Value IN (");
         		
         		List<String> typeStrs = new ArrayList<String>();
-        		for (CommandRequestExecutionType type : types) {
+        		for (DeviceRequestType type : types) {
         			typeStrs.add(type.name());
         		}
         		

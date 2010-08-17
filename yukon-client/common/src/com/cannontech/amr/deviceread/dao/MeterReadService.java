@@ -2,7 +2,7 @@ package com.cannontech.amr.deviceread.dao;
 
 import java.util.Set;
 
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -16,7 +16,7 @@ public interface MeterReadService {
      * @param device
      * @param attribute
      */
-    public CommandResultHolder readMeter(YukonDevice device, Set<? extends Attribute> attribute, CommandRequestExecutionType type, LiteYukonUser user);
+    public CommandResultHolder readMeter(YukonDevice device, Set<? extends Attribute> attribute, DeviceRequestType type, LiteYukonUser user);
 
     /**
      * This method will verify which commands need to be sent to read the attributes.  If there

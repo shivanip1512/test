@@ -20,7 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -142,7 +142,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         ModelAndView mav = getOutagesModelAndView(meter, allExistingAttributes);
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, CommandRequestExecutionType.METER_OUTAGES_WIDGET_ATTRIBUTE_READ, userContext.getYukonUser());
+        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, DeviceRequestType.METER_OUTAGES_WIDGET_ATTRIBUTE_READ, userContext.getYukonUser());
         
         if( allExistingAttributes.contains(BuiltInAttribute.OUTAGE_LOG)) {
             PerishableOutageData data = addOutageData(meter, result.getValues(), userContext);

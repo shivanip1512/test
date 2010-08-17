@@ -20,7 +20,7 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupReques
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoOnetimeFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoPendingFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -56,7 +56,7 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		// DEFAULT FILTERS
 		Date toDate = new Date();
 		Date fromDate = DateUtils.addMonths(toDate, -1);
-		List<CommandRequestExecutionType> typeFilters = null;
+		List<DeviceRequestType> typeFilters = null;
 		
 		// FILTERS
 		
@@ -104,10 +104,10 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		
 		
 		// type
-		CommandRequestExecutionType typeFilter = null;
+		DeviceRequestType typeFilter = null;
 		String typeFilterStr = ServletRequestUtils.getStringParameter(request, "typeFilter", null);
 		if (typeFilterStr != null && !typeFilterStr.equals("ANY")) {
-			typeFilter = CommandRequestExecutionType.valueOf(typeFilterStr);
+			typeFilter = DeviceRequestType.valueOf(typeFilterStr);
 			typeFilters = Collections.singletonList(typeFilter);
 		} else {
 			typeFilters = null;
@@ -126,9 +126,9 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		mav.addObject("error", error);
 		
 		// TYPES
-		CommandRequestExecutionType[] commandRequestExecutionTypes = CommandRequestExecutionType.values();
-		List<CommandRequestExecutionType> scheduledCommandRequestExecutionTypes = new ArrayList<CommandRequestExecutionType>();
-		for (CommandRequestExecutionType commandRequestExecutionType : commandRequestExecutionTypes) {
+		DeviceRequestType[] commandRequestExecutionTypes = DeviceRequestType.values();
+		List<DeviceRequestType> scheduledCommandRequestExecutionTypes = new ArrayList<DeviceRequestType>();
+		for (DeviceRequestType commandRequestExecutionType : commandRequestExecutionTypes) {
 			if (commandRequestExecutionType.isScheduled()) {
 				scheduledCommandRequestExecutionTypes.add(commandRequestExecutionType);
 			}

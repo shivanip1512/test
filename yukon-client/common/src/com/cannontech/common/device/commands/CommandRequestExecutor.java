@@ -2,6 +2,7 @@ package com.cannontech.common.device.commands;
 
 import java.util.List;
 
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -19,7 +20,7 @@ public interface CommandRequestExecutor<T> {
      * @return Results of executing command
      * @throws CommandCompletionException
      */
-    public CommandResultHolder execute(T command, CommandRequestExecutionType type, LiteYukonUser user)
+    public CommandResultHolder execute(T command, DeviceRequestType type, LiteYukonUser user)
             throws CommandCompletionException;
 
     /**
@@ -30,7 +31,7 @@ public interface CommandRequestExecutor<T> {
      * @return Results of executing commands
      * @throws CommandCompletionException
      */
-    public CommandResultHolder execute(List<T> commands, CommandRequestExecutionType type, LiteYukonUser user)
+    public CommandResultHolder execute(List<T> commands, DeviceRequestType type, LiteYukonUser user)
             throws CommandCompletionException;
 
     /**
@@ -42,7 +43,7 @@ public interface CommandRequestExecutor<T> {
      * @return The CommandRequestExecution ID. The ID of the CommandRequestExecution database table record where command results can be found.
      */
     public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback,
-    		CommandRequestExecutionType type, LiteYukonUser user);
+    		DeviceRequestType type, LiteYukonUser user);
     
     public CommandRequestExecutionIdentifier executeWithParameterDto(List<T> commands, CommandCompletionCallback<? super T> callback, 
             CommandRequestExecutionParameterDto context);
@@ -56,5 +57,5 @@ public interface CommandRequestExecutor<T> {
      */
     public long cancelExecution(CommandCompletionCallback<? super T> callback, LiteYukonUser user);
     
-    public CommandRequestExecutionTemplate<T> getExecutionTemplate(CommandRequestExecutionType type, final LiteYukonUser user);
+    public CommandRequestExecutionTemplate<T> getExecutionTemplate(DeviceRequestType type, final LiteYukonUser user);
 }

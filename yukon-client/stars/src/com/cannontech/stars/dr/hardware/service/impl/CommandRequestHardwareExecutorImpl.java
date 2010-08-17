@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
@@ -62,7 +62,7 @@ public class CommandRequestHardwareExecutorImpl implements
 					}
 					
 				},
-				CommandRequestExecutionType.LM_HARDWARE_COMMAND,
+				DeviceRequestType.LM_HARDWARE_COMMAND,
 				user);
 		
 	}
