@@ -300,7 +300,7 @@ unsigned char RDSTransmitter::getSequenceCount()
 
 unsigned char RDSTransmitter::getGroupTypeCode()
 {
-    return _rdsTable.getGroupID();
+    return _rdsTable.getGroupType();
 }
 
 float RDSTransmitter::getGroupsPerSecond()
@@ -539,7 +539,7 @@ string RDSTransmitter::getSQLCoreStatement() const
     static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
                                      "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.portid, "
                                      "DUS.phonenumber, DUS.minconnecttime, DUS.maxconnecttime, DUS.linesettings, "
-                                     "DUS.baudrate, RDS.siteaddress, RDS.encoderaddress, RDS.groupid, RDS.transmitspeed "
+                                     "DUS.baudrate, RDS.siteaddress, RDS.encoderaddress, RDS.grouptype, RDS.transmitspeed "
                                    "FROM Device DV, RDSTransmitter RDS, DeviceDirectCommSettings CS, "
                                      "YukonPAObject YP LEFT OUTER JOIN DeviceDialupSettings DUS ON "
                                      "YP.paobjectid = DUS.deviceid "

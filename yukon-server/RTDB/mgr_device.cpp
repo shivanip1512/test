@@ -1862,8 +1862,8 @@ void CtiDeviceManager::refreshStaticPaoInfo(Cti::Database::id_set &paoids)
             {
                 static_paoinfo.DecodeDatabaseReader(rdr);
 
-                rdr["paobjectid"] >> tmp_paobjectid;
-                rdr["entryid"]    >> tmp_entryid;
+                rdr["paobjectid"]       >> tmp_paobjectid;
+                rdr["staticpaoinfoid"]  >> tmp_entryid;
 
                 device = getDeviceByID(tmp_paobjectid);
 

@@ -13,7 +13,7 @@ protected:
 
    unsigned char  _siteAddress;
    unsigned char  _encoderAddress;
-   CtiString      _groupID;
+   CtiString      _groupType;
    float          _groupRate;
 
 public:
@@ -25,7 +25,7 @@ public:
 
    unsigned char getSiteAddress() const;
    unsigned char getEncoderAddress() const;
-   unsigned char getGroupID() const;
+   unsigned char getGroupType() const;
    float         getGroupRate() const;
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);

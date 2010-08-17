@@ -92,7 +92,7 @@ bool CtiTableStaticPaoInfo::hasRow() const
 
 string CtiTableStaticPaoInfo::getSQLCoreStatement(CtiApplication_t _app_id)
 {
-    static const string sqlStart =  "SELECT SPI.entryid, SPI.paobjectid, SPI.infokey, SPI.value "
+    static const string sqlStart =  "SELECT SPI.staticpaoinfoid, SPI.paobjectid, SPI.infokey, SPI.value "
                                     "FROM StaticPaoInfo SPI";
 
     return sqlStart;
@@ -105,7 +105,7 @@ void CtiTableStaticPaoInfo::DecodeDatabaseReader(Cti::RowReader& rdr)
 
     key_map_t::const_iterator k_itr;
 
-    rdr["entryid"]    >> tmp_entryid;
+    rdr["staticpaoinfoid"] >> tmp_entryid;
     rdr["paobjectid"] >> tmp_paoid;
     rdr["infokey"]    >> tmp_key;
     rdr["value"]      >> tmp_value;
