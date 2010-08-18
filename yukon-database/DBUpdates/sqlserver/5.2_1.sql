@@ -180,6 +180,12 @@ SELECT LMTS.InventoryId, ats.AcctThermostatScheduleId
 FROM LMThermostatSchedule LMTS
 JOIN AcctThermostatSchedule ats ON (LMTS.ScheduleId = ats.AcctThermostatScheduleId)
 WHERE LMTS.InventoryId > 0;
+
+ALTER TABLE LMThermostatSchedule DROP CONSTRAINT FK_LMThSc_CsAc;
+ALTER TABLE LMThermostatSchedule DROP CONSTRAINT FK_LMThSc_InvB;
+ALTER TABLE LMThermostatSchedule DROP CONSTRAINT FK_LMThSc_YkLs;
+ALTER TABLE LMThermostatSeason DROP CONSTRAINT FK_YkWbC_LThSs;
+ALTER TABLE LMThermostatSeasonEntry DROP CONSTRAINT FK_CsLsE_LThSE;
 /* End YUK-8881 */
 
 /* Start YUK-8773 */

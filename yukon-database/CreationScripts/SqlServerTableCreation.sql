@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/18/2010 2:22:21 PM                         */
+/* Created on:     8/18/2010 3:12:48 PM                         */
 /*==============================================================*/
 
 
@@ -15587,41 +15587,16 @@ alter table LMThermostatManualEvent
       references LMCustomerEventBase (EventID)
 go
 
-alter table LMThermostatSchedule
-   add constraint FK_LMThSc_CsAc foreign key (AccountID)
-      references CustomerAccount (AccountID)
-go
-
-alter table LMThermostatSchedule
-   add constraint FK_LMThSc_InvB foreign key (InventoryID)
-      references InventoryBase (InventoryID)
-go
-
-alter table LMThermostatSchedule
-   add constraint FK_LMThSc_YkLs foreign key (ThermostatTypeID)
-      references YukonListEntry (EntryID)
-go
-
 alter table LMThermostatSeason
    add constraint FK_LMThermSea_LMThermSch foreign key (ScheduleID)
       references LMThermostatSchedule (ScheduleID)
          on delete cascade
 go
 
-alter table LMThermostatSeason
-   add constraint FK_YkWbC_LThSs foreign key (WebConfigurationID)
-      references YukonWebConfiguration (ConfigurationID)
-go
-
 alter table LMThermostatSeasonEntry
    add constraint FK_LMThermSeaEntry_LMThermSea foreign key (SeasonID)
       references LMThermostatSeason (SeasonID)
          on delete cascade
-go
-
-alter table LMThermostatSeasonEntry
-   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
-      references YukonListEntry (EntryID)
 go
 
 alter table MACROROUTE

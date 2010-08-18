@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/18/2010 2:19:58 PM                         */
+/* Created on:     8/18/2010 3:25:27 PM                         */
 /*==============================================================*/
 
 
@@ -12016,35 +12016,15 @@ alter table LMThermostatManualEvent
    add constraint FK_LmThrS_LmCstEv foreign key (EventID)
       references LMCustomerEventBase (EventID);
 
-alter table LMThermostatSchedule
-   add constraint FK_LMThSc_CsAc foreign key (AccountID)
-      references CustomerAccount (AccountID);
-
-alter table LMThermostatSchedule
-   add constraint FK_LMThSc_InvB foreign key (InventoryID)
-      references InventoryBase (InventoryID);
-
-alter table LMThermostatSchedule
-   add constraint FK_LMThSc_YkLs foreign key (ThermostatTypeID)
-      references YukonListEntry (EntryID);
-
 alter table LMThermostatSeason
    add constraint FK_LMThermSea_LMThermSch foreign key (ScheduleID)
       references LMThermostatSchedule (ScheduleID)
       on delete cascade;
 
-alter table LMThermostatSeason
-   add constraint FK_YkWbC_LThSs foreign key (WebConfigurationID)
-      references YukonWebConfiguration (ConfigurationID);
-
 alter table LMThermostatSeasonEntry
    add constraint FK_LMThermSeaEntry_LMThermSea foreign key (SeasonID)
       references LMThermostatSeason (SeasonID)
       on delete cascade;
-
-alter table LMThermostatSeasonEntry
-   add constraint FK_CsLsE_LThSE foreign key (TimeOfWeekID)
-      references YukonListEntry (EntryID);
 
 alter table MACROROUTE
    add constraint SYS_C0013274 foreign key (ROUTEID)
