@@ -277,8 +277,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                         LONG stationId, areaId, spAreaId;
                         store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
 
-                        CtiMultiMsg_vec ccEvents;
-                        ccEvents.push_back(
+                        CtiMultiMsg* ccEvents = new CtiMultiMsg();
+                        ccEvents->insert(
                             new CtiCCEventLogMsg(
                                     0,
                                     SYS_PID_CAPCONTROL,
@@ -337,11 +337,12 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 }
 
                 CtiMultiMsg_vec pointChanges;
-                CtiMultiMsg_vec ccEvents;
+                CtiMultiMsg* ccEventMsg = new CtiMultiMsg();
+                CtiMultiMsg_vec &ccEvents = ccEventMsg->getData();
 
                 //Update Control Status
                 subbus->capBankControlStatusUpdate(pointChanges,ccEvents);
-                sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEvents);
+                sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEventMsg);
                 subbus->setBusUpdatedFlag(true);
                 state->setTimeStamp(now);
 
@@ -457,8 +458,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 LONG stationId, areaId, spAreaId;
                 store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
 
-                CtiMultiMsg_vec ccEvents;
-                ccEvents.push_back(
+                CtiMultiMsg* ccEvents = new CtiMultiMsg();
+                ccEvents->insert(
                     new CtiCCEventLogMsg(
                             0, 
                             SYS_PID_CAPCONTROL, 
@@ -478,7 +479,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 std::set<long> missingIds = state->getGroupRequest()->getMissingPoints();
                 for each (long ID in missingIds)
                 {
-                    ccEvents.push_back(
+                    ccEvents->insert(
                         new CtiCCEventLogMsg(
                                 0, 
                                 SYS_PID_CAPCONTROL, 
@@ -497,7 +498,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 std::set<long> rejectedIds = state->getGroupRequest()->getRejectedPoints();
                 for each (long ID in rejectedIds)
                 {
-                    ccEvents.push_back(
+                    ccEvents->insert(
                         new CtiCCEventLogMsg(
                                 0, 
                                 SYS_PID_CAPCONTROL, 
@@ -795,7 +796,8 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
                                     bank->getControlStatus() == CtiCCCapBank::CloseQuestionable);
 
             CtiMultiMsg_vec pointChanges;
-            CtiMultiMsg_vec ccEvents;
+            CtiMultiMsg* ccEventMsg = new CtiMultiMsg();
+            CtiMultiMsg_vec &ccEvents = ccEventMsg->getData();
 
             double beforeKvar = subbus->getCurrentVarLoadPointValue();
             double varValueA = subbus->getPhaseAValue();
@@ -839,7 +841,7 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
                     pointChanges.push_back(new CtiPointDataMsg(subbus->getEstimatedVarLoadPointId(),subbus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
                 }
 
-                sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEvents);
+                sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEventMsg);
             }
         }
     }
@@ -868,19 +870,17 @@ void IVVCAlgorithm::sendPointChanges(DispatchConnectionPtr dispatchConnection, C
     }
 }
 
-void IVVCAlgorithm::sendEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& ccEvents)
+void IVVCAlgorithm::sendEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg* ccEventMsg)
 {
-    if ( ccEvents.size() > 0 )
+    if ( ccEventMsg->getCount() > 0 )
     {
-        CtiMultiMsg* ccEventMsg = new CtiMultiMsg();
-        ccEventMsg->setData(ccEvents);
-        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(ccEventMsg);
-
-        //Not calling processCCEventMsgs(). The control loop will end up calling this.
+        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(ccEventMsg->replicateMessage());
+        delete ccEventMsg;
     }
+        //Not calling processCCEventMsgs(). The control loop will end up calling this.
 }
 
-void IVVCAlgorithm::sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents)
+void IVVCAlgorithm::sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, CtiMultiMsg* ccEvents)
 {
     sendEvents(dispatchConnection,ccEvents);
     sendPointChanges(dispatchConnection,pointChanges);

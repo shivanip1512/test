@@ -895,11 +895,11 @@ void CtiCapController::controlLoop()
                     //send ccEvents to EventLOG!
                     if( ccEvents.size() > 0)
                     {
-                        _ccEventMsgQueue.write(multiCCEventMsg);
-                        processCCEventMsgs();
+                        _ccEventMsgQueue.write(multiCCEventMsg->replicateMessage());
+                        delete multiCCEventMsg;
                         multiCCEventMsg = new CtiMultiMsg();
                     }
-                    else if (_ccEventMsgQueue.canRead())
+                    if (_ccEventMsgQueue.canRead())
                     {
                         processCCEventMsgs();
                     }
@@ -1222,10 +1222,10 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                         {
                             if( ccEvents.size() > 0)
                             {
-
                                 CtiMultiMsg *ccEventMsg = new CtiMultiMsg();
                                 ccEventMsg->setData(ccEvents);
-                                _ccEventMsgQueue.write(ccEventMsg);
+                                _ccEventMsgQueue.write(ccEventMsg->replicateMessage());
+                                delete ccEventMsg;
                                 processCCEventMsgs();
                             }
 
@@ -1306,7 +1306,8 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                         {
                             CtiMultiMsg *ccEventMsg = new CtiMultiMsg();
                             ccEventMsg->setData(ccEvents);
-                            _ccEventMsgQueue.write(ccEventMsg);
+                            _ccEventMsgQueue.write(ccEventMsg->replicateMessage());
+                            delete ccEventMsg;
                             processCCEventMsgs();
                         }
                     }
@@ -1407,9 +1408,7 @@ void CtiCapController::processCCEventMsgs()
 {
     try
     {
-        CtiCCEventLogMsg* msg = NULL;
-
-        RWCollectable* msg1 = NULL;
+        RWCollectable* msg = NULL;
         int msgCount = 0;
         CtiTime processTimeStart = CtiTime();
 
@@ -1417,41 +1416,28 @@ void CtiCapController::processCCEventMsgs()
         {
             try
             {
-                msg1 = _ccEventMsgQueue.read();
+                msg = _ccEventMsgQueue.read();
 
-                if (msg1->isA() == MSG_MULTI)
+                if (msg->isA() == MSG_MULTI && ((CtiMultiMsg*) msg)->getCount() > 0)
                 {
-                    CtiMultiMsg_vec& temp = ((CtiMultiMsg*) msg1)->getData();
+                    CtiMultiMsg_vec& temp = ((CtiMultiMsg*) msg)->getData();
                     for(int i=0;i<temp.size( );i++)
                     {
 
-                        msg = (CtiCCEventLogMsg *) temp[i];
-                        CtiCCSubstationBusStore::getInstance()->InsertCCEventLogInDB(msg);
+                        CtiCCSubstationBusStore::getInstance()->InsertCCEventLogInDB((CtiCCEventLogMsg *) temp[i]);
                         msgCount++;
                     }
-                    if (msg1 != NULL)
-                    {
-                        delete msg1;
-                        msg1 = NULL;
-                    }
-
                 }
-                else if (msg1->isA() == CTICCEVENTLOG_ID)
+                else if (msg->isA() == CTICCEVENTLOG_ID)
                 {
-                    msg = (CtiCCEventLogMsg *) msg1;
-                    CtiCCSubstationBusStore::getInstance()->InsertCCEventLogInDB(msg);
+                    CtiCCSubstationBusStore::getInstance()->InsertCCEventLogInDB((CtiCCEventLogMsg *) msg);
                     msgCount++;
-                    delete msg;
                 }
-                else
+                if (msg != NULL)
                 {
-                    if (msg1 != NULL)
-                    {
-                        delete msg1;
-                        msg1 = NULL;
-                    }
+                    delete msg;
+                    msg = NULL;
                 }
-
             }
             catch(...)
             {

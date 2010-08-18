@@ -29,9 +29,9 @@ class IVVCAlgorithm
                                   const double Kp, const double powerFactor, const double targetPowerFactor);
 
         virtual void operateBank(long bankId, CtiCCSubstationBusPtr subbus, DispatchConnectionPtr dispatchConnection);
-        virtual void sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
+        virtual void sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, CtiMultiMsg* ccEvents);
         virtual void sendPointChanges(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges);
-        virtual void sendEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& ccEvents);
+        virtual void sendEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg* ccEvents);
 
         virtual void sendKeepAlive(CtiCCSubstationBusPtr subbus);
 
