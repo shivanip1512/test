@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="yukon.common.device.attributeRead.general.success">Successful Read</entry>
+    <entry key="yukon.common.device.attributeRead.general.errorHeading">There was an error reading the meter:</entry>
+    <entry key="yukon.common.device.attributeRead.general.noStrategy">No read strategy for type {0}</entry>
+
+    <entry key="yukon.common.device.attributeRead.plc.errorSummary">{1} ({2})</entry>
+    <entry key="yukon.common.device.attributeRead.plc.exception">Unknown error: {0}</entry>
+    
+    <entry key="yukon.common.device.attributeRead.crf.notKnown">Unable to find CRF fields: {0}</entry>
+    <entry key="yukon.common.device.attributeRead.crf.statusError">Read error (status): {0}</entry>
+    <entry key="yukon.common.device.attributeRead.crf.dataError">Read error (data): {0}</entry>
+    <entry key="yukon.common.device.attributeRead.crf.exception">Unknown error: {0}</entry>
+</properties>

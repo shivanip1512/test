@@ -157,7 +157,7 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
 	private Set<PointIdentifier> convertToDevicePointIdentifiers(Iterable<LitePoint> collection) {
         Set<PointIdentifier> result = Sets.newHashSet();
         for (LitePoint point : collection) {
-            PointIdentifier pointIdentifier = new PointIdentifier(point.getPointType(), point.getPointOffset());
+            PointIdentifier pointIdentifier = new PointIdentifier(point.getPointTypeEnum(), point.getPointOffset());
             result.add(pointIdentifier);
         }
         return result;

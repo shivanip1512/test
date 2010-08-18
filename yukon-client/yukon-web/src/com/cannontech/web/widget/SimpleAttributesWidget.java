@@ -13,7 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.amr.deviceread.dao.MeterReadService;
+import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.DeviceRequestType;
@@ -31,7 +31,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 public class SimpleAttributesWidget extends WidgetControllerBase {
     
     private AttributeService attributeService = null;
-    private MeterReadService meterReadService = null;
+    private PlcDeviceAttributeReadService plcDeviceAttributeReadService = null;
     private DeviceDao deviceDao;
     private MeterDao meterDao;
     
@@ -78,7 +78,7 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         
         // readable?
         Meter meter = meterDao.getForId(deviceId);
-        boolean isReadable = meterReadService.isReadable(meter, attributes, user);
+        boolean isReadable = plcDeviceAttributeReadService.isReadable(meter, attributes, user);
         mav.addObject("isReadable", isReadable);
 
         return mav;
@@ -102,7 +102,7 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
         allExistingAttributes.retainAll(attributes);
         
-        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, DeviceRequestType.SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ, user);
+        CommandResultHolder result = plcDeviceAttributeReadService.readMeter(meter, allExistingAttributes, DeviceRequestType.SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ, user);
         
         //result
         mav.addObject("result", result);
@@ -159,8 +159,8 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
     }
     
     @Required
-    public void setMeterReadService(MeterReadService meterReadService) {
-        this.meterReadService = meterReadService;
+    public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
+        this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
     }
     
     @Required

@@ -201,7 +201,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
                 return Maps.immutableEntry(groupId, macroGroup);
             }
         };
-        Function<PaoIdentifier, Integer> typeMapper = PaoUtils.getPaoIdentifierIdFunction();
+        Function<PaoIdentifier, Integer> typeMapper = PaoUtils.getPaoIdFunction();
 
         ChunkingMappedSqlTemplate sqlTemplate = new ChunkingMappedSqlTemplate(simpleJdbcTemplate);
         return sqlTemplate.reverseMultimappedQuery(sqlGenerator, 

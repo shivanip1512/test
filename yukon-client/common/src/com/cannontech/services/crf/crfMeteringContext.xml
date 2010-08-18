@@ -24,7 +24,7 @@
       
     <bean id="defaultMessageListener" class="com.cannontech.amr.crf.endpoint.MeterReadingArchiveRequestListener" />
     <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-        <property name="destinationName" value="yukon.notif.obj.amr.crf.message.MeterReadingArchiveRequest" />
+        <property name="destinationName" value="yukon.rr.obj.amr.crf.MeterReadingArchiveRequest" />
         <property name="pubSubDomain" value="false"/>
         <property name="concurrentConsumers" value="1"/>
         <property name="connectionFactory" ref="connectionFactory" />

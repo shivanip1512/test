@@ -68,7 +68,7 @@
 
 	<bean id="meterReadCommandGeneratorService" class="com.cannontech.amr.deviceread.service.impl.MeterReadCommandGeneratorServiceImpl"/>
 
-    <bean id="meterReadService" class="com.cannontech.amr.deviceread.dao.impl.MeterReadServiceImpl"/>
+    <bean id="plcDeviceAttributeReadService" class="com.cannontech.amr.deviceread.dao.impl.PlcDeviceAttributeReadServiceImpl"/>
         
     <bean id="groupMeterReadService" class="com.cannontech.amr.deviceread.service.impl.GroupMeterReadServiceImpl"/>
 
@@ -87,7 +87,7 @@
     <bean id="calculatedPointService"
         class="com.cannontech.amr.deviceread.dao.impl.CalculatedPointServiceImpl">
         <property name="attributeService" ref="attributeService" />
-        <property name="meterReadService" ref="meterReadService" />
+        <property name="plcDeviceAttributeReadService" ref="plcDeviceAttributeReadService" />
         <property name="peakReportService" ref="peakReportService" />
     </bean>
 
@@ -97,8 +97,15 @@
     <!-- Tamper flag monitor Service -->
     <bean id="tamperFlagMonitorService" class="com.cannontech.amr.tamperFlagProcessing.service.impl.TamperFlagMonitorServiceImpl"/>
   
+    <!-- CRF Meter Read Service -->
+    <bean id="crfMeterReadService" class="com.cannontech.amr.crf.service.CrfMeterReadService"/>
+
     <bean id="crfMeterDao" class="com.cannontech.amr.crf.dao.impl.CrfMeterDaoImpl"/>
     <bean class="com.cannontech.amr.crf.service.CrfAttributeLookupService"/>
+    
+    <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadServiceImpl"/>
+    <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadCrfStrategy"/>
+    <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadPlcStrategy"/>
 
 </beans>
 

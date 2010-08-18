@@ -1,6 +1,5 @@
 package com.cannontech.amr.deviceread.service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -26,9 +25,7 @@ public interface GroupMeterReadService {
 	                                                                    DeviceRequestType type, 
 	                                                                    CommandCompletionCallback<CommandRequestDevice> callback, 
 	                                                                    LiteYukonUser user,
-	                                                                    int retryCount,
-	                                                                    Date stopRetryAfterDate,
-	                                                                    Integer turnOffQueuingAfterRetryCount);
+	                                                                    RetryParameters retryParameters);
 
 	public List<GroupMeterReadResult> getCompleted();
 	public List<GroupMeterReadResult> getCompletedByType(DeviceRequestType type);

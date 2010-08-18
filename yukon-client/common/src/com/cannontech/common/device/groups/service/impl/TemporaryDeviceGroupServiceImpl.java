@@ -40,6 +40,11 @@ public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupServ
         return group;
     }
 
+    @Override
+    public StoredDeviceGroup createTempGroup() {
+        return createTempGroup(null);
+    }    
+
     private StoredDeviceGroup doCreateTempGroup(String groupName) {
         
         if (StringUtils.isBlank(groupName)) {

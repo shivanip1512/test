@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.amr.deviceread.dao.MeterReadService;
+import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.DeviceRequestType;
@@ -30,7 +30,7 @@ public class TouWidget extends WidgetControllerBase {
 
     private AttributeService attributeService;
     private MeterDao meterDao;
-    private MeterReadService meterReadService;
+    private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
 
     /**
      * This method renders the default deviceGroupWidget
@@ -52,7 +52,7 @@ public class TouWidget extends WidgetControllerBase {
         Set<Attribute> existingTouAttributes =
             Sets.intersection(allExistingAttributes,AttributeHelper.getTouAttributes());
 
-        boolean readable = meterReadService.isReadable(meter, existingTouAttributes, user);
+        boolean readable = plcDeviceAttributeReadService.isReadable(meter, existingTouAttributes, user);
 
         // Add objects to mav.
         mav.addObject("meter", meter);
@@ -93,11 +93,11 @@ public class TouWidget extends WidgetControllerBase {
             Sets.intersection(allExistingAttributes,AttributeHelper.getTouAttributes());
 
         // Reads all the meters in the existing set
-        CommandResultHolder result = meterReadService.readMeter(meter, existingTouAttributes, DeviceRequestType.TOU_WIDGET_ATTRIBUTE_READ, user);
+        CommandResultHolder result = plcDeviceAttributeReadService.readMeter(meter, existingTouAttributes, DeviceRequestType.TOU_WIDGET_ATTRIBUTE_READ, user);
 
         mav.addObject("result", result);
         
-        boolean readable = meterReadService.isReadable(meter, existingTouAttributes, user);
+        boolean readable = plcDeviceAttributeReadService.isReadable(meter, existingTouAttributes, user);
         mav.addObject("readable", readable);
 
         if (existingTouAttributes.size() > 0) {
@@ -134,8 +134,8 @@ public class TouWidget extends WidgetControllerBase {
     }
 
     @Autowired
-    public void setMeterReadService(MeterReadService meterReadService) {
-        this.meterReadService = meterReadService;
+    public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
+        this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
     }
 
 }

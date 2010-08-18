@@ -94,7 +94,7 @@ public class DemandResponseDaoImpl implements DemandResponseDao {
                 return Maps.immutableEntry(groupId, program);
             }
         };
-        Function<PaoIdentifier, Integer> typeMapper = PaoUtils.getPaoIdentifierIdFunction();
+        Function<PaoIdentifier, Integer> typeMapper = PaoUtils.getPaoIdFunction();
 
         ChunkingMappedSqlTemplate sqlTemplate = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
         return sqlTemplate.reverseMultimappedQuery(sqlGenerator, 

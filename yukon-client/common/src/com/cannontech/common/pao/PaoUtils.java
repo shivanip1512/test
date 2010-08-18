@@ -7,16 +7,31 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.ImmutableList.Builder;
 
 public class PaoUtils {
-    private final Function<PaoIdentifier, Integer> paoIdentifierToPaoIdFunction = new Function<PaoIdentifier, Integer>() {
+    private static final Function<PaoIdentifier, Integer> paoIdentifierToPaoIdFunction = new Function<PaoIdentifier, Integer>() {
         public Integer apply(PaoIdentifier from) {
             return from.getPaoIdentifier().getPaoId();
         }
     };
 
+    private static final Function<YukonPao, PaoType> yukonPaoToPaoTypeFunction = new Function<YukonPao, PaoType>() {
+        public PaoType apply(YukonPao from) {
+            return from.getPaoIdentifier().getPaoType();
+        }
+    };
+    
+    private static final Function<YukonPao, PaoIdentifier> yukonPaoToPaoIdentifierFunction = new Function<YukonPao, PaoIdentifier>() {
+        public PaoIdentifier apply(YukonPao from) {
+            return from.getPaoIdentifier();
+        }
+    };
+    
     public static YukonDevice asYukonDevice(YukonPao pao) {
         if (pao instanceof YukonDevice) {
             YukonDevice device = (YukonDevice)pao;
@@ -24,6 +39,10 @@ public class PaoUtils {
         } else {
             return new SimpleDevice(pao);
         }
+    }
+    
+    public static ImmutableList<SimpleDevice> asSimpleDeviceListFromPaos(Iterable<? extends YukonPao> paos) {
+        return asSimpleDeviceList(asPaoIdentifiers(paos));
     }
     
     public static ImmutableList<YukonDevice> asDeviceList(Iterable<PaoIdentifier> identifiers) {
@@ -54,14 +73,15 @@ public class PaoUtils {
         return builder.build();
     }
     
-    public static Function<PaoIdentifier, Integer> getPaoIdentifierIdFunction() {
-        return new Function<PaoIdentifier, Integer>() {
-            public Integer apply(PaoIdentifier from) {
-                return from.getPaoId();
-            }; 
-         };
+    public static <T extends YukonPao> ImmutableMultimap<PaoType, T> mapPaoTypes(Iterable<T> paos) {
+        ImmutableListMultimap<PaoType, T> result = Multimaps.index(paos, yukonPaoToPaoTypeFunction);
+        return result;
     }
-
+    
+    public static Iterable<PaoIdentifier> asPaoIdentifiers(Iterable<? extends YukonPao> paos) {
+        return Iterables.transform(paos, yukonPaoToPaoIdentifierFunction);
+    }
+    
     public static void validateDeviceType(YukonPao pao) {
         PaoType paoType = pao.getPaoIdentifier().getPaoType();
         validateDeviceType(paoType);
@@ -71,7 +91,11 @@ public class PaoUtils {
         Validate.isTrue(paoType.getPaoCategory() == PaoCategory.DEVICE);
     }
     
-    public Function<PaoIdentifier, Integer> getPaoIdFunction() {
+    public static Function<YukonPao, PaoType> getPaoTypeFunction() {
+        return yukonPaoToPaoTypeFunction;
+    }
+
+    public static Function<PaoIdentifier, Integer> getPaoIdFunction() {
         return paoIdentifierToPaoIdFunction;
     }
 }

@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.amr.deviceread.dao.MeterReadService;
+import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.DeviceRequestType;
@@ -43,7 +43,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 public class MeterOutagesWidget extends WidgetControllerBase {
 
     private MeterDao meterDao;
-    private MeterReadService meterReadService;
+    private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
     private AttributeService attributeService;
 
     //Contains <DeviceID>,<PerishableOutageData>
@@ -127,7 +127,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         mav.addObject("data", data);
                              
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        boolean readable = meterReadService.isReadable(meter, allExistingAttributes, user);
+        boolean readable = plcDeviceAttributeReadService.isReadable(meter, allExistingAttributes, user);
         mav.addObject("readable", readable);
 
         return mav;
@@ -142,7 +142,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         ModelAndView mav = getOutagesModelAndView(meter, allExistingAttributes);
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, DeviceRequestType.METER_OUTAGES_WIDGET_ATTRIBUTE_READ, userContext.getYukonUser());
+        CommandResultHolder result = plcDeviceAttributeReadService.readMeter(meter, allExistingAttributes, DeviceRequestType.METER_OUTAGES_WIDGET_ATTRIBUTE_READ, userContext.getYukonUser());
         
         if( allExistingAttributes.contains(BuiltInAttribute.OUTAGE_LOG)) {
             PerishableOutageData data = addOutageData(meter, result.getValues(), userContext);
@@ -153,7 +153,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
 
         mav.addObject("result", result);
         
-        boolean readable = meterReadService.isReadable(meter, allExistingAttributes, userContext.getYukonUser());
+        boolean readable = plcDeviceAttributeReadService.isReadable(meter, allExistingAttributes, userContext.getYukonUser());
         mav.addObject("readable", readable);
         
         return mav;
@@ -232,7 +232,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
     }
 
     @Required
-    public void setMeterReadService(MeterReadService meterReadService) {
-        this.meterReadService = meterReadService;
+    public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
+        this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
     }
 }

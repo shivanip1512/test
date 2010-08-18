@@ -63,18 +63,4 @@ public class TransactionExecutorImpl implements TransactionExecutor, Initializin
         this.platformTransactionManager = platformTransactionManager;
     }
 
-    @Autowired
-    public void setForcedTransactionTemplate(
-            TransactionTemplate forcedTransactionTemplate) {
-        this.forcedTransactionTemplate = forcedTransactionTemplate;
-    }
-
-    @Autowired
-    public void setNormalTransactionTemplate(
-            TransactionTemplate normalTransactionTemplate) {
-        this.normalTransactionTemplate = normalTransactionTemplate;
-    }
-
-
-
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -83,7 +84,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 	private NextValueHelper nextValueHelper;
 	private CommandRequestExecutorEventLogService commandRequestExecutorEventLogService;
     
-    private Map<CommandCompletionCallback<? super T>, CommandResultMessageListener> msgListeners = new HashMap<CommandCompletionCallback<? super T>, CommandResultMessageListener>();
+    private Map<CommandCompletionCallback<? super T>, CommandResultMessageListener> msgListeners = new ConcurrentHashMap<CommandCompletionCallback<? super T>, CommandResultMessageListener>();
     
     Logger log = YukonLogManager.getLogger(CommandRequestExecutorBase.class);
     private int betweenResultsMaxDelay = 60;
@@ -529,6 +530,9 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         
         CommandRequestExecutionContextId contextId = new CommandRequestExecutionContextId(nextValueHelper.getNextValue("CommandRequestExec"));
         CommandRequestExecutionParameterDto parameterDto = new CommandRequestExecutionParameterDto(contextId, type, user);
+        int priority = CommandRequestExecutionDefaults.getPriority(type);
+        boolean noqueue = CommandRequestExecutionDefaults.isNoqueue(type);
+        parameterDto = parameterDto.withPriority(priority).withNoqueue(noqueue);
         
         return new CommandRequestExecutionTemplateImpl(parameterDto);
     }
@@ -662,6 +666,11 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     @ManagedAttribute
     public void setBetweenResultsMaxDelay(int betweenResultsMaxDelay) {
         this.betweenResultsMaxDelay = betweenResultsMaxDelay;
+    }
+    
+    @ManagedAttribute
+    public int getPendingRequestCount() {
+        return msgListeners.size();
     }
 
     @ManagedAttribute

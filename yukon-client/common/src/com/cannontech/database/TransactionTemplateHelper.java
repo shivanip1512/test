@@ -15,6 +15,11 @@ public class TransactionTemplateHelper {
                 try {
                     return callable.call();
                 } catch (Exception e) {
+                    if (e instanceof RuntimeException) {
+                        // reduce unneeded nesting
+                        RuntimeException re = (RuntimeException) e;
+                        throw re;
+                    }
                     throw new RuntimeException("Unable to complete callable", e);
                 }
             }
@@ -22,4 +27,5 @@ public class TransactionTemplateHelper {
         
         return (T) result;
     }
+    
 }

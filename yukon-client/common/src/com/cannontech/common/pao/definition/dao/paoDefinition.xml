@@ -4331,6 +4331,9 @@
             <tag name="METER_DETAIL_DISPLAYABLE">
                 <value>true</value>
             </tag>
+            <tag name="NETWORK_MANAGER_ATTRIBUTE_READS">
+                <value>true</value>
+            </tag>
         </tags>
     </pao>
     

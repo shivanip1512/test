@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
@@ -28,14 +29,12 @@ public class CommandRequestRetryExecutor<T> {
     
     // CONSTRUCTORS
     public CommandRequestRetryExecutor(CommandRequestExecutor<T> commandRequestExecutor,
-                                       int retryCount,
-                                       Date stopRetryAfterDate,
-                                       Integer turnOffQueuingAfterRetryCount) {
+                                       RetryParameters retryParameters) {
         
         this.commandRequestExecutor = commandRequestExecutor;
-        this.retryCount = retryCount;
-        this.stopRetryAfterDate = stopRetryAfterDate;
-        this.turnOffQueuingAfterRetryCount = turnOffQueuingAfterRetryCount;
+        this.retryCount = retryParameters.getRetryCount();
+        this.stopRetryAfterDate = retryParameters.getStopRetryAfterDate();
+        this.turnOffQueuingAfterRetryCount = retryParameters.getTurnOffQueuingAfterRetryCount();
     }
     
     public CommandRequestRetryExecutor(CommandRequestExecutor<T> commandRequestExecutor, int retryCount) {

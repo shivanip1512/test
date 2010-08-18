@@ -1,5 +1,6 @@
 package com.cannontech.web.widget;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.amr.deviceread.dao.MeterReadService;
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
+import com.cannontech.amr.deviceread.dao.MessageCollectingBlockingCallback;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.events.loggers.MeteringEventLogService;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -34,7 +35,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 public class MeterReadingsWidget extends WidgetControllerBase {
 
     private MeterDao meterDao;
-    private MeterReadService meterReadService;
+    private DeviceAttributeReadService deviceAttributeReadService;
     private AttributeService attributeService;
     private MeteringEventLogService meteringEventLogService;
     private PointService pointService;
@@ -75,7 +76,8 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         
         allExistingAttributes.retainAll(attributesToShow);
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        boolean readable = meterReadService.isReadable(meter, allExistingAttributes, user);
+        
+        boolean readable = deviceAttributeReadService.isReadable(Collections.singleton(meter), allExistingAttributes, user);
         mav.addObject("readable", readable);
         
         return mav;
@@ -85,7 +87,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     throws Exception {
         
         Meter meter = getMeter(request);
-        ModelAndView mav = new ModelAndView("common/meterReadingsResult.jsp");
+        ModelAndView mav = new ModelAndView("common/deviceAttributeReadResult.jsp");
         
         Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
         
@@ -94,11 +96,13 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
         meteringEventLogService.readNowPushedForReadingsWidget(user, meter.getDeviceId());
-        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, DeviceRequestType.METER_READINGS_WIDGET_ATTRIBUTE_READ, user);
+        MessageCollectingBlockingCallback callback = new MessageCollectingBlockingCallback();
+        Set<Meter> meterSingleton = Collections.singleton(meter);
+        deviceAttributeReadService.initiateRead(meterSingleton, allExistingAttributes, callback, DeviceRequestType.METER_READINGS_WIDGET_ATTRIBUTE_READ, user);
         
-        mav.addObject("result", result);
+        mav.addObject("result", callback);
         
-        boolean readable = meterReadService.isReadable(meter, allExistingAttributes, user);
+        boolean readable = deviceAttributeReadService.isReadable(meterSingleton, allExistingAttributes, user);
         mav.addObject("readable", readable);
 
         return mav;
@@ -116,11 +120,6 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     }
     
     @Autowired
-    public void setMeterReadService(MeterReadService meterReadService) {
-        this.meterReadService = meterReadService;
-    }
-
-    @Autowired
     public void setAttributeService(AttributeService attributeService) {
         this.attributeService = attributeService;
     }
@@ -134,5 +133,10 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     @Autowired
     public void setPointService(PointService pointService) {
         this.pointService = pointService;
+    }
+    
+    @Autowired
+    public void setDeviceAttributeReadService(DeviceAttributeReadService deviceAttributeReadService) {
+        this.deviceAttributeReadService = deviceAttributeReadService;
     }
 }

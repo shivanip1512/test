@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
@@ -51,45 +52,44 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     public SimpleDevice createDeviceByTemplate(String templateName, String newDeviceName, boolean copyPoints) {
         
         SimpleDevice newYukonDevice = new SimpleDevice();
-        
-        try {
 
-            // CREATE NEW MCT DEVICE
-            DeviceBase templateDevice = getExistingDeviceByTemplate(templateName);
-            int templateDeviceId = templateDevice.getPAObjectID();
-            
-            int newDeviceId = paoDao.getNextPaoId();
-            DeviceBase newDevice = templateDevice;
-            newDevice.setDeviceID(newDeviceId);
-            newDevice.setPAOName(newDeviceName);
-            
+
+        // CREATE NEW MCT DEVICE
+        DeviceBase templateDevice = getExistingDeviceByTemplate(templateName);
+        int templateDeviceId = templateDevice.getPAObjectID();
+
+        int newDeviceId = paoDao.getNextPaoId();
+        DeviceBase newDevice = templateDevice;
+        newDevice.setDeviceID(newDeviceId);
+        newDevice.setPAOName(newDeviceName);
+
+        try {
             Transaction.createTransaction(Transaction.INSERT, newDevice).execute();
-            
-            // COPY POINTS
-            if (copyPoints) {
-                
-                List<PointBase> points = this.getPointsForPao(templateDeviceId);
-                this.applyPoints(newDevice, points);
-            }
-            // db change msg.  Process Device dbChange AFTER device AND points have been inserted into DB.
-            processDeviceDbChange(newDevice);
-            
-            // MAKE new, template YukonDevice
-            newYukonDevice.setDeviceId(newDeviceId);
-            newYukonDevice.setType(paoGroupsWrapper.getDeviceType(newDevice.getPAOType()));
-            
-            SimpleDevice templateYukonDevice = new SimpleDevice();
-            templateYukonDevice.setDeviceId(templateDeviceId);
-            templateYukonDevice.setType(paoGroupsWrapper.getDeviceType(templateDevice.getPAOType()));
-            
-            // add to template's device groups
-            addToTemplatesGroups(templateYukonDevice, newYukonDevice);
-            
+        } catch (TransactionException e) {
+            throw new DeviceCreationException(String.format("Could not create new device named '%s' from template '%s'", newDeviceName, templateName), e);
         }
-        catch (TransactionException e) {
-            throw new DeviceCreationException("Could not create new device.", e);
+
+        // COPY POINTS
+        if (copyPoints) {
+
+            List<PointBase> points = this.getPointsForPao(templateDeviceId);
+            this.applyPoints(newDevice, points);
         }
-        
+        // db change msg.  Process Device dbChange AFTER device AND points have been inserted into DB.
+        processDeviceDbChange(newDevice);
+
+        // MAKE new, template YukonDevice
+        newYukonDevice.setDeviceId(newDeviceId);
+        newYukonDevice.setType(paoGroupsWrapper.getDeviceType(newDevice.getPAOType()));
+
+        SimpleDevice templateYukonDevice = new SimpleDevice();
+        templateYukonDevice.setDeviceId(templateDeviceId);
+        templateYukonDevice.setType(paoGroupsWrapper.getDeviceType(templateDevice.getPAOType()));
+
+        // add to template's device groups
+        addToTemplatesGroups(templateYukonDevice, newYukonDevice);
+
+
         return newYukonDevice;
     }
     
@@ -153,7 +153,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             return templateDevice;
         }
         catch (IncorrectResultSizeDataAccessException e) {
-            throw new DeviceCreationException("Device for template name not found: " + templateName, e);
+            throw new BadTemplateDeviceCreationException(templateName);
         }
         catch (TransactionException e) {
             throw new DeviceCreationException("Could not load template device from database: " + templateName, e);

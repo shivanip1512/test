@@ -6,7 +6,7 @@ import org.apache.commons.lang.StringUtils;
 
 public class CrfMeterIdentifier implements Serializable{
     
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
     
     private String sensorManufacturer;
     private String sensorModel;
@@ -58,4 +58,51 @@ public class CrfMeterIdentifier implements Serializable{
     public static CrfMeterIdentifier createBlank() {
         return new CrfMeterIdentifier(null, null, null);
     }
+
+    @Override
+    public String toString() {
+        return String.format("CrfMeterIdentifier [sensorManufacturer=%s, sensorModel=%s, sensorSerialNumber=%s]",
+                             sensorManufacturer,
+                             sensorModel,
+                             sensorSerialNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((sensorManufacturer == null) ? 0 : sensorManufacturer.hashCode());
+        result = prime * result + ((sensorModel == null) ? 0 : sensorModel.hashCode());
+        result = prime * result + ((sensorSerialNumber == null) ? 0 : sensorSerialNumber.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CrfMeterIdentifier other = (CrfMeterIdentifier) obj;
+        if (sensorManufacturer == null) {
+            if (other.sensorManufacturer != null)
+                return false;
+        } else if (!sensorManufacturer.equals(other.sensorManufacturer))
+            return false;
+        if (sensorModel == null) {
+            if (other.sensorModel != null)
+                return false;
+        } else if (!sensorModel.equals(other.sensorModel))
+            return false;
+        if (sensorSerialNumber == null) {
+            if (other.sensorSerialNumber != null)
+                return false;
+        } else if (!sensorSerialNumber.equals(other.sensorSerialNumber))
+            return false;
+        return true;
+    }
+    
+    
 }

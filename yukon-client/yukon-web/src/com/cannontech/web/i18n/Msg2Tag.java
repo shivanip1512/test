@@ -63,18 +63,23 @@ public class Msg2Tag extends YukonTagSupport {
         if (debug) {
             String[] codes = resolvable.getCodes();
             Map<String,String> debugMap = Maps.newLinkedHashMap();
-            for (int i = 0; i < codes.length; i++) {
-                String specificCode = codes[i];
-                String specificCodeMessage = "[undefined]";
-                try {
-                    specificCodeMessage = getMessageSource().getMessage(specificCode, resolvedArguments);
-                } catch (NoSuchMessageException e) {
+            if (org.apache.commons.lang.StringUtils.isNotBlank(resolvable.getDefaultMessage())) {
+                debugMap.put("[default]", resolvable.getDefaultMessage());
+            }
+            if (codes != null) {
+                for (int i = 0; i < codes.length; i++) {
+                    String specificCode = codes[i];
+                    String specificCodeMessage = "[undefined]";
+                    try {
+                        specificCodeMessage = getMessageSource().getMessage(specificCode, resolvedArguments);
+                    } catch (NoSuchMessageException e) {
+                    }
+                    debugMap.put(specificCode, specificCodeMessage);
                 }
-                debugMap.put(specificCode, specificCodeMessage);
             }
             getJspContext().setAttribute("msg2TagDebugMap", debugMap, TagUtils.getScope(TagUtils.SCOPE_PAGE));
         }
-        
+
         // HTML and/or JavaScript escape, if demanded.
         message = htmlEscape ? HtmlUtils.htmlEscape(message) : message;
         message = javaScriptEscape ? JavaScriptUtils.javaScriptEscape(message) : message;

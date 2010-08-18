@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.amr.deviceread.service.GroupMeterReadService;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
+import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
@@ -27,8 +28,8 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.util.RecentResultsCache;
@@ -52,15 +53,13 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
                                                                    DeviceRequestType type, 
                                                                    CommandCompletionCallback<CommandRequestDevice> callback, 
                                                                    LiteYukonUser user,
-                                                                   int retryCount,
-                                                                   Date stopRetryAfterDate,
-                                                                   Integer turnOffQueuingAfterRetryCount) {
+                                                                   RetryParameters retryParameters) {
 	    
 	    
 	    Multimap<YukonDevice, CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(deviceCollection.getDeviceList(), attributes, type);
 	    List<CommandRequestDevice> allRequests = new ArrayList<CommandRequestDevice>(commandRequests.values());
 	    
-	    CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor = new CommandRequestRetryExecutor<CommandRequestDevice>(commandRequestDeviceExecutor, retryCount, stopRetryAfterDate, turnOffQueuingAfterRetryCount);
+	    CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor = new CommandRequestRetryExecutor<CommandRequestDevice>(commandRequestDeviceExecutor, retryParameters);
 	    CommandRequestExecutionContextId contextId = retryExecutor.execute(allRequests, callback, type, user);
         
         return contextId;
@@ -92,11 +91,11 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
         final GroupMeterReadResult groupMeterReadResult = new GroupMeterReadResult();
         
         // success/fail temporary groups
-        final StoredDeviceGroup originalDeviceCollectionCopyGroup = temporaryDeviceGroupService.createTempGroup(null);
+        final StoredDeviceGroup originalDeviceCollectionCopyGroup = temporaryDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(originalDeviceCollectionCopyGroup, deviceCollection.getDeviceList());
-        final StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
-        final StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup(null);
-        final StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup(null);
+        final StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
+        final StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup();
+        final StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(unsupportedGroup, PaoUtils.asDeviceList(unsupportedDevices));
         
         // command completion callback
@@ -158,13 +157,7 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
 	@Override
 	public List<GroupMeterReadResult> getCompletedByType(DeviceRequestType type) {
         List<GroupMeterReadResult> completed = getCompleted();
-        List<GroupMeterReadResult> completeOfType = new ArrayList<GroupMeterReadResult>();
-        for (GroupMeterReadResult result : completed) {
-        	if (result.getCommandRequestExecutionType().equals(type)) {
-        		completeOfType.add(result);
-        	}
-        }
-        return completeOfType;
+        return filterByType(completed, type);
     }
 
 	@Override
@@ -175,6 +168,13 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
 	@Override
     public List<GroupMeterReadResult> getPendingByType(DeviceRequestType type) {
         List<GroupMeterReadResult> pending = getPending();
+        return filterByType(pending, type);
+    }
+
+
+
+    private List<GroupMeterReadResult> filterByType(List<GroupMeterReadResult> pending,
+                                                    DeviceRequestType type) {
         List<GroupMeterReadResult> pendingOfType = new ArrayList<GroupMeterReadResult>();
         for (GroupMeterReadResult result : pending) {
         	if (result.getCommandRequestExecutionType().equals(type)) {

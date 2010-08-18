@@ -34,8 +34,8 @@ public class WaitableCrfMeterReadCompletionCallback implements CrfMeterReadCompl
     }
 
     @Override
-    public void receivedData(CrfMeterReadingDataReplyType replyType, PointValueHolder value) {
-        delegate.receivedData(replyType, value);
+    public void receivedData(PointValueHolder value) {
+        delegate.receivedData(value);
     }
 
     @Override

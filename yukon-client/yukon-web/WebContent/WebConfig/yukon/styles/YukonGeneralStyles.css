@@ -1021,6 +1021,21 @@ div.padded {
     padding: 4px;
 }
 
+.i18nBlock {
+}
+
+.i18nBlock .i18nBlockDebug {
+    display: none;
+}
+
+.i18nBlock:hover .i18nBlockDebug {
+    display: block;
+    position: absolute;
+    background: white;
+    border: thin #eee solid;
+    padding: 4px;
+}
+
 .busyBox {
 	position: absolute;
 	left: 50%;

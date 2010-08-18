@@ -43,7 +43,7 @@
         <property name="meterDao" ref="meterDao" />
         <property name="nextValueHelper" ref="nextValueHelper"/>
         <property name="paoCommandAuthorizationService" ref="paoCommandAuthorizationService" />
-        <property name="meterReadService" ref="meterReadService" />
+        <property name="plcDeviceAttributeReadService" ref="plcDeviceAttributeReadService" />
         <property name="attributeService" ref="attributeService" />
     </bean>
 
@@ -346,9 +346,5 @@
         <property name="phaseDetectResultsCache" ref="phaseDetectResultsCache"/>
     </bean>
     
-    <!-- CRF Meter Read Service -->
-    <bean id="crfMeterReadService" class="com.cannontech.amr.crf.service.CrfMeterReadService">
-        <property name="connectionFactory" ref="connectionFactoryTarget"/>
-    </bean>
     
 </beans>

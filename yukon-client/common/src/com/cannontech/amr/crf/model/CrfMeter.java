@@ -47,5 +47,15 @@ public class CrfMeter implements YukonDevice, DisplayablePao {
         this.paoName = paoName;
     }
 
+    @Override
+    public String toString() {
+        return String.format("CrfMeter [paoIdentifier=%s, meterIdentifier=%s, paoName=%s, meterNumber=%s]",
+                             paoIdentifier,
+                             meterIdentifier,
+                             paoName,
+                             meterNumber);
+    }
+
+    
     
 }

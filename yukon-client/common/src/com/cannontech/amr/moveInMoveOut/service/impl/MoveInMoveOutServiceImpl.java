@@ -17,7 +17,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.amr.deviceread.CalculatedPointResults;
 import com.cannontech.amr.deviceread.dao.CalculatedPointService;
-import com.cannontech.amr.deviceread.dao.MeterReadService;
+import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInForm;
@@ -75,7 +75,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DynamicDataSource dynamicDataSource;
     private MeterDao meterDao;
-    private MeterReadService meterReadService;
+    private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
     private SimpleJdbcOperations jdbcTemplate = null;
     private NextValueHelper nextValueHelper = null;
     private PaoCommandAuthorizationService paoCommandAuthorizationService = null;
@@ -104,7 +104,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                 // which we use to calculate the point
                 Meter meter = moveInResult.getPreviousMeter();
                 logger.info("Starting meter read for " + meter.toString());
-                CommandResultHolder meterReadResults = meterReadService.readMeter(meter, 
+                CommandResultHolder meterReadResults = plcDeviceAttributeReadService.readMeter(meter, 
                                                                                   Collections.singleton(BuiltInAttribute.USAGE),
                                                                                   DeviceRequestType.MOVE_IN_MOVE_OUT_USAGE_READ,
                                                                                   moveInFormObj.getUserContext().getYukonUser());
@@ -260,7 +260,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                 // which we use to calculate the point
                 Meter meter = moveOutResult.getPreviousMeter();
                 logger.info("Starting meter read for " + meter.toString());
-                CommandResultHolder meterReadResults = meterReadService.readMeter(meter, 
+                CommandResultHolder meterReadResults = plcDeviceAttributeReadService.readMeter(meter, 
                                                                                   Collections.singleton(BuiltInAttribute.USAGE),
                                                                                   DeviceRequestType.MOVE_IN_MOVE_OUT_USAGE_READ,
                                                                                   moveOutFormObj.getUserContext().getYukonUser());
@@ -631,8 +631,8 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 	}
 
     @Required
-    public void setMeterReadService(MeterReadService meterReadService) {
-        this.meterReadService = meterReadService;
+    public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
+        this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
     }
     
     @Required

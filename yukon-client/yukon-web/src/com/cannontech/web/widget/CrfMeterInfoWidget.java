@@ -61,7 +61,7 @@ public class CrfMeterInfoWidget extends WidgetControllerBase {
             }
             
             @Override
-            public void receivedData(CrfMeterReadingDataReplyType replyType, PointValueHolder value) {
+            public void receivedData(PointValueHolder value) {
             }
             
             @Override

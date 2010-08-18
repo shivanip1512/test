@@ -10,7 +10,7 @@ public interface CrfMeterReadCompletionCallback {
 	 * Method to keep track of received point values.
 	 * @param PointValueHolder value
 	 */
-    public void receivedData(CrfMeterReadingDataReplyType replyType, PointValueHolder value);
+    public void receivedData(PointValueHolder value);
     
     /**
      * Method to signal the that the read has completed.
@@ -26,7 +26,7 @@ public interface CrfMeterReadCompletionCallback {
     
     /**
      * Method to signal that the initial response to the read request
-     * was recieved. Status will indicate if the reciever expects to be 
+     * was received. Status will indicate if the receiver expects to be 
      * able to read the meter or not. Should be called only once.
      * @param CrfMeterReadingReplyType replyType
      */

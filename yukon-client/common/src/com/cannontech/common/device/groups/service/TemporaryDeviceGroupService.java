@@ -9,6 +9,12 @@ public interface TemporaryDeviceGroupService {
     /**
      * Create a Device Group under TEMPORARYGROUPS group.
      * Group will be scheduled to be deleted after 24 hours.
+     * @return The temporary group.
+     */
+    public StoredDeviceGroup createTempGroup();
+    /**
+     * Create a Device Group under TEMPORARYGROUPS group.
+     * Group will be scheduled to be deleted after 24 hours.
      * @param groupName If blank or null, a random UUID will be used.
      * @return The temporary group.
      */

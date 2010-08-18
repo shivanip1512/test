@@ -10,15 +10,13 @@ public class CommandRequestExecutionParameterDto {
     private CommandRequestExecutionContextId contextId;
     private DeviceRequestType type;
     private LiteYukonUser user;
-    private boolean noqueue;
-    private int priority;
+    private boolean noqueue = false;
+    private int priority = 7;
     
     public CommandRequestExecutionParameterDto(CommandRequestExecutionContextId contextId, DeviceRequestType type, LiteYukonUser user) {
         this.contextId = contextId;
         this.type = type;
         this.user = user;
-        this.noqueue = type.isNoqueue();
-        this.priority = type.getPriority();
     }
     
     public CommandRequestExecutionParameterDto withNoqueue(Boolean noqueue) {

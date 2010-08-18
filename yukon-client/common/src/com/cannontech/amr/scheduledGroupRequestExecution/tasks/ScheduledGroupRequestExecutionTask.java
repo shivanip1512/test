@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.deviceread.service.GroupMeterReadService;
+import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionPair;
 import com.cannontech.clientutils.YukonLogManager;
@@ -72,8 +73,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
             
             if (getCommand() != null) {
             
-            	CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
-                };
+            	CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>();
                 
                 Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singletonList(getDeviceGroup()));
                 List<CommandRequestDevice> commandRequests = new ArrayList<CommandRequestDevice>();
@@ -85,17 +85,15 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
                     
                     commandRequests.add(cmdReq);
                 }
-                
-                CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor = new CommandRequestRetryExecutor<CommandRequestDevice>(commandRequestDeviceExecutor, 
-                                                                                                                                        getRetryCount(),
-                                                                                                                                        getStopRetryAfterDate(),
-                                                                                                                                        getTurnOffQueuingAfterRetryCount());
+
+                CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor = 
+                    new CommandRequestRetryExecutor<CommandRequestDevice>(commandRequestDeviceExecutor, 
+                            getRetryParameters());
                 contextId = retryExecutor.execute(commandRequests, dummyCallback, getCommandRequestExecutionType(), user);
-            
+
             } else if (getAttributes() != null) {
             	
-                CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
-                };
+                CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>();
                 
     	        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(getDeviceGroup());
     	        
@@ -104,9 +102,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
             	                                                             getCommandRequestExecutionType(), 
             	                                                             dummyCallback, 
             	                                                             user, 
-            	                                                             getRetryCount(), 
-            	                                                             getStopRetryAfterDate(),
-            	                                                             getTurnOffQueuingAfterRetryCount());
+            	                                                             getRetryParameters());
     	        
             
             } else {
@@ -125,6 +121,10 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
         	          ", retryCount=" + getRetryCount() + ", stopRetryAfterDate=" + getStopRetryAfterDate() + ", turnOffQueuingAfterRetryCount=" + getTurnOffQueuingAfterRetryCount() + ".", e);
         }
         
+    }
+
+    private RetryParameters getRetryParameters() {
+        return new RetryParameters(getRetryCount(), getStopRetryAfterDate(), getTurnOffQueuingAfterRetryCount());
     }
     
     private Date getStopRetryAfterDate() {

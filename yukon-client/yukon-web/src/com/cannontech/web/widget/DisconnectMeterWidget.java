@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.amr.deviceread.dao.MeterReadService;
+import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.DeviceRequestType;
@@ -39,7 +39,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 public class DisconnectMeterWidget extends WidgetControllerBase {
 
     private MeterDao meterDao;
-    private MeterReadService meterReadService;
+    private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
     private AttributeService attributeService;
     private StateDao stateDao;
     private PaoDefinitionDao paoDefinitionDao;
@@ -88,7 +88,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         boolean controllable = commandAuthorizationService.isAuthorized(user, CONTROL_CONNECT_COMMAND, meter);
         mav.addObject("controllable", controllable);
 
-        boolean readable = meterReadService.isReadable(meter, disconnectAttribute, user);
+        boolean readable = plcDeviceAttributeReadService.isReadable(meter, disconnectAttribute, user);
         mav.addObject("readable", readable);
         
         int pointId = getPointId(request);
@@ -103,7 +103,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         ModelAndView mav = getReadModelAndView(meter, true);
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        CommandResultHolder result = meterReadService.readMeter(meter, disconnectAttribute, DeviceRequestType.DISCONNECT_STATUS_ATTRIBUTE_READ,user);
+        CommandResultHolder result = plcDeviceAttributeReadService.readMeter(meter, disconnectAttribute, DeviceRequestType.DISCONNECT_STATUS_ATTRIBUTE_READ,user);
         
         mav.addObject("state", getDisconnectedState(meter, result));
         String configStr = "";
@@ -116,7 +116,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         boolean controllable = commandAuthorizationService.isAuthorized(user, CONTROL_CONNECT_COMMAND, meter);
         mav.addObject("controllable", controllable);
 
-        boolean readable = meterReadService.isReadable(meter, disconnectAttribute, user);
+        boolean readable = plcDeviceAttributeReadService.isReadable(meter, disconnectAttribute, user);
         mav.addObject("readable", readable);
         
         int pointId = getPointId(request);
@@ -226,7 +226,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         boolean controllable = commandAuthorizationService.isAuthorized(user, "control connect", meter);
         mav.addObject("controllable", controllable);
 
-        boolean readable = meterReadService.isReadable(meter, disconnectAttribute, user);
+        boolean readable = plcDeviceAttributeReadService.isReadable(meter, disconnectAttribute, user);
         mav.addObject("readable", readable);
         
         int pointId = getPointId(request);
@@ -298,8 +298,8 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     }
     
     @Required
-    public void setMeterReadService(MeterReadService meterReadService) {
-        this.meterReadService = meterReadService;
+    public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
+        this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
     }
 
     @Required

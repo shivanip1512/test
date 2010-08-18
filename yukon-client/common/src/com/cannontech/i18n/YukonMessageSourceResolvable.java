@@ -43,10 +43,18 @@ public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable
         super(new String[] { code }, args);
     }
 
+    public static MessageSourceResolvable createSingleCode(String code) {
+        return new YukonMessageSourceResolvable(code);
+    }
+    
     public static MessageSourceResolvable createSingleCodeWithArgumentList(String code, Iterable<? extends Object> args) {
         return new YukonMessageSourceResolvable(new String[] { code }, toArray(args, Object.class));
     }
 
+    public static MessageSourceResolvable createSingleCodeWithArguments(String code, Object... args) {
+        return new YukonMessageSourceResolvable(code, args);
+    }
+    
     public static MessageSourceResolvable createSingleCodeWithArgumentListWithDefault(String code, Iterable<? extends Object> args, String defaultMessage) {
         return new YukonMessageSourceResolvable(new String[] { code }, toArray(args, Object.class), defaultMessage);
     }
@@ -96,7 +104,7 @@ public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable
     
     @Override
     public String toString() {
-        if (getCodes().length == 0) {
+        if (getCodes() == null || getCodes().length == 0) {
             return getDefaultMessage() + "*";
         }
         if (getCodes().length == 1) {

@@ -330,7 +330,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             ListMultimap<PaoIdentifier, PointValueQualityHolder> rows = template.multimappedQuery(sqlGeneratorFactory.create(pointIdentifier),
                                                                                                   paoPointIdentifiersMap.get(pointIdentifier),
                                                                                                   parameterizedRowMapper,
-                                                                                                  PaoUtils.getPaoIdentifierIdFunction());
+                                                                                                  PaoUtils.getPaoIdFunction());
 
             for (PaoIdentifier pao : rows.keySet()) {
                 List<PointValueQualityHolder> list = rows.get(pao);

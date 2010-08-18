@@ -8,7 +8,6 @@ import java.util.concurrent.Executors;
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
@@ -38,6 +37,7 @@ import com.cannontech.amr.crf.model.CrfMeterIdentifier;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -114,9 +114,9 @@ public class CrfMeterReadService {
                             producer.send(requestMessage);
                             
                             /* Blocks for status response or until timeout*/
-                            Message replyMessage = replyConsumer.receive(Duration.standardSeconds(statusTimeout).getMillis());
+                            ObjectMessage replyMessage = (ObjectMessage) replyConsumer.receive(Duration.standardSeconds(statusTimeout).getMillis());
                             
-                            CrfMeterReadReply statusReply = (CrfMeterReadReply) replyMessage;
+                            CrfMeterReadReply statusReply = (CrfMeterReadReply) replyMessage.getObject();
                             
                             if (statusReply == null || !statusReply.isSuccess()) {
                                 /* Request failed */
@@ -132,9 +132,9 @@ public class CrfMeterReadService {
                                 List<PointValueHolder> pointDatas = Lists.newArrayList();
                                 
                                 /* Blocks for reading point data or until timeout*/
-                                Message dataReply = replyConsumer.receive(Duration.standardMinutes(dataTimeout).getMillis());
+                                ObjectMessage dataReply = (ObjectMessage) replyConsumer.receive(Duration.standardMinutes(dataTimeout).getMillis());
                                 
-                                CrfMeterReadDataReply dataReplyMessage = (CrfMeterReadDataReply) dataReply;
+                                CrfMeterReadDataReply dataReplyMessage = (CrfMeterReadDataReply) dataReply.getObject();
                                 
                                 if (!dataReplyMessage.isSuccess()) {
                                     /* Data response failed */
@@ -144,7 +144,7 @@ public class CrfMeterReadService {
                                     processMeterReadingDataMessage(dataReplyMessage.getData(), CrfMeterReadingType.CURRENT, pointDatas);
                                     
                                     for (PointValueHolder pointValueHolder : pointDatas) {
-                                        callback.receivedData(dataReplyMessage.getReplyType(), pointValueHolder);
+                                        callback.receivedData(pointValueHolder);
                                     }
                                 }
                             }
@@ -155,7 +155,7 @@ public class CrfMeterReadService {
                         }
                         return null;
                     }
-                });
+                }, true);
             }
         });
     }
@@ -167,8 +167,19 @@ public class CrfMeterReadService {
         CrfMeter crfMeter;
         try {
             crfMeter = crfMeterDao.getMeter(meterIdentifier);
+            LogHelper.debug(log, "Found matching meter: %s", crfMeter);
         } catch (NotFoundException e) {
-            crfMeter = createMeter(meterIdentifier);
+            try {
+                crfMeter = createMeter(meterIdentifier);
+                LogHelper.debug(log, "Created new meter: %s", crfMeter);
+            } catch (DeviceCreationException e1) {
+                LogHelper.debug(log, "Unable to create meter for %s, trying to find again: %s", meterIdentifier, e1.toString());
+                if (log.isTraceEnabled()) {
+                    log.trace("stack dump of creation failure", e1);
+                }
+                crfMeter = crfMeterDao.getMeter(meterIdentifier);
+                LogHelper.debug(log, "Found matching meter (2nd try): %s", crfMeter);
+            }
         }
         
         for (ChannelData channelData : meterReadingDataNotification.getChannelDataList()) {
@@ -262,6 +273,7 @@ public class CrfMeterReadService {
         this.deviceCreationService = deviceCreationService;
     }
     
+    @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
     }

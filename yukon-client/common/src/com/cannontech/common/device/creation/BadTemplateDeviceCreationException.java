@@ -1,0 +1,7 @@
+package com.cannontech.common.device.creation;
+
+public class BadTemplateDeviceCreationException extends DeviceCreationException {
+    public BadTemplateDeviceCreationException(String templateName) {
+        super(templateName);
+    }
+}

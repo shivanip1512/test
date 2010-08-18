@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.deviceread.CalculatedPointResults;
 import com.cannontech.amr.deviceread.dao.CalculatedPointService;
-import com.cannontech.amr.deviceread.dao.MeterReadService;
+import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
@@ -34,9 +34,9 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 	private Logger logger = YukonLogManager
 			.getLogger(CalculatedPointServiceImpl.class);
 
-	AttributeService attributeService;
-	MeterReadService meterReadService;
-	PeakReportService peakReportService;
+	private AttributeService attributeService;
+	private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
+	private PeakReportService peakReportService;
 
 	/**
 	 * This calculates a point in the past from the current usage.
@@ -51,7 +51,7 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 		// Makes a call to the meter to find the usage,
 		// which we use to calculate the point
 		logger.info("Starting meter read for " + meter.toString());
-		CommandResultHolder meterReadResults = meterReadService.readMeter(
+		CommandResultHolder meterReadResults = plcDeviceAttributeReadService.readMeter(
 				meter, Collections.singleton(BuiltInAttribute.USAGE),
 				type,
 				userContext.getYukonUser());
@@ -120,8 +120,8 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 	}
 
 	@Required
-	public void setMeterReadService(MeterReadService meterReadService) {
-		this.meterReadService = meterReadService;
+	public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
+		this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
 	}
 
 	@Required
