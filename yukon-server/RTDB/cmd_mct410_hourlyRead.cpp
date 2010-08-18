@@ -127,23 +127,30 @@ Mct410HourlyReadCommand::request_ptr Mct410HourlyReadCommand::decode(CtiTime now
     point_data_t kwh;
 
     kwh.name = "kWh";
-    kwh.offset = 1;
+    kwh.offset = _channel;
     kwh.type = PulseAccumulatorPointType;
     kwh.quality = NormalQuality;
 
     //  end of the current day
     kwh.time = CtiTime(_date_begin + 1);
 
-    if( kwh.time.isDST() )
-    {
-        kwh.time += 3600;
-    }
-
     std::vector<unsigned> deltas;
 
     if( _midday_reading )
     {
-        deltas = getValueVectorFromBits(payload, 13, 7, 13);
+        kwh.value = *_midday_reading;
+
+        if( ! kwh.time.isDST() )
+        {
+            //  If it's not DST, the first delta is from 12 to 1 AM, which we don't need
+            deltas = getValueVectorFromBits(payload, 20, 7, 12);
+            kwh.time -= 11 * 3600;
+        }
+        else
+        {
+            deltas = getValueVectorFromBits(payload, 13, 7, 13);
+            kwh.time -= 10 * 3600;
+        }
 
         point_data_t blink;
 
@@ -159,27 +166,21 @@ Mct410HourlyReadCommand::request_ptr Mct410HourlyReadCommand::decode(CtiTime now
             blink.quality = OverflowQuality;
         }
 
-        kwh.value = *_midday_reading;
-        kwh.time -= 11 * 3600;
-
         points.push_back(blink);
     }
     else
     {
-        deltas = getValueVectorFromBits(payload, 3, 7, 11);
-
-        const double midnight_kwh = getValueFromBits(payload, 80, 24) * 0.1;
-
         if( kwh.time.isDST() )
         {
-            kwh.value = midnight_kwh + convertDelta(deltas.back());
-
-            deltas.pop_back();
-
-            points.push_back(kwh);
-
-            kwh.time -= 3600;
+            //  If it's DST, the last delta is from 12 to 1 AM, which we don't need
+            deltas = getValueVectorFromBits(payload, 3, 7, 10);
         }
+        else
+        {
+            deltas = getValueVectorFromBits(payload, 3, 7, 11);
+        }
+
+        const double midnight_kwh = getValueFromBits(payload, 80, 24) * 0.1;
 
         kwh.value = midnight_kwh;
 

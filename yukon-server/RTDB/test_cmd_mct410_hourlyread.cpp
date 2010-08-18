@@ -67,43 +67,40 @@ BOOST_AUTO_TEST_CASE(test_command)
             BOOST_CHECK_EQUAL(r->length(),  13);
             BOOST_CHECK_EQUAL(r->payload().size(), 0);
 
-            BOOST_CHECK_EQUAL(points.size(), 12);
+            BOOST_CHECK_EQUAL(points.size(), 11);
 
-            BOOST_CHECK_EQUAL(points[ 0].time,  CtiTime(CtiDate(12, 8, 2010),  1));
-            BOOST_CHECK_EQUAL(points[ 0].value, 7456.6);
+            BOOST_CHECK_EQUAL(points[ 0].time,  CtiTime(CtiDate(12, 8, 2010),  0));
+            BOOST_CHECK_EQUAL(points[ 0].value, 7456.5);
 
-            BOOST_CHECK_EQUAL(points[ 1].time,  CtiTime(CtiDate(12, 8, 2010),  0));
-            BOOST_CHECK_EQUAL(points[ 1].value, 7456.5);
+            BOOST_CHECK_EQUAL(points[ 1].time,  CtiTime(CtiDate(11, 8, 2010), 23));
+            BOOST_CHECK_EQUAL(points[ 1].value, 7456.3);
 
-            BOOST_CHECK_EQUAL(points[ 2].time,  CtiTime(CtiDate(11, 8, 2010), 23));
-            BOOST_CHECK_EQUAL(points[ 2].value, 7456.3);
+            BOOST_CHECK_EQUAL(points[ 2].time,  CtiTime(CtiDate(11, 8, 2010), 22));
+            BOOST_CHECK_EQUAL(points[ 2].value, 7456.0);
 
-            BOOST_CHECK_EQUAL(points[ 3].time,  CtiTime(CtiDate(11, 8, 2010), 22));
-            BOOST_CHECK_EQUAL(points[ 3].value, 7456.0);
+            BOOST_CHECK_EQUAL(points[ 3].time,  CtiTime(CtiDate(11, 8, 2010), 21));
+            BOOST_CHECK_EQUAL(points[ 3].value, 7455.6);
 
-            BOOST_CHECK_EQUAL(points[ 4].time,  CtiTime(CtiDate(11, 8, 2010), 21));
-            BOOST_CHECK_EQUAL(points[ 4].value, 7455.6);
+            BOOST_CHECK_EQUAL(points[ 4].time,  CtiTime(CtiDate(11, 8, 2010), 20));
+            BOOST_CHECK_EQUAL(points[ 4].value, 7455.1);
 
-            BOOST_CHECK_EQUAL(points[ 5].time,  CtiTime(CtiDate(11, 8, 2010), 20));
-            BOOST_CHECK_EQUAL(points[ 5].value, 7455.1);
+            BOOST_CHECK_EQUAL(points[ 5].time,  CtiTime(CtiDate(11, 8, 2010), 19));
+            BOOST_CHECK_EQUAL(points[ 5].value, 7454.5);
 
-            BOOST_CHECK_EQUAL(points[ 6].time,  CtiTime(CtiDate(11, 8, 2010), 19));
-            BOOST_CHECK_EQUAL(points[ 6].value, 7454.5);
+            BOOST_CHECK_EQUAL(points[ 6].time,  CtiTime(CtiDate(11, 8, 2010), 18));
+            BOOST_CHECK_EQUAL(points[ 6].value, 7453.8);
 
-            BOOST_CHECK_EQUAL(points[ 7].time,  CtiTime(CtiDate(11, 8, 2010), 18));
-            BOOST_CHECK_EQUAL(points[ 7].value, 7453.8);
+            BOOST_CHECK_EQUAL(points[ 7].time,  CtiTime(CtiDate(11, 8, 2010), 17));
+            BOOST_CHECK_EQUAL(points[ 7].value, 7453.0);
 
-            BOOST_CHECK_EQUAL(points[ 8].time,  CtiTime(CtiDate(11, 8, 2010), 17));
-            BOOST_CHECK_EQUAL(points[ 8].value, 7453.0);
+            BOOST_CHECK_EQUAL(points[ 8].time,  CtiTime(CtiDate(11, 8, 2010), 16));
+            BOOST_CHECK_EQUAL(points[ 8].value, 7452.1);
 
-            BOOST_CHECK_EQUAL(points[ 9].time,  CtiTime(CtiDate(11, 8, 2010), 16));
-            BOOST_CHECK_EQUAL(points[ 9].value, 7452.1);
+            BOOST_CHECK_EQUAL(points[ 9].time,  CtiTime(CtiDate(11, 8, 2010), 15));
+            BOOST_CHECK_EQUAL(points[ 9].value, 7451.1);
 
-            BOOST_CHECK_EQUAL(points[10].time,  CtiTime(CtiDate(11, 8, 2010), 15));
-            BOOST_CHECK_EQUAL(points[10].value, 7451.1);
-
-            BOOST_CHECK_EQUAL(points[11].time,  CtiTime(CtiDate(11, 8, 2010), 14));
-            BOOST_CHECK_EQUAL(points[11].value, 7450.0);
+            BOOST_CHECK_EQUAL(points[10].time,  CtiTime(CtiDate(11, 8, 2010), 14));
+            BOOST_CHECK_EQUAL(points[10].value, 7450.0);
         }
 
         {
@@ -302,7 +299,7 @@ BOOST_AUTO_TEST_CASE(test_command)
             //  make sure it's null, we're done with today
             BOOST_CHECK( ! r.get());
 
-            BOOST_CHECK_EQUAL(points.size(), 14);
+            BOOST_CHECK_EQUAL(points.size(), 13);
 
             BOOST_CHECK_EQUAL(points[ 0].time,   CtiTime(CtiDate(12, 2, 2010),  0));
             BOOST_CHECK_EQUAL(points[ 0].value,  321.0);
@@ -344,9 +341,6 @@ BOOST_AUTO_TEST_CASE(test_command)
 
             BOOST_CHECK_EQUAL(points[12].time,   CtiTime(CtiDate(11, 2, 2010),  1));
             BOOST_CHECK_EQUAL(points[12].value,  7363.9);
-
-            BOOST_CHECK_EQUAL(points[13].time,   CtiTime(CtiDate(11, 2, 2010),  0));
-            BOOST_CHECK_EQUAL(points[13].value,  7363.9);
         }
     }
 }
