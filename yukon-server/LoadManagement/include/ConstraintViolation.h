@@ -19,6 +19,10 @@ private:
 
     ConstraintViolation() { };
 
+    /* Friend function is declared here for the use of the above-declared private default constructor.
+       RogueWave needs access to a default constructor in rwutil.h to be able to pass these types of
+       objects over the wire to the client side in vectors. This overload function is the rwutil function
+       which creates the object and thus needs the friend access. */
     template <class T> friend RWvistream& operator >> ( RWvistream &strm, std::vector<T> &v );
 
 public:
@@ -134,9 +138,9 @@ public:
     void restoreGuts(RWvistream&);
     void saveGuts(RWvostream&) const;
 
-    bool equals(const ConstraintViolation &rhs) const;
+    bool operator==(const ConstraintViolation &rhs) const;
 
-//protected:
+protected:
 
     std::vector<double>      getDoubleParams()   const;
     std::vector<int>         getIntegerParams()  const;

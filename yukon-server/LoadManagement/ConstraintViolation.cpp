@@ -108,7 +108,7 @@ std::vector<CtiTime> ConstraintViolation::getDateTimeParams() const
     return _datetimeParams;
 }
 
-bool ConstraintViolation::equals(const ConstraintViolation &rhs) const
+bool ConstraintViolation::operator==(const ConstraintViolation &rhs) const
 {
     if (_errorCode != rhs.getErrorCode() || _doubleParams.size() != rhs.getDoubleParams().size() ||
         _integerParams.size() != rhs.getIntegerParams().size() || _stringParams.size() != rhs.getStringParams().size() ||

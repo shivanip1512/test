@@ -457,7 +457,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
                                                  controlArea.getCurrentDailyStartTime(today),
                                                  controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -486,7 +486,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
                                                  controlArea.getCurrentDailyStartTime(today),
                                                  controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -515,7 +515,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
                                                  controlArea.getCurrentDailyStartTime(today),
                                                  controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -566,7 +566,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
                                                  controlArea.getCurrentDailyStartTime(today),
                                                  controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -595,7 +595,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
                                                  controlArea.getCurrentDailyStartTime(today),
                                                  controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 BOOST_AUTO_TEST_CASE(test_program_control_area_constraint_check_infinite_stop)
@@ -661,7 +661,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
                                                  controlArea.getCurrentDailyStartTime(tomorrow),
                                                  controlArea.getCurrentDailyStopTime(tomorrow));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -693,7 +693,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
                                                  controlArea.getCurrentDailyStartTime(tomorrow),
                                                  controlArea.getCurrentDailyStopTime(tomorrow));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -725,7 +725,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
                                                  controlArea.getCurrentDailyStartTime(tomorrow),
                                                  controlArea.getCurrentDailyStopTime(tomorrow));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -779,7 +779,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
                                                  controlArea.getCurrentDailyStartTime(tomorrow),
                                                  controlArea.getCurrentDailyStopTime(tomorrow));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -811,7 +811,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
                                                  controlArea.getCurrentDailyStartTime(tomorrow),
                                                  controlArea.getCurrentDailyStopTime(tomorrow));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -871,7 +871,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
                                                  controlArea.getCurrentDailyStartTime(yesterday),
                                                  controlArea.getCurrentDailyStopTime(yesterday));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -903,7 +903,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
                                                  controlArea.getCurrentDailyStartTime(yesterday),
                                                  controlArea.getCurrentDailyStopTime(yesterday));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -935,7 +935,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
                                                  controlArea.getCurrentDailyStartTime(yesterday),
                                                  controlArea.getCurrentDailyStopTime(yesterday));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -967,7 +967,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
                                                  controlArea.getCurrentDailyStartTime(yesterday),
                                                  controlArea.getCurrentDailyStopTime(yesterday));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -999,7 +999,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
                                                  controlArea.getCurrentDailyStartTime(yesterday),
                                                  controlArea.getCurrentDailyStopTime(yesterday));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -1029,7 +1029,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
                                                  controlArea.getCurrentDailyStartTime(today),
                                                  controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -1058,7 +1058,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
                                                  controlArea.getCurrentDailyStartTime(today),
                                                  controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -1087,7 +1087,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
                                                  controlArea.getCurrentDailyStartTime(today),
                                                  controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -1116,7 +1116,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
                                                  controlArea.getCurrentDailyStartTime(today),
                                                  controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -1145,7 +1145,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
                                                  controlArea.getCurrentDailyStartTime(today),
                                                  controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -1218,7 +1218,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
                                                  controlArea.getCurrentDailyStartTime(today),
                                                  controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -1247,7 +1247,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
                                                  controlArea.getCurrentDailyStartTime(today),
                                                  controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -1298,7 +1298,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
                                                  controlArea.getCurrentDailyStartTime(today),
                                                  controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -1327,7 +1327,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
                                                  controlArea.getCurrentDailyStartTime(today),
                                                  controlArea.getCurrentDailyStopTime(today));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -1359,7 +1359,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
                                                  controlArea.getCurrentDailyStartTime(tomorrow),
                                                  controlArea.getCurrentDailyStopTime(tomorrow));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -1391,7 +1391,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
                                                  controlArea.getCurrentDailyStartTime(tomorrow),
                                                  controlArea.getCurrentDailyStopTime(tomorrow));
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
@@ -1463,7 +1463,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
                                                  stopTime,
                                                  startTime);
 
-    BOOST_CHECK( cv.equals(constraints.getViolations()[0]) );
+    BOOST_CHECK( cv == constraints.getViolations()[0] );
 }
 
 
