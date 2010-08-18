@@ -74,7 +74,7 @@ public class OptOutController extends AbstractConsumerController {
     private SurveyDao surveyDao;
     private OptOutControllerHelper helper;
 
-    private static class StartDateException extends Exception {
+    private static class StartDateException extends IllegalArgumentException {
         private final static long serialVersionUID = 1L;
 
         private StartDateException(String message) {
@@ -145,11 +145,9 @@ public class OptOutController extends AbstractConsumerController {
 
         // Validate the start date
         try {
-            validateStartDate(optOutBackingBean.getStartDate(),
-                              userContext, customerAccount);
+            validateStartDate(optOutBackingBean.getStartDate(), userContext, customerAccount);
         } catch (StartDateException exception) {
-            MessageSourceResolvable message = new YukonMessageSourceResolvable(
-                    exception.getMessage());
+            MessageSourceResolvable message = new YukonMessageSourceResolvable(exception.getMessage());
             model.addAttribute("result", message);
             return "consumer/optout/optOutResult.jsp";
         }
@@ -210,7 +208,7 @@ public class OptOutController extends AbstractConsumerController {
         accountCheckerService.checkInventory(user,
                                              optOutBackingBean.getInventoryIds());
         Integer[] inventoryIds = optOutBackingBean.getInventoryIds();
-        if (inventoryIds.length == 0) {
+        if (inventoryIds == null || inventoryIds.length == 0) {
             model.addAttribute("error", "yukon.dr.consumer.optoutlist.noInventorySelected");
             return deviceSelection(customerAccount, optOutBackingBean,
                                    bindingResult, flashScope, model,
@@ -299,14 +297,11 @@ public class OptOutController extends AbstractConsumerController {
         // or that all have been taken if any did exist.
 
         // Validate info entered on first page.
-        try {
-            validateStartDate(optOutBackingBean.getStartDate(),
-                              userContext, customerAccount);
+		try {
+            validateStartDate(optOutBackingBean.getStartDate(), userContext, customerAccount);
         } catch (StartDateException exception) {
-            MessageSourceResolvable result = new YukonMessageSourceResolvable(
-                    "yukon.dr.consumer.optoutresult.invalidStartDate");
-
-            model.addAttribute("result", result);
+            MessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.dr.consumer.optoutresult.invalidStartDate");
+            model.addAttribute("result", message);
             return "consumer/optout/optOutResult.jsp";
         }
 
@@ -340,8 +335,7 @@ public class OptOutController extends AbstractConsumerController {
         helper.processOptOut(optOutBackingBean, userContext,
                              customerAccount, surveyIdsByInventoryId);
 
-        MessageSourceResolvable result = new YukonMessageSourceResolvable(
-            "yukon.dr.consumer.optoutresult.success");
+        MessageSourceResolvable result = new YukonMessageSourceResolvable("yukon.dr.consumer.optoutresult.success");
         model.addAttribute("result", result);
         return "consumer/optout/optOutResult.jsp";
     }

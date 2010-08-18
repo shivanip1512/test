@@ -36,7 +36,9 @@
                     <tr class="<tags:alternateRow odd='altRow' even=""/>">
                         <td align="left">
                             <c:choose>
-                                <c:when test="${!optOutCount.optOutsRemaining || displayableInventory.currentlyOptedOut && isSameDay}">
+                                <c:when test="${!optOutCount.optOutsRemaining || 
+                                                displayableInventory.currentlyOptedOut && isSameDay ||
+                                                not empty displayableInventory.currentlyScheduledOptOut && ((optOutCount.remainingOptOuts - 1) eq 0) && isSameDay}">
                                     <input id="unused_${inventoryId}" checked="checked" disabled="disabled" type="checkbox"></input>
                                 </c:when>
                                 <c:otherwise>
@@ -66,16 +68,22 @@
                             </label>
                         </td>
                     </tr>
-                    <c:if test="${!optOutCount.optOutsRemaining || displayableInventory.currentlyOptedOut}">
+                    <c:if test="${!optOutCount.optOutsRemaining || 
+                             displayableInventory.currentlyOptedOut || 
+                             not empty displayableInventory.currentlyScheduledOptOut}">
                         <tr class="<tags:alternateRow odd='altRow' even="" skipToggle="true"/>">
                             <td>&nbsp;</td>
                             <td colspan="2">
-                            <c:if test="${!optOutCount.optOutsRemaining}">
-                                <cti:msg key="yukon.dr.consumer.optoutlist.noMoreOptOutsAvailable"/><br>
-                            </c:if>
-                            <c:if test="${displayableInventory.currentlyOptedOut}">
-                               <cti:msg key="yukon.dr.consumer.optoutlist.currentlyOptedOut"/><br>
-                            </c:if>
+                                <c:if test="${!optOutCount.optOutsRemaining  ||
+                                          not empty displayableInventory.currentlyScheduledOptOut && ((optOutCount.remainingOptOuts - 1) eq 0) && isSameDay}">
+                                    <cti:msg key="yukon.dr.consumer.optoutlist.noMoreOptOutsAvailable"/><br>
+                                </c:if>
+                                <c:if test="${displayableInventory.currentlyOptedOut}">
+                                   <cti:msg key="yukon.dr.consumer.optoutlist.currentlyOptedOut"/><br>
+                                </c:if>
+                                <c:if test="${not empty displayableInventory.currentlyScheduledOptOut}">
+                                    <cti:msg key="yukon.dr.consumer.optoutlist.currentlyScheduledOptOut"/><br>
+                                </c:if>
                             </td>
                         </tr>
                     </c:if>

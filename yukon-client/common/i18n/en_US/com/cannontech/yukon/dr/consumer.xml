@@ -468,7 +468,7 @@
     <entry key="yukon.dr.consumer.optout.startDateTooEarly">The start date cannot be earlier than today.</entry>
     <entry key="yukon.dr.consumer.optout.startDateTooLate">The start date cannot be more than 1 year in the future.</entry>
     <entry key="yukon.dr.consumer.optout.allDevicesCurrentlyOptedOut">All of the devices are already opted out for today.</entry>
-
+    
     <!-- confirmCancle.jsp -->
     <entry key="yukon.dr.consumer.optout.confirmCancel.question">Are you sure you want to cancel the opt out for {0}?</entry>
     <entry key="yukon.dr.consumer.optout.cancelOptOut">Cancel Opt Out</entry>
@@ -490,6 +490,7 @@
     <entry key="yukon.dr.consumer.optoutlist.noRelay">Relay (N/A)</entry>
     <entry key="yukon.dr.consumer.optoutlist.currentlyOptedOut">This device is currently opted out.</entry>
     <entry key="yukon.dr.consumer.optoutlist.noMoreOptOutsAvailable">No more opt outs are available for this device.</entry>
+    <entry key="yukon.dr.consumer.optoutlist.currentlyScheduledOptOut">This device is currently scheduled for an opt out.</entry>
     <entry key="yukon.dr.consumer.optoutlist.noInventorySelected">At least one device must be chosen.</entry>
     <entry key="yukon.dr.consumer.optoutlist.save">Opt Out</entry>
     <entry key="yukon.dr.consumer.optoutlist.cancel">Cancel</entry>
