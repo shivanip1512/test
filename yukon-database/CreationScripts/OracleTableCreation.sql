@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/18/2010 3:25:27 PM                         */
+/* Created on:     8/18/2010 3:52:39 PM                         */
 /*==============================================================*/
 
 
@@ -880,6 +880,8 @@ drop table PortTiming cascade constraints;
 drop table PurchasePlan cascade constraints;
 
 drop table RAWPOINTHISTORY cascade constraints;
+
+drop table RDSTransmitter cascade constraints;
 
 drop table RPHTag cascade constraints;
 
@@ -7407,6 +7409,18 @@ create index Indx_RwPtHisPtIDTst on RAWPOINTHISTORY (
 );
 
 /*==============================================================*/
+/* Table: RDSTransmitter                                        */
+/*==============================================================*/
+create table RDSTransmitter  (
+   PAObjectId           NUMBER                          not null,
+   SiteAddress          NUMBER                          not null,
+   EncoderAddress       NUMBER                          not null,
+   TransmitSpeed        FLOAT                           not null,
+   GroupType            VARCHAR2(3)                     not null,
+   constraint PK_RDSTran primary key (PAObjectId)
+);
+
+/*==============================================================*/
 /* Table: RPHTag                                                */
 /*==============================================================*/
 create table RPHTag  (
@@ -12273,6 +12287,11 @@ alter table PortTiming
 alter table PurchasePlan
    add constraint FK_PRCHSPL_REF_EC foreign key (EnergyCompanyID)
       references EnergyCompany (EnergyCompanyID);
+
+alter table RDSTransmitter
+   add constraint FK_RDSTran_PAO foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table RPHTag
    add constraint FK_RPHTag_RPH foreign key (ChangeId)

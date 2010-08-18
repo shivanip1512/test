@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/18/2010 3:12:48 PM                         */
+/* Created on:     8/18/2010 4:00:39 PM                         */
 /*==============================================================*/
 
 
@@ -3263,6 +3263,13 @@ if exists (select 1
            where  id = object_id('RAWPOINTHISTORY')
             and   type = 'U')
    drop table RAWPOINTHISTORY
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('RDSTransmitter')
+            and   type = 'U')
+   drop table RDSTransmitter
 go
 
 if exists (select 1
@@ -10450,6 +10457,19 @@ TIMESTAMP ASC
 go
 
 /*==============================================================*/
+/* Table: RDSTransmitter                                        */
+/*==============================================================*/
+create table RDSTransmitter (
+   PAObjectId           numeric              not null,
+   SiteAddress          numeric              not null,
+   EncoderAddress       numeric              not null,
+   TransmitSpeed        float                not null,
+   GroupType            varchar(3)           not null,
+   constraint PK_RDSTran primary key (PAObjectId)
+)
+go
+
+/*==============================================================*/
 /* Table: RPHTag                                                */
 /*==============================================================*/
 create table RPHTag (
@@ -15903,6 +15923,12 @@ go
 alter table PurchasePlan
    add constraint FK_PRCHSPL_REF_EC foreign key (EnergyCompanyID)
       references EnergyCompany (EnergyCompanyID)
+go
+
+alter table RDSTransmitter
+   add constraint FK_RDSTran_PAO foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table RPHTag

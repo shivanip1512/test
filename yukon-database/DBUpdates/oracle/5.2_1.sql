@@ -479,6 +479,22 @@ SET Description = 'The following settings are valid: HIDE_MACS(0x00001000), HIDE
 WHERE RolePropertyId = -10104;
 /* End YUK-6576 */
 
+/* Start YUK-8994 */
+CREATE TABLE RDSTransmitter  (
+   PAObjectId           NUMBER                          NOT NULL,
+   SiteAddress          NUMBER                          NOT NULL,
+   EncoderAddress       NUMBER                          NOT NULL,
+   TransmitSpeed        FLOAT                           NOT NULL,
+   GroupType            VARCHAR2(3)                     NOT NULL,
+   CONSTRAINT PK_RDSTran PRIMARY KEY (PAObjectId)
+);
+
+ALTER TABLE RDSTransmitter
+    ADD CONSTRAINT FK_RDSTran_PAO FOREIGN KEY (PAObjectId)
+        REFERENCES YukonPAObject (PAObjectId)
+            ON DELETE CASCADE;
+/* End YUK-8994 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
