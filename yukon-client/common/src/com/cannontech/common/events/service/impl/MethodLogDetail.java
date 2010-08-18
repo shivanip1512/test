@@ -70,11 +70,6 @@ public class MethodLogDetail {
         return isLogging;
     }
 
-    @Override
-    public String toString() {
-        return eventCategory.getFullName() + "." + methodName + ": " + getValueMapper();
-    }
-    
     public String getFullPath(){
         return eventCategory.getFullName()+"."+methodName;
     }
@@ -86,4 +81,16 @@ public class MethodLogDetail {
     public ExecutorTransactionality getTransactionality() {
         return transactionality;
     }
+    
+    @Override
+    public String toString() {
+        return "MethodLogDetail [eventCategory=" + eventCategory.getFullName() + ", "+
+                                 "methodName=" + methodName + ", "+
+                                 "isLogging=" + isLogging + ", "+
+                                 "parameterToColumnMapping=" + parameterToColumnMapping + ", "+
+                                 "columnToParameterMapping="+ columnToParameterMapping + ", "+
+                                 "transactionality=" + transactionality + ", "+
+                                 "valueMapper=" + valueMapper + "]";
+    }
+    
 }

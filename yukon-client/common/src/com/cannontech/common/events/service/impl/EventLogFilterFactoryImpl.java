@@ -1,7 +1,6 @@
 package com.cannontech.common.events.service.impl;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Service;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.model.ArgumentColumn;
@@ -15,7 +14,6 @@ import com.cannontech.common.events.model.NumberFilterValue;
 import com.cannontech.common.events.model.StringFilterValue;
 import com.cannontech.common.events.service.EventLogFilterFactory;
 
-@Service
 public class EventLogFilterFactoryImpl implements EventLogFilterFactory {
 
     @Override

@@ -12,7 +12,6 @@ import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.JdbcUtils;
-import org.springframework.stereotype.Repository;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
@@ -32,7 +31,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableList.Builder;
 
-@Repository
 public class EventLogDaoImpl implements EventLogDao {
     
     private JdbcTemplate jdbcTemplate;

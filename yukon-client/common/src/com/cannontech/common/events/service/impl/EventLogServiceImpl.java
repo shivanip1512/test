@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -68,6 +70,26 @@ public class EventLogServiceImpl implements EventLogService {
 
     private Map<Method, MethodLogDetail> methodLogDetailLookup = Maps.newHashMap();
     private Map<String, MethodLogDetail> methodLogDetailCatalog = Maps.newHashMap();
+
+    private ImmutableList<String> excludedEventLogPaths; 
+    
+    @PostConstruct
+    public void setupExcludedEventLogPaths() {
+        // Gets the value from the cparm if it exists
+        String excludedEventLogPathsStr = configurationSource.getString("EVENT_LOG_EXCLUSION_LIST");
+
+        // Builds up the list of excluded event log paths.
+        Builder<String> excludedEventLogPathsBuilder = ImmutableList.builder();
+        if (excludedEventLogPathsStr != null) {
+            String[] excludedEventLogPathArray = StringUtils.split(excludedEventLogPathsStr, ",");
+
+            for (String excludedEventLogPathStr : excludedEventLogPathArray) {
+                excludedEventLogPathsBuilder.add(excludedEventLogPathStr.trim());
+            }
+        }
+        
+        excludedEventLogPaths = excludedEventLogPathsBuilder.build();
+    }
     
     private static class ArgumentMapper<T> {
         public static <TT> ArgumentMapper<TT> create(Class<TT> javaType, int sqlType) {
@@ -247,7 +269,6 @@ public class EventLogServiceImpl implements EventLogService {
         methodLogDetail.setValueMapper(argumentValueMapper); 
         
         // Checks to see if the event log is in the exclusion list.
-        ImmutableList<String> excludedEventLogPaths = getExcludedEventLogPaths();
         for (String excludedEventLogPath : excludedEventLogPaths) {
             if (methodLogDetail.getFullPath().startsWith(excludedEventLogPath)) {
                 methodLogDetail.setLogging(false);
@@ -255,31 +276,11 @@ public class EventLogServiceImpl implements EventLogService {
                           excludedEventLogPath+"] entry being excluded through the master.cfg");
             }
         }
-        if (methodLogDetail.isLogging()) {
-            log.debug("Created mapping: " + methodLogDetail);
-        }
+        log.debug("Created mapping: " + methodLogDetail);
         
         methodLogDetailLookup.put(method, methodLogDetail);
         methodLogDetailCatalog.put(methodLogDetail.getEventType(), methodLogDetail);
     }
-    
-    private ImmutableList<String> getExcludedEventLogPaths() {
-        // Gets the value from the cparm if it exists
-        String excludedEventLogPathsStr = configurationSource.getString("EVENT_LOG_EXCLUSION_LIST");
-
-        // Builds up the list of excluded event log paths.
-        Builder<String> excludedEventLogPathsBuilder = ImmutableList.builder();
-        if (excludedEventLogPathsStr != null) {
-            String[] excludedEventLogPathArray = StringUtils.split(excludedEventLogPathsStr, ",");
-
-            for (String excludedEventLogPathStr : excludedEventLogPathArray) {
-                excludedEventLogPathsBuilder.add(excludedEventLogPathStr.trim());
-            }
-        }
-        
-        return excludedEventLogPathsBuilder.build();
-    }
-    
     
     /**
      * This method doesn't do much work, but it is broken out to preserve
