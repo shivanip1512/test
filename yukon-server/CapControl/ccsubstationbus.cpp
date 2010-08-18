@@ -3845,6 +3845,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                                                               getPhaseBValue(), getPhaseCValue(), regression);
                    }
                 }
+                setWaitToFinishRegularControlFlag(FALSE);
                 setRecentlyControlledFlag(FALSE);
                 figureEstimatedVarLoadPointValue();
                 found = TRUE;
@@ -3940,6 +3941,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
             }
             if( recentlyControlledFeeders == 0 )
             {
+                setWaitToFinishRegularControlFlag(FALSE);
                 setRecentlyControlledFlag(FALSE);
             }
             figureEstimatedVarLoadPointValue();
