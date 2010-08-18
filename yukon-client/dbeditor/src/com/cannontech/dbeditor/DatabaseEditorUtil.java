@@ -135,7 +135,8 @@ public final class DatabaseEditorUtil {
     }
     
     public static <E> E matchJComponent(final JComponent c, final String name, final Class<E> expectedType) {
-        if (expectedType.isInstance(c) && c.getName().equals(name)) {
+        if (expectedType.isInstance(c) && 
+            c.getName() != null && c.getName().equals(name)) {
             return expectedType.cast(c);
         }
         return null;

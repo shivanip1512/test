@@ -192,6 +192,7 @@ public class CrfMeterPanel extends DataInputPanel implements CaretListener {
     public JTextField getManufacturerTextField() {
         if(manufacturerTextField == null) {
             manufacturerTextField = new JTextField();
+            manufacturerTextField.setName("ManufacturerTextField");
             manufacturerTextField.setColumns(80);
         }
         return manufacturerTextField;
@@ -200,6 +201,7 @@ public class CrfMeterPanel extends DataInputPanel implements CaretListener {
     public JTextField getModelTextField() {
         if(modelTextField == null) {
             modelTextField = new JTextField();
+            modelTextField.setName("ModelTextField");
             modelTextField.setColumns(80);
         }
         return modelTextField;
@@ -217,6 +219,7 @@ public class CrfMeterPanel extends DataInputPanel implements CaretListener {
     public JTextField getSerialNumberTextField() {
         if(serialNumberTextField == null) {
             serialNumberTextField = new JTextField();
+            serialNumberTextField.setName("SerialNumberTextField");
             serialNumberTextField.setColumns(30);
         }
         return serialNumberTextField;

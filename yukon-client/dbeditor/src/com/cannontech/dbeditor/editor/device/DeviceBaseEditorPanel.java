@@ -1061,6 +1061,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     private JTextField getSerialNumberTextField() {
         if (serialNumberTextField == null) {
             serialNumberTextField = new JTextField();
+            serialNumberTextField.setName("SerialNumberTextField");
             serialNumberTextField.setFont(new Font("sansserif", 0, 14));
             serialNumberTextField.setMinimumSize(new Dimension(200, 23));
             serialNumberTextField.setVisible(false);
@@ -1071,6 +1072,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     private JTextField getManufacturerTextField() {
         if (manufacturerTextField == null) {
             manufacturerTextField = new JTextField();
+            manufacturerTextField.setName("ManufacturerTextField");
             manufacturerTextField.setFont(new Font("sansserif", 0, 14));
             manufacturerTextField.setMinimumSize(new Dimension(200, 23));
             manufacturerTextField.setVisible(false);
@@ -1081,6 +1083,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     private JTextField getModelTextField() {
         if (modelTextField == null) {
             modelTextField = new JTextField();
+            modelTextField.setName("ModelTextField");
             modelTextField.setFont(new Font("sansserif", 0, 14));
             modelTextField.setMinimumSize(new Dimension(200, 23));
             modelTextField.setVisible(false);
