@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/18/2010 3:52:39 PM                         */
+/* Created on:     8/18/2010 4:40:07 PM                         */
 /*==============================================================*/
 
 
@@ -250,6 +250,8 @@ drop index INDX_SYSLG_PTID_TS;
 drop index Indx_SYSLG_Date;
 
 drop index Indx_SYSLG_PtId;
+
+drop index Indx_PAObjId_InfoKey_UNQ;
 
 drop index Indx_SurvId_DispOrder_UNQ;
 
@@ -914,6 +916,8 @@ drop table SettlementConfig cascade constraints;
 drop table Shipment cascade constraints;
 
 drop table SiteInformation cascade constraints;
+
+drop table StaticPAOInfo cascade constraints;
 
 drop table Substation cascade constraints;
 
@@ -7769,6 +7773,25 @@ create table SiteInformation  (
 INSERT INTO SiteInformation VALUES (0,'(none)','(none)','(none)','(none)',0);
 
 /*==============================================================*/
+/* Table: StaticPAOInfo                                         */
+/*==============================================================*/
+create table StaticPAOInfo  (
+   StaticPAOInfoId      NUMBER                          not null,
+   PAObjectId           NUMBER                          not null,
+   InfoKey              VARCHAR2(128)                   not null,
+   Value                VARCHAR2(128)                   not null,
+   constraint PK_StatPAOInfo primary key (StaticPAOInfoId)
+);
+
+/*==============================================================*/
+/* Index: Indx_PAObjId_InfoKey_UNQ                              */
+/*==============================================================*/
+create unique index Indx_PAObjId_InfoKey_UNQ on StaticPAOInfo (
+   PAObjectId ASC,
+   InfoKey ASC
+);
+
+/*==============================================================*/
 /* Table: Substation                                            */
 /*==============================================================*/
 create table Substation  (
@@ -12357,6 +12380,11 @@ alter table Shipment
 alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
       references Substation (SubstationID);
+
+alter table StaticPAOInfo
+   add constraint FK_StatPAOInfo foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table Substation
    add constraint FK_Sub_Rt foreign key (LMRouteID)

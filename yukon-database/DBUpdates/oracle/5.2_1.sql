@@ -495,6 +495,26 @@ ALTER TABLE RDSTransmitter
             ON DELETE CASCADE;
 /* End YUK-8994 */
 
+/* Start YUK-8991 */
+CREATE TABLE StaticPAOInfo  (
+   StaticPAOInfoId      NUMBER                          NOT NULL,
+   PAObjectId           NUMBER                          NOT NULL,
+   InfoKey              VARCHAR2(128)                   NOT NULL,
+   Value                VARCHAR2(128)                   NOT NULL,
+   CONSTRAINT PK_StatPAOInfo PRIMARY KEY (StaticPAOInfoId)
+);
+
+CREATE UNIQUE INDEX Indx_PAObjId_InfoKey_UNQ ON StaticPAOInfo (
+    PAObjectId ASC,
+    InfoKey ASC
+);
+
+ALTER TABLE StaticPAOInfo
+    ADD CONSTRAINT FK_StatPAOInfo FOREIGN KEY (PAObjectId)
+        REFERENCES YukonPAObject (PAObjectId)
+            ON DELETE CASCADE;
+/* End YUK-8991 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

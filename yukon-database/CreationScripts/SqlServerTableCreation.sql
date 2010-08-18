@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/18/2010 4:00:39 PM                         */
+/* Created on:     8/18/2010 4:37:58 PM                         */
 /*==============================================================*/
 
 
@@ -1038,6 +1038,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index SYSTEMLOG.Indx_SYSLG_PtId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('StaticPAOInfo')
+            and   name  = 'Indx_PAObjId_InfoKey_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index StaticPAOInfo.Indx_PAObjId_InfoKey_UNQ
 go
 
 if exists (select 1
@@ -3382,6 +3391,13 @@ if exists (select 1
            where  id = object_id('SiteInformation')
             and   type = 'U')
    drop table SiteInformation
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('StaticPAOInfo')
+            and   type = 'U')
+   drop table StaticPAOInfo
 go
 
 if exists (select 1
@@ -10840,6 +10856,27 @@ go
 INSERT INTO SiteInformation VALUES (0,'(none)','(none)','(none)','(none)',0);
 
 /*==============================================================*/
+/* Table: StaticPAOInfo                                         */
+/*==============================================================*/
+create table StaticPAOInfo (
+   StaticPAOInfoId      numeric              not null,
+   PAObjectId           numeric              not null,
+   InfoKey              varchar(128)         not null,
+   Value                varchar(128)         not null,
+   constraint PK_StatPAOInfo primary key (StaticPAOInfoId)
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_PAObjId_InfoKey_UNQ                              */
+/*==============================================================*/
+create unique index Indx_PAObjId_InfoKey_UNQ on StaticPAOInfo (
+PAObjectId ASC,
+InfoKey ASC
+)
+go
+
+/*==============================================================*/
 /* Table: Substation                                            */
 /*==============================================================*/
 create table Substation (
@@ -16010,6 +16047,12 @@ go
 alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
       references Substation (SubstationID)
+go
+
+alter table StaticPAOInfo
+   add constraint FK_StatPAOInfo foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table Substation
