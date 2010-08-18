@@ -833,6 +833,8 @@ int Mct410Device::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< 
         insertPointDataReport(pdata.type, pdata.offset, ReturnMsg.get(), pi, pdata.name, pdata.time);
     }
 
+    ReturnMsg->setResultString(description);
+
     if( ptr.get() )
     {
         OUTMESS *OutMessage = new OUTMESS;
@@ -841,7 +843,22 @@ int Mct410Device::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< 
 
         fillOutMessage(*OutMessage, *ptr);
 
-        outList.push_back(OutMessage);
+        CtiRequestMsg newReq(getID(),
+                             InMessage.Return.CommandStr,
+                             InMessage.Return.UserID,
+                             InMessage.Return.GrpMsgID,
+                             InMessage.Return.RouteID,
+                             selectInitialMacroRouteOffset(InMessage.Return.RouteID),
+                             InMessage.Return.Attempt,
+                             0,
+                             InMessage.Priority);
+
+        newReq.setConnectionHandle((void *)InMessage.Return.Connection);
+
+        executeOnDLCRoute(&newReq,
+                          CtiCommandParser(newReq.CommandString()),
+                          list<OUTMESS *>(1, OutMessage),
+                          vgList, retList, outList, false);
     }
     else
     {
@@ -1532,6 +1549,16 @@ void Mct410Device::readSspec(const OUTMESS &OutMessage, list<OUTMESS *> &outList
 
 void Mct410Device::fillOutMessage(OUTMESS &OutMessage, DlcCommand::request_t &request)
 {
+    OutMessage.DeviceID  = getID();
+    OutMessage.TargetID  = getID();
+    OutMessage.Port      = getPortID();
+    OutMessage.Remote    = getAddress();
+    OutMessage.TimeOut   = 2;
+    OutMessage.Retry     = 2;
+
+    OutMessage.Request.RouteID     = getRouteID();
+    OutMessage.Request.MacroOffset = selectInitialMacroRouteOffset(OutMessage.Request.RouteID);
+
     OutMessage.Buffer.BSt.Function = request.function;
     OutMessage.Buffer.BSt.IO       = request.io();
     OutMessage.Buffer.BSt.Length   = request.length();
@@ -1695,6 +1722,8 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
         //  this call might be able to move out to ExecuteRequest() at some point - maybe we just return
         //    a DlcCommand object that it can execute out there
         found = tryExecuteCommand(*OutMessage, hourlyRead);
+
+        function = OutMessage->Sequence;
     }
     else if( parse.isKeyValid(str_daily_read) )
     {
@@ -4541,15 +4570,18 @@ bool Mct410Device::isSupported(const Mct4xxDevice::Features feature) const
 
 bool Mct410Device::sspecValid(const unsigned sspec, const unsigned rev) const
 {
+    if( rev >= SspecRev_BetaHi )
+    {
+        return (sspec == Mct410Device::Sspec) || ((sspec / 10) == Mct410Device::Sspec);
+    }
+
     if( rev >= SspecRev_NextGen )
     {
         //  next-gen SSPEC is 10290-10299, split per meter type
         return (sspec / 10) == Mct410Device::Sspec;
     }
-    else
-    {
-        return sspec == Mct410Device::Sspec;
-    }
+
+    return sspec == Mct410Device::Sspec;
 }
 
 }

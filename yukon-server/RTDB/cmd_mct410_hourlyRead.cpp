@@ -105,7 +105,7 @@ Mct410HourlyReadCommand::request_ptr Mct410HourlyReadCommand::decode(CtiTime now
 
     if( weekday != _date_begin.weekDay() )
     {
-        string error_description = "Day of week does not match (" + CtiNumStr(weekday) + " != " + CtiNumStr(_date_begin.weekDay());
+        string error_description = "Day of week does not match (" + CtiNumStr(weekday) + " != " + CtiNumStr(_date_begin.weekDay()) + ")";
 
         _retries--;
 
