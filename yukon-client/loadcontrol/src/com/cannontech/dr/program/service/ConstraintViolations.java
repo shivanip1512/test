@@ -17,5 +17,9 @@ public class ConstraintViolations {
 	public void setViolationContainers(List<ConstraintContainer> violations) {
 		this.violations = violations;
 	}
+	
+	public boolean isViolated() {
+		return (violations.size() > 0);
+	}
 
 }

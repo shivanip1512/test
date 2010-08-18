@@ -485,7 +485,7 @@ public class StartProgramController extends ProgramControllerBase {
                                                                      backingBean.getActualStopDate(),
                                                                      stopOffset,
                                                                      gearAdjustments);
-            if (violations != null && violations.getViolationContainers().size() > 0) {
+            if (violations != null && violations.isViolated() ) {
                 violationsByProgramId.put(programId, violations);
                 constraintsViolated = true;
             }
