@@ -19,7 +19,6 @@ import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.filter.SqlFragmentUiFilter;
@@ -59,7 +58,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.ImmutableList.Builder;
 
-@Service
 public class EventLogServiceImpl implements EventLogService {
     private static final Logger log = YukonLogManager.getLogger(EventLogServiceImpl.class);
 
