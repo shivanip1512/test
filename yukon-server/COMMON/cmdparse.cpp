@@ -1349,41 +1349,6 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
 
     doParseControlExpresscom(CmdStr);
     doParseControlSA(CmdStr);
-
-    if(isKeyValid("type"))
-    {
-        switch( getiValue("type") )
-        {
-        case ProtocolEnergyProType:
-            {
-                // This will change over time.
-                doParseControlExpresscom(CmdStr);
-                break;
-            }
-        case ProtocolExpresscomType:
-            {
-                doParseControlExpresscom(CmdStr);
-                break;
-            }
-        case ProtocolSADigitalType:
-        case ProtocolGolayType:
-        case ProtocolSA105Type:
-        case ProtocolSA205Type:
-        case ProtocolSA305Type:
-            {
-                // This will change over time.
-                doParseControlSA(CmdStr);
-                break;
-            }
-        case ProtocolVersacomType:
-        case ProtocolFisherPierceType:
-        case ProtocolEmetconType:
-        default:
-            {
-                break;
-            }
-        }
-    }
 }
 
 
