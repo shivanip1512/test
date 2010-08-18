@@ -280,7 +280,6 @@ void CtiFDRService::OnStop( )
 
 void CtiFDRService::Run( )
 {
-    CtiMessage* msg = NULL;
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::FDR);
     CtiTime NextThreadMonitorReportTime;
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
@@ -322,7 +321,7 @@ void CtiFDRService::Run( )
                 }
             }
 
-            while( msg = FdrVanGoghConnection.ReadConnQue(0) )
+            while( CtiMessage *msg = FdrVanGoghConnection.ReadConnQue(0) )
             {
                 if( msg->isA() == MSG_COMMAND && ((CtiCommandMsg*)msg)->getOperation() == CtiCommandMsg::AreYouThere )
                 {
