@@ -122,7 +122,8 @@ public class EventLogFactoryBeanTest {
         eventLogService.setFilterService(new FilterServiceImpl());
         eventLogService.setEventLogDao(eventLogDaoMock);
         eventLogService.setConfigurationSource(new EventLogMockConfigurationService());
-
+        eventLogService.setupExcludedEventLogPaths();
+        
         eventLogFactoryBean.setEventLogService(eventLogService);
         eventLogFactoryBean.afterPropertiesSet();
         testEventLog = (TestEventLogInterface) eventLogFactoryBean.getObject();
