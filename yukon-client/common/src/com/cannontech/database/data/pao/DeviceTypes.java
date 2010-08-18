@@ -147,9 +147,10 @@ public interface DeviceTypes extends TypeBase
     
     public final static int CRF_AX    = DEVICE_OFFSET + 112;
     public final static int CRF_AL    = DEVICE_OFFSET + 113;
+    public final static int RDS_TERMINAL    = DEVICE_OFFSET + 114;
     
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 113;
+	public final static int DEVICE_TYPES_COUNT = 114;
 	
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
@@ -222,6 +223,7 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_TNPP_TERMINAL = {"TNPP TERMINAL"};
 	public static final String[] STRING_WCTP_TERMINAL = {"WCTP TERMINAL"};
 	public static final String[] STRING_SNPP_TERMINAL = {"SNPP TERMINAL"};
+	public static final String[] STRING_RDS_TERMINAL = {"RDS TERMINAL"};
 	public static final String[] STRING_EMETCON_GROUP = {"EMETCON GROUP"};
 	public static final String[] STRING_VERSACOM_GROUP = {"VERSACOM GROUP"};
 	public static final String[] STRING_EXPRESSCOMM_GROUP = {"EXPRESSCOM GROUP"};
@@ -271,5 +273,8 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_FAULT_CI = { "Faulted Circuit Indicator" };
     public static final String[] STRING_CRF_AX = {"CRF-AX"};
     public static final String[] STRING_CRF_AL = {"CRF-AL"};
-    
+    public static final String[] STRING_MCT_420FL = {"MCT-420FL"};
+    public static final String[] STRING_MCT_420FLD = {"MCT-420FLD"};
+    public static final String[] STRING_MCT_420CL = {"MCT-420CL"};
+    public static final String[] STRING_MCT_420CLD = {"MCT-420CLD"};
 }

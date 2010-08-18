@@ -7,6 +7,7 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.data.device.Repeater850;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.dbeditor.wizard.device.DeviceRDSTerminalPanel;
 import com.cannontech.dbeditor.wizard.device.DeviceTNPPTerminalPanel;
 import com.cannontech.roles.application.DBEditorRole;
 
@@ -37,7 +38,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.RTC, PAOGroups.KV, PAOGroups.KVII, PAOGroups.RTM, PAOGroups.MCT410IL, PAOGroups.MCT410CL,
             PAOGroups.MCT410FL, PAOGroups.MCT410GL, PAOGroups.MCT470, PAOGroups.MCT430A, PAOGroups.MCT430S4, PAOGroups.MCT430SL, PAOGroups.MCT430A3, 
             PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.FAULT_CI, PAOGroups.NEUTRAL_MONITOR, PAOGroups.INTEGRATION_TRANSMITTER, PAOGroups.LCR3102,
-            PAOGroups.CRF_AL, PAOGroups.CRF_AX
+            PAOGroups.CRF_AL, PAOGroups.CRF_AX, PAOGroups.RDS_TERMINAL
 		},
 		{ 	//1 - DeviceMeterGroupEditorPanel
 			PAOGroups.ALPHA_A1, PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, PAOGroups.QUANTUM, 
@@ -113,14 +114,14 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.CCU721, PAOGroups.TCU5000, PAOGroups.TCU5500, 
 			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER, 
 			PAOGroups.TAPTERMINAL, PAOGroups.TNPP_TERMINAL, PAOGroups.WCTP_TERMINAL,
-			PAOGroups.SERIES_5_LMI, PAOGroups.RTC, PAOGroups.SNPP_TERMINAL
+			PAOGroups.SERIES_5_LMI, PAOGroups.RTC, PAOGroups.SNPP_TERMINAL, PAOGroups.RDS_TERMINAL
 			
 		},
 		{	//11 - ExclusionTimingEditorPanel
 			PAOGroups.CCU710A, PAOGroups.CCU711, PAOGroups.CCU721, PAOGroups.TCU5000, PAOGroups.TCU5500, 
 			PAOGroups.LCU415, PAOGroups.LCU_T3026, PAOGroups.LCULG, PAOGroups.LCU_ER, 
 			PAOGroups.TAPTERMINAL, PAOGroups.TNPP_TERMINAL, PAOGroups.WCTP_TERMINAL,
-			PAOGroups.SERIES_5_LMI, PAOGroups.RTC, PAOGroups.SNPP_TERMINAL
+			PAOGroups.SERIES_5_LMI, PAOGroups.RTC, PAOGroups.SNPP_TERMINAL, PAOGroups.RDS_TERMINAL
 		},
 		{	//12 - DeviceVerificationAssignmentPanel
 			PAOGroups.RTM
@@ -132,6 +133,10 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
         {
             //14 - TNPPTermOptionPanel
             PAOGroups.TNPP_TERMINAL
+        },
+        {
+            //15 - RDSTerminalPanel
+            PAOGroups.RDS_TERMINAL
         }
 
 };
@@ -229,7 +234,11 @@ public Object[] createNewPanel(int panelIndex)
 		    objs[0] = new DeviceTNPPTerminalPanel();
 	        objs[1] = "TNPP Settings";
 	        break;
-
+		
+		case 15:
+		    objs[0] = new DeviceRDSTerminalPanel();
+		    objs[1] = "RDS Settings";
+		    break;
 	}
 		
 	return objs;

@@ -125,7 +125,8 @@ public enum PaoType implements DatabaseRepresentationSource {
     INTEGRATION_TRANSMITTER(DeviceTypes.INTEGRATION_TRANSMITTER, "INTEGRATION", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
     MCT430A3(DeviceTypes.MCT430A3, "MCT-430A3", PaoCategory.DEVICE, PaoClass.CARRIER),
     LCR3102(DeviceTypes.LCR3102, "LCR-3102", PaoCategory.DEVICE, PaoClass.CARRIER),
-
+    RDS_TERMINAL(DeviceTypes.RDS_TERMINAL, "RDS TERMINAL", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    
     ROUTE_CCU(RouteTypes.ROUTE_CCU, "CCU", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_TCU(RouteTypes.ROUTE_TCU, "TCU", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_LCU(RouteTypes.ROUTE_LCU, "LCU", PaoCategory.ROUTE, PaoClass.ROUTE),
@@ -138,6 +139,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     ROUTE_SNPP_TERMINAL(RouteTypes.ROUTE_SNPP_TERMINAL, "SNPP Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_INTEGRATION(RouteTypes.ROUTE_INTEGRATION, "Integration Route", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_TNPP_TERMINAL(RouteTypes.ROUTE_TNPP_TERMINAL, "TNPP Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_RDS_TERMINAL(RouteTypes.ROUTE_RDS_TERMINAL, "RDS Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
 
     LOCAL_DIRECT(PortTypes.LOCAL_DIRECT, "Local Direct", PaoCategory.PORT, PaoClass.PORT),
     LOCAL_SHARED(PortTypes.LOCAL_SHARED, "Local Serial Port", PaoCategory.PORT, PaoClass.PORT),

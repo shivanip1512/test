@@ -28,6 +28,7 @@ public class DeviceWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private MCTBroadcastListEditorPanel mctBroadcastListEditorPanel;
 	private DeviceScanRateEditorPanel deviceScanRateEditorPanel;
     private CrfMeterPanel crfMeterPanel;
+    private DeviceRDSTerminalPanel rdsTerminalPanel;
 
 /**
  * DeviceWizardPanel constructor comment.
@@ -47,6 +48,14 @@ public java.awt.Dimension getActualSize()
 	setPreferredSize( new java.awt.Dimension(410, 480) );
 
 	return getPreferredSize();
+}
+
+
+public DeviceRDSTerminalPanel getRDSTerminalPanel() {
+    if( rdsTerminalPanel == null)
+        rdsTerminalPanel = new DeviceRDSTerminalPanel();
+
+    return rdsTerminalPanel;
 }
 
 
@@ -256,7 +265,8 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 		int devType = getDeviceTypePanel().getDeviceType();
 		
 		if( devType == PAOGroups.TAPTERMINAL ||
-		    devType == PAOGroups.TNPP_TERMINAL)
+		    devType == PAOGroups.TNPP_TERMINAL || 
+		    devType == PAOGroups.RDS_TERMINAL)
 		{
 		    getDeviceTapTerminalPanel().setDeviceType(devType);
 			getDeviceTapTerminalPanel().setFirstFocus();
@@ -343,6 +353,10 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 		{
 		    return getDeviceCommChannelPanel();
 		}
+		else if (devType == DeviceTypes.RDS_TERMINAL)
+		{
+		    return getRDSTerminalPanel();
+		}
 		else
 		{
 			getDeviceScanRatePanel().setDeviceType(getDeviceTypePanel().getDeviceType());
@@ -408,6 +422,10 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
            getDeviceTNPPTerminalPanel().setFirstFocus();
            return getDeviceTNPPTerminalPanel();
        }
+       if (devType == PAOGroups.RDS_TERMINAL) {
+           getRDSTerminalPanel().setFirstFocus();
+           return getRDSTerminalPanel();
+       }
        return null;
 	}
 	else if (currentInputPanel == getDeviceTapVerizonPanel() ||
@@ -430,6 +448,11 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 			getDeviceRoutePanel().setValue(null);
             getDeviceRoutePanel().setFirstFocus();
 			return getDeviceRoutePanel();
+	}
+	else if (currentInputPanel == getRDSTerminalPanel())
+	{
+	    getDeviceCommChannelPanel().setFirstFocus();
+        return getDeviceCommChannelPanel();
 	}
 	else
 		throw new Error(getClass() + "::" + "getNextInputPanel() - Could not determine next DataInputPanel");

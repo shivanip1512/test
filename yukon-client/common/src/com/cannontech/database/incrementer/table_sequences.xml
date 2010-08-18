@@ -236,5 +236,8 @@
       <sequence name="AcctThermostatScheduleEntry">
         <table name="AcctThermostatScheduleEntry" identitycolumn="AcctThermostatScheduleEntryId" initsequence="true"/>
       </sequence>
+      <sequence name="StaticPaoInfo">
+        <table name="StaticPaoInfo" identitycolumn="StaticPaoInfoId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

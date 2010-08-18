@@ -19,7 +19,8 @@ public class RouteEditorPanel extends com.cannontech.common.editor.PropertyPanel
 			RouteTypes.STRING_TAP_PAGING, RouteTypes.STRING_WCTP_TERMINAL_ROUTE,
 			RouteTypes.STRING_VERSACOM, RouteTypes.STRING_SERIES_5_LMI_ROUTE,
 			RouteTypes.STRING_RTC_ROUTE, RouteTypes.STRING_SNPP_TERMINAL_ROUTE,
-			RouteTypes.STRING_INTEGRATION_ROUTE, RouteTypes.STRING_TNPP_TERMINAL_ROUTE
+			RouteTypes.STRING_INTEGRATION_ROUTE, RouteTypes.STRING_TNPP_TERMINAL_ROUTE,
+			RouteTypes.STRING_RDS_TERMINAL_ROUTE
 		},
 		{  //1 - RepeaterSetupEditorPanel
 			RouteTypes.STRING_CCU

@@ -244,6 +244,9 @@ public final class DeviceFactory {
         case SNPP_TERMINAL:
             returnDevice = new SNPPTerminal();
             break;
+        case RDS_TERMINAL:
+            returnDevice = new RDSTerminal();
+            break;
 
         case LM_GROUP_EMETCON:
             returnDevice = new com.cannontech.database.data.device.lm.LMGroupEmetcon();

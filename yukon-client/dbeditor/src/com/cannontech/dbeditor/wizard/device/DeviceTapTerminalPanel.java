@@ -2,6 +2,7 @@ package com.cannontech.dbeditor.wizard.device;
 
 import java.awt.Dimension;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.IEDBase;
 import com.cannontech.database.data.device.PagingTapTerminal;
 import com.cannontech.database.data.device.TNPPTerminal;
@@ -363,46 +364,25 @@ public Object getValue(Object val)
 {
     IEDBase iedBase = (IEDBase)val;
     
-    if (iedBase instanceof PagingTapTerminal) {
-        PagingTapTerminal tapTerm = (PagingTapTerminal)val;
-    
-    	String nameString = getNameTextField().getText();
-    	tapTerm.setPAOName( nameString );
-    
-    	String pagerNumber = getPagerNumberTextField().getText();
-    	tapTerm.getDeviceTapPagingSettings().setPagerNumber(pagerNumber);
-    
-    	if( getPasswordCheckBox().isSelected() )
-    	{
-    		tapTerm.getDeviceIED().setPassword( getPasswordTextField().getText() );
-    	}
-    	else
-    		tapTerm.getDeviceIED().setPassword(
-                com.cannontech.common.util.CtiUtilities.STRING_NONE );
-    
-    	//Tap Terminals cannot be slaves like some IED meters
-    	tapTerm.getDeviceIED().setSlaveAddress("Master");
-    }
-    
-    if (iedBase instanceof TNPPTerminal) {
-        TNPPTerminal tnppTerm = (TNPPTerminal)val;
-    
-        String nameString = getNameTextField().getText();
-        tnppTerm.setPAOName( nameString );
-    
-        if( getPasswordCheckBox().isSelected() )
-        {
-            tnppTerm.getDeviceIED().setPassword( getPasswordTextField().getText() );
-        }
-        else
-            tnppTerm.getDeviceIED().setPassword(
-                com.cannontech.common.util.CtiUtilities.STRING_NONE );
-    
-        //Tap Terminals cannot be slaves like some IED meters
-        tnppTerm.getDeviceIED().setSlaveAddress("Master");
-        
+    String nameString = getNameTextField().getText();
+    iedBase.setPAOName(nameString);
+
+    if( getPasswordCheckBox().isSelected() ) {
+        iedBase.getDeviceIED().setPassword( getPasswordTextField().getText() );
+    } else {
+        iedBase.getDeviceIED().setPassword(CtiUtilities.STRING_NONE );
     }
 
+    //Tap Terminals cannot be slaves like some IED meters
+    iedBase.getDeviceIED().setSlaveAddress("Master");
+
+    
+    if (iedBase instanceof PagingTapTerminal) {
+        PagingTapTerminal tapTerm = (PagingTapTerminal)val;
+    	String pagerNumber = getPagerNumberTextField().getText();
+    	tapTerm.getDeviceTapPagingSettings().setPagerNumber(pagerNumber);
+    }
+    
 	return val;
 }
 /**

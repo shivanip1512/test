@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.device.TNPPTerminal;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.db.device.DeviceTNPPSettings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
@@ -705,7 +706,13 @@ public Dimension getPreferredSize() {
  */
 public Object getValue(Object val) 
 {
-	TNPPTerminal tnppTerm = (TNPPTerminal)val;
+    Object value = null;
+    if (val instanceof SmartMultiDBPersistent) {
+        value = ((SmartMultiDBPersistent) val).getOwnerDBPersistent();
+    } else {
+        value = val;
+    }
+	TNPPTerminal tnppTerm = (TNPPTerminal)value;
 
 	String originAddress = getOriginAddressTextField().getText();
     tnppTerm.getDeviceTNPPSettings().setOriginAddress(new Integer(originAddress));

@@ -3524,6 +3524,9 @@
     <pao id="CCU721" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>CCU-721</displayName>
     </pao>
+    <pao id="INTEGRATION_TRANSMITTER" inherits="SIGNAL_TRANSMITTER_BASE">
+        <displayName>INTEGRATION</displayName>
+    </pao>
     <pao id="LCU415" inherits="TRANSMITTER_BASE" creatable="false">
         <displayName>LCU-415</displayName>
         <points>
@@ -3661,8 +3664,8 @@
     <pao id="TAPTERMINAL" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>PAGING TAP TERMINAL</displayName>
     </pao>
-    <pao id="TNPP_TERMINAL" inherits="SIGNAL_TRANSMITTER_BASE">
-        <displayName>TNPP TERMINAL</displayName>
+    <pao id="RDS_TERMINAL" inherits="SIGNAL_TRANSMITTER_BASE">
+        <displayName>RDS TERMINAL</displayName>
     </pao>
     <pao id="REPEATER" inherits="REPEATER_BASE">
         <displayName>REPEATER 900</displayName>
@@ -3691,7 +3694,9 @@
     <pao id="SNPP_TERMINAL" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>SNPP TERMINAL</displayName>
     </pao>
-    
+    <pao id="TNPP_TERMINAL" inherits="SIGNAL_TRANSMITTER_BASE">
+        <displayName>TNPP TERMINAL</displayName>
+    </pao>
     <!-- TCU BASE -->
     <pao id="TCU_BASE" abstract="true" inherits="TRANSMITTER_BASE">
     	<points>
@@ -3757,9 +3762,6 @@
     </pao>
     <pao id="WCTP_TERMINAL" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>WCTP TERMINAL</displayName>
-    </pao>
-    <pao id="INTEGRATION_TRANSMITTER" inherits="SIGNAL_TRANSMITTER_BASE">
-        <displayName>INTEGRATION</displayName>
     </pao>
     
     <!-- ELECTRONIC METERS -->

@@ -234,6 +234,10 @@ public Object getValue(Object val) {
 	{
 		val = RouteFactory.createRoute( RouteTypes.ROUTE_INTEGRATION);
 	}
+	else if (type == PAOGroups.RDS_TERMINAL)
+	{
+	    val = RouteFactory.createRoute( RouteTypes.ROUTE_RDS_TERMINAL);
+	}
 	else //?
 		throw new Error("RouteType2::getValue() - Unknown transmitter type");
 

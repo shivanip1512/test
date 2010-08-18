@@ -6,6 +6,7 @@ package com.cannontech.dbeditor.editor.route;
 
 import java.awt.GridBagConstraints;
 
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.yukon.IDatabaseCache;
@@ -505,6 +506,14 @@ private void loadSignalTransmitterComboBox(String routeType) {
                     getSignalTransmitterComboBox().addItem( devices.get(i) );
             }
         }
+		else if( routeType.equalsIgnoreCase(RouteTypes.STRING_RDS_TERMINAL_ROUTE))
+		{
+		    for(int i=0;i<devices.size();i++)
+		    {
+		        if( ((LiteYukonPAObject)devices.get(i)).getType() == PAOGroups.RDS_TERMINAL)
+		            getSignalTransmitterComboBox().addItem(devices.get(i));
+		    }
+		}
 		else if( routeType.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_VERSACOM) )
 		{
 			for(int i=0;i<devices.size();i++)

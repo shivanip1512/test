@@ -69,7 +69,11 @@ public final static RouteBase createRoute(int routeType)
 		case RouteTypes.ROUTE_INTEGRATION:
 			returnRoute = new RouteBase();
 			returnRoute.setRouteType( RouteTypes.STRING_INTEGRATION_ROUTE );
-
+			break;
+		case RouteTypes.ROUTE_RDS_TERMINAL:
+		    returnRoute = new RDSTerminalRoute();
+		    returnRoute.setRouteType(RouteTypes.STRING_RDS_TERMINAL_ROUTE);
+		    break;
 	}
 
 	returnRoute.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_ROUTE );
@@ -147,6 +151,11 @@ public final static RouteBase createRoute( String routeType)
 	{
 		returnRoute = new RouteBase();
 		returnRoute.setRouteType( RouteTypes.STRING_INTEGRATION_ROUTE );
+	}
+	else if (routeType.equalsIgnoreCase(RouteTypes.STRING_RDS_TERMINAL_ROUTE))
+	{
+	    returnRoute = new RDSTerminalRoute();
+	    returnRoute.setRouteType(RouteTypes.STRING_RDS_TERMINAL_ROUTE);
 	}
 	else
 		throw new IllegalStateException( "*** " + routeType + " is not a valid route type." );

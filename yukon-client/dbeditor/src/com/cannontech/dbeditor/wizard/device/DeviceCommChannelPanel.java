@@ -296,6 +296,8 @@ private void checkAddress()
                 routeType = RouteTypes.STRING_RTC_ROUTE;
         	} else if (devType == PAOGroups.INTEGRATION_TRANSMITTER) {
         		routeType = RouteTypes.STRING_INTEGRATION_ROUTE;
+        	} else if (devType == PAOGroups.RDS_TERMINAL){
+        	    routeType = RouteTypes.STRING_RDS_TERMINAL_ROUTE;
         	} else {
                 return val;
         	}

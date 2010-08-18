@@ -20,6 +20,7 @@ public interface RouteTypes extends TypeBase
 	public final static int ROUTE_SNPP_TERMINAL = ROUTE_OFFSET + 9;
 	public final static int ROUTE_INTEGRATION   = ROUTE_OFFSET + 10;
     public final static int ROUTE_TNPP_TERMINAL = ROUTE_OFFSET + 11;
+    public final static int ROUTE_RDS_TERMINAL  = ROUTE_OFFSET + 12;
 	
 	public static final String STRING_CCU = "CCU";
 	public static final String STRING_TCU = "TCU";
@@ -33,5 +34,6 @@ public interface RouteTypes extends TypeBase
 	public static final String STRING_RTC_ROUTE = "RTC Route";
 	public static final String STRING_INTEGRATION_ROUTE = "Integration Route";
 	public static final String STRING_TNPP_TERMINAL_ROUTE = "TNPP Terminal Route";
+	public static final String STRING_RDS_TERMINAL_ROUTE = "RDS Terminal Route";
 	
 }

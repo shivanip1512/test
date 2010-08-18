@@ -952,6 +952,7 @@ public final static boolean isTransmitter(int deviceType)
 		case SERIES_5_LMI:
 		case RTC:
 		case INTEGRATION_TRANSMITTER:
+		case RDS_TERMINAL:
 			return true;
 	
 		default:
