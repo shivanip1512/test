@@ -7,7 +7,7 @@ import com.google.common.collect.Lists;
 
 public class OptOutSurvey {
     private int optOutSurveyId;
-    private List<Integer> loginGroupIds = Lists.newArrayList();
+    private List<Integer> programIds = Lists.newArrayList();
     private int surveyId;
     private String surveyName;
     private Date startDate;
@@ -17,10 +17,10 @@ public class OptOutSurvey {
     public OptOutSurvey() {
     }
 
-    public OptOutSurvey(int optOutSurveyId, List<Integer> loginGroupIds,
+    public OptOutSurvey(int optOutSurveyId, List<Integer> programIds,
             int surveyId, Date startDate, Date stopDate, int energyCompanyId) {
         this.optOutSurveyId = optOutSurveyId;
-        this.loginGroupIds = loginGroupIds;
+        this.programIds = programIds;
         this.surveyId = surveyId;
         this.startDate = startDate;
         this.stopDate = stopDate;
@@ -35,16 +35,16 @@ public class OptOutSurvey {
         this.optOutSurveyId = optOutSurveyId;
     }
 
-    public List<Integer> getLoginGroupIds() {
-        return loginGroupIds;
+    public List<Integer> getProgramIds() {
+        return programIds;
     }
 
-    public void addLoginGroupId(Integer loginGroupId) {
-        loginGroupIds.add(loginGroupId);
+    public void addProgramId(Integer programId) {
+        programIds.add(programId);
     }
 
-    public void setLoginGroupIds(List<Integer> loginGroupIds) {
-        this.loginGroupIds = loginGroupIds;
+    public void setProgramIds(List<Integer> programIds) {
+        this.programIds = programIds;
     }
 
     public int getSurveyId() {

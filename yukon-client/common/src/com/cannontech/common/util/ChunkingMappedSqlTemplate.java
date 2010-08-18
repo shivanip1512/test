@@ -10,6 +10,8 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
+import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.YukonRowMapperAdapter;
 import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
@@ -69,10 +71,20 @@ public class ChunkingMappedSqlTemplate {
         return resultMap;
     }
 
+    public <I, R, C> ListMultimap<C, R> multimappedQuery(
+            SqlFragmentGenerator<I> sqlGenerator, Iterable<C> input,
+            YukonRowMapper<Map.Entry<I, R>> rowMapper,
+            Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
+        ParameterizedRowMapper<Map.Entry<I, R>> parameterizedRowMapper =
+            new YukonRowMapperAdapter<Map.Entry<I,R>>(rowMapper);
+        return multimappedQuery(sqlGenerator, input, parameterizedRowMapper,
+                                inputTypeToSqlGeneratorTypeMapper);
+    }
+
     public <I, R, C> ListMultimap<C, R> multimappedQuery(final SqlFragmentGenerator<I> sqlGenerator, 
-                                           final Iterable<C> input,
-                                           final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
-                                           Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
+                                                         final Iterable<C> input,
+                                                         final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
+                                                         Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
         
         final ArrayListMultimap<C, R> resultMap = ArrayListMultimap.create();
         processQuery(sqlGenerator, input, rowMapper, inputTypeToSqlGeneratorTypeMapper, new PairProcessor<C, R>() {

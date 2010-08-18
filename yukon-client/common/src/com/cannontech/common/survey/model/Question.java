@@ -83,4 +83,12 @@ public class Question {
     public void setDisplayOrder(int displayOrder) {
         this.displayOrder = displayOrder;
     }
+
+    public String toString() {
+        return "surveyQuestionId=" + surveyQuestionId + "; surveyId=" +
+            surveyId + "; questionKey=[" + questionKey + "]; answerRequired=" +
+            answerRequired + "; questionType=" + questionType +
+            "; textAnswerAllowed=" + textAnswerAllowed + "; displayOrder=" +
+            displayOrder;
+    }
 }

@@ -5,7 +5,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
 
-<c:set var="actionUrl" value="/spring/stars/consumer/optout/view2"/>
+<c:set var="actionUrl" value="/spring/stars/consumer/optout/deviceSelection"/>
 
 <cti:standardPage module="consumer" page="confirmCancel">
     <cti:standardMenu/>

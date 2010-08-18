@@ -25,7 +25,7 @@
             <table id="optOutSurveyList" class="compactResultsTable rowHighlighting">
                 <tr>
                     <th><cti:msg2 key=".surveyName"/></th>
-                    <th><cti:msg2 key=".loginGroups"/></th>
+                    <th><cti:msg2 key=".programs"/></th>
                     <th><cti:msg2 key=".startDate"/></th>
                     <th><cti:msg2 key=".stopDate"/></th>
                     <th><cti:msg2 key=".actions"/></th>
@@ -37,9 +37,9 @@
                         <td><spring:escapeBody
                             htmlEscape="true">${optOutSurvey.surveyName}</spring:escapeBody></td>
                         <td>
-						    <c:forEach var="loginGroupId" items="${optOutSurvey.loginGroupIds}">
+						    <c:forEach var="programId" items="${optOutSurvey.programIds}">
 						        <spring:escapeBody htmlEscape="true">
-						            ${loginGroupsById[loginGroupId]}
+						            ${programsById[programId].name.displayName}
 						        </spring:escapeBody><br>
 						    </c:forEach>
                         </td>
@@ -71,7 +71,7 @@
         </c:if>
 
         <script type="text/javascript">
-        function chooseSurvey(loginGroupIds) {
+        function chooseSurvey(programIds) {
         	surveyPicker.show()
         	return true;
         }
@@ -87,9 +87,10 @@
         <cti:url var="addUrl" value="/spring/stars/optOutSurvey/edit"/>
         <form id="addForm" action="${addUrl}">
             <div class="actionArea">
-            <tags:pickerDialog type="loginGroupPicker" id="loginGroupPicker"
-                destinationFieldName="loginGroupIds" endAction="chooseSurvey"
-                multiSelectMode="true" linkType="button"><cti:msg2 key=".add"/></tags:pickerDialog>
+	            <tags:pickerDialog type="assignedProgramPicker" id="programPicker"
+	                destinationFieldName="programIds" endAction="chooseSurvey"
+	                multiSelectMode="true" linkType="button"
+	                extraArgs="${energyCompanyId}"><cti:msg2 key=".add"/></tags:pickerDialog>
                 <tags:pickerDialog type="surveyPicker" id="surveyPicker"
                     destinationFieldName="surveyId" endAction="addOptOutSurvey"
                     styleClass="simpleLink" immediateSelectMode="true"

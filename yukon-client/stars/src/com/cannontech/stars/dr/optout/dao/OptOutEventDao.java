@@ -27,8 +27,9 @@ public interface OptOutEventDao {
 	 * @param event - Event to save/update
 	 * @param action - Action taken on the opt out event
 	 * @param user - User requesting the action
+	 * @return The log entry saved to optOutEventLog.
 	 */
-	public void save(OptOutEvent event, OptOutAction action, LiteYukonUser user);
+	public OptOutLog save(OptOutEvent event, OptOutAction action, LiteYukonUser user);
 	
 	/**
 	 * Method to determine if there is a current active opt out for a given inventory/customer account 

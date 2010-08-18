@@ -4,7 +4,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
 <%@ tag body-content="empty" %>
-<%@ attribute name="path" required="true" type="java.lang.String"%>
+<%@ attribute name="path" required="true" type="java.lang.String" rtexprvalue="true"%>
 <%@ attribute name="disabled" required="false" type="java.lang.String"%>
 <%@ attribute name="readonly" required="false" type="java.lang.String"%>
 <%@ attribute name="size" required="false" type="java.lang.String"%>

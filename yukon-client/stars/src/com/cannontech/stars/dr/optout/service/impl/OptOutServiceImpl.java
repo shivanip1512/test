@@ -35,6 +35,8 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.survey.dao.SurveyDao;
+import com.cannontech.common.survey.model.Result;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.AccountNotFoundException;
@@ -70,6 +72,7 @@ import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.dr.optout.dao.OptOutAdditionalDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
+import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
 import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideDao;
 import com.cannontech.stars.dr.optout.exception.AlreadyOptedOutException;
 import com.cannontech.stars.dr.optout.exception.NotOptedOutException;
@@ -96,6 +99,7 @@ import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 
 public class OptOutServiceImpl implements OptOutService {
@@ -126,6 +130,8 @@ public class OptOutServiceImpl implements OptOutService {
 	private SystemDateFormattingService systemDateFormattingService;
 	private YukonUserDao yukonUserDao;
 	private Executor executor;
+	private SurveyDao surveyDao;
+	private OptOutSurveyDao optOutSurveyDao;
 	
 	private final Logger logger = YukonLogManager.getLogger(OptOutServiceImpl.class);
 	
@@ -134,8 +140,8 @@ public class OptOutServiceImpl implements OptOutService {
 	@Transactional
 	public void optOut(final CustomerAccount customerAccount, final OptOutRequest request, 
 			final LiteYukonUser user) throws CommandCompletionException {
-		
-		int customerAccountId = customerAccount.getAccountId();
+
+	    int customerAccountId = customerAccount.getAccountId();
 		final LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
 		List<Integer> inventoryIdList = request.getInventoryIdList();
 		ReadableInstant startDate = request.getStartDate();
@@ -154,8 +160,14 @@ public class OptOutServiceImpl implements OptOutService {
 		for (OptOutCountsDto setting : programSpecificOptOutCounts) {
 			optOutCountsSettingsByProgramIdMap.put(setting.getProgramId(), setting);
 		}
-		
-		// Send opt out command immediately for each inventory
+
+		Map<Integer, Integer> surveyResultIdsBySurveyId = Maps.newHashMap();
+        for (Result result : request.getSurveyResults()) {
+            surveyDao.saveResult(result);
+            surveyResultIdsBySurveyId.put(result.getSurveyId(), result.getSurveyResultId());
+        }
+
+        // Send opt out command immediately for each inventory
     	for(Integer inventoryId : inventoryIdList) { 
 
 			LiteStarsLMHardware inventory = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
@@ -189,6 +201,7 @@ public class OptOutServiceImpl implements OptOutService {
 			event.setStartDate(request.getStartDate());
 			event.setStopDate(request.getStopDate());
 
+			OptOutLog optOutEventLog = null;
 			if(!startNow) {
 				
 				// Cancel any existing scheduled opt out
@@ -202,9 +215,7 @@ public class OptOutServiceImpl implements OptOutService {
 
 				// Schedule the opt out 
 				event.setState(OptOutEventState.SCHEDULED);
-				optOutEventDao.save(event, OptOutAction.SCHEDULE, user);
-		    	
-				
+				optOutEventLog = optOutEventDao.save(event, OptOutAction.SCHEDULE, user);
 			} else {
 				// Do the opt out now 
 				
@@ -241,12 +252,19 @@ public class OptOutServiceImpl implements OptOutService {
 						event.getDurationInHours(), 
 						user);
 
-				optOutEventDao.save(event, OptOutAction.START_OPT_OUT, user);
-				
+				optOutEventLog = optOutEventDao.save(event, OptOutAction.START_OPT_OUT, user);
+
 				// Update the LMHardwareControlGroup table
 				lmHardwareControlInformationService.startOptOut(inventoryId, customerAccountId, user, event.getStartDate());
 			}
-    		
+
+			if (request.getSurveyIdsByInventoryId().get(inventoryId) != null) {
+	            for (Integer surveyId : request.getSurveyIdsByInventoryId().get(inventoryId)) {
+	                int surveyResultId = surveyResultIdsBySurveyId.get(surveyId);
+	                optOutSurveyDao.saveResult(surveyResultId, optOutEventLog.getLogId());
+	            }
+			}
+
 	    	// Log the event
 			accountEventLogService.deviceOptedOut(user, customerAccount.getAccountNumber(), 
 			                                      inventory.getManufacturerSerialNumber(),
@@ -269,7 +287,7 @@ public class OptOutServiceImpl implements OptOutService {
                     ActivityLogActions.PROGRAM_OPT_OUT_ACTION, 
                     logMsg.toString());
     	}
-    	
+
     	// Send opt out notification
     	Runnable notificationRunner = new Runnable() {
     		@Override
@@ -1312,4 +1330,14 @@ public class OptOutServiceImpl implements OptOutService {
 	public void setExecutor(@Qualifier("main") Executor executor) {
 		this.executor = executor;
 	}
+
+	@Autowired
+	public void setSurveyDao(SurveyDao surveyDao) {
+        this.surveyDao = surveyDao;
+    }
+
+    @Autowired
+    public void setOptOutSurveyDao(OptOutSurveyDao optOutSurveyDao) {
+        this.optOutSurveyDao = optOutSurveyDao;
+    }
 }

@@ -10,6 +10,7 @@ import com.cannontech.stars.dr.hardware.dao.impl.LMHardwareControlGroupDaoImpl.D
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
+import com.google.common.collect.Multimap;
 
 public interface LMHardwareControlGroupDao {
 
@@ -52,6 +53,8 @@ public interface LMHardwareControlGroupDao {
     
     public List<LMHardwareControlGroup> getCurrentEnrollmentByAccountId(int accountId);
     
+    public Multimap<Integer, LMHardwareControlGroup> getCurrentEnrollmentByInventoryIds(Iterable<Integer> inventoryIds);
+
     public List<LMHardwareControlGroup> getCurrentEnrollmentByInventoryIdAndAccountId(int inventoryId, int accountId);
     
     public List<LMHardwareControlGroup> getCurrentEnrollmentByProgramIdAndAccountId(int programId, int accountId);

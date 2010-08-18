@@ -78,6 +78,7 @@ public class OperatorEnrollmentController {
         List<HardwareConfigAction> hardwareConfigActions =
             lmHardwareControlGroupDao.getHardwareConfigActions(accountId);
         model.addAttribute("hardwareConfigActions", hardwareConfigActions);
+        model.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
 
         return "operator/enrollment/list.jsp";
     }

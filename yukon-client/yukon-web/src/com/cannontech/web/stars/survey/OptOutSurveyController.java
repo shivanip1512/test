@@ -23,11 +23,11 @@ import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Survey;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.EnergyCompanyDao;
-import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
+import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
 import com.cannontech.stars.dr.optout.model.OptOutSurvey;
 import com.cannontech.stars.dr.optout.service.OptOutSurveyService;
@@ -36,6 +36,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.util.ListBackingBean;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @Controller
@@ -47,7 +48,7 @@ public class OptOutSurveyController {
     private OptOutSurveyService optOutSurveyService;
     private SurveyDao surveyDao;
     private EnergyCompanyDao energyCompanyDao;
-    private YukonGroupDao yukonGroupDao;
+    private AssignedProgramDao assignedProgramDao;
     private DatePropertyEditorFactory datePropertyEditorFactory;
 
     @RequestMapping
@@ -62,14 +63,19 @@ public class OptOutSurveyController {
                                  backingBean.getItemsPerPage());
         model.addAttribute("optOutSurveys", optOutSurveys);
 
-        Set<Integer> loginGroupIds = Sets.newHashSet();
+        Set<Integer> programIds = Sets.newHashSet();
         for (OptOutSurvey optOutSurvey : optOutSurveys.getResultList()) {
-            loginGroupIds.addAll(optOutSurvey.getLoginGroupIds());
+            programIds.addAll(optOutSurvey.getProgramIds());
         }
 
-        Map<Integer, LiteYukonGroup> loginGroupsById =
-            yukonGroupDao.getLiteYukonGroups(loginGroupIds);
-        model.addAttribute("loginGroupsById", loginGroupsById);
+        List<AssignedProgram> programs = assignedProgramDao.getByIds(programIds);
+        Map<Integer, AssignedProgram> programsById = Maps.newHashMap();
+        for (AssignedProgram program : programs) {
+            programsById.put(program.getAssignedProgramId(), program);
+        }
+        model.addAttribute("programsById", programsById);
+
+        model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyID());
 
         return "optOutSurvey/list.jsp";
     }
@@ -102,7 +108,7 @@ public class OptOutSurveyController {
 
     @RequestMapping
     public String edit(ModelMap model, Integer optOutSurveyId,
-            Integer surveyId, Integer[] loginGroupIds,
+            Integer surveyId, Integer[] programIds,
             YukonUserContext userContext) {
         OptOutSurveyDto optOutSurveyDto = null;
         if (optOutSurveyId == null || optOutSurveyId == 0) {
@@ -110,12 +116,12 @@ public class OptOutSurveyController {
             if (surveyId == 0) {
                 throw new RuntimeException("survey id required");
             }
-            if (loginGroupIds == null || loginGroupIds.length == 0) {
+            if (programIds == null || programIds.length == 0) {
                 throw new RuntimeException("at least one login group id required");
             }
             optOutSurveyDto.setStartDate(new Date());
             optOutSurveyDto.setSurveyId(surveyId);
-            optOutSurveyDto.setLoginGroupIds(loginGroupIds);
+            optOutSurveyDto.setProgramIds(programIds);
             LiteEnergyCompany energyCompany =
                 energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
             optOutSurveyDto.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
@@ -132,9 +138,9 @@ public class OptOutSurveyController {
             YukonUserContext userContext) {
         model.addAttribute("optOutSurvey", optOutSurveyDto);
 
-        Map<Integer, LiteYukonGroup> loginGroupsById =
-            yukonGroupDao.getLiteYukonGroups(Arrays.asList(optOutSurveyDto.getLoginGroupIds()));
-        model.addAttribute("loginGroups", loginGroupsById.values());
+        List<AssignedProgram> programs =
+            assignedProgramDao.getByIds(Arrays.asList(optOutSurveyDto.getProgramIds()));
+        model.addAttribute("programs", programs);
 
         Survey survey = surveyDao.getSurveyById(optOutSurveyDto.getSurveyId());
         model.addAttribute("survey", survey);
@@ -219,8 +225,8 @@ public class OptOutSurveyController {
     }
 
     @Autowired
-    public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
-        this.yukonGroupDao = yukonGroupDao;
+    public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
+        this.assignedProgramDao = assignedProgramDao;
     }
 
     @Autowired

@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%@ tag body-content="empty" %>
-<%@ attribute name="path" required="true" type="java.lang.String"%>
+<%@ attribute name="path" required="true" type="java.lang.String" rtexprvalue="true"%>
 <%@ attribute name="id"%>
 
 <spring:bind path="${path}">

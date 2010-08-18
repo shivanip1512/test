@@ -28,15 +28,15 @@ submitForm = function() {
 <form:form id="inputForm" commandName="optOutSurvey" action="${submitUrl}"
     onsubmit="return submitForm()">
     <form:hidden path="optOutSurveyId"/>
-    <c:forEach var="loginGroupId" items="${optOutSurvey.loginGroupIds}">
-        <input type="hidden" name="loginGroupIds" value="${loginGroupId}"/>
+    <c:forEach var="programId" items="${optOutSurvey.programIds}">
+        <input type="hidden" name="programIds" value="${programId}"/>
     </c:forEach>
     <form:hidden path="surveyId"/>
     <form:hidden path="energyCompanyId"/>
     <tags:nameValueContainer2>
-        <tags:nameValue2 nameKey=".loginGroups">
-            <c:forEach var="loginGroup" items="${loginGroups}">
-                <spring:escapeBody htmlEscape="true">${loginGroup.groupName}</spring:escapeBody><br>
+        <tags:nameValue2 nameKey=".programs">
+            <c:forEach var="program" items="${programs}">
+                <spring:escapeBody htmlEscape="true">${program.name.displayName}</spring:escapeBody><br>
             </c:forEach>
         </tags:nameValue2>
 

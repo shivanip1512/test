@@ -7,7 +7,7 @@ import com.cannontech.stars.dr.optout.model.OptOutSurvey;
 
 public class OptOutSurveyDto {
     private int optOutSurveyId;
-    private Integer[] loginGroupIds;
+    private Integer[] programIds;
     private int surveyId;
     private Date startDate;
     private Date stopDate;
@@ -19,8 +19,8 @@ public class OptOutSurveyDto {
 
     public OptOutSurveyDto(OptOutSurvey optOutSurvey) {
         optOutSurveyId = optOutSurvey.getOptOutSurveyId();
-        loginGroupIds = new Integer[optOutSurvey.getLoginGroupIds().size()];
-        loginGroupIds = optOutSurvey.getLoginGroupIds().toArray(loginGroupIds);
+        programIds = new Integer[optOutSurvey.getProgramIds().size()];
+        programIds = optOutSurvey.getProgramIds().toArray(programIds);
         surveyId = optOutSurvey.getSurveyId();
         startDate = optOutSurvey.getStartDate();
         stopDate = optOutSurvey.getStopDate();
@@ -40,12 +40,12 @@ public class OptOutSurveyDto {
         return surveyId;
     }
 
-    public Integer[] getLoginGroupIds() {
-        return loginGroupIds;
+    public Integer[] getProgramIds() {
+        return programIds;
     }
 
-    public void setLoginGroupIds(Integer[] loginGroupIds) {
-        this.loginGroupIds = loginGroupIds;
+    public void setProgramIds(Integer[] programIds) {
+        this.programIds = programIds;
     }
 
     public void setSurveyId(int surveyId) {
@@ -85,7 +85,7 @@ public class OptOutSurveyDto {
     }
 
     public OptOutSurvey getOptOutSurvey() {
-        return new OptOutSurvey(optOutSurveyId, Arrays.asList(loginGroupIds),
+        return new OptOutSurvey(optOutSurveyId, Arrays.asList(programIds),
                                  surveyId, startDate,
                                  specifyStopDate ? stopDate : null,
                                  energyCompanyId);

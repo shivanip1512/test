@@ -20,6 +20,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
@@ -33,6 +34,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private ECMappingDao ecMappingDao;
     private WebConfigurationDao webConfigurationDao;
+    private StarsDatabaseCache starsDatabaseCache;
 
     private static class RowMapper extends
             AbstractRowMapperWithBaseQuery<ApplianceCategory> {
@@ -79,12 +81,20 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<Integer> getApplianceCategoryIds(int accountId) {
+    public List<Integer> getApplianceCategoryIdsByAccount(int accountId) {
+        int energyCompanyId =
+            ecMappingDao.getEnergyCompanyIdForAccountId(accountId);
+        return getApplianceCategoryIdsByEC(energyCompanyId);
+    }
 
-        LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(accountId);
-        
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<Integer> getApplianceCategoryIdsByEC(int energyCompanyId) {
+        LiteStarsEnergyCompany energyCompany =
+            starsDatabaseCache.getEnergyCompany(energyCompanyId);
+
         Set<Integer> idSet = ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
-        
+
         final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT ApplianceCategoryID");
         sqlBuilder.append("FROM ApplianceCategory");
@@ -106,8 +116,8 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<ApplianceCategory> findApplianceCategories(int customerAccountId) {
-        List<Integer> applianceCategoryIdList = getApplianceCategoryIds(customerAccountId);
-        
+        List<Integer> applianceCategoryIdList = getApplianceCategoryIdsByAccount(customerAccountId);
+
         final Set<ApplianceCategory> set = new HashSet<ApplianceCategory>(applianceCategoryIdList.size());
         
         for (final Integer applianceCategoryId : applianceCategoryIdList) {
@@ -224,5 +234,10 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Autowired
     public void setWebConfigurationDao(WebConfigurationDao webConfigurationDao) {
         this.webConfigurationDao = webConfigurationDao;
+    }
+
+    @Autowired
+    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+        this.starsDatabaseCache = starsDatabaseCache;
     }
 }

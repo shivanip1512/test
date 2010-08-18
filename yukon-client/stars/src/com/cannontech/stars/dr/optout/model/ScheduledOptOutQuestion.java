@@ -1,29 +1,44 @@
 package com.cannontech.stars.dr.optout.model;
 
+public class ScheduledOptOutQuestion implements
+        Comparable<ScheduledOptOutQuestion> {
+    private int index;
+    private String question;
+    private String answer;
 
-public class ScheduledOptOutQuestion implements Comparable<ScheduledOptOutQuestion>{
-    private final int index;
-    private final String question;
-    private final String answer;
-    
+    public ScheduledOptOutQuestion() {
+    }
+
     public ScheduledOptOutQuestion(int index, String question, String answer) {
         this.index = index;
         this.question = question;
         this.answer = answer;
     }
-    
+
     public int getIndex() {
         return index;
     }
-    
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
     public String getQuestion() {
         return question;
     }
-    
+
+    public void setQuestion(String question) {
+        this.question = question;
+    }
+
     public String getAnswer() {
         return answer;
     }
-    
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+
     @Override
     public int compareTo(ScheduledOptOutQuestion o) {
         Integer index1 = this.index;
@@ -64,5 +79,4 @@ public class ScheduledOptOutQuestion implements Comparable<ScheduledOptOutQuesti
             return false;
         return true;
     }
-    
 }

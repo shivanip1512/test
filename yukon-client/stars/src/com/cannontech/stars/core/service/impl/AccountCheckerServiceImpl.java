@@ -256,9 +256,10 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     private List<Integer> getApplianceCategoryIdsByUser(LiteYukonUser user) {
         List<CustomerAccount> customerAccountList = customerAccountDao.getByUser(user);
         CustomerAccount customerAccount = customerAccountList.get(0);
-        
-        final List<Integer> categoryIdList = applianceCategoryDao.getApplianceCategoryIds(customerAccount.getAccountId());
-        
+
+        List<Integer> categoryIdList =
+            applianceCategoryDao.getApplianceCategoryIdsByAccount(customerAccount.getAccountId());
+
         return categoryIdList;
     }
     

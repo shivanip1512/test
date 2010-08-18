@@ -221,6 +221,12 @@
       <sequence name="surveyQuestionAnswer">
         <table name="surveyQuestionAnswer" identitycolumn="surveyQuestionAnswerId"/>
       </sequence>
+      <sequence name="surveyResultId">
+        <table name="surveyResult" identitycolumn="surveyResultId"/>
+      </sequence>
+      <sequence name="surveyResultAnswerId">
+        <table name="surveyResultAnswer" identitycolumn="surveyResultAnswerId"/>
+      </sequence>
       <sequence name="optOutSurvey">
         <table name="optOutSurvey" identitycolumn="optOutSurveyId"/>
       </sequence>

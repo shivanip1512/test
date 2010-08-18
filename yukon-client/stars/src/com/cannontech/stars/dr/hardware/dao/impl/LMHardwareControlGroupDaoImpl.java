@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.InitializingBean;
@@ -16,6 +18,9 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.IntegerRowMapper;
@@ -31,7 +36,11 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 
 public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao, InitializingBean {
     private static final String removeSql;
@@ -366,7 +375,8 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         
         return yukonJdbcTemplate.query(selectCurrentEnrollmentByAccountId, rowMapper);
     }    
-    
+
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> 
                 getCurrentEnrollmentByInventoryIdAndAccountId(int inventoryId, int accountId) {
         SqlStatementBuilder selectCurrentEnrollmentByInventoryIdAndAccountId = 
@@ -378,7 +388,37 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         
         return yukonJdbcTemplate.query(selectCurrentEnrollmentByInventoryIdAndAccountId, rowMapper);
     }
-    
+
+    public Multimap<Integer, LMHardwareControlGroup> getCurrentEnrollmentByInventoryIds(
+            final Iterable<Integer> inventoryIds) {
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder(selectAllSql);
+                sql.append("WHERE InventoryId").in(inventoryIds);
+                sql.append(    "AND GroupEnrollStop IS NULL");
+                sql.append(    "AND NOT GroupEnrollStart IS NULL");
+                return sql;
+            }
+        };
+        Function<Integer, Integer> typeMapper = Functions.identity();
+        YukonRowMapper<Map.Entry<Integer, LMHardwareControlGroup>> mappingRowMapper =
+            new YukonRowMapper<Map.Entry<Integer, LMHardwareControlGroup>>() {
+                @Override
+                public Entry<Integer, LMHardwareControlGroup> mapRow(
+                        YukonResultSet rs) throws SQLException {
+                    LMHardwareControlGroup hwControlGroup = rowMapper.mapRow(rs);
+                    return Maps.immutableEntry(hwControlGroup.getInventoryId(), hwControlGroup);
+                }};
+
+        Multimap<Integer, LMHardwareControlGroup> retVal =
+            template.multimappedQuery(sqlGenerator, inventoryIds, mappingRowMapper,
+                                      typeMapper);
+
+        return retVal;
+    }
+
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> 
                 getCurrentEnrollmentByProgramIdAndAccountId(int programId, int accountId) {

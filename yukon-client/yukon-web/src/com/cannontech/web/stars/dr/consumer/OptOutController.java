@@ -1,39 +1,38 @@
 package com.cannontech.web.stars.dr.consumer;
 
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
+import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-
-import net.sf.json.JSONArray;
-
-import org.apache.commons.lang.StringEscapeUtils;
-import org.joda.time.Instant;
-import org.joda.time.Interval;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.util.TimeUtil;
+import com.cannontech.common.survey.dao.SurveyDao;
+import com.cannontech.common.survey.model.Question;
+import com.cannontech.common.survey.model.Survey;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -44,12 +43,19 @@ import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
-import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
-import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
+import com.cannontech.stars.dr.optout.service.OptOutSurveyService;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.stars.dr.operator.model.OptOutBackingBean;
+import com.cannontech.web.stars.dr.operator.model.SurveyResultValidator;
+import com.cannontech.web.stars.dr.operator.model.OptOutBackingBean.SurveyResult;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT)
 @Controller
@@ -59,11 +65,14 @@ public class OptOutController extends AbstractConsumerController {
 	
 	private AccountEventLogService accountEventLogService;
     private RolePropertyDao rolePropertyDao;
-    private DateFormattingService dateFormattingService;
+    private DatePropertyEditorFactory datePropertyEditorFactory;
     private LMHardwareBaseDao lmHardwareBaseDao;
     private OptOutService optOutService; 
     private OptOutEventDao optOutEventDao;
     private OptOutStatusService optOutStatusService;
+    private OptOutSurveyService optOutSurveyService;
+    private SurveyDao surveyDao;
+    private OptOutControllerHelper helper;
 
     private static class StartDateException extends Exception {
         private final static long serialVersionUID = 1L;
@@ -74,9 +83,8 @@ public class OptOutController extends AbstractConsumerController {
     };
 
     @RequestMapping(value = "/consumer/optout", method = RequestMethod.GET)
-    public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-            YukonUserContext yukonUserContext, ModelMap map) {
-    	
+    public String view(@ModelAttribute CustomerAccount customerAccount,
+            YukonUserContext yukonUserContext, ModelMap model) {
     	LiteYukonUser user = yukonUserContext.getYukonUser();
     	if (!optOutStatusService.getOptOutEnabled(user)) {
     	    return "consumer/optout/optOutDisabled.jsp";
@@ -84,14 +92,14 @@ public class OptOutController extends AbstractConsumerController {
     	
         Calendar cal = Calendar.getInstance(yukonUserContext.getTimeZone());
     	Date currentDate = cal.getTime();
-    	map.addAttribute("currentDate", currentDate);
+    	model.addAttribute("currentDate", currentDate);
 
     	int accountId = customerAccount.getAccountId();
 
     	// Get the list of current and scheduled opt outs
 		List<OptOutEventDto> currentOptOutList = 
     		optOutEventDao.getCurrentOptOuts(accountId);
-    	map.addAttribute("currentOptOutList", currentOptOutList);
+    	model.addAttribute("currentOptOutList", currentOptOutList);
 
     	// Get the current counts for used opt outs and remaining allowed opt outs for each device
     	List<DisplayableInventory> displayableInventories =
@@ -109,54 +117,46 @@ public class OptOutController extends AbstractConsumerController {
     	        optOutsAvailable = true;
     	    }
     	}
-    	map.addAttribute("displayableInventories", displayableInventories);
-        map.addAttribute("optOutCounts", optOutCounts);
+    	model.addAttribute("displayableInventories", displayableInventories);
+        model.addAttribute("optOutCounts", optOutCounts);
 
     	// Get the list of completed and canceled opt outs
     	List<OptOutEventDto> previousOptOutList = 
     		optOutEventDao.getOptOutHistoryForAccount(accountId, MAX_NUMBER_OF_OPT_OUT_HISTORY);
-    	map.addAttribute("previousOptOutList", previousOptOutList);
-    	map.addAttribute("allOptedOut", allOptedOut);
-    	map.addAttribute("optOutsAvailable", optOutsAvailable);
+    	model.addAttribute("previousOptOutList", previousOptOutList);
+    	model.addAttribute("allOptedOut", allOptedOut);
+    	model.addAttribute("optOutsAvailable", optOutsAvailable);
     	
     	List<Integer> optOutPeriodList = optOutService.getAvailableOptOutPeriods(user);
-    	map.addAttribute("optOutPeriodList", optOutPeriodList);
+    	model.addAttribute("optOutPeriodList", optOutPeriodList);
     	    	
     	return "consumer/optout/optOut.jsp";
     }
 
-    @RequestMapping(value = "/consumer/optout/view2")
-    public String view2(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-            YukonUserContext yukonUserContext, String startDate, 
-            int durationInDays, String error, ModelMap map) {
-
-    	final LiteYukonUser user = yukonUserContext.getYukonUser();
+    @RequestMapping(value = "/consumer/optout/deviceSelection")
+    public String deviceSelection(@ModelAttribute CustomerAccount customerAccount,
+            @ModelAttribute OptOutBackingBean optOutBackingBean,
+            BindingResult bindingResult, FlashScope flashScope, ModelMap model,
+            YukonUserContext userContext) throws CommandCompletionException {
+    	final LiteYukonUser user = userContext.getYukonUser();
         if (!optOutStatusService.getOptOutEnabled(user)) {
             return "consumer/optout/optOutDisabled.jsp";
         }
 
-        final boolean hasDeviceSelection =
-            rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_OPT_OUT_DEVICE_SELECTION, user);
-
-        map.addAttribute("durationInDays", durationInDays);
-        map.addAttribute("startDate", startDate);
-        map.addAttribute("error", error);
-
         // Validate the start date
-        Date startDateObj = parseDate(startDate, yukonUserContext);
-        TimeZone userTimeZone = yukonUserContext.getTimeZone();
-        final Date today = TimeUtil.getMidnight(new Date(), userTimeZone);
         try {
-            validateStartDate(startDateObj, today, durationInDays, yukonUserContext, customerAccount);
+            validateStartDate(optOutBackingBean.getStartDate(),
+                              userContext, customerAccount);
         } catch (StartDateException exception) {
             MessageSourceResolvable message = new YukonMessageSourceResolvable(
                     exception.getMessage());
-            map.addAttribute("result", message);
+            model.addAttribute("result", message);
             return "consumer/optout/optOutResult.jsp";
         }
 
-        boolean isSameDay = TimeUtil.isSameDay(startDateObj, today, yukonUserContext.getTimeZone());
-        map.addAttribute("isSameDay", isSameDay);
+        LocalDate today = new LocalDate(userContext.getJodaTimeZone());
+        boolean isSameDay = today.isEqual(optOutBackingBean.getStartDate());
+        model.addAttribute("isSameDay", isSameDay);
 
         List<DisplayableInventory> displayableInventories =
             displayableInventoryDao.getDisplayableInventory(customerAccount.getAccountId());
@@ -170,143 +170,188 @@ public class OptOutController extends AbstractConsumerController {
         	}
         }
 
+        boolean hasDeviceSelection =
+            rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_OPT_OUT_DEVICE_SELECTION, user);
         boolean blanketDevices = (optOutableInventories.size() < 2 && !hasDeviceSelection);
         if (blanketDevices) {
-            final JSONArray jsonArray = new JSONArray();
-
-            for (final DisplayableInventory inventory : optOutableInventories) {
-        		jsonArray.put(inventory.getInventoryId());
+            Integer[] inventoryIds = new Integer[optOutableInventories.size()];
+            for (int index = 0; index < optOutableInventories.size(); index++) {
+                inventoryIds[index] = optOutableInventories.get(index).getInventoryId();
             }
+            optOutBackingBean.setInventoryIds(inventoryIds);
 
-            String jsonInventoryIds = StringEscapeUtils.escapeHtml(jsonArray.toString());
-            map.addAttribute("jsonInventoryIds", jsonInventoryIds);
-
-            return "redirect:/spring/stars/consumer/optout/confirm";
+            return optOutQuestions(customerAccount, userContext,
+                                   optOutBackingBean, bindingResult,
+                                   flashScope, model);
         }
 
-        map.addAttribute("displayableInventories", displayableInventories);
-        map.addAttribute("optOutCounts", optOutCounts);
-        return "consumer/optout/optOutList.jsp";
+        model.addAttribute("displayableInventories", displayableInventories);
+        model.addAttribute("optOutCounts", optOutCounts);
+        return "consumer/optout/optOutDeviceSelection.jsp";
     }
 
-    @RequestMapping("/consumer/optout/confirm")
-    public String confirm(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-            YukonUserContext yukonUserContext, String startDate, int durationInDays,
-            String jsonInventoryIds, ModelMap map) {
-        
-    	LiteYukonUser user = yukonUserContext.getYukonUser();
+    /**
+     * This method can be called more than once if the operator has more than
+     * one opt out survey to complete. Because of this, it also handles
+     * committing an opt out.
+     * @throws CommandCompletionException 
+     */
+    @RequestMapping("/consumer/optout/optOutQuestions")
+    public String optOutQuestions(
+            @ModelAttribute CustomerAccount customerAccount,
+            YukonUserContext userContext,
+            @ModelAttribute OptOutBackingBean optOutBackingBean,
+            BindingResult bindingResult, FlashScope flashScope, ModelMap model) throws CommandCompletionException {
+    	LiteYukonUser user = userContext.getYukonUser();
         if (!optOutStatusService.getOptOutEnabled(user)) {
             return "consumer/optout/optOutDisabled.jsp";
         }
 
-        map.addAttribute("startDate", startDate);
-        map.addAttribute("durationInDays", durationInDays);
-
-        List<Integer> inventoryIds = getInventoryIds(yukonUserContext, jsonInventoryIds);
-        if (inventoryIds.size() == 0) {
-            map.addAttribute("error", "yukon.dr.consumer.optoutlist.noInventorySelected");
-            return "redirect:/spring/stars/consumer/optout/view2";
+        accountCheckerService.checkInventory(user,
+                                             optOutBackingBean.getInventoryIds());
+        Integer[] inventoryIds = optOutBackingBean.getInventoryIds();
+        if (inventoryIds.length == 0) {
+            model.addAttribute("error", "yukon.dr.consumer.optoutlist.noInventorySelected");
+            return deviceSelection(customerAccount, optOutBackingBean,
+                                   bindingResult, flashScope, model,
+                                   userContext);
         }
-        validateInventoryIds(inventoryIds, customerAccount);
-        
-        String escaped = StringEscapeUtils.escapeHtml(jsonInventoryIds);
-        map.addAttribute("jsonInventoryIds", escaped);
+        validateOptOutsRemaining(optOutBackingBean.getInventoryIds(), customerAccount);
 
-        List<String> questions = OptOutControllerHelper.getConfirmQuestions(
-        		messageSourceResolver, 
-        		yukonUserContext,
-        		"yukon.dr.consumer.optoutconfirm.question.");
-        if (questions.size() == 0) return "redirect:/spring/stars/consumer/optout/update";
-
-        map.addAttribute("questions", questions);
-        return "consumer/optout/optOutConfirm.jsp";
-    }
-    
-    @RequestMapping("/consumer/optout/update")
-    public String update(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-            YukonUserContext userContext, String startDate, int durationInDays,
-            String jsonInventoryIds, HttpServletRequest request, ModelMap map) throws Exception {
-
-
-        Date startDateObj = parseDate(startDate, userContext);
-        Instant optOutStartDateMidnight = new Instant(startDateObj);
-        List<Integer> inventoryIds = getInventoryIds(userContext, jsonInventoryIds);
-        for (int inventoryId : inventoryIds) {
-            LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
-            accountEventLogService.optOutAttemptedByConsumer(userContext.getYukonUser(), 
-                                                             customerAccount.getAccountNumber(), 
-                                                             lmHardwareBase.getManufacturerSerialNumber(),
-                                                             optOutStartDateMidnight);
+        boolean noSurveysToTake = false;
+        int surveyId = 0;
+        Integer currentSurveyIndex = optOutBackingBean.getCurrentSurveyIndex();
+        if (currentSurveyIndex != null) {
+            // Validate the survey they just took and send them back to it
+            // if there are problems.
+            SurveyResult currentResults =
+                optOutBackingBean.getSurveyResults().get(currentSurveyIndex);
+            Map<Integer, Question> questionsById =
+                surveyDao.getQuestionMapBySurveyId(currentResults.getSurveyId());
+            SurveyResultValidator resultsValidator =
+                new SurveyResultValidator(currentSurveyIndex, questionsById);
+            resultsValidator.validate(optOutBackingBean, bindingResult);
+            if (bindingResult.hasErrors()) {
+                List<MessageSourceResolvable> messages =
+                    YukonValidationUtils.errorsForBindingResult(bindingResult);
+                flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+                surveyId = currentResults.getSurveyId();
+            }
         }
-        
-    	if (!optOutStatusService.getOptOutEnabled(userContext.getYukonUser())) {
-            return "consumer/optout/optOutDisabled.jsp";
-        }
-    	validateInventoryIds(inventoryIds, customerAccount);
 
-        MessageSourceResolvable result = new YukonMessageSourceResolvable(
-			"yukon.dr.consumer.optoutresult.success");
-        
-        // Validate the start date
-        TimeZone userTimeZone = userContext.getTimeZone();
-        final Date now = new Date();
-		final Date today = TimeUtil.getMidnight(now, userTimeZone);
-		try {
-		    validateStartDate(startDateObj, today, durationInDays, userContext, customerAccount);
+        List<Integer> inventoryIdList = Arrays.asList(inventoryIds);
+        Multimap<Integer, Integer> surveyIdsByInventoryId =
+            optOutSurveyService.getActiveSurveyIdsByInventoryId(inventoryIdList);
+        if (surveyId == 0) {
+            // They haven't yet taken a survey or they have and it passed
+            // validation.  Check to see if there are any (more).
+            if (surveyIdsByInventoryId.isEmpty()) {
+                noSurveysToTake = true;
+            } else {
+                if (optOutBackingBean.getSurveyResults().isEmpty()) {
+                    // This is the first time here; create the results.
+
+                    // It's arbitrary that we're sorting by survey id but there
+                    // isn't really anything else that makes sense (there
+                    // normally won't be more than a single survey in this
+                    // list). This will at least keep the ordering consistent.
+                    Set<Integer> surveyIds = Sets.newTreeSet();
+                    surveyIds.addAll(surveyIdsByInventoryId.values());
+                    optOutBackingBean.createSurveyResults(surveyIds);
+                }
+
+                // Find the oldest incomplete survey and make it the current.
+                int index = 0;
+                for (SurveyResult surveyResult : optOutBackingBean.getSurveyResults()) {
+                    if (!surveyResult.isAnswered()) {
+                        surveyId = surveyResult.getSurveyId();
+                        optOutBackingBean.setCurrentSurveyIndex(index);
+                        break;
+                    }
+                    index++;
+                }
+            }
+        }
+
+        // We found a survey they should take or they just took one and it
+        // failed validation.
+        if (surveyId != 0) {
+            Survey survey = surveyDao.getSurveyById(surveyId);
+            List<Question> questions = surveyDao.getQuestionsBySurveyId(surveyId);
+            model.addAttribute("survey", survey);
+            model.addAttribute("questions", questions);
+            return "consumer/optout/optOutSurvey.jsp";
+        }
+
+        if (noSurveysToTake && optOutBackingBean.getLegacyQuestions().isEmpty()) {
+            // There are no surveys.  Check for legacy questions.
+            List<String> questions =
+                helper.getConfirmQuestions(messageSourceResolver,
+                    userContext, "yukon.dr.consumer.optoutconfirm.question.");
+
+            if (!questions.isEmpty()) {
+                model.addAttribute("questions", questions);
+                return "consumer/optout/optOutQuestions.jsp";
+            }
+        }
+
+        // At this point, we have verified that no surveys/questions exist
+        // or that all have been taken if any did exist.
+
+        // Validate info entered on first page.
+        try {
+            validateStartDate(optOutBackingBean.getStartDate(),
+                              userContext, customerAccount);
         } catch (StartDateException exception) {
-        	result = new YukonMessageSourceResolvable(
-        			"yukon.dr.consumer.optoutresult.invalidStartDate");
+            MessageSourceResolvable result = new YukonMessageSourceResolvable(
+                    "yukon.dr.consumer.optoutresult.invalidStartDate");
 
-            map.addAttribute("result", result);
+            model.addAttribute("result", result);
             return "consumer/optout/optOutResult.jsp";
         }
 
-        boolean isSameDay = TimeUtil.isSameDay(startDateObj,
-                                               today,
-                                               userContext.getTimeZone());
-
-        String jsonQuestions = ServletRequestUtils.getStringParameter(request,
-                                                                      "jsonQuestions");
-        List<ScheduledOptOutQuestion> questionList = OptOutControllerHelper.toOptOutQuestionList(jsonQuestions);
-
-        OptOutRequest optOutRequest = new OptOutRequest();
-        if (isSameDay) {
-            int extraHours = 0;
-            // If durationInDays is 1 that means the rest of today only
-            if (durationInDays > 1) {
-                // Today counts as the first day
-                extraHours = (durationInDays - 1) * 24;
-            }
-            
-            int hoursRemainingInDay = TimeUtil.getHoursTillMidnight(now, userTimeZone);
-            optOutRequest.setDurationInHours(hoursRemainingInDay + extraHours);
-            optOutRequest.setStartDate(null); // Same day OptOut's have null
-                                              // startDates.
-        } else {
-            Instant start = new Instant(startDateObj);
-            Period optOutPeriod = Period.days(durationInDays);
-            Interval optOutInterval = new Interval(start, optOutPeriod);
-            optOutRequest.setStartDate(start);
-            optOutRequest.setDurationInHours(optOutInterval.toDuration()
-                                                           .toPeriod()
-                                                           .toStandardHours()
-                                                           .getHours());
+        // If there were any surveys taken, double-check-validate them.
+        int index = 0;
+        for (SurveyResult surveyResult : optOutBackingBean.getSurveyResults()) {
+            Map<Integer, Question> questionsById =
+                surveyDao.getQuestionMapBySurveyId(surveyResult.getSurveyId());
+            SurveyResultValidator resultsValidator =
+                new SurveyResultValidator(index++, questionsById);
+            resultsValidator.validate(optOutBackingBean, bindingResult);
         }
-        optOutRequest.setInventoryIdList(inventoryIds);
-        optOutRequest.setQuestions(questionList);
 
-        optOutService.optOut(customerAccount, optOutRequest, userContext.getYukonUser());
+        if (bindingResult.hasErrors()) {
+            // This should only happen if there is a coding error or
+            // they muck with a request along the way somewhere.
+            throw new RuntimeException("validation failed; contact administrator");
+        }
 
-        map.addAttribute("result", result);
+        // Save survey or legacy questions and do opt out.
+        for (int inventoryId : optOutBackingBean.getInventoryIds()) {
+            LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+            DateTime startDate =
+                optOutBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone());
+            accountEventLogService.optOutAttemptedByConsumer(userContext.getYukonUser(), 
+                                                             customerAccount.getAccountNumber(), 
+                                                             lmHardwareBase.getManufacturerSerialNumber(),
+                                                             startDate);
+        }
+
+        helper.processOptOut(optOutBackingBean, userContext,
+                             customerAccount, surveyIdsByInventoryId);
+
+        MessageSourceResolvable result = new YukonMessageSourceResolvable(
+            "yukon.dr.consumer.optoutresult.success");
+        model.addAttribute("result", result);
         return "consumer/optout/optOutResult.jsp";
     }
 
     @RequestMapping(value = "/consumer/optout/confirmCancel")
     public String confirmCancel(
-            @ModelAttribute("customerAccount") CustomerAccount customerAccount,
+            @ModelAttribute CustomerAccount customerAccount,
             Integer eventId, YukonUserContext yukonUserContext, ModelMap model) {
         // Make sure the event is the current user's event
-        checkEventAgainstAccount(eventId, customerAccount);
+        helper.checkEventAgainstAccount(eventId, customerAccount.getAccountId());
 
         // Get the list of current and scheduled opt outs
         List<OptOutEventDto> currentOptOutList = 
@@ -328,8 +373,8 @@ public class OptOutController extends AbstractConsumerController {
     }
 
     @RequestMapping(value = "/consumer/optout/cancel", method = RequestMethod.POST)
-    public String cancel(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    		Integer eventId, YukonUserContext userContext, ModelMap map) throws Exception {
+    public String cancel(@ModelAttribute CustomerAccount customerAccount,
+    		Integer eventId, YukonUserContext userContext, ModelMap model) throws Exception {
 
         // Log consumer opt out cancel attempt
         OptOutEvent optOutEvent = optOutEventDao.getOptOutEventById(eventId);
@@ -347,50 +392,25 @@ public class OptOutController extends AbstractConsumerController {
         }
     	
     	// Make sure the event is the current user's event
-    	this.checkEventAgainstAccount(eventId, customerAccount);
+    	helper.checkEventAgainstAccount(eventId, customerAccount.getAccountId());
     	
     	optOutService.cancelOptOut(Collections.singletonList(eventId), user);
         
     	return "redirect:/spring/stars/consumer/optout";
     }
 
-    private Date parseDate(String dateStr, YukonUserContext yukonUserContext) {
-        try {
-            return dateFormattingService.flexibleDateParser(dateStr, yukonUserContext);
-        } catch (ParseException e) {
-            // caller requires a date so null is treated as an error
-        }
-        return null;
-    }
-
-    private void validateStartDate(Date startDate, Date todayDate, int durationInDays,
-                                   YukonUserContext userContext, CustomerAccount customerAccount) 
-    throws StartDateException {
-        
-        LocalDate startLocalDate = new LocalDate(startDate, userContext.getJodaTimeZone());
-        String startDateErrorCode = 
-            optOutService.checkOptOutStartDate(customerAccount.getAccountId(), startLocalDate, 
-                                               userContext, false);
+    private void validateStartDate(LocalDate startDate,
+            YukonUserContext userContext, CustomerAccount customerAccount)
+            throws StartDateException {
+        String startDateErrorCode =
+            optOutService.checkOptOutStartDate(customerAccount.getAccountId(),
+                                               startDate, userContext, false);
 
         // Error found while checking the start date
         if (startDateErrorCode != null) {
-            throw new StartDateException("yukon.dr.consumer.optout."+startDateErrorCode);
+            throw new StartDateException("yukon.dr.consumer.optout." + startDateErrorCode);
         }
     }
-
-    /**
-     * Helper method to make sure the event being updated belongs to the current account
-     */
-    private void checkEventAgainstAccount(Integer eventId, CustomerAccount customerAccount) {
-
-    	OptOutEvent event = optOutEventDao.getOptOutEventById(eventId);
-    	
-    	int accountId = customerAccount.getAccountId();
-    	if(event.getCustomerAccountId() != accountId) {
-    		throw new NotAuthorizedException("The user is not authorized to modify the " +
-    				"Opt Out event with id: " + eventId);
-    	}
-	}
 
     private Map<Integer, OptOutCountHolder> getOptOutCountsForInventories(
             Iterable<DisplayableInventory> inventories, int customerAccountId) {
@@ -404,16 +424,7 @@ public class OptOutController extends AbstractConsumerController {
         return retVal;
     }
 
-    private List<Integer> getInventoryIds(YukonUserContext yukonUserContext, String jsonInventoryIds) {
-        String unEscaped = StringEscapeUtils.unescapeHtml(jsonInventoryIds);
-        List<Integer> inventoryIds = OptOutControllerHelper.toInventoryIdList(unEscaped);
-
-        accountCheckerService.checkInventory(yukonUserContext.getYukonUser(),
-                                             inventoryIds.toArray(new Integer[inventoryIds.size()]));
-        return inventoryIds;
-    }
-
-    private void validateInventoryIds(List<Integer> inventoryIds,
+    private void validateOptOutsRemaining(Integer[] inventoryIds,
             CustomerAccount customerAccount) {
         // Check that there are opt outs remaining for each inventory being
         // opted out
@@ -427,6 +438,13 @@ public class OptOutController extends AbstractConsumerController {
         }
     }
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+        binder.registerCustomEditor(LocalDate.class,
+                                    "startDate",
+                                    datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext));
+    }
+
     @Autowired
     public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
         this.accountEventLogService = accountEventLogService;
@@ -438,10 +456,11 @@ public class OptOutController extends AbstractConsumerController {
     }
 
     @Autowired
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
+    public void setDatePropertyEditorFactory(
+            DatePropertyEditorFactory datePropertyEditorFactory) {
+        this.datePropertyEditorFactory = datePropertyEditorFactory;
     }
-    
+
     @Autowired
     public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
         this.lmHardwareBaseDao = lmHardwareBaseDao;
@@ -461,5 +480,19 @@ public class OptOutController extends AbstractConsumerController {
     public void setOptOutStatusService(OptOutStatusService optOutStatusService) {
 		this.optOutStatusService = optOutStatusService;
 	}
-    
+
+    @Autowired
+    public void setOptOutSurveyService(OptOutSurveyService optOutSurveyService) {
+        this.optOutSurveyService = optOutSurveyService;
+    }
+
+    @Autowired
+    public void setSurveyDao(SurveyDao surveyDao) {
+        this.surveyDao = surveyDao;
+    }
+
+    @Autowired
+    public void setHelper(OptOutControllerHelper helper) {
+        this.helper = helper;
+    }
 }

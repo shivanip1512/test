@@ -38,12 +38,13 @@ public class AssignedProgramPicker
     }
 
     @Override
-    public SearchResult<UltraLightAssignedProgram> search(String ss, int start, int count, String extraArgs, YukonUserContext userContext) {
-    	
-        int accountId = NumberUtils.toInt(extraArgs, 0);
-        
+    public SearchResult<UltraLightAssignedProgram> search(String ss, int start,
+            int count, String extraArgs, YukonUserContext userContext) {
+        int energyCompanyId = NumberUtils.toInt(extraArgs, 0);
+
         List<SqlFilter> extraSqlFilters = Lists.newArrayList();
-        List<Integer> applianceCategoryIds = applianceCategoryDao.getApplianceCategoryIds(accountId);
+        List<Integer> applianceCategoryIds =
+            applianceCategoryDao.getApplianceCategoryIdsByEC(energyCompanyId);
         extraSqlFilters.add(new UltraLightAssignedProgramApplianceCategoryFilter(applianceCategoryIds));
         
         return super.search(ss, start, count, extraSqlFilters, null, userContext);

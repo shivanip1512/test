@@ -1575,5 +1575,6 @@
         <property name="objectFormattingService" ref="objectFormattingService" />
         <property name="resultsCache" ref="accountImportResultsCache" />
     </bean>
-    
+
+    <bean class="com.cannontech.web.stars.dr.consumer.OptOutControllerHelper"/>    
 </beans>

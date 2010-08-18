@@ -18,7 +18,8 @@ public interface ApplianceCategoryDao {
 
     public List<ApplianceCategory> findApplianceCategories(int customerAccountId);
 
-    public List<Integer> getApplianceCategoryIds(int accountId);    
+    public List<Integer> getApplianceCategoryIdsByAccount(int accountId);    
+    public List<Integer> getApplianceCategoryIdsByEC(int energyCompanyId);    
 
     public Map<Integer, ApplianceCategory> getByApplianceCategoryIds(
             Collection<Integer> applianceCategoryIds);

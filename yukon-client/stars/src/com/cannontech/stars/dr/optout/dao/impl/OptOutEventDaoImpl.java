@@ -64,7 +64,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 
 	@Override
 	@Transactional
-	public void save(OptOutEvent event, OptOutAction action, LiteYukonUser user) {
+	public OptOutLog save(OptOutEvent event, OptOutAction action, LiteYukonUser user) {
 
 		SqlStatementBuilder eventSql = new SqlStatementBuilder();
 		if(event.getEventId() == null) {
@@ -114,7 +114,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		
 		// Add OptOutEventLog entry
 		saveOptOutLog(log);
-		
+
+		return log;
 	}
 	
 	@Override

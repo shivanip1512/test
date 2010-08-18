@@ -129,7 +129,7 @@
 <entry key="yukon.web.modules.optOutSurvey.list.noResults">No opt out surveys currently exist.</entry>
 
 <entry key="yukon.web.modules.optOutSurvey.list.surveyName">Name</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.loginGroups">Login Groups</entry>
+<entry key="yukon.web.modules.optOutSurvey.list.programs">Programs</entry>
 <entry key="yukon.web.modules.optOutSurvey.list.startDate">Start</entry>
 <entry key="yukon.web.modules.optOutSurvey.list.stopDate">End</entry>
 <entry key="yukon.web.modules.optOutSurvey.list.noStopDate">Open Ended</entry>
@@ -156,7 +156,7 @@
 <entry key="yukon.web.modules.optOutSurvey.list.ok">OK</entry>
 <entry key="yukon.web.modules.optOutSurvey.list.cancel">Cancel</entry>
 
-<entry key="yukon.web.modules.optOutSurvey.edit.loginGroups">Login Groups</entry>
+<entry key="yukon.web.modules.optOutSurvey.edit.programs">Programs</entry>
 <entry key="yukon.web.modules.optOutSurvey.edit.survey">Survey</entry>
 <entry key="yukon.web.modules.optOutSurvey.edit.startDate">Start</entry>
 <entry key="yukon.web.modules.optOutSurvey.edit.stopDate">End</entry>

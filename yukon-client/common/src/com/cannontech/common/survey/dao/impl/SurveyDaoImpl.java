@@ -13,6 +13,8 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Answer;
 import com.cannontech.common.survey.model.Question;
+import com.cannontech.common.survey.model.Result;
+import com.cannontech.common.survey.model.ResultAnswer;
 import com.cannontech.common.survey.model.Survey;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -89,6 +91,16 @@ public class SurveyDaoImpl implements SurveyDao {
         }
 
         return questions;
+    }
+
+    @Override
+    public Map<Integer, Question> getQuestionMapBySurveyId(int surveyId) {
+        List<Question> questions = getQuestionsBySurveyId(surveyId);
+        Map<Integer, Question> retVal = Maps.newHashMap();
+        for (Question question : questions) {
+            retVal.put(question.getSurveyQuestionId(), question);
+        }
+        return retVal;
     }
 
     @Override
@@ -335,6 +347,38 @@ public class SurveyDaoImpl implements SurveyDao {
         sql.append("WHERE surveyQuestionId").eq(surveyQuestionId);
         yukonJdbcTemplate.update(sql);
     }
+
+    @Override
+    @Transactional
+    public void saveResult(Result result) {
+        int surveyResultId = nextValueHelper.getNextValue("surveyResult");
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO surveyResult (surveyResultId,");
+        sql.append("surveyId, accountId, accountNumber, whenTaken)");
+        sql.values(surveyResultId, result.getSurveyId(), result.getAccountId(),
+                   result.getAccountNumber(), result.getWhenTaken().toDate());
+        yukonJdbcTemplate.update(sql);
+
+        for (ResultAnswer answer : result.getResultAnswers()) {
+            int surveyResultAnswerId = nextValueHelper.getNextValue("surveyResultAnswer");
+            answer.setSurveyResultAnswerId(surveyResultAnswerId);
+            answer.setSurveyResultId(surveyResultId);
+
+            sql = new SqlStatementBuilder();
+            sql.append("INSERT INTO surveyResultAnswer (surveyResultAnswerId,");
+            sql.append("surveyResultId, surveyQuestionId,");
+            sql.append("surveyQuestionAnswerId, textAnswer)");
+            sql.values(surveyResultAnswerId, surveyResultId,
+                       answer.getSurveyQuestionId(),
+                       answer.getSurveyQuestionAnswerId(),
+                       answer.getTextAnswer());
+            yukonJdbcTemplate.update(sql);
+        }
+
+        result.setSurveyResultId(surveyResultId);
+    }
+
 
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {

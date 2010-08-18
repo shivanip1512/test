@@ -1,8 +1,10 @@
 package com.cannontech.common.survey.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.common.survey.model.Question;
+import com.cannontech.common.survey.model.Result;
 import com.cannontech.common.survey.model.Survey;
 import com.cannontech.core.dao.DuplicateException;
 
@@ -10,7 +12,16 @@ public interface SurveyDao {
     Survey getSurveyById(int surveyId);
 
     Question getQuestionById(int surveyQuestionId);
+
+    /**
+     * Get a list of questions in their presentation order for a given survey.
+     */
     List<Question> getQuestionsBySurveyId(int surveyId);
+
+    /**
+     * Get a map of questions by question id for a given survey.
+     */
+    Map<Integer, Question> getQuestionMapBySurveyId(int surveyId);
 
     /**
      * Get the next survey key available. If two users add a survey at the same
@@ -50,4 +61,6 @@ public interface SurveyDao {
     void deleteSurvey(int surveyId);
 
     void deleteQuestion(int surveyQuestionId);
+
+    void saveResult(Result result);
 }

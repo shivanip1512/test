@@ -5,7 +5,9 @@ import java.util.List;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import com.cannontech.common.survey.model.Result;
 import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
+import com.google.common.collect.Multimap;
 
 /**
  * Class which holds information about an Opt Out request
@@ -15,8 +17,10 @@ public class OptOutRequest {
     private long durationInHours;
     private List<Integer> inventoryIdList;
     private List<ScheduledOptOutQuestion> questions;
+    private List<Result> surveyResults;
+    private Multimap<Integer, Integer> surveyIdsByInventoryId;
     private Integer eventId;
-    
+
     public Instant getStartDate() {
         return startDate;
     }
@@ -48,7 +52,24 @@ public class OptOutRequest {
     public void setQuestions(List<ScheduledOptOutQuestion> questions) {
         this.questions = questions;
     }
-    
+
+    public List<Result> getSurveyResults() {
+        return surveyResults;
+    }
+
+    public void setSurveyResults(List<Result> surveyResults) {
+        this.surveyResults = surveyResults;
+    }
+
+    public Multimap<Integer, Integer> getSurveyIdsByInventoryId() {
+        return surveyIdsByInventoryId;
+    }
+
+    public void setSurveyIdsByInventoryId(
+            Multimap<Integer, Integer> surveyIdsByInventoryId) {
+        this.surveyIdsByInventoryId = surveyIdsByInventoryId;
+    }
+
     public Instant getStopDate() {
     	if(startDate == null) {
     		return null;
@@ -69,5 +90,4 @@ public class OptOutRequest {
     public void setEventId(Integer eventId) {
         this.eventId = eventId;
     }
-    
 }
