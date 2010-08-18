@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.IEDBase;
 import com.cannontech.database.data.device.PagingTapTerminal;
+import com.cannontech.database.data.device.RDSTerminal;
 import com.cannontech.database.data.device.TNPPTerminal;
 import com.cannontech.database.data.pao.PAOGroups;
 
@@ -520,7 +521,9 @@ public void setValue(Object val ) {
     if (iedBase instanceof TNPPTerminal){
         deviceType = PAOGroups.TNPP_TERMINAL;
     }
-    
+    if (iedBase instanceof RDSTerminal){
+        deviceType = PAOGroups.RDS_TERMINAL;
+    }
     return;
 }
 
