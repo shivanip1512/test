@@ -317,11 +317,17 @@ CREATE INDEX Indx_LMContHist_SOE_Tag ON LMControlHistory (
 
 /* Start YUK-8932 */
 CREATE TABLE OptOutSurvey  (
-   GroupId              NUMBER                          NOT NULL,
-   SurveyId             NUMBER,
+   OptOutSurveyId       NUMBER                          NOT NULL,
+   SurveyId             NUMBER                          NOT NULL,
    StartDate            DATE                            NOT NULL,
-   StopDate             DATE                            NOT NULL,
-   CONSTRAINT PK_OptOutSurvey PRIMARY KEY (GroupId)
+   StopDate             DATE                            NULL,
+   CONSTRAINT PK_OptOutSurvey PRIMARY KEY (OptOutSurveyId)
+);
+
+CREATE TABLE OptOutSurveyProgram (
+   OptOutSurveyId       NUMBER                          NOT NULL,
+   ProgramId            NUMBER                          NOT NULL,
+   CONSTRAINT PK_OptOutSurveyProgram PRIMARY KEY (OptOutSurveyId, ProgramId)
 );
 
 CREATE TABLE OptOutSurveyResult  (
@@ -332,7 +338,7 @@ CREATE TABLE OptOutSurveyResult  (
 
 CREATE TABLE Survey  (
    SurveyId             NUMBER                          NOT NULL,
-   EnergyCompanyId      NUMBER,
+   EnergyCompanyId      NUMBER                          NOT NULL,
    SurveyName           VARCHAR2(64)                    NOT NULL,
    SurveyKey            VARCHAR2(64)                    NOT NULL,
    CONSTRAINT PK_Surv PRIMARY KEY (SurveyId)
@@ -370,7 +376,8 @@ CREATE UNIQUE INDEX Indx_SurvQuestId_dispOrder_UNQ ON SurveyQuestionAnswer (
 CREATE TABLE SurveyResult  (
    SurveyResultId       NUMBER                          NOT NULL,
    SurveyId             NUMBER                          NOT NULL,
-   TakenByAccountId     NUMBER                          NOT NULL,
+   AccountId            NUMBER                          NOT NULL,
+   AccountNumber        VARCHAR2(40)                    NULL,
    WhenTaken            DATE                            NOT NULL,
    CONSTRAINT PK_SurvRes PRIMARY KEY (SurveyResultId)
 );
@@ -378,8 +385,9 @@ CREATE TABLE SurveyResult  (
 CREATE TABLE SurveyResultAnswer  (
    SurveyResultAnswerId NUMBER                          NOT NULL,
    SurveyResultId       NUMBER                          NOT NULL,
-   surveyQuestion       VARCHAR2(255)                   NOT NULL,
-   SurveyAnswer         VARCHAR2(255)                   NOT NULL,
+   SurveyQuestionId     NUMBER                          NOT NULL,
+   SurveyQuestionAnswerId NUMBER                        NULL,
+   TextAnswer           VARCHAR2(255)                   NULL,
    CONSTRAINT PK_SurvResAns PRIMARY KEY (SurveyResultAnswerId)
 );
 
@@ -388,9 +396,14 @@ ALTER TABLE OptOutSurvey
         REFERENCES Survey (SurveyId)
             ON DELETE CASCADE;
 
-ALTER TABLE OptOutSurvey
-    ADD CONSTRAINT FK_OptOutSurv_YukonGroup FOREIGN KEY (GroupId)
-        REFERENCES YukonGroup (GroupID)
+ALTER TABLE OptOutSurveyProgram
+    ADD CONSTRAINT FK_OptOutSurvProg_OptOutSurv FOREIGN KEY (OptOutSurveyId)
+        REFERENCES OptOutSurvey (OptOutSurveyId)
+            ON DELETE CASCADE;
+
+ALTER TABLE OptOutSurveyProgram
+    ADD CONSTRAINT FK_OptOutSurvProg_LMProgWebPub FOREIGN KEY (ProgramId)
+        REFERENCES LMProgramWebPublishing (ProgramId)
             ON DELETE CASCADE;
 
 ALTER TABLE OptOutSurveyResult
@@ -423,9 +436,23 @@ ALTER TABLE SurveyResult
         REFERENCES Survey (SurveyId)
             ON DELETE CASCADE;
 
+ALTER TABLE SurveyResult
+    ADD CONSTRAINT FK_SurvRes_CustAcco FOREIGN KEY (AccountId)
+        REFERENCES CustomerAccount (AccountId);
+
 ALTER TABLE SurveyResultAnswer
     ADD CONSTRAINT FK_SurvResAns_SurvRes FOREIGN KEY (SurveyResultId)
         REFERENCES SurveyResult (SurveyResultId)
+            ON DELETE CASCADE;
+
+ALTER TABLE SurveyResultAnswer
+    ADD CONSTRAINT FK_SurvResAns_SurvQues FOREIGN KEY (SurveyQuestionId)
+        REFERENCES SurveyQuestion (SurveyQuestionId)
+            ON DELETE CASCADE;
+
+ALTER TABLE SurveyResultAnswer
+    ADD CONSTRAINT FK_SurvResAns_SurvQuesAnsw FOREIGN KEY (SurveyQuestionAnswerId)
+        REFERENCES SurveyQuestionAnswer (SurveyQuestionAnswerId)
             ON DELETE CASCADE;
 /* End YUK-8932 */
 

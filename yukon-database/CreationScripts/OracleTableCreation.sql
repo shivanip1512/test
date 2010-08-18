@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/12/2010 4:01:58 PM                         */
+/* Created on:     8/18/2010 2:19:58 PM                         */
 /*==============================================================*/
 
 
@@ -818,6 +818,8 @@ drop table OptOutEvent cascade constraints;
 drop table OptOutEventLog cascade constraints;
 
 drop table OptOutSurvey cascade constraints;
+
+drop table OptOutSurveyProgram cascade constraints;
 
 drop table OptOutSurveyResult cascade constraints;
 
@@ -6865,11 +6867,20 @@ create table OptOutEventLog  (
 /* Table: OptOutSurvey                                          */
 /*==============================================================*/
 create table OptOutSurvey  (
-   GroupId              NUMBER                          not null,
+   OptOutSurveyId       NUMBER                          not null,
    SurveyId             NUMBER                          not null,
    StartDate            DATE                            not null,
-   StopDate             DATE                            not null,
-   constraint PK_OptOutSurvey primary key (GroupId)
+   StopDate             DATE,
+   constraint PK_OptOutSurvey primary key (OptOutSurveyId)
+);
+
+/*==============================================================*/
+/* Table: OptOutSurveyProgram                                   */
+/*==============================================================*/
+create table OptOutSurveyProgram  (
+   OptOutSurveyId       NUMBER                          not null,
+   ProgramId            NUMBER                          not null,
+   constraint PK_OptOutSurvProg primary key (OptOutSurveyId, ProgramId)
 );
 
 /*==============================================================*/
@@ -7823,7 +7834,8 @@ create unique index Indx_SurvQuestId_dispOrder_UNQ on SurveyQuestionAnswer (
 create table SurveyResult  (
    SurveyResultId       NUMBER                          not null,
    SurveyId             NUMBER                          not null,
-   TakenByAccountId     NUMBER                          not null,
+   AccountId            NUMBER                          not null,
+   AccountNumber        VARCHAR2(40),
    WhenTaken            DATE                            not null,
    constraint PK_SurvRes primary key (SurveyResultId)
 );
@@ -7834,8 +7846,9 @@ create table SurveyResult  (
 create table SurveyResultAnswer  (
    SurveyResultAnswerId NUMBER                          not null,
    SurveyResultId       NUMBER                          not null,
-   surveyQuestion       VARCHAR2(255)                   not null,
-   SurveyAnswer         VARCHAR2(255)                   not null,
+   SurveyQuestionId     NUMBER                          not null,
+   SurveyQuestionAnswerId NUMBER,
+   TextAnswer           VARCHAR2(255),
    constraint PK_SurvResAns primary key (SurveyResultAnswerId)
 );
 
@@ -12119,9 +12132,14 @@ alter table OptOutSurvey
       references Survey (SurveyId)
       on delete cascade;
 
-alter table OptOutSurvey
-   add constraint FK_OptOutSurv_YukonGroup foreign key (GroupId)
-      references YukonGroup (GroupID)
+alter table OptOutSurveyProgram
+   add constraint FK_OptOutSurvProg_LMProgWebPub foreign key (ProgramId)
+      references LMProgramWebPublishing (ProgramID)
+      on delete cascade;
+
+alter table OptOutSurveyProgram
+   add constraint FK_OptOutSurvProg_OptOutSurv foreign key (OptOutSurveyId)
+      references OptOutSurvey (OptOutSurveyId)
       on delete cascade;
 
 alter table OptOutSurveyResult
@@ -12370,8 +12388,22 @@ alter table SurveyQuestionAnswer
       on delete cascade;
 
 alter table SurveyResult
+   add constraint FK_SurvRes_CustAcct foreign key (AccountId)
+      references CustomerAccount (AccountID);
+
+alter table SurveyResult
    add constraint FK_SurvRes_Surv foreign key (SurveyId)
       references Survey (SurveyId)
+      on delete cascade;
+
+alter table SurveyResultAnswer
+   add constraint FK_SurvResAns_SurQuestAns foreign key (SurveyQuestionAnswerId)
+      references SurveyQuestionAnswer (SurveyQuestionAnswerId)
+      on delete cascade;
+
+alter table SurveyResultAnswer
+   add constraint FK_SurvResAns_SurvQuest foreign key (SurveyQuestionId)
+      references SurveyQuestion (SurveyQuestionId)
       on delete cascade;
 
 alter table SurveyResultAnswer

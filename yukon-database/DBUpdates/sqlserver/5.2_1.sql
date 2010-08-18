@@ -320,11 +320,17 @@ CREATE INDEX Indx_LMContHist_SOE_Tag ON LMControlHistory (
 
 /* Start YUK-8932 */
 CREATE TABLE OptOutSurvey (
-   GroupId              NUMERIC              NOT NULL,
-   SurveyId             NUMERIC              NULL,
+   OptOutSurveyId       NUMERIC              NOT NULL,
+   SurveyId             NUMERIC              NOT NULL,
    StartDate            DATETIME             NOT NULL,
-   StopDate             DATETIME             NOT NULL,
-   CONSTRAINT PK_OptOutSurvey PRIMARY KEY (GroupId)
+   StopDate             DATETIME             NULL,
+   CONSTRAINT PK_OptOutSurvey PRIMARY KEY (OptOutSurveyId)
+);
+
+CREATE TABLE OptOutSurveyProgram (
+   OptOutSurveyId       NUMERIC              NOT NULL,
+   ProgramId            NUMERIC              NOT NULL,
+   CONSTRAINT PK_OptOutSurvProg PRIMARY KEY (OptOutSurveyId, ProgramId)
 );
 
 CREATE TABLE OptOutSurveyResult (
@@ -335,7 +341,7 @@ CREATE TABLE OptOutSurveyResult (
 
 CREATE TABLE Survey (
    SurveyId             NUMERIC              NOT NULL,
-   EnergyCompanyId      NUMERIC              NULL,
+   EnergyCompanyId      NUMERIC              NOT NULL,
    SurveyName           VARCHAR(64)          NOT NULL,
    SurveyKey            VARCHAR(64)          NOT NULL,
    CONSTRAINT PK_Surv PRIMARY KEY (SurveyId)
@@ -375,7 +381,8 @@ CREATE UNIQUE INDEX Indx_SurvQuestId_dispOrder_UNQ ON SurveyQuestionAnswer (
 CREATE TABLE SurveyResult (
    SurveyResultId       NUMERIC              NOT NULL,
    SurveyId             NUMERIC              NOT NULL,
-   TakenByAccountId     NUMERIC              NOT NULL,
+   AccountId            NUMERIC              NOT NULL,
+   AccountNumber        VARCHAR(40)          NULL,
    WhenTaken            DATETIME             NOT NULL,
    CONSTRAINT PK_SurvRes PRIMARY KEY (SurveyResultId)
 );
@@ -383,8 +390,9 @@ CREATE TABLE SurveyResult (
 CREATE TABLE SurveyResultAnswer (
    SurveyResultAnswerId NUMERIC              NOT NULL,
    SurveyResultId       NUMERIC              NOT NULL,
-   surveyQuestion       VARCHAR(255)         NOT NULL,
-   SurveyAnswer         VARCHAR(255)         NOT NULL,
+   SurveyQuestionId     NUMERIC              NOT NULL,
+   SurveyQuestionAnswerId NUMERIC            NULL,
+   TextAnswer           VARCHAR(255)         NULL,
    CONSTRAINT PK_SurvResAns PRIMARY KEY (SurveyResultAnswerId)
 );
 GO
@@ -393,9 +401,13 @@ ALTER TABLE OptOutSurvey
     ADD CONSTRAINT FK_OptOutSurv_Surv FOREIGN KEY (SurveyId)
         REFERENCES Survey (SurveyId)
             ON DELETE CASCADE;
-ALTER TABLE OptOutSurvey
-    ADD CONSTRAINT FK_OptOutSurv_YukonGroup FOREIGN KEY (GroupId)
-        REFERENCES YukonGroup (GroupID)
+ALTER TABLE OptOutSurveyProgram
+    ADD CONSTRAINT FK_OptOutSurvProg_LMProgWebPub FOREIGN KEY (ProgramId)
+        REFERENCES LMProgramWebPublishing (ProgramId)
+            ON DELETE CASCADE;
+ALTER TABLE OptOutSurveyProgram
+    ADD CONSTRAINT FK_OptOutSurvProg_OptOutSurv FOREIGN KEY (OptOutSurveyId)
+        REFERENCES OptOutSurvey (OptOutSurveyId)
             ON DELETE CASCADE;
 ALTER TABLE OptOutSurveyResult
     ADD CONSTRAINT FK_OptOutSurvRes_OptOutEventLo FOREIGN KEY (OptOutEventLogId)
@@ -418,8 +430,19 @@ ALTER TABLE SurveyQuestionAnswer
         REFERENCES SurveyQuestion (SurveyQuestionId)
             ON DELETE CASCADE;
 ALTER TABLE SurveyResult
+    ADD CONSTRAINT FK_SurvRes_CustAcct FOREIGN KEY (AccountId)
+        REFERENCES CustomerAccount (AccountId);
+ALTER TABLE SurveyResult
     ADD CONSTRAINT FK_SurvRes_Surv FOREIGN KEY (SurveyId)
         REFERENCES Survey (SurveyId)
+            ON DELETE CASCADE;
+ALTER TABLE SurveyResultAnswer
+    ADD CONSTRAINT FK_SurvResAns_SurQuestAns FOREIGN KEY (SurveyQuestionAnswerId)
+        REFERENCES SurveyQuestionAnswer (SurveyQuestionAnswerId)
+            ON DELETE CASCADE;
+ALTER TABLE SurveyResultAnswer
+    ADD CONSTRAINT FK_SurvResAns_SurvQuest FOREIGN KEY (SurveyQuestionId)
+        REFERENCES SurveyQuestion (SurveyQuestionId)
             ON DELETE CASCADE;
 ALTER TABLE SurveyResultAnswer
     ADD CONSTRAINT FK_SurvResAns_SurvRes FOREIGN KEY (SurveyResultId)

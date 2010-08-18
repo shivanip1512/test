@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/12/2010 4:03:15 PM                         */
+/* Created on:     8/18/2010 2:22:21 PM                         */
 /*==============================================================*/
 
 
@@ -3046,6 +3046,13 @@ if exists (select 1
            where  id = object_id('OptOutSurvey')
             and   type = 'U')
    drop table OptOutSurvey
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('OptOutSurveyProgram')
+            and   type = 'U')
+   drop table OptOutSurveyProgram
 go
 
 if exists (select 1
@@ -9855,11 +9862,21 @@ go
 /* Table: OptOutSurvey                                          */
 /*==============================================================*/
 create table OptOutSurvey (
-   GroupId              numeric              not null,
+   OptOutSurveyId       numeric              not null,
    SurveyId             numeric              not null,
    StartDate            datetime             not null,
-   StopDate             datetime             not null,
-   constraint PK_OptOutSurvey primary key (GroupId)
+   StopDate             datetime             null,
+   constraint PK_OptOutSurvey primary key (OptOutSurveyId)
+)
+go
+
+/*==============================================================*/
+/* Table: OptOutSurveyProgram                                   */
+/*==============================================================*/
+create table OptOutSurveyProgram (
+   OptOutSurveyId       numeric              not null,
+   ProgramId            numeric              not null,
+   constraint PK_OptOutSurvProg primary key (OptOutSurveyId, ProgramId)
 )
 go
 
@@ -10889,7 +10906,8 @@ go
 create table SurveyResult (
    SurveyResultId       numeric              not null,
    SurveyId             numeric              not null,
-   TakenByAccountId     numeric              not null,
+   AccountId            numeric              not null,
+   AccountNumber        varchar(40)          null,
    WhenTaken            datetime             not null,
    constraint PK_SurvRes primary key (SurveyResultId)
 )
@@ -10901,8 +10919,9 @@ go
 create table SurveyResultAnswer (
    SurveyResultAnswerId numeric              not null,
    SurveyResultId       numeric              not null,
-   surveyQuestion       varchar(255)         not null,
-   SurveyAnswer         varchar(255)         not null,
+   SurveyQuestionId     numeric              not null,
+   SurveyQuestionAnswerId numeric              null,
+   TextAnswer           varchar(255)         null,
    constraint PK_SurvResAns primary key (SurveyResultAnswerId)
 )
 go
@@ -15711,9 +15730,15 @@ alter table OptOutSurvey
          on delete cascade
 go
 
-alter table OptOutSurvey
-   add constraint FK_OptOutSurv_YukonGroup foreign key (GroupId)
-      references YukonGroup (GroupID)
+alter table OptOutSurveyProgram
+   add constraint FK_OptOutSurvProg_LMProgWebPub foreign key (ProgramId)
+      references LMProgramWebPublishing (ProgramID)
+         on delete cascade
+go
+
+alter table OptOutSurveyProgram
+   add constraint FK_OptOutSurvProg_OptOutSurv foreign key (OptOutSurveyId)
+      references OptOutSurvey (OptOutSurveyId)
          on delete cascade
 go
 
@@ -16021,8 +16046,25 @@ alter table SurveyQuestionAnswer
 go
 
 alter table SurveyResult
+   add constraint FK_SurvRes_CustAcct foreign key (AccountId)
+      references CustomerAccount (AccountID)
+go
+
+alter table SurveyResult
    add constraint FK_SurvRes_Surv foreign key (SurveyId)
       references Survey (SurveyId)
+         on delete cascade
+go
+
+alter table SurveyResultAnswer
+   add constraint FK_SurvResAns_SurQuestAns foreign key (SurveyQuestionAnswerId)
+      references SurveyQuestionAnswer (SurveyQuestionAnswerId)
+         on delete cascade
+go
+
+alter table SurveyResultAnswer
+   add constraint FK_SurvResAns_SurvQuest foreign key (SurveyQuestionId)
+      references SurveyQuestion (SurveyQuestionId)
          on delete cascade
 go
 
