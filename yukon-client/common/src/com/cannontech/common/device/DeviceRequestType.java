@@ -3,81 +3,59 @@ package com.cannontech.common.device;
 
 public enum DeviceRequestType {
     
-    // NOTES:
-    // Setting defaultNoqueue = true will cause 'noqueue' to be appended to all commands sent using this type.
-    // Setting defaultPriority = X will cause all commands to be sent at priority X
-    //
-    // IN GENERAL, commands sent to a device (i.e. no specific route) should have a defaultNoqueue = true. If you are using the type with the
-    // CommandRequestRouteAndDeviceExecutor or the CommandRequestRouteExecutor, then set defaultNoqueue = false.
-    //
-    // IN GENERAL, when using a type with a service that results in sending commands to several devices, a lower priority should be used (~8). Consider naming the type
-    // with a prefix of "GROUP_". In special cases, such as PHASE_DETECT_COMMAND, the priority is set higher even though this type is used to send commands to multiple devices at a time.
-    // Commands intended to be sent to a single device at a time may use a higher priority (~14).
-
+    METER_INFORMATION_PING_COMMAND("Ping Command", "A 'ping' command sent to device.", false),
+    PING_DEVICE_ON_ROUTE_COMMAND("Ping Device On Route Command", "A 'ping' command sent to device on a specific route.", false),
+    PEAK_REPORT_COMMAND("Peak Report Command", "A 'getvalue lp peak' command sent for the purpose of profiling.", false),
+    ROUTE_DISCOVERY_PUTCONFIG_COMMAND("Route Discovery Put Config Command", "A 'putconfig emetcon intervals' command sent to 410s after a route has been set due to running a route discovery action.", false),
+    CONTROL_CONNECT_DISCONNECT_COMAMND("Connect/Disconnect Command", "A 'control connect' or 'control disconnect' command sent from the disconnect widget.", false),
+    TOU_SCHEDULE_COMMAND("TOU Schedule Command", "A 'putconfig tou ...' command sent from the TOU widget.", false),
+    LM_HARDWARE_COMMAND("LM Hardware Command", "A command sent to LM hardware.", false),
+    MOVE_IN_MOVE_OUT_USAGE_READ("Move In/Move Out Usage Reading", "Move In/Move Out Usage Reading", false),
     
-	METER_INFORMATION_PING_COMMAND(true, 14, "Ping Command", "A 'ping' command sent to device.", false),
-	PING_DEVICE_ON_ROUTE_COMMAND(false, 14, "Ping Device On Route Command", "A 'ping' command sent to device on a specific route.", false),
-	PEAK_REPORT_COMMAND(true, 14, "Peak Report Command", "A 'getvalue lp peak' command sent for the purpose of profiling.", false),
-	ROUTE_DISCOVERY_PUTCONFIG_COMMAND(false, 14, "Route Discovery Put Config Command", "A 'putconfig emetcon intervals' command sent to 410s after a route has been set due to running a route discovery action.", false),
-	CONTROL_CONNECT_DISCONNECT_COMAMND(true, 14, "Connect/Disconnect Command", "A 'control connect' or 'control disconnect' command sent from the disconnect widget.", false),
-	TOU_SCHEDULE_COMMAND(true, 14, "TOU Schedule Command", "A 'putconfig tou ...' command sent from the TOU widget.", false),
-	LM_HARDWARE_COMMAND(false, 14, "LM Hardware Command", "A command sent to LM hardware.", false),
-	MOVE_IN_MOVE_OUT_USAGE_READ(false, 14, "Move In/Move Out Usage Reading", "Move In/Move Out Usage Reading", false),
-	
-	METER_OUTAGES_WIDGET_ATTRIBUTE_READ(false, 14, "Outage Widget Attribute Read", "Reads all meter attributes for display in the Meter Outages Widget.", false),
-	METER_READINGS_WIDGET_ATTRIBUTE_READ(false, 14, "Meter Readings Widget Attribute Read", "Reads all meter attributes that are displayed in the Meter Readings Widget.", false),
-	SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ(false, 14, "Simple Attributes Widget Attribute Read", "Reads a set of attributes for the Simple Attributes Widget.", false),
-	TOU_WIDGET_ATTRIBUTE_READ(false, 14, "TOU Widget Attribute Read", "Reads TOU attributes for the TOU Widget.", false),
-	DISCONNECT_STATUS_ATTRIBUTE_READ(false, 14, "Disconnect Status Attribute Read", "Disconnect Status Attribute Read", false),
-	
-	GROUP_COMMAND(false, 8, "Group Command", "A command sent to a group of devices.", false),
-	GROUP_ATTRIBUTE_READ(false, 8, "Group Attribute Read", "An attribute read command sent to a group of devices.", false),
-	SCHEDULED_GROUP_COMMAND(false, 8, "Scheduled Group Command", "A command sent to a group of devices periodically.", true),
-	SCHEDULED_GROUP_ATTRIBUTE_READ(false, 8, "Scheduled Group Attribute Read", "An attribute read command sent to a group of devices periodically.", true),
-	
-	GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ(false, 8, "Outage Processing Outage Logs Read", "Outage logs read for the purpose of Outage Processing on the Outages Group of an Outage Monitor.", false),
-	GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ(false, 8, "Tamper Flag Processing Internal Flags Read", "Internal flags read for the purpose of Tamper Flag Processing on the Tamper Flag Group of a Tamper Flag Monitor.", false),
-	GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_RESET(false, 8, "Tamper Flag Processing Internal Flags Reset", "Internal flags reset for the purpose of Tamper Flag Processing on the Tamper Flag Group of a Tamper Flag Monitor.", false),
-	
-	GROUP_DEVICE_CONFIG_VERIFY(false, 8, "Device Config Verify", "Verify command sent to a collection of devices for the purpose of Device Configuration.", false),
-	GROUP_DEVICE_CONFIG_SEND(true, 8, "Device Config Send", "Send config settings to a collection of devices for the purpose of Device Configuration.", false),
-	GROUP_DEVICE_CONFIG_READ(true, 8, "Device Config Read", "Send getconfig install command to a collection of devices for the purpose of Device Configuration.", false),
-	
-	PHASE_DETECT_CLEAR(false, 14, "Phase Detection Clear Command", "Command sent to broadcast MCT to clear phase data from meters.", false),
-	PHASE_DETECT_COMMAND(false, 14, "Phase Detection Command", "Command sent to broadcast MCT to detect a phase change.", false),
-	PHASE_DETECT_READ(false, 7, "Phase Detection Read", "Command sent to MCT's to read phase data.", false),
-	VEE_RE_READ(false, 7, "Validation Engine Automatic Read", "Command sent to meter to validate previous readings", false),
-	
-	;
-	
-    private boolean defaultNoqueue;
-    private int defaultPriority;
-	private String shortName;
-	private String description;
-	private boolean scheduled;
-	
-	DeviceRequestType(boolean defaultNoqueue, int defaultPriority, String shortName, String description, boolean scheduled) {
-		
-	    this.defaultNoqueue = defaultNoqueue;
-	    this.defaultPriority = defaultPriority;
-		this.shortName = shortName;
-		this.description = description;
-		this.scheduled = scheduled;
-	}
-	
-	public boolean isNoqueue() {
-        return defaultNoqueue;
+    METER_OUTAGES_WIDGET_ATTRIBUTE_READ("Outage Widget Attribute Read", "Reads all meter attributes for display in the Meter Outages Widget.", false),
+    METER_READINGS_WIDGET_ATTRIBUTE_READ("Meter Readings Widget Attribute Read", "Reads all meter attributes that are displayed in the Meter Readings Widget.", false),
+    SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ("Simple Attributes Widget Attribute Read", "Reads a set of attributes for the Simple Attributes Widget.", false),
+    TOU_WIDGET_ATTRIBUTE_READ("TOU Widget Attribute Read", "Reads TOU attributes for the TOU Widget.", false),
+    DISCONNECT_STATUS_ATTRIBUTE_READ("Disconnect Status Attribute Read", "Disconnect Status Attribute Read", false),
+    
+    GROUP_COMMAND("Group Command", "A command sent to a group of devices.", false),
+    GROUP_ATTRIBUTE_READ("Group Attribute Read", "An attribute read command sent to a group of devices.", false),
+    SCHEDULED_GROUP_COMMAND("Scheduled Group Command", "A command sent to a group of devices periodically.", true),
+    SCHEDULED_GROUP_ATTRIBUTE_READ("Scheduled Group Attribute Read", "An attribute read command sent to a group of devices periodically.", true),
+    
+    GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ("Outage Processing Outage Logs Read", "Outage logs read for the purpose of Outage Processing on the Outages Group of an Outage Monitor.", false),
+    GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ("Tamper Flag Processing Internal Flags Read", "Internal flags read for the purpose of Tamper Flag Processing on the Tamper Flag Group of a Tamper Flag Monitor.", false),
+    GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_RESET("Tamper Flag Processing Internal Flags Reset", "Internal flags reset for the purpose of Tamper Flag Processing on the Tamper Flag Group of a Tamper Flag Monitor.", false),
+    
+    GROUP_DEVICE_CONFIG_VERIFY("Device Config Verify", "Verify command sent to a collection of devices for the purpose of Device Configuration.", false),
+    GROUP_DEVICE_CONFIG_SEND("Device Config Send", "Send config settings to a collection of devices for the purpose of Device Configuration.", false),
+    GROUP_DEVICE_CONFIG_READ("Device Config Read", "Send getconfig install command to a collection of devices for the purpose of Device Configuration.", false),
+    
+    PHASE_DETECT_CLEAR("Phase Detection Clear Command", "Command sent to broadcast MCT to clear phase data from meters.", false),
+    PHASE_DETECT_COMMAND("Phase Detection Command", "Command sent to broadcast MCT to detect a phase change.", false),
+    PHASE_DETECT_READ("Phase Detection Read", "Command sent to MCT's to read phase data.", false),
+    VEE_RE_READ("Validation Engine Automatic Read", "Command sent to meter to validate previous readings", false),
+    
+    ;
+    
+    private String shortName;
+    private String description;
+    private boolean scheduled; // not sure about this guy
+    
+    DeviceRequestType(String shortName, String description, boolean scheduled) {
+        
+        this.shortName = shortName;
+        this.description = description;
+        this.scheduled = scheduled;
     }
-	public int getPriority() {
-        return defaultPriority;
+    
+    public String getShortName() {
+        return shortName;
     }
-	public String getShortName() {
-		return shortName;
-	}
-	public String getDescription() {
-		return description;
-	}
-	public boolean isScheduled() {
-		return scheduled;
-	}
+    public String getDescription() {
+        return description;
+    }
+    public boolean isScheduled() {
+        return scheduled;
+    }
 }
