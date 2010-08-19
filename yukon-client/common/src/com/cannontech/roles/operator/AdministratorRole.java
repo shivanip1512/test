@@ -26,4 +26,5 @@ public interface AdministratorRole {
     public static final int ADMIN_MANAGE_INDEXES = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 15;
     public static final int ADMIN_VIEW_LOGS = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 16;
     public static final int ADMIN_DATABASE_MIGRATION = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 17;
+    public static final int ADMIN_EVENT_LOGS = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 18;
 }

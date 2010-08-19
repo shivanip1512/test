@@ -26,7 +26,6 @@ public interface DemandResponseEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
     public void controlAreaStopped(@Arg(ArgEnum.controlAreaName) String controlAreaName, 
                                    Date stopDate);
-
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
     public void threeTierControlAreaTriggersChanged(@Arg(ArgEnum.username) LiteYukonUser yukonUser,

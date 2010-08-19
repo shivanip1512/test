@@ -57,7 +57,7 @@ import com.cannontech.common.events.service.impl.MethodLogDetail;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.tools.csv.CSVWriter;
@@ -69,7 +69,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EventLogColumnTypePropertyEditor;
-import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.validator.EventLogCategoryValidator;
 import com.cannontech.web.stars.dr.operator.validator.EventLogTypeValidator;
 import com.cannontech.web.util.ExtTreeNode;
@@ -79,7 +79,7 @@ import com.google.common.collect.Ordering;
 
 @Controller
 @RequestMapping("/eventLog/*")
-@CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
+@CheckRoleProperty(YukonRoleProperty.ADMIN_EVENT_LOGS)
 @SessionAttributes(value="eventLogTypeBackingBean")
 public class EventLogViewerController {
 
@@ -260,7 +260,7 @@ public class EventLogViewerController {
             eventLogUIService.getFilteredPagedSearchResultByType(eventLogTypeBackingBean.getEventLogType(), 
                                                                  eventLogTypeBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
                                                                  eventLogTypeBackingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                                 eventLogTypeBackingBean.getStartIndex(), 
+                                                                 0, 
                                                                  Integer.MAX_VALUE,
                                                                  eventLogSqlFilters,
                                                                  userContext);

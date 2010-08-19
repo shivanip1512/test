@@ -256,34 +256,61 @@
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStarted">Control area {2} was started by {1}</entry>
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStopped">Control area {2} was stopped by {1}</entry>
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTriggersChanged">Control area {2} had its triggers changed by user {1} via 3-Tier</entry>
-
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTriggersChanged.7">First Threshold</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTriggersChanged.8">First Offset</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTriggersChanged.9">Second Threshold</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTriggersChanged.10">Second Offset</entry>
+    
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTimeWindowChanged">Control area {2} had its time window changed to {7} - {8} (in seconds from midnight) by user {1} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTimeWindowChanged.2">Control Area</entry>
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTimeWindowChanged.7">Control Window Start </entry>
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTimeWindowChanged.8">Control Window End</entry>
 
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaEnabled">Control area {2} was enabled by user {1} via 3-Tier</entry>
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaDisabled">Control area {2} was disabled by user {1} via 3-Tier</entry>
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaPeakReset">Control area {2} had its triggers peak(s) reset by user {1} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.controlArea.controlAreaStarted">Control area {1} was started at {4}</entry>
-    <entry key="yukon.common.events.dr.controlArea.controlAreaStopped">Control area {1} was stopped at {4}</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaStarted">Control area {1} was started at {11}</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaStarted.11">Control Area Start Date</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaStopped">Control area {1} was stopped at {11}</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaStopped.11">Control Area Stop Date</entry>
     <entry key="yukon.common.events.dr.controlArea.controlAreaTriggersChanged">Control area {1} had its triggers changed</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaTriggersChanged.7">First Threshold</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaTriggersChanged.8">First Offset</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaTriggersChanged.9">Second Threshold</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaTriggersChanged.10">Second Offset</entry>
     <entry key="yukon.common.events.dr.controlArea.controlAreaTimeWindowChanged">Control area {1} had its time window changed to {7} - {8} (in seconds from midnight)</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaTimeWindowChanged.7">Control Window Start</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaTimeWindowChanged.8">Control Window End</entry>
+
     <entry key="yukon.common.events.dr.controlArea.controlAreaEnabled">Control area {1} was enabled</entry>
     <entry key="yukon.common.events.dr.controlArea.controlAreaDisabled">Control area {1} was disabled</entry>
     <entry key="yukon.common.events.dr.controlArea.controlAreaPeakReset">Control area {1} had its triggers peak(s) reset</entry>
 
     <!-- Program -->
     <entry key="yukon.common.events.dr.program.threeTierProgramScheduled">Program {2} start scheduled at {11} by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.program.threeTierProgramScheduled.11">Scheduled Start Date</entry>
+    
     <entry key="yukon.common.events.dr.program.threeTierProgramStopped">Program {2} was stopped at {11} by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.program.threeTierProgramStopped.11">Program Stop Date</entry>
+    
     <entry key="yukon.common.events.dr.program.threeTierProgramStopScheduled">Program {2} was scheduled to stop at {11} by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.program.threeTierProgramStopScheduled.11">Scheduled Program Stop Date</entry>
+    
     <entry key="yukon.common.events.dr.program.threeTierProgramChangeGear">Program {2} changed gears by user {1} via 3-Tier</entry>
     <entry key="yukon.common.events.dr.program.threeTierProgramEnabled">Program {2} was enabled by user {1} via 3-Tier</entry>
     <entry key="yukon.common.events.dr.program.threeTierProgramDisabled">Program {2} was disabled by user {1} via 3-Tier</entry>
 
     <entry key="yukon.common.events.dr.program.programScheduled">Program {1} start scheduled at {11} with gear {3}; stop scheduled {4}</entry>
+    <entry key="yukon.common.events.dr.program.programScheduled.2">Override Constraints</entry>
+    <entry key="yukon.common.events.dr.program.programScheduled.4">Stop Scheduled</entry>
+    <entry key="yukon.common.events.dr.program.programScheduled.11">Scheduled Start Date</entry>
+    <entry key="yukon.common.events.dr.program.programScheduled.12">Scheduled Stop Date</entry>
+
     <entry key="yukon.common.events.dr.program.programStopped">Program {1} was stopped at {11}</entry>
+    <entry key="yukon.common.events.dr.program.programStopped.11">Program Stop Date</entry>
+    
     <entry key="yukon.common.events.dr.program.programStopScheduled">Program {1} was scheduled to stop at {11}</entry>
+    <entry key="yukon.common.events.dr.program.programStopScheduled.11">Scheduled Program Stop Date</entry>
+    
     <entry key="yukon.common.events.dr.program.programChangeGear">Program {1} changed gears to {2}</entry>
     <entry key="yukon.common.events.dr.program.programEnabled">Program {1} was enabled</entry>
     <entry key="yukon.common.events.dr.program.programDisabled">Program {1} was disabled</entry>
@@ -301,6 +328,8 @@
     
     <!-- Command Request Executor -->
     <entry key="yukon.common.events.porterRequests.commandFailedToTransmit">Command failed to transmit: command={2} type={1} error={3} user={4} id={7} contextId={8} </entry>
+    <entry key="yukon.common.events.porterRequests.commandFailedToTransmit.2">Command</entry>
+    <entry key="yukon.common.events.porterRequests.commandFailedToTransmit.3">Error</entry>
     <entry key="yukon.common.events.porterRequests.foundFailedCre">Found IN_PROGRESS CommandRequestExecution during startup, set ExecutionStatus to FAILED. CommandRequestExecId = {7}</entry>
     
     <!-- VEE -->
