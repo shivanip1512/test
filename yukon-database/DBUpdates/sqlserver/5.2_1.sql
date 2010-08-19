@@ -520,3 +520,4 @@ INSERT INTO YukonRoleProperty VALUES(-20018,-200,'Event Logs','false','Controls 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.2', 'Matt K', '20-AUG-2010', 'Latest Update', 1);
