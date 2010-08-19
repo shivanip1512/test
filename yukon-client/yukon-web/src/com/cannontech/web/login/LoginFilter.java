@@ -111,8 +111,10 @@ public class LoginFilter implements Filter {
                 /* Send error response if we fail to log them in. */
                 for (LoginRequestHandler handler : loginRequestHandlers) {
                     boolean success = handler.handleLoginRequest(request, response);
-                    if (!success) continue;
-                    log.debug("Proceeding with request after successful handler login");
+                    if (success) {
+                        log.debug("Proceeding with request after successful handler login");
+                        break;
+                    }
                 }
                 
                 if(!isLoggedIn(request)) {
