@@ -21,10 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.bulk.filter.SqlFragmentUiFilter;
-import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.bulk.filter.service.FilterService;
-import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.config.ConfigurationSource;
@@ -42,14 +38,9 @@ import com.cannontech.common.events.service.EventLogService;
 import com.cannontech.common.events.service.mappers.LiteYukonUserToNameMapper;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.common.util.SqlBuilder;
-import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
@@ -62,9 +53,7 @@ public class EventLogServiceImpl implements EventLogService {
     private static final Logger log = YukonLogManager.getLogger(EventLogServiceImpl.class);
 
     private ConfigurationSource configurationSource;
-    private DateFormattingService dateFormattingService;
     private EventLogDao eventLogDao;
-    private FilterService filterService;
 
     private Map<Method, MethodLogDetail> methodLogDetailLookup = Maps.newHashMap();
     private Map<String, MethodLogDetail> methodLogDetailCatalog = Maps.newHashMap();
@@ -352,143 +341,13 @@ public class EventLogServiceImpl implements EventLogService {
         return mappedEventLog;
     }
     
-    @Override
-    public SearchResult<EventLog> 
-                getFilteredPagedSearchResultByCategories(Iterable<EventCategory> eventCategories, 
-                                                         ReadableInstant startDate, 
-                                                         ReadableInstant stopDate, 
-                                                         Integer start, 
-                                                         Integer pageCount,
-                                                         String filterText,
-                                                         YukonUserContext userContext) {
-        
-        // There was no filter text supplied.  Return the whole list of event logs for the
-        // supplied time period time period.
-        if (StringUtils.isBlank(filterText)) {
-            return eventLogDao.getPagedSearchResultByCategories(eventCategories, startDate, 
-                                                                stopDate, start, pageCount);
-        }
-
-        SearchResult<EventLog> pagedSearchResultByCategories = 
-            eventLogDao.getFilteredPagedSearchResultByCategories(eventCategories, 
-                                                                 startDate, 
-                                                                 stopDate, 
-                                                                 start, 
-                                                                 pageCount,
-                                                                 filterText);
-        
-        return pagedSearchResultByCategories;
-        
-    }
-    
-    @Override
-    public SearchResult<EventLog> getFilteredPagedSearchResultByType(String eventLogType,
-                                                                     ReadableInstant startDate,
-                                                                     ReadableInstant stopDate,
-                                                                     int startIndex,
-                                                                     int itemsPerPage,
-                                                                     UiFilter<EventLog> eventLogSqlFilters,
-                                                                     YukonUserContext userContext) {
-        
-        // Build up the Event Log Type filter and Date Range Filter from the supplied
-        // eventLogType and start and stop dates
-        List<UiFilter<EventLog>> filters = Lists.newArrayList();
-        filters.add(new EventLogTypeFilter(eventLogType));
-        filters.add(new EventLogDateRangeFilter(startDate, stopDate));
-        if (eventLogSqlFilters != null) {
-            filters.add(eventLogSqlFilters);
-        }
-        UiFilter<EventLog> filter = UiFilterList.wrap(filters);
-        
-        // Process search results
-        SearchResult<EventLog> searchResult =
-            filterService.filter(filter, null, startIndex, itemsPerPage, 
-                                 eventLogDao.getEventLogRowMapper());
-
-        return searchResult;
-    }
-    
-    @Override
-    public List<List<String>> getDataGridRow(SearchResult<EventLog> searchResult, 
-                                             YukonUserContext userContext) {
-        
-        List<EventLog> resultList = searchResult.getResultList();
-        
-        List<List<String>> dataGrid = Lists.newArrayList();
-        for (EventLog eventLog : resultList) {
-            DateFormatEnum dateDisplayFormat = DateFormatEnum.BOTH;
-            
-            List<String> dataRow = Lists.newArrayList();
-            
-            dataRow.add(eventLog.getEventType());
-            dataRow.add(dateFormattingService.format(eventLog.getDateTime(), dateDisplayFormat, userContext));
-
-            for (Object argument : eventLog.getArguments()) {
-                if (argument == null) { continue;}
-                
-                if (argument instanceof Date) {
-                    dataRow.add(dateFormattingService.format(argument, dateDisplayFormat, userContext));
-                } else {
-                    dataRow.add(argument.toString());
-                }
-            }
-            dataGrid.add(dataRow);
-        }
-        return dataGrid;
-    }
-    
-    
-    // UI Filters
-    private static class EventLogTypeFilter extends SqlFragmentUiFilter<EventLog> {
-
-        String eventLogType;
-        
-        public EventLogTypeFilter(String eventLogType) {
-            this.eventLogType = eventLogType;
-        }
-        
-        @Override
-        protected void getSqlFragment(SqlBuilder sql) {
-            sql.append("EventType").eq(eventLogType);
-        }
-    };
-
-    private static class EventLogDateRangeFilter extends SqlFragmentUiFilter<EventLog> {
-
-        private Instant startDate;
-        private Instant stopDate;
-        
-        public EventLogDateRangeFilter(ReadableInstant startDate,
-                                       ReadableInstant stopDate) {
-            this.startDate = startDate.toInstant();
-            this.stopDate = stopDate.toInstant();
-        }
-        
-        @Override
-        protected void getSqlFragment(SqlBuilder sql) {
-            sql.append("EventTime").gte(startDate).append(" AND ");
-            sql.append("EventTime").lte(stopDate);
-        }
-    };
-    
     @Autowired
     public void setConfigurationSource(ConfigurationSource configurationSource) {
         this.configurationSource = configurationSource;
     }
 
     @Autowired
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-    
-    @Autowired
     public void setEventLogDao(EventLogDao eventLogDao) {
         this.eventLogDao = eventLogDao;
     }
-    
-    @Autowired
-    public void setFilterService(FilterService filterService) {
-        this.filterService = filterService;
-    }
-    
 }

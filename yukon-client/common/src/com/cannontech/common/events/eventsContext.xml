@@ -12,6 +12,7 @@
     
     <bean id="eventLogDao" class="com.cannontech.common.events.dao.impl.EventLogDaoImpl"/>
     <bean id="eventLogService" class="com.cannontech.common.events.service.impl.EventLogServiceImpl"/>
+    <bean id="eventLogUIService" class="com.cannontech.common.events.service.impl.EventLogUIServiceImpl"/>
     <bean id="eventLogFilterFactory" class="com.cannontech.common.events.service.impl.EventLogFilterFactoryImpl"/>
 
     <!-- Event Logger Beans -->

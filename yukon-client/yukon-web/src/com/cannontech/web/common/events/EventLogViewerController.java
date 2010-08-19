@@ -52,6 +52,7 @@ import com.cannontech.common.events.model.NumberFilterValue;
 import com.cannontech.common.events.model.StringFilterValue;
 import com.cannontech.common.events.service.EventLogFilterFactory;
 import com.cannontech.common.events.service.EventLogService;
+import com.cannontech.common.events.service.EventLogUIService;
 import com.cannontech.common.events.service.impl.MethodLogDetail;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.search.SearchResult;
@@ -90,6 +91,7 @@ public class EventLogViewerController {
     private EventLogTypeValidator eventLogTypeValidator;
     private EventLogDao eventLogDao;
     private EventLogService eventLogService;
+    private EventLogUIService eventLogUIService;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @RequestMapping
@@ -134,13 +136,13 @@ public class EventLogViewerController {
         
         // Getting the search results
         SearchResult<EventLog> searchResult = 
-            eventLogService.getFilteredPagedSearchResultByCategories(eventCategories, 
-                                                                     eventLogCategoryBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                                     eventLogCategoryBackingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                                     eventLogCategoryBackingBean.getStartIndex(), 
-                                                                     eventLogCategoryBackingBean.getItemsPerPage(),
-                                                                     eventLogCategoryBackingBean.getFilterValue(),
-                                                                     userContext);
+            eventLogUIService.getFilteredPagedSearchResultByCategories(eventCategories, 
+                                                                       eventLogCategoryBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
+                                                                       eventLogCategoryBackingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
+                                                                       eventLogCategoryBackingBean.getStartIndex(), 
+                                                                       eventLogCategoryBackingBean.getItemsPerPage(),
+                                                                       eventLogCategoryBackingBean.getFilterValue(),
+                                                                       userContext);
         
         model.addAttribute("searchResult", searchResult);
         model.addAttribute("events", searchResult.getResultList());
@@ -161,7 +163,7 @@ public class EventLogViewerController {
         
     }
     
-    @RequestMapping(params="eventLogType", method=RequestMethod.GET)
+    @RequestMapping(value="viewByType", params="eventLogType", method=RequestMethod.GET)
     public void viewByType(HttpServletRequest request,
                            HttpSession session,
                            YukonUserContext userContext, 
@@ -186,15 +188,17 @@ public class EventLogViewerController {
         eventLogTypeBackingBean.setPage(ServletRequestUtils.getIntParameter(request, "page", 1));
         model.addAttribute("eventLogTypeBackingBean", eventLogTypeBackingBean);
 
+        UiFilter<EventLog> eventLogSqlFilters = getEventLogUIFilters(eventLogTypeBackingBean);
+        
         // Get default search results
         SearchResult<EventLog> searchResult = 
-            eventLogService.getFilteredPagedSearchResultByType(eventLogTypeBackingBean.getEventLogType(), 
-                                                               eventLogTypeBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                               eventLogTypeBackingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                               eventLogTypeBackingBean.getStartIndex(), 
-                                                               eventLogTypeBackingBean.getItemsPerPage(),
-                                                               null,
-                                                               userContext);
+            eventLogUIService.getFilteredPagedSearchResultByType(eventLogTypeBackingBean.getEventLogType(), 
+                                                                 eventLogTypeBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
+                                                                 eventLogTypeBackingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
+                                                                 eventLogTypeBackingBean.getStartIndex(), 
+                                                                 eventLogTypeBackingBean.getItemsPerPage(),
+                                                                 eventLogSqlFilters,
+                                                                 userContext);
 
         buildEventLogResults(userContext, model, eventLogTypeBackingBean, searchResult);
         
@@ -203,7 +207,7 @@ public class EventLogViewerController {
         
     }
 
-    @RequestMapping(value="viewByType",method=RequestMethod.POST)
+    @RequestMapping(value="viewByType", params="eventLogType",method=RequestMethod.POST)
     public void viewByType(@ModelAttribute("eventLogTypeBackingBean") EventLogTypeBackingBean eventLogTypeBackingBean,
                            BindingResult bindingResult,
                            FlashScope flashScope,
@@ -227,13 +231,13 @@ public class EventLogViewerController {
         
         // Get search results
         SearchResult<EventLog> searchResult = 
-            eventLogService.getFilteredPagedSearchResultByType(eventLogTypeBackingBean.getEventLogType(), 
-                                                               eventLogTypeBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                               eventLogTypeBackingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                               eventLogTypeBackingBean.getStartIndex(), 
-                                                               eventLogTypeBackingBean.getItemsPerPage(),
-                                                               eventLogSqlFilters,
-                                                               userContext);
+            eventLogUIService.getFilteredPagedSearchResultByType(eventLogTypeBackingBean.getEventLogType(), 
+                                                                 eventLogTypeBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
+                                                                 eventLogTypeBackingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
+                                                                 eventLogTypeBackingBean.getStartIndex(), 
+                                                                 eventLogTypeBackingBean.getItemsPerPage(),
+                                                                 eventLogSqlFilters,
+                                                                 userContext);
         
         
         buildEventLogResults(userContext, model, eventLogTypeBackingBean, searchResult);
@@ -253,13 +257,13 @@ public class EventLogViewerController {
         
         // Get search results
         SearchResult<EventLog> searchResult = 
-            eventLogService.getFilteredPagedSearchResultByType(eventLogTypeBackingBean.getEventLogType(), 
-                                                               eventLogTypeBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                               eventLogTypeBackingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                               eventLogTypeBackingBean.getStartIndex(), 
-                                                               Integer.MAX_VALUE,
-                                                               eventLogSqlFilters,
-                                                               userContext);
+            eventLogUIService.getFilteredPagedSearchResultByType(eventLogTypeBackingBean.getEventLogType(), 
+                                                                 eventLogTypeBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
+                                                                 eventLogTypeBackingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
+                                                                 eventLogTypeBackingBean.getStartIndex(), 
+                                                                 Integer.MAX_VALUE,
+                                                                 eventLogSqlFilters,
+                                                                 userContext);
         
         // Get column names
         List<String> columnNames = Lists.newArrayList();
@@ -275,7 +279,7 @@ public class EventLogViewerController {
         
         // Get data grid
         List<List<String>> dataGrid = 
-            eventLogService.getDataGridRow(searchResult, userContext);
+            eventLogUIService.getDataGridRow(searchResult, userContext);
         
         // Build and write csv report
         response.setContentType("text/csv");
@@ -332,7 +336,7 @@ public class EventLogViewerController {
         
         // Get data grid
         List<List<String>> dataGrid = 
-            eventLogService.getDataGridRow(searchResult, userContext);
+            eventLogUIService.getDataGridRow(searchResult, userContext);
         model.addAttribute("dataGrid", dataGrid);
     }
     
@@ -560,6 +564,11 @@ public class EventLogViewerController {
     @Autowired
     public void setEventLogService(EventLogService eventLogService) {
         this.eventLogService = eventLogService;
+    }
+    
+    @Autowired
+    public void setEventLogUIService(EventLogUIService eventLogUIService) {
+        this.eventLogUIService = eventLogUIService;
     }
     
     @Autowired

@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
-import com.cannontech.common.bulk.filter.service.impl.FilterServiceImpl;
 import com.cannontech.common.config.MockConfigurationSource;
 import com.cannontech.common.events.dao.EventLogDao;
 import com.cannontech.common.events.model.ArgumentColumn;
@@ -22,7 +21,6 @@ import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.TransactionExecutor;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
-import com.cannontech.core.service.impl.DateFormattingServiceImpl;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -118,8 +116,6 @@ public class EventLogFactoryBeanTest {
         eventLogFactoryBean.setEventLogDao(eventLogDaoMock);
 
         EventLogServiceImpl eventLogService = new EventLogServiceImpl();
-        eventLogService.setDateFormattingService(new DateFormattingServiceImpl());
-        eventLogService.setFilterService(new FilterServiceImpl());
         eventLogService.setEventLogDao(eventLogDaoMock);
         eventLogService.setConfigurationSource(new EventLogMockConfigurationService());
         eventLogService.setupExcludedEventLogPaths();
@@ -219,8 +215,6 @@ public class EventLogFactoryBeanTest {
         eventLogFactoryBean.setEventLogDao(eventLogDaoMock);
         
         EventLogServiceImpl eventLogService = new EventLogServiceImpl();
-        eventLogService.setDateFormattingService(new DateFormattingServiceImpl());
-        eventLogService.setFilterService(new FilterServiceImpl());
         eventLogService.setEventLogDao(eventLogDaoMock);
         eventLogService.setConfigurationSource(new EventLogMockConfigurationService());
         eventLogFactoryBean.setEventLogService(eventLogService);

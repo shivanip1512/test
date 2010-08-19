@@ -1,13 +1,10 @@
 package com.cannontech.common.events.loggers;
 
-import org.springframework.stereotype.Service;
-
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-@Service
 public interface HardwareEventLogService {
 
 /* HARDWARE */    
