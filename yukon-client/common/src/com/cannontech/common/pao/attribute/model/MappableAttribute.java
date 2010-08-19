@@ -1,15 +1,15 @@
 package com.cannontech.common.pao.attribute.model;
 
-import com.cannontech.database.data.point.PointType;
+import com.cannontech.common.search.FilterType;
 
 public class MappableAttribute {
 
     Attribute attribute;
-    PointType pointTypeFilter;
+    FilterType filterType;
     
-    public MappableAttribute(Attribute attribute, PointType pointType) {
+    public MappableAttribute(Attribute attribute, FilterType filterType) {
         this.attribute = attribute;
-        this.pointTypeFilter = pointType;
+        this.filterType = filterType;
     }
     
     public Attribute getAttribute() {
@@ -18,10 +18,10 @@ public class MappableAttribute {
     public void setAttribute(Attribute attribute) {
         this.attribute = attribute;
     }
-    public PointType getPointTypeFilter() {
-        return pointTypeFilter;
+    public FilterType getFilterType() {
+        return filterType;
     }
-    public void setPointTypeFilter(PointType pointTypeFilter) {
-        this.pointTypeFilter = pointTypeFilter;
+    public void setFilterType(FilterType filterType) {
+        this.filterType = filterType;
     }
 }

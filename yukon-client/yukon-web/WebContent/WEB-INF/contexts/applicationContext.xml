@@ -1373,7 +1373,7 @@
 
     <bean id="abstractPointPicker" class="com.cannontech.web.picker.v2.PointPicker"
           abstract="true">
-        <property name="searcher" ref="paoTypeSearcherLucene"/>
+        <property name="searcher" ref="pointDeviceSearcherLucene"/>
     </bean>
     <bean name="pointPicker" parent="abstractPointPicker"
         class="com.cannontech.web.picker.v2.PointPicker"/>
@@ -1389,6 +1389,11 @@
             <bean class="com.cannontech.common.search.criteria.CCVarCriteria"/>
         </property>
     </bean>
+    
+	<bean name="filterablePointPicker" parent="abstractPointPicker"
+        class="com.cannontech.web.picker.v2.FilterablePointPicker">
+    </bean>
+    
     <bean name="wattPointPicker" parent="abstractPointPicker"
         class="com.cannontech.web.picker.v2.PointPicker">
         <property name="criteria">

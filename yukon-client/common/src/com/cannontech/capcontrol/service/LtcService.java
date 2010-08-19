@@ -45,7 +45,7 @@ public class LtcService {
                 mapping.setPaoName(CtiUtilities.STRING_NONE);
                 mapping.setPointName(CtiUtilities.STRING_NONE);
             }
-            mapping.setPointType(mappableAttribute.getPointTypeFilter());
+            mapping.setFilterType(mappableAttribute.getFilterType());
             pointMappings.add(mapping);
         }
         return pointMappings;

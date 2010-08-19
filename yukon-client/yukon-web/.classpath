@@ -73,5 +73,10 @@
 	<classpathentry kind="var" path="TOMCAT_HOME/lib/annotations-api.jar"/>
 	<classpathentry kind="lib" path="/third-party/SchemaCompare.jar"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/lib/jasper-el.jar"/>
+	<classpathentry kind="lib" path="/third-party/lucene-core-2.3.2.jar" sourcepath="Z:/java/Third-Party Sources/lucene-2.3.2-src.zip">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

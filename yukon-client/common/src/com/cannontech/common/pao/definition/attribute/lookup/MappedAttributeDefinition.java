@@ -4,17 +4,17 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
+import com.cannontech.common.search.FilterType;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
-import com.cannontech.database.data.point.PointType;
 
 public class MappedAttributeDefinition extends AttributeDefinition {
 
     private ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao;
-    private PointType pointType;
+    private FilterType filterType;
     
-    public MappedAttributeDefinition(Attribute attribute, PointType pointType, ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao) {
+    public MappedAttributeDefinition(Attribute attribute, FilterType pointType, ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao) {
         super(attribute);
-        this.pointType = pointType;
+        this.filterType = pointType;
         this.extraPaoPointAssignmentDao = extraPaoPointAssignmentDao;
     }
 
@@ -34,8 +34,8 @@ public class MappedAttributeDefinition extends AttributeDefinition {
         return false;
     }
 
-    public PointType getPointType() {
-        return pointType;
+    public FilterType getFilterType() {
+        return filterType;
     }
 
 }

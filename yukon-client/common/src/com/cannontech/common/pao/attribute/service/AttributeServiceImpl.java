@@ -164,7 +164,7 @@ public class AttributeServiceImpl implements AttributeService {
         for (AttributeDefinition attributeDefinition : definedAttributes) {
             if( attributeDefinition instanceof MappedAttributeDefinition) {
                 MappedAttributeDefinition mappedAttributeDefinition = (MappedAttributeDefinition) attributeDefinition;
-                result.add(new MappableAttribute(mappedAttributeDefinition.getAttribute(), mappedAttributeDefinition.getPointType()));
+                result.add(new MappableAttribute(mappedAttributeDefinition.getAttribute(), mappedAttributeDefinition.getFilterType()));
             }
         }
         

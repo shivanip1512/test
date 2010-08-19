@@ -1,8 +1,8 @@
 package com.cannontech.database.data.capcontrol;
 
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.search.FilterType;
 import com.cannontech.core.dao.ExtraPaoPointMapping;
-import com.cannontech.database.data.point.PointType;
 
 public class LtcPointMapping implements Comparable<LtcPointMapping>{
 
@@ -10,7 +10,7 @@ public class LtcPointMapping implements Comparable<LtcPointMapping>{
     private String paoName; /* This is the name of the pao that the point is actually attached to, not the pao it's being mapped to. */
     private String pointName;
     private int index;
-    private PointType pointType;
+    private FilterType filterType;
     
     public String getPaoName() {
         return paoName;
@@ -36,12 +36,12 @@ public class LtcPointMapping implements Comparable<LtcPointMapping>{
         return index;
     }
     
-    public void setPointType(PointType pointType) {
-        this.pointType = pointType;
+    public void setFilterType(FilterType filterType) {
+        this.filterType = filterType;
     }
     
-    public PointType getPointType() {
-        return pointType;
+    public FilterType getFilterType() {
+        return filterType;
     }
     
     public Attribute getAttribute() {

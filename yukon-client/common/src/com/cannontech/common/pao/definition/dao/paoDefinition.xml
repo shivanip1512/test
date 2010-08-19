@@ -5249,32 +5249,32 @@
         <attributes>
             <attribute name="AUTO_REMOTE_CONTROL">
                 <mappedLookup>
-                    <typeFilter type="Status"/>
+                    <typeFilter type="STATUSPOINT"/>
                 </mappedLookup>
             </attribute>
             <attribute name="TAP_UP">
                 <mappedLookup>
-                    <typeFilter type="Status"/>
+                    <typeFilter type="STATUSPOINT"/>
                 </mappedLookup>
             </attribute>
             <attribute name="TAP_DOWN">
                 <mappedLookup>
-                    <typeFilter type="Status"/>
+                    <typeFilter type="STATUSPOINT"/>
                 </mappedLookup>
             </attribute>
             <attribute name="TAP_POSITION">
                 <mappedLookup>
-                    <typeFilter type="Analog"/>
+                    <typeFilter type="ANALOGPOINT"/>
                 </mappedLookup>
             </attribute>
             <attribute name="VOLTAGE">
                 <mappedLookup>
-                    <typeFilter type="Analog"/>
+                    <typeFilter type="ANALOGPOINT"/>
                 </mappedLookup>
             </attribute>
             <attribute name="KEEP_ALIVE">
                 <mappedLookup>
-                    <typeFilter type="Analog"/>
+                    <typeFilter type="ANALOGPOINT"/>
                 </mappedLookup>
             </attribute>
         </attributes>

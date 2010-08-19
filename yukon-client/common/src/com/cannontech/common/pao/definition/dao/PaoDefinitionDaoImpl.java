@@ -68,6 +68,7 @@ import com.cannontech.common.pao.definition.model.castor.Point;
 import com.cannontech.common.pao.definition.model.castor.PointRef;
 import com.cannontech.common.pao.definition.model.castor.Tag;
 import com.cannontech.common.pao.definition.model.castor.TypeFilter;
+import com.cannontech.common.search.FilterType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -745,9 +746,9 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         } else if(choiceLookup instanceof MappedLookup) {
             MappedLookup lookup = (MappedLookup) choiceLookup;
             TypeFilter pointTypeFilter = lookup.getTypeFilter();
-            String pointTypeString = pointTypeFilter.getType();
-            PointType pointType = PointType.getForString(pointTypeString);
-            attributeDefinition = new MappedAttributeDefinition(attribute, pointType, extraPaoPointAssignmentDao);
+            String filterTypeString = pointTypeFilter.getType();
+            FilterType filterType = FilterType.valueOf(filterTypeString);
+            attributeDefinition = new MappedAttributeDefinition(attribute, filterType, extraPaoPointAssignmentDao);
         }
 
         if (attributeDefinition != null) {

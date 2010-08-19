@@ -20,14 +20,20 @@ public abstract class LucenePicker<T> extends BasePicker<T> {
     public SearchResult<T> search(String ss, int start, int count,
             String extraArgs, YukonUserContext userContext) {
         SearchResult<T> hits;
-        if (StringUtils.isBlank(ss)) {
-            hits = searcher.all(criteria, start, count);
+        
+        YukonObjectCriteria combinedCriteria = combineCriteria(criteria, extraArgs);
+		if (StringUtils.isBlank(ss)) {
+            hits = searcher.all(combinedCriteria, start, count);
         } else {
-            hits = searcher.search(ss, criteria, start , count);
+            hits = searcher.search(ss, combinedCriteria, start , count);
         }
         return hits;
     }
 
+    public YukonObjectCriteria combineCriteria(YukonObjectCriteria baseCriteria, String extraArgs) {
+    	return baseCriteria;
+    }
+    
     public void setCriteria(YukonObjectCriteria criteria) {
         this.criteria = criteria;
     }

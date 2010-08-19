@@ -39,6 +39,7 @@
 <entry key="yukon.web.picker.point.pointName">Point</entry>
 <entry key="yukon.web.picker.point.pointId">Point Id</entry>
 <entry key="yukon.web.picker.point.deviceName">Device</entry>
+<entry key="yukon.web.picker.point.pointType">Point Type</entry>
 
 <entry key="yukon.web.picker.pointPicker.dialogTitle">Select Point</entry>
 <entry key="yukon.web.picker.voltReductionPointPicker.dialogTitle">Select Point</entry>
@@ -46,6 +47,7 @@
 <entry key="yukon.web.picker.wattPointPicker.dialogTitle">Select Point</entry>
 <entry key="yukon.web.picker.voltPointPicker.dialogTitle">Select Point</entry>
 <entry key="yukon.web.picker.twoStatePointPicker.dialogTitle">Select Point</entry>
+<entry key="yukon.web.picker.filterablePointPicker.dialogTitle">Select Point</entry>
 
 <!-- User Picker -->
 <entry key="yukon.web.picker.user.name">User</entry>
