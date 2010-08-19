@@ -208,7 +208,7 @@ CREATE TABLE MACSimpleSchedule (
    StopCommand VARCHAR(120) NULL,
    RepeatInterval NUMERIC NULL,
    CONSTRAINT PK_MACSimpSch PRIMARY KEY (ScheduleId)
-)
+);
 GO
 
 /* Migrate the old information into the new table */
