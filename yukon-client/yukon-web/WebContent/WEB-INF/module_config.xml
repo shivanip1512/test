@@ -915,6 +915,7 @@
         </option>
         <option name="events">
           <link>/spring/common/eventLog/viewByCategory</link>
+          <requireRoleProperty value="ADMIN_EVENT_LOGS" />
           <options>
             <option name="byCategory">
               <link>/spring/common/eventLog/viewByCategory</link>
