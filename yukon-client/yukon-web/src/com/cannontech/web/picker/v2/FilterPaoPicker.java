@@ -4,10 +4,12 @@ import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.common.search.UltraLightPao;
+import com.cannontech.common.search.UltraLightPaoAdapter;
 import com.cannontech.common.search.pao.db.UltraLightPaoRowMapper;
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
-public class FilterPaoPicker extends DatabasePicker<UltraLightPao> {
+public class FilterPaoPicker extends DatabasePicker<UltraLightPao, UltraLightPaoAdapter> {
     private final static String[] searchColumnNames = new String[] {"paoName"};
     private final static List<OutputColumn> outputColumns;
     static {
@@ -22,6 +24,29 @@ public class FilterPaoPicker extends DatabasePicker<UltraLightPao> {
 
     public FilterPaoPicker() {
         super(new UltraLightPaoRowMapper(), searchColumnNames);
+    }
+
+    @Override
+    protected Function<UltraLightPaoAdapter, UltraLightPao> getTypeTranslator() {
+        return new Function<UltraLightPaoAdapter, UltraLightPao>() {
+            @Override
+            public UltraLightPao apply(final UltraLightPaoAdapter from) {
+                return new UltraLightPao() {
+                    @Override
+                    public int getPaoId() {
+                        return from.getPaoId();
+                    }
+
+                    @Override
+                    public String getPaoName() {
+                        return from.getPaoName();
+                    }
+
+                    @Override
+                    public String getType() {
+                        return from.getType();
+                    }};
+            }};
     }
 
     @Override

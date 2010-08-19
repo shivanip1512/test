@@ -14,37 +14,47 @@ import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
-public abstract class DatabasePicker<T> extends BasePicker<T> {
+/**
+ * A picker that queries from the database for instances of TDB and serves up
+ * instances of TP for picker results.
+ *
+ * @param <TP>
+ * @param <TDB>
+ */
+public abstract class DatabasePicker<TP, TDB> extends BasePicker<TP> {
 
 	private List<SqlFilter> sqlFilters;
-    private List<PostProcessingFilter<T>> postProcessingFilters;
-    private RowMapperWithBaseQuery<T> rowMapper;
+    private List<PostProcessingFilter<TDB>> postProcessingFilters;
+    private RowMapperWithBaseQuery<TDB> rowMapper;
     private String[] searchColumnNames;
 
     private FilterService filterService;
 
-    protected DatabasePicker(RowMapperWithBaseQuery<T> rowMapper, String[] searchColumnNames) {
-    	
+    protected DatabasePicker(RowMapperWithBaseQuery<TDB> rowMapper,
+            String[] searchColumnNames) {
         this.rowMapper = rowMapper;
         this.searchColumnNames = searchColumnNames;
     }
+
+    protected abstract Function<TDB, TP> getTypeTranslator();
 
     /**
      * Subclasses can override this method to convert extraArgs into specific
      * filters.
      */
     @Override
-    public SearchResult<T> search(final String ss, int start, int count, String extraArgs, YukonUserContext userContext) {
+    public SearchResult<TP> search(String ss, int start, int count,
+            String extraArgs, YukonUserContext userContext) {
         return search(ss, start, count, null, null, userContext);
     }
-    
-    public SearchResult<T> search(final String ss, int start, int count,
-            					  List<SqlFilter> extraSqlFilters,
-            					  List<PostProcessingFilter<T>> extraPostProcessingFilters,
-            					  YukonUserContext userContext) {
-    	
+
+    protected final SearchResult<TP> search(final String ss, int start, int count,
+            List<SqlFilter> extraSqlFilters,
+            List<PostProcessingFilter<TDB>> extraPostProcessingFilters,
+            YukonUserContext userContext) {
     	// sql filters
         final List<SqlFilter> mySqlFilters = Lists.newArrayList();
         if (sqlFilters != null) {
@@ -67,7 +77,7 @@ public abstract class DatabasePicker<T> extends BasePicker<T> {
         }
         
         // post processing filters
-        final List<PostProcessingFilter<T>> myPostProcessingFilters = Lists.newArrayList();
+        final List<PostProcessingFilter<TDB>> myPostProcessingFilters = Lists.newArrayList();
         if (postProcessingFilters != null) {
         	myPostProcessingFilters.addAll(postProcessingFilters);
         }
@@ -76,9 +86,9 @@ public abstract class DatabasePicker<T> extends BasePicker<T> {
         }
 
         // combine sql and post processing filter into a single UiFilter
-        UiFilter<T> filter = new UiFilter<T>() {
+        UiFilter<TDB> filter = new UiFilter<TDB>() {
             @Override
-            public Iterable<PostProcessingFilter<T>> getPostProcessingFilters() {
+            public Iterable<PostProcessingFilter<TDB>> getPostProcessingFilters() {
                 return myPostProcessingFilters;
             }
 
@@ -89,14 +99,16 @@ public abstract class DatabasePicker<T> extends BasePicker<T> {
         };
 
         // no sorter support
-        return filterService.filter(filter, null, start, count, rowMapper);
+        SearchResult<TDB> dbResults = filterService.filter(filter, null, start,
+                                                           count, rowMapper);
+        return dbResults.translate(getTypeTranslator());
     }
 
     public void setSqlFilters(List<SqlFilter> sqlFilters) {
         this.sqlFilters = sqlFilters;
     }
     
-    public void setPostProcessingFilters(List<PostProcessingFilter<T>> postProcessingFilters) {
+    public void setPostProcessingFilters(List<PostProcessingFilter<TDB>> postProcessingFilters) {
 		this.postProcessingFilters = postProcessingFilters;
 	}
 

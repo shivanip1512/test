@@ -19,7 +19,7 @@ import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
-public class AvailableThermostatPicker extends DatabasePicker<DisplayableLmHardware> {
+public class AvailableThermostatPicker extends SimpleDatabasePicker<DisplayableLmHardware> {
     
     private StarsDatabaseCache starsDatabaseCache;
     private ECMappingDao ecMappingDao;

@@ -16,7 +16,7 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class AssignedProgramPicker
-    extends DatabasePicker<UltraLightAssignedProgram> {
+    extends SimpleDatabasePicker<UltraLightAssignedProgram> {
     private ApplianceCategoryDao applianceCategoryDao;
 
     private final static String[] searchColumnNames = new String[] {

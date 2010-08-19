@@ -15,7 +15,7 @@ import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
-public class SurveyPicker extends DatabasePicker<Survey> {
+public class SurveyPicker extends SimpleDatabasePicker<Survey> {
     private EnergyCompanyDao energyCompanyDao;
 
     private final static String[] searchColumnNames = new String[] {
