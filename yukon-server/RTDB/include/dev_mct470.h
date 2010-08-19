@@ -25,8 +25,6 @@ private:
     CtiTableDeviceMCTIEDPort _iedPort;
     CtiTime                  _iedTime;
 
-    bool _precannedTableCurrent;
-
     boost::shared_ptr<Cti::DataAccessLoadProfile> deviceConfigLp;
     boost::shared_ptr<Cti::DataAccessLoadProfile> getDeviceConfigLp(Cti::Config::CtiConfigDeviceSPtr deviceConfig);
 

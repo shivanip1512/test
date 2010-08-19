@@ -1,37 +1,11 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   port_base
-*
-* Class:  CtiPort
-* Date:   3/29/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.50.2.2 $
-* DATE         :  $Date: 2008/11/20 16:49:27 $
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PORT_BASE_H__
-#define __PORT_BASE_H__
-#pragma warning( disable : 4786)
-
-
-
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
+#pragma once
 
 #include <windows.h>
 #include <list>
 #include <iostream>
 #include <boost/shared_ptr.hpp>
-#include "boostutil.h"
-using boost::shared_ptr;
+
 using std::list;
-using std::iostream;
 
 #include <rw/thr/thrfunc.h>
 
@@ -43,6 +17,7 @@ using std::iostream;
 #include "tbl_paoexclusion.h"
 #include "xfer.h"
 #include "critical_section.h"
+#include "counter.h"
 
 #ifdef CTIOLDSTATS
   #include "tbl_port_statistics.h"
@@ -53,7 +28,7 @@ using std::iostream;
 #include <boost/noncopyable.hpp>
 
 class CtiPort;
-typedef shared_ptr< CtiPort > CtiPortSPtr;
+typedef boost::shared_ptr< CtiPort > CtiPortSPtr;
 
 
 typedef void (*CTI_PORTTHREAD_FUNC_PTR)(void*);
@@ -385,5 +360,3 @@ inline void CtiPort::setSharingStatus( bool b ) { _sharingStatus = b; }
 inline void CtiPort::setShareToggle( bool b ) { _sharingToggle = b; }
 inline bool CtiPort::getShareToggle(  ) const { return _sharingToggle; }
 
-
-#endif // #ifndef __PORT_BASE_H__

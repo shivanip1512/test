@@ -1,34 +1,12 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dyn_pttag
-*
-* Class:  CtiTableDynamicPaoInfo
-* Date:   12/22/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.22.6.2 $
-* DATE         :  $Date: 2008/11/19 15:21:28 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+#pragma once
 
-#pragma warning( disable : 4786)
-#ifndef __TBL_DYN_PAOINFO_H__
-#define __TBL_DYN_PAOINFO_H__
-
+#include "dlldefs.h"
+#include "dbmemobject.h"
+#include "database_connection.h"
+#include "row_reader.h"
 
 #include <string>
 #include <map>
-
-#include "ctibase.h"
-#include "dlldefs.h"
-#include "dbmemobject.h"
-#include "pointdefs.h"
-#include "yukon.h"
-#include "database_connection.h"
-#include "rwutil.h"
 
 using std::map;
 using std::string;
@@ -399,6 +377,7 @@ public:
     CtiApplication_t getOwnerID()     const;
     string           getOwnerString() const;
     PaoInfoKeys      getKey()         const;
+    string           getKeyString()   const;
     string           getValue()       const;
 
     void             getValue(int           &destination) const;
@@ -426,5 +405,3 @@ public:
     virtual void dump();
 };
 
-
-#endif // #ifndef __TBL_DYN_PAOINFO_H__

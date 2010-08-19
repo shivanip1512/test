@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_base
-*
-* Date:   7/23/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.77.2.2 $
-* DATE         :  $Date: 2008/11/19 15:21:28 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <limits>
@@ -28,6 +15,8 @@
 #include "utility.h"
 #include "database_connection.h"
 #include "database_writer.h"
+
+using namespace std;
 
 CtiMutex CtiDeviceBase::_configMux;
 
@@ -447,12 +436,17 @@ void CtiDeviceBase::purgeDynamicPaoInfo()
     set<CtiTableDynamicPaoInfo>::iterator itr = _paoInfo.begin();
 
     if(itr == _paoInfo.end()) // Nothing to purge, let's get out of here!
-        return; 
+        return;
 
-    const string owner = (*itr).getOwnerString();
+    const string owner = itr->getOwnerString();
 
-    // Purge the dynamic info from memory. 
+    // Purge the dynamic info from memory.
     _paoInfo.clear();
+
+    if( owner.empty() )
+    {
+        return;
+    }
 
     // Purge the dynamic info from the database.
     static const string sqlPurge = "DELETE "
@@ -463,6 +457,39 @@ void CtiDeviceBase::purgeDynamicPaoInfo()
     Cti::Database::DatabaseWriter       deleter(connection, sqlPurge);
 
     deleter << getID()
+            << owner;
+
+    deleter.execute();
+}
+
+void CtiDeviceBase::purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::PaoInfoKeys key)
+{
+    std::set<CtiTableDynamicPaoInfo>::iterator itr = _paoInfo.find(CtiTableDynamicPaoInfo(getID(), key));
+
+    if(itr == _paoInfo.end()) // Nothing to purge, let's get out of here!
+        return;
+
+    const string owner   = itr->getOwnerString();
+    const string keyname = itr->getKeyString();
+
+    // Purge the dynamic info from memory.
+    _paoInfo.erase(itr);
+
+    if( owner.empty() || keyname.empty() )
+    {
+        return;
+    }
+
+    // Purge the dynamic info from the database.
+    static const string sqlPurge = "DELETE "
+                                   "FROM dynamicpaoinfo "
+                                   "WHERE paobjectid = ? AND infokey = ? AND owner = ?";
+
+    Cti::Database::DatabaseConnection   connection;
+    Cti::Database::DatabaseWriter       deleter(connection, sqlPurge);
+
+    deleter << getID()
+            << keyname
             << owner;
 
     deleter.execute();
@@ -861,8 +888,8 @@ bool CtiDeviceBase::setDynamicInfo(const CtiTableDynamicPaoInfo &info)
     return new_record;
 }
 
-bool CtiDeviceBase::getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k,        string &destination) const    
-{   
+bool CtiDeviceBase::getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k,        string &destination) const
+{
     bool success = false;
 
     std::set<CtiTableStaticPaoInfo>::const_iterator itr;
@@ -876,8 +903,8 @@ bool CtiDeviceBase::getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k,        s
     return success;
 }
 
-long CtiDeviceBase::getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const    
-{   
+long CtiDeviceBase::getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const
+{
     std::set<CtiTableStaticPaoInfo>::const_iterator itr;
 
     long value = 0;

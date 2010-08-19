@@ -35,8 +35,7 @@ const Mct470Device::error_set Mct470Device::_error_info_gekv      = Mct470Device
 const Mct470Device::error_set Mct470Device::_error_info_sentinel  = Mct470Device::initErrorInfoSentinel();
 
 Mct470Device::Mct470Device( ) :
-    _lastConfigRequest(0),
-    _precannedTableCurrent(false)  //default to false on each startup, since we don't persist this boolean
+    _lastConfigRequest(0)
 {
 }
 
@@ -1340,7 +1339,6 @@ INT Mct470Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 
         case EmetconProtocol::PutConfig_PrecannedTable:
         {
-            _precannedTableCurrent = false;
             status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
@@ -1488,7 +1486,7 @@ INT Mct470Device::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 
 bool Mct470Device::isPrecannedTableCurrent() const
 {
-    return _precannedTableCurrent && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType);
+    return hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType);
 }
 
 
@@ -2261,7 +2259,7 @@ INT Mct470Device::executePutConfig( CtiRequestMsg         *pReq,
             OutMessage->Buffer.BSt.Message[2] = 0;
             OutMessage->Buffer.BSt.Message[3] = parse.getiValue("precanned_table");
 
-            _precannedTableCurrent = false;
+            purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType);
         }
     }
     else if( parse.isKeyValid("channel_config") )
@@ -4965,8 +4963,6 @@ INT Mct470Device::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNow, 
 
         resultString += getName() + " / Precanned Meter Number: " + CtiNumStr(DSt->Message[4]) + "\n";
         resultString += getName() + " / Precanned Table Type: "   + CtiNumStr(DSt->Message[5]) + "\n";
-
-        _precannedTableCurrent = true;
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {

@@ -432,7 +432,7 @@ bool CtiTableDynamicPaoInfo::Insert(Cti::Database::DatabaseConnection &conn)
 
         Cti::Database::DatabaseWriter   inserter(conn, sql);
 
-        inserter 
+        inserter
             << getEntryID()     //  MUST be set before we try to insert
             << getPaoID()
             << *tmp_owner
@@ -644,6 +644,17 @@ CtiTableDynamicPaoInfo::PaoInfoKeys CtiTableDynamicPaoInfo::getKey() const
 {
     return _key;
 }
+string CtiTableDynamicPaoInfo::getKeyString() const
+{
+    key_map_t::const_iterator key = _key_map.find(_key);
+
+    if( key == _key_map.end() || !key->second )
+    {
+        return string();
+    }
+
+    return *(key->second);
+}
 
 string CtiTableDynamicPaoInfo::getValue() const
 {
@@ -652,11 +663,14 @@ string CtiTableDynamicPaoInfo::getValue() const
 
 string CtiTableDynamicPaoInfo::getOwnerString() const
 {
-    const string *ownerString = 0;
+    owner_map_t::const_iterator owner = _owner_map.find(_owner_id);
 
-    ownerString = (_owner_map.find(getOwnerID()))->second;
+    if( owner == _owner_map.end() || !owner->second )
+    {
+        return string();
+    }
 
-    return *ownerString;
+    return *(owner->second);
 }
 
 //  these may need to become individually named get functions, if the assignment idiom doesn't work out
