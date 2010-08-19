@@ -16,6 +16,7 @@
 			<list>
 				<ref bean="mct470Config"/>
 				<ref bean="mct430Config"/>
+				<ref bean="mct420Config" />
 				<!-- 
 				<ref bean="mct410Config"/>
 				-->
@@ -529,7 +530,383 @@
 			</props>
 		</property>
 	</bean>
+	
+	<bean id="mct420Config"
+		class="com.cannontech.common.device.config.model.ConfigurationTemplate">
+		<property name="name" value="MCT 420 Configuration" />
+		<property name="view" value="420Config" />
+		<property name="description" value="MCT 420 Configuration" />
+		<property name="supportedDeviceSet">
+			<set>
+				<value>MCT-420FL</value>
+				<value>MCT-420FLD</value>
+				<value>MCT-420CL</value>
+				<value>MCT-420CLD</value>
+			</set>
+		</property>
+		<property name="categoryList">
+			<list>
+				<ref bean="displayItemList" />
+			</list>
+		</property>
 
+		<!-- Config field name to database item mapping -->
+		<property name="dbNameMapping">
+			<props>
+				<prop key="Display Item 1">displayItems[0]</prop>
+				<prop key="Display Item 2">displayItems[1]</prop>
+				<prop key="Display Item 3">displayItems[2]</prop>
+				<prop key="Display Item 4">displayItems[3]</prop>
+				<prop key="Display Item 5">displayItems[4]</prop>
+				<prop key="Display Item 6">displayItems[5]</prop>
+				<prop key="Display Item 7">displayItems[6]</prop>
+				<prop key="Display Item 8">displayItems[7]</prop>
+				<prop key="Display Item 9">displayItems[8]</prop>
+				<prop key="Display Item 10">displayItems[9]</prop>
+				<prop key="Display Item 11">displayItems[10]</prop>
+				<prop key="Display Item 12">displayItems[11]</prop>
+				<prop key="Display Item 13">displayItems[12]</prop>
+				<prop key="Display Item 14">displayItems[13]</prop>
+				<prop key="Display Item 15">displayItems[14]</prop>
+				<prop key="Display Item 16">displayItems[15]</prop>
+				<prop key="Display Item 17">displayItems[16]</prop>
+				<prop key="Display Item 18">displayItems[17]</prop>
+				<prop key="Display Item 19">displayItems[18]</prop>
+				<prop key="Display Item 20">displayItems[19]</prop>
+				<prop key="Display Item 21">displayItems[20]</prop>
+				<prop key="Display Item 22">displayItems[21]</prop>
+				<prop key="Display Item 23">displayItems[22]</prop>
+				<prop key="Display Item 24">displayItems[23]</prop>
+				<prop key="Display Item 25">displayItems[24]</prop>
+				<prop key="Display Item 26">displayItems[25]</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="displayConfigEnum" class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+		<property name="enumeratedType" ref="inputIntegerType" />
+		<property name="optionList">
+			<list>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="Slot Disabled" />
+					<property name="value" value="0" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="No Segments" />
+					<property name="value" value="1" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="All Segments" />
+					<property name="value" value="2" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="Total kWh" />
+					<property name="value" value="3" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="Net kWh" />
+					<property name="value" value="4" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="Delivered kWh" />
+					<property name="value" value="5" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="Reverse kWh" />
+					<property name="value" value="6" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="Last Interval kW" />
+					<property name="value" value="7" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="Peak kW" />
+					<property name="value" value="8" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="Peak kW Date" />
+					<property name="value" value="9" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="Peak kW Time" />
+					<property name="value" value="10" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="Last Interval Voltage" />
+					<property name="value" value="11" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="Peak Voltage" />
+					<property name="value" value="12" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="Peak Voltage Date" />
+					<property name="value" value="13" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="Peak Voltage Time" />
+					<property name="value" value="14" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate A kWh" />
+					<property name="value" value="15" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate A Peak kW" />
+					<property name="value" value="16" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate A Date of Peak Demand" />
+					<property name="value" value="17" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate A Time of Peak Demand" />
+					<property name="value" value="18" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate B kWh" />
+					<property name="value" value="19" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate B Peak kW" />
+					<property name="value" value="20" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate B Date of Peak kW" />
+					<property name="value" value="21" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate B Time of Peak kW" />
+					<property name="value" value="22" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate C kWh" />
+					<property name="value" value="23" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate C Peak kW" />
+					<property name="value" value="24" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate C Date of Peak kW" />
+					<property name="value" value="25" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate C Time of Peak kW" />
+					<property name="value" value="26" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate D kWh" />
+					<property name="value" value="27" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate D Peak kW" />
+					<property name="value" value="28" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate D Date of Peak kW" />
+					<property name="value" value="29" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate D Time of Peak kW" />
+					<property name="value" value="30" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate E kWh" />
+					<property name="value" value="31" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate E Peak kW" />
+					<property name="value" value="32" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate E Date of Peak kW" />
+					<property name="value" value="33" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate E Time of Peak kW" />
+					<property name="value" value="34" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="Tamper" />
+					<property name="value" value="35" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="displayItemList"
+		class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="Display Items" />
+		<property name="description">
+			<value>
+			</value>
+		</property>
+		<property name="validatorList">
+		<list><bean class="com.cannontech.common.device.config.model.MCT420DisplayConfigValidator"/></list>
+		</property>
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 1" />
+					<property name="field" value="displayItems[0]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 2" />
+					<property name="field" value="displayItems[1]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 3" />
+					<property name="field" value="displayItems[2]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 4" />
+					<property name="field" value="displayItems[3]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 5" />
+					<property name="field" value="displayItems[4]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 6" />
+					<property name="field" value="displayItems[5]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 7" />
+					<property name="field" value="displayItems[6]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 8" />
+					<property name="field" value="displayItems[7]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 9" />
+					<property name="field" value="displayItems[8]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 10" />
+					<property name="field" value="displayItems[9]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 11" />
+					<property name="field" value="displayItems[10]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 12" />
+					<property name="field" value="displayItems[11]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 13" />
+					<property name="field" value="displayItems[12]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 14" />
+					<property name="field" value="displayItems[13]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 15" />
+					<property name="field" value="displayItems[14]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 16" />
+					<property name="field" value="displayItems[15]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 17" />
+					<property name="field" value="displayItems[16]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 18" />
+					<property name="field" value="displayItems[17]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 19" />
+					<property name="field" value="displayItems[18]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 20" />
+					<property name="field" value="displayItems[19]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 21" />
+					<property name="field" value="displayItems[20]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 22" />
+					<property name="field" value="displayItems[21]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 23" />
+					<property name="field" value="displayItems[22]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 24" />
+					<property name="field" value="displayItems[23]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 25" />
+					<property name="field" value="displayItems[24]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Display Item 26" />
+					<property name="field" value="displayItems[25]" />
+					<property name="type" ref="displayConfigEnum" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
 	<!-- Configuration categories -->
 	
 	<bean id="addressingCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">

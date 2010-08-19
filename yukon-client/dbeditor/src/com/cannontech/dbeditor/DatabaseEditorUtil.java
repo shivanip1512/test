@@ -32,6 +32,7 @@ import com.cannontech.database.data.device.MCT410CL;
 import com.cannontech.database.data.device.MCT410FL;
 import com.cannontech.database.data.device.MCT410GL;
 import com.cannontech.database.data.device.MCT410IL;
+import com.cannontech.database.data.device.MCT420FL;
 import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -59,6 +60,14 @@ public final class DatabaseEditorUtil {
                 (object instanceof MCT410FL) ||
                 (object instanceof MCT410GL) ||
                 (object instanceof MCT410IL));
+    }
+    
+    public static boolean isDisconnectCollarCompatible(final Object object){
+        return ((object instanceof MCT410CL) ||
+                (object instanceof MCT410FL) ||
+                (object instanceof MCT410GL) ||
+                (object instanceof MCT410IL) ||
+                (object instanceof MCT420FL));
     }
     
     public static void updateDisconnectStatus(final DatabaseEditor dbEditor, final JComponent c, final Object object) {

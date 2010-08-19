@@ -18,7 +18,9 @@ import com.cannontech.web.input.Input;
 import com.cannontech.web.input.InputFormController;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputSource;
+import com.cannontech.web.input.validate.InputValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.Lists;
 
 /**
  * Spring controller class for Device Configuration form input
@@ -50,6 +52,16 @@ public class DeviceConfigurationFormController extends InputFormController {
             inputList.addAll(catTemplate.getInputList());
         }
 
+    }
+    
+    @Override
+    protected List<InputValidator<?>> getGlobalValidators() {
+        List<InputValidator<?>> result = Lists.newArrayList();
+        for (CategoryTemplate catTemplate : configurationTemplate.getCategoryList()) {
+            result.addAll(catTemplate.getValidatorList());
+        }
+        
+        return result;
     }
 
     @Override

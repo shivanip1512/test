@@ -12,6 +12,7 @@ public enum PaoTag {
 	VOLTAGE_PROFILE("Voltage Profile"),
 	DEVICE_CONFIGURATION_470("Device Configuration 470"),
 	DEVICE_CONFIGURATION_430("Device Configuration 430"),
+	DEVICE_CONFIGURATION_420("Device Configuration 420"),
 	DISCONNECT_410("410 Disconnect"),
 	DISCONNECT_310("310 Disconnect"),
 	DISCONNECT_213("213 Disconnect"),

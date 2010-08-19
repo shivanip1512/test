@@ -17,6 +17,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.input.type.InputType;
 import com.cannontech.web.input.validate.InputBindingErrorProcessor;
 import com.cannontech.web.input.validate.InputValidator;
+import com.google.common.collect.ImmutableList;
 
 /**
  * Form controller for inputs. Handles the registration of property editors from
@@ -115,6 +116,15 @@ public abstract class InputFormController extends SimpleFormController {
                 }
             }
         }
+        
+        for (InputValidator validator : getGlobalValidators()) {
+            validator.validate(null, "", command, errors);
+        }
+        
+    }
+
+    protected List<InputValidator<?>> getGlobalValidators() {
+        return ImmutableList.of();
     }
 
 }

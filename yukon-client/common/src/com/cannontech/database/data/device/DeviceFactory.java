@@ -171,6 +171,18 @@ public final class DeviceFactory {
         case MCT410GL:
             returnDevice = new MCT410GL();
             break;
+        case MCT420FL:
+            returnDevice = new MCT420FL();
+            break;
+        case MCT420FLD:
+            returnDevice = new MCT420FLD();
+            break;
+        case MCT420CL:
+            returnDevice = new MCT420CL();
+            break;
+        case MCT420CLD:
+            returnDevice = new MCT420CLD();
+            break;
         case MCT430A:
             returnDevice = new MCT430A();
             break;

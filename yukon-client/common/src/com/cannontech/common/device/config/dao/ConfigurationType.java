@@ -4,8 +4,10 @@ import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.MCT410Configuration;
 import com.cannontech.common.device.config.model.MCT430Configuration;
 import com.cannontech.common.device.config.model.MCT470Configuration;
+import com.cannontech.common.device.config.model.MCT420Configuration;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.search.criteria.MCT410Criteria;
+import com.cannontech.common.search.criteria.MCT420Criteria;
 import com.cannontech.common.search.criteria.MCT430Criteria;
 import com.cannontech.common.search.criteria.MCT470Criteria;
 import com.cannontech.common.search.criteria.YukonObjectCriteriaHelper;
@@ -47,6 +49,23 @@ public enum ConfigurationType {
 
         public PaoTag getSupportedDeviceTag() {
             return PaoTag.DEVICE_CONFIGURATION_430;
+        }
+    },
+    MCT420 {
+        public ConfigurationBase getConfigurationClass() {
+            return new MCT420Configuration();
+        }
+        
+        public String getConfigurationTemplateName() {
+            return "MCT 420 Configuration";
+        }
+        
+        public Class<? extends YukonObjectCriteriaHelper> getCriteria() {
+            return MCT420Criteria.class;
+        }
+        
+        public PaoTag getSupportedDeviceTag() {
+            return PaoTag.DEVICE_CONFIGURATION_420;
         }
     },
     MCT410 {

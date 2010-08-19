@@ -38,7 +38,8 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.RTC, PAOGroups.KV, PAOGroups.KVII, PAOGroups.RTM, PAOGroups.MCT410IL, PAOGroups.MCT410CL,
             PAOGroups.MCT410FL, PAOGroups.MCT410GL, PAOGroups.MCT470, PAOGroups.MCT430A, PAOGroups.MCT430S4, PAOGroups.MCT430SL, PAOGroups.MCT430A3, 
             PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.FAULT_CI, PAOGroups.NEUTRAL_MONITOR, PAOGroups.INTEGRATION_TRANSMITTER, PAOGroups.LCR3102,
-            PAOGroups.CRF_AL, PAOGroups.CRF_AX, PAOGroups.RDS_TERMINAL
+            PAOGroups.CRF_AL, PAOGroups.CRF_AX, PAOGroups.RDS_TERMINAL, 
+            PAOGroups.MCT420FL, PAOGroups.MCT420FLD, PAOGroups.MCT420CL, PAOGroups.MCT420CLD
 		},
 		{ 	//1 - DeviceMeterGroupEditorPanel
 			PAOGroups.ALPHA_A1, PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, PAOGroups.QUANTUM, 
@@ -50,7 +51,8 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.TRANSDATA_MARKV, PAOGroups.KV, PAOGroups.KVII, PAOGroups.MCT410IL, PAOGroups.MCT410CL,
             PAOGroups.MCT410FL, PAOGroups.MCT410GL, PAOGroups.MCT470, PAOGroups.MCT430A, PAOGroups.MCT430S4, PAOGroups.MCT430SL, PAOGroups.MCT430A3, 
             PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.LCR3102,
-            PAOGroups.CRF_AL, PAOGroups.CRF_AX
+            PAOGroups.CRF_AL, PAOGroups.CRF_AX,
+            PAOGroups.MCT420FL, PAOGroups.MCT420FLD, PAOGroups.MCT420CL, PAOGroups.MCT420CLD
 		},
       	{   //2 - CapBankController
          PAOGroups.CAPBANKCONTROLLER, PAOGroups.CBC_FP_2800, PAOGroups.DNP_CBC_6510, PAOGroups.CBC_EXPRESSCOM,
@@ -74,7 +76,8 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
          	PAOGroups.MCT310IDL, PAOGroups.TRANSDATA_MARKV, PAOGroups.SERIES_5_LMI, PAOGroups.RTU_MODBUS,
          	PAOGroups.RTC,  PAOGroups.KV, PAOGroups.KVII, PAOGroups.RTM, PAOGroups.MCT410IL, PAOGroups.MCT410CL,
             PAOGroups.MCT410FL, PAOGroups.MCT410GL, PAOGroups.MCT470, PAOGroups.MCT430A, PAOGroups.MCT430S4, PAOGroups.MCT430SL, PAOGroups.MCT430A3,
-            PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.LCR3102
+            PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.LCR3102,
+            PAOGroups.MCT420FL, PAOGroups.MCT420FLD, PAOGroups.MCT420CL, PAOGroups.MCT420CLD
 		},
 
 		{   //5 - TapTerminalPanel
@@ -128,7 +131,8 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 		},
 		{
 			//13 - DeviceMCT400SeriesOptionPanel
-			PAOGroups.MCT410IL, PAOGroups.MCT410CL, PAOGroups.MCT410FL, PAOGroups.MCT410GL
+			PAOGroups.MCT410IL, PAOGroups.MCT410CL, PAOGroups.MCT410FL, PAOGroups.MCT410GL,
+			PAOGroups.MCT420FL
 		},
         {
             //14 - TNPPTermOptionPanel
@@ -234,11 +238,11 @@ public Object[] createNewPanel(int panelIndex)
 		    objs[0] = new DeviceTNPPTerminalPanel();
 	        objs[1] = "TNPP Settings";
 	        break;
-		
-		case 15:
-		    objs[0] = new DeviceRDSTerminalPanel();
-		    objs[1] = "RDS Settings";
-		    break;
+        
+        case 15:
+            objs[0] = new DeviceRDSTerminalPanel();
+            objs[1] = "RDS Settings";
+            break;
 	}
 		
 	return objs;

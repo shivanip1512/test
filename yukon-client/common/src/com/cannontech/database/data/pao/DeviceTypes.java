@@ -148,9 +148,13 @@ public interface DeviceTypes extends TypeBase
     public final static int CRF_AX    = DEVICE_OFFSET + 112;
     public final static int CRF_AL    = DEVICE_OFFSET + 113;
     public final static int RDS_TERMINAL    = DEVICE_OFFSET + 114;
+    public final static int MCT420FL        = DEVICE_OFFSET + 115;
+    public final static int MCT420FLD        = DEVICE_OFFSET + 116;
+    public final static int MCT420CL        = DEVICE_OFFSET + 117;
+    public final static int MCT420CLD        = DEVICE_OFFSET + 118;
     
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 114;
+	public final static int DEVICE_TYPES_COUNT = 118;
 	
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]

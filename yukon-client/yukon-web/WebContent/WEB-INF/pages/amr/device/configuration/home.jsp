@@ -46,7 +46,7 @@
                     </tags:nameValue>
                 </tags:nameValueContainer>
             </tags:sectionContainer>
-            <input type="submit" name="createConfig" value="Create" />
+            <input type="submit" name="createConfig" value="Create" class="formSubmit"/>
         </form>
     </c:if>
 	
@@ -69,10 +69,10 @@
                     <br>
                     <a href="/spring/bulk/deviceSelection">Manage Device Configuration Assignments</a>
                 </tags:sectionContainer>
-                <input type="submit" name="editConfig" value="${editConfig ? 'Edit' : 'View'}"/>
+                <input type="submit" name="editConfig" value="${editConfig ? 'Edit' : 'View'}" class="formSubmit"/>
                 <c:if test="${editConfig}">
-                    <input type="submit" name="removeConfig" value="Delete" onclick="return deleteConfig()"/>
-                    <input type="submit" name="cloneConfig" value="Copy"/>
+                    <input type="submit" name="removeConfig" value="Delete" onclick="return deleteConfig()" class="formSubmit"/>
+                    <input type="submit" name="cloneConfig" value="Copy" class="formSubmit"/>
                 </c:if>
 			</form>
 		</c:when>
