@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/18/2010 4:40:07 PM                         */
+/* Created on:     8/18/2010 10:54:15 PM                        */
 /*==============================================================*/
 
 
@@ -9501,6 +9501,7 @@ INSERT INTO YukonRoleProperty VALUES(-20014,-200,'View Device Config','true','Co
 INSERT INTO YukonRoleProperty VALUES(-20015,-200,'Manage Indexes','true','Controls access to manually build Lucene indexes.'); 
 INSERT INTO YukonRoleProperty VALUES(-20016,-200,'View Logs','true','Controls access to view or download log files.');
 INSERT INTO YukonRoleProperty VALUES(-20017,-200,'Database Migration','false','Controls access to database migration tool.');
+INSERT INTO YukonRoleProperty VALUES(-20018,-200,'Event Logs','false','Controls access to event logs feature.');
 
 /* Operator Metering Role Properties*/
 INSERT INTO YukonRoleProperty VALUES(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
@@ -12425,13 +12426,11 @@ alter table SurveyResult
 
 alter table SurveyResultAnswer
    add constraint FK_SurvResAns_SurQuestAns foreign key (SurveyQuestionAnswerId)
-      references SurveyQuestionAnswer (SurveyQuestionAnswerId)
-      on delete cascade;
+      references SurveyQuestionAnswer (SurveyQuestionAnswerId);
 
 alter table SurveyResultAnswer
    add constraint FK_SurvResAns_SurvQuest foreign key (SurveyQuestionId)
-      references SurveyQuestion (SurveyQuestionId)
-      on delete cascade;
+      references SurveyQuestion (SurveyQuestionId);
 
 alter table SurveyResultAnswer
    add constraint FK_SurvResAns_SurvRes foreign key (SurveyResultId)

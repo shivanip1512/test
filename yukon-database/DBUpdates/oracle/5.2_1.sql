@@ -453,13 +453,11 @@ ALTER TABLE SurveyResultAnswer
 
 ALTER TABLE SurveyResultAnswer
     ADD CONSTRAINT FK_SurvResAns_SurvQues FOREIGN KEY (SurveyQuestionId)
-        REFERENCES SurveyQuestion (SurveyQuestionId)
-            ON DELETE CASCADE;
+        REFERENCES SurveyQuestion (SurveyQuestionId);
 
 ALTER TABLE SurveyResultAnswer
     ADD CONSTRAINT FK_SurvResAns_SurvQuesAnsw FOREIGN KEY (SurveyQuestionAnswerId)
-        REFERENCES SurveyQuestionAnswer (SurveyQuestionAnswerId)
-            ON DELETE CASCADE;
+        REFERENCES SurveyQuestionAnswer (SurveyQuestionAnswerId);
 /* End YUK-8932 */
 
 /* Start YUK-8976 */
@@ -514,6 +512,10 @@ ALTER TABLE StaticPAOInfo
         REFERENCES YukonPAObject (PAObjectId)
             ON DELETE CASCADE;
 /* End YUK-8991 */
+
+/* Start YUK-9005 */
+INSERT INTO YukonRoleProperty VALUES(-20018,-200,'Event Logs','false','Controls access to event logs feature.');
+/* End YUK-9005 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
