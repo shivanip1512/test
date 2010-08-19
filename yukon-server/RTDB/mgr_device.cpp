@@ -1950,7 +1950,7 @@ void CtiDeviceManager::writeDynamicPaoInfo( void )
     for( ; dev_itr != dev_end; dev_itr++ )
     {
         //  passed by reference
-        dev_itr->second->getDirtyInfo(dirty_info);
+        dev_itr->second->getDirtyInfo(dirty_info, _app_id);
     }
 
     if( !dirty_info.empty() )

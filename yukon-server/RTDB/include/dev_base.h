@@ -246,7 +246,7 @@ public:
     //  note - this returns the value as a long for convenience - the name may need to be changed to prevent confusion if it arises
     long getDynamicInfo(PaoInfoKeys k) const;
 
-    bool getDirtyInfo(vector<CtiTableDynamicPaoInfo *> &dirty_info);
+    bool getDirtyInfo(vector<CtiTableDynamicPaoInfo *> &dirty_info, CtiApplication_t app_id);
 
     bool hasStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const;
     bool setStaticInfo(const CtiTableStaticPaoInfo &info);

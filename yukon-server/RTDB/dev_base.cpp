@@ -1003,7 +1003,7 @@ long CtiDeviceBase::getDynamicInfo(PaoInfoKeys k) const
     return l;
 }
 
-bool CtiDeviceBase::getDirtyInfo(std::vector<CtiTableDynamicPaoInfo *> &dirty_info)
+bool CtiDeviceBase::getDirtyInfo(std::vector<CtiTableDynamicPaoInfo *> &dirty_info, CtiApplication_t app_id)
 {
     bool retval = false;
 
@@ -1013,6 +1013,8 @@ bool CtiDeviceBase::getDirtyInfo(std::vector<CtiTableDynamicPaoInfo *> &dirty_in
 
         for( itr = _paoInfo.begin(); itr != itr_end; itr++ )
         {
+            itr->setOwner(app_id);
+
             if( itr->isDirty() )
             {
                 dirty_info.push_back(CTIDBG_new CtiTableDynamicPaoInfo(*itr));
