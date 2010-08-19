@@ -504,6 +504,10 @@
 <entry key="yukon.web.modules.dr.programList.heading.priority">Priority</entry>
 <entry key="yukon.web.modules.dr.programList.heading.reduction">Reduction</entry>
 <entry key="yukon.web.modules.dr.programList.heading.loadCapacity">Load Capacity</entry>
+<entry key="yukon.web.modules.dr.programList.typeMismatch.start.min">Invalid date</entry>
+<entry key="yukon.web.modules.dr.programList.typeMismatch.start.max">Invalid date</entry>
+<entry key="yukon.web.modules.dr.programList.typeMismatch.stop.min">Invalid date</entry>
+<entry key="yukon.web.modules.dr.programList.typeMismatch.stop.max">Invalid date</entry>
 
 
 <!-- Program Detail -->

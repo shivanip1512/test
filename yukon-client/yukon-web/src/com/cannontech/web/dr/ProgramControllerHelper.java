@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.support.SessionStatus;
 
@@ -24,6 +25,7 @@ import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.Range;
+import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -100,6 +102,12 @@ public class ProgramControllerHelper {
     private FavoritesDao favoritesDao;
 
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+        if (binder.getTarget() != null) {
+            MessageCodesResolver msgCodesResolver =
+                new YukonMessageCodeResolver("yukon.web.modules.dr.programList.");
+            binder.setMessageCodesResolver(msgCodesResolver);
+        }
+
         PropertyEditor fullDateTimeEditor =
             datePropertyEditorFactory.getPropertyEditor(DateFormatEnum.DATEHM, userContext);
         binder.registerCustomEditor(Date.class, fullDateTimeEditor);

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -23,6 +24,7 @@ import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -32,6 +34,8 @@ import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.service.ScenarioService;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.dr.ProgramControllerHelper.ProgramListBackingBean;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ListBackingBean;
@@ -88,13 +92,17 @@ public class ScenarioController {
     }
 
     @RequestMapping("/scenario/detail")
-    public String detail(int scenarioId, 
-                         ModelMap modelMap,
-                         YukonUserContext userContext,
-                         @ModelAttribute("backingBean") ProgramListBackingBean backingBean,
-                         BindingResult result, 
-                         SessionStatus status) {
-        
+    public String detail(int scenarioId, ModelMap modelMap,
+            YukonUserContext userContext,
+            @ModelAttribute("backingBean") ProgramListBackingBean backingBean,
+            BindingResult bindingResult,
+            SessionStatus status, FlashScope flashScope) {
+        if (bindingResult.hasErrors()) {
+            List<MessageSourceResolvable> messages =
+                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        }
+
     	DisplayablePao scenario = scenarioDao.getScenario(scenarioId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      scenario, 
@@ -108,7 +116,7 @@ public class ScenarioController {
 
         UiFilter<DisplayablePao> detailFilter = new ForScenarioFilter(scenarioId);
         programControllerHelper.filterPrograms(modelMap, userContext, backingBean,
-                                               result, status, detailFilter);
+                                               bindingResult, status, detailFilter);
 
         return "dr/scenario/detail.jsp";
     }

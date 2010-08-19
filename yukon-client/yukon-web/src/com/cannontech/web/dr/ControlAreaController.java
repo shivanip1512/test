@@ -54,6 +54,7 @@ import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Ordering;
@@ -189,7 +190,13 @@ public class ControlAreaController {
     public String detail(int controlAreaId, ModelMap modelMap,
             YukonUserContext userContext,
             @ModelAttribute("backingBean") ProgramControllerHelper.ProgramListBackingBean backingBean,
-            BindingResult result, SessionStatus status) {
+            BindingResult bindingResult, SessionStatus status,
+            FlashScope flashScope) {
+        if (bindingResult.hasErrors()) {
+            List<MessageSourceResolvable> messages =
+                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        }
 
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
@@ -204,7 +211,7 @@ public class ControlAreaController {
 
         UiFilter<DisplayablePao> detailFilter = new ForControlAreaFilter(controlAreaId);
         programControllerHelper.filterPrograms(modelMap, userContext, backingBean,
-                                               result, status, detailFilter);
+                                               bindingResult, status, detailFilter);
 
         return "dr/controlArea/detail.jsp";
     }

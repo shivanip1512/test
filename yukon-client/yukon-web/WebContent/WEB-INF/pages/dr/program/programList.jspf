@@ -84,9 +84,17 @@
 						<cti:msg var="fieldName"
 							key="yukon.web.modules.dr.programList.filter.start" />
 						<td>${fieldName}</td>
-						<td><tags:dateInputCalendar springInput="true"
-							fieldName="start.min" /> &nbsp;${toStr}&nbsp; <tags:dateInputCalendar
-							springInput="true" fieldName="start.max" /></td>
+						<td>
+						    <table>
+						        <tr>
+                                    <td><tags:dateInputCalendar springInput="true"
+                                        fieldName="start.min"/></td>
+                                    <td>${toStr}</td>
+                                    <td><tags:dateInputCalendar
+                                        springInput="true" fieldName="start.max"/></td>
+						        </tr>
+						    </table>
+					    </td>
 					</cti:checkRolesAndProperties>
 
 					<cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
@@ -106,9 +114,17 @@
 						<cti:msg var="fieldName"
 							key="yukon.web.modules.dr.programList.filter.stop" />
 						<td>${fieldName}</td>
-						<td><tags:dateInputCalendar springInput="true"
-							fieldName="stop.min" /> &nbsp;${toStr}&nbsp; <tags:dateInputCalendar
-							springInput="true" fieldName="stop.max" /></td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td><tags:dateInputCalendar springInput="true"
+                                        fieldName="stop.min"/></td>
+                                    <td>${toStr}</td>
+                                    <td><tags:dateInputCalendar
+                                        springInput="true" fieldName="stop.max"/></td>
+                                </tr>
+                            </table>
+                        </td>
 					</cti:checkRolesAndProperties>
 
 					<%--

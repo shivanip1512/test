@@ -14,7 +14,7 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.DefaultMessageCodesResolver;
+import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -26,6 +26,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -434,19 +435,8 @@ public class OperatorHardwareConfigController {
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         if (binder.getTarget() != null) {
-            DefaultMessageCodesResolver msgCodesResolver =
-                new DefaultMessageCodesResolver() {
-                    @Override
-                    protected String postProcessMessageCode(String code) {
-                        // Messages generated using YukonValidationUtils
-                        // can't use the prefix.
-                        if (code.startsWith("yukon.web.")) {
-                            return code;
-                        }
-                        return super.postProcessMessageCode(code);
-                    }
-            };
-            msgCodesResolver.setPrefix("yukon.web.modules.operator.hardwareConfig.");
+            MessageCodesResolver msgCodesResolver =
+                new YukonMessageCodeResolver("yukon.web.modules.operator.hardwareConfig.");
             binder.setMessageCodesResolver(msgCodesResolver);
         }
     }
