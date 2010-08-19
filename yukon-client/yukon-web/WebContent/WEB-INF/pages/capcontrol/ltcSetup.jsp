@@ -53,7 +53,7 @@
                     </f:facet>
 			
                     <x:inputHidden id="pointId" forceId="true" value="#{mapping.pointId}"/>
-                    <x:inputHidden id="filterType" forceId="true" value="#{mapping.filterType.name}"/>
+                    <x:inputHidden id="filterType" forceId="true" value="#{mapping.filterName}"/>
                     <x:commandLink id="pickerLink" forceId="true" onclick="javascript:return;" value="Select Point" rendered="#{capControlForm.editingAuthorized}"/>
 
                     <f:verbatim>

@@ -44,6 +44,16 @@ public class LtcPointMapping implements Comparable<LtcPointMapping>{
         return filterType;
     }
     
+    //Hiding the FilterType Enum from JSF so it doesn't error on the submit.
+    public String getFilterName() {
+    	return filterType.name();
+    }
+    
+    //Hiding the FilterType Enum from JSF so it doesn't error on the submit.
+    public void setFilterName(String name) {
+    	
+    }
+    
     public Attribute getAttribute() {
         return extraPaoPointMapping.getAttribute();
     }
