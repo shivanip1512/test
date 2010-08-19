@@ -115,7 +115,7 @@ bool CtiTableMCSimpleSchedule::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     rdr["scheduleid"]       >> _schedule_id;
 
-    rdr["targetpaobjectid"] >> _target_id;
+    rdr["targetselect"] >> _target_id;
 
     rdr["startcommand"]     >> _start_command;
     rdr["stopcommand"]      >> _stop_command;
@@ -129,7 +129,7 @@ bool CtiTableMCSimpleSchedule::Update()
 {
     static const string sql =  "update " + std::string(_table_name) + 
                                 " set "
-                                    "TargetPaobjectID = ?, "
+                                    "TargetSelect = ?, "
                                     "StartCommand = ?, "
                                     "StopCommand = ?, "
                                     "RepeatInterval = ?"
