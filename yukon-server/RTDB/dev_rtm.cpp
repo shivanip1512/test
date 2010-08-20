@@ -183,9 +183,11 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
                     parse.setValue("rtm_command", TMS_ALL);
 
-                    int cmd_len, error_code;
+                    int cmd_len = 300;
+					int error_code = 0; 
+					error_code = CtiProtocolSA3rdParty::formatTMScmd(OutMessage->Buffer.OutMessage, &cmd_len, TMS_ALL, getAddress());
 
-                    if( !(error_code = CtiProtocolSA3rdParty::formatTMScmd(OutMessage->Buffer.OutMessage, &cmd_len, TMS_ALL, getAddress())) )
+					if( !error_code )
                     {
                         OutMessage->OutLength = cmd_len * 2;
 
