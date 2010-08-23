@@ -40,19 +40,21 @@
               <tags:alternateRowReset/>
               <c:forEach var="event" items="${controlHistoryEventList}">
                 <tr class="<tags:alternateRow odd='' even='altRow'/>">
-                  <td class="nowrapping" width="${widthPercent}"><cti:formatDate value="${event.startDate}" type="BOTH"/></td>
+                  <td width="${widthPercent}"><cti:formatDate value="${event.startDate}" type="BOTH"/></td>
                   <c:choose>
                     <c:when test="${event.controlling}">
-                        <td class="nowrapping" width="${widthPercent}">----</td>
+                        <td width="${widthPercent}">----</td>
                     </c:when>
                     <c:otherwise>
-                        <td class="nowrapping" width="${widthPercent}"><cti:formatDate value="${event.endDate}" type="BOTH"/></td>
+                        <td class="nonwrapping" width="${widthPercent}"><cti:formatDate value="${event.endDate}" type="BOTH"/></td>
                     </c:otherwise>
                   </c:choose>
                   <c:if test="${not consumer}">
-                    <td class="nowrapping" width="${widthPercent}">${event.gears}</td>
+                    <td width="${widthPercent}">${event.gears}</td>
                   </c:if>
-                  <td class="nowrapping" width="${widthPercent}"><cti:formatDuration type="HM" startDate="${event.startDate}" endDate="${event.endDate}" /></td>
+                  <td width="${widthPercent}">
+                    <cti:formatDuration type="HM" startDate="${event.startDate}" endDate="${event.endDate}" />
+                  </td>
                   <c:set var="totalDuration" value="${event.duration.millis + totalDuration}" />
                 </tr>
               </c:forEach>
@@ -62,7 +64,7 @@
                   <td width="${widthPercent}"></td>
                   <td width="${widthPercent}"></td>
                   <c:if test="${not consumer}"><td width="${widthPercent}"></td></c:if>
-                  <td width="${widthPercent}" class="nowrapping" style="font-weight: bold"><cti:formatDuration type="HM" value="${totalDuration}"/></td>
+                  <td width="${widthPercent}" class="nonwrapping" style="font-weight: bold"><cti:formatDuration type="HM" value="${totalDuration}"/></td>
                 </tr>
               </c:if>
             </table>	
@@ -71,7 +73,7 @@
       </c:when>
       <c:otherwise>
         <tr class="${rowClass}">
-          <td class="nowrapping" colspan="${columns}"><i18n:inline key="${keyPrefix}.noControlDuringPeriod" /></td>
+          <td colspan="${columns}"><i18n:inline key="${keyPrefix}.noControlDuringPeriod" /></td>
         </tr>
       </c:otherwise>
     </c:choose>
