@@ -91,17 +91,21 @@ public class MessageScopeHelper {
          * @param result
          * @param scopes
          * @param defaultPrefix prepended to every result, should always end with a period
-         * @param suffix will be the final part of every result, should always begin with a period
+         * @param suffix Usually suffix will be the final part of every result, in this case should always begin with a period,
+         *              but this will also repsect a suffix of 'yukon.*' as legitemate also. 
          */
         private void collectKeys(List<String> result, List<ScopeHolder> scopes, String defaultPrefix, String suffix) {
             if (!suffix.startsWith(".")) {
-                result.add(defaultPrefix + suffix);
+                if (!suffix.startsWith("yukon.")) {
+                    result.add(defaultPrefix + suffix);
+                } else {
+                    result.add(suffix);
+                }
                 return;
             }
             if (scopes.isEmpty()) {
                 throw new IllegalArgumentException("ran out of scopes before finding absolute key");
             }
-
             
             ScopeHolder currentScope = scopes.get(0);
             List<ScopeHolder> remainingScopes = scopes.subList(1, scopes.size());
