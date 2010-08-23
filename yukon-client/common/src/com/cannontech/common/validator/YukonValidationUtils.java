@@ -1,6 +1,8 @@
 package com.cannontech.common.validator;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.validation.BindingResult;
@@ -34,6 +36,14 @@ public class YukonValidationUtils extends ValidationUtils {
             errors.rejectValue(field, "yukon.web.error.outOfRange",
                                new Object[] { min, max },
                                "Must be between " + min + " and " + max + ".");
+        }
+    }
+
+    public static void regexCheck(Errors errors, String field,
+            String fieldValue, Pattern pattern, String errorCode) {
+        Matcher matcher = pattern.matcher(fieldValue);
+        if (!matcher.matches()) {
+            errors.rejectValue(field, errorCode);
         }
     }
 

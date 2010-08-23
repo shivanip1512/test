@@ -64,7 +64,7 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
 
     }
 
-    private ParameterizedRowMapper<Map.Entry<Integer, LiteYukonGroup>> mappingRowMapper =
+    private ParameterizedRowMapper<Map.Entry<Integer, LiteYukonGroup>> mapEntryRowMapper =
         new ParameterizedRowMapper<Map.Entry<Integer, LiteYukonGroup>>() {
             public Map.Entry<Integer, LiteYukonGroup> mapRow(ResultSet rs, int rowNum) throws SQLException {
                 int groupId = rs.getInt("groupId");
@@ -104,7 +104,7 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         Function<Integer, Integer> typeMapper = Functions.identity();
 
         Map<Integer, LiteYukonGroup> retVal =
-            template.mappedQuery(sqlGenerator, groupIds, mappingRowMapper, typeMapper);
+            template.mappedQuery(sqlGenerator, groupIds, mapEntryRowMapper, typeMapper);
 
         return retVal;
     }

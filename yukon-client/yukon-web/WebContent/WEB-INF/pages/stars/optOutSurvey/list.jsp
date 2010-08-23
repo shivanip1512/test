@@ -1,9 +1,10 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 
 <cti:standardPage module="optOutSurvey" page="list">
@@ -19,16 +20,16 @@
     <tags:pagedBox title="${boxTitle}" searchResult="${optOutSurveys}"
         baseUrl="${baseUrl}">
         <c:if test="${optOutSurveys.hitCount == 0}">
-            <cti:msg2 key=".noResults"/>
+            <i:inline key=".noResults"/>
         </c:if>
         <c:if test="${optOutSurveys.hitCount > 0}">
             <table id="optOutSurveyList" class="compactResultsTable rowHighlighting">
                 <tr>
-                    <th><cti:msg2 key=".surveyName"/></th>
-                    <th><cti:msg2 key=".programs"/></th>
-                    <th><cti:msg2 key=".startDate"/></th>
-                    <th><cti:msg2 key=".stopDate"/></th>
-                    <th><cti:msg2 key=".actions"/></th>
+                    <th><i:inline key=".surveyName"/></th>
+                    <th><i:inline key=".programs"/></th>
+                    <th><i:inline key=".startDate"/></th>
+                    <th><i:inline key=".stopDate"/></th>
+                    <th><i:inline key=".actions"/></th>
                 </tr>
                 <cti:msg2 var="noStopDate" key=".noStopDate"/>
                 <c:forEach var="optOutSurvey" items="${optOutSurveys.resultList}">

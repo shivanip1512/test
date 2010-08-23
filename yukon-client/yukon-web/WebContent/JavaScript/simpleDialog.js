@@ -1,5 +1,9 @@
 var naturalDialogSizes = {};
 
+/**
+ * Adjust the given dialog's size to ensure it fits within the browser window
+ * and adjust its position to center it in that window.
+ */
 function adjustDialogSizeAndPosition(dialogId) {
     var dialogDiv = $(dialogId);
     var dialogDimensions = naturalDialogSizes[dialogId];
@@ -48,6 +52,31 @@ function adjustDialogSizeAndPosition(dialogId) {
     });
 }
 
+/**
+ * Make an AJAX request with the given URL (innerHtmlUrl) and populate the
+ * dialog specified by dialogId with the response. This method will show a busy
+ * cursor while waiting for the request. If the request contains JSON with an
+ * "action" value of "close", the dialog box will be closed instead of
+ * populated. Once the dialog box is populated, its size and position will be
+ * adjusted to center and ensure it fits.
+ * 
+ * @param dialogId
+ *            The id of the dialog box, normally created with tags:simpleDialog.
+ *            Required.
+ * @param innerHtmlUrl
+ *            The URL which will be used in the request for what to put in the
+ *            dialog box. Required.
+ * @param title
+ *            The title for the dialog box. If this is not specified, the title
+ *            of the dialog box will not be changed.
+ * @param parameters
+ *            Any parameters that need to be passed along with the request.
+ * @param skipShow
+ *            Set this to true to skip sizing, positioning and displaying the
+ *            dialog box.
+ * @param method
+ *            The HTTP method ('get' or 'post'). 'post' is the default.
+ */
 function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters, skipShow, method) {
 	showBusy();
 
@@ -74,6 +103,23 @@ function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters, skipShow, m
         });
 }
 
+/**
+ * Submit an HTML form and place the returned contents into a dialog box.
+ * 
+ * @param dialogId
+ *            The id of the dialog box, normally created with tags:simpleDialog.
+ *            Required.
+ * @param formId
+ *            The id of the form HTML element which is to be submitted.
+ * @param url
+ *            The URL which will be used in the request for what to put in the
+ *            dialog box. Required.
+ * @param title
+ *            The title for the dialog box. If this is not specified, the title
+ *            of the dialog box will not be changed.
+ * @param method
+ *            The HTTP method ('get' or 'post'). 'post' is the default.
+ */
 function submitFormViaAjax(dialogId, formId, url, title, method) {
 	if (arguments.length < 3 || url == null) {
 		url = $(formId).action;
@@ -82,6 +128,14 @@ function submitFormViaAjax(dialogId, formId, url, title, method) {
     return false; // useful if we want to use this for "onsubmit" on a form
 }
 
+/**
+ * Make a simple AJAX request with the given URL and possibly react. Currently,
+ * the only supported reaction is "reload" which cause the page to be reloaded.
+ * The action is specified by setting the JSON variable 'action'.
+ * 
+ * @param url
+ *            The URL of the request to make.
+ */
 function simpleAJAXRequest(url) {
     var successCallback = function(transport, json) {
         hideBusy();
@@ -101,7 +155,6 @@ function simpleAJAXRequest(url) {
             'onSuccess': successCallback,
             'onFailure': errorCallback
             };
-    // 'parameters'
     showBusy();
     new Ajax.Request(url, options);
 }

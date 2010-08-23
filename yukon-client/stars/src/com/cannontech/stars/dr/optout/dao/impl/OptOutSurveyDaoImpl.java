@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +19,9 @@ import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.FieldMapper;
 import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
@@ -29,6 +34,7 @@ import com.google.common.collect.Multimap;
 public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
+    private SimpleTableAccessTemplate<OptOutSurvey> dbTemplate;
 
     private final static ParameterizedRowMapper<Map.Entry<Integer, Integer>> optOutProgramRowMapper =
         new ParameterizedRowMapper<Map.Entry<Integer, Integer>>(){
@@ -42,25 +48,44 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
 
     private final static RowMapperWithBaseQuery<OptOutSurvey> optOutSurveyRowMapper =
         new OptOutSurveyRowMapper();
+    private final static FieldMapper<OptOutSurvey> optOutSurveyFieldMapper = new FieldMapper<OptOutSurvey>() {
+        @Override
+        public void setPrimaryKey(OptOutSurvey optOutSurvey, int optOutSurveyId) {
+            optOutSurvey.setOptOutSurveyId(optOutSurveyId);
+        }
 
         @Override
-        @Transactional(readOnly = true)
-        public OptOutSurvey getOptOutSurveyById(int optOutSurveyId) {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append(optOutSurveyRowMapper.getBaseQuery());
-            sql.append("WHERE optOutSurveyId").eq(optOutSurveyId);
-            OptOutSurvey retVal =
-                yukonJdbcTemplate.queryForObject(sql, optOutSurveyRowMapper);
-
-            sql = new SqlStatementBuilder();
-            sql.append("SELECT programId FROM optOutSurveyProgram");
-            sql.append("WHERE optOutSurveyId").eq(optOutSurveyId);
-            List<Integer> programIds =
-                yukonJdbcTemplate.query(sql, new IntegerRowMapper());
-            retVal.setProgramIds(programIds);
-
-            return retVal;
+        public Number getPrimaryKey(OptOutSurvey optOutSurvey) {
+            return optOutSurvey.getOptOutSurveyId();
         }
+
+        @Override
+        public void extractValues(MapSqlParameterSource parameterHolder,
+                OptOutSurvey optOutSurvey) {
+            parameterHolder.addValue("surveyId", optOutSurvey.getSurveyId());
+            parameterHolder.addValue("startDate", optOutSurvey.getStartDate());
+            parameterHolder.addValue("stopDate", optOutSurvey.getStopDate());
+        }
+    };
+
+    @Override
+    @Transactional(readOnly = true)
+    public OptOutSurvey getOptOutSurveyById(int optOutSurveyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(optOutSurveyRowMapper.getBaseQuery());
+        sql.append("WHERE optOutSurveyId").eq(optOutSurveyId);
+        OptOutSurvey retVal =
+            yukonJdbcTemplate.queryForObject(sql, optOutSurveyRowMapper);
+
+        sql = new SqlStatementBuilder();
+        sql.append("SELECT programId FROM optOutSurveyProgram");
+        sql.append("WHERE optOutSurveyId").eq(optOutSurveyId);
+        List<Integer> programIds =
+            yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        retVal.setProgramIds(programIds);
+
+        return retVal;
+    }
 
     @Override
     @Transactional(readOnly=true)
@@ -137,32 +162,13 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
     @Override
     @Transactional
     public void saveOptOutSurvey(OptOutSurvey optOutSurvey) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
+        dbTemplate.save(optOutSurvey);
+
         int optOutSurveyId = optOutSurvey.getOptOutSurveyId();
-        if (optOutSurveyId == 0) {
-            optOutSurveyId = nextValueHelper.getNextValue("optOutSurvey");
-
-            sql.append("INSERT INTO optOutSurvey (");
-            sql.append(    "optOutSurveyId, surveyId, startDate, stopDate");
-            sql.append(")").values(optOutSurveyId,
-                                   optOutSurvey.getSurveyId(),
-                                   optOutSurvey.getStartDate(),
-                                   optOutSurvey.getStopDate());
-        } else {
-            sql.append("UPDATE optOutSurvey");
-            sql.append(    "SET surveyId = ").appendArgument(optOutSurvey.getSurveyId());
-            sql.append(    ", startDate = ").appendArgument(optOutSurvey.getStartDate());
-            sql.append(    ", stopDate = ").appendArgument(optOutSurvey.getStopDate());
-            sql.append("WHERE optOutSurveyId").eq(optOutSurveyId);
-        }
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM optOutSurveyProgram");
+        sql.append("WHERE optOutSurveyId").eq(optOutSurveyId);
         yukonJdbcTemplate.update(sql);
-
-        if (optOutSurveyId != 0) {
-            sql = new SqlStatementBuilder();
-            sql.append("DELETE FROM optOutSurveyProgram");
-            sql.append("WHERE optOutSurveyId").eq(optOutSurveyId);
-            yukonJdbcTemplate.update(sql);
-        }
 
         for (int programId : optOutSurvey.getProgramIds()) {
             sql = new SqlStatementBuilder();
@@ -171,8 +177,6 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
             sql.values(optOutSurveyId, programId);
             yukonJdbcTemplate.update(sql);
         }
-
-        optOutSurvey.setSurveyId(optOutSurveyId);
     }
 
     @Override
@@ -194,6 +198,15 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
         yukonJdbcTemplate.update(sql);
     }
 
+
+    @PostConstruct
+    public void init() {
+        dbTemplate = new SimpleTableAccessTemplate<OptOutSurvey>(yukonJdbcTemplate, nextValueHelper);
+        dbTemplate.withTableName("optOutSurvey");
+        dbTemplate.withFieldMapper(optOutSurveyFieldMapper);
+        dbTemplate.withPrimaryKeyField("optOutSurveyId");
+        dbTemplate.withPrimaryKeyValidOver(0);
+    }
 
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {

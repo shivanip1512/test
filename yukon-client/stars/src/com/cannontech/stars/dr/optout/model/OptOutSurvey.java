@@ -1,13 +1,13 @@
 package com.cannontech.stars.dr.optout.model;
 
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import com.google.common.collect.Lists;
 
 public class OptOutSurvey {
     private int optOutSurveyId;
-    private List<Integer> programIds = Lists.newArrayList();
+    private Collection<Integer> programIds = Lists.newArrayList();
     private int surveyId;
     private String surveyName;
     private Date startDate;
@@ -17,7 +17,7 @@ public class OptOutSurvey {
     public OptOutSurvey() {
     }
 
-    public OptOutSurvey(int optOutSurveyId, List<Integer> programIds,
+    public OptOutSurvey(int optOutSurveyId, Collection<Integer> programIds,
             int surveyId, Date startDate, Date stopDate, int energyCompanyId) {
         this.optOutSurveyId = optOutSurveyId;
         this.programIds = programIds;
@@ -35,7 +35,7 @@ public class OptOutSurvey {
         this.optOutSurveyId = optOutSurveyId;
     }
 
-    public List<Integer> getProgramIds() {
+    public Collection<Integer> getProgramIds() {
         return programIds;
     }
 
@@ -43,7 +43,7 @@ public class OptOutSurvey {
         programIds.add(programId);
     }
 
-    public void setProgramIds(List<Integer> programIds) {
+    public void setProgramIds(Collection<Integer> programIds) {
         this.programIds = programIds;
     }
 

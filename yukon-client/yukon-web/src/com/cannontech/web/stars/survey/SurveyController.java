@@ -7,8 +7,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -20,6 +18,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.View;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.search.SearchResult;
@@ -38,6 +37,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.util.JsonView;
 import com.cannontech.web.util.ListBackingBean;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -71,10 +71,10 @@ public class SurveyController {
                                                       baseKey + "edit.valueRequired");
             YukonValidationUtils.checkExceedsMaxLength(errors, "surveyKey",
                                                        target.getSurveyKey(), 64);
-            Matcher matcher = validKeyPattern.matcher(target.getSurveyKey());
-            if (!matcher.matches()) {
-                errors.rejectValue("surveyKey", baseKey + "edit.invalidChars");
-            }
+            YukonValidationUtils.regexCheck(errors, "surveyKey",
+                                            target.getSurveyKey(),
+                                            validKeyPattern,
+                                            baseKey + "edit.invalidChars");
         }
     };
 
@@ -85,10 +85,10 @@ public class SurveyController {
                                                       baseKey + "edit.valueRequired");
             YukonValidationUtils.checkExceedsMaxLength(errors, "questionKey",
                                                        target.getQuestionKey(), 64);
-            Matcher matcher = validKeyPattern.matcher(target.getQuestionKey());
-            if (!matcher.matches()) {
-                errors.rejectValue("questionKey", baseKey + "edit.invalidChars");
-            }
+            YukonValidationUtils.regexCheck(errors, "questionKey",
+                                            target.getQuestionKey(),
+                                            validKeyPattern,
+                                            baseKey + "edit.invalidChars");
             boolean foundNotUnique = false;
             boolean foundValueRequired = false;
             boolean foundTooLarge = false;
@@ -109,7 +109,7 @@ public class SurveyController {
                     errors.reject(baseKey + "edit.answerTooLarge");
                     foundTooLarge = true;
                 }
-                matcher = validKeyPattern.matcher(answerKey);
+                Matcher matcher = validKeyPattern.matcher(answerKey);
                 if (!foundInvalidChars && !matcher.matches()) {
                     errors.reject(baseKey + "edit.answerHasInvalidChars");
                     foundInvalidChars = true;
@@ -310,11 +310,8 @@ public class SurveyController {
     }
 
     @RequestMapping
-    public void moveQuestion(HttpServletResponse response, ModelMap model,
+    public View moveQuestion(HttpServletResponse response, ModelMap model,
             int surveyQuestionId, String direction, YukonUserContext userContext) {
-
-        JSONObject object = new JSONObject();
-
         Question question = surveyDao.getQuestionById(surveyQuestionId);
         if ("up".equals(direction)) {
             surveyDao.moveQuestionUp(question);
@@ -323,10 +320,8 @@ public class SurveyController {
         } else {
             throw new RuntimeException("invalid diirection [" + direction + "]");
         }
-        object.put("action", "reload");
-
-        response.addHeader("X-JSON", object.toString());
-        response.setContentType("text/plain");
+        model.addAttribute("action", "reload");
+        return new JsonView();
     }
 
     @RequestMapping

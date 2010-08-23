@@ -1,21 +1,17 @@
 package com.cannontech.stars.dr.optout.service.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
-import com.cannontech.common.bulk.filter.SqlFilter;
+import com.cannontech.common.bulk.filter.SqlFragmentUiFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.search.SearchResult;
-import com.cannontech.common.util.SqlFragmentSource;
-import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
@@ -24,7 +20,6 @@ import com.cannontech.stars.dr.optout.model.OptOutSurvey;
 import com.cannontech.stars.dr.optout.service.OptOutSurveyService;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
@@ -72,24 +67,10 @@ public class OptOutSurveyServiceImpl implements OptOutSurveyService {
     public SearchResult<OptOutSurvey> findSurveys(final int energyCompanyId,
             int startIndex, int count) {
 
-        UiFilter<OptOutSurvey> filter = new UiFilter<OptOutSurvey>() {
+        UiFilter<OptOutSurvey> filter = new SqlFragmentUiFilter<OptOutSurvey>() {
             @Override
-            public Iterable<PostProcessingFilter<OptOutSurvey>> getPostProcessingFilters() {
-                return null;
-            }
-
-            @Override
-            public Iterable<SqlFilter> getSqlFilters() {
-                List<SqlFilter> retVal = new ArrayList<SqlFilter>(1);
-                retVal.add(new SqlFilter() {
-                    @Override
-                    public SqlFragmentSource getWhereClauseFragment() {
-                        SqlStatementBuilder sql = new SqlStatementBuilder();
-                        sql.append("energyCompanyId").eq(energyCompanyId);
-                        return sql;
-                    }
-                });
-                return retVal;
+            protected void getSqlFragment(SqlBuilder sql) {
+                sql.append("energyCompanyId").eq(energyCompanyId);
             }
         };
 
@@ -99,7 +80,7 @@ public class OptOutSurveyServiceImpl implements OptOutSurveyService {
         Multimap<OptOutSurvey, Integer> programsByOptOutSurveyId =
             optOutSurveyDao.getProgramsForOptOutSurveys(retVal.getResultList());
         for (OptOutSurvey optOutSurvey : retVal.getResultList()) {
-            optOutSurvey.setProgramIds(Lists.newArrayList(programsByOptOutSurveyId.get(optOutSurvey)));
+            optOutSurvey.setProgramIds(programsByOptOutSurveyId.get(optOutSurvey));
         }
 
         return retVal;

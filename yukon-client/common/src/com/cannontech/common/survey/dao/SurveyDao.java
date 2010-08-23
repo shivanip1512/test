@@ -9,31 +9,31 @@ import com.cannontech.common.survey.model.Survey;
 import com.cannontech.core.dao.DuplicateException;
 
 public interface SurveyDao {
-    Survey getSurveyById(int surveyId);
+    public Survey getSurveyById(int surveyId);
 
-    Question getQuestionById(int surveyQuestionId);
+    public Question getQuestionById(int surveyQuestionId);
 
     /**
      * Get a list of questions in their presentation order for a given survey.
      */
-    List<Question> getQuestionsBySurveyId(int surveyId);
+    public List<Question> getQuestionsBySurveyId(int surveyId);
 
     /**
      * Get a map of questions by question id for a given survey.
      */
-    Map<Integer, Question> getQuestionMapBySurveyId(int surveyId);
+    public Map<Integer, Question> getQuestionMapBySurveyId(int surveyId);
 
     /**
      * Get the next survey key available. If two users add a survey at the same
      * time, it can return the same key twice, but uniqueness checking in the
      * save method should reject the second one saved.
      */
-    String getNextSurveyKey();
+    public String getNextSurveyKey();
 
     /**
      * Works like getNextSurveyKey.
      */
-    String getNextQuestionKey(int surveyId);
+    public String getNextQuestionKey(int surveyId);
 
     /**
      * Saves a given survey. The survey will be saved as a new survey if its
@@ -42,7 +42,7 @@ public interface SurveyDao {
      * @param survey The survey to save.
      * @throws DuplicateException if the surveyKey is in use by another survey
      */
-    void saveSurvey(Survey survey);
+    public void saveSurvey(Survey survey);
 
     /**
      * Saves a given question. The question will be saved as a new question if
@@ -52,15 +52,15 @@ public interface SurveyDao {
      * @throws DuplicateException if the questionKey is in use by another
      *             question in the same survey
      */
-    void saveQuestion(Question question);
+    public void saveQuestion(Question question);
 
-    void moveQuestionUp(Question question);
-    void moveQuestionDown(Question question);
+    public void moveQuestionUp(Question question);
+    public void moveQuestionDown(Question question);
 
-    boolean isInUse(int surveyId);
-    void deleteSurvey(int surveyId);
+    public boolean isInUse(int surveyId);
+    public void deleteSurvey(int surveyId);
 
-    void deleteQuestion(int surveyQuestionId);
+    public void deleteQuestion(int surveyQuestionId);
 
-    void saveResult(Result result);
+    public void saveResult(Result result);
 }

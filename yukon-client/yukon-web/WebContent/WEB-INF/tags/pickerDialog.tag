@@ -6,7 +6,7 @@
 <%@ attribute name="immediateSelectMode" type="java.lang.Boolean" description="True if picker should select and close when an item is clicked"%>
 <%@ attribute name="endAction" description="Javascript function to call on picker close"%>
 <%@ attribute name="memoryGroup" description="Adds the picker to the memory group - picker will open up with previous search text populated (as long as no page refresh between)"%>
-<%@ attribute name="linkType" description="Type of link to create which can be 'normal' (the default), 'button' or 'none'"%>
+<%@ attribute name="linkType" description="Type of link to create which can be 'normal' (the default--a plain anchor tag link), 'button' or 'none'"%>
 <%@ attribute name="styleClass" description="If provided, puts the styleClass provided on the picker link's span"%>
 <%@ attribute name="extraArgs" description="Dynamic inputs to picker search"%>
 <%@ attribute name="extraDestinationFields" description="used when a selection has been made and the picker is closed.  It's a semicolon separated list of: [property]:[fieldId]"%>

@@ -5,8 +5,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
@@ -19,6 +22,8 @@ import com.cannontech.common.survey.model.Survey;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
+import com.cannontech.database.FieldMapper;
+import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.StringRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -28,8 +33,28 @@ public class SurveyDaoImpl implements SurveyDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
 
+    private SimpleTableAccessTemplate<Survey> dbTemplate;
     private final static RowMapperWithBaseQuery<Survey> surveyRowMapper =
         new SurveyRowMapper();
+    private final static FieldMapper<Survey> surveyFieldMapper = new FieldMapper<Survey>() {
+        @Override
+        public void setPrimaryKey(Survey survey, int surveyId) {
+            survey.setSurveyId(surveyId);
+        }
+
+        @Override
+        public Number getPrimaryKey(Survey survey) {
+            return survey.getSurveyId();
+        }
+
+        @Override
+        public void extractValues(MapSqlParameterSource parameterHolder,
+                Survey survey) {
+            parameterHolder.addValue("energyCompanyId", survey.getEnergyCompanyId());
+            parameterHolder.addValue("surveyName", survey.getSurveyName());
+            parameterHolder.addValue("surveyKey", survey.getSurveyKey());
+        }
+    };
     private final static RowMapperWithBaseQuery<Question> questionRowMapper =
         new QuestionRowMapper();
     private final static RowMapperWithBaseQuery<Answer> answerRowMapper =
@@ -166,28 +191,7 @@ public class SurveyDaoImpl implements SurveyDao {
             throw new DuplicateException("surveyName");
         }
 
-        sql = new SqlStatementBuilder();
-        if (survey.getSurveyId() == 0) {
-            int surveyId = nextValueHelper.getNextValue("survey");
-
-            sql.append("INSERT INTO survey (");
-            sql.append("surveyId, energyCompanyId, surveyName, surveyKey");
-            sql.append(") VALUES (");
-            sql.appendArgument(surveyId);
-            sql.append(",").appendArgument(survey.getEnergyCompanyId());
-            sql.append(",").appendArgument(survey.getSurveyName());
-            sql.append(",").appendArgument(survey.getSurveyKey());
-            sql.append(")");
-
-            survey.setSurveyId(surveyId);
-        } else {
-            sql.append("UPDATE survey SET");
-            sql.append("energyCompanyId = ").appendArgument(survey.getEnergyCompanyId());
-            sql.append(", surveyName = ").appendArgument(survey.getSurveyName());
-            sql.append(", surveyKey = ").appendArgument(survey.getSurveyKey());
-            sql.append("WHERE surveyId").eq(survey.getSurveyId());
-        }
-        yukonJdbcTemplate.update(sql);
+        dbTemplate.save(survey);
     }
 
     @Override
@@ -379,6 +383,15 @@ public class SurveyDaoImpl implements SurveyDao {
         result.setSurveyResultId(surveyResultId);
     }
 
+
+    @PostConstruct
+    public void init() {
+        dbTemplate = new SimpleTableAccessTemplate<Survey>(yukonJdbcTemplate, nextValueHelper);
+        dbTemplate.withTableName("survey");
+        dbTemplate.withFieldMapper(surveyFieldMapper);
+        dbTemplate.withPrimaryKeyField("surveyId");
+        dbTemplate.withPrimaryKeyValidOver(0);
+    }
 
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
