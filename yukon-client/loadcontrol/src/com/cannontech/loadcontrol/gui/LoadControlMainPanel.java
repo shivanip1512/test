@@ -1661,14 +1661,17 @@ private synchronized void updateControlAreaTableModel(LMControlArea changedArea,
 }
 
 private synchronized void handleChange( LCChangeEvent msg ) {
-    if( msg.id == LCChangeEvent.INSERT ) {
-        LMControlArea newArea = getLoadControlClientConnection().getControlArea(((LMControlArea)msg.arg).getYukonID());
-        getControlAreaTableModel().addControlAreaAt(newArea, getInsertionIndx(newArea, getControlAreaTableModel()));
-    }
-    else if( msg.id == LCChangeEvent.UPDATE ) {
-        boolean found = false;
-        if(msg.arg instanceof LMControlArea) {
-            LMControlArea newArea = getLoadControlClientConnection().getControlArea(((LMControlArea)msg.arg).getYukonID());
+    
+    if(msg.arg instanceof LMControlArea) {
+        LMControlArea lmControlArea = (LMControlArea)msg.arg;
+        
+        if( msg.id == LCChangeEvent.INSERT ) {
+            LMControlArea newArea = getLoadControlClientConnection().getControlArea(lmControlArea.getYukonID());
+            getControlAreaTableModel().addControlAreaAt(newArea, getInsertionIndx(newArea, getControlAreaTableModel()));
+        }
+        else if( msg.id == LCChangeEvent.UPDATE ) {
+            boolean found = false;
+            LMControlArea newArea = getLoadControlClientConnection().getControlArea(lmControlArea.getYukonID());
             for( int i = 0; i < getControlAreaTableModel().getRowCount(); i++ ) {
                 LMControlArea areaRow = getControlAreaTableModel().getRowAt(i);
                     
@@ -1679,22 +1682,21 @@ private synchronized void handleChange( LCChangeEvent msg ) {
                     break;
                 }
             }
-            if( !found )
+            if( !found ) {
                 getControlAreaTableModel().addControlAreaAt(newArea, getInsertionIndx(newArea, getControlAreaTableModel()) );
+            }
         }
+        else if( msg.id == LCChangeEvent.DELETE ) {
+            getControlAreaTableModel().removeControlArea(lmControlArea);
+        }
+        else if( msg.id == LCChangeEvent.DELETE_ALL ) {
+            getControlAreaTableModel().clear();               
+        }
+    }else {
         /*Must have just been a program, group, or trigger change by itself*/
-        else {
-            updateProgramTableModel();
-            getGroupTableModel().setCurrentData( getSelectedControlArea(), getSelectedProgram() );
-        }
+        updateProgramTableModel();
+        getGroupTableModel().setCurrentData( getSelectedControlArea(), getSelectedProgram() );
     }
-    else if( msg.id == LCChangeEvent.DELETE ) {
-        getControlAreaTableModel().removeControlArea((LMControlArea)msg.arg );                       
-    }
-    else if( msg.id == LCChangeEvent.DELETE_ALL ) {
-        getControlAreaTableModel().clear();               
-    }
-
 }
 
 private LoadControlClientConnection getLoadControlClientConnection() {
