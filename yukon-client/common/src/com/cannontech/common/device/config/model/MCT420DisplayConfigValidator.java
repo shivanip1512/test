@@ -21,7 +21,7 @@ public class MCT420DisplayConfigValidator implements InputValidator<MCT420Config
         boolean foundDisabled = false;
         for (int displayItemValue : displayItems) {
             if (foundDisabled && displayItemValue != 0) {
-                errors.reject("i18n code here", "All enabled slots must be contiguous and at the beginning of the list.");
+                errors.reject("yukon.web.modules.deviceConfig.420.nonContiguousEntries");
                 return;
             }
             if (displayItemValue == 0) {
