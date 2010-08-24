@@ -80,19 +80,19 @@
                     <tbody id="tableBody">
                         <c:forEach var="item" items="${strategies}">
                             <tr class="<tags:alternateRow odd="" even="altRow"/>"
-                                id="s_${item.strategyID}">
+                                id="s_${item.strategyId}">
                                 <td nowrap="nowrap">
                                     <c:choose>
                                         <c:when test="${hasEditingRole}">
-                                            <a href="/editor/cbcBase.jsf?type=5&itemid=${item.strategyID}" class="tierIconLink">
+                                            <a href="/editor/cbcBase.jsf?type=5&itemid=${item.strategyId}" class="tierIconLink">
                                                 <img class="tierImg" src="/WebConfig/yukon/Icons/pencil.gif" />
                                             </a>
-                                            <a href="javascript:removeStrategy(${item.strategyID}, '<spring:escapeBody javaScriptEscape="true">${item.strategyName}</spring:escapeBody>');" class="tierIconLink">
+                                            <a href="javascript:removeStrategy(${item.strategyId}, '<spring:escapeBody javaScriptEscape="true">${item.strategyName}</spring:escapeBody>');" class="tierIconLink">
                                                 <img class="tierImg" src="/WebConfig/yukon/Icons/delete.gif">
                                             </a>
                                         </c:when>
                                         <c:otherwise>
-                                            <a href="/editor/cbcBase.jsf?type=3&itemid=${item.strategyID}" class="tierIconLink">
+                                            <a href="/editor/cbcBase.jsf?type=3&itemid=${item.strategyId}" class="tierIconLink">
                                                 <img class="tierImg" src="/WebConfig/yukon/Icons/information.gif" />
                                             </a>
                                         </c:otherwise>
@@ -103,15 +103,15 @@
                                 <td><c:out value="${item.controlMethod}" /></td>
                                 <td><c:out value="${item.controlUnits}" /></td>
                                 <td>
-                                    <cti:formatDuration value="${item.peakStartTime * 1000}" type="HM_SHORT"/>
+                                    <c:out value="${item.peakStartTime}"/>
                                     <c:out value="/"/>
-                                    <cti:formatDuration value="${item.peakStopTime * 1000}" type="HM_SHORT"/>
+                                    <c:out value="${item.peakStopTime}"/>
                                 </td>
-                                <td><c:out value="${item.controlIntervalString}"/></td>
-                                <td><c:out value="${item.minResponseTimeString}"/></td>
-                                <td><c:out value="${item.passFailPercentString}"/></td>
-                                <td><c:out value="${item.peakSettingsString}"/></td>
-                                <td><c:out value="${item.offPeakSettingsString}"/></td>
+                                <td><c:out value="${item.controlInterval}"/></td>
+                                <td><c:out value="${item.minResponseTime}"/></td>
+                                <td><c:out value="${item.passFailPercent}"/></td>
+                                <td><c:out value="${item.peakSettings}"/></td>
+                                <td><c:out value="${item.offPeakSettings}"/></td>
                             </tr>
                         </c:forEach>
                     </tbody>

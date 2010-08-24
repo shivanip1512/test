@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.View;
 
+import com.cannontech.capcontrol.dao.StrategyDao;
+import com.cannontech.capcontrol.model.ViewableStrategy;
 import com.cannontech.common.search.SearchResult;
-import com.cannontech.core.dao.StrategyDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
 
@@ -33,8 +33,8 @@ public class StrategyController {
     private StrategyDao strategyDao = null;
     
     @RequestMapping
-    public String strategies(HttpServletRequest request, LiteYukonUser user, ModelMap mav) {
-        List<CapControlStrategy> strategies = strategyDao.getAllStrategies();
+    public String strategies(HttpServletRequest request, YukonUserContext userContext, ModelMap mav) {
+        List<ViewableStrategy> strategies = strategyDao.getAllViewableStrategies(userContext);
         
         int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
@@ -45,13 +45,13 @@ public class StrategyController {
         if(numberOfResults < toIndex) toIndex = numberOfResults;
         strategies = strategies.subList(startIndex, toIndex);
         
-        SearchResult<CapControlStrategy> result = new SearchResult<CapControlStrategy>();
+        SearchResult<ViewableStrategy> result = new SearchResult<ViewableStrategy>();
         result.setResultList(strategies);
         result.setBounds(startIndex, itemsPerPage, numberOfResults);
         mav.addAttribute("searchResult", result);
         mav.addAttribute("strategies", result.getResultList());
         
-        boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
+        boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, userContext.getYukonUser());
         mav.addAttribute("hasEditingRole", hasEditingRole);
         
         String urlParams = request.getQueryString();

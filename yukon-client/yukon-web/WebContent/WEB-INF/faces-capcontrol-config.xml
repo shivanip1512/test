@@ -79,6 +79,11 @@
             <property-name>rolePropertyDao</property-name>
             <value>#{rolePropertyDao}</value>
         </managed-property>
+
+        <managed-property>
+            <property-name>nextValueHelper</property-name>
+            <value>#{nextValueHelper}</value>
+        </managed-property>
     </managed-bean>
     
      <managed-bean>

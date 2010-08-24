@@ -101,6 +101,7 @@ import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
+import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
@@ -403,16 +404,8 @@ public class ReportFuncs
         	return new ArrayList<LiteYukonPAObject>();
         	
         } else if (filter.equals(ReportFilter.STRATEGY)) {
-        	List<LiteCapControlStrategy> strategyList = CapControlStrategy.getAllLiteCapControlStrategy(); 
-        	
-        	//Remove "(none)" from the list
-        	for( LiteCapControlStrategy strategy : strategyList) {
-        		String name = strategy.getStrategyName();
-        		if("(none)".equals(name)) {
-        			strategyList.remove(strategy);
-        			break;
-        		}
-        	}
+            StrategyDao strategyDao = YukonSpringHook.getBean("strategyDao", StrategyDao.class);
+        	List<LiteCapControlStrategy> strategyList = strategyDao.getAllLiteStrategies();
         	
         	return strategyList;
         }

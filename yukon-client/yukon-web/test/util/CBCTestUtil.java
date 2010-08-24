@@ -67,18 +67,6 @@ public class CBCTestUtil {
         return newSubID;
     }
 
-    public static Integer getStratIDToUpdate() {
-        List<CapControlStrategy> allCBCStrategies = CapControlStrategy.getAllCBCStrategies();
-        Integer newStratID = null;
-        for (CapControlStrategy strategy : allCBCStrategies ) {
-            if (!strategy.getStrategyID().equals(getStrategyID())) {
-                newStratID = strategy.getStrategyID();
-                break;
-            }
-        }
-        return newStratID;
-    }
-
     public static ArrayList<CCSubAreaAssignment> getFirstFourSubs(Integer areaID) {
         List<LiteYukonPAObject> buses = DaoFactory.getPaoDao()
                                                   .getAllCapControlSubBuses();

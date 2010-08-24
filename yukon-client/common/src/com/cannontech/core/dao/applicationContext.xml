@@ -175,7 +175,7 @@
   <bean id="xmlLMGroupParameterDao" class="com.cannontech.core.dao.impl.LmGroupXmlParameterDaoImpl"/> 
   <bean id="paoScheduleDao" class="com.cannontech.core.dao.impl.PaoScheduleDaoImpl"/>
   
-  <bean id="strategyDao" class="com.cannontech.core.dao.impl.StrategyDaoImpl"/>
+  <bean id="strategyDao" class="com.cannontech.capcontrol.dao.impl.StrategyDaoImpl"/>
   
   <bean id="outageMonitorDao" class="com.cannontech.amr.outageProcessing.dao.impl.OutageMonitorDaoImpl"/>
   

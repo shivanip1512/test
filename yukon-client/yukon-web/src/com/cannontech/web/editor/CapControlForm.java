@@ -25,6 +25,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.ControlMethod;
+import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CapbankControllerDao;
 import com.cannontech.cbc.dao.CapbankDao;
@@ -53,7 +54,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
-import com.cannontech.core.dao.StrategyDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.TransactionException;
@@ -96,6 +96,7 @@ import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.database.db.season.SeasonSchedule;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.model.Season;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.spring.YukonSpringHook;
@@ -161,6 +162,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private PaoDao paoDao;
     private RolePropertyDao rolePropertyDao;
     private CBCSelectionLists selectionLists;
+    private NextValueHelper nextValueHelper;
     
     Logger log = YukonLogManager.getLogger(CapControlForm.class);
     
@@ -210,7 +212,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     public List<SelectItem> getCbcStrategies() {
 		if (cbcStrategies == null) {
-			List<CapControlStrategy> cbcDBStrats = CapControlStrategy.getAllCBCStrategies();
+			List<CapControlStrategy> cbcDBStrats = strategyDao.getAllStrategies();
 			cbcStrategies = Lists.newArrayList();
 			cbcStrategies.add(new SelectItem(-1, "(none)"));
 			for (CapControlStrategy strategy : cbcDBStrats) {
@@ -223,7 +225,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     public List<SelectItem> getCbcHolidayStrategies() {
         List<SelectItem> cbcHolidayStrategies;
-        List<CapControlStrategy> cbcDBStrats = CapControlStrategy.getAllCBCStrategies();
+        List<CapControlStrategy> cbcDBStrats = strategyDao.getAllStrategies();
         cbcHolidayStrategies = Lists.newArrayList();
         for (CapControlStrategy strategy : cbcDBStrats) {
             cbcHolidayStrategies.add(new SelectItem(strategy.getStrategyID(), strategy.getStrategyName()));
@@ -269,7 +271,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     public HashMap<Integer, String> getStrategyNameMap(){
         HashMap<Integer, String> map = new HashMap<Integer, String>();
-        List<CapControlStrategy> strats = CapControlStrategy.getAllCBCStrategies();
+        List<CapControlStrategy> strats = strategyDao.getAllStrategies();
         for(CapControlStrategy strat : strats) {
             map.put(strat.getStrategyID(), strat.getStrategyName());
         }
@@ -1078,7 +1080,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
 	public void createStrategy() {
         CapControlStrategy ccStrat = CCYukonPAOFactory.createCapControlStrategy();
-		Integer newId = CapControlStrategy.getNextStrategyID();
+		Integer newId = nextValueHelper.getNextValue(CapControlStrategy.TABLE_NAME);
 		ccStrat.setStrategyID(newId);
 		ccStrat.setStrategyName("Strat #" + newId + " (New)");
 		// this message will be filled in by the super class
@@ -1918,7 +1920,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     }
     
     public List<CapControlStrategy> getAllCBCStrats() {
-        return CapControlStrategy.getAllCBCStrategies();
+        return strategyDao.getAllStrategies();
     }
     
     @SuppressWarnings("unchecked")
@@ -2109,4 +2111,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         this.rolePropertyDao = rolePropertyDao;
     }
     
+    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+        this.nextValueHelper = nextValueHelper;
+    }
 }

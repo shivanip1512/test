@@ -16,7 +16,8 @@ public enum DurationFormat implements DisplayableEnum {
     M(RoundingMode.HALF_UP),
     S(RoundingMode.HALF_UP),
     HM_ABBR(RoundingMode.HALF_UP),
-    HM_SHORT(RoundingMode.DOWN);
+    HM_SHORT(RoundingMode.DOWN),
+	MS_ABBR(RoundingMode.HALF_UP);
     
     private RoundingMode roundingMode;
     private static final String keyPrefix = "yukon.common.durationFormatting.pattern.";

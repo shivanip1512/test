@@ -10,9 +10,9 @@ import javax.faces.model.SelectItem;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.AuthDao;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -23,10 +23,8 @@ import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
-import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Maps;
 
@@ -67,6 +65,7 @@ public class CBCSelectionLists {
 	
 	private LiteYukonUser yukonUser;
 	private AuthDao authDao;
+	private RolePropertyDao rolePropertyDao;
 	
     private static final SelectItem[] pTypes = {
       new SelectItem(new Integer (PointTypes.ANALOG_POINT), "Analog"),
@@ -154,16 +153,11 @@ public class CBCSelectionLists {
 
 	private static final SelectItem[] cbcControlMethods =  {
 		//value, label
-		new SelectItem(ControlMethod.INDIVIDUAL_FEEDER.getDatabaseRepresentation(),
-				StringUtils.addCharBetweenWords( ' ', ControlMethod.INDIVIDUAL_FEEDER.getDatabaseRepresentation())),
-		new SelectItem(ControlMethod.BUSOPTIMIZED_FEEDER.getDatabaseRepresentation(),
-				StringUtils.addCharBetweenWords( ' ', ControlMethod.BUSOPTIMIZED_FEEDER.getDatabaseRepresentation())),		
-		new SelectItem(ControlMethod.MANUAL_ONLY.getDatabaseRepresentation(),
-				StringUtils.addCharBetweenWords( ' ', ControlMethod.MANUAL_ONLY.getDatabaseRepresentation())),		
-		new SelectItem(ControlMethod.SUBSTATION_BUS.getDatabaseRepresentation(),
-				StringUtils.addCharBetweenWords( ' ', ControlMethod.SUBSTATION_BUS.getDatabaseRepresentation())),
-		new SelectItem(ControlMethod.TIME_OF_DAY.getDatabaseRepresentation(),
-		        StringUtils.addCharBetweenWords(' ', ControlMethod.TIME_OF_DAY.getDatabaseRepresentation()))
+		new SelectItem(ControlMethod.INDIVIDUAL_FEEDER.getDatabaseRepresentation(), ControlMethod.INDIVIDUAL_FEEDER.getDisplayName()),
+		new SelectItem(ControlMethod.BUSOPTIMIZED_FEEDER.getDatabaseRepresentation(), ControlMethod.BUSOPTIMIZED_FEEDER.getDisplayName()),		
+		new SelectItem(ControlMethod.MANUAL_ONLY.getDatabaseRepresentation(), ControlMethod.MANUAL_ONLY.getDisplayName()),		
+		new SelectItem(ControlMethod.SUBSTATION_BUS.getDatabaseRepresentation(), ControlMethod.SUBSTATION_BUS.getDisplayName()),
+		new SelectItem(ControlMethod.TIME_OF_DAY.getDatabaseRepresentation(), ControlMethod.TIME_OF_DAY.getDisplayName())
 	};
 
 
@@ -294,13 +288,6 @@ public class CBCSelectionLists {
 	};
     
 	/**
-	 * 
-	 */
-	public CBCSelectionLists() {
-		super();
-	}
-
-	/**
 	 * Returns all possible Comm Channels
 	 */
 	public SelectItem[] getCommChannels() {
@@ -375,8 +362,7 @@ public class CBCSelectionLists {
 	 * @return SelectItem[]
 	 */
 	public SelectItem[] getCapBankOpStates() {
-	    AuthDao authdao = DaoFactory.getAuthDao();
-	    String fixedText = authdao.getRolePropertyValue(yukonUser, CBCOnelineSettingsRole.CAP_BANK_FIXED_TEXT);
+	    String fixedText = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CAP_BANK_FIXED_TEXT, yukonUser);
 	    capBankOpStates[0] = new SelectItem(fixedText, fixedText);
 		return capBankOpStates;
 	}
@@ -636,10 +622,12 @@ public class CBCSelectionLists {
         this.yukonUser = yukonUser;
     }
     
-    public AuthDao getAuthDao() {
-        return authDao;
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
+    
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
     }
+    
 }

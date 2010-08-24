@@ -2,6 +2,8 @@ package com.cannontech.cbc.service.impl;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.cbc.dao.AreaDao;
 import com.cannontech.cbc.dao.CapbankControllerDao;
 import com.cannontech.cbc.dao.LtcDao;
@@ -22,7 +24,6 @@ import com.cannontech.cbc.service.CapControlCreationService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PaoScheduleDao;
-import com.cannontech.core.dao.StrategyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.CapControlTypes;
