@@ -149,6 +149,8 @@ bool Klondike::commandStateValid()
 
             command_valid = false;
         }
+
+        _loading_device_queue = command_valid;
     }
 
     if( _current_command.command      == Command_ReadQueue &&
