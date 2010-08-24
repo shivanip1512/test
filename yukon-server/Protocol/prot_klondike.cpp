@@ -109,6 +109,11 @@ bool Klondike::nextCommandState()
             _reading_device_queue = false;
         }
 
+        if( _current_command.command == Command_LoadQueue )
+        {
+            _loading_device_queue = false;
+        }
+
         _current_command.command_code = CommandCode_Null;
 
         return false;  //  we don't have a command to send
