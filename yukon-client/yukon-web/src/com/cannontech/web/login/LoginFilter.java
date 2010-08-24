@@ -161,7 +161,12 @@ public class LoginFilter implements Filter {
         if (session != null) {
             SessionInfo sessionInfo = (SessionInfo) session.getAttribute(ServletUtil.SESSION_INFO);
             /* Update the IP Address */
-            sessionInfo.setIpAddress(request.getRemoteAddr());
+            if(sessionInfo == null) {
+                sessionInfo = new SessionInfo(request.getRemoteAddr());
+                session.setAttribute(ServletUtil.SESSION_INFO, sessionInfo);
+            } else {
+                sessionInfo.setIpAddress(request.getRemoteAddr());
+            }
             
             Instant lastActivityTime = sessionInfo.getLastActivityTime();
             LiteYukonUser user = YukonUserContextUtils.getYukonUserContext(request).getYukonUser();
