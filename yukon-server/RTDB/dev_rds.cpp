@@ -159,9 +159,9 @@ int RDSTransmitter::decode(CtiXfer &xfer, int status)
 void RDSTransmitter::delay()
 {
     const int totalGroups = getMessageCountFromBufSize(_outMessage.OutLength);
-    if(getGroupsPerSecond > 0)
+    if(getGroupsPerSecond() > 0)
     {
-        Sleep((float)1000*totalGroups/getGroupsPerSecond());
+        Sleep(1000*totalGroups/getGroupsPerSecond());
     }
     else
     {
