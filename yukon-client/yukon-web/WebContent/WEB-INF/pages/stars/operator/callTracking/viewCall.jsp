@@ -9,10 +9,11 @@
 
 	<script type="text/javascript">
 
-		var combineDateAndTimeFieldsOnSubmit = function() {
+		var combineDateAndTimeFieldsAndSubmit = function() {
 			
 		    combineDateAndTimeFields('dateTaken');
-		    return true;
+
+            $("callReportUpdateForm").submit();
 		}
 
 	</script>
@@ -21,7 +22,7 @@
 		<input type="hidden" name="accountId" value="${accountId}">
 	</form>
 	
-	<form:form id="callReportUpdateForm" commandName="callReport" action="/spring/stars/operator/callTracking/updateCall" onsubmit="return submitForm();">
+	<form:form id="callReportUpdateForm" commandName="callReport" action="/spring/stars/operator/callTracking/updateCall">
 	
 		<input type="hidden" name="accountId" value="${accountId}">
 	
@@ -57,7 +58,7 @@
 		<br>
 		
 		<%-- buttons --%>
-		<tags:slowInput2 formId="callReportUpdateForm" key="save" onsubmit="combineDateAndTimeFieldsOnSubmit"/>
+		<tags:slowInput2 formId="callReportUpdateForm" key="save" onsubmit="combineDateAndTimeFieldsAndSubmit"/>
 		<tags:slowInput2 formId="viewAllForm" key="cancel"/>
 		
 	</form:form>
