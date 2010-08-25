@@ -371,23 +371,6 @@ public class WebGraph implements Runnable
 	 */
 	public void start()
 	{
-	    dbChangeListener = new DBChangeListener() {
-	        public void dbChangeReceived(DBChangeMsg msg)
-	        {
-	            if (!msg.getSource().equals(com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE))
-	            {
-	                if( msg.getDatabase() == DBChangeMsg.CHANGE_GRAPH_DB)
-	                {
-	                    CTILogger.info("DBChangeMSG received, updating graphDefinitionCache.");
-	                    getPredefinedGraphs();
-	                }
-	            }
-	        }			
-	    };
-
-	    AsyncDynamicDataSource dataSource =  (AsyncDynamicDataSource) YukonSpringHook.getBean("asyncDynamicDataSource");
-	    dataSource.addDBChangeListener(dbChangeListener);
-
 	    strtThread = new Thread( this, "WebGraph" );
 	    strtThread.start();
 	}
@@ -416,7 +399,24 @@ public class WebGraph implements Runnable
 	}
 
 	public void run()
-	{		
+	{
+       dbChangeListener = new DBChangeListener() {
+            public void dbChangeReceived(DBChangeMsg msg)
+            {
+                if (!msg.getSource().equals(com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE))
+                {
+                    if( msg.getDatabase() == DBChangeMsg.CHANGE_GRAPH_DB)
+                    {
+                        CTILogger.info("DBChangeMSG received, updating graphDefinitionCache.");
+                        getPredefinedGraphs();
+                    }
+                }
+            }           
+        };
+
+        AsyncDynamicDataSource dataSource =  (AsyncDynamicDataSource) YukonSpringHook.getBean("asyncDynamicDataSource");
+        dataSource.addDBChangeListener(dbChangeListener);
+	    
 		java.util.Date now = null;
 		figureNextRunTime();
 		getPredefinedGraphs();
