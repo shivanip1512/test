@@ -57,8 +57,10 @@ public:
             else 
                 return false;
         }
-
-        throw;
+        else
+        {
+            throw;
+        }
     }
 
     bool operator()()
@@ -70,6 +72,8 @@ public:
     
     RowReader &operator[](const std::string &columnName)
     {
+        bool found = false;
+
         if( _currentRow < _values.size() )
         {
             for( int i=0; i < _columnNames.size(); i++ )
@@ -77,156 +81,73 @@ public:
                 if( _columnNames[i] == columnName )
                 {
                     _currentColumn = i;
-                    return *this;
+                    found = true;
+                    break;
                 }
             }
         }
 
-        // We didnt find it or we should not be here.
-        throw;
+        if( !found )
+        {
+            throw;
+        }
+
+        return *this;
     }
 
     RowReader &operator[](int columnNumber) { _currentColumn = columnNumber; return *this; } // 0 based
 
     RowReader &operator>>(bool &operand)
     {
+        bool found = false;
+
         if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
         {
             if( _values[_currentRow][_currentColumn] == getTrueString() )
             {
                 operand = true;
-                _currentColumn++;
-                return *this;
+                found = true;
             }
             else if( _values[_currentRow][_currentColumn] == getFalseString() )
             {
                 operand = false;
-                _currentColumn++;
-                return *this;
+                found = true;
             }
         }
 
-        throw;
-    }
-
-    RowReader &operator>>(short &operand)
-    {
-        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
+        if( !found )
         {
-            operand = atoi(_values[_currentRow][_currentColumn].c_str());
-            _currentColumn++;
-            return *this;
+            throw;
         }
 
-        throw;
+        _currentColumn++;
+        return *this;
     }
 
-    RowReader &operator>>(unsigned short &operand)
-    {
-        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
-        {
-            operand = atoi(_values[_currentRow][_currentColumn].c_str());
-            _currentColumn++;
-            return *this;
-        }
+    RowReader &operator>>(short &operand)          { operand = getNextIntegerValue(); return *this;  }
+    RowReader &operator>>(unsigned short &operand) { operand = getNextIntegerValue(); return *this;  }
+    RowReader &operator>>(long &operand)           { operand = getNextIntegerValue(); return *this;  }
+    RowReader &operator>>(INT &operand)            { operand = getNextIntegerValue(); return *this;  }
+    RowReader &operator>>(UINT &operand)           { operand = getNextIntegerValue(); return *this;  }
+    RowReader &operator>>(UCHAR &operand)          { operand = getNextIntegerValue(); return *this;  }
+    RowReader &operator>>(unsigned long &operand)  { operand = getNextIntegerValue(); return *this;  }
 
-        throw;
-    }
-
-    RowReader &operator>>(long &operand)
-    {
-        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
-        {
-            operand = atoi(_values[_currentRow][_currentColumn].c_str());
-            _currentColumn++;
-            return *this;
-        }
-
-        throw;
-    }
-
-    RowReader &operator>>(INT &operand)
-    {
-        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
-        {
-            operand = atoi(_values[_currentRow][_currentColumn].c_str());
-            _currentColumn++;
-            return *this;
-        }
-
-        throw;
-    }
-
-    RowReader &operator>>(UINT &operand)
-    {
-        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
-        {
-            operand = atoi(_values[_currentRow][_currentColumn].c_str());
-            _currentColumn++;
-            return *this;
-        }
-
-        throw;
-    }
-
-    RowReader &operator>>(UCHAR &operand)
-    {
-        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
-        {
-            operand = atoi(_values[_currentRow][_currentColumn].c_str());
-            _currentColumn++;
-            return *this;
-        }
-
-        throw;
-    }
-
-    RowReader &operator>>(unsigned long &operand)
-    {
-        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
-        {
-            operand = atoi(_values[_currentRow][_currentColumn].c_str());
-            _currentColumn++;
-            return *this;
-        }
-
-        throw;
-    }
-
-    RowReader &operator>>(double &operand)
-    {
-        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
-        {
-            operand = atof(_values[_currentRow][_currentColumn].c_str());
-            _currentColumn++;
-            return *this;
-        }
-
-        throw;
-    }
-
-    RowReader &operator>>(float &operand)
-    {
-        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
-        {
-            operand = atof(_values[_currentRow][_currentColumn].c_str());
-            _currentColumn++;
-            return *this;
-        }
-
-        throw;
-    }
+    RowReader &operator>>(double &operand)         { operand = getNextFloatValue();   return *this;  }
+    RowReader &operator>>(float &operand)          { operand = getNextFloatValue();   return *this;  }
 
     RowReader &operator>>(CtiTime &operand)
     {
         if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
         {
             operand = CtiTime::now();
-            _currentColumn++;
-            return *this;
+        }
+        else
+        {
+            throw;
         }
 
-        throw;
+        _currentColumn++;
+        return *this;
     }
 
     RowReader &operator>>(boost::posix_time::ptime &operand)
@@ -234,11 +155,14 @@ public:
         if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
         {
             operand = boost::posix_time::from_time_t(CtiTime::now().seconds());
-            _currentColumn++;
-            return *this;
+        }
+        else
+        {
+            throw;
         }
 
-        throw;
+        _currentColumn++;
+        return *this;
     }
 
     RowReader &operator>>(std::string &operand)
@@ -246,11 +170,14 @@ public:
         if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
         {
             operand = _values[_currentRow][_currentColumn];
-            _currentColumn++;
-            return *this;
+        }
+        else
+        {
+            throw;
         }
 
-        throw;
+        _currentColumn++;
+        return *this;
     }
 
     // inputs for variable binding
@@ -282,6 +209,41 @@ public:
     static std::string getFalseString()
     {
         return "cR4nd0mFalseStr1ng";
+    }
+
+private:
+    // helper function, returns a proper value and incrememts the column or throws.
+    int getNextIntegerValue()
+    {
+        int retVal = 0;
+        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
+        {
+            retVal = atoi(_values[_currentRow][_currentColumn].c_str());
+        }
+        else
+        {
+            throw;
+        }
+
+        _currentColumn++;
+        return retVal;
+    }
+
+    // helper function, returns a proper value and incrememts the column or throws.
+    double getNextFloatValue()
+    {
+        double retVal = 0;
+        if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
+        {
+            retVal = atof(_values[_currentRow][_currentColumn].c_str());
+        }
+        else
+        {
+            throw;
+        }
+
+        _currentColumn++;
+        return retVal;
     }
 };
 
