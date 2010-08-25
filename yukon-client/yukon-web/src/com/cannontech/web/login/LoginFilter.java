@@ -103,56 +103,60 @@ public class LoginFilter implements Filter {
         if (excludedRequest) {
             log.debug("Proceeding with request that passes exclusion filter");
             attachYukonUserContext(request, false);
-        } else {
-            boolean loggedIn = isLoggedIn(request);
-            
-            if(!loggedIn) {
-                /* Try to log them in using a LoginRequestHandler to handle the login request. */ 
-                /* Send error response if we fail to log them in. */
-                for (LoginRequestHandler handler : loginRequestHandlers) {
-                    boolean success = handler.handleLoginRequest(request, response);
-                    if (success) {
-                        log.debug("Proceeding with request after successful handler login");
-                        break;
-                    }
-                }
-                
-                if(!isLoggedIn(request)) {
-                    /* If we got here, they couldn't be authenticated, send an error response. */
-                    log.debug("All login attempts failed, returning error");
-                    
-                    boolean noRedirect = ServletRequestUtils.getBooleanParameter(request, "noLoginRedirect", false);
-                    if (ajaxRequest || noRedirect) {
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not Authenticated!");
-                    } else {
-                        sendLoginRedirect(request, response);
-                    }
-                    return;
-                }
-            }
-            
-            /* User has been authenticated. */
-            attachYukonUserContext(request, true);
-            
-            /* Check session timeout, update last activity time if successful, redirect to login page if expired. */
-            try{
-                checkSessionTimeout(request, ajaxRequest);
-            } catch (SessionTimeoutException e) {
-                loginService.invalidateSession(request, "TIMEOUT");
-                sendLoginRedirect(request, response);
-                return;
-            }
-            
-            /* Check for access authorization */
-            try {
-                verifyPathAccess(request);
-            } catch(NotAuthorizedException naexception) {
-                log.error(naexception.getMessage());
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                return;
-            }
-            
+            chain.doFilter(request, response);
+            return;
         }
+        
+        boolean loggedIn = isLoggedIn(request);
+            
+        if(!loggedIn) {
+            /* Try to log them in using a LoginRequestHandler to handle the login request. */ 
+            /* Send error response if we fail to log them in. */
+            boolean success = false;
+            for (LoginRequestHandler handler : loginRequestHandlers) {
+                success = handler.handleLoginRequest(request, response);
+                if (success) {
+                    log.debug("Proceeding with request after successful handler login");
+                    break;
+                }
+            }
+            
+            if(!success) {
+                /* If we got here, they couldn't be authenticated, send an error response. */
+                log.debug("All login attempts failed, returning error");
+                
+                boolean noRedirect = ServletRequestUtils.getBooleanParameter(request, "noLoginRedirect", false);
+                if (ajaxRequest || noRedirect) {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not Authenticated!");
+                } else {
+                    sendLoginRedirect(request, response);
+                }
+                return;
+            }
+        }
+        
+        /* At this point the user has been authenticated, check for timeout and authorization. */
+        attachYukonUserContext(request, true);
+        
+        /* Check session timeout, update last activity time if successful, redirect to login page if expired. */
+        try{
+            checkSessionTimeout(request, ajaxRequest);
+        } catch (SessionTimeoutException e) {
+            log.info("User logged out due to inactivity");
+            loginService.invalidateSession(request, "TIMEOUT");
+            sendLoginRedirect(request, response);
+            return;
+        }
+        
+        /* Check for access authorization */
+        try {
+            verifyPathAccess(request);
+        } catch(NotAuthorizedException naexception) {
+            log.error(naexception.getMessage());
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+            
         chain.doFilter(req, resp);
     }
 
@@ -161,12 +165,7 @@ public class LoginFilter implements Filter {
         if (session != null) {
             SessionInfo sessionInfo = (SessionInfo) session.getAttribute(ServletUtil.SESSION_INFO);
             /* Update the IP Address */
-            if(sessionInfo == null) {
-                sessionInfo = new SessionInfo(request.getRemoteAddr());
-                session.setAttribute(ServletUtil.SESSION_INFO, sessionInfo);
-            } else {
-                sessionInfo.setIpAddress(request.getRemoteAddr());
-            }
+            sessionInfo.setIpAddress(request.getRemoteAddr());
             
             Instant lastActivityTime = sessionInfo.getLastActivityTime();
             LiteYukonUser user = YukonUserContextUtils.getYukonUserContext(request).getYukonUser();

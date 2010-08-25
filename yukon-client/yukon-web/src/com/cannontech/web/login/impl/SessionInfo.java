@@ -1,8 +1,12 @@
 package com.cannontech.web.login.impl;
 
+import java.io.Serializable;
+
 import org.joda.time.Instant;
 
-public class SessionInfo {
+public class SessionInfo implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     
     private Instant lastActivityTime = new Instant();
     private String ipAddress;
