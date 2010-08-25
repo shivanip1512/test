@@ -13,6 +13,7 @@ import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
@@ -71,13 +72,14 @@ import com.google.common.collect.ListMultimap;
 
 public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     private static final Logger log = YukonLogManager.getLogger(ProgramEnrollmentServiceImpl.class);
-    private EnrollmentDao enrollmentDao;
-    private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private ControlHistoryService controlHistoryService;
     private ECMappingDao ecMappingDao;
+    private EnrollmentDao enrollmentDao;
+    private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
 
     @Override
+    @Transactional
     public ProgramEnrollmentResultEnum applyEnrollmentRequests(final CustomerAccount customerAccount,
             final List<ProgramEnrollment> requests, final LiteYukonUser user) {
 
@@ -96,13 +98,30 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         try {
             StarsOperation operation = createStarsOperation(customerAccount, requests, energyCompany, liteCustomerAccount, useHardwareAddressing);
             StarsProgramSignUp programSignUp = operation.getStarsProgramSignUp();
+            Instant now  = new Instant();
 
+            // Clean up an opt outs that are active or scheduled.
+            for (ProgramEnrollment programEnrollment : requests) {
+                if (programEnrollment.isEnroll() == false) {
+                    
+                    List<LMHardwareControlGroup> lmHardwareControlGroups = 
+                        lmHardwareControlGroupDao
+                            .getByInventoryIdAndGroupIdAndAccountIdAndType(programEnrollment.getInventoryId(), 
+                                                                           programEnrollment.getLmGroupId(), 
+                                                                           customerAccountId, 
+                                                                           LMHardwareControlGroup.OPT_OUT_ENTRY);
+                    
+                    for (LMHardwareControlGroup lmHardwareControlGroup : lmHardwareControlGroups) {
+                        lmHardwareControlGroupDao.stopOptOut(lmHardwareControlGroup.getInventoryId(),
+                                                             lmHardwareControlGroup.getAccountId(),
+                                                             user, now);
+                    }
+                }
+            }
+            
+            // Process Enrollments
             List<LiteStarsLMHardware> hwsToConfig = 
-                updateProgramEnrollment(programSignUp,
-                                                            liteCustomerAccount,
-                                                            null,
-                                                            energyCompany,
-                                                            user);
+                updateProgramEnrollment(programSignUp, liteCustomerAccount, null,energyCompany, user);
 
             // Send out the config/disable command
             for (final LiteStarsLMHardware liteHw : hwsToConfig) {

@@ -24,6 +24,9 @@ public interface LMHardwareControlGroupDao {
     
     public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, 
                              ReadableInstant stopDate);    
+
+    public void stopOptOut(int inventoryId, int accountId, int assignedProgramId,
+                           LiteYukonUser currentUser, ReadableInstant stopDate);    
     
     public void resetEntriesForProgram(int programId, LiteYukonUser user);    
     
