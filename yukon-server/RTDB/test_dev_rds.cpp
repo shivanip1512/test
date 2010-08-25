@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(test_reader_and_getters)
     BOOST_CHECK_EQUAL(test_xmitter.getSiteAddress(), 11);
     BOOST_CHECK_EQUAL(test_xmitter.getEncoderAddress(), 12);
     BOOST_CHECK_EQUAL(test_xmitter.getGroupTypeCode(), 0x16);
-    BOOST_CHECK_EQUAL(test_xmitter.getGroupsPerSecond(), (float)0.8);
+    BOOST_CHECK_CLOSE(test_xmitter.getGroupsPerSecond(), 0.8f, 1e-5 );
 }
 
 BOOST_AUTO_TEST_CASE(test_crc)

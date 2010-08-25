@@ -159,7 +159,15 @@ int RDSTransmitter::decode(CtiXfer &xfer, int status)
 void RDSTransmitter::delay()
 {
     const int totalGroups = getMessageCountFromBufSize(_outMessage.OutLength);
-    Sleep((float)1000*totalGroups/getGroupsPerSecond());
+    if(getGroupsPerSecond > 0)
+    {
+        Sleep((float)1000*totalGroups/getGroupsPerSecond());
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "**** Checkpoint **** Invalid groups per second value" << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 }
 
 void RDSTransmitter::createBiDirectionRequest(MessageStore &message)
