@@ -69,6 +69,7 @@ test_lcr3102.obj \
 test_rte_ccu.obj \
 test_slctdev.obj \
 test_rtdb_sql.obj \
+test_dev_rds.obj \
 
 
 ALL:            $(TEST_OBJS) Makefile

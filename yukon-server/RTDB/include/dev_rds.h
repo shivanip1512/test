@@ -30,7 +30,7 @@ public:
 
     static bool isPacketValid(const unsigned char *buf, const size_t len);
 
-private:
+protected:
 
     typedef CtiDeviceRemote Inherited;
     typedef std::list <unsigned char> MessageStore;
