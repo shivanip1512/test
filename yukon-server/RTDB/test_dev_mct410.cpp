@@ -31,25 +31,35 @@ struct test_Mct410Device : Mct410Device
     using Mct410Device::extractDynamicPaoInfo;
     using Mct410Device::executePutConfig;
 
-    enum test_ValueType410
+    point_info getData_DymanicDemand(unsigned char *buf, int len)
     {
-        ValueType_DynamicDemand = Mct410Device::ValueType_DynamicDemand
-    };
+        return Mct410Device::getData(buf, len, Mct410Device::ValueType_DynamicDemand);
+    }
 
-    point_info test_getData(unsigned char *buf, int len, test_ValueType410 vt)
+    point_info getData_FrozenDynamicDemand(unsigned char *buf, int len)
     {
-        return getData(buf, len, static_cast<Mct410Device::ValueType410>(vt));
+        return Mct410Device::getData(buf, len, Mct410Device::ValueType_FrozenDynamicDemand);
+    }
+
+    point_info getData_LoadProfileDynamicDemand(unsigned char *buf, int len)
+    {
+        return Mct410Device::getData(buf, len, Mct410Device::ValueType_LoadProfile_DynamicDemand);
+    }
+
+    point_info getData_AccumulatorDelta(unsigned char *buf, int len)
+    {
+        return Mct410Device::getData(buf, len, Mct410Device::ValueType_AccumulatorDelta);
     }
 };
 
-BOOST_AUTO_TEST_CASE(test_dev_mct410_getdata_rounding)
+BOOST_AUTO_TEST_CASE(test_dev_mct410_getdata_rounding_dynamic_demand)
 {
     test_Mct410Device dev;
     test_Mct410Device::point_info pi;
 
     unsigned char kwh_read[3] = { 0x00, 0x05, 0x00 };
 
-    pi = dev.test_getData(kwh_read, 3, test_Mct410Device::ValueType_DynamicDemand);
+    pi = dev.getData_DymanicDemand(kwh_read, 3);
 
     BOOST_CHECK_EQUAL( pi.value,      1280 );
     BOOST_CHECK_EQUAL( pi.freeze_bit, false );
@@ -57,9 +67,75 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_getdata_rounding)
 
     kwh_read[2] = 0x01;
     
-    pi = dev.test_getData(kwh_read, 3, test_Mct410Device::ValueType_DynamicDemand);
+    pi = dev.getData_DymanicDemand(kwh_read, 3);
 
     BOOST_CHECK_EQUAL( pi.value,      1280 ); // Still should be 1280, we round down!
+    BOOST_CHECK_EQUAL( pi.freeze_bit, true );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+}
+
+BOOST_AUTO_TEST_CASE(test_dev_mct410_getdata_rounding_frozen_dynamic_demand)
+{
+    test_Mct410Device dev;
+    test_Mct410Device::point_info pi;
+
+    unsigned char kwh_read[3] = { 0x00, 0x00, 0x80 };
+
+    pi = dev.getData_FrozenDynamicDemand(kwh_read, 3);
+
+    BOOST_CHECK_EQUAL( pi.value,      128 );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, false );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+
+    kwh_read[2] = 0x81;
+    
+    pi = dev.getData_FrozenDynamicDemand(kwh_read, 3);
+
+    BOOST_CHECK_EQUAL( pi.value,      128 ); // Still should be 128, we round down!
+    BOOST_CHECK_EQUAL( pi.freeze_bit, true );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+}
+
+BOOST_AUTO_TEST_CASE(test_dev_mct410_getdata_rounding_lp_dynamic_demand)
+{
+    test_Mct410Device dev;
+    test_Mct410Device::point_info pi;
+
+    unsigned char kwh_read[3] = { 0x00, 0x00, 0xf0 };
+
+    pi = dev.getData_LoadProfileDynamicDemand(kwh_read, 3);
+
+    BOOST_CHECK_EQUAL( pi.value,      240 );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, false );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+
+    kwh_read[2] = 0xf1;
+    
+    pi = dev.getData_LoadProfileDynamicDemand(kwh_read, 3);
+
+    BOOST_CHECK_EQUAL( pi.value,      240 ); // Still should be 240, we round down!
+    BOOST_CHECK_EQUAL( pi.freeze_bit, true );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+}
+
+BOOST_AUTO_TEST_CASE(test_dev_mct410_getdata_rounding_accumulator_delta)
+{
+    test_Mct410Device dev;
+    test_Mct410Device::point_info pi;
+
+    unsigned char kwh_read[3] = { 0x00, 0x04, 0x00 };
+
+    pi = dev.getData_AccumulatorDelta(kwh_read, 3);
+
+    BOOST_CHECK_EQUAL( pi.value,      1024 );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, false );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+
+    kwh_read[2] = 0x01;
+    
+    pi = dev.getData_AccumulatorDelta(kwh_read, 3);
+
+    BOOST_CHECK_EQUAL( pi.value,      1024 ); // Still should be 1024, we round down!
     BOOST_CHECK_EQUAL( pi.freeze_bit, true );
     BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
 }
@@ -76,21 +152,21 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
         bool freeze_bit;
     };
 
-    demand_checks dc[10] = {{{0x30, 0x05}, false, 0.004, true}, // rounding makes this value .004, down from .005
+    demand_checks dc[10] = {{{0x30, 0x05}, false, 0.005, true},
                             {{0x30, 0x05}, true,  0.004, true},
                             {{0x30, 0x04}, false, 0.004, false},
                             {{0x30, 0x04}, true,  0.004, false},
-                            {{0x2f, 0x0f}, false, 38.54, true}, // here as well...
+                            {{0x2f, 0x0f}, false, 38.55, true},
                             {{0x2f, 0x0f}, true,  38.54, true},
                             {{0x2f, 0x0e}, false, 38.54, false},
                             {{0x2f, 0x0e}, true,  38.54, false},
-                            {{0x01, 0x11}, false, 272,   true}, // and here!
+                            {{0x01, 0x11}, false, 273,   true},
                             {{0x01, 0x11}, true,  272,   true}};
 
     test_Mct410Device::point_info pi;
 
     pi = dev.getDemandData(dc[0].raw_value, 2, dc[0].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[0].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_SMALL(pi.value - (dc[0].value - 0.001) /* rounded down! */, std::numeric_limits<double>::epsilon());
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[0].freeze_bit);
 
     pi = dev.getDemandData(dc[1].raw_value, 2, dc[1].frozen);
@@ -106,7 +182,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[3].freeze_bit);
 
     pi = dev.getDemandData(dc[4].raw_value, 2, dc[4].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[4].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_SMALL(pi.value - (dc[4].value - 0.01) /* rounded down! */, std::numeric_limits<double>::epsilon());
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[4].freeze_bit);
 
     pi = dev.getDemandData(dc[5].raw_value, 2, dc[5].frozen);
@@ -122,7 +198,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[7].freeze_bit);
 
     pi = dev.getDemandData(dc[8].raw_value, 2, dc[8].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[8].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_SMALL(pi.value - (dc[8].value - 1) /* rounded down! */, std::numeric_limits<double>::epsilon());
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[8].freeze_bit);
 
     pi = dev.getDemandData(dc[9].raw_value, 2, dc[9].frozen);

@@ -156,6 +156,27 @@ Mct410Device::ConfigPartsList Mct410Device::getPartsList()
     return _config_parts;
 }
 
+bool Mct410Device::isKwhDataRead(Mct410Device::ValueType410 vt)
+{
+    switch( vt )
+    {
+        case Mct410Device::ValueType_DynamicDemand:
+        case Mct410Device::ValueType_FrozenDynamicDemand:
+        case Mct410Device::ValueType_LoadProfile_DynamicDemand:
+        case Mct410Device::ValueType_AccumulatorDelta:
+        {
+            return true;
+        }
+        case Mct410Device::ValueType_Voltage:
+        case Mct410Device::ValueType_LoadProfile_Voltage:
+        case Mct410Device::ValueType_OutageCount:
+        default:
+        {
+            return false;
+        }
+    }
+}
+
 int Mct410Device::makeDynamicDemand(double input)
 {
     /*
@@ -317,7 +338,7 @@ Mct410Device::point_info Mct410Device::getData(const unsigned char *buf, int len
         }
     }
 
-    if( value % 2 )
+    if( isKwhDataRead(vt) && value % 2 )
     {
         value--; // Round down to the nearest .2 kWh.
     }

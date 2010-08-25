@@ -288,6 +288,8 @@ public:
 
     virtual ~Mct4xxDevice();
 
+    static bool isKwhDataRead(Mct4xxDevice::ValueType4xx vt);
+
     Mct4xxDevice &operator=(const Mct4xxDevice &aRef);
 
     enum

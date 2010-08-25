@@ -188,6 +188,8 @@ protected:
 
     point_info getData(const unsigned char *buf, int len, ValueType470 vt) const;
 
+    static bool isKwhDataRead(Mct470Device::ValueType470 vt);
+
     static const error_set _error_info_old_lp;
     static const error_set _error_info_lgs4;
     static const error_set _error_info_alphaa3;

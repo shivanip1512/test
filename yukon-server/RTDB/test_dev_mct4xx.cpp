@@ -31,9 +31,14 @@ struct test_Mct4xxDevice : Mct4xxDevice
         ValueType_Raw               = Inherited::ValueType_Raw,
     };
 
-    test_point_info test_getData(unsigned char *buf, int len, test_ValueType4xx vt)
+    test_point_info getDataAccumulator(unsigned char *buf, int len)
     {
-        return Inherited::getData(buf, len, static_cast<Inherited::ValueType4xx>(vt));
+        return Inherited::getData(buf, len, Mct4xxDevice::ValueType_Accumulator);
+    }
+
+    test_point_info getDataFrozenAccumulator(unsigned char *buf, int len)
+    {
+        return Inherited::getData(buf, len, Mct4xxDevice::ValueType_FrozenAccumulator);
     }
 
     read_key_store_t fake_key_store;
@@ -46,7 +51,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata)
     test_Mct4xxDevice dev;
     test_Mct4xxDevice::test_point_info pi;
 
-    pi = dev.test_getData(kwh_read, 3, test_Mct4xxDevice::ValueType_FrozenAccumulator);
+    pi = dev.getDataFrozenAccumulator(kwh_read, 3);
 
     BOOST_CHECK_EQUAL( pi.value,      256 );
     BOOST_CHECK_EQUAL( pi.freeze_bit, false );
@@ -54,21 +59,21 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata)
 
     kwh_read[2] = 0x01;
 
-    pi = dev.test_getData(kwh_read, 3, test_Mct4xxDevice::ValueType_FrozenAccumulator);
+    pi = dev.getDataFrozenAccumulator(kwh_read, 3);
 
     BOOST_CHECK_EQUAL( pi.value,      256 );
     BOOST_CHECK_EQUAL( pi.freeze_bit, true );
     BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
 }
 
-BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata_kwh_rounding)
+BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata_kwh_rounding_accumulator)
 {
     unsigned char kwh_read[3] = { 0x00, 0x02, 0x00 };
 
     test_Mct4xxDevice dev;
     test_Mct4xxDevice::test_point_info pi;
 
-    pi = dev.test_getData(kwh_read, 3, test_Mct4xxDevice::ValueType_Raw);
+    pi = dev.getDataAccumulator(kwh_read, 3);
     
     BOOST_CHECK_EQUAL( pi.value,      512 );
     BOOST_CHECK_EQUAL( pi.freeze_bit, false );
@@ -76,10 +81,33 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata_kwh_rounding)
 
     kwh_read[2] = 0x01;
 
-    pi = dev.test_getData(kwh_read, 3, test_Mct4xxDevice::ValueType_Raw);
+    pi = dev.getDataAccumulator(kwh_read, 3);
 
     BOOST_CHECK_EQUAL( pi.value,      512 ); // Still should be 512, we round down!
     BOOST_CHECK_EQUAL( pi.freeze_bit, true );
     BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
 }
+
+BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata_kwh_rounding_frozen_accumulator)
+{
+    unsigned char kwh_read[3] = { 0x00, 0x09, 0x10 };
+
+    test_Mct4xxDevice dev;
+    test_Mct4xxDevice::test_point_info pi;
+
+    pi = dev.getDataFrozenAccumulator(kwh_read, 3);
+    
+    BOOST_CHECK_EQUAL( pi.value,      2320 );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, false );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+
+    kwh_read[2] = 0x11;
+
+    pi = dev.getDataFrozenAccumulator(kwh_read, 3);
+
+    BOOST_CHECK_EQUAL( pi.value,      2320 ); // Still should be 2320, we round down!
+    BOOST_CHECK_EQUAL( pi.freeze_bit, true );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+}
+
 
