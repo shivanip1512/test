@@ -61,3 +61,25 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata)
     BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
 }
 
+BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata_kwh_rounding)
+{
+    unsigned char kwh_read[3] = { 0x00, 0x02, 0x00 };
+
+    test_Mct4xxDevice dev;
+    test_Mct4xxDevice::test_point_info pi;
+
+    pi = dev.test_getData(kwh_read, 3, test_Mct4xxDevice::ValueType_Raw);
+    
+    BOOST_CHECK_EQUAL( pi.value,      512 );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, false );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+
+    kwh_read[2] = 0x01;
+
+    pi = dev.test_getData(kwh_read, 3, test_Mct4xxDevice::ValueType_Raw);
+
+    BOOST_CHECK_EQUAL( pi.value,      512 ); // Still should be 512, we round down!
+    BOOST_CHECK_EQUAL( pi.freeze_bit, true );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+}
+

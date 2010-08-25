@@ -13,9 +13,19 @@ struct test_Mct470Device : Mct470Device
 {
     typedef Mct470Device::point_info point_info;
 
+    enum test_ValueType470
+    {
+        ValueType_IED = Mct470Device::ValueType_IED
+    };
+
     using Mct470Device::extractDynamicPaoInfo;
     using Mct470Device::convertTimestamp;
     using Mct470Device::computeResolutionByte;
+    
+    point_info test_getData(unsigned char *buf, int len, test_ValueType470 vt)
+    {
+        return getData(buf, len, static_cast<Mct470Device::ValueType470>(vt));
+    }
 };
 
 
@@ -61,6 +71,27 @@ unsigned long build_gmt_seconds(const utc34_checker_expected_time &e)
     return local_time.seconds() - local_offset;
 }
 
+BOOST_AUTO_TEST_CASE(test_dev_mct470_getdata_rounding)
+{
+    test_Mct470Device dev;
+    test_Mct470Device::point_info pi;
+
+    unsigned char kwh_read[3] = { 0x00, 0x10, 0x00 };
+
+    pi = dev.test_getData(kwh_read, 3, test_Mct470Device::ValueType_IED);
+
+    BOOST_CHECK_EQUAL( pi.value,      4096 );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, false );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+
+    kwh_read[2] = 0x01;
+    
+    pi = dev.test_getData(kwh_read, 3, test_Mct470Device::ValueType_IED);
+
+    BOOST_CHECK_EQUAL( pi.value,      4096 ); // Still should be 4096, we round down!
+    BOOST_CHECK_EQUAL( pi.freeze_bit, true );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+}
 
 BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2009)
 {

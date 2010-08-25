@@ -30,7 +30,39 @@ struct test_Mct410Device : Mct410Device
     using Mct410Device::getDemandData;
     using Mct410Device::extractDynamicPaoInfo;
     using Mct410Device::executePutConfig;
+
+    enum test_ValueType410
+    {
+        ValueType_DynamicDemand = Mct410Device::ValueType_DynamicDemand
+    };
+
+    point_info test_getData(unsigned char *buf, int len, test_ValueType410 vt)
+    {
+        return getData(buf, len, static_cast<Mct410Device::ValueType410>(vt));
+    }
 };
+
+BOOST_AUTO_TEST_CASE(test_dev_mct410_getdata_rounding)
+{
+    test_Mct410Device dev;
+    test_Mct410Device::point_info pi;
+
+    unsigned char kwh_read[3] = { 0x00, 0x05, 0x00 };
+
+    pi = dev.test_getData(kwh_read, 3, test_Mct410Device::ValueType_DynamicDemand);
+
+    BOOST_CHECK_EQUAL( pi.value,      1280 );
+    BOOST_CHECK_EQUAL( pi.freeze_bit, false );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+
+    kwh_read[2] = 0x01;
+    
+    pi = dev.test_getData(kwh_read, 3, test_Mct410Device::ValueType_DynamicDemand);
+
+    BOOST_CHECK_EQUAL( pi.value,      1280 ); // Still should be 1280, we round down!
+    BOOST_CHECK_EQUAL( pi.freeze_bit, true );
+    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
+}
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
 {
@@ -44,15 +76,15 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
         bool freeze_bit;
     };
 
-    demand_checks dc[10] = {{{0x30, 0x05}, false, 0.005, true},
+    demand_checks dc[10] = {{{0x30, 0x05}, false, 0.004, true}, // rounding makes this value .004, down from .005
                             {{0x30, 0x05}, true,  0.004, true},
                             {{0x30, 0x04}, false, 0.004, false},
                             {{0x30, 0x04}, true,  0.004, false},
-                            {{0x2f, 0x0f}, false, 38.55, true},
+                            {{0x2f, 0x0f}, false, 38.54, true}, // here as well...
                             {{0x2f, 0x0f}, true,  38.54, true},
                             {{0x2f, 0x0e}, false, 38.54, false},
                             {{0x2f, 0x0e}, true,  38.54, false},
-                            {{0x01, 0x11}, false, 273,   true},
+                            {{0x01, 0x11}, false, 272,   true}, // and here!
                             {{0x01, 0x11}, true,  272,   true}};
 
     test_Mct410Device::point_info pi;

@@ -317,6 +317,11 @@ Mct410Device::point_info Mct410Device::getData(const unsigned char *buf, int len
         }
     }
 
+    if( value % 2 )
+    {
+        value--; // Round down to the nearest .2 kWh.
+    }
+
     retval.value       = value;
     retval.quality     = quality;
     retval.description = description;
