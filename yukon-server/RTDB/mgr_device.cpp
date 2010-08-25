@@ -1825,13 +1825,13 @@ void CtiDeviceManager::refreshStaticPaoInfo(Cti::Database::id_set &paoids)
     {
         if(DebugLevel & 0x00020000)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Dynamic PAO Info" << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Static PAO Info" << endl;
         }
 
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection);
 
-        string sql = CtiTableStaticPaoInfo::getSQLCoreStatement(_app_id);
+        string sql = CtiTableStaticPaoInfo::getSQLCoreStatement();
 
         if( !sql.empty() )
         {
@@ -1887,7 +1887,7 @@ void CtiDeviceManager::refreshStaticPaoInfo(Cti::Database::id_set &paoids)
 
         if(DebugLevel & 0x00020000)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Dynamic PAO Info" << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Static PAO Info" << endl;
         }
     }
 }

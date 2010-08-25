@@ -64,7 +64,7 @@ public:
 
     bool hasRow() const;
 
-    static string getSQLCoreStatement(CtiApplication_t _app_id);
+    static string getSQLCoreStatement();
 
     void DecodeDatabaseReader(Cti::RowReader& rdr);
 
