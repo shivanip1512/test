@@ -171,9 +171,9 @@ public class LoginFilter implements Filter {
             LiteYukonUser user = YukonUserContextUtils.getYukonUserContext(request).getYukonUser();
             int sessionTimeout = rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.SESSION_TIMEOUT, user);
             
-            Instant expirationTime = new Instant().minus(Duration.standardMinutes(sessionTimeout));
+            Instant validActivityThreshold = new Instant().minus(Duration.standardMinutes(sessionTimeout));
             
-            if(lastActivityTime.isBefore(expirationTime)) {
+            if(lastActivityTime.isBefore(validActivityThreshold)) {
                 /* Timeout */
                 log.debug("Session Timeout for request: " + request.getRequestURI());
                 throw new SessionTimeoutException();
