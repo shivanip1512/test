@@ -15,9 +15,11 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -27,6 +29,8 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.JAVA_WEB_START_LAUNCHER_ENABLED)
 public class JnlpController extends AbstractController {
+
+    private ConfigurationSource configurationSource;
 
     private String appTitle;
     private String appDescription;
@@ -79,8 +83,8 @@ public class JnlpController extends AbstractController {
         Element j2seElem = new Element("j2se");
         //j2seElem.setAttribute("href", "http://java.sun.com/products/autodl/j2se");
         j2seElem.setAttribute("version", "1.6");
-        j2seElem.setAttribute("initial-heap-size", "128m");
-        j2seElem.setAttribute("max-heap-size", "384m");
+        j2seElem.setAttribute("initial-heap-size", configurationSource.getString("JNLP_INIT_HEAP_SIZE", "128m"));
+        j2seElem.setAttribute("max-heap-size", configurationSource.getString("JNLP_MAX_HEAP_SIZE", "384m"));
         resourcesElem.addContent(j2seElem);        
         
         // add main class jar
@@ -199,5 +203,8 @@ public class JnlpController extends AbstractController {
         this.userChecker = userChecker;
     }
 
-
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
+    }
 }
