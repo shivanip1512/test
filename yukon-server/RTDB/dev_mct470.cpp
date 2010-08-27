@@ -938,7 +938,7 @@ Mct470Device::point_info Mct470Device::getData( const unsigned char *buf, int le
         }
     }
 
-    if( isKwhDataRead(vt) && value % 2 )
+    if( vt == ValueType_PulseDemand && value % 2 )
     {
         value--; // Round down to the nearest .2 kWh.
     }
@@ -948,30 +948,6 @@ Mct470Device::point_info Mct470Device::getData( const unsigned char *buf, int le
     retval.description = description;
 
     return retval;
-}
-
-bool Mct470Device::isKwhDataRead(Mct470Device::ValueType470 vt)
-{
-    switch( vt )
-    {
-        case Mct470Device::ValueType_PulseDemand:
-        case Mct470Device::ValueType_LoadProfile_PulseDemand:
-        {
-            return true;
-        }
-        case Mct470Device::ValueType_LoadProfile_IED_LG_S4:
-        case Mct470Device::ValueType_LoadProfile_IED_Alpha_A3:
-        case Mct470Device::ValueType_LoadProfile_IED_Alpha_PP:
-        case Mct470Device::ValueType_LoadProfile_IED_GE_kV:
-        case Mct470Device::ValueType_LoadProfile_IED_GE_kV2:
-        case Mct470Device::ValueType_LoadProfile_IED_GE_kV2c:
-        case Mct470Device::ValueType_LoadProfile_IED_Sentinel:
-        case Mct470Device::ValueType_IED:
-        default:
-        {
-            return false;
-        }
-    }
 }
 
 bool Mct470Device::hasIedInputs() const

@@ -31,12 +31,12 @@ struct test_Mct4xxDevice : Mct4xxDevice
         ValueType_Raw               = Inherited::ValueType_Raw,
     };
 
-    test_point_info getDataAccumulator(unsigned char *buf, int len)
+    test_point_info getData_Accumulator(unsigned char *buf, int len)
     {
         return Inherited::getData(buf, len, Mct4xxDevice::ValueType_Accumulator);
     }
 
-    test_point_info getDataFrozenAccumulator(unsigned char *buf, int len)
+    test_point_info getData_FrozenAccumulator(unsigned char *buf, int len)
     {
         return Inherited::getData(buf, len, Mct4xxDevice::ValueType_FrozenAccumulator);
     }
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata)
     test_Mct4xxDevice dev;
     test_Mct4xxDevice::test_point_info pi;
 
-    pi = dev.getDataFrozenAccumulator(kwh_read, 3);
+    pi = dev.getData_FrozenAccumulator(kwh_read, 3);
 
     BOOST_CHECK_EQUAL( pi.value,      256 );
     BOOST_CHECK_EQUAL( pi.freeze_bit, false );
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata)
 
     kwh_read[2] = 0x01;
 
-    pi = dev.getDataFrozenAccumulator(kwh_read, 3);
+    pi = dev.getData_FrozenAccumulator(kwh_read, 3);
 
     BOOST_CHECK_EQUAL( pi.value,      256 );
     BOOST_CHECK_EQUAL( pi.freeze_bit, true );
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata_kwh_rounding_accumulator)
     test_Mct4xxDevice dev;
     test_Mct4xxDevice::test_point_info pi;
 
-    pi = dev.getDataAccumulator(kwh_read, 3);
+    pi = dev.getData_Accumulator(kwh_read, 3);
     
     BOOST_CHECK_EQUAL( pi.value,      512 );
     BOOST_CHECK_EQUAL( pi.freeze_bit, false );
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata_kwh_rounding_accumulator)
 
     kwh_read[2] = 0x01;
 
-    pi = dev.getDataAccumulator(kwh_read, 3);
+    pi = dev.getData_Accumulator(kwh_read, 3);
 
     BOOST_CHECK_EQUAL( pi.value,      512 ); // Still should be 512, we round down!
     BOOST_CHECK_EQUAL( pi.freeze_bit, true );
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata_kwh_rounding_frozen_accumulator)
     test_Mct4xxDevice dev;
     test_Mct4xxDevice::test_point_info pi;
 
-    pi = dev.getDataFrozenAccumulator(kwh_read, 3);
+    pi = dev.getData_FrozenAccumulator(kwh_read, 3);
     
     BOOST_CHECK_EQUAL( pi.value,      2320 );
     BOOST_CHECK_EQUAL( pi.freeze_bit, false );
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata_kwh_rounding_frozen_accumulator)
 
     kwh_read[2] = 0x11;
 
-    pi = dev.getDataFrozenAccumulator(kwh_read, 3);
+    pi = dev.getData_FrozenAccumulator(kwh_read, 3);
 
     BOOST_CHECK_EQUAL( pi.value,      2320 ); // Still should be 2320, we round down!
     BOOST_CHECK_EQUAL( pi.freeze_bit, true );

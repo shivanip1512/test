@@ -80,23 +80,6 @@ Mct4xxDevice::~Mct4xxDevice()
 {
 }
 
-bool Mct4xxDevice::isKwhDataRead(Mct4xxDevice::ValueType4xx vt)
-{
-    switch( vt )
-    {
-        case Mct4xxDevice::ValueType_Accumulator:
-        case Mct4xxDevice::ValueType_FrozenAccumulator:
-        {
-            return true;
-        }
-        case Mct4xxDevice::ValueType_Raw:
-        default:
-        {
-            return false;
-        }
-    }
-}
-
 Mct4xxDevice &Mct4xxDevice::operator=(const Mct4xxDevice &aRef)
 {
     if(this != &aRef)
@@ -355,7 +338,7 @@ Mct4xxDevice::point_info Mct4xxDevice::getData( const unsigned char *buf, int le
         }
     }
 
-    if( isKwhDataRead(vt) && value % 2 )
+    if( (vt == ValueType_Accumulator || vt == ValueType_FrozenAccumulator) && value % 2 )
     {
         value--; // Round down to the nearest .2 kWh.
     }

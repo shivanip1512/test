@@ -41,11 +41,6 @@ struct test_Mct410Device : Mct410Device
         return Mct410Device::getData(buf, len, Mct410Device::ValueType_FrozenDynamicDemand);
     }
 
-    point_info getData_LoadProfileDynamicDemand(unsigned char *buf, int len)
-    {
-        return Mct410Device::getData(buf, len, Mct410Device::ValueType_LoadProfile_DynamicDemand);
-    }
-
     point_info getData_AccumulatorDelta(unsigned char *buf, int len)
     {
         return Mct410Device::getData(buf, len, Mct410Device::ValueType_AccumulatorDelta);
@@ -92,28 +87,6 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_getdata_rounding_frozen_dynamic_demand)
     pi = dev.getData_FrozenDynamicDemand(kwh_read, 3);
 
     BOOST_CHECK_EQUAL( pi.value,      128 ); // Still should be 128, we round down!
-    BOOST_CHECK_EQUAL( pi.freeze_bit, true );
-    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
-}
-
-BOOST_AUTO_TEST_CASE(test_dev_mct410_getdata_rounding_lp_dynamic_demand)
-{
-    test_Mct410Device dev;
-    test_Mct410Device::point_info pi;
-
-    unsigned char kwh_read[3] = { 0x00, 0x00, 0xf0 };
-
-    pi = dev.getData_LoadProfileDynamicDemand(kwh_read, 3);
-
-    BOOST_CHECK_EQUAL( pi.value,      240 );
-    BOOST_CHECK_EQUAL( pi.freeze_bit, false );
-    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
-
-    kwh_read[2] = 0xf1;
-    
-    pi = dev.getData_LoadProfileDynamicDemand(kwh_read, 3);
-
-    BOOST_CHECK_EQUAL( pi.value,      240 ); // Still should be 240, we round down!
     BOOST_CHECK_EQUAL( pi.freeze_bit, true );
     BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
 }
@@ -166,43 +139,43 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
     test_Mct410Device::point_info pi;
 
     pi = dev.getDemandData(dc[0].raw_value, 2, dc[0].frozen);
-    BOOST_CHECK_SMALL(pi.value - (dc[0].value - 0.001) /* rounded down! */, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, (dc[0].value - 0.001));
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[0].freeze_bit);
 
     pi = dev.getDemandData(dc[1].raw_value, 2, dc[1].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[1].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, dc[1].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[1].freeze_bit);
 
     pi = dev.getDemandData(dc[2].raw_value, 2, dc[2].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[2].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, dc[2].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[2].freeze_bit);
 
     pi = dev.getDemandData(dc[3].raw_value, 2, dc[3].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[3].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, dc[3].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[3].freeze_bit);
 
     pi = dev.getDemandData(dc[4].raw_value, 2, dc[4].frozen);
-    BOOST_CHECK_SMALL(pi.value - (dc[4].value - 0.01) /* rounded down! */, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, (dc[4].value - 0.01));
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[4].freeze_bit);
 
     pi = dev.getDemandData(dc[5].raw_value, 2, dc[5].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[5].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, dc[5].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[5].freeze_bit);
 
     pi = dev.getDemandData(dc[6].raw_value, 2, dc[6].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[6].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, dc[6].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[6].freeze_bit);
 
     pi = dev.getDemandData(dc[7].raw_value, 2, dc[7].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[7].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, dc[7].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[7].freeze_bit);
 
     pi = dev.getDemandData(dc[8].raw_value, 2, dc[8].frozen);
-    BOOST_CHECK_SMALL(pi.value - (dc[8].value - 1) /* rounded down! */, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, (dc[8].value - 1));
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[8].freeze_bit);
 
     pi = dev.getDemandData(dc[9].raw_value, 2, dc[9].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[9].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, dc[9].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[9].freeze_bit);
 }
 

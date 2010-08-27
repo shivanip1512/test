@@ -17,14 +17,9 @@ struct test_Mct470Device : Mct470Device
     using Mct470Device::convertTimestamp;
     using Mct470Device::computeResolutionByte;
     
-    point_info getDataPulseDemand(unsigned char *buf, int len)
+    point_info getData_PulseDemand(unsigned char *buf, int len)
     {
         return getData(buf, len, Mct470Device::ValueType_PulseDemand);
-    }
-
-    point_info getDataLoadProfilePulseDemand(unsigned char *buf, int len)
-    {
-        return getData(buf, len, Mct470Device::ValueType_LoadProfile_PulseDemand);
     }
 };
 
@@ -78,7 +73,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_getdata_rounding_pulse_demand)
 
     unsigned char kwh_read[3] = { 0x00, 0x10, 0x00 };
 
-    pi = dev.getDataPulseDemand(kwh_read, 3);
+    pi = dev.getData_PulseDemand(kwh_read, 3);
 
     BOOST_CHECK_EQUAL( pi.value,      4096 );
     BOOST_CHECK_EQUAL( pi.freeze_bit, false );
@@ -86,31 +81,9 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_getdata_rounding_pulse_demand)
 
     kwh_read[2] = 0x01;
     
-    pi = dev.getDataPulseDemand(kwh_read, 3);
+    pi = dev.getData_PulseDemand(kwh_read, 3);
 
     BOOST_CHECK_EQUAL( pi.value,      4096 ); // Still should be 4096, we round down!
-    BOOST_CHECK_EQUAL( pi.freeze_bit, true );
-    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
-}
-
-BOOST_AUTO_TEST_CASE(test_dev_mct470_getdata_rounding_lp_pulse_demand)
-{
-    test_Mct470Device dev;
-    test_Mct470Device::point_info pi;
-
-    unsigned char kwh_read[3] = { 0x00, 0x0e, 0x00 };
-
-    pi = dev.getDataLoadProfilePulseDemand(kwh_read, 3);
-
-    BOOST_CHECK_EQUAL( pi.value,      3584 );
-    BOOST_CHECK_EQUAL( pi.freeze_bit, false );
-    BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
-
-    kwh_read[2] = 0x01;
-    
-    pi = dev.getDataLoadProfilePulseDemand(kwh_read, 3);
-
-    BOOST_CHECK_EQUAL( pi.value,      3584 ); // Still should be 3584, we round down!
     BOOST_CHECK_EQUAL( pi.freeze_bit, true );
     BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
 }

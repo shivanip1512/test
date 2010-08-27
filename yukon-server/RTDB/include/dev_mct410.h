@@ -359,8 +359,6 @@ protected:
 
     point_info getData(const unsigned char *buf, int len, ValueType410 vt) const;
 
-    static bool isKwhDataRead(Mct410Device::ValueType410 vt);
-
     static int makeDynamicDemand(double input);
 
     long getLoadProfileInterval(unsigned channel);
