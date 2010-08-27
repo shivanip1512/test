@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.survey;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,6 +42,7 @@ import com.cannontech.web.util.JsonView;
 import com.cannontech.web.util.ListBackingBean;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @Controller
@@ -131,6 +133,32 @@ public class SurveyController {
         model.addAttribute("surveys", surveys);
 
         return "survey/list.jsp";
+    }
+
+    @RequestMapping
+    public String sampleXml(ModelMap model, Integer surveyId,
+            YukonUserContext userContext) {
+        List<Survey> surveys = Lists.newArrayList();
+        if (surveyId != null && surveyId > 0) {
+            Survey survey = verifyEditable(surveyId, userContext);
+            surveys.add(survey);
+        } else {
+            LiteEnergyCompany energyCompany =
+                energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
+            SearchResult<Survey> surveyResults =
+                surveyService.findSurveys(energyCompany.getEnergyCompanyID(),
+                                          0, Integer.MAX_VALUE);
+            surveys = surveyResults.getResultList();
+        }
+        model.addAttribute("surveys", surveys);
+        Map<Integer, List<Question>> questions = Maps.newHashMap();
+        for (Survey survey : surveys) {
+            questions.put(survey.getSurveyId(),
+                          surveyDao.getQuestionsBySurveyId(survey.getSurveyId()));
+        }
+        model.addAttribute("questions", questions);
+
+        return "survey/sampleXml.jsp";
     }
 
     @RequestMapping

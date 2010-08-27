@@ -61,7 +61,6 @@ public class SurveyDaoImpl implements SurveyDao {
         new AnswerRowMapper();
 
     @Override
-    @Transactional(readOnly = true)
     public Survey getSurveyById(int surveyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(surveyRowMapper.getBaseQuery());

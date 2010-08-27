@@ -81,6 +81,24 @@ public class OptOutSurveyController {
     }
 
     @RequestMapping
+    public String programList(ModelMap model, int optOutSurveyId,
+            YukonUserContext userContext) {
+        OptOutSurvey optOutSurvey =
+            optOutSurveyDao.getOptOutSurveyById(optOutSurveyId);
+        verifyEditable(optOutSurvey.getEnergyCompanyId(), userContext);
+        model.addAttribute("optOutSurvey", optOutSurvey);
+
+        List<AssignedProgram> programs =
+            assignedProgramDao.getByIds(optOutSurvey.getProgramIds());
+        model.addAttribute("programs", programs);
+
+        Survey survey = surveyDao.getSurveyById(optOutSurvey.getSurveyId());
+        model.addAttribute("survey", survey);
+
+        return "optOutSurvey/programList.jsp";
+    }
+
+    @RequestMapping
     public String confirmDelete(ModelMap model, int optOutSurveyId,
             YukonUserContext userContext) {
         OptOutSurvey optOutSurvey =

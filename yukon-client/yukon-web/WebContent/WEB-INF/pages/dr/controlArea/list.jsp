@@ -125,7 +125,7 @@
 			<c:otherwise>
 				<table id="controlAreaList"
 					class="compactResultsTable rowHighlighting">
-					<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<tr>
 
 						<%-- Table headers - columns are hidden/shown based on role props --%>
 

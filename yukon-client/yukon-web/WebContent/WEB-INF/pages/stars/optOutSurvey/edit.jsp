@@ -35,9 +35,12 @@ submitForm = function() {
     <form:hidden path="energyCompanyId"/>
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".programs">
-            <c:forEach var="program" items="${programs}">
+            <c:forEach var="program" items="${programs}" end="2">
                 <spring:escapeBody htmlEscape="true">${program.name.displayName}</spring:escapeBody><br>
             </c:forEach>
+            <c:if test="${fn:length(programs) > 3}">
+                <i:inline key=".ellipsis"/>
+            </c:if>
         </tags:nameValue2>
 
         <tags:nameValue2 nameKey=".survey">

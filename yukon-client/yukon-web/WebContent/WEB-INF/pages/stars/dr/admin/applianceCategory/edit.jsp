@@ -178,16 +178,7 @@
             <c:forEach var="assignedProgram" items="${assignedPrograms.resultList}">
                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
                     <td>
-                        <c:if test="${assignedProgram.programId == 0}">
-                            <i:inline key=".virtualProgramName"
-                                arguments="${assignedProgram.displayName}"/>
-                        </c:if>
-                        <c:if test="${assignedProgram.programId != 0}">
-                            <spring:escapeBody htmlEscape="true">${assignedProgram.programName}</spring:escapeBody>
-                            <c:if test="${!empty assignedProgram.displayName && assignedProgram.displayName != assignedProgram.programName}">
-                                (<spring:escapeBody htmlEscape="true">${assignedProgram.displayName}</spring:escapeBody>)
-                            </c:if>
-                        </c:if>
+                        <dr:assignedProgramName assignedProgram="${assignedProgram}"/>
                     </td>
                     <td>
                         <cti:url var="editProgramUrl" value="/spring/stars/dr/admin/applianceCategory/${pageBase}AssignedProgram">

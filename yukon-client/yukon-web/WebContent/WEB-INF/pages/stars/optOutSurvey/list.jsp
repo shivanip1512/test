@@ -10,8 +10,13 @@
 <cti:standardPage module="optOutSurvey" page="list">
     <tags:simpleDialog id="ajaxDialog"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/operator/survey.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
+    <cti:msg2 var="programListTitle" key=".programListTitle" javaScriptEscape="true"/>
+	<script type="text/javascript">
+	    var programListTitle = '${programListTitle}';
+	</script>
 
     <c:set var="baseUrl" value="/spring/stars/optOutSurvey/list"/>
     <cti:url var="submitUrl" value="${baseUrl}"/>
@@ -38,11 +43,16 @@
                         <td><spring:escapeBody
                             htmlEscape="true">${optOutSurvey.surveyName}</spring:escapeBody></td>
                         <td>
-						    <c:forEach var="programId" items="${optOutSurvey.programIds}">
-						        <spring:escapeBody htmlEscape="true">
-						            ${programsById[programId].name.displayName}
-						        </spring:escapeBody><br>
+						    <c:forEach var="programId" items="${optOutSurvey.programIds}" end="2">
+                                <dr:assignedProgramName assignedProgram="${programsById[programId]}"/><br>
 						    </c:forEach>
+				            <c:if test="${fn:length(optOutSurvey.programIds) > 3}">
+				                <cti:url var="programListUrl" value="/spring/stars/optOutSurvey/programList">
+				                    <cti:param name="optOutSurveyId" value="${optOutSurveyId}"/>
+				                </cti:url>
+
+				                <a href="javascript:openSimpleDialog('ajaxDialog', '${programListUrl}', programListTitle)"><i:inline key=".morePrograms"/></a>
+				            </c:if>
                         </td>
                         <td>
                             <cti:formatDate type="BOTH" value="${optOutSurvey.startDate}"/>

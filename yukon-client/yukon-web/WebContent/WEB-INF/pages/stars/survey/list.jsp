@@ -48,6 +48,10 @@
         </c:if>
 
         <div class="actionArea">
+            <cti:url var="sampleXmlUrl" value="/spring/stars/survey/sampleXml"/>
+            <input type="button" value="<cti:msg2 key=".sampleXml"/>"
+                onclick="window.location='${sampleXmlUrl}'">
+
             <cti:url var="addUrl" value="/spring/stars/survey/editDetails"/>
             <input type="button" value="<cti:msg2 key=".add"/>"
                 onclick="openSimpleDialog('ajaxDialog', '${addUrl}', '<cti:msg2 key=".addTitle"/>')">

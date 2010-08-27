@@ -56,6 +56,13 @@
                             <tags:simpleDialogLink2 dialogId="ajaxDialog"
                                 key="addQuestion" actionUrl="${addQuestionUrl}"/>
                         </li>
+                        <cti:url var="sampleXmlUrl"
+                            value="/spring/stars/survey/sampleXml">
+                            <cti:param name="surveyId" value="${surveyId}"/>
+                        </cti:url>
+                        <li>
+                            <cti:labeledImg key="sampleXml" href="${sampleXmlUrl}"/>
+                        </li>
                     </ul>
                 </tags:boxContainer2>
             </div>
