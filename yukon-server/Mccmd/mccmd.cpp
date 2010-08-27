@@ -26,6 +26,7 @@
 #include "database_connection.h"
 #include "connection.h"
 #include "cparms.h"
+#include "cmdparse.h"
 
 #include "ctitokenizer.h"
 #include "configparms.h"
@@ -1753,6 +1754,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     PILReturnMap device_map;
     PILReturnMap good_map;
     PILReturnMap bad_map;
+    std::vector<string> bad_names;
     std::deque<CtiTableMeterReadLog> resultQueue;
 
     RWCollectable* msg = NULL;
@@ -1770,7 +1772,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
                 CtiReturnMsg* ret_msg = (CtiReturnMsg*) msg;
                 DumpReturnMessage(*ret_msg);
                 bool allowExitOnError = isBreakStatus(ret_msg->Status());
-                HandleReturnMessage(ret_msg, good_map, bad_map, device_map, resultQueue);
+                HandleReturnMessage(ret_msg, good_map, bad_map, device_map, bad_names, resultQueue);
                 lastReturnMessageReceived = lastReturnMessageReceived.now();
 
                 // have we received everything expected?
@@ -1929,7 +1931,15 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
                 WriteOutput(current.c_str());
             }
 
-            GetDeviceName(m_iter->first,dev_name);
+            if( m_iter->second.status == IDNF )
+            {
+                dev_name = m_iter->second.deviceName;
+            }
+            else
+            {    
+                GetDeviceName(m_iter->first,dev_name);
+            }
+
             next_line = dev_name;
             if( !gUseOldStyleMissed )
             {
@@ -1945,6 +1955,14 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         {
             string current = "Writing bad list, " + CtiNumStr(count) + " / " + CtiNumStr(bad_map.size()) + " written";
             WriteOutput(current.c_str());
+        }
+    }
+
+    if( !bad_names.empty() )
+    {
+        for each( const string &str in bad_names )
+        {
+            Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(str.c_str(), -1));
         }
     }
 
@@ -2029,11 +2047,12 @@ void HandleMessage(RWCollectable* msg,
            PILReturnMap& good_map,
            PILReturnMap& bad_map,
            PILReturnMap& device_map,
+           std::vector<string>& bad_names,
            std::deque<CtiTableMeterReadLog>& resultQueue )
 {
     if( msg->isA() == MSG_PCRETURN )
     {
-        HandleReturnMessage( (CtiReturnMsg*) msg, good_map, bad_map, device_map, resultQueue);
+        HandleReturnMessage( (CtiReturnMsg*) msg, good_map, bad_map, device_map, bad_names, resultQueue);
     }
     if( msg->isA() == MSG_MULTI )
     {
@@ -2041,7 +2060,7 @@ void HandleMessage(RWCollectable* msg,
 
         for( unsigned i = 0; i < multi_msg->getData( ).size( ); i++ )
         {
-            HandleMessage( multi_msg->getData()[i], good_map, bad_map, device_map, resultQueue);
+            HandleMessage( multi_msg->getData()[i], good_map, bad_map, device_map, bad_names, resultQueue);
         }
     }
     else
@@ -2056,9 +2075,48 @@ void HandleReturnMessage(CtiReturnMsg* msg,
              PILReturnMap& good_map,
              PILReturnMap& bad_map,
              PILReturnMap& device_map,
+             std::vector<string>& bad_names,
              std::deque<CtiTableMeterReadLog>& resultQueue )
 {
+    static const string UnknownName = "**Unknown Name**";
+
     long dev_id = msg->DeviceId();
+
+    if( msg->Status() == IDNF )
+    {
+        // Either the Device ID or the Device Name was wacky and we couldn't find it in the database.
+        // Determine which and act accordingly...
+
+        // The only way to know what happened here is to check the ID. If it's greater than zero, the 
+        // ID was not found in the database and we need to keep that ID. Otherwise we need to keep the
+        // device name somehow...
+
+        MACS_Return_Data data;
+        data.time = msg->getMessageTime();
+        data.status = msg->Status();
+        
+        if( dev_id == 0 ) // Our request has an invalid name.
+        {
+            CtiCommandParser parser(msg->CommandString());
+            string dname = parser.getsValue("device");
+            if(!dname.empty())
+            {
+                bad_names.push_back(dname);
+                //data.deviceName = dname;    
+                //bad_map.insert(PILReturnMap::value_type(UnknownID, data));
+            }
+        }
+        else // DeviceId > 0 (right?)
+        {
+            data.deviceName = UnknownName;
+            bad_map.insert(PILReturnMap::value_type(dev_id, data));
+        }
+             
+        delete msg;
+        msg = NULL;
+
+        return;
+    }
 
     if( good_map.find(dev_id) != good_map.end() )
     {

@@ -70,6 +70,7 @@ struct MACS_Return_Data
 {
     CtiTime time;
     int     status;
+    string  deviceName; // Stores the device names for requests whose status resulted in IDNF.
 };
 
 typedef std::map< long, MACS_Return_Data, std::less<long> > PILReturnMap;
@@ -157,12 +158,14 @@ static void HandleReturnMessage(CtiReturnMsg* msg,
                 PILReturnMap& good_map,
                 PILReturnMap& bad_map,
                 PILReturnMap& device_map,
+                std::vector<string>& bad_names,
                 std::deque<CtiTableMeterReadLog>& queueStatus);
 
 static void HandleMessage(RWCollectable* msg,
               PILReturnMap& good_map,
               PILReturnMap& bad_map,
-              PILReturnMap& device_map);
+              PILReturnMap& device_map,
+              std::vector<string>& bad_names);
 
 static int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT requestLogId);
 

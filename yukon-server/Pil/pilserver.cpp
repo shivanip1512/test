@@ -1609,6 +1609,32 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             {
                 pReq->setDeviceId( Dev->getID() ) ;
             }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Execute Error **** " << endl;
+                    dout << CtiTime() << " Device Name: " << dname << endl;
+                    dout << CtiTime() << " Command: " << pReq->CommandString() << endl;
+                    dout << CtiTime() << " No device found in the database with this device name." << endl;
+                }
+
+                CtiReturnMsg *pcRet = CTIDBG_new CtiReturnMsg(pReq->DeviceId(),
+                                                              pReq->CommandString(),
+                                                              "No device with name " + dname + " exists in the database.",
+                                                              IDNF,
+                                                              pReq->RouteId(),
+                                                              pReq->MacroOffset(),
+                                                              pReq->AttemptNum(),
+                                                              pReq->GroupMessageId(),
+                                                              pReq->UserMessageId(),
+                                                              pReq->getSOE());
+
+                retList.push_back(pcRet);
+                delete pReq;
+
+                return status;
+            }
         }
     }
 
