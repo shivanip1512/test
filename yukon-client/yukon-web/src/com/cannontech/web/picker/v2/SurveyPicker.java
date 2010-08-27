@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
-import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.survey.dao.impl.EnergyCompanyFilter;
 import com.cannontech.common.survey.dao.impl.SurveyRowMapper;
 import com.cannontech.common.survey.model.Survey;
@@ -15,7 +15,7 @@ import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
-public class SurveyPicker extends SimpleDatabasePicker<Survey> {
+public class SurveyPicker extends DatabasePicker<Survey> {
     private EnergyCompanyDao energyCompanyDao;
 
     private final static String[] searchColumnNames = new String[] {
@@ -36,16 +36,12 @@ public class SurveyPicker extends SimpleDatabasePicker<Survey> {
     }
 
     @Override
-    public SearchResult<Survey> search(String ss, int start, int count,
+    protected void updateFilters(List<SqlFilter> sqlFilters,
+            List<PostProcessingFilter<Survey>> postProcessingFilters,
             String extraArgs, YukonUserContext userContext) {
         LiteEnergyCompany energyCompany =
             energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
-
-        List<SqlFilter> extraSqlFilters = Lists.newArrayList();
-        extraSqlFilters.add(new EnergyCompanyFilter(energyCompany.getEnergyCompanyID()));
-
-        return super.search(ss, start, count, extraSqlFilters, null,
-                            userContext);
+        sqlFilters.add(new EnergyCompanyFilter(energyCompany.getEnergyCompanyID()));
     }
 
     @Override

@@ -3,10 +3,6 @@ package com.cannontech.common.search;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
-
 public class SearchResult<T> {
     private int hitCount;           //total count (possibly estimate) of results available
     private int startIndex;         //inclusive, 0-based
@@ -26,20 +22,6 @@ public class SearchResult<T> {
         result.setResultList(empty);
         result.setStartIndex(0);
         return result;
-    }
-
-    public <U> SearchResult<U> translate(Function<T, U> translator) {
-        SearchResult<U> retVal = new SearchResult<U>();
-        retVal.hitCount = hitCount;
-        retVal.startIndex = startIndex;
-        retVal.endIndex = endIndex;
-        retVal.resultList = Lists.newArrayList();
-        retVal.resultList.addAll(Collections2.transform(resultList, translator));
-        retVal.previousStartIndex = previousStartIndex;
-        retVal.count = count;
-        retVal.lastStartIndex = lastStartIndex;
-        retVal.numberOfPages = numberOfPages;
-        return retVal;
     }
 
     /**

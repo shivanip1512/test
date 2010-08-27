@@ -7,8 +7,8 @@ import java.util.Set;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
-import com.cannontech.common.search.SearchResult;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -19,7 +19,7 @@ import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
-public class AvailableThermostatPicker extends SimpleDatabasePicker<DisplayableLmHardware> {
+public class AvailableThermostatPicker extends DatabasePicker<DisplayableLmHardware> {
     
     private StarsDatabaseCache starsDatabaseCache;
     private ECMappingDao ecMappingDao;
@@ -41,24 +41,25 @@ public class AvailableThermostatPicker extends SimpleDatabasePicker<DisplayableL
     }
 
     @Override
-    public SearchResult<DisplayableLmHardware> search(String ss, int start, int count, String energyCompanyIdExtraArg, YukonUserContext userContext) {
-        List<SqlFilter> extraFilters = Lists.newArrayList();
-        
-        if (energyCompanyIdExtraArg != null) {
-        
-            int energyCompanyId = NumberUtils.toInt(energyCompanyIdExtraArg);
-            LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+    protected void updateFilters(
+            List<SqlFilter> sqlFilters,
+            List<PostProcessingFilter<DisplayableLmHardware>> postProcessingFilters,
+            String extraArgs, YukonUserContext userContext) {
+        if (extraArgs != null) {
+            int energyCompanyId = NumberUtils.toInt(extraArgs);
+            LiteStarsEnergyCompany energyCompany =
+                starsDatabaseCache.getEnergyCompany(energyCompanyId);
             
             // gather parents energyCompanyIds
-            Set<Integer> energyCompanyIds = ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
+            Set<Integer> energyCompanyIds =
+                ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
             
-            extraFilters = Lists.newArrayList();
-            AvailableLmHardwareFilter energyCompanyIdsFilter = new AvailableLmHardwareFilter(energyCompanyIds, LMHardwareClass.THERMOSTAT);
-            extraFilters.add(energyCompanyIdsFilter);
-            
+            sqlFilters = Lists.newArrayList();
+            AvailableLmHardwareFilter energyCompanyIdsFilter =
+                new AvailableLmHardwareFilter(energyCompanyIds,
+                                              LMHardwareClass.THERMOSTAT);
+            sqlFilters.add(energyCompanyIdsFilter);
         }
-        
-        return super.search(ss, start, count, extraFilters, null, userContext);
     }
 
     @Override

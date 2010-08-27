@@ -14,49 +14,46 @@ import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.user.YukonUserContext;
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 /**
- * A picker that queries from the database for instances of TDB and serves up
- * instances of TP for picker results.
+ * A picker that queries from the database for instances of T.
  *
- * @param <TP>
- * @param <TDB>
+ * @param <T>
  */
-public abstract class DatabasePicker<TP, TDB> extends BasePicker<TP> {
+public abstract class DatabasePicker<T> extends BasePicker<T> {
 
 	private List<SqlFilter> sqlFilters;
-    private List<PostProcessingFilter<TDB>> postProcessingFilters;
-    private RowMapperWithBaseQuery<TDB> rowMapper;
+    private List<PostProcessingFilter<T>> postProcessingFilters;
+    private RowMapperWithBaseQuery<T> rowMapper;
     private String[] searchColumnNames;
 
     private FilterService filterService;
 
-    protected DatabasePicker(RowMapperWithBaseQuery<TDB> rowMapper,
+    protected DatabasePicker(RowMapperWithBaseQuery<T> rowMapper,
             String[] searchColumnNames) {
         this.rowMapper = rowMapper;
         this.searchColumnNames = searchColumnNames;
     }
 
-    protected abstract Function<TDB, TP> getTypeTranslator();
-
     /**
-     * Subclasses can override this method to convert extraArgs into specific
-     * filters.
+     * Subclasses can override this method to add their own filters, probably
+     * based on extraArgs or the user context.
      */
-    @Override
-    public SearchResult<TP> search(String ss, int start, int count,
+    protected void updateFilters(List<SqlFilter> sqlFilters,
+            List<PostProcessingFilter<T>> postProcessingFilters,
             String extraArgs, YukonUserContext userContext) {
-        return search(ss, start, count, null, null, userContext);
     }
 
-    protected final SearchResult<TP> search(final String ss, int start, int count,
-            List<SqlFilter> extraSqlFilters,
-            List<PostProcessingFilter<TDB>> extraPostProcessingFilters,
-            YukonUserContext userContext) {
-    	// sql filters
+    @Override
+    public final SearchResult<T> search(final String ss, int start, int count,
+            String extraArgs, YukonUserContext userContext) {
         final List<SqlFilter> mySqlFilters = Lists.newArrayList();
+        final List<PostProcessingFilter<T>> myPostProcessingFilters = Lists.newArrayList();
+        updateFilters(mySqlFilters, myPostProcessingFilters, extraArgs,
+                      userContext);
+
+        // sql filters
         if (sqlFilters != null) {
         	mySqlFilters.addAll(sqlFilters);
         }
@@ -72,23 +69,16 @@ public abstract class DatabasePicker<TP, TDB> extends BasePicker<TP> {
                 return retVal;
             }
         });
-        if (extraSqlFilters != null) {
-        	mySqlFilters.addAll(extraSqlFilters);
-        }
-        
+
         // post processing filters
-        final List<PostProcessingFilter<TDB>> myPostProcessingFilters = Lists.newArrayList();
         if (postProcessingFilters != null) {
         	myPostProcessingFilters.addAll(postProcessingFilters);
         }
-        if (extraPostProcessingFilters != null) {
-        	myPostProcessingFilters.addAll(extraPostProcessingFilters);
-        }
 
         // combine sql and post processing filter into a single UiFilter
-        UiFilter<TDB> filter = new UiFilter<TDB>() {
+        UiFilter<T> filter = new UiFilter<T>() {
             @Override
-            public Iterable<PostProcessingFilter<TDB>> getPostProcessingFilters() {
+            public Iterable<PostProcessingFilter<T>> getPostProcessingFilters() {
                 return myPostProcessingFilters;
             }
 
@@ -99,16 +89,16 @@ public abstract class DatabasePicker<TP, TDB> extends BasePicker<TP> {
         };
 
         // no sorter support
-        SearchResult<TDB> dbResults = filterService.filter(filter, null, start,
-                                                           count, rowMapper);
-        return dbResults.translate(getTypeTranslator());
+        SearchResult<T> dbResults =
+            filterService.filter(filter, null, start, count, rowMapper);
+        return dbResults;
     }
 
     public void setSqlFilters(List<SqlFilter> sqlFilters) {
         this.sqlFilters = sqlFilters;
     }
     
-    public void setPostProcessingFilters(List<PostProcessingFilter<TDB>> postProcessingFilters) {
+    public void setPostProcessingFilters(List<PostProcessingFilter<T>> postProcessingFilters) {
 		this.postProcessingFilters = postProcessingFilters;
 	}
 

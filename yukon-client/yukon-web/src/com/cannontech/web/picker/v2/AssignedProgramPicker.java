@@ -6,8 +6,8 @@ import java.util.List;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
-import com.cannontech.common.search.SearchResult;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.dao.UltraLightAssignedProgramApplianceCategoryFilter;
 import com.cannontech.stars.dr.appliance.dao.UltraLightAssignedProgramRowMapper;
@@ -16,7 +16,7 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class AssignedProgramPicker
-    extends SimpleDatabasePicker<UltraLightAssignedProgram> {
+    extends DatabasePicker<UltraLightAssignedProgram> {
     private ApplianceCategoryDao applianceCategoryDao;
 
     private final static String[] searchColumnNames = new String[] {
@@ -39,16 +39,14 @@ public class AssignedProgramPicker
     }
 
     @Override
-    public SearchResult<UltraLightAssignedProgram> search(String ss, int start,
-            int count, String extraArgs, YukonUserContext userContext) {
+    protected void updateFilters(
+            List<SqlFilter> sqlFilters,
+            List<PostProcessingFilter<UltraLightAssignedProgram>> postProcessingFilters,
+            String extraArgs, YukonUserContext userContext) {
         int energyCompanyId = NumberUtils.toInt(extraArgs, 0);
-
-        List<SqlFilter> extraSqlFilters = Lists.newArrayList();
         List<Integer> applianceCategoryIds =
             applianceCategoryDao.getApplianceCategoryIdsByEC(energyCompanyId);
-        extraSqlFilters.add(new UltraLightAssignedProgramApplianceCategoryFilter(applianceCategoryIds));
-        
-        return super.search(ss, start, count, extraSqlFilters, null, userContext);
+        sqlFilters.add(new UltraLightAssignedProgramApplianceCategoryFilter(applianceCategoryIds));
     }
 
     @Override

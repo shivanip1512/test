@@ -6,9 +6,9 @@ import java.util.Set;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.search.UltraLightPao;
 import com.cannontech.common.search.pao.db.AvailableMctFilter;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -17,33 +17,32 @@ import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
-public class AvailableMctPicker extends FilterPaoPicker {
+public class AvailableMctPicker extends DatabasePaoPicker {
     
     private StarsDatabaseCache starsDatabaseCache;
     private ECMappingDao ecMappingDao;
     private PaoDefinitionDao paoDefinitionDao;
 
     @Override
-    public SearchResult<UltraLightPao> search(String ss, int start, int count, String energyCompanyIdExtraArg, YukonUserContext userContext) {
-        List<SqlFilter> extraFilters = Lists.newArrayList();
-        
-        if (energyCompanyIdExtraArg != null) {
-        
-            int energyCompanyId = NumberUtils.toInt(energyCompanyIdExtraArg);
-            LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-            
+    protected void updateFilters(List<SqlFilter> sqlFilters,
+            List<PostProcessingFilter<UltraLightPao>> postProcessingFilters,
+            String extraArgs, YukonUserContext userContext) {
+        if (extraArgs != null) {
+            int energyCompanyId = NumberUtils.toInt(extraArgs);
+            LiteStarsEnergyCompany energyCompany =
+                starsDatabaseCache.getEnergyCompany(energyCompanyId);
+
             // gather parents energyCompanyIds
-            Set<Integer> energyCompanyIds = ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
-            
-            extraFilters = Lists.newArrayList();
-            AvailableMctFilter energyCompanyIdsFilter = new AvailableMctFilter(energyCompanyIds, paoDefinitionDao);
-            extraFilters.add(energyCompanyIdsFilter);
-            
+            Set<Integer> energyCompanyIds =
+                ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
+
+            sqlFilters = Lists.newArrayList();
+            AvailableMctFilter energyCompanyIdsFilter =
+                new AvailableMctFilter(energyCompanyIds, paoDefinitionDao);
+            sqlFilters.add(energyCompanyIdsFilter);
         }
-        
-        return super.search(ss, start, count, extraFilters, null, userContext);
     }
-    
+
     @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;

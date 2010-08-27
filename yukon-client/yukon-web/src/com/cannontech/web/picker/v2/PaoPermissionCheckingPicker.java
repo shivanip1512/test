@@ -5,39 +5,45 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
-import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.search.UltraLightPao;
-import com.cannontech.common.search.UltraLightPaoAdapter;
+import com.cannontech.common.search.UltraLightPaoHolder;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
-public class PaoPermissionCheckingPicker extends FilterPaoPicker {
+public class PaoPermissionCheckingPicker extends DatabasePaoPicker {
 
 	private PaoAuthorizationService paoAuthorizationService;
 	private Permission permission;
-	
-	@Override
-    public SearchResult<UltraLightPao> search(String ss, int start, int count,
-            String extraArgs, final YukonUserContext userContext) {
 
-		List<PostProcessingFilter<UltraLightPaoAdapter>> ppFilters = Lists.newArrayList();
-		PostProcessingFilter<UltraLightPaoAdapter> lmPaoPermissionCheckingPostProcessingFilter = 
-		    new PostProcessingFilter<UltraLightPaoAdapter>() {
+	@Override
+    protected void updateFilters(List<SqlFilter> sqlFilters,
+            List<PostProcessingFilter<UltraLightPao>> postProcessingFilters,
+            String extraArgs, final YukonUserContext userContext) {
+        PostProcessingFilter<UltraLightPao> lmPaoPermissionCheckingPostProcessingFilter = 
+            new PostProcessingFilter<UltraLightPao>() {
 
             @Override
-            public List<UltraLightPaoAdapter> process(List<UltraLightPaoAdapter> objectsFromDb) {
-                List<UltraLightPaoAdapter> authorized =
-                    paoAuthorizationService.filterAuthorized(userContext.getYukonUser(), objectsFromDb, permission);
-                return authorized;
+            public List<UltraLightPao> process(List<UltraLightPao> objectsFromDb) {
+                List<UltraLightPaoHolder> toFilter = Lists.newArrayList();
+                for (UltraLightPao pao : objectsFromDb) {
+                    toFilter.add(new UltraLightPaoHolder(pao));
+                }
+                List<UltraLightPaoHolder> authorized =
+                    paoAuthorizationService.filterAuthorized(userContext.getYukonUser(), toFilter, permission);
+                List<UltraLightPao> retVal = Lists.newArrayList();
+                for (UltraLightPaoHolder holder : authorized) {
+                    retVal.add(holder.getUltraLightPao());
+                }
+                return retVal;
             }
-		};
+        };
 
-		ppFilters.add(lmPaoPermissionCheckingPostProcessingFilter);
-		return search(ss, start, count, null, ppFilters, userContext);
-	}
-	
+        postProcessingFilters.add(lmPaoPermissionCheckingPostProcessingFilter);
+    }
+
 	public void setPermission(Permission permission) {
 		this.permission = permission;
 	}

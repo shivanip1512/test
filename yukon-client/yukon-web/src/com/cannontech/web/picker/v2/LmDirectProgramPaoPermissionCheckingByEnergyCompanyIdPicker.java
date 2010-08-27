@@ -4,25 +4,23 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
-import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.search.UltraLightPao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.picker.v2.service.LmProgramForEnergyCompanyIdFilterFactory;
-import com.google.common.collect.Lists;
 
 public class LmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker extends PaoPermissionCheckingPicker {
-	
 	private LmProgramForEnergyCompanyIdFilterFactory energyCompanyFlterFactory;
 
 	@Override
-    public SearchResult<UltraLightPao> search(String ss, int start, int count, String energyCompanyIdExtraArg, YukonUserContext userContext) {
-
-		List<SqlFilter> sqlFilters = Lists.newArrayList(energyCompanyFlterFactory.getFilterForEnergyCompanyIdExtraArg(energyCompanyIdExtraArg));
-        
-        return super.search(ss, start, count, sqlFilters, null, userContext);
+    protected void updateFilters(List<SqlFilter> sqlFilters,
+            List<PostProcessingFilter<UltraLightPao>> postProcessingFilters,
+            String extraArgs, YukonUserContext userContext) {
+        sqlFilters.add(energyCompanyFlterFactory.getFilterForEnergyCompanyIdExtraArg(extraArgs));
+        super.updateFilters(sqlFilters, postProcessingFilters, extraArgs, userContext);
     }
-	
+
 	@Autowired
 	public void setFilterFactory(LmProgramForEnergyCompanyIdFilterFactory energyCompanyFlterFactory) {
 		this.energyCompanyFlterFactory = energyCompanyFlterFactory;
