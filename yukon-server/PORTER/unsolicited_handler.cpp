@@ -627,7 +627,9 @@ bool UnsolicitedHandler::generateOutbounds( void )
 
             if( dr->work.xfer.getInCountExpected() > 0 )
             {
-                dr->work.timeout = CtiTime::now() + gConfigParms.getValueAsInt("PORTER_DNPUDP_TIMEOUT", 10);
+                unsigned portDelay    = _port->getDelay(EXTRA_DELAY); // Additional timeout for the port.
+                unsigned cparmTimeout = gConfigParms.getValueAsInt("PORTER_DNPUDP_TIMEOUT", 10);
+                dr->work.timeout = CtiTime::now() + std::max(portDelay, cparmTimeout);
             }
             else
             {
