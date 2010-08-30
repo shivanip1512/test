@@ -8,9 +8,10 @@ import com.google.common.collect.Lists;
 
 public class MCT420Configuration extends ConfigurationBase {
     private List<Integer> displayItems;
+    private final int NUM_OF_DISPLAY_ITEMS = 26;
     
     public MCT420Configuration(){
-        displayItems = Lists.newArrayList(Collections.nCopies(26, 0));
+        displayItems = Lists.newArrayList(Collections.nCopies(NUM_OF_DISPLAY_ITEMS, 0));
     }
     
     public List<Integer> getDisplayItems() {

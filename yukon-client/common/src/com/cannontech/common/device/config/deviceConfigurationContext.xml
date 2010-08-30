@@ -32,11 +32,6 @@
 		<property name="name" value="MCT 470 Configuration" />
 		<property name="view" value="470Config" />
 		<property name="description" value="MCT 470 Configuration" />
-		<property name="supportedDeviceSet">
-			<set>
-				<value>MCT-470</value>
-			</set>
-		</property>
 		<property name="categoryList">
 			<list>
 				<ref bean="dst430_470Category"/>
@@ -224,11 +219,6 @@
 		<property name="name" value="MCT 430 Configuration" />
 		<property name="view" value="430Config" />
 		<property name="description" value="MCT 430 Configuration" />
-		<property name="supportedDeviceSet">
-			<set>
-				<value>MCT-430</value>
-			</set>
-		</property>
 		<property name="categoryList">
 			<list>
 				<ref bean="dst430_470Category"/>
@@ -412,11 +402,6 @@
 		<property name="name" value="MCT 410 Configuration" />
 		<property name="view" value="410Config" />
 		<property name="description" value="MCT 410 Configuration" />
-		<property name="supportedDeviceSet">
-			<set>
-				<value>MCT-410IL</value>
-			</set>
-		</property>
 		<property name="categoryList">
 			<list>
 				<ref bean="centronCategory"/>
@@ -536,14 +521,6 @@
 		<property name="name" value="MCT 420 Configuration" />
 		<property name="view" value="420Config" />
 		<property name="description" value="MCT 420 Configuration" />
-		<property name="supportedDeviceSet">
-			<set>
-				<value>MCT-420FL</value>
-				<value>MCT-420FLD</value>
-				<value>MCT-420CL</value>
-				<value>MCT-420CLD</value>
-			</set>
-		</property>
 		<property name="categoryList">
 			<list>
 				<ref bean="displayItemList" />

@@ -6,11 +6,6 @@ import com.cannontech.common.device.config.model.MCT430Configuration;
 import com.cannontech.common.device.config.model.MCT470Configuration;
 import com.cannontech.common.device.config.model.MCT420Configuration;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.search.criteria.MCT410Criteria;
-import com.cannontech.common.search.criteria.MCT420Criteria;
-import com.cannontech.common.search.criteria.MCT430Criteria;
-import com.cannontech.common.search.criteria.MCT470Criteria;
-import com.cannontech.common.search.criteria.YukonObjectCriteriaHelper;
 
 /**
  * Enum for all the types of configurations
@@ -26,10 +21,6 @@ public enum ConfigurationType {
             return "MCT 470 Configuration";
         }
 
-        public Class<? extends YukonObjectCriteriaHelper> getCriteria() {
-            return MCT470Criteria.class;
-        }
-
         public PaoTag getSupportedDeviceTag() {
             return PaoTag.DEVICE_CONFIGURATION_470;
         }
@@ -41,10 +32,6 @@ public enum ConfigurationType {
 
         public String getConfigurationTemplateName() {
             return "MCT 430 Configuration";
-        }
-
-        public Class<? extends YukonObjectCriteriaHelper> getCriteria() {
-            return MCT430Criteria.class;
         }
 
         public PaoTag getSupportedDeviceTag() {
@@ -60,10 +47,6 @@ public enum ConfigurationType {
             return "MCT 420 Configuration";
         }
         
-        public Class<? extends YukonObjectCriteriaHelper> getCriteria() {
-            return MCT420Criteria.class;
-        }
-        
         public PaoTag getSupportedDeviceTag() {
             return PaoTag.DEVICE_CONFIGURATION_420;
         }
@@ -75,10 +58,6 @@ public enum ConfigurationType {
 
         public String getConfigurationTemplateName() {
             return "MCT 410 Configuration";
-        }
-
-        public Class<? extends YukonObjectCriteriaHelper> getCriteria() {
-            return MCT410Criteria.class;
         }
 
         public PaoTag getSupportedDeviceTag() {
@@ -99,12 +78,6 @@ public enum ConfigurationType {
      * @return The template name
      */
     public abstract String getConfigurationTemplateName();
-
-    /**
-     * Method to get the search criteria associated with this configuration type
-     * @return Search criteria
-     */
-    public abstract Class<? extends YukonObjectCriteriaHelper> getCriteria();
 
     /**
      * Method to get a device tag representing the devices this configuration type

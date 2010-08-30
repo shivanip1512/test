@@ -50,14 +50,6 @@ public class ConfigurationTemplate {
         this.view = view;
     }
 
-    public Set<String> getSupportedDeviceSet() {
-        return supportedDeviceSet;
-    }
-
-    public void setSupportedDeviceSet(Set<String> supportedDeviceSet) {
-        this.supportedDeviceSet = supportedDeviceSet;
-    }
-
     public Properties getDbNameMapping() {
         return dbNameMapping;
     }
