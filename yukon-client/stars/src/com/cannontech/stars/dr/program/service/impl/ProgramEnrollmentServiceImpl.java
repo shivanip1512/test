@@ -114,6 +114,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                     for (LMHardwareControlGroup lmHardwareControlGroup : lmHardwareControlGroups) {
                         lmHardwareControlGroupDao.stopOptOut(lmHardwareControlGroup.getInventoryId(),
                                                              lmHardwareControlGroup.getAccountId(),
+                                                             lmHardwareControlGroup.getProgramId(),
                                                              user, now);
                     }
                 }
