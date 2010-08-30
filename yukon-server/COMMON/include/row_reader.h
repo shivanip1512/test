@@ -61,6 +61,7 @@ public:
     virtual RowReader &operator<<(const CtiTime &operand) = 0;
     virtual RowReader &operator<<(const boost::posix_time::ptime &operand) = 0;
     virtual RowReader &operator<<(const std::string &operand) = 0;
+    virtual RowReader &operator<<(const char *operand) = 0;
 };
 
 }// namespace cti

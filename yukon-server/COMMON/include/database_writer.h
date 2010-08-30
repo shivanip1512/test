@@ -38,6 +38,7 @@ public:
     RowWriter &operator<<(const CtiTime &operand);
     RowWriter &operator<<(const boost::posix_time::ptime &operand);
     RowWriter &operator<<(const std::string &operand);
+    RowWriter &operator<<(const char *operand);
 
     std::string asString();
 

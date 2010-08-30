@@ -193,6 +193,7 @@ public:
     RowReader &operator<<(const CtiTime &operand) { return *this; }
     RowReader &operator<<(const boost::posix_time::ptime &operand) { return *this; }
     RowReader &operator<<(const std::string &operand) { return *this; }
+    RowReader &operator<<(const char *operand) { return *this; }
 
     std::string asString() { return "UNIMPLEMENTED" }
 

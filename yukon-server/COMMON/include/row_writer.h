@@ -42,6 +42,7 @@ public:
     virtual RowWriter &operator<<(const CtiTime &operand) = 0;
     virtual RowWriter &operator<<(const boost::posix_time::ptime &operand) = 0;
     virtual RowWriter &operator<<(const std::string &operand) = 0;
+    virtual RowWriter &operator<<(const char *operand) = 0;
 };
 
 }// namespace cti

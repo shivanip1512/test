@@ -65,6 +65,7 @@ public:
     RowReader &operator<<(const CtiTime &operand);
     RowReader &operator<<(const boost::posix_time::ptime &operand);
     RowReader &operator<<(const std::string &operand);
+    RowReader &operator<<(const char *operand);
 
     std::string asString();
 };

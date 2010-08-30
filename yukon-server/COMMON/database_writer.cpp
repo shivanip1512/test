@@ -41,7 +41,7 @@ bool DatabaseWriter::execute()
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** ERROR **** DB EXCEPTION " << (string)x.ErrText() << " Class "
                  << x.ErrClass() << " Pos " << x.ErrPos() << " nativeCode " << x.ErrNativeCode() << " in query: " << endl;
-            dout << _command.CommandText() << " " << __FILE__ << " " << __LINE__ << endl;
+            dout << asString() << " " << __FILE__ << " " << __LINE__ << endl;
         }
     }
     return retVal;
@@ -128,6 +128,12 @@ RowWriter &DatabaseWriter::operator<<(const std::string &operand)
     return *this;
 }
 
+RowWriter &DatabaseWriter::operator<<(const char *operand)
+{
+    _command << operand;
+    return *this;
+}
+
 std::string DatabaseWriter::asString()
 {
     std::string sqlString = _command.CommandText() + " ";
@@ -135,9 +141,8 @@ std::string DatabaseWriter::asString()
     {
         if( _command.ParamByIndex(i).ParamType() != SA_dtCursor )
         {
-            sqlString += ":" + i;
-            sqlString += " " + _command.ParamByIndex(i).asString();
-            sqlString += " ";
+            sqlString += " <" + CtiNumStr(i) + "> ";
+            sqlString += _command.ParamByIndex(i).asString();
         }
     }
 
