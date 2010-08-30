@@ -100,7 +100,7 @@
         </tags>
     </pao>
 
-    <pao id="SUPPORTS_DISCONNECT" abstract="true">  <!--  Ability to disconnect through collar device -->
+    <pao id="SUPPORTS_MCT_DISCONNECT" abstract="true">  <!--  Ability to disconnect through collar device -->
         <points>
             <point type="Status" offset="1">
                 <name>Disconnect Status</name>
@@ -119,6 +119,14 @@
                 <basicLookup point="Disconnect Status" />
             </attribute>
         </attributes>
+        <tags>
+        	<tag name="DISCONNECT_410">
+        		<value>true</value>
+        	</tag>
+        	<tag name="DISCONNECT_COLLAR_COMPATIBLE">
+        		<value>true</value>
+        	</tag>
+        </tags>
     </pao>
 
     <pao id="SUPPORTS_INTEGRATED_DISCONNECT" abstract="true">   <!-- Integrated into the device itself -->
@@ -141,6 +149,11 @@
                 <basicLookup point="Disconnect Status" />
             </attribute>
         </attributes>
+        <tags>
+        	<tag name="DISCONNECT_410">
+        		<value>true</value>
+        	</tag>
+        </tags>
     </pao>
 
     <pao id="REVERSE_POWER" abstract="true">
@@ -1330,7 +1343,7 @@
 	</pao>
     
 	<!-- MCT 420s -->
-	<pao id="MCT420FL" inherits="MCT_420_BASE, SUPPORTS_DISCONNECT, REVERSE_POWER_FL">
+	<pao id="MCT420FL" inherits="MCT_420_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER_FL">
         <displayName>MCT-420FL</displayName>
     </pao>
     <pao id="MCT420FLD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT, REVERSE_POWER_FL">
@@ -1793,16 +1806,16 @@
 	</pao>
         
     <!-- MCT 410s -->
-    <pao id="MCT410IL" inherits="MCT_410_BASE, SUPPORTS_DISCONNECT, REVERSE_POWER">
+    <pao id="MCT410IL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER">
         <displayName>MCT-410IL</displayName>
     </pao>
-    <pao id="MCT410CL" inherits="MCT_410_BASE, SUPPORTS_DISCONNECT, REVERSE_POWER">
+    <pao id="MCT410CL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER">
         <displayName>MCT-410CL</displayName>
     </pao>
-    <pao id="MCT410FL" inherits="MCT_410_BASE, SUPPORTS_DISCONNECT, REVERSE_POWER_FL">
+    <pao id="MCT410FL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER_FL">
         <displayName>MCT-410FL</displayName>
     </pao>
-    <pao id="MCT410GL" inherits="MCT_410_BASE, SUPPORTS_DISCONNECT, REVERSE_POWER" enabled="false">
+    <pao id="MCT410GL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER" enabled="false">
         <displayName>MCT-410GL</displayName>
     </pao>
     

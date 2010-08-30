@@ -2399,7 +2399,7 @@ public void selectionPerformed( PropertyPanelEvent event)
     			    DatabaseEditorUtil.updateRouteName(this, panel, object);
                 }    
     			
-                if (DatabaseEditorUtil.isDisconnectCollarCompatible(object)) {
+    			if (DatabaseEditorUtil.isDisconnectCollarCompatible(object)) {
                     DatabaseEditorUtil.updateDisconnectStatus(this, panel, object);
                 }
                 

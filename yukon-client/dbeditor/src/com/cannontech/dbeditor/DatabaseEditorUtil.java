@@ -14,10 +14,12 @@ import javax.swing.SwingUtilities;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -25,14 +27,8 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.CCUBase;
-import com.cannontech.database.data.device.MCT410CL;
-import com.cannontech.database.data.device.MCT410FL;
-import com.cannontech.database.data.device.MCT410GL;
-import com.cannontech.database.data.device.MCT410IL;
-import com.cannontech.database.data.device.MCT420FL;
 import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -47,27 +43,21 @@ public final class DatabaseEditorUtil {
     private static final PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
     private static final DeviceDao deviceDao = YukonSpringHook.getBean("deviceDao", DeviceDao.class);
     private static final AttributeService attributeService = YukonSpringHook.getBean("attributeService", AttributeService.class);
-    private static final PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);
     private static final DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
     private static final PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
-    
+
     private DatabaseEditorUtil() {
         
     }
     
-    public static boolean isMCT410Series(final Object object) {
-        return ((object instanceof MCT410CL) ||
-                (object instanceof MCT410FL) ||
-                (object instanceof MCT410GL) ||
-                (object instanceof MCT410IL));
-    }
-    
     public static boolean isDisconnectCollarCompatible(final Object object){
-        return ((object instanceof MCT410CL) ||
-                (object instanceof MCT410FL) ||
-                (object instanceof MCT410GL) ||
-                (object instanceof MCT410IL) ||
-                (object instanceof MCT420FL));
+        LiteYukonPAObject lpao = null;
+        if( object instanceof LiteYukonPAObject) {
+            lpao = (LiteYukonPAObject) object;
+            return paoDefinitionDao.isTagSupported(PaoType.getForId(lpao.getType()), PaoTag.DISCONNECT_COLLAR_COMPATIBLE);
+        } else {
+            return false;
+        }
     }
     
     public static void updateDisconnectStatus(final DatabaseEditor dbEditor, final JComponent c, final Object object) {
