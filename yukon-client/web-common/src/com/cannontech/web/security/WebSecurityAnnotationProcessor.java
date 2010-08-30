@@ -6,6 +6,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.web.security.annotation.CheckDevelopmentMode;
 import com.cannontech.web.security.annotation.CheckFalseRoleProperty;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -17,6 +18,11 @@ public class WebSecurityAnnotationProcessor {
 
     public void process(final Object bean) throws Exception {
         final Class<?> clazz = getClass(bean);
+        
+        boolean hasCheckDevelopmentMode = hasCheckDevelopmentMode(clazz);
+        if (hasCheckDevelopmentMode) {
+            doHasCheckDevelopmentMode(getCheckDevelopmentMode(clazz));
+        }
         
         boolean hasCheckRole = hasCheckRole(clazz);
         if (hasCheckRole) {
@@ -48,6 +54,10 @@ public class WebSecurityAnnotationProcessor {
         return bean.getClass();
     }
     
+    private void doHasCheckDevelopmentMode(CheckDevelopmentMode checkRole) {
+        webSecurityChecker.checkDevelopmentMode();
+    }
+    
     private void doHasCheckRole(CheckRole checkRole) throws Exception {
         YukonRole[] roles = checkRole.value();
         webSecurityChecker.checkRole(roles);
@@ -63,6 +73,11 @@ public class WebSecurityAnnotationProcessor {
         webSecurityChecker.checkFalseRoleProperty(roleProperties);
     }
     
+    private CheckDevelopmentMode getCheckDevelopmentMode(Class<?> clazz) {
+        CheckDevelopmentMode checkDevelopmentMode = AnnotationUtils.findAnnotation(clazz, CheckDevelopmentMode.class);
+        return checkDevelopmentMode;
+    }
+    
     private CheckRole getCheckRole(Class<?> clazz) {
         CheckRole checkRole = AnnotationUtils.findAnnotation(clazz, CheckRole.class);
         return checkRole;
@@ -76,6 +91,12 @@ public class WebSecurityAnnotationProcessor {
     private CheckFalseRoleProperty getCheckFalseRoleProperty(Class<?> clazz) {
     	CheckFalseRoleProperty checkFalseRoleProperty = AnnotationUtils.findAnnotation(clazz, CheckFalseRoleProperty.class);
         return checkFalseRoleProperty;
+    }
+    
+    private boolean hasCheckDevelopmentMode(Class<?> clazz) {
+        CheckDevelopmentMode checkDevelopmentMode = getCheckDevelopmentMode(clazz);
+        boolean hasCheckDevelopmentMode = checkDevelopmentMode != null;
+        return hasCheckDevelopmentMode;
     }
     
     private boolean hasCheckRole(Class<?> clazz) {

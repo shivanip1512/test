@@ -1,9 +1,13 @@
 package com.cannontech.database.data.point;
 
+import java.util.Set;
+
 import org.apache.commons.lang.Validate;
-import com.cannontech.common.util.DatabaseRepresentationSource;
+
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public enum PointType implements DisplayableEnum, DatabaseRepresentationSource {
@@ -20,6 +24,7 @@ public enum PointType implements DisplayableEnum, DatabaseRepresentationSource {
 	
 	private final int pointTypeId;
     private final static ImmutableMap<Integer, PointType> lookupById;
+    private final static Set<PointType> statusPoints = Sets.immutableEnumSet(Status, CalcStatus, StatusOutput);
     
     static {
         Builder<Integer, PointType> idBuilder = ImmutableMap.builder();
@@ -63,5 +68,9 @@ public enum PointType implements DisplayableEnum, DatabaseRepresentationSource {
     @Override
     public Object getDatabaseRepresentation() {
         return getPointTypeString();
+    }
+
+    public boolean isStatus() {
+        return statusPoints.contains(this);
     }
 }

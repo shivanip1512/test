@@ -278,3 +278,32 @@ function showBusy() {
 function hideBusy() {
 	$('busyBox').hide();
 }
+
+var YEvent = new Object();
+
+Object.extend(YEvent, {
+    clickMemory: [],
+
+    observeSelectorClick: function(selector, callback) {
+        YEvent.clickMemory.push({'selector': selector, 'callback': callback});
+    },
+    
+    _handleClickEvent: function(event) {
+        YEvent.clickMemory.each(function(memItem) {
+            var element = Event.element(event);
+            if (element.match(memItem.selector)) {
+                memItem.callback(event);
+            }
+        });
+    },
+    
+    markBusy: function(event) {
+        Event.element(event).addClassName("ajaxBusy");
+    },
+    
+    unmarkBusy: function(event) {
+        Event.element(event).addRemoveName("ajaxBusy");
+    }
+});
+
+Event.observe(document, 'click', YEvent._handleClickEvent);

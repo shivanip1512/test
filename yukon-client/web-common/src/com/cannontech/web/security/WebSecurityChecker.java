@@ -3,6 +3,8 @@ package com.cannontech.web.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -12,6 +14,15 @@ import com.cannontech.web.util.SpringWebUtil;
 
 public class WebSecurityChecker {
     private RolePropertyDao rolePropertyDao;
+    private ConfigurationSource configurationSource;
+    
+    public void checkDevelopmentMode() {
+        final LiteYukonUser user = getYukonUser();
+        boolean result = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE.name(), false);
+        if (!result) {
+            throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
+        }
+    }
     
     public void checkRole(YukonRole... roles) {
         final LiteYukonUser user = getYukonUser();
@@ -58,6 +69,11 @@ public class WebSecurityChecker {
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
+    }
+
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
     }
     
 }

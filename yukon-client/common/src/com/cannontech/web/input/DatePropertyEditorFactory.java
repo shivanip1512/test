@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.DataBinder;
 
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -17,6 +18,8 @@ import com.cannontech.user.YukonUserContext;
 
 public class DatePropertyEditorFactory {
     private DateFormattingService dateFormattingService;
+    
+    public static enum BlankMode {ERROR, NULL, CURRENT};
 
     private class DatePropertyEditor extends PropertyEditorSupport {
         private DateFormattingService.DateOnlyMode dateOnlyMode;
@@ -76,15 +79,32 @@ public class DatePropertyEditorFactory {
     private class LocalTimePropertyEditor extends PropertyEditorSupport {
         private DateFormatEnum timeFormat;
         private YukonUserContext userContext;
+        private BlankMode blankMode;
 
         private LocalTimePropertyEditor(DateFormatEnum timeFormat,
-                YukonUserContext userContext) {
+                YukonUserContext userContext,
+                BlankMode blankMode) {
             this.timeFormat = timeFormat;
             this.userContext = userContext;
+            this.blankMode = blankMode;
         }
 
         @Override
         public void setAsText(String localTimeStr) throws IllegalArgumentException {
+            if (StringUtils.isBlank(localTimeStr)) {
+                switch (blankMode) {
+                case CURRENT:
+                    setValue(new LocalTime(userContext.getJodaTimeZone()));
+                    break;
+                case ERROR:
+                    throw new IllegalArgumentException("Could not parse blank time");
+                case NULL:
+                    setValue(null);
+                    break;
+                }
+                return;
+            }
+            
             try {
                 setValue(dateFormattingService.parseLocalTime(localTimeStr,
                                                               userContext));
@@ -104,17 +124,28 @@ public class DatePropertyEditorFactory {
     private class LocalDatePropertyEditor extends PropertyEditorSupport {
         private DateFormatEnum dateFormat;
         private YukonUserContext userContext;
-
+        private BlankMode blankMode;
+        
         private LocalDatePropertyEditor(DateFormatEnum dateFormat,
-                                         YukonUserContext userContext) {
+                                         YukonUserContext userContext, BlankMode blankMode) {
             this.dateFormat = dateFormat;
             this.userContext = userContext;
+            this.blankMode = blankMode;
         }
 
         @Override
         public void setAsText(String localDateStr) throws IllegalArgumentException {
             if (StringUtils.isBlank(localDateStr)) {
-                setValue(null);
+                switch (blankMode) {
+                case CURRENT:
+                    setValue(new LocalDate(userContext.getJodaTimeZone()));
+                    break;
+                case ERROR:
+                    throw new IllegalArgumentException("Could not parse blank date");
+                case NULL:
+                    setValue(null);
+                    break;
+                }
                 return;
             }
             
@@ -146,16 +177,39 @@ public class DatePropertyEditorFactory {
 
     public PropertyEditor getLocalTimePropertyEditor(DateFormatEnum dateFormat,
             YukonUserContext userContext) {
-        return new LocalTimePropertyEditor(dateFormat, userContext);
+        return new LocalTimePropertyEditor(dateFormat, userContext, BlankMode.ERROR);
     }
 
+    public PropertyEditor getLocalTimePropertyEditor(DateFormatEnum dateFormat,
+            YukonUserContext userContext, BlankMode blankMode) {
+        return new LocalTimePropertyEditor(dateFormat, userContext, blankMode);
+    }
+    
     public PropertyEditor getLocalDatePropertyEditor(DateFormatEnum dateFormat,
                                                       YukonUserContext userContext) {
-        return new LocalDatePropertyEditor(dateFormat, userContext);
+        return new LocalDatePropertyEditor(dateFormat, userContext, BlankMode.NULL);
+    }
+    
+    public PropertyEditor getLocalDatePropertyEditor(DateFormatEnum dateFormat,
+            YukonUserContext userContext, BlankMode blankMode) {
+        return new LocalDatePropertyEditor(dateFormat, userContext, blankMode);
+    }
+    
+    public void setupLocalDatePropertyEditor(DataBinder dataBinder, 
+            YukonUserContext userContext, BlankMode blankMode) {
+        PropertyEditor propertyEditor = getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext, blankMode);
+        dataBinder.registerCustomEditor(LocalDate.class, propertyEditor);
+    }
+    
+    public void setupLocalTimePropertyEditor(DataBinder dataBinder,
+            YukonUserContext userContext, BlankMode blankMode) {
+        PropertyEditor propertyEditor = getLocalTimePropertyEditor(DateFormatEnum.TIME, userContext, blankMode);
+        dataBinder.registerCustomEditor(LocalTime.class, propertyEditor);
     }
     
     @Autowired
     public void setDateFormattingService(DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;
     }
+
 }

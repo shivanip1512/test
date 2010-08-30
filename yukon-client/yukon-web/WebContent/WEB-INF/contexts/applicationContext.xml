@@ -18,6 +18,7 @@
                 <ref bean="userContextArgumentResolver"/>
                 <ref bean="flashScopeArgumentResolver"/>
                 <ref bean="accountInfoFragmentArgumentResolver"/>
+                <ref bean="enumArgumentResolver"/>
             </list>
         </property>
     </bean>
@@ -36,6 +37,7 @@
     </bean>
     
     <bean id="userContextArgumentResolver" class="com.cannontech.web.login.UserContextArgumentResolver"/>
+    <bean id="enumArgumentResolver" class="com.cannontech.web.login.EnumArgumentResolver"/>
     
     <!-- If we want the view resolver to continue to not jave the suffix, we'll need this. -->
     <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator">

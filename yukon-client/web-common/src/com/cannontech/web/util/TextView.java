@@ -15,6 +15,10 @@ public class TextView extends AbstractView {
         this.text = text;
     }
 
+    public TextView() {
+        this.text = "";
+    }
+    
     @Override
     protected void renderMergedOutputModel(Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {

@@ -925,6 +925,15 @@
             </option>
           </options>
         </option>
+        <option name="development">
+          <requireRoleProperty value="DEVELOPMENT_MODE" />
+          <link>/spring/support/development/pointInjection/main</link>
+          <options>
+            <option name="pointInjection">
+              <link>/spring/support/development/pointInjection/main</link>
+            </option>
+          </options>
+        </option>
         <option name="other">
           <link>/spring/support/threadDump</link>
           <options>
@@ -935,32 +944,39 @@
         </option>
       </options>
     </menu>
-    
+
     <pages>
-		<page name="logLanding" type="BASIC">
-			<link>/spring/support/logging/menu?file=/</link>
-	   		<pages>
-				<page name="logMenu" type="DETAIL">
-					<menu>logs</menu>
-					<link>/spring/support/logging/menu?file=${rootlessDirFileString}</link>
-					<labelArgument>${rootlessDirFileString}</labelArgument>
-					<pages>
-						<page name="logTail" type="DETAIL">
-							<menu>logs</menu>
-							<link>/spring/support/logging/tail?file=${rootlessDirFileString}${logFileName}</link>
-							<labelArgument>${logFileName}</labelArgument>
-							<pages>
-								<page name="logView" type="DETAIL_CHILD">
-								<menu>logs</menu>
-								<labelArgument>${logFileName}</labelArgument>
-								</page>
-							</pages>
-						</page>
-					</pages>
-				</page>
-	   		</pages>    
-		</page>
-	</pages>
+        <page name="supportLanding" type="LANDING">
+            <pages>
+                <page name="logLanding" type="BASIC">
+                    <link>/spring/support/logging/menu?file=/</link>
+                    <pages>
+                        <page name="logMenu" type="DETAIL">
+                            <menu>logs</menu>
+                            <link>/spring/support/logging/menu?file=${rootlessDirFileString}</link>
+                            <labelArgument>${rootlessDirFileString}</labelArgument>
+                            <pages>
+                                <page name="logTail" type="DETAIL">
+                                    <menu>logs</menu>
+                                    <link>/spring/support/logging/tail?file=${rootlessDirFileString}${logFileName}</link>
+                                    <labelArgument>${logFileName}</labelArgument>
+                                    <pages>
+                                        <page name="logView" type="DETAIL_CHILD">
+                                            <menu>logs</menu>
+                                            <labelArgument>${logFileName}</labelArgument>
+                                        </page>
+                                    </pages>
+                                </page>
+                            </pages>
+                        </page>
+                    </pages>
+                </page>
+                <page name="pointInjection" type="BASIC">
+                    <menu>development|pointInjection</menu>
+                </page>
+            </pages>
+        </page>
+    </pages>
     
   </module>
 
