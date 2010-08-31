@@ -111,6 +111,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	subBus.setAlternateBusId(new Integer((int)vstr.extractUnsignedInt()));
 	subBus.setDualBusEnabled(((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
 	subBus.setLtcId(new Integer((int)vstr.extractUnsignedInt()));
+	subBus.setStrategyId(new Integer((int)vstr.extractUnsignedInt()));
+	
     subBus.setCcFeeders( VectorExtract.extractVector(vstr, polystr));
 }
 
@@ -118,62 +120,6 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
  * saveGuts method comment.
  */
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
-	super.saveGuts( obj, vstr, polystr );
-
-	SubBus subBus = (SubBus)obj;
-	vstr.insertUnsignedInt( subBus.getMaxDailyOperation().intValue() );
-	vstr.insertUnsignedInt( (subBus.getMaxOperationDisableFlag().booleanValue() == true) ? 1 : 0 );
-	vstr.insertUnsignedInt( subBus.getCurrentVarLoadPointID().intValue() );
-	vstr.insertDouble( subBus.getCurrentVarLoadPointValue().doubleValue() );
-	vstr.insertUnsignedInt( subBus.getCurrentWattLoadPointID().intValue() );
-	vstr.insertDouble( subBus.getCurrentWattLoadPointValue().doubleValue() );
-	vstr.saveObject( subBus.getMapLocationID(), SimpleMappings.CString );
-	vstr.saveObject( subBus.getControlUnits(), SimpleMappings.CString );
-	vstr.insertUnsignedInt( subBus.getDecimalPlaces().intValue() );
-	vstr.insertUnsignedInt( (subBus.getNewPointDataReceivedFlag().booleanValue() == true) ? 1 : 0 );
-	vstr.insertUnsignedInt( (subBus.getBusUpdateFlag().booleanValue() == true) ? 1 : 0 );
-	vstr.saveObject( subBus.getLastCurrentVarPointUpdateTime(), SimpleMappings.Time );
-	vstr.insertUnsignedInt( subBus.getEstimatedVarLoadPointID().intValue() );
-	vstr.insertDouble( subBus.getEstimatedVarLoadPointValue().doubleValue() );
-	vstr.insertUnsignedInt( subBus.getDailyOperationsAnalogPointId().intValue() );	
-	vstr.insertUnsignedInt( subBus.getPowerFactorPointId().intValue() );	
-	vstr.insertUnsignedInt( subBus.getEstimatedPowerFactorPointId().intValue() );	
-	vstr.insertUnsignedInt( subBus.getCurrentDailyOperations().intValue() );
-	vstr.insertUnsignedInt( (subBus.getPeakTimeFlag().booleanValue() == true) ? 1 : 0 );
-	vstr.insertUnsignedInt( (subBus.getRecentlyControlledFlag().booleanValue() == true) ? 1 : 0 );
-	vstr.saveObject( subBus.getLastOperationTime(), SimpleMappings.Time );
-	vstr.insertDouble( subBus.getVarValueBeforeControl().doubleValue() );
-	vstr.insertDouble( subBus.getPowerFactorValue().doubleValue() );
-	vstr.insertDouble( subBus.getEstimatedPFValue().doubleValue() );
-	vstr.insertUnsignedInt( subBus.getCurrentVarPtQuality().intValue() );
-	vstr.insertUnsignedInt( (subBus.getWaiveControlFlag().booleanValue() == true) ? 1 : 0 );
-	vstr.insertDouble( subBus.getPeakLag().doubleValue() );
-	vstr.insertDouble( subBus.getOffPkLag().doubleValue() );
-	vstr.insertDouble( subBus.getPeakLead().doubleValue() );
-	vstr.insertDouble( subBus.getOffPkLead().doubleValue() );
-	vstr.insertUnsignedInt( subBus.getCurrentVoltLoadPointID().intValue() );
-	vstr.insertDouble( subBus.getCurrentVoltLoadPointValue().doubleValue() );
-	vstr.insertUnsignedInt( (subBus.getVerificationFlag().booleanValue() == true) ? 1 : 0 );
-	vstr.insertUnsignedInt( (subBus.getSwitchOverStatus().booleanValue() == true) ? 1 : 0 );
-	vstr.insertInt( subBus.getCurrentwattpointquality() );
-	vstr.insertInt( subBus.getCurrentvoltpointquality() );
-	vstr.insertDouble( subBus.getTargetvarvalue() );
-	vstr.saveObject( subBus.getSolution(), SimpleMappings.CString);
-	vstr.insertUnsignedInt( (subBus.getOvUvDisabledFlag().booleanValue() == true) ? 1 : 0 );
-    vstr.insertDouble( subBus.getPeakPFSetPoint() );
-    vstr.insertDouble( subBus.getOffpeakPFSetPoint() );
-    vstr.saveObject( subBus.getControlMethod(), SimpleMappings.CString );
-    vstr.insertDouble( subBus.getPhaseA() );
-    vstr.insertDouble( subBus.getPhaseB() );
-    vstr.insertDouble( subBus.getPhaseC() );
-    vstr.insertUnsignedInt( (subBus.getLikeDayControlFlag().booleanValue() == true) ? 1 : 0 );
-    vstr.insertInt( subBus.getDisplayOrder() );
-    vstr.insertUnsignedInt((subBus.getVoltReductionFlag().booleanValue() == true) ? 1 : 0);
-    vstr.insertUnsignedInt((subBus.getUsePhaseData().booleanValue() == true) ? 1 : 0);
-    vstr.insertUnsignedInt((subBus.getPrimaryBusFlag().booleanValue() == true) ? 1 : 0);
-    vstr.insertUnsignedInt((subBus.getAlternateBusId().intValue()));
-    vstr.insertUnsignedInt((subBus.getDualBusEnabled().booleanValue() == true) ? 1 : 0);
-    vstr.insertUnsignedInt((subBus.getLtcId().intValue()));
-	VectorInsert.insertVector( subBus.getCcFeeders(), vstr, polystr );
+    //This never gets called and the servers do not know how to restore it.
 }
 }

@@ -73,7 +73,7 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
     private Boolean dualBusEnabled = null;
     private Integer alternateBusId = null;
     private Integer ltcId = 0;
-    
+    private Integer strategyId = -1;
     /**
      * constructor comment.
      */
@@ -815,7 +815,15 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
     public Integer getLtcId() {
         return ltcId;
     }
-	
+    
+    public void setStrategyId(Integer strategyId) {
+        this.strategyId = strategyId;
+    }
+
+    public Integer getStrategyId() {
+        return strategyId;
+    }
+    
     public ControlMethod getControlMethodEnum() {
     	return ControlMethod.getForDbString(getControlMethod());
     }
