@@ -1,19 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  cccapbank.h
-
-        Programmer:  Josh Wolberg
-
-        Description:    Header file for CtiCCCapBank
-                        CtiCCCapBank maintains the state and handles
-                        the persistence of cap banks for Cap Control.
-
-        Initial Date:  8/30/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-
-#ifndef CTICCCAPBANKIMPL_H
-#define CTICCCAPBANKIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -170,7 +155,6 @@ public:
 
     std::list <LONG>* getPointIds() {return &_pointIds;};
     std::vector <CtiCCMonitorPointPtr>& getMonitorPoint() {return _monitorPoint;};
-    //std::vector <CtiCCPointResponsePtr>& getPointResponse() {return _pointResponses;};
 
     CtiCCCapBank& setParentId(LONG parentId);
     CtiCCCapBank& setAlarmInhibitFlag(BOOL alarminhibit);
@@ -417,4 +401,3 @@ private:
 
 //typedef shared_ptr<CtiCCCapBank> CtiCCCapBankPtr;
 typedef CtiCCCapBank* CtiCCCapBankPtr;
-#endif

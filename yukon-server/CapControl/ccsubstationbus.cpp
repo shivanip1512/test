@@ -7480,9 +7480,8 @@ void CtiCCSubstationBus::updatePointResponsePreOpValues(CtiCCCapBank* capBank)
     for (int i = 0; i < _multipleMonitorPoints.size(); i++)
     {
         CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[i];
-        bool ret = capBank->updatePointResponsePreOpValues(point->getPointId(),point->getValue());
 
-        if (ret)
+        if (capBank->updatePointResponsePreOpValues(point->getPointId(),point->getValue()))
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " Bank Id: " << capBank->getPaoName() << " Point Id: " << point->getPointId( )<< " Value: " << point->getValue() << endl;
@@ -8677,8 +8676,7 @@ BOOL CtiCCSubstationBus::areOtherMonitorPointResponsesOk(LONG mPointID, CtiCCCap
         CtiCCMonitorPointPtr otherPoint = (CtiCCMonitorPointPtr)_multipleMonitorPoints[i];
         if (otherPoint->getPointId() != mPointID)
         {
-            std::vector<PointResponse> pointResponses = potentialCap->getPointResponses();
-            for each (PointResponse pResponse in pointResponses)
+            for each (const PointResponse& pResponse in potentialCap->getPointResponses())
             {
                 if (otherPoint->getPointId() == pResponse.getPointId())
                 {

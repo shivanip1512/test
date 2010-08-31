@@ -37,7 +37,7 @@ bool PointResponseManager::updatePointResponseDeltas(const CtiCCMonitorPoint& po
         return false;
     }
 
-    itr->updateDeltas(point.getNInAvg(),point.getValue());
+    itr->second.updateDelta(point.getNInAvg(),point.getValue());
 
     return true;
 }

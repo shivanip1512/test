@@ -1,23 +1,5 @@
-/*---------------------------------------------------------------------------
-        Filename:  ccsubstationbusstore.h
-
-        Programmer:  Josh Wolberg
-
-        Description:    Header file for CtiCCSubstationBusStore.
-                        CtiCCSubstationBusStore maintains a pool of
-                        CtiCCSubstationBus handles.
-
-
-        Initial Date:  8/27/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-
+#pragma once
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTICCSUBSTATIONBUSSTORE_H
-#define CTICCSUBSTATIONBUSSTORE_H
-
 
 #include <rw/vstream.h>
 #include <rw/thr/onlyptr.h>
@@ -628,10 +610,7 @@ private:
 
     map< long, MaxKvarObject > _maxKvarMap;
 
-    boost::shared_ptr<Cti::CapControl::Database::DaoFactory> _daoFactory;
+    boost::shared_ptr<Cti::CapControl::DaoFactory> _daoFactory;
 
     mutable RWRecursiveLock<RWMutexLock> _storeMutex;
 };
-
-#endif
-

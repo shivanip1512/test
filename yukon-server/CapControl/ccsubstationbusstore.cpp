@@ -1,16 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  ccsubstationbusstore.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiCCSubstationBusStore
-                        CtiCCSubstationBusStore maintains a pool of
-                        CtiCCSubstationBuses.
-
-        Initial Date:  8/27/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <map>
@@ -19,7 +6,6 @@
 
 #include <rw/rwfile.h>
 #include <rw/thr/thrfunc.h>
-//#include <rw/collstr.h>
 
 #include "ccsubstationbusstore.h"
 #include "ControlStrategy.h"
@@ -44,8 +30,10 @@
 #include "database_connection.h"
 #include "database_reader.h"
 #include "database_writer.h"
-
 #include "ctistring.h"
+#include "PointResponse.h"
+#include "PointResponseDao.h"
+
 #include <string>
 
 #define HOURLY_RATE 3600
@@ -62,14 +50,10 @@ extern BOOL _OP_STATS_DYNAMIC_UPDATE;
 
 
 using namespace std;
+using namespace Cti::CapControl;
 
-#include "PointResponse.h"
-#include "PointResponseDao.h"
+using Database::DatabaseDaoFactory;
 
-using Cti::CapControl::PointResponse;
-using Cti::CapControl::Database::DaoFactory;
-using Cti::CapControl::Database::DatabaseDaoFactory;
-using Cti::CapControl::PointResponseDaoPtr;
 
 CtiTime timeSaver;
 

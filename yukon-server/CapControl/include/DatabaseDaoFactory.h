@@ -7,7 +7,6 @@
 
 namespace Cti {
 namespace CapControl {
-namespace Database {
 
 class DaoFactory
 {
@@ -15,18 +14,20 @@ class DaoFactory
         virtual PointResponseDaoPtr getPointResponseDao()=0;
 };
 
-class DatabaseDaoFactory : public DaoFactory
-{
-    public:
-        DatabaseDaoFactory(){}
+namespace Database {
 
-        virtual PointResponseDaoPtr getPointResponseDao()
-        {
-            PointResponseDatabaseDao* dao = new PointResponseDatabaseDao();
+    class DatabaseDaoFactory : public DaoFactory
+    {
+        public:
+            DatabaseDaoFactory(){}
 
-            return PointResponseDaoPtr(dao);
-        }
-};
+            virtual PointResponseDaoPtr getPointResponseDao()
+            {
+                PointResponseDatabaseDao* dao = new PointResponseDatabaseDao();
+
+                return PointResponseDaoPtr(dao);
+            }
+    };
 
 }
 }

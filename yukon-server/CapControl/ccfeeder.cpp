@@ -5670,8 +5670,7 @@ BOOL CtiCCFeeder::areOtherMonitorPointResponsesOk(LONG mPointID, CtiCCCapBank* p
         CtiCCMonitorPointPtr otherPoint = (CtiCCMonitorPointPtr)_multipleMonitorPoints[i];
         if (otherPoint->getPointId() != mPointID)
         {
-            std::vector<PointResponse> pointResponses = potentialCap->getPointResponses();
-            for each (PointResponse pResponse in pointResponses)
+            for each (const PointResponse& pResponse in potentialCap->getPointResponses())
             {
                 if (otherPoint->getPointId() == pResponse.getPointId())
                 {
@@ -5786,9 +5785,8 @@ void CtiCCFeeder::updatePointResponsePreOpValues(CtiCCCapBank* capBank)
     for (int i = 0; i < _multipleMonitorPoints.size(); i++)
     {
         CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[i];
-        bool ret = capBank->updatePointResponsePreOpValues(point->getPointId(),point->getValue());
 
-        if (ret)
+        if (capBank->updatePointResponsePreOpValues(point->getPointId(),point->getValue()))
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " Bank ID: " << capBank->getPaoName() << " Point ID: " << point->getPointId( )<< " Value: " << point->getValue() << endl;

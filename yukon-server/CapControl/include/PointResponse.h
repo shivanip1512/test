@@ -9,25 +9,19 @@ class PointResponse
         PointResponse();
         PointResponse(long pointId, long bankId, double preOpValue, double delta);
 
-        long getPointId();
+        long getPointId() const;
         void setPointId(long pointId);
 
-        long getBankId();
+        long getBankId() const;
         void setBankId(long bankId);
 
-        double getPreOpValue();
+        double getPreOpValue() const;
         void setPreOpValue(double preOpValue);
 
-        double getDelta();
+        double getDelta() const;
         void setDelta(double delta);
 
         void updateDelta(long nInAvg, double value);
-
-        /**
-         * These are overloaded to compare only the bankId and pointId
-         * */
-        bool operator==(const PointResponse& right) const;
-        bool operator<(const PointResponse& right) const;
 
     private:
         long _pointId;

@@ -26,17 +26,7 @@ PointResponse::PointResponse(long pointId, long bankId, double preOpValue, doubl
 {
 }
 
-bool PointResponse::operator<(const PointResponse& right) const
-{
-    return _bankId < right._bankId || _pointId < right._pointId;
-}
-
-bool PointResponse::operator==(const PointResponse& right) const
-{
-    return _bankId == right._bankId && _pointId == right._pointId;
-}
-
-long PointResponse::getPointId()
+long PointResponse::getPointId() const
 {
     return _pointId;
 }
@@ -46,7 +36,7 @@ void PointResponse::setPointId(long pointId)
     _pointId = pointId;
 }
 
-long PointResponse::getBankId()
+long PointResponse::getBankId() const
 {
     return _bankId;
 }
@@ -56,7 +46,7 @@ void PointResponse::setBankId(long bankId)
     _bankId = bankId;
 }
 
-double PointResponse::getPreOpValue()
+double PointResponse::getPreOpValue() const
 {
     return _preOpValue;
 }
@@ -66,7 +56,7 @@ void PointResponse::setPreOpValue(double preOpValue)
     _preOpValue = preOpValue;
 }
 
-double PointResponse::getDelta()
+double PointResponse::getDelta() const
 {
     return _delta;
 }
@@ -84,9 +74,9 @@ void PointResponse::updateDelta(long nInAvg, double value)
         dout << CtiTime() << " Point Delta: Bank ID: " << _bankId <<" Point ID: " << _pointId << " preOpValue: " << _preOpValue << " currentValue: " << value << endl;
     }
 
-    double nInAvg = nInAvg != 0 ? nInAvg:1;
+    double new_nInAvg = nInAvg != 0 ? nInAvg:1;
     double fabsy = fabs(_preOpValue - value);
-    double delta = ((_delta*(nInAvg - 1.0 )) + fabsy) / nInAvg;
+    double delta = ((_delta*(new_nInAvg - 1.0 )) + fabsy) / new_nInAvg;
 
     if (_CC_DEBUG & (CC_DEBUG_MULTIVOLT | CC_DEBUG_IVVC))
     {

@@ -21,20 +21,14 @@
 #include "resolvers.h"
 #include "database_reader.h"
 #include "database_writer.h"
-
 #include "utility.h"
-
 #include "PointResponseDao.h"
 #include "DatabaseDaoFactory.h"
 
-using Cti::CapControl::PointResponse;
-using Cti::CapControl::PointResponseDaoPtr;
-using Cti::CapControl::Database::DaoFactory;
-using Cti::CapControl::Database::DatabaseDaoFactory;
-using Cti::CapControl::PointResponseManager;
-
+using namespace Cti::CapControl;
 using namespace std;
 
+using Database::DatabaseDaoFactory;
 
 extern ULONG _CC_DEBUG;
 extern BOOL _USE_FLIP_FLAG;
