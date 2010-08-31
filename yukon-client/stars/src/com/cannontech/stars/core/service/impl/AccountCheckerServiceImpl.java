@@ -50,6 +50,13 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     }
     
     @Override
+    public void checkInventory(final LiteYukonUser user, final List<Integer> inventoryIds) 
+            throws NotAuthorizedException {
+        checkInventory(user, inventoryIds.toArray(new Integer[inventoryIds.size()]));
+        
+    }
+    
+    @Override
     public void checkThermostatSchedule(final LiteYukonUser user, final Integer... scheduleIds)
             throws NotAuthorizedException {
     	

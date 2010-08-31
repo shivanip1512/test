@@ -68,7 +68,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 
         LiteYukonUser user = yukonUserContext.getYukonUser();
         accountCheckerService.checkThermostatSchedule(user, scheduleId);
-        accountCheckerService.checkInventory(user, thermostatIds.toArray(new Integer[thermostatIds.size()]));
+        accountCheckerService.checkInventory(user, thermostatIds);
 
         int thermostatId = thermostatIds.get(0);
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
@@ -266,7 +266,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         }
 
         accountCheckerService.checkThermostatSchedule(user, scheduleId);
-        accountCheckerService.checkInventory(user, thermostatIds.toArray(new Integer[thermostatIds.size()]));
+        accountCheckerService.checkInventory(user, thermostatIds);
         
         boolean sendAndSave = "saveApply".equals(saveAction);
 
@@ -346,8 +346,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     public String updateComplete(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
             String message, LiteYukonUser user, ModelMap map) throws Exception {
 
-        accountCheckerService.checkInventory(user, 
-                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
+        accountCheckerService.checkInventory(user, thermostatIds);
         
         ThermostatScheduleUpdateResult resultMessage = ThermostatScheduleUpdateResult.valueOf(message);
         String key = resultMessage.getDisplayKey();
@@ -383,7 +382,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
             @ModelAttribute("thermostatIds") List<Integer> thermostatIds, YukonUserContext yukonUserContext,
             ModelMap map) throws Exception {
 
-        accountCheckerService.checkInventory(yukonUserContext.getYukonUser(), thermostatIds.toArray(new Integer[thermostatIds.size()]));
+        accountCheckerService.checkInventory(yukonUserContext.getYukonUser(), thermostatIds);
 
         int thermostatId = thermostatIds.get(0);
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
@@ -406,7 +405,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	
     	List<Integer> thermostatIdsList = getThermostatIds(request);
     	
-    	accountCheckerService.checkInventory(user, thermostatIdsList.toArray(new Integer[thermostatIdsList.size()]));
+    	accountCheckerService.checkInventory(user, thermostatIdsList);
     	
     	accountThermostatScheduleDao.deleteById(scheduleId);
     	

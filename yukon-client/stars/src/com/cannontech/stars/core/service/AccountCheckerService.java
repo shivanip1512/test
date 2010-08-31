@@ -1,5 +1,7 @@
 package com.cannontech.stars.core.service;
 
+import java.util.List;
+
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -9,7 +11,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface AccountCheckerService {
 
     public void checkInventory(LiteYukonUser user, Integer... inventoryIds) throws NotAuthorizedException;
-
+    
+    public void checkInventory(LiteYukonUser user, List<Integer> inventoryIds) throws NotAuthorizedException;
+    
     public void checkThermostatSchedule(LiteYukonUser user, Integer... scheduleIds) throws NotAuthorizedException;
     
     public void checkContact(LiteYukonUser user, Integer... contactIds) throws NotAuthorizedException;

@@ -77,14 +77,7 @@ public class AccountThermostatScheduleEntry {
 	}
 	
 	public LocalTime getStartTimeLocalTime() {
-		
-		int startMinutes = startTime / 60;
-        int startTimeHours = startMinutes / 60;
-        int startTimeMinutes = startMinutes % 60;
-        if(startTimeMinutes < 0) {
-        	startTimeMinutes = 0;
-        }
-        return new LocalTime(startTimeHours, startTimeMinutes);
+        return LocalTime.fromMillisOfDay(startTime*1000);
 	}
 	
 	public int getStartTimeMinutes() {

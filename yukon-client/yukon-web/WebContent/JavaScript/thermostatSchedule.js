@@ -291,9 +291,9 @@ function validateTemp(input, idx, mode) {
     }
     
     // Convert current temp to celsius if needed
-    fTemp = getConvertedTemp(fTemp, currentTempUnit);
+    var finalTemp = getConvertedTemp(fTemp, currentTempUnit);
     
-    $(input).value = fTemp;
+    $(input).value = finalTemp;
     
 }
 
