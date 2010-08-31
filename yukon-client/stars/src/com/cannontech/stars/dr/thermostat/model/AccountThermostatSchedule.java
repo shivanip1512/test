@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 
 public class AccountThermostatSchedule {
 
-	private int accountThermostatScheduleId = 0;
+	private int accountThermostatScheduleId = -1;
 	private int accountId;
 	private String scheduleName;
 	private SchedulableThermostatType thermostatType;
@@ -68,19 +68,19 @@ public class AccountThermostatSchedule {
 	public Map<TimeOfWeek, List<AccountThermostatScheduleEntry>> getEntriesByTimeOfWeekMap() {
 
 		// a bit more complicated than just creating a ArrayListMultimap, but to maintain consistency of order, we want the keys to ordered
-		Map<TimeOfWeek, List<AccountThermostatScheduleEntry>> x = new LinkedHashMap<TimeOfWeek, List<AccountThermostatScheduleEntry>>();
+		Map<TimeOfWeek, List<AccountThermostatScheduleEntry>> result = new LinkedHashMap<TimeOfWeek, List<AccountThermostatScheduleEntry>>();
 		for (TimeOfWeek timeOfWeek : TimeOfWeek.values()) {
 			for (AccountThermostatScheduleEntry atsEntry : this.getScheduleEntries()) {
 				if (atsEntry.getTimeOfWeek() == timeOfWeek) {
 					
-					if (!x.containsKey(timeOfWeek)) {
-						x.put(timeOfWeek, new ArrayList<AccountThermostatScheduleEntry>());
+					if (!result.containsKey(timeOfWeek)) {
+						result.put(timeOfWeek, new ArrayList<AccountThermostatScheduleEntry>());
 					}
-					x.get(timeOfWeek).add(atsEntry);
+					result.get(timeOfWeek).add(atsEntry);
 				}
 	    	}
 		}
     	
-    	return x;
+    	return result;
 	}
 }

@@ -22,6 +22,8 @@ import com.cannontech.database.RowAndFieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowAndFieldMapper;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -204,51 +206,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 			
 	    // create default
 		} catch (EmptyResultDataAccessException e) {
-			
-			// create and save schedule without entries
-			AccountThermostatSchedule ats = new AccountThermostatSchedule();
-			ats.setAccountId(0);
-			ats.setScheduleName(type.name());
-			ats.setThermostatScheduleMode(ThermostatScheduleMode.WEEKDAY_SAT_SUN);
-			ats.setThermostatType(type);
-			
-			List<AccountThermostatScheduleEntry> atsEntries = Lists.newArrayList();
-			AccountThermostatScheduleEntry weekday1 = new AccountThermostatScheduleEntry(21600, TimeOfWeek.WEEKDAY, 72, 72);
-			AccountThermostatScheduleEntry weekday2 = new AccountThermostatScheduleEntry(30600, TimeOfWeek.WEEKDAY, 72, 72);
-			AccountThermostatScheduleEntry weekday3 = new AccountThermostatScheduleEntry(61200, TimeOfWeek.WEEKDAY, 72, 72);
-			AccountThermostatScheduleEntry weekday4 = new AccountThermostatScheduleEntry(75600, TimeOfWeek.WEEKDAY, 72, 72);
-			AccountThermostatScheduleEntry sat1 = new AccountThermostatScheduleEntry(21600, TimeOfWeek.SATURDAY, 72, 72);
-			AccountThermostatScheduleEntry sat2 = new AccountThermostatScheduleEntry(30600, TimeOfWeek.SATURDAY, 72, 72);
-			AccountThermostatScheduleEntry sat3 = new AccountThermostatScheduleEntry(61200, TimeOfWeek.SATURDAY, 72, 72);
-			AccountThermostatScheduleEntry sat4 = new AccountThermostatScheduleEntry(75600, TimeOfWeek.SATURDAY, 72, 72);
-			AccountThermostatScheduleEntry sun1 = new AccountThermostatScheduleEntry(21600, TimeOfWeek.SUNDAY, 72, 72);
-			AccountThermostatScheduleEntry sun2 = new AccountThermostatScheduleEntry(30600, TimeOfWeek.SUNDAY, 72, 72);
-			AccountThermostatScheduleEntry sun3 = new AccountThermostatScheduleEntry(61200, TimeOfWeek.SUNDAY, 72, 72);
-			AccountThermostatScheduleEntry sun4 = new AccountThermostatScheduleEntry(75600, TimeOfWeek.SUNDAY, 72, 72);
-			
-			atsEntries.add(weekday1);
-			atsEntries.add(weekday2);
-			atsEntries.add(weekday3);
-			atsEntries.add(weekday4);
-			atsEntries.add(sat1);
-			atsEntries.add(sat2);
-			atsEntries.add(sat3);
-			atsEntries.add(sat4);
-			atsEntries.add(sun1);
-			atsEntries.add(sun2);
-			atsEntries.add(sun3);
-			atsEntries.add(sun4);
-			
-			ats.setScheduleEntries(atsEntries);
-			save(ats);
-			
-			// insert ECToAcctThermostatSchedule record
-			SqlStatementBuilder sql = new SqlStatementBuilder();
-			sql.append("INSERT INTO ECToAcctThermostatSchedule(EnergyCompanyId, AcctThermostatScheduleId)");
-			sql.append("VALUES(").appendArgumentList(Lists.newArrayList(ecId, ats.getAccountThermostatScheduleId())).append(")");
-			yukonJdbcTemplate.update(sql);
-			
-			return ats;
+			return createAndSaveDefaultSchedule(ecId, type);
 		}
     }
     
@@ -277,7 +235,13 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 			yukonJdbcTemplate.update(insertSql);
 		}
 	}
-
+	
+	//SAVE AND MAP TO THERMOSTATS
+	public void saveAndMapToThermostats(AccountThermostatSchedule ats, List<Integer> thermostatIds){
+	    save(ats);
+	    mapThermostatsToSchedule(thermostatIds, ats.getAccountThermostatScheduleId());
+	}
+	
 	// ALL SCHEDULES FOR ACCOUNT BY TYPE
 	@Override
 	public List<AccountThermostatSchedule> getAllSchedulesForAccountByType(int accountId, SchedulableThermostatType type) {
@@ -316,23 +280,34 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     	accountThermostatScheduleTemplate.withPrimaryKeyValidOver(-1);
     }
     
+    private AccountThermostatSchedule createAndSaveDefaultSchedule(int ecId, SchedulableThermostatType type){
+        // create and save schedule without entries
+        AccountThermostatSchedule ats = type.getDefaultAccountThermostatSchedule();
+        save(ats);
+        
+        // insert AcctThermostatScheduleToEc record
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO ECToAcctThermostatSchedule(EnergyCompanyId, AcctThermostatScheduleId)");
+        sql.values(ecId, ats.getAccountThermostatScheduleId());
+        yukonJdbcTemplate.update(sql);
+        
+        return ats;
+    }
+    
     // ROW AND FIELD MAPPER
-    private RowAndFieldMapper<AccountThermostatSchedule> accountThermostatScheduleRowAndFieldMapper = new RowAndFieldMapper<AccountThermostatSchedule>() {
-
+    private YukonRowAndFieldMapper<AccountThermostatSchedule> accountThermostatScheduleRowAndFieldMapper = new YukonRowAndFieldMapper<AccountThermostatSchedule>() {
+        
     	@Override
-    	public AccountThermostatSchedule mapRow(ResultSet rs, int rowNum) throws SQLException {
-
+    	public AccountThermostatSchedule mapRow(YukonResultSet rs) throws SQLException {
+    	    
     		AccountThermostatSchedule ats = new AccountThermostatSchedule();
     		ats.setAccountThermostatScheduleId(rs.getInt("AcctThermostatScheduleId"));
     		ats.setAccountId(rs.getInt("AccountId"));
-    		ats.setScheduleName(SqlUtils.convertDbValueToString(rs, "ScheduleName"));
-    		ats.setThermostatType(SchedulableThermostatType.valueOf(rs.getString("ThermostatType")));
+    		ats.setScheduleName(rs.getStringSafe("ScheduleName"));
+    		ats.setThermostatType(rs.getEnum("ThermostatType", SchedulableThermostatType.class));
     		ats.setThermostatScheduleMode(null);
-    		
-    		String scheduleModeStr = rs.getString("ScheduleMode");
-    		if (scheduleModeStr != null) {
-    			ats.setThermostatScheduleMode(ThermostatScheduleMode.valueOf(scheduleModeStr));
-    		}
+
+    		ats.setThermostatScheduleMode(rs.getEnum("ScheduleMode", ThermostatScheduleMode.class));
     		
     		return ats;
     	}
@@ -378,8 +353,8 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     	List<AccountThermostatScheduleEntry> satEntries = map.get(TimeOfWeek.SATURDAY);
     	List<AccountThermostatScheduleEntry> sunEntries = map.get(TimeOfWeek.SUNDAY);
     	
-    	if (isAccountThermostatScheduleEntryListsHaveIdenticalStartTimeAndTemps(satEntries, sunEntries)) {
-			if (isAccountThermostatScheduleEntryListsHaveIdenticalStartTimeAndTemps(satEntries, weekdayEntries)) {
+    	if (hasIdenticalStartTimeAndTemps(satEntries, sunEntries)) {
+			if (hasIdenticalStartTimeAndTemps(satEntries, weekdayEntries)) {
 				mode = ThermostatScheduleMode.ALL;
 			} else {
 				mode = ThermostatScheduleMode.WEEKDAY_WEEKEND;
@@ -389,7 +364,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 		ats.setThermostatScheduleMode(mode);
     }
     
-    private static boolean isAccountThermostatScheduleEntryListsHaveIdenticalStartTimeAndTemps(List<AccountThermostatScheduleEntry> list1, List<AccountThermostatScheduleEntry> list2) {
+    private static boolean hasIdenticalStartTimeAndTemps(List<AccountThermostatScheduleEntry> list1, List<AccountThermostatScheduleEntry> list2) {
     	
     	if (list1.size() != list2.size()) {
     		return false;

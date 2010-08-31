@@ -39,7 +39,7 @@ public class LMHardwareBase extends InventoryBase {
 		// delete from LMHardwareConfiguration
 		com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.deleteAllLMHardwareConfiguration( inventoryID );
 		
-		// delete from LMThermostatSchedule
+		// delete from AcctThermostatSchedule
 		AccountThermostatScheduleDao accountThermostatScheduleDao = 
     		YukonSpringHook.getBean("accountThermostatScheduleDao", AccountThermostatScheduleDao.class);
 		accountThermostatScheduleDao.deleteByInventoryId(inventoryID);

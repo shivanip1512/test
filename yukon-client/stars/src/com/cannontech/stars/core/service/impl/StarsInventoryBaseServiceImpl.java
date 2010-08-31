@@ -5,9 +5,12 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.amr.crf.endpoint.MeterReadingArchiveRequestListener;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
@@ -52,7 +55,7 @@ import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 
 public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService {
-
+    private static final Logger log = YukonLogManager.getLogger(MeterReadingArchiveRequestListener.class);
     private HardwareEventLogService hardwareEventLogService;
     private StarsSearchDao starsSearchDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
@@ -230,11 +233,19 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                                                                         YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE,
                                                                         lmHw.getLmHardwareTypeID());
         HardwareType hwType = HardwareType.valueOf(thermostatDefId);
-        AccountThermostatSchedule schedule = thermostatService.getAccountThermostatScheduleTemplate(lmHw.getAccountID(), SchedulableThermostatType.getByHardwareType(hwType));
-        schedule.setAccountId(lmHw.getAccountID());
-        schedule.setScheduleName(lmHw.getDeviceLabel());
-        accountThermostatScheduleDao.save(schedule);
-        accountThermostatScheduleDao.mapThermostatsToSchedule(Collections.singletonList(lmHw.getInventoryID()), schedule.getAccountThermostatScheduleId());
+
+        try{
+            AccountThermostatSchedule schedule = thermostatService.getAccountThermostatScheduleTemplate(lmHw.getAccountID(), SchedulableThermostatType.getByHardwareType(hwType));
+            schedule.setAccountId(lmHw.getAccountID());
+            schedule.setScheduleName(lmHw.getDeviceLabel());
+            accountThermostatScheduleDao.save(schedule);
+            accountThermostatScheduleDao.mapThermostatsToSchedule(Collections.singletonList(lmHw.getInventoryID()), schedule.getAccountThermostatScheduleId());
+        } catch(IllegalArgumentException e){
+            //thrown by SchedulableThermostatType.getByHardwareType(hwType)
+            //if hwType is not a SchedulableThermostatType
+            log.warn("HardwareType \"" + hwType.toString() + "\"is not a ScheduleableThermostatType." + 
+                      "Unable to initialize schedule.", e);
+        }
     }
 
     @Override
