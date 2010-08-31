@@ -63,6 +63,13 @@ extern BOOL _OP_STATS_DYNAMIC_UPDATE;
 
 using namespace std;
 
+#include "PointResponse.h"
+#include "PointResponseDao.h"
+
+using Cti::CapControl::PointResponse;
+using Cti::CapControl::Database::DaoFactory;
+using Cti::CapControl::Database::DatabaseDaoFactory;
+using Cti::CapControl::PointResponseDaoPtr;
 
 CtiTime timeSaver;
 
@@ -119,7 +126,7 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE),
     _voltDisabledCount = 0;
 
     _pointDataHandler.setPointDataListener(this);
-
+    _daoFactory = boost::shared_ptr<DaoFactory>(new DatabaseDaoFactory());
 }
 
 /*--------------------------------------------------------------------------
@@ -1119,22 +1126,24 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                                             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                         }
                                     }
-                                        try
+
+                                    try
+                                    {
+                                        if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(), "CBC 702") )
                                         {
-                                            if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(), "CBC 702") )
+                                            CtiCCTwoWayPoints* twoWayPts = currentCapBank->getTwoWayPoints();
+                                            if (twoWayPts->isDirty())
                                             {
-                                                CtiCCTwoWayPoints* twoWayPts = currentCapBank->getTwoWayPoints();
-                                                if (twoWayPts->isDirty())
-                                                {
-                                                    twoWayPts->dumpDynamicData(conn,currentDateTime);
-                                                }
+                                                twoWayPts->dumpDynamicData(conn,currentDateTime);
                                             }
                                         }
-                                        catch(...)
-                                        {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                        }
+                                    }
+                                    catch(...)
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                    }
+
                                     if (currentCapBank->getOperationStats().isDirty())
                                     {
                                         currentCapBank->getOperationStats().dumpDynamicData(conn,currentDateTime);
@@ -1147,14 +1156,8 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                                             ((CtiCCMonitorPointPtr)monPoints[l])->dumpDynamicData(conn,currentDateTime);
                                         }
                                     }
-                                    vector <CtiCCPointResponsePtr>& ptResponses = currentCapBank->getPointResponse();
-                                    for (LONG m = 0; m < ptResponses.size(); m++)
-                                    {
-                                        if (((CtiCCPointResponsePtr)ptResponses[m])->isDirty())
-                                        {
-                                            ((CtiCCPointResponsePtr)ptResponses[m])->dumpDynamicData(conn,currentDateTime);
-                                        }
-                                    }
+                                    //Update Point Responses
+                                    currentCapBank->dumpDynamicPointResponseData();
                                 }
                             }
                         }
@@ -1283,7 +1286,7 @@ void CtiCCSubstationBusStore::reset()
         }
 
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());            
+            RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Obtained connection to the database..." << endl;
@@ -3502,9 +3505,9 @@ bool CtiCCSubstationBusStore::UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* 
         Cti::Database::DatabaseConnection   connection;
         {
             static const std::string sql = "delete from ccfeedersubassignment where substationbusid = ?";
-    
+
             Cti::Database::DatabaseWriter       deleter(connection, sql);
-    
+
             deleter << bus->getPaoId();
             deleter.execute();
         }
@@ -3708,7 +3711,7 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
                                  CtiLockGuard<CtiLogger> logger_guard(dout);
                                  dout << CtiTime() << " - " << loggedSQLstring << endl;
                              }
-                        } 
+                        }
 
                         while ( dbRdr() )
                         {
@@ -3952,8 +3955,8 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
 
                      const string sqlMain =  "SELECT HSA.paobjectid, HSA.holidayscheduleid, HSA.strategyid, "
                                                "DH.holidayname, DH.holidaymonth, DH.holidayday, DH.holidayyear "
-                                             "FROM ccholidaystrategyassignment HSA, dateofholiday DH, " 
-                                               + capControlObjectTable + 
+                                             "FROM ccholidaystrategyassignment HSA, dateofholiday DH, "
+                                               + capControlObjectTable +
                                              "WHERE HSA.holidayscheduleid = DH.holidayscheduleid AND "
                                                "HSA.strategyid = ? AND HSA.paobjectid = " + paObjectColumn;
 
@@ -4177,7 +4180,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                                        "WHERE SSA.seasonscheduleid = DS.seasonscheduleid AND "
                                          "SSA.seasonname = DS.seasonname AND SSA.strategyid = ? "
                                          "AND SSA.paobjectid = " + paObjectColumn;
-                                                  
+
                    Cti::Database::DatabaseConnection connection;
                    Cti::Database::DatabaseReader dbRdr(connection, sql);
 
@@ -4379,7 +4382,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
             {
                 rdr.setCommandText(sqlNoID);
             }
-                
+
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -4452,7 +4455,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
         {
             static const string sqlNoID = "SELECT CAS.areaid, CAS.substationbusid, CAS.displayorder "
                                           "FROM ccsubareaassignment CAS";
-                            
+
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection);
 
@@ -4671,7 +4674,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
             static const string sql =  "SELECT SBL.substationid, SBL.substationbusid, SBL.displayorder "
                                        "FROM ccsubstationsubbuslist SBL "
                                        "WHERE SBL.substationid = ?";
-           
+
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection, sql);
 
@@ -4736,13 +4739,13 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
             deleteArea(areaId);
         }
 
-        CtiTime currentDateTime;                    
+        CtiTime currentDateTime;
         {
             static const string sqlNoID =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
                                               "YP.description, YP.disableflag, CCA.voltreductionpointid "
                                            "FROM yukonpaobject YP, capcontrolarea CCA "
                                            "WHERE YP.paobjectid = CCA.areaid";
-                
+
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection);
 
@@ -4752,7 +4755,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                 rdr.setCommandText(sqlID);
                 rdr << areaId;
             }
-            else 
+            else
             {
                 rdr.setCommandText(sqlNoID);
             }
@@ -4805,7 +4808,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
              {
                  rdr.setCommandText(sqlNoID);
              }
-                
+
              rdr.execute();
 
              while ( rdr() )
@@ -4921,7 +4924,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
             Cti::Database::DatabaseReader rdr(connection);
 
             if(areaId > 0)
-            {    
+            {
                 static const string sqlID = string(sqlNoID + " AND CCA.areaid = ?");
                 rdr.setCommandText(sqlID);
                 rdr << areaId;
@@ -4932,7 +4935,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
             }
 
             rdr.execute();
-                                        
+
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
                 string loggedSQLstring = rdr.asString();
@@ -5242,7 +5245,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId,
              {
                  rdr.setCommandText(sqlNoID);
              }
-            
+
              rdr.execute();
 
              if ( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -5724,16 +5727,16 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
             CtiCCSubstationBusPtr  currentCCSubstationBus;
             while ( rdr() )
             {
-                LONG busId;    
-                LONG altBusId; 
-                rdr["paobjectid"] >> busId;  
-                rdr["AltSubID"] >> altBusId;    
+                LONG busId;
+                LONG altBusId;
+                rdr["paobjectid"] >> busId;
+                rdr["AltSubID"] >> altBusId;
                 if (subBusId > 0 && busId != subBusId && altBusId == subBusId && paobject_subbus_map->find(busId) != paobject_subbus_map->end() )
                 {
                     currentCCSubstationBus = paobject_subbus_map->find( busId )->second;
                 }
                 else
-                {    
+                {
                     currentCCSubstationBus = CtiCCSubstationBusPtr(new CtiCCSubstationBus(rdr, &_strategyManager));
                     paobject_subbus_map->insert(make_pair(currentCCSubstationBus->getPaoId(),currentCCSubstationBus));
                 }
@@ -6950,7 +6953,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
             static const string sqlNoID =  "SELECT PT.paobjectid, PT.pointid, PT.pointoffset, PT.pointtype "
                                            "FROM point PT, capcontrolfeeder CCF "
                                            "WHERE CCF.feederid = PT.paobjectid";
-            
+
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection);
 
@@ -7445,8 +7448,8 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
         }
         //load points off of cbc 70xx devices (two way device points)
         {
-            static const string sql = "SELECT PT.paobjectid, PT.pointid, PT.pointoffset, PT.pointtype "  
-                                      "FROM point PT, capbank CB "                                       
+            static const string sql = "SELECT PT.paobjectid, PT.pointid, PT.pointoffset, PT.pointtype "
+                                      "FROM point PT, capbank CB "
                                       "WHERE CB.controldeviceid = PT.paobjectid";
 
             Cti::Database::DatabaseConnection connection;
@@ -7527,17 +7530,17 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
         }
         //load dynamiccctwowaycbc (two way device points)
         {
-            static const string sql = "SELECT DTW.deviceid, DTW.recloseblocked, DTW.controlmode, DTW.autovoltcontrol, "   
-                                          "DTW.lastcontrol, DTW.condition, DTW.opfailedneutralcurrent, "                  
-                                          "DTW.neutralcurrentfault, DTW.badrelay, DTW.dailymaxops, "                      
-                                          "DTW.voltagedeltaabnormal, DTW.tempalarm, DTW.dstactive, DTW.neutrallockout, "  
-                                          "DTW.ignoredindicator, DTW.voltage, DTW.highvoltage, DTW.lowvoltage, "          
-                                          "DTW.deltavoltage, DTW.analoginputone, DTW.temp, DTW.rssi, DTW.ignoredreason, " 
-                                          "DTW.totalopcount, DTW.uvopcount, DTW.ovopcount, DTW.ovuvcountresetdate, "      
-                                          "DTW.uvsetpoint, DTW.ovsetpoint, DTW.ovuvtracktime, DTW.lastovuvdatetime, "     
-                                          "DTW.neutralcurrentsensor, DTW.neutralcurrentalarmsetpoint, DTW.ipaddress, "    
-                                          "DTW.udpport "                                                                  
-                                      "FROM dynamiccctwowaycbc DTW, capbank CB "                                          
+            static const string sql = "SELECT DTW.deviceid, DTW.recloseblocked, DTW.controlmode, DTW.autovoltcontrol, "
+                                          "DTW.lastcontrol, DTW.condition, DTW.opfailedneutralcurrent, "
+                                          "DTW.neutralcurrentfault, DTW.badrelay, DTW.dailymaxops, "
+                                          "DTW.voltagedeltaabnormal, DTW.tempalarm, DTW.dstactive, DTW.neutrallockout, "
+                                          "DTW.ignoredindicator, DTW.voltage, DTW.highvoltage, DTW.lowvoltage, "
+                                          "DTW.deltavoltage, DTW.analoginputone, DTW.temp, DTW.rssi, DTW.ignoredreason, "
+                                          "DTW.totalopcount, DTW.uvopcount, DTW.ovopcount, DTW.ovuvcountresetdate, "
+                                          "DTW.uvsetpoint, DTW.ovsetpoint, DTW.ovuvtracktime, DTW.lastovuvdatetime, "
+                                          "DTW.neutralcurrentsensor, DTW.neutralcurrentalarmsetpoint, DTW.ipaddress, "
+                                          "DTW.udpport "
+                                      "FROM dynamiccctwowaycbc DTW, capbank CB "
                                       "WHERE CB.controldeviceid = DTW.deviceid";
 
             Cti::Database::DatabaseConnection connection;
@@ -7751,7 +7754,6 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, ma
             }
 
             CtiCCMonitorPointPtr currentMonPoint = NULL;
-            CtiCCPointResponsePtr currentPointResponse = NULL;
             while ( rdr() )
             {
                 long currentCapBankId;
@@ -7770,64 +7772,10 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, ma
                 {
                     currentCCCapBank->getMonitorPoint().push_back(currentMonPoint);
                     pointid_capbank_map->insert(make_pair(currentMonPoint->getPointId(),currentCCCapBank));
-
-                    if (paobject_feeder_map->find(currentCCCapBank->getParentId()) != paobject_feeder_map->end())
-                    {
-
-                        CtiCCFeederPtr currentCCFeeder = paobject_feeder_map->find(currentCCCapBank->getParentId())->second;
-                        if (currentCCFeeder != NULL)
-                        {
-                            if (!stringCompareIgnoreCase(currentCCFeeder->getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod) )
-                            {
-                                CtiCCSubstationBusPtr currentSubstationBus = paobject_subbus_map->find(currentCCFeeder->getParentId())->second;
-                                if (currentSubstationBus != NULL)
-                                {
-                                    CtiFeeder_vec& feeds = currentSubstationBus->getCCFeeders();
-
-                                    for (LONG aa = 0; aa < feeds.size(); aa++)
-                                    {
-                                        currentCCFeeder = (CtiCCFeeder*)feeds[aa];
-                                        CtiCCCapBank_SVector& banks = currentCCFeeder->getCCCapBanks();
-                                        for (LONG a = 0; a < banks.size(); a++)
-                                        {
-                                            CtiCCCapBank* bank = (CtiCCCapBank*)banks[a];
-
-                                            currentPointResponse = new CtiCCPointResponse(rdr);
-                                            currentPointResponse->setBankId(bank->getPaoId());
-                                            currentPointResponse->setPointId(currentMonPoint->getPointId());
-
-                                            bank->getPointResponse().push_back(currentPointResponse);
-                                            {
-                                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                dout << CtiTime() << " currentPointResponse bankId: "<<bank->getPaoId()<<" pointId: "<<currentMonPoint->getPointId() << endl;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                CtiCCCapBank_SVector& banks = currentCCFeeder->getCCCapBanks();
-                                for (LONG a = 0; a < banks.size(); a++)
-                                {
-                                    CtiCCCapBank* bank = (CtiCCCapBank*)banks[a];
-                                    currentPointResponse = new CtiCCPointResponse(rdr);
-                                    currentPointResponse->setBankId(bank->getPaoId());
-                                    currentPointResponse->setPointId(currentMonPoint->getPointId());
-
-                                    bank->getPointResponse().push_back(currentPointResponse);
-
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " currentPointResponse bankId: "<<bank->getPaoId()<<" pointId: "<<currentMonPoint->getPointId() << endl;
-                                    }
-                                }
-                            }
-                        }
-                    }
                 }
             }
         }
+
         {
             //LOADING OF MONITOR POINTS.
             static const string sqlNoID = "SELECT MBH.bankid, MBH.pointid, MBH.value, MBH.datetime, MBH.scaninprogress "
@@ -7881,64 +7829,31 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, ma
 
             }
         }
+
         {
-            //LOADING OF MONITOR POINTS.
-            static const string sqlNoID = "SELECT MPR.bankid, MPR.pointid, MPR.preopvalue, MPR.delta "
-                                          "FROM dynamicccmonitorpointresponse MPR";
+            //Loading new point responses
+            PointResponseDaoPtr pointResponseDao = _daoFactory->getPointResponseDao();
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
-
-            if(capBankId > 0)
+            std::vector<PointResponse> pointResponses;
+            if (capBankId > 0)
             {
-                static const string sqlID = string(sqlNoID + " WHERE MPR.bankid = ? OR MPR.pointid = ?");
-                rdr.setCommandText(sqlID);
-                rdr << capBankId
-                    << monPointId;
+                pointResponses = pointResponseDao->getPointResponsesByBankId(capBankId);
             }
             else
             {
-                rdr.setCommandText(sqlNoID);
+                pointResponses = pointResponseDao->getAllPointResponses();
             }
 
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+            for each (PointResponse pointResponse in pointResponses)
             {
-                string loggedSQLstring = rdr.asString();
+                CtiCCCapBankPtr bank = paobject_capbank_map->find(pointResponse.getBankId())->second;
+                bank->addPointResponse(pointResponse);
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    dout << CtiTime() << " currentPointResponse bankId: " << bank->getPaoId() << " pointId: " << pointResponse.getPointId() << endl;
                 }
             }
-
-            CtiCCPointResponsePtr currentPointResponse = NULL;
-            while ( rdr() )
-            {
-                long currentCapBankId;
-                long currentPointId;
-                float delta;
-                float preopvalue;
-
-                rdr["bankid"] >> currentCapBankId;
-                rdr["pointid"] >> currentPointId;
-                CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(currentCapBankId)->second;
-                vector <CtiCCPointResponsePtr>& ptResponses = currentCCCapBank->getPointResponse();
-
-               // if (ptResponses != NULL)
-                {
-                    LONG numResponses = ptResponses.size();
-                    for (int i = 0; i < numResponses; i++)
-                    {
-                        currentPointResponse = (CtiCCPointResponsePtr)ptResponses[i];
-                        if (currentPointResponse->getPointId() == currentPointId)
-                        {
-                            currentPointResponse->setDynamicData(rdr);
-                            break;
-                        }
-                    }
-                }
-            }
+            //Look for missing point responses for default values?
         }
     }
     catch(...)
@@ -10995,7 +10910,7 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
 
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection, sql);
-           
+
             rdr << oneMonthAgo;
 
             rdr.execute();

@@ -7,12 +7,15 @@
 #include "LitePoint.h"
 #include "AttributeService.h"
 #include "ccsubstationbusstore.h"
+#include "PointResponse.h"
 
 #include <list>
 #include <limits>
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
+
+using Cti::CapControl::PointResponse;
 
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern ULONG _POINT_AGE;
@@ -461,17 +464,17 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 CtiMultiMsg* ccEvents = new CtiMultiMsg();
                 ccEvents->insert(
                     new CtiCCEventLogMsg(
-                            0, 
-                            SYS_PID_CAPCONTROL, 
-                            spAreaId, 
-                            areaId, 
-                            stationId, 
-                            subbus->getPaoId(), 
                             0,
-                            capControlIvvcCommStatus, 
-                            0, 
-                            0, 
-                            "IVVC Comms Lost", 
+                            SYS_PID_CAPCONTROL,
+                            spAreaId,
+                            areaId,
+                            stationId,
+                            subbus->getPaoId(),
+                            0,
+                            capControlIvvcCommStatus,
+                            0,
+                            0,
+                            "IVVC Comms Lost",
                             "cap control") );
 
                 // capControlIvvcMissingPoint
@@ -481,17 +484,17 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 {
                     ccEvents->insert(
                         new CtiCCEventLogMsg(
-                                0, 
-                                SYS_PID_CAPCONTROL, 
-                                spAreaId, 
-                                areaId, 
-                                stationId, 
-                                subbus->getPaoId(), 
                                 0,
-                                capControlIvvcMissingPoint, 
-                                0, 
-                                ID, 
-                                "IVVC Missing Point Response", 
+                                SYS_PID_CAPCONTROL,
+                                spAreaId,
+                                areaId,
+                                stationId,
+                                subbus->getPaoId(),
+                                0,
+                                capControlIvvcMissingPoint,
+                                0,
+                                ID,
+                                "IVVC Missing Point Response",
                                 "cap control") );
                 }
 
@@ -500,17 +503,17 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 {
                     ccEvents->insert(
                         new CtiCCEventLogMsg(
-                                0, 
-                                SYS_PID_CAPCONTROL, 
-                                spAreaId, 
-                                areaId, 
-                                stationId, 
-                                subbus->getPaoId(), 
                                 0,
-                                capControlIvvcRejectedPoint, 
-                                0, 
-                                ID, 
-                                "IVVC Rejected Point Response", 
+                                SYS_PID_CAPCONTROL,
+                                spAreaId,
+                                areaId,
+                                stationId,
+                                subbus->getPaoId(),
+                                0,
+                                capControlIvvcRejectedPoint,
+                                0,
+                                ID,
+                                "IVVC Rejected Point Response",
                                 "cap control") );
                 }
 
@@ -1004,15 +1007,15 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                  (isCapBankOpen || isCapBankClosed) &&
                  (deltas.find(currentBank->getTwoWayPoints()->getVoltageId()) != deltas.end()))
             {
-                std::vector <CtiCCPointResponsePtr>& responses = currentBank->getPointResponse();
 
-                for ( std::vector <CtiCCPointResponsePtr>::iterator prb = responses.begin(), pre = responses.end(); prb != pre; ++prb )
+                std::vector<PointResponse> responses = currentBank->getPointResponses();
+
+                for each (PointResponse currentResponse in responses)
                 {
-                    CtiCCPointResponsePtr currentResponse = *prb;
-                    if (deltas.find(currentResponse->getPointId()) != deltas.end())
+                    if (deltas.find(currentResponse.getPointId()) != deltas.end())
                     {
-                        reportedIds.insert(currentResponse->getPointId());
-                        deltas[ currentResponse->getPointId() ].value += ( ( isCapBankOpen ? 1.0 : -1.0 ) * currentResponse->getDelta() );
+                        reportedIds.insert(currentResponse.getPointId());
+                        deltas[ currentResponse.getPointId() ].value += ( ( isCapBankOpen ? 1.0 : -1.0 ) * currentResponse.getDelta() );
                     }
                 }
 
@@ -1027,12 +1030,11 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                          << currentBank->getPaoId() << " is " << (isCapBankOpen ? "CLOSED" : "OPENED") << endl;
 
                     dout << "Estimated Voltages [ Point ID : Estimated Value ]" << endl;
-                    for ( std::vector <CtiCCPointResponsePtr>::iterator prb = responses.begin(), pre = responses.end(); prb != pre; ++prb )
+                    for each (PointResponse currentResponse in responses)
                     {
-                        CtiCCPointResponsePtr currentResponse = *prb;
-                        if (deltas.find(currentResponse->getPointId()) != deltas.end())
+                        if (deltas.find(currentResponse.getPointId()) != deltas.end())
                         {
-                            dout << currentResponse->getPointId() << " : " << deltas[ currentResponse->getPointId() ].value << endl;
+                            dout << currentResponse.getPointId() << " : " << deltas[ currentResponse.getPointId() ].value << endl;
                         }
                     }
                 }
@@ -1114,17 +1116,9 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         state->setTimeStamp(now);
 
         // record preoperation voltage values for the feeder our capbank is on
-
-        std::vector <CtiCCPointResponsePtr>& responses = state->_estimated[operatePaoId].capbank->getPointResponse();
-
-        for ( std::vector <CtiCCPointResponsePtr>::iterator prb = responses.begin(), pre = responses.end(); prb != pre; ++prb )
+        for each (PointValueMap::value_type pointValuePair in pointValues)
         {
-            CtiCCPointResponsePtr currentResponse = *prb;
-
-            if (reportedIds.find(currentResponse->getPointId()) != reportedIds.end())
-            {
-                currentResponse->setPreOpValue( pointValues[ currentResponse->getPointId() ].value );
-            }
+            state->_estimated[operatePaoId].capbank->updatePointResponsePreOpValues(pointValuePair.first,pointValuePair.second.value);
         }
 
         state->_estimated[operatePaoId].operated = true;

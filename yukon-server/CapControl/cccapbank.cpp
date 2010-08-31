@@ -23,7 +23,19 @@
 #include "database_writer.h"
 
 #include "utility.h"
+
+#include "PointResponseDao.h"
+#include "DatabaseDaoFactory.h"
+
+using Cti::CapControl::PointResponse;
+using Cti::CapControl::PointResponseDaoPtr;
+using Cti::CapControl::Database::DaoFactory;
+using Cti::CapControl::Database::DatabaseDaoFactory;
+using Cti::CapControl::PointResponseManager;
+
 using namespace std;
+
+
 extern ULONG _CC_DEBUG;
 extern BOOL _USE_FLIP_FLAG;
 
@@ -99,7 +111,6 @@ CtiCCCapBank::CtiCCCapBank(Cti::RowReader& rdr)
 {
     restore(rdr);
      _monitorPoint.clear();
-     _pointResponses.clear();
      _twoWayPoints = NULL;
      _ovuvSituationFlag = false;
      _operationStats.setPAOId(getPaoId());
@@ -129,15 +140,6 @@ CtiCCCapBank::~CtiCCCapBank()
         _monitorPoint.clear();
     }
 
-    if (!_pointResponses.empty())
-    {
-        for (int i = 0; i < _pointResponses.size(); i++)
-        {
-            CtiCCPointResponsePtr point = (CtiCCPointResponsePtr)_pointResponses[i];
-            delete point;
-        }
-        _pointResponses.clear();
-    }
     try
     {
         if (_twoWayPoints != NULL)
@@ -1803,45 +1805,15 @@ CtiCCCapBank& CtiCCCapBank::initVerificationControlStatus()
    return *this;
 }
 
-CtiCCCapBank& CtiCCCapBank::updatePointResponseDeltas(CtiCCMonitorPoint* point)
+bool CtiCCCapBank::updatePointResponseDeltas(CtiCCMonitorPoint* point)
 {
-    string name = getPaoName();
-
-    for (LONG j=0; j<getPointResponse().size(); j++)
-    {
-        CtiCCPointResponse* pResponse = (CtiCCPointResponse*)getPointResponse()[j];
-
-        if (point->getPointId() == pResponse->getPointId())
-        {
-            if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " MULTIVOLT: Bank ID: " << name <<" Point ID: " << pResponse->getPointId() << " preOpValue: " << pResponse->getPreOpValue() << " currentValue: " <<point->getValue() << endl;
-            }
-
-            //if (pResponse->getDelta() != 0)
-            DOUBLE nInAvg = (point->getNInAvg()!=0?point->getNInAvg():1);
-            DOUBLE fabsy = fabs(pResponse->getPreOpValue() - point->getValue());
-            DOUBLE delta = ( (pResponse->getDelta()*(nInAvg -1)) +
-                                  fabs(pResponse->getPreOpValue() - point->getValue()) ) /
-                                  nInAvg;
-            if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " MULTIVOLT: Bank ID: " << name <<" Point ID: " << pResponse->getPointId() << " fabs: " << fabsy << " delta: " << delta << endl;
-            }
-            {
-                pResponse->setDelta( ( (pResponse->getDelta()*(nInAvg -1.0)) +
-                                  fabs(pResponse->getPreOpValue() - point->getValue()) ) /
-                                  nInAvg);
-            }
-
-            break;
-        }
-    }
-    return *this;
+    return _pointResponseManager.updatePointResponseDeltas(*point);
 }
 
+bool CtiCCCapBank::updatePointResponsePreOpValues(long pointId, double value)
+{
+    return _pointResponseManager.updatePointResponsePreOpValues(pointId,value);
+}
 
 /*---------------------------------------------------------------------------
     setControlStatus
@@ -2018,22 +1990,25 @@ CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(std::set<long>& pointAddMsg
     return *this;
 }
 
-
-CtiCCPointResponse* CtiCCCapBank::getPointResponse(CtiCCMonitorPoint* point)
+Cti::CapControl::PointResponse CtiCCCapBank::getPointResponse(CtiCCMonitorPoint* point)
 {
-    for (LONG j=0; j<getPointResponse().size(); j++)
-    {
-        CtiCCPointResponse* pResponse = (CtiCCPointResponse*)getPointResponse()[j];
-
-        if (point->getPointId() == pResponse->getPointId())
-        {
-            return pResponse;
-        }
-    }
-    return NULL;
-
+    return _pointResponseManager.getPointResponse(point->getPointId());
 }
 
+std::vector<Cti::CapControl::PointResponse> CtiCCCapBank::getPointResponses()
+{
+    return _pointResponseManager.getPointResponses();
+}
+
+void CtiCCCapBank::addPointResponse(Cti::CapControl::PointResponse pointResponse)
+{
+    _pointResponseManager.addPointResponse(pointResponse);
+}
+
+PointResponseManager& CtiCCCapBank::getPointResponseManager()
+{
+    return _pointResponseManager;
+}
 
 /*---------------------------------------------------------------------------
     saveGuts
@@ -2558,19 +2533,22 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
             if (monPoint->isDirty())
                 monPoint->dumpDynamicData(conn,currentDateTime);
         }
-
-        dumpDynamicPointResponseData(conn,currentDateTime);
-
     }
 }
 
-void CtiCCCapBank::dumpDynamicPointResponseData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
+void CtiCCCapBank::dumpDynamicPointResponseData()
 {
-    for each (CtiCCPointResponsePtr ptResponse in getPointResponse())
+    //Building Dao manually here beacuse this updating should be handled in the store anyways.
+    PointResponseDaoPtr pointResponseDao = DatabaseDaoFactory().getPointResponseDao();
+
+    for each (PointResponse pointResponse in getPointResponses())
     {
-        if (ptResponse->isDirty())
+        bool ret = pointResponseDao->save(pointResponse);
+
+        if( (ret == false) && (_CC_DEBUG & CC_DEBUG_DATABASE) )
         {
-            ptResponse->dumpDynamicData(conn,currentDateTime);
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Point Response save failed. " << endl;
         }
     }
 }

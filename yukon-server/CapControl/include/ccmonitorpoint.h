@@ -1,25 +1,9 @@
-
-/*---------------------------------------------------------------------------
-        Filename:  ccmonitorpoint.h
-        
-        Programmer:  julie Richter
-        
-        Description:    Header file for CtiCCMonitorPoint
-                        CtiCCMonitorPoint maintains the monitor point information
-                        in multiple monitor point bus control.
-
-        Initial Date:  8/30/2001
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-
-#ifndef CTICCMONITORPOINT_H
-#define CTICCMONITORPOINT_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
 #include <list>
 
 #include "msg_cmd.h"
@@ -54,7 +38,7 @@ public:
     LONG getNInAvg() const;
     DOUBLE getUpperBandwidth() const;
     DOUBLE getLowerBandwidth() const;
-    
+
     CtiTime getTimeStamp() const;
     BOOL getScanInProgress() const;
 
@@ -66,7 +50,7 @@ public:
     CtiCCMonitorPoint& setNInAvg(LONG n);
     CtiCCMonitorPoint& setUpperBandwidth(DOUBLE upperBW);
     CtiCCMonitorPoint& setLowerBandwidth(DOUBLE lowerBW);
-    
+
     CtiCCMonitorPoint& setTimeStamp(CtiTime timeStamp);
     CtiCCMonitorPoint& setScanInProgress(BOOL flag);
 
@@ -100,16 +84,15 @@ private:
     DOUBLE _lowerBW;
     DOUBLE _value;
     CtiTime _timeStamp;  //averaged value change.
-    BOOL _scanInProgress;                              
+    BOOL _scanInProgress;
 
     //don't stream
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
     void restore(Cti::RowReader& rdr);
-    
+
 
 };
 
 typedef CtiCCMonitorPoint* CtiCCMonitorPointPtr;
-#endif

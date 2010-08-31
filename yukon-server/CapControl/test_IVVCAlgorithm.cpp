@@ -462,5 +462,5 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm)
 
 
     store->deleteInstance();
-}
 
+}

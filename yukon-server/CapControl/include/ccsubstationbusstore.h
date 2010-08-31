@@ -40,7 +40,7 @@
 #include "StrategyManager.h"
 #include "StrategyLoader.h"
 #include "AttributeService.h"
-
+#include "DatabaseDaoFactory.h"
 
 using std::multimap;
 typedef std::set<RWCollectable*> CtiMultiMsg_set;
@@ -627,6 +627,8 @@ private:
     list <long> _orphanedFeeders;
 
     map< long, MaxKvarObject > _maxKvarMap;
+
+    boost::shared_ptr<Cti::CapControl::Database::DaoFactory> _daoFactory;
 
     mutable RWRecursiveLock<RWMutexLock> _storeMutex;
 };

@@ -23,7 +23,6 @@
 
 #include "msg_cmd.h"
 #include "msg_pdata.h"
-#include "ccpointresponse.h"
 #include "ccmonitorpoint.h"
 #include "cctwowaycbcpoints.h"
 #include "ccoperationstats.h"
@@ -34,6 +33,9 @@
 #include "ctitime.h"
 #include "ctidate.h"
 #include "CapControlPao.h"
+
+#include "PointResponse.h"
+#include "PointResponseManager.h"
 
 namespace Cti {
 namespace Database {
@@ -168,7 +170,7 @@ public:
 
     std::list <LONG>* getPointIds() {return &_pointIds;};
     std::vector <CtiCCMonitorPointPtr>& getMonitorPoint() {return _monitorPoint;};
-    std::vector <CtiCCPointResponsePtr>& getPointResponse() {return _pointResponses;};
+    //std::vector <CtiCCPointResponsePtr>& getPointResponse() {return _pointResponses;};
 
     CtiCCCapBank& setParentId(LONG parentId);
     CtiCCCapBank& setAlarmInhibitFlag(BOOL alarminhibit);
@@ -243,7 +245,6 @@ public:
     CtiCCCapBank& setAssumedOrigVerificationState(int assumedOrigCapBankPos);
     CtiCCCapBank& setPreviousVerificationControlStatus(LONG status);
     BOOL updateVerificationState(void);
-    CtiCCCapBank& updatePointResponseDeltas(CtiCCMonitorPoint* point);
 
     string getControlStatusQualityString();
     string getIgnoreReasonText() const;
@@ -256,7 +257,14 @@ public:
     BOOL isFailedOrQuestionableStatus();
     bool isControlDeviceTwoWay();
 
-    CtiCCPointResponse* getPointResponse(CtiCCMonitorPoint* point);
+    Cti::CapControl::PointResponse getPointResponse(CtiCCMonitorPoint* point);
+    std::vector<Cti::CapControl::PointResponse> getPointResponses();
+    void addPointResponse(Cti::CapControl::PointResponse pointResponse);
+    Cti::CapControl::PointResponseManager& getPointResponseManager();
+
+    bool updatePointResponseDeltas(CtiCCMonitorPoint* point);
+    bool updatePointResponsePreOpValues(long pointId, double value);
+
 
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
@@ -270,7 +278,7 @@ public:
     BOOL isDirty() const;
     BOOL getInsertDynamicDataFlag() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
-    void dumpDynamicPointResponseData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
+    void dumpDynamicPointResponseData();
 
     void setDynamicData(Cti::RowReader& rdr);
 
@@ -401,7 +409,8 @@ private:
     std::list <LONG> _pointIds;
     std::vector <CtiCCMonitorPoint*>  _monitorPoint; //normally this is just one, but if display order is > 1 then we have more
                                                     // than one monitor point attached to a capbank!!!
-    std::vector <CtiCCPointResponse*> _pointResponses;
+
+    Cti::CapControl::PointResponseManager _pointResponseManager;
 
     void restore(Cti::RowReader& rdr);
 };

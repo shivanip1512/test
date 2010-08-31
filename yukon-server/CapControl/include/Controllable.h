@@ -26,15 +26,16 @@ public:
 
     StrategyManager::SharedPtr getStrategy() const;
 
-    const long getStrategyID() const;
+    const long getStrategyId() const;
+    void setStrategyId(long strategyId);
 
-    void setStrategy(const long strategyID);
+    void setStrategy(const long strategyId);
 
     void setStrategyManager(StrategyManager * strategyManager);
 
 private:
 
-    long _strategyID;
+    long _strategyId;
 
     StrategyManager * _strategyManager;
 };
