@@ -36,6 +36,7 @@ import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.util.JsonView;
@@ -91,30 +92,36 @@ public class SurveyController {
                                             target.getQuestionKey(),
                                             validKeyPattern,
                                             baseKey + "edit.invalidChars");
-            boolean foundNotUnique = false;
-            boolean foundValueRequired = false;
-            boolean foundTooLarge = false;
-            boolean foundInvalidChars = false;
-            Set<String> answerKeysUsed = Sets.newHashSet();
-            for (Answer answer : target.getAnswers()) {
-                String answerKey = answer.getAnswerKey();
-                if (!foundNotUnique && answerKeysUsed.contains(answerKey)) {
-                    errors.reject(baseKey + "edit.answerKeysNotUnique");
-                    foundNotUnique = true;
+            if (target.getQuestionType() == QuestionType.DROP_DOWN) {
+                boolean foundNotUnique = false;
+                boolean foundValueRequired = false;
+                boolean foundTooLarge = false;
+                boolean foundInvalidChars = false;
+                Set<String> answerKeysUsed = Sets.newHashSet();
+                List<Answer> answers = target.getAnswers();
+                for (Answer answer : answers) {
+                    String answerKey = answer.getAnswerKey();
+                    if (!foundNotUnique && answerKeysUsed.contains(answerKey)) {
+                        errors.reject(baseKey + "edit.answerKeysNotUnique");
+                        foundNotUnique = true;
+                    }
+                    answerKeysUsed.add(answerKey);
+                    if (!foundValueRequired && StringUtils.isBlank(answerKey)) {
+                        errors.reject(baseKey + "edit.answerValueRequired");
+                        foundValueRequired = true;
+                    }
+                    if (!foundTooLarge && answerKey != null && answerKey.length() > 64) {
+                        errors.reject(baseKey + "edit.answerTooLarge");
+                        foundTooLarge = true;
+                    }
+                    Matcher matcher = validKeyPattern.matcher(answerKey);
+                    if (!foundInvalidChars && !matcher.matches()) {
+                        errors.reject(baseKey + "edit.answerHasInvalidChars");
+                        foundInvalidChars = true;
+                    }
                 }
-                answerKeysUsed.add(answerKey);
-                if (!foundValueRequired && StringUtils.isBlank(answerKey)) {
-                    errors.reject(baseKey + "edit.answerValueRequired");
-                    foundValueRequired = true;
-                }
-                if (!foundTooLarge && answerKey != null && answerKey.length() > 64) {
-                    errors.reject(baseKey + "edit.answerTooLarge");
-                    foundTooLarge = true;
-                }
-                Matcher matcher = validKeyPattern.matcher(answerKey);
-                if (!foundInvalidChars && !matcher.matches()) {
-                    errors.reject(baseKey + "edit.answerHasInvalidChars");
-                    foundInvalidChars = true;
+                if (answers.size() < 1 || !target.isTextAnswerAllowed() && answers.size() < 2) {
+                    errors.reject(baseKey + "edit.notEnoughAnswers");
                 }
             }
         }
@@ -166,7 +173,8 @@ public class SurveyController {
             FlashScope flashScope, YukonUserContext userContext) {
         Survey survey = verifyEditable(surveyId, userContext);
         model.addAttribute("survey", survey);
-        if (surveyDao.isInUse(surveyId)) {
+        if (surveyDao.usedByOptOutSurvey(surveyId)
+                || surveyDao.hasBeenTaken(surveyId)) {
             return "survey/inUse.jsp";
         }
         return "survey/confirmDelete.jsp";
@@ -176,7 +184,8 @@ public class SurveyController {
     public String delete(ModelMap model, int surveyId, FlashScope flashScope,
             YukonUserContext userContext) {
         Survey survey = verifyEditable(surveyId, userContext);
-        if (surveyDao.isInUse(surveyId)) {
+        if (surveyDao.usedByOptOutSurvey(surveyId)
+                || surveyDao.hasBeenTaken(surveyId)) {
             model.addAttribute("survey", survey);
             return "survey/inUse.jsp";
         }
@@ -195,6 +204,7 @@ public class SurveyController {
         model.addAttribute("survey", survey);
         List<Question> questions = surveyDao.getQuestionsBySurveyId(surveyId);
         model.addAttribute("questions", questions);
+        model.addAttribute("hasBeenTaken", surveyDao.hasBeenTaken(surveyId));
         return "survey/edit.jsp";
     }
 
@@ -282,6 +292,9 @@ public class SurveyController {
     private String editQuestion(ModelMap model, Question question,
             YukonUserContext userContext) {
         Survey survey = verifyEditable(question.getSurveyId(), userContext);
+        boolean hasBeenTaken = surveyDao.hasBeenTaken(survey.getSurveyId());
+        model.addAttribute("hasBeenTaken", hasBeenTaken);
+        model.addAttribute("mode", hasBeenTaken ? PageEditMode.VIEW : PageEditMode.EDIT);
         model.addAttribute("question", question);
         List<String> answerKeys = Lists.transform(question.getAnswers(),
                                                   answerKeyTransformer);

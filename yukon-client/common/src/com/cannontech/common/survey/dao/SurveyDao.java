@@ -36,6 +36,16 @@ public interface SurveyDao {
     public String getNextQuestionKey(int surveyId);
 
     /**
+     * Deletion of surveys that are connected to an opt out is not allowed.
+     */
+    public boolean usedByOptOutSurvey(int surveyId);
+
+    /**
+     * Editing of surveys that have been taken should is not allowed.
+     */
+    public boolean hasBeenTaken(int surveyId);
+
+    /**
      * Saves a given survey. The survey will be saved as a new survey if its
      * surveyId is 0. In this case, the surveyId property will be updated with
      * he new id.
@@ -57,7 +67,6 @@ public interface SurveyDao {
     public void moveQuestionUp(Question question);
     public void moveQuestionDown(Question question);
 
-    public boolean isInUse(int surveyId);
     public void deleteSurvey(int surveyId);
 
     public void deleteQuestion(int surveyQuestionId);

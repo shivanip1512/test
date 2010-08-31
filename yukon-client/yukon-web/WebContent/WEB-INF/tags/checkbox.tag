@@ -24,7 +24,7 @@
 			<c:when test="${status.value == false && not empty pageScope.id}">
 				<input type="checkbox" disabled="disabled" id="${pageScope.id}">
 			</c:when>
-			<c:when test="${status.value == false && not empty pageScope.id}">
+			<c:when test="${status.value == false && empty pageScope.id}">
 				<input type="checkbox" disabled="disabled">
 			</c:when>
 			<c:otherwise>

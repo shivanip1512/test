@@ -7,6 +7,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
+<tags:setFormEditMode mode="${mode}"/>
 
 <cti:msgScope paths="modules.survey.edit">
 
@@ -19,6 +20,7 @@
 </span>
 
 <script type="text/javascript">
+<cti:displayForPageEditModes modes="EDIT">
 var templateIcons = $$('#templateIcons > a')
 moveUpIcon = templateIcons[0];
 moveDownIcon = templateIcons[1];
@@ -33,6 +35,7 @@ submitForm = function() {
 }
 
 initWithAnswerKeys(${cti:jsonString(answerKeys)});
+</cti:displayForPageEditModes>
 
 questionTypeChanged = function() {
 	questionType = $('questionType').value;
@@ -62,25 +65,31 @@ questionTypeChanged = function() {
         </tags:nameValue2>
 
         <tags:nameValue2 nameKey=".answerRequired" labelForId="answerRequiredCheckbox">
-            <form:checkbox id="answerRequiredCheckbox" path="answerRequired"/>
+            <tags:checkbox id="answerRequiredCheckbox" path="answerRequired"/>
             <label for="answerRequiredCheckbox">
                 <i:inline key=".answerRequiredDescription"/>
             </label>
         </tags:nameValue2>
 
         <tags:nameValue2 nameKey=".questionType">
-            <form:select path="questionType" id="questionType"
-                onchange="questionTypeChanged()">
-                <c:forEach var="questionType" items="${questionTypes}">
-                    <cti:msg var="optionLabel" key="${questionType}"/>
-                    <form:option value="${questionType}" label="${optionLabel}"/>
-                </c:forEach>
-            </form:select>
+            <cti:displayForPageEditModes modes="VIEW">
+                <cti:msg2 key="${question.questionType}"/>
+                <form:hidden path="questionType" id="questionType"/>
+            </cti:displayForPageEditModes>
+            <cti:displayForPageEditModes modes="EDIT">
+	            <form:select path="questionType" id="questionType"
+	                onchange="questionTypeChanged()">
+	                <c:forEach var="questionType" items="${questionTypes}">
+	                    <cti:msg var="optionLabel" key="${questionType}"/>
+	                    <form:option value="${questionType}" label="${optionLabel}"/>
+	                </c:forEach>
+	            </form:select>
+            </cti:displayForPageEditModes>
         </tags:nameValue2>
 
         <tags:nameValue2 rowId="textAnswerAllowed_DROP_DOWN" rowClass="additionalInfo"
             nameKey=".textAnswerAllowed" labelForId="textAnswerAllowedCheckbox">
-            <form:checkbox id="textAnswerAllowedCheckbox" path="textAnswerAllowed"/>
+            <tags:checkbox id="textAnswerAllowedCheckbox" path="textAnswerAllowed"/>
             <label for="textAnswerAllowedCheckbox">
                 <i:inline key=".textAnswerAllowedDescription"/>
             </label>
@@ -93,16 +102,29 @@ questionTypeChanged = function() {
 			    <table id="answerTable" class="compactResultsTable rowHighlighting">
 			        <tr>
 			            <th><i:inline key=".answerKey"/></th>
-			            <th><i:inline key=".actions"/></th>
+                        <cti:displayForPageEditModes modes="EDIT">
+                            <th><i:inline key=".actions"/></th>
+			            </cti:displayForPageEditModes>
 			        </tr>
+					<cti:displayForPageEditModes modes="VIEW">
+					   <c:forEach var="answer" items="${question.answers}">
+                       <tr>
+                           <td><spring:escapeBody htmlEscape="true">${answer.answerKey}</spring:escapeBody> </td>
+                       </tr>
+					   </c:forEach>
+					</cti:displayForPageEditModes>
 			    </table>
 	        </div>
-	        <cti:labeledImg key="addAnswer" href="javascript: addAnswer()"/>
+            <cti:displayForPageEditModes modes="EDIT">
+                <cti:labeledImg key="addAnswer" href="javascript: addAnswer()"/>
+            </cti:displayForPageEditModes>
 	    </tags:boxContainer2>
     </div>
 
     <div class="actionArea">
-        <input type="submit" value="<cti:msg2 key=".ok"/>"/>
+        <cti:displayForPageEditModes modes="EDIT">
+            <input type="submit" value="<cti:msg2 key=".ok"/>"/>
+        </cti:displayForPageEditModes>
         <input type="button" value="<cti:msg2 key=".cancel"/>"
             onclick="parent.$('ajaxDialog').hide()"/>
     </div>
@@ -112,6 +134,8 @@ questionTypeChanged = function() {
 
 <script type="text/javascript">
 questionTypeChanged();
+<cti:displayForPageEditModes modes="EDIT">
 $('questionKey').focus();
 $('questionKey').select();
+</cti:displayForPageEditModes>
 </script>

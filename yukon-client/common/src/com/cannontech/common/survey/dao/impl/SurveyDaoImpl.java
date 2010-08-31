@@ -164,8 +164,31 @@ public class SurveyDaoImpl implements SurveyDao {
     }
 
     @Override
+    @Transactional(readOnly=true)
+    public boolean usedByOptOutSurvey(int surveyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM optOutSurvey");
+        sql.append("WHERE surveyId").eq(surveyId);
+        int numUses = yukonJdbcTemplate.queryForInt(sql);
+        return numUses > 0;
+    }
+
+    @Override
+    @Transactional(readOnly=true)
+    public boolean hasBeenTaken(int surveyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM surveyResult");
+        sql.append("WHERE surveyId").eq(surveyId);
+        int numUses = yukonJdbcTemplate.queryForInt(sql);
+        return numUses > 0;
+    }
+    
+    @Override
     @Transactional
     public void saveSurvey(Survey survey) {
+        if (hasBeenTaken(survey.getSurveyId())) {
+            throw new RuntimeException("can't modify survey which has been taken");
+        }
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*) FROM survey");
         sql.append("WHERE energyCompanyId").eq(survey.getEnergyCompanyId());
@@ -196,9 +219,16 @@ public class SurveyDaoImpl implements SurveyDao {
     @Override
     @Transactional
     public void saveQuestion(Question question) {
-        deleteQuestion(question.getSurveyQuestionId());
+        int surveyId = question.getSurveyId();
+        if (hasBeenTaken(surveyId)) {
+            throw new RuntimeException("can't modify survey which has been taken");
+        }
 
         int surveyQuestionId = question.getSurveyQuestionId();
+        if (surveyQuestionId != 0) {
+            deleteQuestion(surveyQuestionId, surveyId);
+        }
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*) FROM surveyQuestion");
         sql.append("WHERE surveyId").eq(question.getSurveyId());
@@ -282,6 +312,10 @@ public class SurveyDaoImpl implements SurveyDao {
      *            updated with question's display order.
      */
     private void swapQuestion(Question question, int newDisplayOrder) {
+        if (hasBeenTaken(question.getSurveyId())) {
+            throw new RuntimeException("can't modify survey which has been taken");
+        }
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE surveyQuestion");
         sql.append("SET displayOrder = ").appendArgument(0);
@@ -307,19 +341,12 @@ public class SurveyDaoImpl implements SurveyDao {
     }
 
     @Override
-    @Transactional(readOnly=true)
-    public boolean isInUse(int surveyId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*) FROM optOutSurvey");
-        sql.append("WHERE surveyId").eq(surveyId);
-        int numUses = yukonJdbcTemplate.queryForInt(sql);
-        return numUses > 0;
-    }
-
-    @Override
     @Transactional
     public void deleteSurvey(int surveyId) {
-        // TODO:  check for use before deleting
+        if (usedByOptOutSurvey(surveyId) || hasBeenTaken(surveyId)) {
+            throw new RuntimeException("can't delete survey which has been taken");
+        }
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM surveyQuestionAnswer");
         sql.append("WHERE surveyQuestionId IN(");
@@ -337,18 +364,25 @@ public class SurveyDaoImpl implements SurveyDao {
         yukonJdbcTemplate.update(sql);
     }
 
+    public void deleteQuestion(int surveyQuestionId, int surveyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM surveyQuestion");
+        sql.append("WHERE surveyQuestionId").eq(surveyQuestionId);
+        yukonJdbcTemplate.update(sql);
+    }
+
     @Override
     @Transactional
     public void deleteQuestion(int surveyQuestionId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM surveyQuestionAnswer");
+        sql.append("SELECT surveyId FROM surveyQuestion");
         sql.append("WHERE surveyQuestionId").eq(surveyQuestionId);
-        yukonJdbcTemplate.update(sql);
+        int surveyId = yukonJdbcTemplate.queryForInt(sql);
+        if (hasBeenTaken(surveyId)) {
+            throw new RuntimeException("can't modify survey which has been taken");
+        }
 
-        sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM surveyQuestion");
-        sql.append("WHERE surveyQuestionId").eq(surveyQuestionId);
-        yukonJdbcTemplate.update(sql);
+        deleteQuestion(surveyQuestionId, surveyId);
     }
 
     @Override
