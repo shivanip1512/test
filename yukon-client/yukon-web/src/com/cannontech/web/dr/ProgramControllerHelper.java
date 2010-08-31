@@ -24,6 +24,7 @@ import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.util.DateRange;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -48,8 +49,8 @@ import com.google.common.collect.Ordering;
 public class ProgramControllerHelper {
     public static class ProgramListBackingBean extends ListBackingBean {
         private String state;
-        private Range<Date> start = new Range<Date>();
-        private Range<Date> stop = new Range<Date>();
+        private DateRange start = new DateRange();
+        private DateRange stop = new DateRange();
         private Range<Integer> priority = new Range<Integer>();
         private Range<Double> loadCapacity = new Range<Double>();
 
@@ -61,19 +62,19 @@ public class ProgramControllerHelper {
             this.state = state;
         }
 
-        public Range<Date> getStart() {
+        public DateRange getStart() {
             return start;
         }
 
-        public void setStart(Range<Date> start) {
+        public void setStart(DateRange start) {
             this.start = start;
         }
 
-        public Range<Date> getStop() {
+        public DateRange getStop() {
             return stop;
         }
 
-        public void setStop(Range<Date> stop) {
+        public void setStop(DateRange stop) {
             this.stop = stop;
         }
 
@@ -129,10 +130,10 @@ public class ProgramControllerHelper {
         PropertyEditor dayEndDateEditor =
             datePropertyEditorFactory.getPropertyEditor(DateOnlyMode.END_OF_DAY, userContext);
 
-        binder.registerCustomEditor(Object.class, "start.min", dayStartDateEditor);
-        binder.registerCustomEditor(Object.class, "start.max", dayEndDateEditor);
-        binder.registerCustomEditor(Object.class, "stop.min", dayStartDateEditor);
-        binder.registerCustomEditor(Object.class, "stop.max", dayEndDateEditor);
+        binder.registerCustomEditor(Date.class, "start.min", dayStartDateEditor);
+        binder.registerCustomEditor(Date.class, "start.max", dayEndDateEditor);
+        binder.registerCustomEditor(Date.class, "stop.min", dayStartDateEditor);
+        binder.registerCustomEditor(Date.class, "stop.max", dayEndDateEditor);
         PropertyEditor numberEditor = new CustomNumberEditor(Integer.class, true);
         binder.registerCustomEditor(Object.class, "priority.min", numberEditor);
         binder.registerCustomEditor(Object.class, "priority.max", numberEditor);
