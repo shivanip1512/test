@@ -19,37 +19,21 @@ PointResponse::PointResponse() : _pointId(0),
 
 }
 
-PointResponse::PointResponse(long pointId, long bankId, double preOpValue, double delta)
+PointResponse::PointResponse(long pointId, long bankId, double preOpValue, double delta) : _pointId(pointId),
+                                                                                           _bankId(bankId),
+                                                                                           _preOpValue(preOpValue),
+                                                                                           _delta(delta)
 {
-    _pointId = pointId;
-    _bankId = bankId;
-    _preOpValue = preOpValue;
-    _delta = delta;
 }
 
 bool PointResponse::operator<(const PointResponse& right) const
 {
-    if (_bankId < right._bankId)
-    {
-        return true;
-    }
-    else if (_pointId < right._pointId)
-    {
-        return true;
-    }
-
-    return false;
+    return _bankId < right._bankId || _pointId < right._pointId;
 }
 
 bool PointResponse::operator==(const PointResponse& right) const
 {
-    if (_bankId == right._bankId &&
-        _pointId == right._pointId)
-    {
-        return true;
-    }
-
-    return false;
+    return _bankId == right._bankId && _pointId == right._pointId;
 }
 
 long PointResponse::getPointId()

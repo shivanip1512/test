@@ -60,6 +60,7 @@ PointResponse PointResponseManager::getPointResponse(long pointId)
 {
     PointResponseMap::iterator itr = _pointResponses.find(pointId);
 
+    //I would like to change this to exception instead of returning a default value
     if (itr == _pointResponses.end())
     {
         return PointResponse();
