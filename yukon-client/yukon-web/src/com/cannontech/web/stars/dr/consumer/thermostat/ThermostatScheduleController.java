@@ -303,8 +303,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	ats.setScheduleName(scheduleName);
         
     	// SAVE
-        accountThermostatScheduleDao.save(ats);
-        accountThermostatScheduleDao.mapThermostatsToSchedule(thermostatIds, ats.getAccountThermostatScheduleId());
+        accountThermostatScheduleDao.saveAndMapToThermostats(ats, thermostatIds);
         ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.CONSUMER_SAVE_SCHEDULE_SUCCESS;
 
         // Log schedule name change

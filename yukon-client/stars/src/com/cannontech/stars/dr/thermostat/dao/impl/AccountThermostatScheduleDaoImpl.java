@@ -1,6 +1,5 @@
 package com.cannontech.stars.dr.thermostat.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,7 +17,6 @@ import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
-import com.cannontech.database.RowAndFieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -237,6 +235,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 	}
 	
 	//SAVE AND MAP TO THERMOSTATS
+	@Override
 	public void saveAndMapToThermostats(AccountThermostatSchedule ats, List<Integer> thermostatIds){
 	    save(ats);
 	    mapThermostatsToSchedule(thermostatIds, ats.getAccountThermostatScheduleId());

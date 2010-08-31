@@ -72,6 +72,11 @@ public interface AccountThermostatScheduleDao {
 	public void mapThermostatsToSchedule(List<Integer> thermostatIds, int atsId);
 	
 	/**
+	 * Convenience method to save and map thermostats to schedule.
+	 */
+	public void saveAndMapToThermostats(AccountThermostatSchedule ats, List<Integer> thermostatIds);
+	
+	/**
 	 * Retrieve list of all AccountThermostatSchedules for a given accountId and thermostat type.
 	 * a.k.a. "all saved schedules for account"
 	 */
