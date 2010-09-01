@@ -79,7 +79,7 @@ public class PointDataInjectionController {
         
         PointData pointData = new PointData();
         pointData.setId(pointId);
-        pointData.setTimeStamp(dateTime.toDate());
+        pointData.setTime(dateTime.toDate());
         pointData.setPointQuality(quality);
         pointData.setValue(value);
         dynamicDataSource.putValue(pointData);
