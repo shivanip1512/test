@@ -9,7 +9,7 @@ public class AccountThermostatScheduleEntry {
 
 	private int accountThermostatScheduleEntryId = 0;
 	private int accountThermostatScheduleId;
-	private int startTime;
+	private int startTime;            //in seconds
 	private TimeOfWeek timeOfWeek;
 	private int	coolTemp;
 	private int	heatTemp;
@@ -18,7 +18,6 @@ public class AccountThermostatScheduleEntry {
 	}
 
 	public AccountThermostatScheduleEntry(int startTime, TimeOfWeek timeOfWeek, int coolTemp, int	heatTemp) {
-		
 		this.startTime = startTime;
 		this.timeOfWeek = timeOfWeek;
 		this.coolTemp = coolTemp;
@@ -81,7 +80,6 @@ public class AccountThermostatScheduleEntry {
 	}
 	
 	public int getStartTimeMinutes() {
-		
 		return startTime / 60;
 	}
 
