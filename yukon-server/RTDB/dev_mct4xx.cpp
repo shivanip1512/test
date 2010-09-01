@@ -310,11 +310,10 @@ Mct4xxDevice::point_info Mct4xxDevice::getData( const unsigned char *buf, int le
     switch( vt )
     {
         case ValueType_FrozenAccumulator:
-        {
-            value ^= value & 0x01;  //  clear the low bit, and fall through to the Accumulator case below
-        }
         case ValueType_Accumulator:
         {
+            value &= ~0x01; // clear the low bit
+
             min_error = 0xff989680;  //  32-bit version of the 24-bit maximum value for kWh values - see section 10.1 in the MCT-410 SSPEC
             break;
         }
@@ -336,11 +335,6 @@ Mct4xxDevice::point_info Mct4xxDevice::getData( const unsigned char *buf, int le
             quality     = InvalidQuality;
             description = "Unknown/reserved error [" + CtiNumStr(error_code).hex() + "]";
         }
-    }
-
-    if( (vt == ValueType_Accumulator || vt == ValueType_FrozenAccumulator) && value % 2 )
-    {
-        value--; // Round down to the nearest .2 kWh.
     }
 
     retval.value       = value;

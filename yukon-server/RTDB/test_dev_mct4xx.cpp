@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata)
 
     pi = dev.getData_FrozenAccumulator(kwh_read, 3);
 
-    BOOST_CHECK_EQUAL( pi.value,      256 );
+    BOOST_CHECK_EQUAL( pi.value,      256 ); // Still should be 256, we round down!
     BOOST_CHECK_EQUAL( pi.freeze_bit, true );
     BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
 }
