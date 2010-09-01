@@ -46,6 +46,11 @@ public interface AccountThermostatScheduleDao {
 	public List<Integer> getThermostatIdsUsingSchedule(int atsId);
 	
 	/**
+	 * Get all AccountThermostatSchedules for the specified energy company.
+	 */
+	public List<AccountThermostatSchedule> getAllThermostatSchedulesForEC(int ecId);
+	
+	/**
 	 * Get the energy company default schedule for the given energyCompanyId and thermostat type.
 	 * If one does not exists it will be created.
 	 */

@@ -185,6 +185,20 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 		}
 	}
 	
+	// GET ALL SCHEDULES FOR AN EC
+	@Override
+	@Transactional
+	public List<AccountThermostatSchedule> getAllThermostatSchedulesForEC(int ecId){
+
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+	    sql.append("SELECT ats.*");
+	    sql.append("FROM AcctThermostatSchedule ats");
+	    sql.append("JOIN ECToAcctThermostatSchedule ectats ON (ats.AcctThermostatScheduleId = ECTATS.AcctThermostatScheduleId)");
+	    sql.append("WHERE ECTATS.EnergyCompanyId").eq(ecId);
+	    
+	    return yukonJdbcTemplate.query(sql, accountThermostatScheduleRowAndFieldMapper);
+	}
+	
     // GET EC DEFAULT SCHEDULE
     @Override
     @Transactional

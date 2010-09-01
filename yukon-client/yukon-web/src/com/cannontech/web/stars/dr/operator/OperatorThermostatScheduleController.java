@@ -240,7 +240,7 @@ public class OperatorThermostatScheduleController {
     		YukonMessageSourceResolvable timeOfWeekString = new YukonMessageSourceResolvable(timeOfWeekForDisplay.getDisplayKey());
     		argumentList.add(timeOfWeekString);
     		
-    		for(AccountThermostatScheduleEntry entry : ats.getEntriesByTimeOfWeekMap().get(timeOfWeek)) {
+    		for(AccountThermostatScheduleEntry entry : ats.getEntriesByTimeOfWeekMultimap().get(timeOfWeek)) {
     			
     			LocalTime startTime = entry.getStartTimeLocalTime();
     			String startDateString = dateFormattingService.format(startTime, DateFormatEnum.TIME, yukonUserContext);

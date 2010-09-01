@@ -1,11 +1,10 @@
 package com.cannontech.stars.dr.thermostat.model;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
 public class AccountThermostatSchedule {
@@ -65,22 +64,12 @@ public class AccountThermostatSchedule {
 		this.scheduleEntries = scheduleEntries;
 	}
 	
-	public Map<TimeOfWeek, List<AccountThermostatScheduleEntry>> getEntriesByTimeOfWeekMap() {
+	public ListMultimap<TimeOfWeek, AccountThermostatScheduleEntry> getEntriesByTimeOfWeekMultimap() {
+        ListMultimap<TimeOfWeek, AccountThermostatScheduleEntry> result = ArrayListMultimap.create();
+        for (AccountThermostatScheduleEntry atsEntry : this.getScheduleEntries()) {
+            result.put(atsEntry.getTimeOfWeek(), atsEntry);
+        }
+        return result;
+    }
 
-		// a bit more complicated than just creating a ArrayListMultimap, but to maintain consistency of order, we want the keys to ordered
-		Map<TimeOfWeek, List<AccountThermostatScheduleEntry>> result = new LinkedHashMap<TimeOfWeek, List<AccountThermostatScheduleEntry>>();
-		for (TimeOfWeek timeOfWeek : TimeOfWeek.values()) {
-			for (AccountThermostatScheduleEntry atsEntry : this.getScheduleEntries()) {
-				if (atsEntry.getTimeOfWeek() == timeOfWeek) {
-					
-					if (!result.containsKey(timeOfWeek)) {
-						result.put(timeOfWeek, new ArrayList<AccountThermostatScheduleEntry>());
-					}
-					result.get(timeOfWeek).add(atsEntry);
-				}
-	    	}
-		}
-    	
-    	return result;
-	}
 }

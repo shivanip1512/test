@@ -1,7 +1,7 @@
 package com.cannontech.stars.dr.thermostat.service.impl;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -32,7 +32,7 @@ import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
-import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
+//import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.CustomerThermostatEventBase;
@@ -42,11 +42,13 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
-import com.cannontech.stars.dr.thermostat.model.ThermostatSeasonEntry;
+//import com.cannontech.stars.dr.thermostat.model.ThermostatSeasonEntry;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimap;
 
 /**
  * Implementation class for ThermostatService
@@ -59,7 +61,6 @@ public class ThermostatServiceImpl implements ThermostatService {
     private CustomerEventDao customerEventDao;
     private InventoryDao inventoryDao;
     private ECMappingDao ecMappingDao;
-    private ThermostatScheduleDao thermostatScheduleDao;
     private CommandRequestHardwareExecutor commandRequestHardwareExecutor;
     private RolePropertyDao rolePropertyDao;
     private SystemDateFormattingService systemDateFormattingService;
@@ -83,12 +84,6 @@ public class ThermostatServiceImpl implements ThermostatService {
     @Autowired
     public void setEcMappingDao(ECMappingDao ecMappingDao) {
         this.ecMappingDao = ecMappingDao;
-    }
-
-    @Autowired
-    public void setThermostatScheduleDao(
-            ThermostatScheduleDao thermostatScheduleDao) {
-        this.thermostatScheduleDao = thermostatScheduleDao;
     }
 
     @Autowired
@@ -397,8 +392,8 @@ public class ThermostatServiceImpl implements ThermostatService {
                         ThermostatScheduleMode scheduleMode) {
 
     	
-    	Map<TimeOfWeek, List<AccountThermostatScheduleEntry>> entriesByTimeOfWeekMap = schedule.getEntriesByTimeOfWeekMap();
-        List<AccountThermostatScheduleEntry> entries = entriesByTimeOfWeekMap.get(timeOfWeek);
+    	Multimap<TimeOfWeek, AccountThermostatScheduleEntry> entriesByTimeOfWeekMap = schedule.getEntriesByTimeOfWeekMultimap();
+        Collection<AccountThermostatScheduleEntry> entries = entriesByTimeOfWeekMap.get(timeOfWeek);
 
         StringBuilder commandString = new StringBuilder();
 
@@ -449,34 +444,6 @@ public class ThermostatServiceImpl implements ThermostatService {
         commandString.append(" serial " + thermostat.getSerialNumber());
 
         return commandString.toString();
-    }
-
-
-    /**
-     * Helper method to update time/temp values from a list of entries to
-     * another
-     * @param updatedEntries - Updated time/temp values
-     * @param entries - Current time/temp values
-     */
-    private void updateScheduleEntries(
-            List<ThermostatSeasonEntry> updatedEntries,
-            List<ThermostatSeasonEntry> entries) {
-
-        // Update the season entries
-        for (int i = 0; i < updatedEntries.size(); i++) {
-
-            ThermostatSeasonEntry entry = updatedEntries.get(i);
-            ThermostatSeasonEntry originalEntry = entries.get(i);
-
-            LocalTime startTime = entry.getStartTime();
-            originalEntry.setStartTime(startTime);
-
-            Integer coolTemperature = entry.getCoolTemperature();
-            originalEntry.setCoolTemperature(coolTemperature);
-            
-            Integer heatTemperature = entry.getHeatTemperature();
-            originalEntry.setHeatTemperature(heatTemperature);
-        }
     }
 
     /**
@@ -537,7 +504,7 @@ public class ThermostatServiceImpl implements ThermostatService {
         logMessage.append("Serial #:" + thermostat.getSerialNumber() + ", ");
         logMessage.append("Day:" + timeOfWeek.toString() + ", ");
 
-        Map<TimeOfWeek, List<AccountThermostatScheduleEntry>> entriesByTimeOfWeekMap = schedule.getEntriesByTimeOfWeekMap();
+        ListMultimap<TimeOfWeek, AccountThermostatScheduleEntry> entriesByTimeOfWeekMap = schedule.getEntriesByTimeOfWeekMultimap();
         List<AccountThermostatScheduleEntry> entries = entriesByTimeOfWeekMap.get(timeOfWeek);
         DateTimeFormatter timeFormatter = systemDateFormattingService.getCommandTimeFormatter();
 

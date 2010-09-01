@@ -74,19 +74,19 @@
 
 		    // edit when other are tied to it?
 		    if (!$('saveAsNewSchedule').checked && 
-				$F($('totalNumberOfThermostatsUsingSchedule')) > $F($('selectedNumberOfThermostatsUsingSchedule')) && 
+				$F('totalNumberOfThermostatsUsingSchedule') > $F('selectedNumberOfThermostatsUsingSchedule') && 
 				!confirm('${otherThermostatsUsingScheduleConfirm}')) {
 			    
 				return; // noop
 		    	
 			// save as new without name change?
-		    } else if ($('saveAsNewSchedule').checked && $F($('initialScheduleName')) == $F($('scheduleName'))) {
+		    } else if ($('saveAsNewSchedule').checked && $F('initialScheduleName') == $F('scheduleName')) {
 
 				alert('${duplicateScheduleName}');
 	            $('scheduleName').focus();
 
 		    // no name?
-	    	} else if($F($('initialScheduleName')).empty()){
+	    	} else if($F('initialScheduleName').empty()){
 
 	            alert('${noScheduleName}');
 	            $('scheduleName').focus();

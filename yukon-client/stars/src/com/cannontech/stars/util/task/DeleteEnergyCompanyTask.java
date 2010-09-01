@@ -6,6 +6,8 @@
  */
 package com.cannontech.stars.util.task;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -31,6 +33,7 @@ import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
+import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.action.AccountAction;
 import com.cannontech.stars.web.util.StarsAdminUtil;
@@ -217,15 +220,14 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			// Delete all default thermostat schedules
 			currentAction = "Deleting default thermostat schedules";
 			
-			ECToGenericMapping[] schedules = ECToGenericMapping.getAllMappingItems(
-					energyCompany.getEnergyCompanyID(), "LMThermostatSchedule");
-			if (schedules != null) {
-				AccountThermostatScheduleDao accountThermostatScheduleDao = 
-		    		YukonSpringHook.getBean("accountThermostatScheduleDao", AccountThermostatScheduleDao.class);
-				for (int i = 0; i < schedules.length; i++) {
-					int scheduleId = schedules[i].getItemID();
-					accountThermostatScheduleDao.deleteById(scheduleId);
-				}
+			AccountThermostatScheduleDao accountThermostatScheduleDao = 
+                YukonSpringHook.getBean("accountThermostatScheduleDao", AccountThermostatScheduleDao.class);
+			List<AccountThermostatSchedule> schedules = accountThermostatScheduleDao.getAllThermostatSchedulesForEC(energyCompany.getEnergyCompanyID());
+
+			if(schedules != null && schedules.size() > 0){
+			    for(AccountThermostatSchedule schedule : schedules){
+			        accountThermostatScheduleDao.deleteById(schedule.getAccountThermostatScheduleId());
+			    }
 			}
 			
 			// Delete all substations, CANNOT cancel the operation from now on

@@ -1,7 +1,7 @@
 package com.cannontech.web.stars.dr.operator.service.impl;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import net.sf.json.JSONArray;
@@ -28,7 +28,9 @@ import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareService;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 
@@ -62,11 +64,11 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
         JSONObject scheduleObject = new JSONObject();
         JSONObject seasonObject = new JSONObject();
         
-        Map<TimeOfWeek, List<AccountThermostatScheduleEntry>> entriesByTimeOfWeekMap = schedule.getEntriesByTimeOfWeekMap();
+        Multimap<TimeOfWeek, AccountThermostatScheduleEntry> entriesByTimeOfWeekMap = schedule.getEntriesByTimeOfWeekMultimap();
         
         for (TimeOfWeek timeOfWeek : entriesByTimeOfWeekMap.keySet()) {
 
-            List<AccountThermostatScheduleEntry> atsEntryList = entriesByTimeOfWeekMap.get(timeOfWeek);
+            Collection<AccountThermostatScheduleEntry> atsEntryList = entriesByTimeOfWeekMap.get(timeOfWeek);
 
             for (AccountThermostatScheduleEntry atsEntry : atsEntryList) {
             	
@@ -149,7 +151,7 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	@Override
     public void setToTwoTimeTemps(AccountThermostatSchedule schedule) {
 
-		Map<TimeOfWeek, List<AccountThermostatScheduleEntry>> entriesByTimeOfWeekMap = schedule.getEntriesByTimeOfWeekMap();
+		ListMultimap<TimeOfWeek, AccountThermostatScheduleEntry> entriesByTimeOfWeekMap = schedule.getEntriesByTimeOfWeekMultimap();
 		
         for (TimeOfWeek timeOfWeek : entriesByTimeOfWeekMap.keySet()) {
 
