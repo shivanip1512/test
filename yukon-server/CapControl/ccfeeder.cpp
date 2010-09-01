@@ -1,16 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  ccfeeder.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiCCFeeder.
-                        CtiCCFeeder maintains the state and handles
-                        the persistence of feeders for Cap Control.
-
-        Initial Date:  8/28/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "dbaccess.h"
@@ -34,7 +21,7 @@
 #include "ccsubstationbus.h"
 #include "database_reader.h"
 #include "database_writer.h"
-
+#include "Exceptions.h"
 #include "PointResponse.h"
 #include "PointResponseManager.h"
 
@@ -5417,13 +5404,12 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                 if (parentBank->getControlStatus() == CtiCCCapBank::Open ||
                     parentBank->getControlStatus() == CtiCCCapBank::OpenQuestionable)
                 {
-                    PointResponse pResponse = parentBank->getPointResponse(point);
-                    if (pResponse.getBankId() != 0)
+                    try
                     {
+                        PointResponse pResponse = parentBank->getPointResponse(point);
 
                         if ( (point->getValue() + pResponse.getDelta() <= point->getUpperBandwidth() &&
                               point->getValue() + pResponse.getDelta() >= point->getLowerBandwidth() ) ||
-                              //pRespone.getDelta() == 0 ||
                               point->getValue() + pResponse.getDelta() < point->getUpperBandwidth() )
                         {
                             {
@@ -5436,6 +5422,7 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " MULTIVOLT: MonitorPoint->bankID/pointID: "<<point->getBankId()<<"/"<<point->getPointId()<<" Parent CapBank: "<<parentBank->getPaoName() <<" selected to Close" << endl;
                             }
+
                             //Check other monitor point responses using this potential capbank
                             if (areOtherMonitorPointResponsesOk(point->getPointId(), parentBank, CtiCCCapBank::Close))
                             {
@@ -5447,14 +5434,25 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                                 bestBank = parentBank;
                             }
                             else
+                            {
                                 parentBank = NULL;
+                            }
                         }
                         else
+                        {
                             parentBank = NULL;
+                        }
+                    }
+                    catch (NotFoundException& e)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " PointResponse not found. CapBank: "<< parentBank->getPaoName() <<  " pointId: " << point->getPointId() << endl;
                     }
                 }
                 else
+                {
                     parentBank = NULL;
+                }
             }
 
             //2.  If parent bank won't work, start checking other banks...
@@ -5469,9 +5467,9 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
 
                         if (point->getBankId() != currentCapBank->getPaoId())
                         {
-                            PointResponse pResponse = parentBank->getPointResponse(point);
-                            if (pResponse.getBankId() != 0)
+                            try
                             {
+                                PointResponse pResponse = currentCapBank->getPointResponse(point);
 
                                 if ( (point->getValue() + pResponse.getDelta() <= point->getUpperBandwidth() &&
                                       point->getValue() + pResponse.getDelta() >= point->getLowerBandwidth() ) ||
@@ -5500,7 +5498,11 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                                     }
                                 }
                             }
-
+                            catch (NotFoundException& e)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " PointResponse not found. CapBank: "<< currentCapBank->getPaoName() <<  " pointId: " << point->getPointId() << endl;
+                            }
                         }
                         if (request != NULL)
                         {
@@ -5530,9 +5532,9 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                 if (parentBank->getControlStatus() == CtiCCCapBank::Close ||
                     parentBank->getControlStatus() == CtiCCCapBank::CloseQuestionable)
                 {
-                    PointResponse pResponse = parentBank->getPointResponse(point);
-                    if (pResponse.getBankId() != 0)
+                    try
                     {
+                        PointResponse pResponse = parentBank->getPointResponse(point);
 
                         if ( (point->getValue() - pResponse.getDelta() <= point->getUpperBandwidth() &&
                               point->getValue() - pResponse.getDelta() >= point->getLowerBandwidth() ) ||
@@ -5565,6 +5567,11 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                         else
                             parentBank = NULL;
                     }
+                    catch (NotFoundException& e)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " PointResponse not found. CapBank: "<< parentBank->getPaoName() <<  " pointId: " << point->getPointId() << endl;
+                    }
                 }
                 else
                     parentBank = NULL;
@@ -5582,9 +5589,9 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
 
                         if (point->getBankId() != currentCapBank->getPaoId())
                         {
-                            PointResponse pResponse = parentBank->getPointResponse(point);
-                            if (pResponse.getBankId() != 0)
+                            try
                             {
+                                PointResponse pResponse = currentCapBank->getPointResponse(point);
 
                                 if ( (point->getValue() - pResponse.getDelta() <= point->getUpperBandwidth() &&
                                       point->getValue() - pResponse.getDelta() >= point->getLowerBandwidth() ) ||
@@ -5613,7 +5620,11 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                                     }
                                 }
                             }
-
+                            catch (NotFoundException& e)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " PointResponse not found. CapBank: "<< currentCapBank->getPaoName() <<  " pointId: " << point->getPointId() << endl;
+                            }
                         }
                         if (request != NULL)
                         {
@@ -5786,10 +5797,18 @@ void CtiCCFeeder::updatePointResponsePreOpValues(CtiCCCapBank* capBank)
     {
         CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[i];
 
-        if (capBank->updatePointResponsePreOpValues(point->getPointId(),point->getValue()))
+        try
+        {
+            if (capBank->updatePointResponsePreOpValue(point->getPointId(),point->getValue()))
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " Bank ID: " << capBank->getPaoName() << " Point ID: " << point->getPointId( )<< " Value: " << point->getValue() << endl;
+            }
+        }
+        catch (NotFoundException& e)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " Bank ID: " << capBank->getPaoName() << " Point ID: " << point->getPointId( )<< " Value: " << point->getValue() << endl;
+            dout << CtiTime() << " Error Updating PreOpValue for deltas. PointId not found: " << point->getPointId() << endl;
         }
     }
 }
@@ -5814,8 +5833,16 @@ void CtiCCFeeder::updatePointResponseDeltas()
                }
                for (int j = 0; j < _multipleMonitorPoints.size(); j++)
                {
-                   CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[j];
-                   currentCapBank->updatePointResponseDeltas(point);
+                    CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[j];
+                    try
+                    {
+                       currentCapBank->updatePointResponseDelta(point);
+                    }
+                    catch (NotFoundException& e)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " Error Updating delta value. PointId not found: " << point->getPointId() << endl;
+                    }
                }
                break;
            }

@@ -22,19 +22,19 @@ bool PointResponseManager::addPointResponse(PointResponse pointResponse)
 {
     pair<PointResponseMap::iterator,bool> ret;
 
-    ret = _pointResponses.insert(pair<long,PointResponse>(pointResponse.getPointId(),pointResponse));
+    ret = _pointResponses.insert(std::make_pair(pointResponse.getPointId(),pointResponse));
 
     return ret.second;
 }
 
-bool PointResponseManager::updatePointResponseDeltas(const CtiCCMonitorPoint& point)
+bool PointResponseManager::updatePointResponseDelta(const CtiCCMonitorPoint& point)
 {
     PointResponseMap::iterator itr = _pointResponses.find(point.getBankId());
 
     //Not Found Check
     if (itr == _pointResponses.end())
     {
-        return false;
+        throw NotFoundException();
     }
 
     itr->second.updateDelta(point.getNInAvg(),point.getValue());
@@ -42,17 +42,17 @@ bool PointResponseManager::updatePointResponseDeltas(const CtiCCMonitorPoint& po
     return true;
 }
 
-bool PointResponseManager::updatePointResponsePreOpValues(long pointId, double newValue)
+bool PointResponseManager::updatePointResponsePreOpValue(long pointId, double newValue)
 {
     PointResponseMap::iterator itr = _pointResponses.find(pointId);
 
     //Not Found Check
     if (itr == _pointResponses.end())
     {
-        return false;
+        throw NotFoundException();
     }
 
-    itr->second.setPreOpValue(newValue);
+    itr->second.updatePreOpValue(newValue);
     return true;
 }
 
@@ -63,7 +63,7 @@ PointResponse PointResponseManager::getPointResponse(long pointId)
     //I would like to change this to exception instead of returning a default value
     if (itr == _pointResponses.end())
     {
-        return PointResponse();
+        throw NotFoundException();
     }
 
     return itr->second;

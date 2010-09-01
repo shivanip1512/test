@@ -138,12 +138,7 @@ void PointResponseDatabaseDao::buildPointResponseFromReader(DatabaseReader& read
         reader["PreOpValue"] >> preOpValue;
         reader["Delta"] >> delta;
 
-        PointResponse pointResponse;
-
-        pointResponse.setBankId(bankId);
-        pointResponse.setPointId(pointId);
-        pointResponse.setPreOpValue(preOpValue);
-        pointResponse.setDelta(delta);
+        PointResponse pointResponse(pointId,bankId,preOpValue,delta);
 
         pointResponses.push_back(pointResponse);
     }

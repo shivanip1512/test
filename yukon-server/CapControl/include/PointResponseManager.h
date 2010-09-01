@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Exceptions.h"
 #include "PointResponse.h"
 #include "ccmonitorpoint.h"
 
@@ -16,10 +17,46 @@ class PointResponseManager
 
         bool addPointResponse(PointResponse pointResponse);
 
-        bool updatePointResponseDeltas(const CtiCCMonitorPoint& point);
-        bool updatePointResponsePreOpValues(long pointId, double newValue);
+        /**
+         * Updates the Delta value for the monitor point.
+         *
+         * throws NotFoundException
+         *
+         * @param monitorPoint
+         *
+         * @return bool
+         */
+        bool updatePointResponseDelta(const CtiCCMonitorPoint& monitorPoint);
 
+        /**
+         * Updates the PreOpValue for the PointResponse with the passed
+         * in pointId.
+         *
+         * throws NotFoundException
+         *
+         * @param pointId
+         * @param newValue
+         *
+         * @return bool
+         */
+        bool updatePointResponsePreOpValue(long pointId, double newValue);
+
+        /**
+         * Returns the PointResponse with the pointId.
+         *
+         * throws NotFoundException
+         *
+         * @param pointId
+         *
+         * @return PointResponse
+         */
         PointResponse getPointResponse(long pointId);
+
+        /**
+         * Returns all PointResponses.
+         *
+         * @return std::vector<PointResponse>
+         */
         std::vector<PointResponse> getPointResponses();
 
     private:

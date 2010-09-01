@@ -1799,14 +1799,14 @@ CtiCCCapBank& CtiCCCapBank::initVerificationControlStatus()
    return *this;
 }
 
-bool CtiCCCapBank::updatePointResponseDeltas(CtiCCMonitorPoint* point)
+bool CtiCCCapBank::updatePointResponseDelta(CtiCCMonitorPoint* point)
 {
-    return _pointResponseManager.updatePointResponseDeltas(*point);
+    return _pointResponseManager.updatePointResponseDelta(*point);
 }
 
-bool CtiCCCapBank::updatePointResponsePreOpValues(long pointId, double value)
+bool CtiCCCapBank::updatePointResponsePreOpValue(long pointId, double value)
 {
-    return _pointResponseManager.updatePointResponsePreOpValues(pointId,value);
+    return _pointResponseManager.updatePointResponsePreOpValue(pointId,value);
 }
 
 /*---------------------------------------------------------------------------

@@ -83,11 +83,6 @@ const long Controllable::getStrategyId() const
     return _strategyId;
 }
 
-void Controllable::setStrategyId(long strategyId)
-{
-    _strategyId = strategyId;
-}
-
 void Controllable::setStrategy(const long strategyId)
 {
     getStrategy()->unregisterControllable( getPaoId() );

@@ -11,14 +11,6 @@ extern unsigned long _CC_DEBUG;
 namespace Cti {
 namespace CapControl {
 
-PointResponse::PointResponse() : _pointId(0),
-                                 _bankId(0),
-                                 _preOpValue(0.0),
-                                 _delta(0.0)
-{
-
-}
-
 PointResponse::PointResponse(long pointId, long bankId, double preOpValue, double delta) : _pointId(pointId),
                                                                                            _bankId(bankId),
                                                                                            _preOpValue(preOpValue),
@@ -31,19 +23,10 @@ long PointResponse::getPointId() const
     return _pointId;
 }
 
-void PointResponse::setPointId(long pointId)
-{
-    _pointId = pointId;
-}
 
 long PointResponse::getBankId() const
 {
     return _bankId;
-}
-
-void PointResponse::setBankId(long bankId)
-{
-    _bankId = bankId;
 }
 
 double PointResponse::getPreOpValue() const
@@ -51,19 +34,9 @@ double PointResponse::getPreOpValue() const
     return _preOpValue;
 }
 
-void PointResponse::setPreOpValue(double preOpValue)
-{
-    _preOpValue = preOpValue;
-}
-
 double PointResponse::getDelta() const
 {
     return _delta;
-}
-
-void PointResponse::setDelta(double delta)
-{
-    _delta = delta;
 }
 
 void PointResponse::updateDelta(long nInAvg, double value)
@@ -85,7 +58,12 @@ void PointResponse::updateDelta(long nInAvg, double value)
     }
 
     _delta = delta;
-
 }
+
+void PointResponse::updatePreOpValue(double preOpValue)
+{
+    _preOpValue = preOpValue;
+}
+
 }
 }

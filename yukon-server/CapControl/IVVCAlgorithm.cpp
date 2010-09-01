@@ -8,6 +8,7 @@
 #include "AttributeService.h"
 #include "ccsubstationbusstore.h"
 #include "PointResponse.h"
+#include "Exceptions.h"
 
 #include <list>
 #include <limits>
@@ -1118,7 +1119,15 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         // record preoperation voltage values for the feeder our capbank is on
         for each (PointValueMap::value_type pointValuePair in pointValues)
         {
-            state->_estimated[operatePaoId].capbank->updatePointResponsePreOpValues(pointValuePair.first,pointValuePair.second.value);
+            try
+            {
+                state->_estimated[operatePaoId].capbank->updatePointResponsePreOpValue(pointValuePair.first,pointValuePair.second.value);
+            }
+            catch (NotFoundException& e)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " IVVC Algorithm: Error Updating PreOpValue for deltas. PointId not found: " << pointValuePair.first << endl;
+            }
         }
 
         state->_estimated[operatePaoId].operated = true;

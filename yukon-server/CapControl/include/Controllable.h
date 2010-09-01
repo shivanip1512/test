@@ -27,7 +27,6 @@ public:
     StrategyManager::SharedPtr getStrategy() const;
 
     const long getStrategyId() const;
-    void setStrategyId(long strategyId);
 
     void setStrategy(const long strategyId);
 
