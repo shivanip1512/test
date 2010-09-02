@@ -21,7 +21,7 @@ public interface AsyncDynamicDataSource {
      * Registers a listener to receive PointData events for the given
      * points, returns the current value.
      * @see removePointDataListener
-     * @param l         the listener to add
+     * @param l         the listener to add, use AllPointDataListener to receive all values
      * @param pointId   the pointId the listener will receive events for
      */
     public PointValueQualityHolder getAndRegisterForPointData(PointDataListener l, int pointId);
@@ -29,7 +29,7 @@ public interface AsyncDynamicDataSource {
     
     /**
      * Registers a listener to receive PointData events for all points.
-     * @param l         the listener to add
+     * @param l         the listener to add, use AllPointDataListener to receive all values
      */
     public void registerForAllPointData(PointDataListener l);
     
@@ -37,7 +37,7 @@ public interface AsyncDynamicDataSource {
      * Registers a listener to receive PointData events for the given
      * list of points.
      * @see removePointDataListener
-     * @param l         the listener to add
+     * @param l         the listener to add, use AllPointDataListener to receive all values
      * @param pointIds  the list of point ids the listener will receive events for
      */
     public void registerForPointData(PointDataListener l, Set<Integer> pointIds);

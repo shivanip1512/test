@@ -68,7 +68,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	pData.setType( vstr.extractInt() );
 	pData.setPointQuality( PointQuality.getPointQuality((int)vstr.extractUnsignedInt()));
 	pData.setTags( vstr.extractUnsignedInt() );
-	pData.setAttributes( vstr.extractUnsignedInt() );
+	vstr.extractUnsignedInt(); // attributes used to hold this slot
 	pData.setLimit( vstr.extractUnsignedInt() );
 	pData.setValue( vstr.extractDouble());
 	pData.setForced( vstr.extractUnsignedInt() );	
@@ -88,7 +88,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertInt( pData.getType() );
 	vstr.insertUnsignedInt( pData.getPointQuality().getQuality() );
 	vstr.insertUnsignedInt( pData.getTags() );
-	vstr.insertUnsignedInt( pData.getAttributes() );
+	vstr.insertUnsignedInt( 0l ); // attributes used to hold this slot
 	vstr.insertUnsignedInt( pData.getLimit() );
 	vstr.insertDouble( pData.getValue() );
 	vstr.insertUnsignedInt( pData.getForced() );	

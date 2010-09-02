@@ -19,9 +19,9 @@ import com.cannontech.common.opc.model.YukonOpcItem;
 import com.cannontech.common.opc.service.OpcService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.core.dynamic.AllPointDataListener;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DynamicDataSource;
-import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.netmodule.jpc.driver.opc.OpcGroup;
 import com.netmodule.jpc.driver.opc.OpcItem;
@@ -33,7 +33,7 @@ import com.netmodule.jpc.driver.opc.OpcServer;
  * @author tspar
  *
  */
-public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, PointDataListener {	
+public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, AllPointDataListener {	
 	private Logger log = YukonLogManager.getLogger(OpcService.class);
 	
 	public String statusGroupName = "YukonStatusGroup";

@@ -147,7 +147,6 @@ public static void main(String[] args)
 			pData.setType(type[j]);
 			
 			pData.setLimit(150);
-			pData.setAttributes(0);
 			pData.setStr("Test Point Change");
 			pData.setTags(0);
 

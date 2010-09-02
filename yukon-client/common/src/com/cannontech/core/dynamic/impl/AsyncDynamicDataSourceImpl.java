@@ -18,6 +18,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dynamic.AllPointDataListener;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
@@ -227,7 +228,11 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         
         // make sure we release the lock before calling the listeners
         for (PointDataListener listener : listeners) {
-            listener.pointDataReceived(pointData);
+            boolean newData = (pointData.getTags() & PointData.TAG_POINT_OLD_TIMESTAMP) == 0;
+            boolean listenerWantsAll = listener instanceof AllPointDataListener;
+            if (newData || listenerWantsAll ) {
+                listener.pointDataReceived(pointData);
+            }
         }
     }
     

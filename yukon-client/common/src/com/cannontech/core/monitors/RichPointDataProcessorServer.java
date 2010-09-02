@@ -13,7 +13,7 @@ import com.cannontech.core.dynamic.RichPointDataListener;
 import com.cannontech.util.IfNotRunningExecutor;
 import com.google.common.collect.ImmutableList;
 
-public class RichPointDataProcessorServer implements RichPointDataListener {
+public class RichPointDataProcessorServer {
 
     private volatile ImmutableList<RichPointDataListener> listeners = ImmutableList.of();
     private volatile Instant lastListenerRefresh = new Instant(0);
@@ -21,7 +21,6 @@ public class RichPointDataProcessorServer implements RichPointDataListener {
     private RichPointDataListenerFactory listenerFactory;
     private IfNotRunningExecutor lazyExecutor = new IfNotRunningExecutor();
 
-    @Override
     public void pointDataReceived(RichPointData pointData) {
         refreshListeners();
         for (RichPointDataListener listener : listeners) {

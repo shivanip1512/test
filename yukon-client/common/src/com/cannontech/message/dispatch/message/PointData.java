@@ -13,7 +13,6 @@ public class PointData extends com.cannontech.message.util.Message implements Po
 	private int type;
 	private PointQuality pointQuality;
 	private long tags;
-	private long attributes; // not used as of 11-20-2000
 	private long limit;
 	private double value;
 	private java.lang.String str = "";
@@ -23,15 +22,16 @@ public class PointData extends com.cannontech.message.util.Message implements Po
 	private long millis;
 
 	//Tags from yukon-server common/include/pointdefs.h
-	public static final int TAG_POINT_DO_NOT_REPORT = 0x00000200;        // Do not route this pointData onto others	
-	public static final int TAG_POINT_MOA_REPORT = 0x00000400;        // This point data message is the result of a registration
-	public static final int TAG_POINT_DELAYED_UPDATE = 0x00000800;        // Dispatch delay this point data until the time specified in the message!
-	public static final int TAG_POINT_FORCE_UPDATE = 0x00001000;        // Dispatch will no matter what copy this into his RT memory
-	public static final int TAG_POINT_MUST_ARCHIVE = 0x00002000;        // This data will archive no matter how the point is set up
-	public static final int TAG_POINT_MAY_BE_EXEMPTED = 0x00004000;        // This data may be exempted from propagation if the value element has not changed
-	public static final int TAG_POINT_LOAD_PROFILE_DATA = 0x00008000;        // This data will archive to raw point history
+	public static final long TAG_POINT_DO_NOT_REPORT = 0x00000200;        // Do not route this pointData onto others	
+	public static final long TAG_POINT_MOA_REPORT = 0x00000400;        // This point data message is the result of a registration
+	public static final long TAG_POINT_DELAYED_UPDATE = 0x00000800;        // Dispatch delay this point data until the time specified in the message!
+	public static final long TAG_POINT_FORCE_UPDATE = 0x00001000;        // Dispatch will no matter what copy this into his RT memory
+	public static final long TAG_POINT_MUST_ARCHIVE = 0x00002000;        // This data will archive no matter how the point is set up
+	public static final long TAG_POINT_MAY_BE_EXEMPTED = 0x00004000;        // This data may be exempted from propagation if the value element has not changed
+	public static final long TAG_POINT_LOAD_PROFILE_DATA = 0x00008000;        // This data will archive to raw point history
+	public static final long TAG_POINT_OLD_TIMESTAMP = 0x00100000;
 
-	public static final int TAG_POINT_LP_NO_REPORT = TAG_POINT_LOAD_PROFILE_DATA | TAG_POINT_DO_NOT_REPORT;	// for all but last entry of LP data
+	public static final long TAG_POINT_LP_NO_REPORT = TAG_POINT_LOAD_PROFILE_DATA | TAG_POINT_DO_NOT_REPORT;	// for all but last entry of LP data
 	// Point Types
 	/* DEFINED IN com.cannontech.database.data.point.PointTypes */
 
@@ -40,10 +40,6 @@ public class PointData extends com.cannontech.message.util.Message implements Po
  */
 public PointData() {
 	super();
-}
-
-public long getAttributes() {
-	return attributes;
 }
 
 public long getForced() {
@@ -89,14 +85,6 @@ public PointType getPointType() {
 
 public double getValue() {
 	return value;
-}
-
-public void setAttributes(int newAttributes) {
-	attributes = newAttributes;
-}
-
-public void setAttributes(long newAttributes) {
-	attributes = newAttributes;
 }
 
 public void setForced(long newForced) {

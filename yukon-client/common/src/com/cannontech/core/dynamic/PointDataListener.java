@@ -2,9 +2,8 @@ package com.cannontech.core.dynamic;
 
 
 /**
- * Implement this interface to receive PointData from Yukon.
+ * Implement this interface to receive new/fresh PointData from Yukon.
  * @see com.cannontech.core.dynamic.AsyncDynamicDataSource 
- * @author alauinger
  */
 public interface PointDataListener {
     public void pointDataReceived(PointValueQualityHolder pointData);
