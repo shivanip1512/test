@@ -5,7 +5,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 
 public class UltraLightPaoHolder implements YukonPao {
-    UltraLightPao ultraLightPao;
+    private UltraLightPao ultraLightPao;
 
     public UltraLightPaoHolder(UltraLightPao ultraLightPao) {
         this.ultraLightPao = ultraLightPao;
