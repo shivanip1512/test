@@ -25,10 +25,10 @@
  	// things that thermostat.js is expecting to get set dynamically
     currentScheduleMode = '${scheduleMode}';
 
-    lowerLimitCool = ${schedule.thermostatType.lowerLimitCool};
-    upperLimitCool = ${schedule.thermostatType.upperLimitCool};
-    lowerLimitHeat = ${schedule.thermostatType.lowerLimitHeat};
-    upperLimitHeat = ${schedule.thermostatType.upperLimitHeat};
+    lowerLimitCool = ${schedule.thermostatType.lowerLimitCoolInFahrenheit};
+    upperLimitCool = ${schedule.thermostatType.upperLimitCoolInFahrenheit};
+    lowerLimitHeat = ${schedule.thermostatType.lowerLimitHeatInFahrenheit};
+    upperLimitHeat = ${schedule.thermostatType.upperLimitHeatInFahrenheit};
 
     tempUnit = '${temperatureUnit}';
     
