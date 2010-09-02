@@ -1161,13 +1161,13 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
         // If this is a reload we must erase regardless of whether or not this loads.
         if(pntID != 0)
         {
-            _limits.erase(CtiTablePointLimit(pntID, 0));
             _limits.erase(CtiTablePointLimit(pntID, 1));
+            _limits.erase(CtiTablePointLimit(pntID, 2));
         }
         for each( long tempPointID in pointIds )
         {
-            _limits.erase(CtiTablePointLimit(tempPointID, 0));
             _limits.erase(CtiTablePointLimit(tempPointID, 1));
+            _limits.erase(CtiTablePointLimit(tempPointID, 2));
         }
         for( std::list<CtiTablePointLimit>::iterator iter = tempList.begin(); iter != tempList.end(); iter++ )
         {
@@ -1226,8 +1226,8 @@ void CtiPointClientManager::removePoint(long pointID, bool isExpiration)
 
     removeAlarming(pointID);
     _reasonabilityLimits.erase(pointID);
-    _limits.erase(CtiTablePointLimit(pointID, 0));
     _limits.erase(CtiTablePointLimit(pointID, 1));
+    _limits.erase(CtiTablePointLimit(pointID, 2));
 }
 
 bool CtiPointClientManager::isPointLoaded(LONG Pt)
