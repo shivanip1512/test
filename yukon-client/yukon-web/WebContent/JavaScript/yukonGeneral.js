@@ -302,7 +302,7 @@ Object.extend(YEvent, {
     },
     
     unmarkBusy: function(event) {
-        Event.element(event).addRemoveName("ajaxBusy");
+        Event.element(event).removeClassName("ajaxBusy");
     }
 });
 

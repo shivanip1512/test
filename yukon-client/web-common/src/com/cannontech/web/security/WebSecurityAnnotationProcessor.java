@@ -54,7 +54,7 @@ public class WebSecurityAnnotationProcessor {
         return bean.getClass();
     }
     
-    private void doHasCheckDevelopmentMode(CheckDevelopmentMode checkRole) {
+    private void doHasCheckDevelopmentMode(CheckDevelopmentMode checkDevelopmentMode) {
         webSecurityChecker.checkDevelopmentMode();
     }
     
