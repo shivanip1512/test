@@ -243,7 +243,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 			
 			SqlStatementBuilder insertSql = new SqlStatementBuilder();
 			insertSql.append("INSERT INTO InventoryToAcctThermostatSch (InventoryId, AcctThermostatScheduleId)");
-			insertSql.append("VALUES (").appendArgumentList(Lists.newArrayList(atsId, thermostatId)).append(")");
+			insertSql.append("VALUES (").appendArgumentList(Lists.newArrayList(thermostatId, atsId)).append(")");
 			yukonJdbcTemplate.update(insertSql);
 		}
 	}
