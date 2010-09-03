@@ -104,7 +104,7 @@ singleOverrideChecked = function(boxChecked) {
                             </c:if>
                             <c:if test="${!empty violationsForProgram}">
                                     <ul>
-                                        <c:forEach var="violation" items="${violationsForProgram.violationContainers}">
+                                        <c:forEach var="violation" items="${violationsForProgram.constraintContainers}">
                                             <li><spring:escapeBody htmlEscape="true"><cti:msg2 key="${violation.constraintTemplate}"/></spring:escapeBody></li>
                                         </c:forEach>
                                     </ul>

@@ -453,10 +453,10 @@ public class LoadControlServiceImpl implements LoadControlService {
             
             // log violations, add to status, return
             if (checkViolations.isViolated()) {
-                for (ConstraintContainer violation : checkViolations.getViolationContainers()) {
+                for (ConstraintContainer violation : checkViolations.getConstraintContainers()) {
                     log.info("Constraint Violation: " + violation.toString() + " for request: " + controlRequest);
                 }
-                programStatus.setConstraintViolations(checkViolations.getViolationContainers());
+                programStatus.setConstraintViolations(checkViolations.getConstraintContainers());
                 
                 // observeConstraintsAndExecute = false, return
                 if (!observeConstraintsAndExecute) {

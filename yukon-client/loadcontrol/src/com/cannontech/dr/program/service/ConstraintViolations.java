@@ -4,22 +4,22 @@ import java.util.List;
 
 public class ConstraintViolations {
     
-	private List<ConstraintContainer> violations;
+	private List<ConstraintContainer> constraintContainers;
 
-	public ConstraintViolations(List<ConstraintContainer> violations) {
-		this.violations = violations;
+	public ConstraintViolations(List<ConstraintContainer> constraintContainers) {
+		this.constraintContainers = constraintContainers;
 	}
 
-	public List<ConstraintContainer> getViolationContainers() {
-		return violations;
+	public List<ConstraintContainer> getConstraintContainers() {
+		return constraintContainers;
 	}
 
-	public void setViolationContainers(List<ConstraintContainer> violations) {
-		this.violations = violations;
+	public void setConstraintContainers(List<ConstraintContainer> constraintContainers) {
+		this.constraintContainers = constraintContainers;
 	}
 	
 	public boolean isViolated() {
-		return (violations.size() > 0);
+		return (constraintContainers.size() > 0);
 	}
 
 }

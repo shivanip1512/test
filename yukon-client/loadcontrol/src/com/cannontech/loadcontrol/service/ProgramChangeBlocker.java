@@ -59,7 +59,7 @@ public class ProgramChangeBlocker implements MessageListener {
         this.afterTime = System.currentTimeMillis();
         log.info("Executing program update for programId " + this.programId);
         ConstraintViolations executeViolations = loadControlCommandService.executeManualCommand(controlRequest);
-        programStatus.setConstraintViolations(executeViolations.getViolationContainers());
+        programStatus.setConstraintViolations(executeViolations.getConstraintContainers());
         
         try {
             log.info("Waiting for program update for programId " + this.programId + " to occur after " + this.afterTime);
