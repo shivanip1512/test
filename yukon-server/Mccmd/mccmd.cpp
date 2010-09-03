@@ -1958,12 +1958,9 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         }
     }
 
-    if( !bad_names.empty() )
+    for each( const string &str in bad_names )
     {
-        for each( const string &str in bad_names )
-        {
-            Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(str.c_str(), -1));
-        }
+        Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(str.c_str(), -1));
     }
 
     // any device id's left in this set must have timed out
@@ -2102,8 +2099,6 @@ void HandleReturnMessage(CtiReturnMsg* msg,
             if(!dname.empty())
             {
                 bad_names.push_back(dname);
-                //data.deviceName = dname;    
-                //bad_map.insert(PILReturnMap::value_type(UnknownID, data));
             }
         }
         else // DeviceId > 0 (right?)
@@ -2111,14 +2106,8 @@ void HandleReturnMessage(CtiReturnMsg* msg,
             data.deviceName = UnknownName;
             bad_map.insert(PILReturnMap::value_type(dev_id, data));
         }
-             
-        delete msg;
-        msg = NULL;
-
-        return;
     }
-
-    if( good_map.find(dev_id) != good_map.end() )
+    else if( good_map.find(dev_id) != good_map.end() )
     {
         string warn("received a message for a device already in the good list, id: ");
         warn += CtiNumStr(dev_id);

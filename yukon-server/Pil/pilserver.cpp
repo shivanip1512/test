@@ -1621,7 +1621,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
                 CtiReturnMsg *pcRet = CTIDBG_new CtiReturnMsg(pReq->DeviceId(),
                                                               pReq->CommandString(),
-                                                              "No device with name " + dname + " exists in the database.",
+                                                              "No device with name '" + dname + "' exists in the database.",
                                                               IDNF,
                                                               pReq->RouteId(),
                                                               pReq->MacroOffset(),
