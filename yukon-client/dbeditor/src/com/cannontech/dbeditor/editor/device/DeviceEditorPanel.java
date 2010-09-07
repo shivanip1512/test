@@ -38,7 +38,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.RTC, PAOGroups.KV, PAOGroups.KVII, PAOGroups.RTM, PAOGroups.MCT410IL, PAOGroups.MCT410CL,
             PAOGroups.MCT410FL, PAOGroups.MCT410GL, PAOGroups.MCT470, PAOGroups.MCT430A, PAOGroups.MCT430S4, PAOGroups.MCT430SL, PAOGroups.MCT430A3, 
             PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.FAULT_CI, PAOGroups.NEUTRAL_MONITOR, PAOGroups.INTEGRATION_TRANSMITTER, PAOGroups.LCR3102,
-            PAOGroups.CRF_AL, PAOGroups.CRF_AX, PAOGroups.RDS_TERMINAL, 
+            PAOGroups.RFN_AL, PAOGroups.RFN_AX, PAOGroups.RFN_AXSD, PAOGroups.RDS_TERMINAL, 
             PAOGroups.MCT420FL, PAOGroups.MCT420FLD, PAOGroups.MCT420CL, PAOGroups.MCT420CLD
 		},
 		{ 	//1 - DeviceMeterGroupEditorPanel
@@ -51,7 +51,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.TRANSDATA_MARKV, PAOGroups.KV, PAOGroups.KVII, PAOGroups.MCT410IL, PAOGroups.MCT410CL,
             PAOGroups.MCT410FL, PAOGroups.MCT410GL, PAOGroups.MCT470, PAOGroups.MCT430A, PAOGroups.MCT430S4, PAOGroups.MCT430SL, PAOGroups.MCT430A3, 
             PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.LCR3102,
-            PAOGroups.CRF_AL, PAOGroups.CRF_AX,
+            PAOGroups.RFN_AL, PAOGroups.RFN_AX, PAOGroups.RFN_AXSD,
             PAOGroups.MCT420FL, PAOGroups.MCT420FLD, PAOGroups.MCT420CL, PAOGroups.MCT420CLD
 		},
       	{   //2 - CapBankController

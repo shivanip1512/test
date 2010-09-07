@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.amr.crf.dao.CrfMeterDao;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.rfn.dao.RfnMeterDao;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
@@ -28,7 +28,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 public class MeterInformationWidget extends WidgetControllerBase {
 
     private MeterDao meterDao = null;
-    private CrfMeterDao crfMeterDao;
+    private RfnMeterDao rfnMeterDao;
     private PaoGroupsWrapper paoGroupsWrapper = null;
     private CommandRequestDeviceExecutor commandRequestExecutor;
     private PaoDefinitionDao paoDefinitionDao;
@@ -39,8 +39,8 @@ public class MeterInformationWidget extends WidgetControllerBase {
     }
     
     @Autowired
-    public void setCrfMeterDao(CrfMeterDao crfMeterDao) {
-        this.crfMeterDao = crfMeterDao;
+    public void setRfnMeterDao(RfnMeterDao rfnMeterDao) {
+        this.rfnMeterDao = rfnMeterDao;
     }
     
     @Required
@@ -99,7 +99,7 @@ public class MeterInformationWidget extends WidgetControllerBase {
         /* Show RFMESH settings such as serial number, model, and manufacturer*/
         if(meter.getDeviceType().getPaoClass() == PaoClass.RFMESH) {
             mav.addObject("showRFMeshSettings", true);
-            mav.addObject("crfMeter", crfMeterDao.getMeter(meter));
+            mav.addObject("rfnMeter", rfnMeterDao.getMeter(meter));
         }
         
         if(paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS)) {

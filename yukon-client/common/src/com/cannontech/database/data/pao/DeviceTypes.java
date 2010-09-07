@@ -145,16 +145,17 @@ public interface DeviceTypes extends TypeBase
     public final static int REPEATER_850     = DEVICE_OFFSET + 111;
 
     
-    public final static int CRF_AX    = DEVICE_OFFSET + 112;
-    public final static int CRF_AL    = DEVICE_OFFSET + 113;
+    public final static int RFN_AX    = DEVICE_OFFSET + 112;
+    public final static int RFN_AL    = DEVICE_OFFSET + 113;
     public final static int RDS_TERMINAL    = DEVICE_OFFSET + 114;
     public final static int MCT420FL        = DEVICE_OFFSET + 115;
     public final static int MCT420FLD        = DEVICE_OFFSET + 116;
     public final static int MCT420CL        = DEVICE_OFFSET + 117;
     public final static int MCT420CLD        = DEVICE_OFFSET + 118;
+    public final static int RFN_AXSD    = DEVICE_OFFSET + 119;
     
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 118;
+	public final static int DEVICE_TYPES_COUNT = 119;
 	
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
@@ -275,10 +276,12 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_CBC_DNP  = {"CBC DNP"};
     public static final String[] STRING_NEUTRAL_MONITOR = { "Capacitor Bank Neutral Monitor" };
     public static final String[] STRING_FAULT_CI = { "Faulted Circuit Indicator" };
-    public static final String[] STRING_CRF_AX = {"CRF-AX"};
-    public static final String[] STRING_CRF_AL = {"CRF-AL"};
+    public static final String[] STRING_RFN_AX = {"RFN-AX"};
+    public static final String[] STRING_RFN_AL = {"RFN-AL"};
+    public static final String[] STRING_RFN_AXSD = {"RFN-AXSD"};
     public static final String[] STRING_MCT_420FL = {"MCT-420FL"};
     public static final String[] STRING_MCT_420FLD = {"MCT-420FLD"};
     public static final String[] STRING_MCT_420CL = {"MCT-420CL"};
     public static final String[] STRING_MCT_420CLD = {"MCT-420CLD"};
+    
 }

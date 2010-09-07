@@ -861,8 +861,9 @@ public final static boolean isMeter(int deviceType)
 		case FOCUS:
 		case ALPHA_A3:
 		case DAVISWEATHER:
-		case CRF_AL:
-        case CRF_AX:
+		case RFN_AL:
+        case RFN_AX:
+        case RFN_AXSD:
 			return true;
 	
 		default:
@@ -1594,10 +1595,11 @@ public static Object changeType (String newType,
         return paoDao.getYukonPao(portId).getPaoIdentifier().getPaoType() == PaoType.TCPPORT;
     }
     
-    public static boolean isCrf(int deviceType) {
+    public static boolean isRfn(int deviceType) {
         switch (deviceType) {
-            case CRF_AL:
-            case CRF_AX:
+            case RFN_AL:
+            case RFN_AX:
+            case RFN_AXSD:
                 return true;
                 
             default :

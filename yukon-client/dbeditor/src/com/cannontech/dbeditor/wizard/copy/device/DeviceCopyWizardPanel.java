@@ -19,7 +19,7 @@ import com.cannontech.common.wizard.WizardPanelEvent;
 import com.cannontech.common.wizard.WizardPanelListener;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.device.CrfBase;
+import com.cannontech.database.data.device.RfnBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.MCTBase;
@@ -31,7 +31,7 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.device.CrfAddress;
+import com.cannontech.database.db.device.RfnAddress;
 import com.cannontech.dbeditor.DatabaseEditor;
 import com.cannontech.dbeditor.wizard.device.DeviceRoutePanel;
 import com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupVersacomEditorPanel;
@@ -210,7 +210,7 @@ public class DeviceCopyWizardPanel extends WizardPanel {
             getRoutePanel().setFirstFocus();
             return getRoutePanel();
             
-        } else if (currentInputPanel == getDeviceCopyNameAddressPanel() && DeviceTypesFuncs.isCrf(deviceType)) {
+        } else if (currentInputPanel == getDeviceCopyNameAddressPanel() && DeviceTypesFuncs.isRfn(deviceType)) {
             
             getDeviceMeterGroupPanel().setValue(getCopyObject());
             getDeviceMeterGroupPanel().setFirstFocus();
@@ -311,7 +311,7 @@ public class DeviceCopyWizardPanel extends WizardPanel {
                                                                      || DeviceTypesFuncs.isMCT410(getDeviceType())
                                                                      || DeviceTypesFuncs.isMCT3xx(getDeviceType())
                                                                      || DeviceTypesFuncs.isMCT410(getDeviceType())
-                                                                     || DeviceTypesFuncs.isCrf(getDeviceType())
+                                                                     || DeviceTypesFuncs.isRfn(getDeviceType())
                                                                      || getDeviceType() == DeviceTypes.MCT250
                                                                      || getDeviceType() == DeviceTypes.MCT248
                                                                      || getDeviceType() == DeviceTypes.MCT240
@@ -368,15 +368,15 @@ public class DeviceCopyWizardPanel extends WizardPanel {
     
     /**
      * Adjust the copy of this DBPersistent, changing things that should not get duplicated.
-     * Currently used for resetting the Serial Number, Manufacturer, and Model of CrfBase meters
+     * Currently used for resetting the Serial Number, Manufacturer, and Model of RfnBase meters
      * since these fields form a unique constraint.
      */
     private void adjustCopyVersion() {
-        if( copyObject instanceof CrfBase) {
-            CrfBase crfBase = (CrfBase) copyObject;
-            CrfAddress address = new CrfAddress();
-            address.setDeviceID(crfBase.getPAObjectID());
-            crfBase.setCrfAddress(address);
+        if( copyObject instanceof RfnBase) {
+            RfnBase rfnBase = (RfnBase) copyObject;
+            RfnAddress address = new RfnAddress();
+            address.setDeviceID(rfnBase.getPAObjectID());
+            rfnBase.setRfnAddress(address);
         }
     }
     

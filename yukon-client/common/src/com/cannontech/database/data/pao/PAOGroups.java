@@ -373,10 +373,12 @@ public final static int getDeviceType(String typeString)
         return NEUTRAL_MONITOR;
     else if ( isStringDevice(compareString, STRING_FAULT_CI[0] ))
         return FAULT_CI;
-    else if ( isStringDevice(compareString, STRING_CRF_AL[0] ))
-        return CRF_AL;
-    else if ( isStringDevice(compareString, STRING_CRF_AX[0] ))
-        return CRF_AX;
+    else if ( isStringDevice(compareString, STRING_RFN_AL[0] ))
+        return RFN_AL;
+    else if ( isStringDevice(compareString, STRING_RFN_AX[0] ))
+        return RFN_AX;
+    else if ( isStringDevice(compareString, STRING_RFN_AXSD[0] ))
+        return RFN_AXSD;
    	else
 	  return INVALID;
 }
@@ -703,15 +705,16 @@ public final static String getPAOTypeString(int type)
             return STRING_FAULT_CI[0];
         case NEUTRAL_MONITOR:
             return STRING_NEUTRAL_MONITOR[0];
-        case CRF_AL:
-            return STRING_CRF_AL[0];
-        case CRF_AX:
-            return STRING_CRF_AX[0];
+        case RFN_AL:
+            return STRING_RFN_AL[0];
+        case RFN_AX:
+            return STRING_RFN_AX[0];
+        case RFN_AXSD:
+            return STRING_RFN_AXSD[0];
  	  	default:
 		  	return STRING_INVALID;
 	}
 
-	
 }
 /**
  * This method was created in VisualAge.

@@ -293,6 +293,9 @@ public class MeterController extends MultiActionController {
 
         boolean disconnectSupported = DeviceTypesFuncs.isDisconnectMCTOrHasCollar(device);
         mav.addObject("disconnectSupported", disconnectSupported);
+        
+        boolean rfnDisconnectSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DISCONNECT_RFN);
+        mav.addObject("rfnDisconnectSupported", rfnDisconnectSupported);
 
         boolean touSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.TOU);
         mav.addObject("touSupported", touSupported);

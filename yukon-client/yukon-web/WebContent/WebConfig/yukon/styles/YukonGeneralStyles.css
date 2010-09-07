@@ -798,7 +798,7 @@ div.pagedBox table.boxTable {
     padding: 3px;
 }
 
-.okGreen {
+.okGreen, .successMessage {
     color:#006633;
 }
 
@@ -1056,7 +1056,7 @@ div.userMessage {
 	padding-bottom: 5px;
 	padding-left: 30px;
 	margin-bottom: 12px;
-	background-position: 8px 5px;
+	background-position: 8px 4px;
 	background-repeat:no-repeat;
 }
 

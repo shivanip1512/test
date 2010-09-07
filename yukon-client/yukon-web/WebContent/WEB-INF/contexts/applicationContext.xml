@@ -284,6 +284,21 @@
         <property name="deviceDao" ref="deviceDao" />
     </bean>
     
+    <bean id="rfnMeterDisconnectWidget" class="com.cannontech.web.widget.RfnMeterDisconnectWidget">
+        <property name="title" value="Disconnect"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="roleAndPropertiesChecker">
+            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+        </property>
+    </bean>
+    
     <bean id="meterOutagesWidget"
     	class="com.cannontech.web.widget.MeterOutagesWidget">
     	<property name="title" value="Outages"/>
@@ -391,8 +406,8 @@
         </property>
     </bean>
     
-    <bean id="crfMeterInfoWidget" class="com.cannontech.web.widget.CrfMeterInfoWidget">
-    	<property name="title" value="CRF Meter Info"/>
+    <bean id="rfnMeterInfoWidget" class="com.cannontech.web.widget.RfnMeterInfoWidget">
+    	<property name="title" value="RFN Meter Info"/>
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
            <set>
@@ -1073,7 +1088,7 @@
     </bean>
     
     <bean id="yukonListEntryListTagPrototype" class="com.cannontech.web.taglib.YukonListEntryListTag">
-    	<property name="ecMappingDao" ref="ecMappingDao"/>
+    	<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
     </bean>
 
     <bean id="yukonListEntryValueTagPrototype" class="com.cannontech.web.taglib.YukonListEntryValueTag">
@@ -1312,11 +1327,12 @@
     <bean id="contactNotificationDtoValidator" class="com.cannontech.web.stars.dr.operator.validator.ContactNotificationDtoValidator"/>
     <bean id="customerResidenceValidator" class="com.cannontech.web.stars.dr.operator.validator.CustomerResidenceValidator"/>
     <bean id="callReportValidator" class="com.cannontech.web.stars.dr.operator.validator.CallReportValidator"/>
+    <bean id="residentialLoginService" class="com.cannontech.web.stars.dr.operator.service.impl.ResidentialLoginServiceImpl"/>
 
     <bean id="eventLogCategoryValidator" class="com.cannontech.web.stars.dr.operator.validator.EventLogCategoryValidator"/>
     <bean id="eventLogTypeValidator" class="com.cannontech.web.stars.dr.operator.validator.EventLogTypeValidator"/>
     
-  	<bean id="changeLoginValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.ChangeLoginValidatorFactoryImpl" />
+  	<bean id="changeLoginValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.LoginValidatorFactoryImpl" />
   	<bean id="optOutValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.OptOutValidatorFactoryImpl" />
 
     <bean id="displayableApplianceService" class="com.cannontech.web.stars.dr.operator.service.impl.DisplayableApplianceServiceImpl"/>

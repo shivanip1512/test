@@ -38,7 +38,7 @@
 					<ct:widget bean="meterReadingsWidget" />
                     
                     <c:if test="${isRFMesh}">
-                        <ct:widget bean="crfMeterInfoWidget" />
+                        <ct:widget bean="rfnMeterInfoWidget" />
                     </c:if>
                     
 					<c:if test="${cisInfoWidgetName != null}">
@@ -170,6 +170,10 @@
 					
 					<c:if test="${disconnectSupported}">
 						<ct:widget bean="disconnectMeterWidget"/>
+					</c:if>
+					
+					<c:if test="${rfnDisconnectSupported}">
+						<ct:widget bean="rfnMeterDisconnectWidget"/>
 					</c:if>
 	
 					<c:if test="${outageSupported}">

@@ -75,7 +75,7 @@ public abstract class WidgetControllerBase implements WidgetDefinitionBean, Bean
 		this.roleAndPropertiesChecker = roleAndPropertiesChecker;
 	}
     
-    public WidgetController getActionTarget() {
+    public Object getActionTarget() {
         return this;
     }
     

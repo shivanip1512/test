@@ -23,8 +23,13 @@ public class WidgetHandlerMapping extends AbstractUrlHandlerMapping implements I
             BeanFactoryUtils.beansOfTypeIncludingAncestors(context, WidgetDefinitionBean.class);
         for (WidgetDefinitionBean bean : beansOfType.values()) {
             String path = "/" + bean.getShortName() + "/*";
-            MultiActionController controller = new WidgetMultiActionController(bean.getActionTarget());
-            registerHandler(path, controller);
+            Object actionTarget = bean.getActionTarget();
+            if(actionTarget instanceof WidgetController) {
+                MultiActionController controller = new WidgetMultiActionController(actionTarget);
+                registerHandler(path, controller);
+            } else {
+                registerHandler(path, actionTarget);
+            }
         }
     }
 

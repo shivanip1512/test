@@ -4339,7 +4339,7 @@
         <displayName>SIXNET</displayName>
 	</pao>
 	
-	<pao id="CRF_BASE" abstract="true">
+	<pao id="RFN_BASE" abstract="true">
         <displayGroup>RFMESH</displayGroup>
         <points>
             <point type="Analog" offset="1">
@@ -4385,12 +4385,12 @@
         </tags>
     </pao>
     
-    <pao id="CRF_AL" inherits="CRF_BASE">
-        <displayName>CRF-AL</displayName>
+    <pao id="RFN_AL" inherits="RFN_BASE">
+        <displayName>RFN-AL</displayName>
     </pao>
     
-    <pao id="CRF_AX" inherits="CRF_BASE">
-        <displayName>CRF-AX</displayName>
+    <pao id="RFN_AX" inherits="RFN_BASE">
+        <displayName>RFN-AX</displayName>
         <points>
             <point type="Analog" offset="11">
                 <init>true</init>
@@ -4424,6 +4424,27 @@
                 <basicLookup point="Max Volts" />
             </attribute>
         </attributes>
+    </pao>
+    
+    <pao id="RFN_AXSD" inherits="RFN_AX">
+        <displayName>RFN-AXSD</displayName>
+        <points>
+            <point type="Status" offset="1">
+                <init>true</init>
+                <name>Disconnect Status</name>
+                <stategroup value="RFN Disconnect Status"/>
+            </point>        
+        </points>
+        <attributes>
+            <attribute name="DISCONNECT_STATUS">
+                <basicLookup point="Disconnect Status" />
+            </attribute>
+        </attributes>
+        <tags>
+            <tag name="DISCONNECT_RFN">
+                <value>true</value>
+            </tag>
+        </tags>
     </pao>
 	
 	<pao id="TRANSDATA_MARKV">

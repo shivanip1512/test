@@ -126,9 +126,10 @@ public final class DeviceFactory {
         case TRANSDATA_MARKV:
             returnDevice = new TransdataMarkV();
             break;
-        case CRF_AX:
-        case CRF_AL:
-            returnDevice = new CrfBase();
+        case RFN_AX:
+        case RFN_AL:
+        case RFN_AXSD:
+            returnDevice = new RfnBase();
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RFMESH);
             returnDevice.setDeviceType(paoType.getDbString());
             break;

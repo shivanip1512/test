@@ -160,14 +160,14 @@ public enum PaoType implements DatabaseRepresentationSource {
     CAP_CONTROL_SPECIAL_AREA(CapControlTypes.CAP_CONTROL_SPECIAL_AREA, "CCSPECIALAREA", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
     CAP_CONTROL_SUBSTATION(CapControlTypes.CAP_CONTROL_SUBSTATION, "CCSUBSTATION", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
     LOAD_TAP_CHANGER(CapControlTypes.CAP_CONTROL_LTC, "Load Tap Changer", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
-    CRF_AX(DeviceTypes.CRF_AX, "CRF-AX", PaoCategory.DEVICE, PaoClass.RFMESH),
-    CRF_AL(DeviceTypes.CRF_AL, "CRF-AL", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN_AX(DeviceTypes.RFN_AX, "RFN-AX", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN_AL(DeviceTypes.RFN_AL, "RFN-AL", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN_AXSD(DeviceTypes.RFN_AXSD, "RFN-AXSD", PaoCategory.DEVICE, PaoClass.RFMESH),
     MCT420FL(DeviceTypes.MCT420FL, "MCT-420FL", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT420FLD(DeviceTypes.MCT420FLD, "MCT-420FLD", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT420CL(DeviceTypes.MCT420CL, "MCT-420CL", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT420CLD(DeviceTypes.MCT420CLD, "MCT-420CLD", PaoCategory.DEVICE, PaoClass.CARRIER)
-    ; 
-    
+    ;
     
     private final int deviceTypeId;
     private final String dbString;
@@ -252,4 +252,5 @@ public enum PaoType implements DatabaseRepresentationSource {
     public String getPaoTypeName() {
     	return PAOGroups.getPAOTypeString(this.deviceTypeId);
     }
+    
 }

@@ -8,5 +8,5 @@ public interface WidgetDefinitionBean {
     public String getShortName();
     public Set<WidgetInput> getInputs();
     public boolean isHasIdentity();
-    public WidgetController getActionTarget();
+    public Object getActionTarget();
 }

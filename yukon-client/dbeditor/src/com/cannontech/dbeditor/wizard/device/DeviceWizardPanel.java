@@ -27,7 +27,7 @@ public class DeviceWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private DeviceSixnetWizardPanel deviceSixnetWizardPanel;
 	private MCTBroadcastListEditorPanel mctBroadcastListEditorPanel;
 	private DeviceScanRateEditorPanel deviceScanRateEditorPanel;
-    private CrfMeterPanel crfMeterPanel;
+    private RfnMeterPanel rfnMeterPanel;
     private DeviceRDSTerminalPanel rdsTerminalPanel;
 
 /**
@@ -213,11 +213,11 @@ protected DeviceCommChannelPanel getDeviceCommChannelPanel() {
 	return deviceCommChannelPanel;
 }
 
-protected CrfMeterPanel getCrfMeterPanel() {
-    if( crfMeterPanel == null ) {
-        crfMeterPanel = new CrfMeterPanel();
+protected RfnMeterPanel getRfnMeterPanel() {
+    if( rfnMeterPanel == null ) {
+        rfnMeterPanel = new RfnMeterPanel();
     }
-    return crfMeterPanel;    
+    return rfnMeterPanel;    
 }
 
 /**
@@ -283,7 +283,7 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
             getDeviceTapVerizonPanel().setIsSNPP(true);
 			return getDeviceTapVerizonPanel();
 		}
-        else if( devType == PAOGroups.VIRTUAL_SYSTEM || DeviceTypesFuncs.isCrf(devType)) {
+        else if( devType == PAOGroups.VIRTUAL_SYSTEM || DeviceTypesFuncs.isRfn(devType)) {
             getDeviceBaseNamePanel().setDeviceType(devType);
             getDeviceBaseNamePanel().setFirstFocus();
             return getDeviceBaseNamePanel();
@@ -367,9 +367,9 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 	else if (currentInputPanel == getDeviceMeterNumberPanel())
 	{
 	    int devType = getDeviceTypePanel().getDeviceType();
-	    if(DeviceTypesFuncs.isCrf(devType)) {
-	        getCrfMeterPanel().setFirstFocus();
-	        return getCrfMeterPanel();
+	    if(DeviceTypesFuncs.isRfn(devType)) {
+	        getRfnMeterPanel().setFirstFocus();
+	        return getRfnMeterPanel();
 	    } else {
 	        getDeviceScanRatePanel().setDeviceType(devType);
 	        getDeviceScanRatePanel().setFirstFocus();
@@ -469,7 +469,7 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
             || currentPanel == getDeviceRoutePanel() 
             || (currentPanel == getDeviceBaseNamePanel() && getDeviceTypePanel().getDeviceType() == PAOGroups.VIRTUAL_SYSTEM)
             || currentPanel == getDeviceGridPanel()
-            || currentPanel == getCrfMeterPanel()
+            || currentPanel == getRfnMeterPanel()
             || (currentPanel == getDeviceCommChannelPanel() 
                 && 
                 (getDeviceTypePanel().getDeviceType() == PAOGroups.ION_7700

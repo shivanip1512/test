@@ -8,8 +8,8 @@
     <entry key="yukon.common.device.attributeRead.plc.errorSummary">{1} ({2})</entry>
     <entry key="yukon.common.device.attributeRead.plc.exception">Unknown error: {0}</entry>
     
-    <entry key="yukon.common.device.attributeRead.crf.notKnown">Unable to find CRF fields: {0}</entry>
-    <entry key="yukon.common.device.attributeRead.crf.statusError">Read error (status): {0}</entry>
-    <entry key="yukon.common.device.attributeRead.crf.dataError">Read error (data): {0}</entry>
-    <entry key="yukon.common.device.attributeRead.crf.exception">Unknown error: {0}</entry>
+    <entry key="yukon.common.device.attributeRead.rfn.notKnown">Unable to find RFN fields: {0}</entry>
+    <entry key="yukon.common.device.attributeRead.rfn.statusError">Read error (status): {0}</entry>
+    <entry key="yukon.common.device.attributeRead.rfn.dataError">Read error (data): {0}</entry>
+    <entry key="yukon.common.device.attributeRead.rfn.exception">Unknown error: {0}</entry>
 </properties>
