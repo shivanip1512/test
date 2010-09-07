@@ -14,10 +14,12 @@
 #include <list>
 using std::list;
 
+#include <rw/collstr.h>
+
 #include "AttributeService.h"
 #include "LitePoint.h"
 #include "PointAttribute.h"
-
+#include "DynamicCommandExecutor.h"
 #include "ccclientlistener.h"
 #include "ccexecutor.h"
 #include "ccsubstationbusstore.h"
@@ -27,8 +29,9 @@ using std::list;
 #include "logger.h"
 #include "utility.h"
 #include "ccutil.h"
-#include <rw/collstr.h>
+
 using namespace std;
+using Cti::CapControl::DynamicCommandExecutor;
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
@@ -4203,7 +4206,7 @@ void CtiCCCommandExecutor::AutoEnableOvUvByArea()
                             {
                                 CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
 
-                                //limit auto individual commands to one way devices 
+                                //limit auto individual commands to one way devices
                                 if (!currentCapBank->isControlDeviceTwoWay() && _LIMIT_ONE_WAY_COMMANDS)
                                     continue;
 
@@ -4391,7 +4394,7 @@ void CtiCCCommandExecutor::AutoDisableOvUvByArea()
                             {
                                 CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
 
-                                //limit auto individual commands to one way devices 
+                                //limit auto individual commands to one way devices
                                 if (!currentCapBank->isControlDeviceTwoWay() && _LIMIT_ONE_WAY_COMMANDS)
                                     continue;
 
@@ -4551,7 +4554,7 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubstation(BOOL disableFlag)
                     {
                         CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
 
-                        //limit auto individual commands to one way devices 
+                        //limit auto individual commands to one way devices
                         if (!currentCapBank->isControlDeviceTwoWay() && _LIMIT_ONE_WAY_COMMANDS)
                             continue;
 
@@ -4690,7 +4693,7 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubBus(BOOL disableFlag)
                 {
                     CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
 
-                    //limit auto individual commands to one way devices 
+                    //limit auto individual commands to one way devices
                     if (!currentCapBank->isControlDeviceTwoWay() && _LIMIT_ONE_WAY_COMMANDS)
                         continue;
 
@@ -8049,6 +8052,10 @@ std::auto_ptr<CtiCCExecutor> CtiCCExecutorFactory::createExecutor(const CtiMessa
 
         case CTICCCOMMAND_ID:
             ret_val.reset(new CtiCCCommandExecutor((CtiCCCommand*)message));
+            break;
+
+        case DYNAMICCOMMAND_ID:
+            ret_val.reset(new DynamicCommandExecutor((DynamicCommand*)message));
             break;
 
         case MSG_POINTDATA:

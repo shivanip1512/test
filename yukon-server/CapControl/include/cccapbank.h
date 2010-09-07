@@ -246,6 +246,7 @@ public:
     void addPointResponse(Cti::CapControl::PointResponse pointResponse);
     Cti::CapControl::PointResponseManager& getPointResponseManager();
 
+    bool handlePointResponseDeltaChange(long pointId, double newDelta);
     bool updatePointResponseDelta(CtiCCMonitorPoint* point);
     bool updatePointResponsePreOpValue(long pointId, double value);
 

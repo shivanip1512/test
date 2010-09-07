@@ -1799,6 +1799,11 @@ CtiCCCapBank& CtiCCCapBank::initVerificationControlStatus()
    return *this;
 }
 
+bool CtiCCCapBank::handlePointResponseDeltaChange(long pointId, double newDelta)
+{
+    return _pointResponseManager.handlePointResponseDeltaChange(pointId,newDelta);
+}
+
 bool CtiCCCapBank::updatePointResponseDelta(CtiCCMonitorPoint* point)
 {
     return _pointResponseManager.updatePointResponseDelta(*point);
@@ -2532,7 +2537,7 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
 
 void CtiCCCapBank::dumpDynamicPointResponseData()
 {
-    //Building Dao manually here beacuse this updating should be handled in the store anyways.
+    //Building Dao manually here because this updating should be handled in the store anyways.
     PointResponseDaoPtr pointResponseDao = DatabaseDaoFactory().getPointResponseDao();
 
     for each (PointResponse pointResponse in getPointResponses())

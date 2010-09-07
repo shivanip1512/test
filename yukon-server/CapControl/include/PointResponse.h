@@ -12,6 +12,7 @@ class PointResponse
         long getBankId() const;
         double getPreOpValue() const;
         double getDelta() const;
+        void setDelta(double delta);
 
         void updateDelta(long nInAvg, double value);
         void updatePreOpValue(double preOpValue);

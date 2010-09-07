@@ -97,8 +97,9 @@ $(OBJ)\CapControlDispatchConnection.obj \
 $(OBJ)\CapControlCParms.obj \
 $(OBJ)\PointResponseDatabaseDao.obj \
 $(OBJ)\PointResponse.obj \
-$(OBJ)\PointResponseManager.obj
-
+$(OBJ)\PointResponseManager.obj \
+$(OBJ)\DynamicCommand.obj \
+$(OBJ)\DynamicCommandExecutor.obj
 
 TARGS = capcontrol.exe
 

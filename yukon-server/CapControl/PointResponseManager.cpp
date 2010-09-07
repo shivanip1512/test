@@ -27,9 +27,24 @@ bool PointResponseManager::addPointResponse(PointResponse pointResponse)
     return ret.second;
 }
 
+bool PointResponseManager::handlePointResponseDeltaChange(long pointId, double newDelta)
+{
+    PointResponseMap::iterator itr = _pointResponses.find(pointId);
+
+    //Not Found Check
+    if (itr == _pointResponses.end())
+    {
+        throw NotFoundException();
+    }
+
+    itr->second.setDelta(newDelta);
+
+    return true;
+}
+
 bool PointResponseManager::updatePointResponseDelta(const CtiCCMonitorPoint& point)
 {
-    PointResponseMap::iterator itr = _pointResponses.find(point.getBankId());
+    PointResponseMap::iterator itr = _pointResponses.find(point.getPointId());
 
     //Not Found Check
     if (itr == _pointResponses.end())

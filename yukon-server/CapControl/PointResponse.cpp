@@ -39,6 +39,11 @@ double PointResponse::getDelta() const
     return _delta;
 }
 
+void PointResponse::setDelta(double delta)
+{
+    _delta = delta;
+}
+
 void PointResponse::updateDelta(long nInAvg, double value)
 {
     if (_CC_DEBUG & (CC_DEBUG_MULTIVOLT | CC_DEBUG_IVVC))

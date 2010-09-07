@@ -1,19 +1,5 @@
-/*---------------------------------------------------------------------------
-        Filename:  ccid.h
-
-        Programmer:  Josh Wolberg
-
-        Description:    Header file containing id numbers for various
-                        Cti classes that inherit from RWCollectable.
-
-        Initial Date:  9/6/2000
-
-        Revision Date: 8/29/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-
 class CtiTime;
+
 /* Various message classes */
 #define CTICCMESSAGE_ID             500
 #define CTICCSUBSTATIONBUS_MSG_ID   501
@@ -31,35 +17,20 @@ class CtiTime;
 #define CTICCCAPBANKMOVEMSG_ID      513
 #define CTICCSUBVERIFICATIONMSG_ID  514
 #define CTIPAOSCHEDULEMSG_ID        515
-//#define CTICCSTRATEGY_ID            516
 #define CTICCEVENTLOG_ID            517
 #define CTICCMONITORPOINT_ID        518
 #define CTICCPOINTRESPONSE_ID       519
 #define CTICCAREA_ID                520
 #define CTICCAREA_MSG_ID            521
-
 #define CTICCSPECIALAREA_ID         523
 #define CTICCSPECIALAREAS_MSG_ID    522
-
 #define CTICCSUBSTATION_ID          524
 #define CTICCSUBSTATION_MSG_ID      525
 #define CTICCSERVERRESPONSE_ID      526
 #define CTILTC_ID                   527
 #define CTILTC_MSG_ID               528
 
-/*#define CTICCSTRATEGYLIST_ID     501
-#define CTICCSTRATEGYLIST_MSG_ID     502
-#define CTICCSTRATEGY_ID     503
-#define CTICAPBANK_ID     504
-#define CTICCCOMMAND_ID     505
-#define CTICCSHUTDOWN_ID    506
-#define CTICCSTATE_ID    507
-#define CTICCSTATELIST_MSG_ID    508
-#define CTICCAREALIST_MSG_ID    509
-#define CTICCERROR_ID    511
-#define CTICCDONE_ID    512
-#define CTICCUPDATE_ID    513*/
-
+#define DYNAMICCOMMAND_ID           529
 
 // square root of 3 for power factor calculations
 #define SQRT3               1.7320508075688772935274463415059
