@@ -110,7 +110,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 		SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT ats.*");
     	sql.append("FROM AcctThermostatSchedule ats");
-    	sql.append("JOIN InventoryToAcctThermostatSch ITATS ON (ats.AcctThermostatScheduleId = ITATS.AcctThermostatScheduleId)");
+    	sql.append("  JOIN InventoryToAcctThermostatSch ITATS ON (ats.AcctThermostatScheduleId = ITATS.AcctThermostatScheduleId)");
     	sql.append("WHERE ITATS.InventoryId").eq(inventoryId);
     	
     	try {
@@ -193,7 +193,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
 	    sql.append("SELECT ats.*");
 	    sql.append("FROM AcctThermostatSchedule ats");
-	    sql.append("JOIN ECToAcctThermostatSchedule ectats ON (ats.AcctThermostatScheduleId = ECTATS.AcctThermostatScheduleId)");
+	    sql.append("  JOIN ECToAcctThermostatSchedule ectats ON (ats.AcctThermostatScheduleId = ECTATS.AcctThermostatScheduleId)");
 	    sql.append("WHERE ECTATS.EnergyCompanyId").eq(ecId);
 	    
 	    return yukonJdbcTemplate.query(sql, accountThermostatScheduleRowAndFieldMapper);
@@ -209,7 +209,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 			SqlStatementBuilder sql = new SqlStatementBuilder();
 	    	sql.append("SELECT ats.AcctThermostatScheduleId");
 			sql.append("FROM AcctThermostatSchedule ats");
-			sql.append("JOIN ECToAcctThermostatSchedule ECTATS ON (ats.AcctThermostatScheduleId = ECTATS.AcctThermostatScheduleId)");
+			sql.append("  JOIN ECToAcctThermostatSchedule ECTATS ON (ats.AcctThermostatScheduleId = ECTATS.AcctThermostatScheduleId)");
 			sql.append("WHERE ECTATS.EnergyCompanyId").eq(ecId);
 			sql.append("AND ats.ThermostatType").eq(type);
 			
