@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.amr.crf.endpoint.MeterReadingArchiveRequestListener;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -55,7 +54,7 @@ import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 
 public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService {
-    private static final Logger log = YukonLogManager.getLogger(MeterReadingArchiveRequestListener.class);
+    private static final Logger log = YukonLogManager.getLogger(StarsInventoryBaseServiceImpl.class);
     private HardwareEventLogService hardwareEventLogService;
     private StarsSearchDao starsSearchDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
