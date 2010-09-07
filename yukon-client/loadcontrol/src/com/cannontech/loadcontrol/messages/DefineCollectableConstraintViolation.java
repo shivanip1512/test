@@ -2,7 +2,7 @@ package com.cannontech.loadcontrol.messages;
 
 import java.util.Date;
 
-import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.CollectionExtracter;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
@@ -35,10 +35,10 @@ public class DefineCollectableConstraintViolation extends com.cannontech.message
 		ConstraintViolation cc = (ConstraintViolation) obj;
 
 		cc.setErrorCode(ConstraintError.getByErrorCode((int) vstr.extractUnsignedInt()));
-		cc.setDoubleParams(VectorExtract.extractDoubleList(vstr, polystr));
-		cc.setIntegerParams(VectorExtract.extractIntList(vstr, polystr));
-		cc.setStringParams(VectorExtract.extractList(vstr, SimpleMappings.CString, String.class));
-		cc.setDateTimeParams(VectorExtract.extractList(vstr, SimpleMappings.Time, Date.class));
+		cc.setDoubleParams(CollectionExtracter.extractDoubleList(vstr, polystr));
+		cc.setIntegerParams(CollectionExtracter.extractIntList(vstr, polystr));
+		cc.setStringParams(CollectionExtracter.extractList(vstr, SimpleMappings.CString, String.class));
+		cc.setDateTimeParams(CollectionExtracter.extractList(vstr, SimpleMappings.Time, Date.class));
 	}
 
 	public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {

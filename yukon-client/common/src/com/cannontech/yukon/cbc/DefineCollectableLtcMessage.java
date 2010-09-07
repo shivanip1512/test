@@ -3,7 +3,7 @@ package com.cannontech.yukon.cbc;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.CollectionExtracter;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.VirtualInputStream;
@@ -45,7 +45,7 @@ public class DefineCollectableLtcMessage extends DefineCollectableCBCMessage {
     throws java.io.IOException {
 
         super.restoreGuts(obj, vstr, polystr);
-        Vector<Ltc> ltcs = VectorExtract.extractVector(vstr, polystr);
+        Vector<Ltc> ltcs = CollectionExtracter.extractVector(vstr, polystr);
         
         ((LtcMessage) obj).setLtcs(ltcs);
     }

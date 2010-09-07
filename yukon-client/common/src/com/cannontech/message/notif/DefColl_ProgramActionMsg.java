@@ -5,8 +5,8 @@ import java.util.Date;
 
 import com.cannontech.enums.EconomicEventAction;
 import com.cannontech.message.util.DefineCollectableMessage;
-import com.cannontech.message.util.VectorExtract;
-import com.cannontech.message.util.VectorInsert;
+import com.cannontech.message.util.CollectionExtracter;
+import com.cannontech.message.util.CollectionInserter;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
@@ -57,7 +57,7 @@ public class DefColl_ProgramActionMsg extends DefineCollectableMessage {
         msg.startTime = (Date) vstr.restoreObject(SimpleMappings.Time);
         msg.stopTime = (Date) vstr.restoreObject(SimpleMappings.Time);
         msg.notificationTime = (Date) vstr.restoreObject(SimpleMappings.Time);
-        msg.customerIds = VectorExtract.extractIntArray(vstr, polystr);
+        msg.customerIds = CollectionExtracter.extractIntArray(vstr, polystr);
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
@@ -71,7 +71,7 @@ public class DefColl_ProgramActionMsg extends DefineCollectableMessage {
         vstr.saveObject(msg.startTime, SimpleMappings.Time);
         vstr.saveObject(msg.stopTime, SimpleMappings.Time);
         vstr.saveObject(msg.notificationTime, SimpleMappings.Time);
-        VectorInsert.insertIntArray(msg.customerIds, vstr, polystr);
+        CollectionInserter.insertIntArray(msg.customerIds, vstr, polystr);
     }
 
 }

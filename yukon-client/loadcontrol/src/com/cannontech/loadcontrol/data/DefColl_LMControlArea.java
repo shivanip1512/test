@@ -5,7 +5,7 @@ package com.cannontech.loadcontrol.data;
  */
 import java.util.Vector;
 
-import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.CollectionExtracter;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -89,8 +89,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	Integer currentPriority = new Integer( (int)vstr.extractUnsignedInt() );
 	Integer currentDailyStartTime = new Integer( (int)vstr.extractUnsignedInt() );
 	Integer currentDailyStopTime = new Integer( (int)vstr.extractUnsignedInt() );
-    Vector triggerVector = VectorExtract.extractVector(vstr, polystr);
-    Vector lmProgramVector = VectorExtract.extractVector(vstr, polystr);
+    Vector triggerVector = CollectionExtracter.extractVector(vstr, polystr);
+    Vector lmProgramVector = CollectionExtracter.extractVector(vstr, polystr);
 
 	lmControlArea.setYukonID(yukonID);
 	lmControlArea.setYukonCategory(yukonCategory);

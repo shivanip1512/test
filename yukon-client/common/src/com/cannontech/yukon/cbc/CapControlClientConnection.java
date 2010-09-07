@@ -51,6 +51,7 @@ public class CapControlClientConnection extends ClientConnection
 		new DefineCollectableCBCSubStations(),
 		new DefineCollectableCapControlServerResponse(),
 		new DefineCollectableLtcMessage(),
+		new DefineCollectableDynamicCommand()
 	};
 	
 	/**
@@ -153,25 +154,36 @@ public class CapControlClientConnection extends ClientConnection
 		setAutoReconnect( true );
 	}
     
-	/**
-	 * 
-	 * @return nothing
-	 */
-	public void sendCommand( CapControlCommand cmd )
+	public void sendCommand(CapControlCommand cmd)
 	{
-		//Don't bother sending this out if were not in a good state
-		if( !isValid() )
+		if( !isValid()) {
 			return;
-			
-		synchronized( this )
+		}
+
+		synchronized(this)
 		{
 			write( cmd );
 		}
-	
-		
-		com.cannontech.common.util.MessageEvent msgEvent = new com.cannontech.common.util.MessageEvent( this, CapControlCommand.getCommandString(cmd.getCommand()) + " was executed." );
+
+		MessageEvent msgEvent = new MessageEvent( this, CapControlCommand.getCommandString(cmd.getCommand()) + " was executed." );
 		msgEvent.setMessageType( MessageEvent.INFORMATION_MESSAGE );
 		fireMsgEventGUI(msgEvent);
 	}
+	
+    public void sendCommand(DynamicCommand command)
+    {
+        if(!isValid()) {
+            return;            
+        }
+            
+        synchronized( this )
+        {
+            write(command);
+        }
+        
+        MessageEvent msgEvent = new MessageEvent( this, command.getCommandType().toString() + " command was executed." );
+        msgEvent.setMessageType( MessageEvent.INFORMATION_MESSAGE );
+        fireMsgEventGUI(msgEvent);
+    }
 
 }

@@ -6,8 +6,8 @@ package com.cannontech.loadcontrol.data;
  */
 import java.util.Date;
 
-import com.cannontech.message.util.VectorExtract;
-import com.cannontech.message.util.VectorInsert;
+import com.cannontech.message.util.CollectionExtracter;
+import com.cannontech.message.util.CollectionInserter;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -100,7 +100,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	reply.setUserIDName( (String) vstr.restoreObject(SimpleMappings.CString));
 	reply.setNameOfAcceptPerson( (String) vstr.restoreObject(SimpleMappings.CString));
 	reply.setEnergyExchangeNotes( (String) vstr.restoreObject(SimpleMappings.CString));
-    reply.setEnergyExchangeHourlyCustomer( VectorExtract.extractVector(vstr, polystr) );
+    reply.setEnergyExchangeHourlyCustomer( CollectionExtracter.extractVector(vstr, polystr) );
 	//reply.setEnergyExchangeHourlyCustomer( (Vector) vstr.restoreObject(polystr));
 }
  /**
@@ -123,7 +123,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.saveObject( reply.getNameOfAcceptPerson(), SimpleMappings.CString );
 	vstr.saveObject( reply.getEnergyExchangeNotes(), SimpleMappings.CString );
 	//vstr.saveObject( reply.getEnergyExchangeHourlyCustomer(), polystr );
-    VectorInsert.insertVector(reply.getEnergyExchangeHourlyCustomer(), vstr, polystr);
+    CollectionInserter.insertVector(reply.getEnergyExchangeHourlyCustomer(), vstr, polystr);
     
 }
 }

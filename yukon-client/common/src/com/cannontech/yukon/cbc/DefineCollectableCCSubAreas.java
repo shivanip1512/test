@@ -5,7 +5,7 @@ package com.cannontech.yukon.cbc;
  */
 import java.util.Vector;
 
-import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.CollectionExtracter;
 import com.roguewave.tools.v2_0.Comparator;
 
 public class DefineCollectableCCSubAreas extends DefineCollectableCBCMessage {
@@ -65,7 +65,7 @@ public class DefineCollectableCCSubAreas extends DefineCollectableCBCMessage {
 
         super.restoreGuts(obj, vstr, polystr);
         ((CCSubAreas) obj).setMsgInfoBitMask( new Integer( (int)vstr.extractUnsignedInt() ) );
-	    Vector areaNames = VectorExtract.extractVector(vstr, polystr);
+	    Vector areaNames = CollectionExtracter.extractVector(vstr, polystr);
         
         ((CCSubAreas) obj).setAreas(areaNames);
         

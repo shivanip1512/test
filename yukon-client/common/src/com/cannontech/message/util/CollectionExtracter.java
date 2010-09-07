@@ -9,7 +9,7 @@ import com.google.common.collect.Lists;
 import com.roguewave.vsj.ObjectStreamer;
 
 
-public class VectorExtract 
+public class CollectionExtracter 
 {
     
     @SuppressWarnings("unchecked")

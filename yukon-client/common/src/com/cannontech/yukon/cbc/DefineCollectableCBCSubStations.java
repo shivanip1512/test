@@ -2,7 +2,7 @@ package com.cannontech.yukon.cbc;
 
 import java.util.Vector;
 
-import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.CollectionExtracter;
 import com.roguewave.tools.v2_0.Comparator;
 
 public class DefineCollectableCBCSubStations extends DefineCollectableCBCMessage 
@@ -42,7 +42,7 @@ public class DefineCollectableCBCSubStations extends DefineCollectableCBCMessage
 
 		CCSubStations cbcSub = (CCSubStations) obj;
 		cbcSub.setMsgInfoBitMask( new Integer( (int)vstr.extractUnsignedInt() ) );
-	    Vector stations = VectorExtract.extractVector(vstr,polystr);
+	    Vector stations = CollectionExtracter.extractVector(vstr,polystr);
 
 		cbcSub.setSubStations( stations );
 	}

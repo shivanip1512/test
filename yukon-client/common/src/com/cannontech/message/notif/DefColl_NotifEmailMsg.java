@@ -3,8 +3,8 @@ package com.cannontech.message.notif;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.message.util.VectorInsert;
-import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.CollectionInserter;
+import com.cannontech.message.util.CollectionExtracter;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -75,7 +75,7 @@ public class DefColl_NotifEmailMsg extends com.cannontech.message.util.DefineCol
 		nEmailMsg.setTo_CC( (String)vstr.restoreObject(SimpleMappings.CString) );
 		nEmailMsg.setTo_BCC( (String)vstr.restoreObject(SimpleMappings.CString) );
 //		nEmailMsg.setAttachments( (Vector)vstr.restoreObject( polystr ) );
-        nEmailMsg.setAttachments( VectorExtract.extractVector(vstr, polystr) );
+        nEmailMsg.setAttachments( CollectionExtracter.extractVector(vstr, polystr) );
 	}
 	
 	/**
@@ -94,6 +94,6 @@ public class DefColl_NotifEmailMsg extends com.cannontech.message.util.DefineCol
 		vstr.saveObject( nEmailMsg.getTo_CC(), SimpleMappings.CString );
 		vstr.saveObject( nEmailMsg.getTo_BCC(), SimpleMappings.CString );
 		// vstr.saveObject( nEmailMsg.getAttachments(), polystr);
-		VectorInsert.insertVector(nEmailMsg.getAttachments(), vstr, polystr);
+		CollectionInserter.insertVector(nEmailMsg.getAttachments(), vstr, polystr);
 	}
 }

@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
-import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.CollectionExtracter;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
@@ -91,7 +91,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 
 
 	//lmProgramDirect.setDirectGearVector( (Vector) vstr.restoreObject( polystr ) );
-    lmProgramDirect.setDirectGearVector( VectorExtract.extractVector(vstr, polystr) );
+    lmProgramDirect.setDirectGearVector( CollectionExtracter.extractVector(vstr, polystr) );
 
 
 	// serialize groups one at a time, using a rwordered/vector is trouble for some reason

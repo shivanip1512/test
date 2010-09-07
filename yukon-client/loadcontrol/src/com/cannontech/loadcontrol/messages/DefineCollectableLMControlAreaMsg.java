@@ -6,8 +6,8 @@ package com.cannontech.loadcontrol.messages;
 import java.util.List;
 
 import com.cannontech.loadcontrol.data.LMControlArea;
-import com.cannontech.message.util.VectorExtract;
-import com.cannontech.message.util.VectorInsert;
+import com.cannontech.message.util.CollectionExtracter;
+import com.cannontech.message.util.CollectionInserter;
 import com.roguewave.tools.v2_0.Comparator;
 
 public class DefineCollectableLMControlAreaMsg extends DefineCollectableLMMessage
@@ -65,7 +65,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 
 	lmControlAreaMsg.setMsgInfoBitMask( new Integer( (int)vstr.extractUnsignedInt() ) );
 	//java.util.Vector controlAreaVector = (java.util.Vector)vstr.restoreObject( polystr );
-    java.util.Vector controlAreaVector = VectorExtract.extractVector(vstr,polystr);
+    java.util.Vector controlAreaVector = CollectionExtracter.extractVector(vstr,polystr);
 
 	((LMControlAreaMsg)obj).setLMControlAreaVector(controlAreaVector);
 }
@@ -81,6 +81,6 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedInt( lmControlAreaMsg.getMsgInfoBitMask().intValue() );
 	List<LMControlArea> areaVector = lmControlAreaMsg.getLMControlAreaVector();
 	//vstr.saveObject( areaVector, com.roguewave.vsj.streamer.CollectableMappings.allCollectables );
-    VectorInsert.insertVector(areaVector, vstr, polystr);
+    CollectionInserter.insertVector(areaVector, vstr, polystr);
 }
 }

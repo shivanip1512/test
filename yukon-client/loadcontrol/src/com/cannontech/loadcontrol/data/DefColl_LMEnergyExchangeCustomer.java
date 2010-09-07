@@ -4,7 +4,7 @@ package com.cannontech.loadcontrol.data;
  * Creation date: (5/28/2001 2:08:29 PM)
  * @author: Aaron Lauinger
  */
-import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.CollectionExtracter;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 
@@ -87,7 +87,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	
 	LMEnergyExchangeCustomer cust = (LMEnergyExchangeCustomer) obj;
 	//cust.setEnergyExchangeCustomerReplies( (Vector) vstr.restoreObject(polystr) );
-    cust.setEnergyExchangeCustomerReplies( VectorExtract.extractVector(vstr, polystr) );
+    cust.setEnergyExchangeCustomerReplies( CollectionExtracter.extractVector(vstr, polystr) );
 }
 
  /**

@@ -1,7 +1,7 @@
 package com.cannontech.yukon.cbc;
 
-import com.cannontech.message.util.VectorExtract;
-import com.cannontech.message.util.VectorInsert;
+import com.cannontech.message.util.CollectionExtracter;
+import com.cannontech.message.util.CollectionInserter;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
@@ -90,7 +90,7 @@ public class DefineCollectableCBCArea extends
         area.setDisableFlag(disableFlag);
         area.setCcDisableFlag(disableFlag);
         area.setOvUvDisabledFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
-        area.setStations( VectorExtract.extractIntArray(vstr, polystr));
+        area.setStations( CollectionExtracter.extractIntArray(vstr, polystr));
         area.setPowerFactorValue( new Double( vstr.extractDouble() ) );
         area.setEstimatedPFValue( new Double( vstr.extractDouble() ) );
         area.setVoltReductionFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
@@ -117,7 +117,7 @@ public class DefineCollectableCBCArea extends
         vstr.saveObject(area.getPaoDescription(), SimpleMappings.CString);
         vstr.insertUnsignedInt((area.getDisableFlag().booleanValue()) ? 1 : 0);
         vstr.insertUnsignedInt((area.getOvUvDisabledFlag().booleanValue()) ? 1 : 0);
-        VectorInsert.insertIntArray(area.getStations(), vstr, polystr);
+        CollectionInserter.insertIntArray(area.getStations(), vstr, polystr);
         vstr.insertDouble( area.getPowerFactorValue().doubleValue() );
         vstr.insertDouble( area.getEstimatedPFValue().doubleValue() );
         vstr.insertUnsignedInt((area.getVoltReductionFlag().booleanValue()) ? 1 : 0);

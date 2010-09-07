@@ -1,7 +1,7 @@
 package com.cannontech.yukon.cbc;
 
-import com.cannontech.message.util.VectorExtract;
-import com.cannontech.message.util.VectorInsert;
+import com.cannontech.message.util.CollectionExtracter;
+import com.cannontech.message.util.CollectionInserter;
 import com.roguewave.vsj.DefineCollectable;
 
 public class DefineCollectableSubStation extends DefineCollectableStreamableCapObject {
@@ -45,7 +45,7 @@ public class DefineCollectableSubStation extends DefineCollectableStreamableCapO
 		SubStation sub = (SubStation) obj;
 
 		sub.setOvuvDisableFlag( ((int)vstr.extractUnsignedInt() == 1)? new Boolean(true) : new Boolean(false) );
-        int[] ids = VectorExtract.extractIntArray(vstr, polystr);
+        int[] ids = CollectionExtracter.extractIntArray(vstr, polystr);
 		sub.setSubBusIds( ids);
         sub.setPowerFactorValue( new Double( vstr.extractDouble() ) );
         sub.setEstimatedPFValue( new Double( vstr.extractDouble() ) );
@@ -65,7 +65,7 @@ public class DefineCollectableSubStation extends DefineCollectableStreamableCapO
 		SubStation sub = (SubStation)obj;
 		
 		vstr.insertUnsignedInt( (sub.getOvuvDisableFlag().booleanValue() == true) ? 1 : 0 );
-		VectorInsert.insertIntArray(sub.getSubBusIds(), vstr, polystr);
+		CollectionInserter.insertIntArray(sub.getSubBusIds(), vstr, polystr);
         vstr.insertDouble( sub.getPowerFactorValue().doubleValue() );
         vstr.insertDouble( sub.getEstimatedPFValue().doubleValue() );
         vstr.insertUnsignedInt( (sub.getSpecialAreaEnabled().booleanValue() == true) ? 1 : 0 );

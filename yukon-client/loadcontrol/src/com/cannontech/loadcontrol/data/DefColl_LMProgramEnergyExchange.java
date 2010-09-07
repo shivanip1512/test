@@ -5,8 +5,8 @@ package com.cannontech.loadcontrol.data;
  * @author: Aaron Lauinger
  */
 
-import com.cannontech.message.util.VectorExtract;
-import com.cannontech.message.util.VectorInsert;
+import com.cannontech.message.util.CollectionExtracter;
+import com.cannontech.message.util.CollectionInserter;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -100,8 +100,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	prog.setStoppedEarlyMsg( (String) vstr.restoreObject( SimpleMappings.CString ))	;
 //	prog.setEnergyExchangeOffers( (Vector) vstr.restoreObject( polystr ));
 //	prog.setEnergyExchangeCustomers( (Vector) vstr.restoreObject( polystr ));
-    prog.setEnergyExchangeOffers( VectorExtract.extractVector(vstr, polystr) );
-    prog.setEnergyExchangeCustomers( VectorExtract.extractVector(vstr, polystr) );
+    prog.setEnergyExchangeOffers( CollectionExtracter.extractVector(vstr, polystr) );
+    prog.setEnergyExchangeCustomers( CollectionExtracter.extractVector(vstr, polystr) );
 }
  /**
 	* This method will be called by CollectableStreamer to save the guts,
@@ -123,7 +123,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.saveObject( prog.getStoppedEarlyMsg(), SimpleMappings.CString );
 //	vstr.saveObject( prog.getEnergyExchangeOffers(), polystr );
 //	vstr.saveObject( prog.getEnergyExchangeCustomers(), polystr );
-    VectorInsert.insertVector( prog.getEnergyExchangeOffers(), vstr, polystr );
-    VectorInsert.insertVector( prog.getEnergyExchangeCustomers(), vstr, polystr );
+    CollectionInserter.insertVector( prog.getEnergyExchangeOffers(), vstr, polystr );
+    CollectionInserter.insertVector( prog.getEnergyExchangeCustomers(), vstr, polystr );
 }
 }

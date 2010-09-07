@@ -5,7 +5,7 @@ package com.cannontech.yukon.cbc;
  */
 import java.util.Vector;
 
-import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.CollectionExtracter;
 import com.roguewave.tools.v2_0.Comparator;
 
 public class DefineCollectableCBCSubstationBuses extends DefineCollectableCBCMessage 
@@ -60,7 +60,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 
 	cbcSubBuses.setMsgInfoBitMask( new Integer( (int)vstr.extractUnsignedInt() ) );
     
-    Vector strategyStore = VectorExtract.extractVector(vstr,polystr);
+    Vector strategyStore = CollectionExtracter.extractVector(vstr,polystr);
 
 	cbcSubBuses.setSubBuses( strategyStore );
 }

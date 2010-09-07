@@ -28,6 +28,7 @@ import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.PeaksTargetType;
 import com.cannontech.database.db.capcontrol.StrategyPeakSettingsHelper;
+import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.database.db.point.calculation.ControlAlgorithm;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.user.YukonUserContext;
@@ -315,7 +316,8 @@ public class StrategyDaoImpl implements StrategyDao{
                 String peakValue = rs.getString("peakValue");
                 String offPeakValue = rs.getString("offPeakValue");
                 
-                PeakTargetSetting setting = new PeakTargetSetting(name, peakValue, offPeakValue, null);
+                TargetSettingType targetSetting = TargetSettingType.getByName(name);
+                PeakTargetSetting setting = new PeakTargetSetting(name, peakValue, offPeakValue, targetSetting.getUnits());
                 
                 return setting;
             }

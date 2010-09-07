@@ -1,7 +1,7 @@
 package com.cannontech.yukon.cbc;
 
-import com.cannontech.message.util.VectorExtract;
-import com.cannontech.message.util.VectorInsert;
+import com.cannontech.message.util.CollectionExtracter;
+import com.cannontech.message.util.CollectionInserter;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.VirtualInputStream;
@@ -88,7 +88,7 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
         Boolean disableFlag = ((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false);
         area.setDisableFlag(disableFlag);
         area.setCcDisableFlag(disableFlag);
-        area.setCcSubIds( VectorExtract.extractIntArray(vstr, polystr));
+        area.setCcSubIds( CollectionExtracter.extractIntArray(vstr, polystr));
         area.setOvUvDisabledFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
         area.setPowerFactorValue( new Double( vstr.extractDouble() ) );
         area.setEstimatedPFValue( new Double( vstr.extractDouble() ) );
@@ -110,7 +110,7 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
         vstr.saveObject(area.getPaoType(), SimpleMappings.CString);
         vstr.saveObject(area.getPaoDescription(), SimpleMappings.CString);
         vstr.insertUnsignedInt((area.getDisableFlag().booleanValue()) ? 1 : 0);
-        VectorInsert.insertIntArray(area.getCcSubIds(), vstr, polystr);
+        CollectionInserter.insertIntArray(area.getCcSubIds(), vstr, polystr);
         vstr.insertUnsignedInt((area.getOvUvDisabledFlag().booleanValue()) ? 1 : 0);
         vstr.insertDouble( area.getPowerFactorValue().doubleValue() );
         vstr.insertDouble( area.getEstimatedPFValue().doubleValue() );

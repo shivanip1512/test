@@ -14,11 +14,14 @@ import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.cbc.CapControlCommand;
+import com.cannontech.yukon.cbc.DynamicCommand;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.cbc.TempMoveCapBank;
 import com.cannontech.yukon.cbc.CCVerifySubBus;
 import com.cannontech.yukon.cbc.CCVerifySubStation;
 import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.DynamicCommand.CommandType;
+import com.cannontech.yukon.cbc.DynamicCommand.Parameter;
 
 /**
  * @author rneuharth
@@ -35,6 +38,16 @@ public class CapControlCommandExecutor
 	public CapControlCommandExecutor(final CapControlCache capControlCache, LiteYukonUser user) {	
 	    this.capControlCache = capControlCache;
 	    this.user = user;
+	}
+	
+	public void executeDeltaUpdate(int bankId, int pointId, double delta) {
+	    DynamicCommand command = new DynamicCommand(CommandType.DELTA);
+	    
+	    command.addParameter(Parameter.DEVICE_ID, bankId);
+	    command.addParameter(Parameter.POINT_ID, pointId);
+	    command.addParameter(Parameter.POINT_RESPONSE_DELTA, delta);
+	    
+	    capControlCache.getConnection().sendCommand(command);
 	}
 	
 	public void execute(CapControlType controlType, int cmdId, int paoId, LiteYukonUser user) throws UnsupportedOperationException {

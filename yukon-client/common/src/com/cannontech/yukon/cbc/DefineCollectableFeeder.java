@@ -5,8 +5,8 @@ package com.cannontech.yukon.cbc;
  * Creation date: (8/17/00 3:21:47 PM)
  * @author: 
  */
-import com.cannontech.message.util.VectorExtract;
-import com.cannontech.message.util.VectorInsert;
+import com.cannontech.message.util.CollectionExtracter;
+import com.cannontech.message.util.CollectionInserter;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
@@ -129,7 +129,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
     feeder.setUsePhaseData( ((int)vstr.extractUnsignedInt() == 1) 
     						? new Boolean(true) : new Boolean(false));
     feeder.setOriginalParentId(new Integer(vstr.extractInt()));
-	feeder.setCcCapBanks(VectorExtract.extractVector(vstr,polystr));
+	feeder.setCcCapBanks(CollectionExtracter.extractVector(vstr,polystr));
 }
 
 /**
@@ -223,7 +223,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 			? 1 : 0 );
 	vstr.insertUnsignedInt((feeder.getUsePhaseData().booleanValue() == true)? 1 : 0 );
 	vstr.insertInt(feeder.getOriginalParentId());
-    VectorInsert.insertVector(feeder.getCcCapBanks(), vstr, polystr);
+    CollectionInserter.insertVector(feeder.getCcCapBanks(), vstr, polystr);
     
 }
 }

@@ -5,7 +5,7 @@ package com.cannontech.yukon.cbc;
  */
 import java.util.Vector;
 
-import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.CollectionExtracter;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.VirtualInputStream;
@@ -64,7 +64,7 @@ public class DefineCollectableCCSpecialSubAreas extends DefineCollectableCBCMess
     public void restoreGuts(Object obj, VirtualInputStream vstr, CollectableStreamer polystr) throws java.io.IOException {
 
         super.restoreGuts(obj, vstr, polystr);
-        Vector areaNames = VectorExtract.extractVector(vstr, polystr);
+        Vector areaNames = CollectionExtracter.extractVector(vstr, polystr);
         ((CCSubSpecialAreas) obj).setAreas(areaNames);
     }
 

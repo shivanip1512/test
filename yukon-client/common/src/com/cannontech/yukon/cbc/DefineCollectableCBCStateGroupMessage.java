@@ -5,7 +5,7 @@ package com.cannontech.yukon.cbc;
  */
 import java.util.Vector;
 
-import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.CollectionExtracter;
 import com.roguewave.tools.v2_0.Comparator;
 
 public class DefineCollectableCBCStateGroupMessage extends DefineCollectableCBCMessage
@@ -57,7 +57,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	super.restoreGuts( obj, vstr, polystr );
 	//java.util.Vector stateStore = (java.util.Vector)vstr.restoreObject( polystr );
     
-    Vector stateStore = VectorExtract.extractVector(vstr,polystr);
+    Vector stateStore = CollectionExtracter.extractVector(vstr,polystr);
 
 	((CCStates) obj).setStates( stateStore );
 }

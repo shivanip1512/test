@@ -1,5 +1,7 @@
 package com.cannontech.database.db.capcontrol;
 
+import com.cannontech.core.dao.NotFoundException;
+
 public enum TargetSettingType {
     UPPER_VOLT_LIMIT("Upper Volt Limit", "130.0", "Volts"),
     LOWER_VOLT_LIMIT("Lower Volt Limit", "110.0", "Volts"),
@@ -58,5 +60,20 @@ public enum TargetSettingType {
     public PeakTargetSetting getPeakTargetSetting(){
         PeakTargetSetting setting = new PeakTargetSetting(name, defaultValue, defaultValue, units);
         return setting;
+    }
+    
+    public String getUnits() {
+        return units;
+    }
+    
+    public static TargetSettingType getByName(String name) {
+        
+        for (TargetSettingType type : TargetSettingType.values()) {
+            if (type.getName().equals(name)) {
+                return type;
+            }
+        }
+
+        throw new NotFoundException("TargetSettingType not found : " + name);
     }
 }
