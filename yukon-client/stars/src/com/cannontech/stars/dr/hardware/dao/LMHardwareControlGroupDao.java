@@ -22,11 +22,18 @@ public interface LMHardwareControlGroupDao {
     
     public void unenrollHardware(int inventoryId);
     
-    public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, 
-                             ReadableInstant stopDate);    
+    /** 
+     * This method stops any opt out that matches the inventoryId and accountId supplied.
+     */
+    public void stopOptOut(int inventoryId, int accountId, 
+                             LiteYukonUser currentUser, ReadableInstant stopDate);
 
+    /** 
+     * This method stops any opt out that matches the inventoryId, accountId, 
+     * and assignedProgramId supplied.
+     */
     public void stopOptOut(int inventoryId, int accountId, int assignedProgramId,
-                           LiteYukonUser currentUser, ReadableInstant stopDate);    
+                             LiteYukonUser currentUser, ReadableInstant stopDate);    
     
     public void resetEntriesForProgram(int programId, LiteYukonUser user);    
     

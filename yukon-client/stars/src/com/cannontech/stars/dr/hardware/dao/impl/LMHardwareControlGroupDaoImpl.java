@@ -216,17 +216,9 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, 
                              ReadableInstant stopDate) {
-        
-        SqlStatementBuilder optOutSQL = new SqlStatementBuilder();
-        optOutSQL.append("UPDATE LMHardwareControlGroup");
-        optOutSQL.append("SET OptOutStop").eq(stopDate);
-        optOutSQL.append(",UserIdSecondAction").eq(currentUser.getUserID());
-        optOutSQL.append("WHERE InventoryId").eq(inventoryId);
-        optOutSQL.append("AND AccountId").eq(accountId);
-        optOutSQL.append("AND NOT OptOutStart IS NULL");
-        optOutSQL.append("AND OptOutStop IS NULL");
 
-        yukonJdbcTemplate.update(optOutSQL);
+        stopOptOut(inventoryId, accountId, -1, currentUser, stopDate);
+
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
@@ -239,9 +231,12 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         optOutSQL.append(",UserIdSecondAction").eq(currentUser.getUserID());
         optOutSQL.append("WHERE InventoryId").eq(inventoryId);
         optOutSQL.append("AND AccountId").eq(accountId);
-        optOutSQL.append("AND ProgramId").eq(assignedProgram);
         optOutSQL.append("AND NOT OptOutStart IS NULL");
         optOutSQL.append("AND OptOutStop IS NULL");
+        
+        if (assignedProgram != -1) {
+            optOutSQL.append("AND ProgramId").eq(assignedProgram);
+        }
 
         yukonJdbcTemplate.update(optOutSQL);
     }
