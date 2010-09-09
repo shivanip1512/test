@@ -263,6 +263,9 @@
 
     <bean id="webConfigurationDao" class="com.cannontech.stars.webconfiguration.dao.impl.WebConfigurationDaoImpl"/>
 
+    <bean id="workOrderBaseDao" class="com.cannontech.stars.dr.workOrder.dao.impl.WorkOrderBaseDaoImpl" />
+    <bean id="workOrderService" class="com.cannontech.stars.dr.workOrder.service.impl.WorkOrderServiceImpl"/>
+
     <bean id="optOutSurveyDao" class="com.cannontech.stars.dr.optout.dao.impl.OptOutSurveyDaoImpl"/>
     <bean id="optOutSurveyService" class="com.cannontech.stars.dr.optout.service.impl.OptOutSurveyServiceImpl"/>
 

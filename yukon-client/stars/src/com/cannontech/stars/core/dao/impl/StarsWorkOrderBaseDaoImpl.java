@@ -104,8 +104,10 @@ public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao, Initial
                 workOrder.setDateReported(rs.getTimestamp("DateReported").getTime());
                 workOrder.setOrderedBy(rs.getString("OrderedBy"));
                 workOrder.setDescription(rs.getString("Description"));
-                workOrder.setDateScheduled(rs.getTimestamp("DateScheduled").getTime());
-                workOrder.setDateCompleted(rs.getTimestamp("DateCompleted").getTime());
+                if (rs.getTimestamp("DateScheduled") != null)
+                    workOrder.setDateScheduled(rs.getTimestamp("DateScheduled").getTime());
+                if (rs.getTimestamp("DateCompleted") != null)
+                    workOrder.setDateCompleted(rs.getTimestamp("DateCompleted").getTime());
                 workOrder.setActionTaken(rs.getString("ActionTaken"));
                 workOrder.setAdditionalOrderNumber(rs.getString("AdditionalOrderNumber"));
                 workOrder.setEnergyCompanyID(rs.getInt("EnergyCompanyID"));

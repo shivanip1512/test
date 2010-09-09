@@ -30,7 +30,8 @@ public enum ArgEnum {
     shedDuration, 
     tagSet, 
     thermostatLabel,
-    username
+    username, 
+    workOrderNumber
     ;
 
 }

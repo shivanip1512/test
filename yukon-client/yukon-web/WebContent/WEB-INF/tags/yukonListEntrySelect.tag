@@ -9,8 +9,12 @@
 <%@ attribute name="listName" required="true" type="java.lang.String"%>
 <%@ attribute name="defaultItemValue" required="false" type="java.lang.String"%>
 <%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>
+<%@ attribute name="onchange" required="false" type="java.lang.String"%>
 
 <cti:yukonListEntryList var="entryList" listName="${listName}" accountId="${accountId}"/>
 
-<tags:selectWithItems path="${path}" items="${entryList}" itemValue="entryID" itemLabel="entryText" defaultItemValue="${pageScope.defaultItemValue}" defaultItemLabel="${pageScope.defaultItemLabel}"/>
+<tags:selectWithItems path="${path}" items="${entryList}" itemValue="entryID" itemLabel="entryText" 
+                      defaultItemValue="${pageScope.defaultItemValue}" 
+                      defaultItemLabel="${pageScope.defaultItemLabel}"
+                      onchange="${pageScope.onchange}" />
 

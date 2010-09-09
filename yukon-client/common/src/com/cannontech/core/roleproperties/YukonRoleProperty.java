@@ -264,7 +264,7 @@ public enum YukonRoleProperty {
     OPERATOR_IMPORT_CUSTOMER_ACCOUNT(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT, stringType()),
     OPERATOR_INVENTORY_CHECKING(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.INVENTORY_CHECKING, booleanType()),
     OPERATOR_AUTOMATIC_CONFIGURATION(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.AUTOMATIC_CONFIGURATION, booleanType()),
-    OPERATOR_ORDER_NUMBER_AUTO_GEN(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN, stringType()),
+    OPERATOR_ORDER_NUMBER_AUTO_GEN(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN, booleanType()),
     OPERATOR_CALL_NUMBER_AUTO_GEN(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CALL_NUMBER_AUTO_GEN, stringType()),
     OPERATOR_OPT_OUT_PERIOD(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.OPT_OUT_PERIOD, stringType()),
     OPERATOR_DISABLE_SWITCH_SENDING(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.DISABLE_SWITCH_SENDING, booleanType()),

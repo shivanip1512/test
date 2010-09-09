@@ -98,7 +98,8 @@
     <entry key="yukon.common.events.tagSet">Tag Set</entry>
     <entry key="yukon.common.events.thermostatLabel">Thermostat Label</entry>
     <entry key="yukon.common.events.username">Username</entry>
-
+    <entry key="yukon.common.events.workOrderNumber">Work Order Number</entry>
+    
 <!-- Event log message text and column names -->
 <!-- Account -->
     <!-- Account -->
@@ -186,6 +187,15 @@
     <entry key="yukon.common.events.stars.account.appliance.applianceAdded">The appliance {3} with the program {5} was added to the account {2} on device {4} by {1}</entry>
     <entry key="yukon.common.events.stars.account.appliance.applianceUpdated">The appliance {3} with the program {5} for device {4} and account {2} was updated by {1}</entry>
     <entry key="yukon.common.events.stars.account.appliance.applianceDeleted">The appliance {3} with the program {5} for device {4} and account {2} was removed by {1}</entry>
+
+    <!-- Work Order -->
+    <entry key="yukon.common.events.stars.account.workOrder.workOrderCreationAttemptedByOperator">The operator {1} is attempting to create the work order {3} which will be on the account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.workOrder.workOrderUpdateAttemptedByOperator">The operator {1} is attempting to update the work order {3} which is currently on the account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.workOrder.workOrderDeletionAttemptedByOperator">The operator {1} is attempting to delete the work order {3} which is currently on the account {2}.</entry>
+
+    <entry key="yukon.common.events.stars.account.workOrder.workOrderCreated">The work order {3} was created on the the account {2} by {1}</entry>
+    <entry key="yukon.common.events.stars.account.workOrder.workOrderUpdated">The work order {3}, which is on the account {2}, was updated by {1}</entry>
+    <entry key="yukon.common.events.stars.account.workOrder.workOrderDeleted">The work order {3} was deleted from the account {2} by {1}</entry>
 
     <!-- Thermostat Schedule -->
     <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleSavingAttemptedByOperator">The user {1} is attempting to save the schedule {4} to the device {3} for the account {2}.  They are attempting this through the operator pages.</entry>

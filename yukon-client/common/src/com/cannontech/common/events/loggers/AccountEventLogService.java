@@ -297,7 +297,39 @@ public interface AccountEventLogService {
                                  @Arg(ArgEnum.deviceName) String deviceName,
                                  @Arg(ArgEnum.programName) String programName);
 
+/* Work Orders */
+    // Work Order
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.workOrder")
+    public void workOrderCreationAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+                                                     @Arg(ArgEnum.accountNumber) String accountNumber, 
+                                                     @Arg(ArgEnum.workOrderNumber) String workOrderNumber);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.workOrder")
+    public void workOrderUpdateAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+                                                   @Arg(ArgEnum.accountNumber) String accountNumber, 
+                                                   @Arg(ArgEnum.workOrderNumber) String workOrderNumber);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.workOrder")
+    public void workOrderDeletionAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+                                                     @Arg(ArgEnum.accountNumber) String accountNumber, 
+                                                     @Arg(ArgEnum.workOrderNumber) String workOrderNumber);
+    
+    // Work Order Service Level
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.workOrder")
+    public void workOrderCreated(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+                                 @Arg(ArgEnum.accountNumber) String accountNumber, 
+                                 @Arg(ArgEnum.workOrderNumber) String workOrderNumber);
 
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.workOrder")
+    public void workOrderUpdated(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+                                 @Arg(ArgEnum.accountNumber) String accountNumber, 
+                                 @Arg(ArgEnum.workOrderNumber) String workOrderNumber);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.workOrder")
+    public void workOrderDeleted(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+                                 @Arg(ArgEnum.accountNumber) String accountNumber, 
+                                 @Arg(ArgEnum.workOrderNumber) String workOrderNumber);
+    
 /* THERMOSTAT SCHEDULES */
     // Thermostat Schedule
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")

@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,17 +63,18 @@ public class DatePropertyEditorFactory {
 
         public void setAsText(String dateStr) throws IllegalArgumentException {
             try {
-                setValue(dateFormattingService.flexibleDateParser(dateStr,
-                                                                  userContext));
+                Date date = dateFormattingService.flexibleDateParser(dateStr,
+                                                         userContext);
+                setValue(new DateTime(date, userContext.getJodaTimeZone()));
             } catch (ParseException exception) {
                 throw new IllegalArgumentException("Could not parse date", exception);
             }
         }
 
         public String getAsText() {
-            Date date = (Date) getValue();
-            return date == null
-                ? "" : dateFormattingService.format(date, dateFormat, userContext);
+            DateTime dateTime = (DateTime) getValue();
+            return dateTime == null
+                ? "" : dateFormattingService.format(dateTime, dateFormat, userContext);
         }
     }
 
@@ -185,7 +187,7 @@ public class DatePropertyEditorFactory {
         return new LocalTimePropertyEditor(dateFormat, userContext, blankMode);
     }
     
-    public PropertyEditor getLocalDatePropertyEditor(DateFormatEnum dateFormat,
+        public PropertyEditor getLocalDatePropertyEditor(DateFormatEnum dateFormat,
                                                       YukonUserContext userContext) {
         return new LocalDatePropertyEditor(dateFormat, userContext, BlankMode.NULL);
     }
@@ -205,6 +207,11 @@ public class DatePropertyEditorFactory {
             YukonUserContext userContext, BlankMode blankMode) {
         PropertyEditor propertyEditor = getLocalTimePropertyEditor(DateFormatEnum.TIME, userContext, blankMode);
         dataBinder.registerCustomEditor(LocalTime.class, propertyEditor);
+    }
+    
+    public PropertyEditor getDateTimePropertyEditor(DateFormatEnum dateFormat,
+                                                     YukonUserContext userContext) {
+       return new DateTimePropertyEditor(dateFormat, userContext);
     }
     
     @Autowired

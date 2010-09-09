@@ -1,6 +1,6 @@
 <%@ attribute name="path" required="true"%>
 <%@ attribute name="fieldId"%>
-<%@ attribute name="fieldValue" type="java.util.Date"%>
+<%@ attribute name="fieldValue" type="java.lang.Object"%>
 <%@ attribute name="disabled" type="java.lang.Boolean"%>
 <%@ attribute name="inline" type="java.lang.Boolean"%>
 

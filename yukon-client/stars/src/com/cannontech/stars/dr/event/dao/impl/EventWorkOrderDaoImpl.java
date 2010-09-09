@@ -11,35 +11,48 @@ import java.util.Map;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.stars.dr.event.dao.EventWorkOrderDao;
+import com.cannontech.stars.dr.event.model.EventBase;
 
 public class EventWorkOrderDaoImpl implements EventWorkOrderDao, InitializingBean {
-    private static final String selectSql;
-    private static final String selecltByWorkOrderIdSql;
     private static final ParameterizedRowMapper<EventWorkOrder> rowMapper;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private ChunkingSqlTemplate chunkyJdbcTemplate;
     
+    private SqlStatementBuilder selectSql = new SqlStatementBuilder();
+    {
+        selectSql.append("SELECT EB.EventId, EB.UserId, EB.SystemCategoryId, EB.ActionId, EB.EventTimestamp");
+        selectSql.append("FROM EventBase EB");
+        selectSql.append("JOIN EventWorkOrder EWO ON EWO.EventId = EB.EventId");
+        selectSql.append("JOIN ECToWorkOrderMapping MAP ON MAP.WorkOrderId = EWO.OrderId");
+    }
+    
     static {
+        rowMapper = oldEventWorkOrderRowMapper();
+    }
+    
+    @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    public void add(com.cannontech.stars.dr.event.model.EventWorkOrder eventWorkOrder) {
         
-        selectSql = "SELECT EB.EVENTID,USERID,SYSTEMCATEGORYID,ACTIONID,EVENTTIMESTAMP,ORDERID " +
-                    "FROM EventBase EB,EventWorkOrder EWO,ECToWorkOrderMapping map";
-        
-        selecltByWorkOrderIdSql = selectSql + " WHERE EB.EVENTID = EWO.EVENTID " +
-                                               "AND MAP.WORKORDERID = EWO.ORDERID " +
-                                               "AND EWO.ORDERID = ? " +
-                                               "ORDER BY EB.EVENTID, EVENTTIMESTAMP";
-        
-        rowMapper = createRowMapper();
-        
+        SqlStatementBuilder insertSql = new SqlStatementBuilder();
+        insertSql.append("INSERT INTO EventWorkOrder");
+        insertSql.values(eventWorkOrder.getEventId(), eventWorkOrder.getWorkOrderId());
+
+        yukonJdbcTemplate.update(insertSql);
+    
     }
     
     @Override
@@ -63,7 +76,7 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao, InitializingBea
         
         final Map<Integer,List<EventWorkOrder>> resultMap = new HashMap<Integer,List<EventWorkOrder>>(workOrderList.size());
         for (final String sql : queryList) {
-            simpleJdbcTemplate.getJdbcOperations().query(sql, new RowCallbackHandler() {
+            yukonJdbcTemplate.getJdbcOperations().query(sql, new RowCallbackHandler() {
                 @Override
                 public void processRow(ResultSet rs) throws SQLException {
                     final Integer key = rs.getInt("ORDERID");
@@ -81,9 +94,20 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao, InitializingBea
     }
     
     @Override
-    public List<EventWorkOrder> getByWorkOrderId(final int workOrderId) {
-        List<EventWorkOrder> list = simpleJdbcTemplate.query(selecltByWorkOrderIdSql, rowMapper, workOrderId);
-        return list;
+    public List<EventBase> getByWorkOrderId(final int workOrderId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(selectSql);
+        sql.append("WHERE MAP.WorkOrderId").eq(workOrderId);
+        sql.append("ORDER BY EB.EventTimestamp DESC");
+        
+        return yukonJdbcTemplate.query(sql, new EventBaseRowMapper());
+    }
+    
+    @Override
+    public void deleteEventWorkOrders(List<Integer> workOrderIds) {
+        if(!workOrderIds.isEmpty()) {
+            chunkyJdbcTemplate.update(new EventWorkOrderDeleteSqlGenerator(), workOrderIds);
+        }
     }
     
     private String builderSqlForWorkOrderId(List<Integer> workOrderIdList) {
@@ -97,13 +121,6 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao, InitializingBea
         sqlBuilder.append("ORDER BY EB.EVENTID, EVENTTIMESTAMP");
         String sql = sqlBuilder.toString();
         return sql;
-    }
-    
-    @Override
-    public void deleteEventWorkOrders(List<Integer> workOrderIds) {
-        if(!workOrderIds.isEmpty()) {
-            chunkyJdbcTemplate.update(new EventWorkOrderDeleteSqlGenerator(), workOrderIds);
-        }
     }
     
     /**
@@ -124,12 +141,12 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao, InitializingBea
     public List<Integer> getEventIdsForWorkOrder(Integer workOrderId){
         String sql = "SELECT EventId FROM EventWorkOrder WHERE OrderId = ?";
         List<Integer> eventIds = new ArrayList<Integer>();
-        eventIds = simpleJdbcTemplate.query(sql, new IntegerRowMapper(), workOrderId);
+        eventIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper(), workOrderId);
         
         return eventIds;
     }
     
-    private static ParameterizedRowMapper<EventWorkOrder> createRowMapper() {
+    private static ParameterizedRowMapper<EventWorkOrder> oldEventWorkOrderRowMapper() {
         final ParameterizedRowMapper<EventWorkOrder> mapper = new ParameterizedRowMapper<EventWorkOrder>() {
             @Override
             public EventWorkOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -145,13 +162,31 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao, InitializingBea
         };
         return mapper;
     }
+
+    private static class EventBaseRowMapper implements
+            YukonRowMapper<com.cannontech.stars.dr.event.model.EventBase> {
+
+        @Override
+        public com.cannontech.stars.dr.event.model.EventBase mapRow(YukonResultSet rs) throws SQLException {
+            com.cannontech.stars.dr.event.model.EventBase eventBase = 
+                new com.cannontech.stars.dr.event.model.EventBase();
+
+            eventBase.setEventId(rs.getInt("EventId"));
+            eventBase.setUserId(rs.getInt("UserId"));
+            eventBase.setSystemCategoryId(rs.getInt("SystemCategoryId"));
+            eventBase.setActionId(rs.getInt("ActionId"));
+            eventBase.setEventTimestamp(rs.getInstant("EventTimestamp"));
+
+            return eventBase;
+        }
+    }
     
-    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setSimpleJdbcTemplate(com.cannontech.database.YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
+        chunkyJdbcTemplate= new ChunkingSqlTemplate(yukonJdbcTemplate);
     }
 }

@@ -6,7 +6,11 @@
 <%@ attribute name="listName" required="true" type="java.lang.String"%>
 <%@ attribute name="defaultItemValue" required="false" type="java.lang.String"%>
 <%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>
+<%@ attribute name="onchange" required="false" type="java.lang.String"%>
 
 <tags:nameValue2 nameKey="${nameKey}">
-	<tags:yukonListEntrySelect path="${path}" accountId="${accountId}" listName="${listName}" defaultItemValue="${pageScope.defaultItemValue}" defaultItemLabel="${pageScope.defaultItemLabel}"/>
+	<tags:yukonListEntrySelect path="${path}" accountId="${accountId}" listName="${listName}" 
+                               defaultItemValue="${pageScope.defaultItemValue}" 
+                               defaultItemLabel="${pageScope.defaultItemLabel}"
+                               onchange="${pageScope.onchange}" />
 </tags:nameValue2>

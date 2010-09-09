@@ -1062,19 +1062,19 @@
 			           	<link>/spring/stars/operator/callTracking/callList?accountId=${accountId}</link>
 			           	<labelArgument>${accountNumber}</labelArgument>
 			           	<pages>
-		                <page name="viewCall.EDIT" type="DETAIL">
-	    	              <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
-	        	          <menu>account|accounts</menu>
-	            	      <link>/spring/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
-	                	  <labelArgument>${callNumber}</labelArgument>
-		                </page>
-		                <page name="viewCall.CREATE" type="BASIC">
-	    	              <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
-	        	          <menu>account|accounts</menu>
-	            	      <link>/spring/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
-	                	  <labelArgument>${callNumber}</labelArgument>
-		                </page>
-	    	          </pages>
+		                  <page name="viewCall.EDIT" type="DETAIL">
+	    	                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
+	        	            <menu>account|accounts</menu>
+	            	        <link>/spring/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
+	                	    <labelArgument>${callNumber}</labelArgument>
+		                  </page>
+		                  <page name="viewCall.CREATE" type="BASIC">
+	    	                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
+	        	            <menu>account|accounts</menu>
+	            	        <link>/spring/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
+	                	    <labelArgument>${callNumber}</labelArgument>
+		                  </page>
+	    	            </pages>
 			    	</page>
 			    	<page name="metering" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
 			    	<requireRoleProperty value="OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA, OPERATOR_CONSUMER_INFO_METERING_CREATE" />
@@ -1209,6 +1209,26 @@
 					    	</page>
 	                    </pages>
 	                </page>
+                    <page name="workOrderList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
+                        <menu>account|accounts</menu>
+                        <link>/spring/stars/operator/workOrder/workOrderList?accountId=${accountId}</link>
+                        <labelArgument>${accountNumber}</labelArgument>
+                        <pages>
+                        <page name="viewWorkOrder.EDIT" type="DETAIL">
+                          <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
+                          <menu>account|accounts</menu>
+                          <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>
+                          <labelArgument>${workOrderNumber}</labelArgument>
+                        </page>
+                        <page name="viewWorkOrder.CREATE" type="DETAIL">
+                          <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
+                          <menu>account|accounts</menu>
+                          <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>
+                          <labelArgument>${workOrderNumber}</labelArgument>
+                        </page>
+                      </pages>
+                    </page>
 			    	<page name="changeLogin" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
 			    		<requireRoleProperty value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME,
 			    		                            OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD"/>

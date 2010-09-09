@@ -1,5 +1,7 @@
 package com.cannontech.core.dao;
 
+import java.util.List;
+
 import com.cannontech.common.model.ServiceCompanyDto;
 
 public interface ServiceCompanyDao {
@@ -11,4 +13,9 @@ public interface ServiceCompanyDao {
      */
     public ServiceCompanyDto getCompanyById(int serviceCompanyId);
 
+    /**
+     * Returns a list of all the service companies.
+     */
+    public List<ServiceCompanyDto> getAllServiceCompanies();
+    
 }

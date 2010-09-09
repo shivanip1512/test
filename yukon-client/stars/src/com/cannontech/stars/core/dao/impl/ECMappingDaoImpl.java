@@ -18,6 +18,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.ECToAccountMapping;
+import com.cannontech.stars.dr.workOrder.model.ECToWorkOrderMapping;
 import com.cannontech.stars.util.ECUtils;
 import com.google.common.collect.Sets;
 
@@ -137,6 +138,16 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
             return sql.toString();
         }
     }
+
+    @Override
+    public void addECToWorkOrderMapping(ECToWorkOrderMapping ecToWorkOrderMapping) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO ECToWorkOrderMapping");
+        sql.values(ecToWorkOrderMapping.getEnergyCompanyId(), ecToWorkOrderMapping.getWorkOrderId());
+        
+        yukonJdbcTemplate.update(sql);
+    }
+
     
     @Override
     @Transactional    
@@ -221,4 +232,5 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     public void afterPropertiesSet() throws Exception {
         chunkyJdbcTemplate= new ChunkingSqlTemplate(yukonJdbcTemplate);
     }
+
 }
