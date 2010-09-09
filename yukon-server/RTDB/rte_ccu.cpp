@@ -1,33 +1,9 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   rte_ccu
-*
-* Date:   2/20/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-#include <iostream>
-#include <iomanip>
+#include "rte_ccu.h"
 
 #include "dsm2.h"
-#include "rte_xcu.h"
-#include "master.h"
-#include "cmdparse.h"
-#include "ctibase.h"
-#include "dev_remote.h"
 #include "dev_ccu.h"
-#include "rte_ccu.h"
-#include "msg_pcrequest.h"
 #include "porter.h"
 #include "logger.h"
 #include "numstr.h"
@@ -345,23 +321,28 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
 
     if(OutMessage->EventCode & BWORD)
     {
+        BSTRUCT &BSt = OutMessage->Buffer.BSt;
+
         /* Load up the hunks of the B structure that we know/need */
-        OutMessage->Buffer.BSt.Port                = _transmitterDevice->getPortID();
-        OutMessage->Buffer.BSt.Remote              = _transmitterDevice->getAddress();
-        OutMessage->Buffer.BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)(_transmitterDevice.get()))->getIDLC().getAmp();
-        OutMessage->Buffer.BSt.DlcRoute.Bus        = Carrier.getBus();
-        OutMessage->Buffer.BSt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
-        OutMessage->Buffer.BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
-        OutMessage->Buffer.BSt.DlcRoute.Stages     = getStages();                // How many repeaters on this route?
+        BSt.Port                = _transmitterDevice->getPortID();
+        BSt.Remote              = _transmitterDevice->getAddress();
+        BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)(_transmitterDevice.get()))->getIDLC().getAmp();
+        BSt.DlcRoute.Bus        = Carrier.getBus();
+        BSt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
+        BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
+        BSt.DlcRoute.Stages     = getStages();                // How many repeaters on this route?
 
-        const bool isOneWayRequest = (OutMessage->Buffer.BSt.IO == EmetconProtocol::IO_Write) ||
-                                     (OutMessage->Buffer.BSt.IO == EmetconProtocol::IO_Function_Write);
+        const bool isOneWayRequest = (BSt.IO == EmetconProtocol::IO_Write) ||
+                                     (BSt.IO == EmetconProtocol::IO_Function_Write);
 
-        const bool isCcu711Transmitter = _transmitterDevice->getType() == TYPE_CCU711;
-
-        //  Adjust the stages-to-follow count if we have anything special to do,
-        //    such as an MCT-410 disconnect or we want to delay one-way commands
-        adjustStagesToFollow(OutMessage->Buffer.BSt.DlcRoute.Stages, OutMessage->MessageFlags, isOneWayRequest && isCcu711Transmitter);
+        if( isOneWayRequest )
+        {
+            //  Adjust the stages-to-follow count if we have anything special to do,
+            //    such as an MCT-410 disconnect or we want to delay one-way commands
+            adjustOutboundStagesToFollow(BSt.DlcRoute.Stages,
+                                         OutMessage->MessageFlags,
+                                         _transmitterDevice->getType());
+        }
     }
     else if(OutMessage->EventCode & AWORD)
     {
@@ -464,34 +445,32 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
 
 
 /**
- * adjustStagesToFollow() calculates the "stages to follow"
+ * adjustOutboundStagesToFollow() adjusts the "stages to follow"
  * count based on the route's repeater count and any additional
  * silence that may be required for a command.
  *
- * @param isOneWayRequest
- *               Is this a one way request?
- * @param stages Base stages-to-follow count from the route
- * @param MessageFlags
+ * @param stagesToFollow
+ *               Base stages-to-follow count from the route
+ * @param messageFlags
  *               MessageFlags from the OutMessage
- * @param TransmitterType
+ * @param type
  *               Transmitter type from _transmitterDevice
- *
- * @return Adjusted stages-to-follow count.
  */
-void CtiRouteCCU::adjustStagesToFollow(unsigned short &stagesToFollow, unsigned &messageFlags, const bool isOneWayCcu711Request)
+void CtiRouteCCU::adjustOutboundStagesToFollow(unsigned short &stagesToFollow, unsigned &messageFlags, const int type)
 {
-    //  we only add silence for one way commands
-    //    also, this hack doesn't work for CCU-700/710s at this point - uncertain if they can handle it
-    //    we may need to improve the CCU-710 NAK handling to allow us to handle the error
-    if( isOneWayCcu711Request )
+    if( type == TYPE_CCU711 ||
+        type == TYPE_CCU721 )
     {
         //  add on silence for the MCT-410 to broadcast to its disconnect collar
         if( messageFlags & MessageFlag_AddMctDisconnectSilence )
         {
             stagesToFollow += 2;
         }
+    }
 
-        //  make sure we have at least 1 stages-to-follow delay for the CCU to cool down
+    if( type == TYPE_CCU711 )
+    {
+        //  make sure we have at least 1 stages-to-follow delay for the CCU-711 to cool down
         if( stagesToFollow == 0 )
         {
             stagesToFollow++;
@@ -500,7 +479,7 @@ void CtiRouteCCU::adjustStagesToFollow(unsigned short &stagesToFollow, unsigned 
         }
     }
 
-    stagesToFollow = std::min(stagesToFollow, (unsigned short)MaxStagesToFollow);
+    stagesToFollow = std::min<unsigned short>(stagesToFollow, MaxStagesToFollow);
 }
 
 

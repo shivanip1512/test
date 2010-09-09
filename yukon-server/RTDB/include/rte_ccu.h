@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   rte_ccu
-*
-* Class:  CtiRouteCCU
-* Date:   9/30/1999
-*
-* Author: Corey Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_ccu.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __RTE_CCU_H__
-#define __RTE_CCU_H__
+#pragma once
 
 #include <rw/tvordvec.h>
 #include "rte_xcu.h"
@@ -31,7 +14,7 @@ protected:
    // This is a vector of repeaters 0 to 7 in length... currently we rely on DBEditor to assure this...
    RWTValOrderedVector< CtiTableRepeaterRoute >  RepeaterList;
 
-   static void adjustStagesToFollow(unsigned short &stagesToFollow, unsigned &messageFlags, const bool isOneWayCcu711Request);
+   static void adjustOutboundStagesToFollow(unsigned short &stagesToFollow, unsigned &messageFlags, const int type);
 
 private:
 
@@ -97,4 +80,3 @@ public:
 
 typedef boost::shared_ptr<CtiRouteCCU> CtiRouteCCUSPtr;
 
-#endif // #ifndef __RTE_CCU_H__
