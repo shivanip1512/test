@@ -846,6 +846,8 @@ public class AccountServiceImpl implements AccountService {
                 LiteAddress companyAddress = new LiteAddress();
                 if(streetAddress != null) {
                     setAddressFieldsFromDTO(companyAddress, streetAddress);
+                }else {
+                    setAddressDefaults(companyAddress);
                 }
                 addressDao.add(companyAddress);
                 
@@ -1098,12 +1100,12 @@ public class AccountServiceImpl implements AccountService {
     }
     
     private void setAddressFieldsFromDTO(LiteAddress lite, Address address) {
-        lite.setLocationAddress1(address.getLocationAddress1());
-       	lite.setLocationAddress2(address.getLocationAddress2());
-        lite.setCityName(address.getCityName());
-        lite.setStateCode(address.getStateCode());
-        lite.setZipCode(address.getZipCode());
-        lite.setCounty(address.getCounty());
+        lite.setLocationAddress1(StringUtils.defaultString(address.getLocationAddress1()));
+       	lite.setLocationAddress2(StringUtils.defaultString(address.getLocationAddress2()));
+        lite.setCityName(StringUtils.defaultString(address.getCityName()));
+        lite.setStateCode(StringUtils.defaultString(address.getStateCode()));
+        lite.setZipCode(StringUtils.defaultString(address.getZipCode()));
+        lite.setCounty(StringUtils.defaultString(address.getCounty()));
     }
     
     // when extracting lets turn "(none)"s into blank strings even though they may turn back into "(none)"s if they are re-saved without being set

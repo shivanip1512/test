@@ -101,12 +101,12 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
 	
 	private void copyAddress(LiteAddress from, LiteAddress to) {
 		
-		to.setLocationAddress1(from.getLocationAddress1());
-       	to.setLocationAddress2(from.getLocationAddress2());
-        to.setCityName(from.getCityName());
-        to.setStateCode(from.getStateCode());
-        to.setZipCode(from.getZipCode());
-        to.setCounty(from.getCounty());
+		to.setLocationAddress1(StringUtils.defaultString(from.getLocationAddress1()));
+       	to.setLocationAddress2(StringUtils.defaultString(from.getLocationAddress2()));
+        to.setCityName(StringUtils.defaultString(from.getCityName()));
+        to.setStateCode(StringUtils.defaultString(from.getStateCode()));
+        to.setZipCode(StringUtils.defaultString(from.getZipCode()));
+        to.setCounty(StringUtils.defaultString(from.getCounty()));
 	}
 
     @Override
