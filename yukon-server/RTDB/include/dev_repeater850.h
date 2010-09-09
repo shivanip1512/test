@@ -1,0 +1,51 @@
+
+#pragma once
+
+#include "dev_repeater800.h"
+
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB Repeater850Device : public Repeater800Device
+{
+private:
+
+   typedef Repeater800Device Inherited;
+
+   static const CommandSet _commandStore;
+   static CommandSet initCommandStore();
+
+protected:
+
+    virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
+
+    enum
+    {
+        Rpt850_SSPecPos = 0x11,
+        Rpt850_SSPecLen =    6
+    };
+
+    enum 
+    {
+        SspecRev_BetaLo = 9,
+        SspecRev_BetaHi = 200
+    };
+
+    INT decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+
+public:
+
+   Repeater850Device();
+   Repeater850Device(const Repeater850Device& aRef);
+
+   virtual ~Repeater850Device();
+
+   Repeater850Device& operator=(const Repeater850Device& aRef);
+
+   virtual INT ResultDecode(INMESS*InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+
+};
+
+}
+}
+
