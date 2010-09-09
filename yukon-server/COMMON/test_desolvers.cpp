@@ -20,6 +20,7 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
 
     type_lookups[TYPE_REPEATER900] = "REPEATER";
     type_lookups[TYPE_REPEATER800] = "REPEATER 800";
+    type_lookups[TYPE_REPEATER850] = "REPEATER 850";
 
     type_lookups[TYPE_ILEXRTU]     = "RTU-ILEX";
     type_lookups[TYPE_WELCORTU]    = "RTU-WELCO";

@@ -1672,7 +1672,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
         if( Dev )
         {
-            if( (Dev->getType() == TYPE_REPEATER800 || Dev->getType() == TYPE_REPEATER900) && parse.isKeyValid("install") )
+            if( (isRepeater(Dev->getType())) && parse.isKeyValid("install") )
             {
                 analyzeAutoRole(*pReq,parse,execList,retList);
             }
@@ -1954,7 +1954,7 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, l
 
     if(pRepeaterToRole)
     {
-        if(pRepeaterToRole->getType() == TYPE_REPEATER800 || pRepeaterToRole->getType() == TYPE_REPEATER900)
+        if( isRepeater(pRepeaterToRole->getType()) )
         {
             //CtiRequestMsg *pReq = (CtiRequestMsg*)Req.replicateMessage();
             //pReq->setConnectionHandle( Req.getConnectionHandle() );

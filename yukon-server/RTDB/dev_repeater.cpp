@@ -45,6 +45,9 @@ Repeater900Device::CommandSet Repeater900Device::initCommandStore()
     cs.insert(CommandStore(EmetconProtocol::GetConfig_Role,     EmetconProtocol::IO_Read,   RoleBasePos,    RoleLen));
     cs.insert(CommandStore(EmetconProtocol::GetConfig_Model,    EmetconProtocol::IO_Read,   ModelPos,       ModelLen));
 
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_Raw,      EmetconProtocol::IO_Write,         0,       0));    // filled in later
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Raw,      EmetconProtocol::IO_Read,          0,       0));    // ...ditto
+
     return cs;
 }
 
@@ -284,6 +287,18 @@ INT Repeater900Device::executeGetConfig(CtiRequestMsg                  *pReq,
         function = EmetconProtocol::GetConfig_Model;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
+    else if(parse.isKeyValid("rawloc"))
+    {
+        function = EmetconProtocol::GetConfig_Raw;
+        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        OutMessage->Buffer.BSt.Function = parse.getiValue("rawloc");
+        if( parse.isKeyValid("rawfunc") )
+        {
+            OutMessage->Buffer.BSt.IO = EmetconProtocol::IO_Function_Read;
+        }
+        OutMessage->Buffer.BSt.Length = std::min(parse.getiValue("rawlen", 13), 13);    //  default (and maximum) is 13 bytes
+    }
 
     if(!found)
     {
@@ -487,6 +502,23 @@ INT Repeater900Device::executePutConfig(CtiRequestMsg          *pReq,
        delete OutMessage;
        OutMessage = 0;          // Make the original go away!
     }
+    else if(parse.isKeyValid("rawloc"))
+    {
+        function = EmetconProtocol::PutConfig_Raw;
+        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        OutMessage->Buffer.BSt.Function = parse.getiValue("rawloc");
+        if( parse.isKeyValid("rawfunc") )
+        {
+            OutMessage->Buffer.BSt.IO = EmetconProtocol::IO_Function_Write;
+        }
+
+        string rawData = parse.getsValue("rawdata");
+
+        OutMessage->Buffer.BSt.Length = std::min( rawData.length(), 15u );  //  default (and maximum) is 15 bytes
+
+        rawData.copy( (char *)OutMessage->Buffer.BSt.Message, OutMessage->Buffer.BSt.Length );
+    }
 
     if(!found)
     {
@@ -587,6 +619,16 @@ INT Repeater900Device::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< C
          status = decodeGetConfigRole(InMessage, TimeNow, vgList, retList, outList);
          break;
       }
+   case EmetconProtocol::GetConfig_Raw:
+      {
+         status = decodeGetConfigRaw( InMessage, TimeNow, vgList, retList, outList );
+         break;
+      }
+  case EmetconProtocol::PutConfig_Raw:
+      {
+         status = decodePutConfigRaw( InMessage, TimeNow, vgList, retList, outList );
+         break;
+      }
    default:
       {
           {
@@ -675,6 +717,9 @@ INT Repeater900Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow,
       sspec |= DSt->Message[1];
 
       revision = DSt->Message[2] + '@';  //  '@' is just before 'A' - thus 1 represents 'A', as intended
+
+      setDynamicInfo(CtiTableDynamicPaoInfo::Key_RPT_SSpec,         (long)sspec);
+      setDynamicInfo(CtiTableDynamicPaoInfo::Key_RPT_SSpecRevision, (long)DSt->Message[2]);
 
       modelStr = getName() + " / sspec: " + CtiNumStr(sspec) + revision;
 
@@ -815,11 +860,107 @@ INT Repeater900Device::decodePutConfigRole(INMESS *InMessage, CtiTime &TimeNow, 
    return status;
 }
 
-
-
-INT Repeater900Device::getSSpec() const
+INT Repeater900Device::decodeGetConfigRaw( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-   return 0;
+    INT status = NOTNORMAL;
+
+    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        string results;
+
+        int rawloc = parse.getiValue("rawloc");
+
+        int rawlen = parse.isKeyValid("rawlen")
+            ? std::min(parse.getiValue("rawlen"), 13)       // max 13 bytes...
+            : DSt->Length;
+
+        if( parse.isKeyValid("rawfunc") )
+        {
+            for( int i = 0; i < rawlen; i++ )
+            {
+                results += getName()
+                        + " / FR " + CtiNumStr(rawloc).xhex().zpad(2)
+                        + " byte " + CtiNumStr(i).zpad(2)
+                        + " : "    + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
+                        + "\n";
+            }
+        }
+        else
+        {
+            for( int i = 0; i < rawlen; i++ )
+            {
+                results += getName()
+                        + " / byte " + CtiNumStr(rawloc + i).xhex().zpad(2)
+                        + " : "      + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
+                        + "\n";
+            }
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString( results );
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+INT Repeater900Device::decodePutConfigRaw( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NOTNORMAL;
+
+    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        string results;
+
+        switch( InMessage->Sequence )
+        {
+            case EmetconProtocol::PutConfig_Raw:
+            {
+                results = getName() + " / Raw bytes sent";
+                break;
+            }
+            default:
+            {
+
+            }
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString( results );
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
 }
 
 }

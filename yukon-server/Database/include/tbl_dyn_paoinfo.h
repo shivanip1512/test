@@ -159,6 +159,9 @@ public:
         Key_LCR_SplinterAddressRelay2,
         Key_LCR_SplinterAddressRelay3,
         Key_LCR_SplinterAddressRelay4,
+
+        Key_RPT_SSpec,
+        Key_RPT_SSpecRevision,
         //  make sure to add any new enum values to the string map
     };
 
@@ -323,6 +326,10 @@ protected:
     static const string _key_lcr_feeder;
     static const string _key_lcr_zipcode;
     static const string _key_lcr_uda;
+
+    static const string _key_rpt_sspec;
+    static const string _key_rpt_sspec_revision;
+        
 
     typedef map<CtiApplication_t, const string *> owner_map_t;
     typedef map<PaoInfoKeys,             const string *> key_map_t;

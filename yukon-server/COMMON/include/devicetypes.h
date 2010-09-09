@@ -21,6 +21,7 @@
 #define TYPEDCT501                           4
 #define TYPE_REPEATER900                     5
 #define TYPE_REPEATER800                     6
+#define TYPE_REPEATER850                     7
 #define TYPEPSEUDODEVICE                     8
 #define TYPEMCT210                           10
 #define TYPEMCT212                           11

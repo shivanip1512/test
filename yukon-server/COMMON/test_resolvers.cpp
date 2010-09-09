@@ -160,6 +160,9 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "repeater 801";
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "repeater 850";
+    devType = TYPE_REPEATER850;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "rtu-ilex";
     devType = TYPE_ILEXRTU;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);

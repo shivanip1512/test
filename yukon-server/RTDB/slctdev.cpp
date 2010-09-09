@@ -83,6 +83,7 @@
 #include "dev_rds.h"
 #include "dev_repeater800.h"
 #include "dev_repeater.h"
+#include "dev_repeater850.h"
 #include "dev_rtc.h"
 #include "dev_sixnet.h"
 #include "rte_macro.h"
@@ -205,6 +206,8 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPE_MODBUS:       NewDevice = CTIDBG_new ModbusDevice;      break;
 
         case TYPE_REPEATER800:  NewDevice = CTIDBG_new Repeater800Device; break;
+
+        case TYPE_REPEATER850:  NewDevice = CTIDBG_new Repeater850Device; break;
 
         case TYPE_REPEATER900:  NewDevice = CTIDBG_new Repeater900Device; break;
 

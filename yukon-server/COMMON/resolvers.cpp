@@ -361,10 +361,13 @@ INT resolveDeviceType(const string& _rwsTemp)
         nRet = TYPE_REPEATER900;
     }
     else if(rwsTemp == "repeater 800" ||
-            rwsTemp == "repeater 801" ||
-            rwsTemp == "repeater 850")
+            rwsTemp == "repeater 801")
     {
         nRet = TYPE_REPEATER800;
+    }
+    else if(rwsTemp == "repeater 850")
+    {
+        nRet = TYPE_REPEATER850;
     }
     else if(rwsTemp == "dct-501")
     {
@@ -1184,6 +1187,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPE_CCU710:
         case TYPE_CCU700:
         case TYPE_REPEATER800:
+        case TYPE_REPEATER850:
         case TYPE_REPEATER900:
         case TYPE_ILEXRTU:
         case TYPE_WELCORTU:

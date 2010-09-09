@@ -738,6 +738,7 @@ bool isRepeater(INT Type)
     switch(Type)
     {
         case TYPE_REPEATER800:
+        case TYPE_REPEATER850:
         case TYPE_REPEATER900:
         {
             return true;

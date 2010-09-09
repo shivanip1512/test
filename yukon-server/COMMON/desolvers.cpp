@@ -142,6 +142,7 @@ string desolveDeviceType( INT aType )
 
         case TYPE_REPEATER900:  Ret = "repeater";       break;
         case TYPE_REPEATER800:  Ret = "repeater 800";   break;
+        case TYPE_REPEATER850:  Ret = "repeater 850";   break;
 
         case TYPE_ILEXRTU:      Ret = "rtu-ilex";       break;
         case TYPE_WELCORTU:     Ret = "rtu-welco";      break;

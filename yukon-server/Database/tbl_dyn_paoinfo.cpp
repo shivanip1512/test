@@ -162,6 +162,9 @@ const string CtiTableDynamicPaoInfo::_key_lcr_feeder                        = "l
 const string CtiTableDynamicPaoInfo::_key_lcr_zipcode                       = "lcr zip code";
 const string CtiTableDynamicPaoInfo::_key_lcr_uda                           = "lcr uda";
 
+const string CtiTableDynamicPaoInfo::_key_rpt_sspec                         = "rpt sspec";
+const string CtiTableDynamicPaoInfo::_key_rpt_sspec_revision                = "rpt sspec revision";
+
 const string CtiTableDynamicPaoInfo::_key_udp_ip       = "udp ip";
 const string CtiTableDynamicPaoInfo::_key_udp_port     = "udp port";
 const string CtiTableDynamicPaoInfo::_key_udp_sequence = "udp sequence";
@@ -308,6 +311,9 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_LCR_SplinterAddressRelay2,  &_key_lcr_relay2_splinter_address));
     retval.insert(make_pair(Key_LCR_SplinterAddressRelay3,  &_key_lcr_relay3_splinter_address));
     retval.insert(make_pair(Key_LCR_SplinterAddressRelay4,  &_key_lcr_relay4_splinter_address));
+
+    retval.insert(make_pair(Key_RPT_SSpec,                  &_key_rpt_sspec));
+    retval.insert(make_pair(Key_RPT_SSpecRevision,          &_key_rpt_sspec_revision));
 
     return retval;
 }
