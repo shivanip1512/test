@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/18/2010 10:54:15 PM                        */
+/* Created on:     9/10/2010 4:44:18 PM                         */
 /*==============================================================*/
 
 
@@ -7871,7 +7871,7 @@ create unique index Indx_SurvQuestId_dispOrder_UNQ on SurveyQuestionAnswer (
 create table SurveyResult  (
    SurveyResultId       NUMBER                          not null,
    SurveyId             NUMBER                          not null,
-   AccountId            NUMBER                          not null,
+   AccountId            NUMBER,
    AccountNumber        VARCHAR2(40),
    WhenTaken            DATE                            not null,
    constraint PK_SurvRes primary key (SurveyResultId)

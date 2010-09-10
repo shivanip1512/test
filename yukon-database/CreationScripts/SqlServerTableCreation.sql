@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/18/2010 11:05:23 PM                        */
+/* Created on:     9/10/2010 4:41:01 PM                         */
 /*==============================================================*/
 
 
@@ -10963,7 +10963,7 @@ go
 create table SurveyResult (
    SurveyResultId       numeric              not null,
    SurveyId             numeric              not null,
-   AccountId            numeric              not null,
+   AccountId            numeric              null,
    AccountNumber        varchar(40)          null,
    WhenTaken            datetime             not null,
    constraint PK_SurvRes primary key (SurveyResultId)
