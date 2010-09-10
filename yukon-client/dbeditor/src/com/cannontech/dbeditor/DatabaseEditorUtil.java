@@ -51,10 +51,10 @@ public final class DatabaseEditorUtil {
     }
     
     public static boolean isDisconnectCollarCompatible(final Object object){
-        LiteYukonPAObject lpao = null;
-        if( object instanceof LiteYukonPAObject) {
-            lpao = (LiteYukonPAObject) object;
-            return paoDefinitionDao.isTagSupported(PaoType.getForId(lpao.getType()), PaoTag.DISCONNECT_COLLAR_COMPATIBLE);
+        if (object instanceof YukonPAObject) {
+            YukonPAObject yukonPaobject = (YukonPAObject)object;
+            PaoType paoType = PaoType.getForDbString(yukonPaobject.getPAOType());
+            return paoDefinitionDao.isTagSupported(paoType, PaoTag.DISCONNECT_COLLAR_COMPATIBLE);
         } else {
             return false;
         }
