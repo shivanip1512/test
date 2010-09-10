@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.model.ServiceCompanyDto;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ServiceCompanyDao;
-import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -40,7 +39,6 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
         
     }
     
-    
     // Row Mapper
     private static class ServiceCompanyDtoRowMapper implements YukonRowMapper<ServiceCompanyDto> {
 
@@ -49,12 +47,12 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
             ServiceCompanyDto serviceCompanyDto = new ServiceCompanyDto();
 
             serviceCompanyDto.setCompanyId(rs.getInt("companyId"));
-            serviceCompanyDto.setCompanyName(SqlUtils.convertDbValueToString(rs.getString("companyName")));
+            serviceCompanyDto.setCompanyName(rs.getStringSafe("companyName"));
             serviceCompanyDto.setAddressId(rs.getInt("addressId"));
-            serviceCompanyDto.setMainPhoneNumber(SqlUtils.convertDbValueToString(rs.getString("mainPhoneNumber")));
-            serviceCompanyDto.setMainFaxNumber(SqlUtils.convertDbValueToString(rs.getString("mainFaxNumber")));
+            serviceCompanyDto.setMainPhoneNumber(rs.getStringSafe("mainPhoneNumber"));
+            serviceCompanyDto.setMainFaxNumber(rs.getStringSafe("mainFaxNumber"));
             serviceCompanyDto.setPrimaryContactId(rs.getInt("primaryContactId"));
-            serviceCompanyDto.setHiType(SqlUtils.convertDbValueToString(rs.getString("hiType")));
+            serviceCompanyDto.setHiType(rs.getStringSafe("hiType"));
 
             return serviceCompanyDto;
 

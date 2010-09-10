@@ -2,25 +2,23 @@ package com.cannontech.stars.dr.workOrder.model;
 
 import java.util.List;
 
-import org.joda.time.DateTime;
+import org.joda.time.Instant;
 
 import com.cannontech.stars.dr.event.model.EventBase;
-import com.cannontech.user.YukonUserContext;
 
 public class WorkOrderDto {
     private WorkOrderBase workOrderBase;
-    private DateTime eventDate = new DateTime();
+    private Instant eventDate = new Instant();
     
     public WorkOrderDto(){
         this.workOrderBase = new WorkOrderBase();
     }
     public WorkOrderDto(WorkOrderBase workOrderBase, 
-                        List<EventBase> eventBases,
-                        YukonUserContext userContext) {
+                        List<EventBase> eventBases) {
         this.workOrderBase = workOrderBase;
 
         if (eventBases != null && eventBases.size() > 0) {
-            this.eventDate = eventBases.get(0).getEventTimestamp().toDateTime(userContext.getJodaTimeZone());
+            this.eventDate = new Instant(eventBases.get(0).getEventTimestamp());
         }
     }
 
@@ -31,10 +29,10 @@ public class WorkOrderDto {
         this.workOrderBase = workOrderBase;
     }
     
-    public DateTime getEventDate() {
+    public Instant getEventDate() {
         return eventDate;
     }
-    public void setEventDate(DateTime eventDate) {
+    public void setEventDate(Instant eventDate) {
         this.eventDate = eventDate;
     }
 }

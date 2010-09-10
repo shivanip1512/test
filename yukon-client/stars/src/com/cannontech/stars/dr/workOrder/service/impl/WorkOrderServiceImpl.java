@@ -72,8 +72,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
                                 YukonUserContext userContext) {
 
         // Retrieve the old state of the work order and check to see if the current state has changed.
-        WorkOrderDto oldWorkOrderDto = 
-            getWorkOrder(workOrderDto.getWorkOrderBase().getOrderId(), userContext);
+        WorkOrderDto oldWorkOrderDto = getWorkOrder(workOrderDto.getWorkOrderBase().getOrderId());
         workOrderDto.getWorkOrderBase().setDateReported(oldWorkOrderDto.getWorkOrderBase().getDateReported());
         workOrderDto.getWorkOrderBase().setDateScheduled(oldWorkOrderDto.getWorkOrderBase().getDateScheduled());
         workOrderDto.getWorkOrderBase().setDateCompleted(oldWorkOrderDto.getWorkOrderBase().getDateCompleted());
@@ -122,7 +121,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     @Override
-    public List<WorkOrderDto> findWorkOrderList(int accountId, YukonUserContext userContext) {
+    public List<WorkOrderDto> getWorkOrderList(int accountId) {
         List<WorkOrderDto> workOrders = Lists.newArrayList();
         
         List<WorkOrderBase> workOrderBases = workOrderBaseDao.getByAccountId(accountId);
@@ -130,7 +129,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
             List<EventBase> eventBases =
                 getWorkOrderEventHistory(workOrderBase.getOrderId());
 
-            WorkOrderDto workOrderDto = new WorkOrderDto(workOrderBase, eventBases, userContext);
+            WorkOrderDto workOrderDto = new WorkOrderDto(workOrderBase, eventBases);
             workOrders.add(workOrderDto);
         }
         
@@ -138,18 +137,18 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     @Override
-    public WorkOrderDto getWorkOrder(int workOrderId, YukonUserContext userContext) {
+    public WorkOrderDto getWorkOrder(int workOrderId) {
         WorkOrderBase workOrderBase = workOrderBaseDao.getById(workOrderId);
 
         List<EventBase> eventBases =
             getWorkOrderEventHistory(workOrderBase.getOrderId());
 
-        WorkOrderDto workOrderDto = new WorkOrderDto(workOrderBase, eventBases, userContext);
+        WorkOrderDto workOrderDto = new WorkOrderDto(workOrderBase, eventBases);
         return workOrderDto;
     }
 
     @Override
-    public List<EventBase> getWorkOrderEventHistory(Integer workOrderId) {
+    public List<EventBase> getWorkOrderEventHistory(int workOrderId) {
         List<EventBase> eventBases =
             eventWorkOrderDao.getByWorkOrderId(workOrderId);
 

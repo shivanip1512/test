@@ -24,12 +24,12 @@ public interface WorkOrderService {
     /** 
      * This method gets a list of all the work orders for a given account.
      */
-    public List<WorkOrderDto> findWorkOrderList(int accountId, YukonUserContext userContext);
+    public List<WorkOrderDto> getWorkOrderList(int accountId);
     
     /**
      * This method retrieves a work order object from the database.
      */
-    public WorkOrderDto getWorkOrder(int workOrderId, YukonUserContext userContext);
+    public WorkOrderDto getWorkOrder(int workOrderId);
 
     /**
      * This method updates an existing work order.  It also takes care of creating new events 
@@ -41,6 +41,6 @@ public interface WorkOrderService {
     /**
      * Returns all the event history for a given work order.  This data is ordered by date.
      */
-    public List<EventBase> getWorkOrderEventHistory(Integer workOrderId);
+    public List<EventBase> getWorkOrderEventHistory(int workOrderId);
     
 }

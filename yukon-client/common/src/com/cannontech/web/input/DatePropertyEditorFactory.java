@@ -6,7 +6,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,11 +51,11 @@ public class DatePropertyEditorFactory {
         }
     }
 
-    private class DateTimePropertyEditor extends PropertyEditorSupport {
+    private class DateWithTimePropertyEditor extends PropertyEditorSupport {
         private DateFormatEnum dateFormat;
         private YukonUserContext userContext;
 
-        private DateTimePropertyEditor(DateFormatEnum dateFormat,
+        private DateWithTimePropertyEditor(DateFormatEnum dateFormat,
                 YukonUserContext userContext) {
             this.dateFormat = dateFormat;
             this.userContext = userContext;
@@ -63,18 +63,45 @@ public class DatePropertyEditorFactory {
 
         public void setAsText(String dateStr) throws IllegalArgumentException {
             try {
-                Date date = dateFormattingService.flexibleDateParser(dateStr,
-                                                         userContext);
-                setValue(new DateTime(date, userContext.getJodaTimeZone()));
+                setValue(dateFormattingService.flexibleDateParser(dateStr,
+                                                                  userContext));
             } catch (ParseException exception) {
                 throw new IllegalArgumentException("Could not parse date", exception);
             }
         }
 
         public String getAsText() {
-            DateTime dateTime = (DateTime) getValue();
-            return dateTime == null
-                ? "" : dateFormattingService.format(dateTime, dateFormat, userContext);
+            Date date = (Date) getValue();
+            return date == null
+                ? "" : dateFormattingService.format(date, dateFormat, userContext);
+        }
+    }
+    
+    
+    private class InstantPropertyEditor extends PropertyEditorSupport {
+        private DateFormatEnum dateFormat;
+        private YukonUserContext userContext;
+
+        private InstantPropertyEditor(DateFormatEnum dateFormat,
+                                       YukonUserContext userContext) {
+            this.dateFormat = dateFormat;
+            this.userContext = userContext;
+        }
+
+        public void setAsText(String dateStr) throws IllegalArgumentException {
+            try {
+                Date date = dateFormattingService.flexibleDateParser(dateStr,
+                                                                     userContext);
+                setValue(new Instant(date));
+            } catch (ParseException exception) {
+                throw new IllegalArgumentException("Could not parse date", exception);
+            }
+        }
+
+        public String getAsText() {
+            Instant instant = (Instant) getValue();
+            return instant == null
+                ? "" : dateFormattingService.format(instant, dateFormat, userContext);
         }
     }
 
@@ -174,7 +201,7 @@ public class DatePropertyEditorFactory {
 
     public PropertyEditor getPropertyEditor(DateFormatEnum dateFormat,
             YukonUserContext userContext) {
-        return new DateTimePropertyEditor(dateFormat, userContext);
+        return new DateWithTimePropertyEditor(dateFormat, userContext);
     }
 
     public PropertyEditor getLocalTimePropertyEditor(DateFormatEnum dateFormat,
@@ -209,11 +236,10 @@ public class DatePropertyEditorFactory {
         dataBinder.registerCustomEditor(LocalTime.class, propertyEditor);
     }
     
-    public PropertyEditor getDateTimePropertyEditor(DateFormatEnum dateFormat,
-                                                     YukonUserContext userContext) {
-       return new DateTimePropertyEditor(dateFormat, userContext);
+    public PropertyEditor getInstantPropertyEditor(DateFormatEnum dateFormat,
+                                                    YukonUserContext userContext) {
+       return new InstantPropertyEditor(dateFormat, userContext);
     }
-    
     @Autowired
     public void setDateFormattingService(DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;

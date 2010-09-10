@@ -49,16 +49,15 @@
     </form>
     
     <form:form id="workOrderUpdateForm" commandName="workOrderDto" action="/spring/stars/operator/workOrder/updateWorkOrder">
-
         <input type="hidden" name="accountId" value="${accountId}">
+        <form:hidden path="workOrderBase.accountId"/>
+        <form:hidden path="workOrderBase.orderId"/>
 
         <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;">
             <cti:dataGridCell>
 
                 <tags:formElementContainer nameKey="workOrderContainer">
                     <tags:nameValueContainer2>
-                        <form:hidden path="workOrderBase.accountId"/>
-                        <form:hidden path="workOrderBase.orderId"/>
                         
                         <cti:displayForPageEditModes modes="CREATE">
                             <cti:checkRolesAndProperties value="!OPERATOR_ORDER_NUMBER_AUTO_GEN">
@@ -107,10 +106,9 @@
                 </tags:formElementContainer>
 
             </cti:dataGridCell>
-            <cti:dataGridCell>
-                <tags:formElementContainer nameKey="statusContainer">
-                
-                    <cti:displayForPageEditModes modes="EDIT">
+            <cti:displayForPageEditModes modes="VIEW,EDIT">
+                <cti:dataGridCell>
+                    <tags:formElementContainer nameKey="statusContainer">
                         <tags:nameValueContainer2>
                         
                             <tags:yukonListEntrySelectNameValue nameKey=".currentState" path="workOrderBase.currentStateId" 
@@ -123,9 +121,6 @@
                             <tags:textareaNameValue nameKey=".actionTaken" path="workOrderBase.actionTaken" rows="4" cols="23"/>
                         </tags:nameValueContainer2>
                         <br>
-                    </cti:displayForPageEditModes>
-
-                    <cti:displayForPageEditModes modes="VIEW,EDIT">
                         <div style="text-align: right;">
                             <%-- GENERATE REPORTS --%>
                             <cti:url var="pdfExportUrl" value="/spring/stars/operator/workOrder/generateWorkOrderReport">
@@ -153,10 +148,10 @@
                                 
                             </table>
                         </tags:boxContainer2>
-                    </cti:displayForPageEditModes>
-                        
-                </tags:formElementContainer>
-            </cti:dataGridCell>
+                            
+                    </tags:formElementContainer>
+                </cti:dataGridCell>
+            </cti:displayForPageEditModes>
         </cti:dataGrid>
         <br>
         
