@@ -15,7 +15,6 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.user.YukonUserContext;
-import com.google.common.collect.Lists;
 
 public class AvailableMctPicker extends DatabasePaoPicker {
     
@@ -36,7 +35,6 @@ public class AvailableMctPicker extends DatabasePaoPicker {
             Set<Integer> energyCompanyIds =
                 ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
 
-            sqlFilters = Lists.newArrayList();
             AvailableMctFilter energyCompanyIdsFilter =
                 new AvailableMctFilter(energyCompanyIds, paoDefinitionDao);
             sqlFilters.add(energyCompanyIdsFilter);

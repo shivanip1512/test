@@ -54,7 +54,6 @@ public class AvailableSwitchPicker extends DatabasePicker<DisplayableLmHardware>
             Set<Integer> energyCompanyIds =
                 ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
 
-            sqlFilters = Lists.newArrayList();
             AvailableLmHardwareFilter energyCompanyIdsFilter =
                 new AvailableLmHardwareFilter(energyCompanyIds, LMHardwareClass.SWITCH);
             sqlFilters.add(energyCompanyIdsFilter);

@@ -54,7 +54,6 @@ public class AvailableThermostatPicker extends DatabasePicker<DisplayableLmHardw
             Set<Integer> energyCompanyIds =
                 ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
             
-            sqlFilters = Lists.newArrayList();
             AvailableLmHardwareFilter energyCompanyIdsFilter =
                 new AvailableLmHardwareFilter(energyCompanyIds,
                                               LMHardwareClass.THERMOSTAT);
