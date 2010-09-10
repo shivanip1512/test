@@ -1643,12 +1643,6 @@ public synchronized void processSignalReceived( Signal signal, int pageNumber )
 			if ( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_STATE) ){
 	 			dataRow.setElementAt(TagUtils.getTagString( signal.getTags() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_STATE) ); 
 			}
-			
-			//update the tables view of the data
-			setRowTimeStamp(
-					getPointValue(rNum),
-					signal.getTimeStamp(),
-					rNum );
 		}
 	}
 	else  //handle EVENTS here (these signals should never be in our table)
