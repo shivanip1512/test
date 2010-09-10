@@ -397,7 +397,7 @@ public class JobManagerImpl implements JobManager {
     	jobStatusDao.saveOrUpdate(status);
     }
 
-    public YukonTask instantiateTask(YukonJob job) {
+    public synchronized YukonTask instantiateTask(YukonJob job) {
         YukonJobDefinition<? extends YukonTask> jobDefinition = job.getJobDefinition();
 
         log.info("instantiating task for " + jobDefinition);
