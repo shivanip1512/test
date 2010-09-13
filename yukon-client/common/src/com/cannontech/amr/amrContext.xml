@@ -346,10 +346,4 @@
         <property name="phaseDetectResultsCache" ref="phaseDetectResultsCache"/>
     </bean>
     
-    
-    <!-- RFN Meter Disconnect Service -->
-    <bean id="rfnMeterDisconnectService" class="com.cannontech.amr.rfn.service.RfnMeterDisconnectService">
-        <property name="connectionFactory" ref="connectionFactoryTarget"/>
-    </bean>
-    
 </beans>

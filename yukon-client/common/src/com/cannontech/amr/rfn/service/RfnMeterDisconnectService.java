@@ -78,6 +78,7 @@ public class RfnMeterDisconnectService {
         });
     }
     
+    @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
     }
