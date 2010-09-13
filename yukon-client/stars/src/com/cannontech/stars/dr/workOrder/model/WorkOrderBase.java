@@ -6,6 +6,7 @@ import org.joda.time.ReadableInstant;
 public class WorkOrderBase{
 
     private int accountId;
+    private int energyCompanyId;
     private int orderId;
     private String orderNumber = "";
     private int workTypeId;
@@ -112,4 +113,10 @@ public class WorkOrderBase{
         this.additionalOrderNumber = additionalOrderNumber;
     }
 
+    public int getEnergyCompanyId() {
+        return energyCompanyId;
+    }
+    public void setEnergyCompanyId(int energyCompanyId) {
+        this.energyCompanyId = energyCompanyId;
+    }
 }

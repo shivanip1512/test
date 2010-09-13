@@ -6,7 +6,6 @@ import java.util.Set;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.ECToAccountMapping;
-import com.cannontech.stars.dr.workOrder.model.ECToWorkOrderMapping;
 
 /**
  * Data access interface used to get energy company
@@ -63,7 +62,7 @@ public interface ECMappingDao {
      * Method to add an energy company to work order mapping
      * @param ecToWorkOrderMapping
      */
-    public void addECToWorkOrderMapping(ECToWorkOrderMapping ecToWorkOrderMapping);
+    public void addECToWorkOrderMapping(int energyCompanyId, int workOrderId);
     
     /**
      * Method to add a call report to call report mapping

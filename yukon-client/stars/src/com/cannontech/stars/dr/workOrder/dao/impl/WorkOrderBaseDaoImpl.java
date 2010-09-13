@@ -17,6 +17,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.event.dao.EventBaseDao;
 import com.cannontech.stars.dr.event.dao.EventWorkOrderDao;
 import com.cannontech.stars.dr.event.model.EventBase;
@@ -28,6 +29,7 @@ import com.google.common.collect.Lists;
 public class WorkOrderBaseDaoImpl implements WorkOrderBaseDao, InitializingBean {
 
     private NextValueHelper nextValueHelper;
+    private ECMappingDao ecMappingDao;
     private EventBaseDao eventBaseDao;
     private EventWorkOrderDao eventWorkOrderDao;
     private YukonJdbcTemplate yukonJdbcTemplate;
@@ -38,21 +40,24 @@ public class WorkOrderBaseDaoImpl implements WorkOrderBaseDao, InitializingBean 
     {    
         selectBase.append("SELECT *");
         selectBase.append("FROM WorkOrderBase WOB");
+        selectBase.append("JOIN ECToWorkOrderMapping ECWOM ON ECWOM.WorkOrderId = WOB.OrderId");
     }
 
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void add(WorkOrderBase workOrderBase) {
-        // Create work order base entry
-        int workOrderId = nextValueHelper.getNextValue("WorkOrderBase");
-        workOrderBase.setOrderId(workOrderId);
-        
         workOrderBaseTemplate.insert(workOrderBase);
+        
+        ecMappingDao.addECToWorkOrderMapping(workOrderBase.getEnergyCompanyId(),
+                                             workOrderBase.getOrderId());
     }
     
     @Override
     @Transactional(readOnly = false)
     public void delete(int workOrderId) {
+
+        // Remove energy company mapping entry
+        ecMappingDao.deleteECToWorkOrderMapping(Collections.singletonList(workOrderId));
         
         // Get event ids for deletion
         List<EventBase> eventBases = eventWorkOrderDao.getByWorkOrderId(workOrderId);
@@ -88,7 +93,7 @@ public class WorkOrderBaseDaoImpl implements WorkOrderBaseDao, InitializingBean 
     public WorkOrderBase getById(int workOrderId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(selectBase);
-        sql.append("WHERE orderId").eq(workOrderId);
+        sql.append("WHERE WOB.OrderId").eq(workOrderId);
         
         return yukonJdbcTemplate.queryForObject(sql, new WorkOrderBaseRowMapper());
     }
@@ -97,7 +102,7 @@ public class WorkOrderBaseDaoImpl implements WorkOrderBaseDao, InitializingBean 
     public List<WorkOrderBase> getByAccountId(int accountId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(selectBase);
-        sql.append("WHERE accountId").eq(accountId);
+        sql.append("WHERE AccountId").eq(accountId);
         
         return yukonJdbcTemplate.query(sql, new WorkOrderBaseRowMapper());
     }
@@ -160,6 +165,7 @@ public class WorkOrderBaseDaoImpl implements WorkOrderBaseDao, InitializingBean 
             workOrderBase.setActionTaken(rs.getString("ActionTaken"));
             workOrderBase.setAccountId(rs.getInt("AccountId"));
             workOrderBase.setAdditionalOrderNumber(rs.getString("AdditionalOrderNumber"));
+            workOrderBase.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
             
             return workOrderBase;
         }
@@ -167,6 +173,11 @@ public class WorkOrderBaseDaoImpl implements WorkOrderBaseDao, InitializingBean 
     }
     
     // DI Setters
+    @Autowired
+    public void setEcMappingDao(ECMappingDao ecMappingDao) {
+        this.ecMappingDao = ecMappingDao;
+    }
+    
     @Autowired
     public void setEventBaseDao(EventBaseDao eventBaseDao) {
         this.eventBaseDao = eventBaseDao;

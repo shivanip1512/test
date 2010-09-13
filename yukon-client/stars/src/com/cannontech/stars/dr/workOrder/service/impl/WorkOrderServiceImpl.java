@@ -1,6 +1,5 @@
 package com.cannontech.stars.dr.workOrder.service.impl;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -14,13 +13,11 @@ import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.event.dao.EventBaseDao;
 import com.cannontech.stars.dr.event.dao.EventWorkOrderDao;
 import com.cannontech.stars.dr.event.model.EventBase;
 import com.cannontech.stars.dr.event.model.EventWorkOrder;
 import com.cannontech.stars.dr.workOrder.dao.WorkOrderBaseDao;
-import com.cannontech.stars.dr.workOrder.model.ECToWorkOrderMapping;
 import com.cannontech.stars.dr.workOrder.model.WorkOrderBase;
 import com.cannontech.stars.dr.workOrder.model.WorkOrderCurrentStateEnum;
 import com.cannontech.stars.dr.workOrder.model.WorkOrderDto;
@@ -31,7 +28,6 @@ import com.google.common.collect.Lists;
 public class WorkOrderServiceImpl implements WorkOrderService {
 
     private AccountEventLogService accountEventLogService;
-    private ECMappingDao ecMappingDao;
     private EventBaseDao eventBaseDao;
     private EventWorkOrderDao eventWorkOrderDao;
     private StarsDatabaseCache starsDatabaseCache;
@@ -48,18 +44,13 @@ public class WorkOrderServiceImpl implements WorkOrderService {
             LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
             workOrderDto.getWorkOrderBase().setOrderNumber(energyCompany.getNextOrderNumber());
         }
+        workOrderDto.getWorkOrderBase().setEnergyCompanyId(energyCompanyId);
         workOrderDto.getWorkOrderBase().setDateReported(workOrderDto.getEventDate().toInstant());
         workOrderBaseDao.add(workOrderDto.getWorkOrderBase());
         
         // Create a new event
         createNewWorkOrderEvent(workOrderDto, userContext);
        
-        // Added energy company mapping
-        ECToWorkOrderMapping ecToWorkOrderMapping = new ECToWorkOrderMapping();
-        ecToWorkOrderMapping.setEnergyCompanyId(energyCompanyId);
-        ecToWorkOrderMapping.setWorkOrderId(workOrderDto.getWorkOrderBase().getOrderId());
-        ecMappingDao.addECToWorkOrderMapping(ecToWorkOrderMapping);
-
         // Add event log entry
         accountEventLogService.workOrderCreated(userContext.getYukonUser(),
                                                 accountNumber,
@@ -107,12 +98,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     public void deleteWorkOrder(int workOrderId, String accountNumber, YukonUserContext userContext) {
         WorkOrderBase workOrderBase = workOrderBaseDao.getById(workOrderId);
 
-        // Delete the work order mapping to the energy company
-        ecMappingDao.deleteECToWorkOrderMapping(Collections.singletonList(workOrderId));
-
         // Delete work order
         workOrderBaseDao.delete(workOrderId);
-        
 
         // Add event log entry
         accountEventLogService.workOrderDeleted(userContext.getYukonUser(),
@@ -179,11 +166,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     @Autowired
     public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
         this.accountEventLogService = accountEventLogService;
-    }
-    
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
     }
     
     @Autowired
