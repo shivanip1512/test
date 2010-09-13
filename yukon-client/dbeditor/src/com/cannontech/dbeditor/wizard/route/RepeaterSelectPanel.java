@@ -3,10 +3,13 @@ package com.cannontech.dbeditor.wizard.route;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
+
 import javax.swing.JLabel;
+import javax.swing.ListModel;
 import javax.swing.SwingConstants;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.db.route.RepeaterRoute;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
@@ -311,8 +314,8 @@ private void initialize() {
       add(getRepeatersAddRemovePanel(), constraintsRepeatersAddRemovePanel);
       
       java.awt.GridBagConstraints constraintsRepeaterErrorLabel = new GridBagConstraints();
-      constraintsRepeaterErrorLabel.gridx = 0;
-      constraintsRepeaterErrorLabel.gridy = 4;
+      constraintsRepeaterErrorLabel.gridx = 1;
+      constraintsRepeaterErrorLabel.gridy = 3;
       constraintsRepeaterErrorLabel.gridwidth = 2;
       constraintsRepeaterErrorLabel.anchor = GridBagConstraints.WEST;
       constraintsRepeaterErrorLabel.insets = new java.awt.Insets(0, 2, 0, 2);
@@ -347,17 +350,19 @@ private JLabel getErrorMessageLabel() {
  */
 public boolean isInputValid() 
 {
-    if( getRepeatersAddRemovePanel().rightListGetModel().getSize() < 1 )
-    {
+    ListModel rightListModel = getRepeatersAddRemovePanel().rightListGetModel();
+    if( rightListModel.getSize() < 1 ) {
        setErrorString("One or more repeaters should be selected");
        getErrorMessageLabel().setText(getErrorString());
        return false;
     }
-
-    for( int i = 0; i < getRepeatersAddRemovePanel().rightListGetModel().getSize(); i++ )
-    {
-       if(((com.cannontech.database.data.lite.LiteYukonPAObject)getRepeatersAddRemovePanel().rightListGetModel().getElementAt(i)).getPaoIdentifier().getPaoType() == PaoType.REPEATER_850) {
-           if(i != getRepeatersAddRemovePanel().rightListGetModel().getSize()-1) {
+    
+    for( int i = 0; i < rightListModel.getSize(); i++ ) {
+                
+       LiteYukonPAObject pao = (LiteYukonPAObject)rightListModel.getElementAt(i);
+       
+       if(pao.getPaoIdentifier().getPaoType() == PaoType.REPEATER_850) {
+           if(i != rightListModel.getSize()-1) {
                setErrorString("When present, a repeater 850 MUST be the last repeater in the repeater chain");
                getErrorMessageLabel().setText(getErrorString());
                return false;
