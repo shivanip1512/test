@@ -167,15 +167,15 @@ function checkDates(){
 		if(realStartDate < realStopDate){
 			loadTarget(document.reportForm);
 		} else {
-			if($F('startHourID').visible = true){
+			if($('startHourID')) {    //Check that one of the time fields exists 
 	            if(startDate == stopDate){
-	            	var startHour = $F('startHourID');
-	                var stopHour = $F('stopHourID');
+	            	var startHour = Number($F('startHourID')); 
+	                var stopHour = Number($F('stopHourID')); 
 	                if(startHour < stopHour){
 	                	loadTarget(document.reportForm);
 	                }else if(startHour == stopHour){
-	                	var startMinute = $F('startMinuteID');
-	                	var stopMinute = $F('stopMinuteID');
+	                	var startMinute = Number($F('startMinuteID')); 
+	                	var stopMinute = Number($F('stopMinuteID')); 
 	                	if(startMinute >= stopMinute){
 	                		alert("The start time must occur before the stop time. ");
 	                        $('startCal').focus();
