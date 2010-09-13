@@ -35,13 +35,6 @@ protected:
 
 public:
 
-   Repeater850Device();
-   Repeater850Device(const Repeater850Device& aRef);
-
-   virtual ~Repeater850Device();
-
-   Repeater850Device& operator=(const Repeater850Device& aRef);
-
    virtual INT ResultDecode(INMESS*InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
 };

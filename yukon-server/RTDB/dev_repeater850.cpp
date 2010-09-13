@@ -12,36 +12,10 @@
 using Cti::Protocols::EmetconProtocol;
 using std::string;
 
-namespace Cti
-{
-namespace Devices
-{
+namespace Cti {
+namespace Devices {
 
 const Repeater850Device::CommandSet Repeater850Device::_commandStore = Repeater850Device::initCommandStore();
-
-
-Repeater850Device::Repeater850Device()
-{
-}
-
-Repeater850Device::Repeater850Device(const Repeater850Device& aRef)
-{
-    *this = aRef;
-}
-
-Repeater850Device::~Repeater850Device()
-{
-}
-
-Repeater850Device& Repeater850Device::operator=(const Repeater850Device& aRef)
-{
-    if( this != &aRef )
-    {
-        Inherited::operator=(aRef);
-    }
-
-    return *this;
-}
 
 Repeater850Device::CommandSet Repeater850Device::initCommandStore()
 {
