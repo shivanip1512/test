@@ -4,7 +4,8 @@ import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum CommandRequestExecutionStatus implements DisplayableEnum {
 
-	IN_PROGRESS,
+    @Deprecated IN_PROGRESS, // may still exist in a customer's DB, no longer written
+	STARTED,
 	COMPLETE,
 	FAILED;
 	

@@ -86,25 +86,15 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     
     private Map<CommandCompletionCallback<? super T>, CommandResultMessageListener> msgListeners = new ConcurrentHashMap<CommandCompletionCallback<? super T>, CommandResultMessageListener>();
     
-    Logger log = YukonLogManager.getLogger(CommandRequestExecutorBase.class);
+    private static final Logger log = YukonLogManager.getLogger(CommandRequestExecutorBase.class);
     private int betweenResultsMaxDelay = 60;
     private int totalMaxDelay = 180;
-    private static int CANCEL_PRIORITY = 8;
+    private static final int CANCEL_PRIORITY = 8;
     
     @PostConstruct
     public void initialize() {
         betweenResultsMaxDelay = configurationSource.getInteger("COMMAND_REQUEST_EXECUTOR_BETWEEN_RESULTS_MAX_DELAY", betweenResultsMaxDelay);
         totalMaxDelay = configurationSource.getInteger("COMMAND_REQUEST_EXECUTOR_TOTAL_MAX_DELAY", totalMaxDelay);
-        // fail in progress cres
-        // if it is IN_PROGRESS during startup it will never move to COMPLETED on its own, must be FAILED.
-        List<CommandRequestExecution> inProcessCres = commandRequestExecutionDao.getAllByStatus(CommandRequestExecutionStatus.IN_PROGRESS);
-        for (CommandRequestExecution cre : inProcessCres) {
-        	
-        	cre.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.FAILED);
-        	commandRequestExecutionDao.saveOrUpdate(cre);
-        	
-        	commandRequestExecutorEventLogService.foundFailedCre(cre.getId());
-        }
     }
 
     // COMMAND RESULT MESSAGE LISTENER
@@ -368,7 +358,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         commandRequestExecution.setCommandRequestExecutionType(type);
         commandRequestExecution.setUserName(user.getUsername());
         commandRequestExecution.setCommandRequestType(getCommandRequestType());
-        commandRequestExecution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.IN_PROGRESS);
+        commandRequestExecution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.STARTED);
         
         commandRequestExecutionDao.saveOrUpdate(commandRequestExecution);
         CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = new CommandRequestExecutionIdentifier(commandRequestExecution.getId());
@@ -497,7 +487,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         //   commands and log them as unsent instead.
         messageListener.setCanceled();
         
-        // wait for the listener latch to countdown, which will happen when it has finished it's commandRequests write loop
+        // wait for the listener latch to countdown, which will happen when it has finished its commandRequests write loop
         log.debug("Awaiting latch countdown. groupMessageId = " + messageListener.getGroupMessageId());
         try {
         	if (!messageListener.getCommandsAreWritingLatch().await(5, TimeUnit.MINUTES)) {
