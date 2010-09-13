@@ -31,7 +31,9 @@ public interface SurveyDao {
     public String getNextSurveyKey();
 
     /**
-     * Works like getNextSurveyKey.
+     * Get the next question key available. If two users add a survey at the
+     * same time, it can return the same key twice, but uniqueness checking in
+     * the save method should reject the second one saved.
      */
     public String getNextQuestionKey(int surveyId);
 
@@ -41,7 +43,9 @@ public interface SurveyDao {
     public boolean usedByOptOutSurvey(int surveyId);
 
     /**
-     * Editing of surveys that have been taken should is not allowed.
+     * Editing of surveys that have been taken should not be allowed. Before
+     * editing a survey this method should be called to ensure it has not been
+     * taken.
      */
     public boolean hasBeenTaken(int surveyId);
 

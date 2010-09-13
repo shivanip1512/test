@@ -344,7 +344,8 @@ public class SurveyDaoImpl implements SurveyDao {
     @Transactional
     public void deleteSurvey(int surveyId) {
         if (usedByOptOutSurvey(surveyId) || hasBeenTaken(surveyId)) {
-            throw new RuntimeException("can't delete survey which has been taken");
+            throw new RuntimeException("can't delete survey which has been " +
+                "taken or is used by an opt out survey");
         }
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -364,7 +365,7 @@ public class SurveyDaoImpl implements SurveyDao {
         yukonJdbcTemplate.update(sql);
     }
 
-    public void deleteQuestion(int surveyQuestionId, int surveyId) {
+    private void deleteQuestion(int surveyQuestionId, int surveyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM surveyQuestion");
         sql.append("WHERE surveyQuestionId").eq(surveyQuestionId);
