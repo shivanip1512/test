@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/10/2010 4:44:18 PM                         */
+/* Created on:     9/13/2010 10:19:33 AM                        */
 /*==============================================================*/
 
 
@@ -110,8 +110,6 @@ drop index INDX_CCURTPRGGRP_GRPID_PRGID;
 drop index INDX_CCURPNG_PRGNM_PRGTYPEID;
 
 drop index INDX_CCRTPRGPRM_PGID_PMKEY;
-
-drop index Indx_CRFAdd_SerNum_Man_Mod_UNQ;
 
 drop index Indx_CPCNFDVARPT;
 
@@ -239,11 +237,13 @@ drop index Indx_RwPtHisPtIDTst;
 
 drop index Indx_TimeStamp;
 
+drop index Indx_RFNAdd_SerNum_Man_Mod_UNQ;
+
 drop index Indx_RouteDevID;
 
 drop index Indx_StateRaw;
 
-drop index Indx_STATEGRP_Nme;
+drop index Indx_StateGroup_Name_UNQ;
 
 drop index INDX_SYSLG_PTID_TS;
 
@@ -398,8 +398,6 @@ drop table CICUSTOMERPOINTDATA cascade constraints;
 drop table CICustomerBase cascade constraints;
 
 drop table COLUMNTYPE cascade constraints;
-
-drop table CRFAddress cascade constraints;
 
 drop table CTIDatabase cascade constraints;
 
@@ -884,6 +882,8 @@ drop table PurchasePlan cascade constraints;
 drop table RAWPOINTHISTORY cascade constraints;
 
 drop table RDSTransmitter cascade constraints;
+
+drop table RFNAddress cascade constraints;
 
 drop table RPHTag cascade constraints;
 
@@ -2103,26 +2103,6 @@ insert into columntype values (12, 'UofM');
 insert into columntype values (13, 'State');
 insert into columntype values (14, 'PointImage' );
 insert into columntype values (15, 'QualityCount' );
-
-/*==============================================================*/
-/* Table: CRFAddress                                            */
-/*==============================================================*/
-create table CRFAddress  (
-   DeviceId             NUMBER                          not null,
-   SerialNumber         VARCHAR2(30)                    not null,
-   Manufacturer         VARCHAR2(80)                    not null,
-   Model                VARCHAR2(80)                    not null,
-   constraint PK_CRFAdd primary key (DeviceId)
-);
-
-/*==============================================================*/
-/* Index: Indx_CRFAdd_SerNum_Man_Mod_UNQ                        */
-/*==============================================================*/
-create unique index Indx_CRFAdd_SerNum_Man_Mod_UNQ on CRFAddress (
-   SerialNumber ASC,
-   Manufacturer ASC,
-   Model ASC
-);
 
 /*==============================================================*/
 /* Table: CTIDatabase                                           */
@@ -7425,6 +7405,26 @@ create table RDSTransmitter  (
 );
 
 /*==============================================================*/
+/* Table: RFNAddress                                            */
+/*==============================================================*/
+create table RFNAddress  (
+   DeviceId             NUMBER                          not null,
+   SerialNumber         VARCHAR2(30)                    not null,
+   Manufacturer         VARCHAR2(80)                    not null,
+   Model                VARCHAR2(80)                    not null,
+   constraint PK_CRFAdd primary key (DeviceId)
+);
+
+/*==============================================================*/
+/* Index: Indx_RFNAdd_SerNum_Man_Mod_UNQ                        */
+/*==============================================================*/
+create unique index Indx_RFNAdd_SerNum_Man_Mod_UNQ on RFNAddress (
+   SerialNumber ASC,
+   Manufacturer ASC,
+   Model ASC
+);
+
+/*==============================================================*/
 /* Table: RPHTag                                                */
 /*==============================================================*/
 create table RPHTag  (
@@ -7477,9 +7477,13 @@ create table STATE  (
    constraint PK_STATE primary key (STATEGROUPID, RAWSTATE)
 );
 
-INSERT INTO State VALUES(-11,-1, 'Any', 2, 6 , 0);
-INSERT INTO State VALUES(-11, 0, 'Connected', 0, 6 , 0);
-INSERT INTO State VALUES(-11, 1, 'Disconnected', 1, 6 , 0);
+INSERT INTO State VALUES(-12, 0, 'Unknown', 3, 6, 0);
+INSERT INTO State VALUES(-12, 1, 'Connected', 0, 6, 0);
+INSERT INTO State VALUES(-12, 2, 'Disconnected', 1, 6, 0);
+INSERT INTO State VALUES(-12, 3, 'Armed', 4, 6, 0);
+INSERT INTO State VALUES(-11,-1, 'Any', 2, 6, 0);
+INSERT INTO State VALUES(-11, 0, 'Connected', 0, 6, 0);
+INSERT INTO State VALUES(-11, 1, 'Disconnected', 1, 6, 0);
 INSERT INTO State VALUES(-10, 0, 'Unknown', 0, 6, 0);
 INSERT INTO State VALUES(-10, 1, 'A', 1, 6, 0);
 INSERT INTO State VALUES(-10, 2, 'B', 10, 6, 0);
@@ -7561,12 +7565,13 @@ create index Indx_StateRaw on STATE (
 /* Table: STATEGROUP                                            */
 /*==============================================================*/
 create table STATEGROUP  (
-   STATEGROUPID         NUMBER                          not null,
-   NAME                 VARCHAR2(20)                    not null,
+   StateGroupId         NUMBER                          not null,
+   Name                 VARCHAR2(60)                    not null,
    GroupType            VARCHAR2(20)                    not null,
-   constraint SYS_C0013128 primary key (STATEGROUPID)
+   constraint SYS_C0013128 primary key (StateGroupId)
 );
 
+INSERT INTO StateGroup VALUES(-12, 'RFN Disconnect Status', 'Status'); 
 INSERT INTO StateGroup VALUES(-11, 'Comm Status State', 'Status'); 
 INSERT INTO StateGroup VALUES(-10, 'PhaseStatus', 'Status');
 INSERT INTO StateGroup VALUES(-9, 'ThreeStateStatus', 'Status');
@@ -7586,10 +7591,10 @@ INSERT INTO StateGroup VALUES( 6, '1LNSUBSTATE', 'Status');
 INSERT INTO StateGroup VALUES( 7, '1LNVERIFY', 'Status');
 
 /*==============================================================*/
-/* Index: Indx_STATEGRP_Nme                                     */
+/* Index: Indx_StateGroup_Name_UNQ                              */
 /*==============================================================*/
-create unique index Indx_STATEGRP_Nme on STATEGROUP (
-   NAME ASC
+create unique index Indx_StateGroup_Name_UNQ on STATEGROUP (
+   Name ASC
 );
 
 /*==============================================================*/
@@ -10902,11 +10907,6 @@ alter table CICustomerBase
    add constraint FK_CstCI_Cst foreign key (CustomerID)
       references Customer (CustomerID);
 
-alter table CRFAddress
-   add constraint FK_CRFAdd_Device foreign key (DeviceId)
-      references DEVICE (DEVICEID)
-      on delete cascade;
-
 alter table CalcPointBaseline
    add constraint FK_CLCBS_BASL foreign key (BaselineID)
       references BaseLine (BaselineID);
@@ -12229,7 +12229,7 @@ alter table POINT
 
 alter table POINT
    add constraint Ref_STATGRP_PT foreign key (STATEGROUPID)
-      references STATEGROUP (STATEGROUPID);
+      references STATEGROUP (StateGroupId);
 
 alter table POINTACCUMULATOR
    add constraint SYS_C0013317 foreign key (POINTID)
@@ -12317,6 +12317,11 @@ alter table RDSTransmitter
       references YukonPAObject (PAObjectID)
       on delete cascade;
 
+alter table RFNAddress
+   add constraint FK_CRFAdd_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
+
 alter table RPHTag
    add constraint FK_RPHTag_RPH foreign key (ChangeId)
       references RAWPOINTHISTORY (CHANGEID)
@@ -12344,7 +12349,7 @@ alter table STATE
 
 alter table STATE
    add constraint SYS_C0013342 foreign key (STATEGROUPID)
-      references STATEGROUP (STATEGROUPID);
+      references STATEGROUP (StateGroupId);
 
 alter table ScheduleShipmentMapping
    add constraint FK_SCHDSHPMNTMAP_DS foreign key (ScheduleID)

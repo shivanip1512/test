@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/10/2010 4:41:01 PM                         */
+/* Created on:     9/13/2010 11:06:25 AM                        */
 /*==============================================================*/
 
 
@@ -408,15 +408,6 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index CCurtProgramParameter.INDX_CCRTPRGPRM_PGID_PMKEY
-go
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('CRFAddress')
-            and   name  = 'Indx_CRFAdd_SerNum_Man_Mod_UNQ'
-            and   indid > 0
-            and   indid < 255)
-   drop index CRFAddress.Indx_CRFAdd_SerNum_Man_Mod_UNQ
 go
 
 if exists (select 1
@@ -988,6 +979,15 @@ go
 
 if exists (select 1
             from  sysindexes
+           where  id    = object_id('RFNAddress')
+            and   name  = 'Indx_RFNAdd_SerNum_Man_Mod_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index RFNAddress.Indx_RFNAdd_SerNum_Man_Mod_UNQ
+go
+
+if exists (select 1
+            from  sysindexes
            where  id    = object_id('Route')
             and   name  = 'Indx_RouteDevID'
             and   indid > 0
@@ -1007,10 +1007,10 @@ go
 if exists (select 1
             from  sysindexes
            where  id    = object_id('STATEGROUP')
-            and   name  = 'Indx_STATEGRP_Nme'
+            and   name  = 'Indx_StateGroup_Name_UNQ'
             and   indid > 0
             and   indid < 255)
-   drop index STATEGROUP.Indx_STATEGRP_Nme
+   drop index STATEGROUP.Indx_StateGroup_Name_UNQ
 go
 
 if exists (select 1
@@ -1578,13 +1578,6 @@ if exists (select 1
            where  id = object_id('COLUMNTYPE')
             and   type = 'U')
    drop table COLUMNTYPE
-go
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('CRFAddress')
-            and   type = 'U')
-   drop table CRFAddress
 go
 
 if exists (select 1
@@ -3283,6 +3276,13 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('RFNAddress')
+            and   type = 'U')
+   drop table RFNAddress
+go
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('RPHTag')
             and   type = 'U')
    drop table RPHTag
@@ -4851,28 +4851,6 @@ insert into columntype values (12, 'UofM');
 insert into columntype values (13, 'State');
 insert into columntype values (14, 'PointImage' );
 insert into columntype values (15, 'QualityCount' );
-
-/*==============================================================*/
-/* Table: CRFAddress                                            */
-/*==============================================================*/
-create table CRFAddress (
-   DeviceId             numeric              not null,
-   SerialNumber         varchar(30)          not null,
-   Manufacturer         varchar(80)          not null,
-   Model                varchar(80)          not null,
-   constraint PK_CRFAdd primary key (DeviceId)
-)
-go
-
-/*==============================================================*/
-/* Index: Indx_CRFAdd_SerNum_Man_Mod_UNQ                        */
-/*==============================================================*/
-create unique index Indx_CRFAdd_SerNum_Man_Mod_UNQ on CRFAddress (
-SerialNumber ASC,
-Manufacturer ASC,
-Model ASC
-)
-go
 
 /*==============================================================*/
 /* Table: CTIDatabase                                           */
@@ -10486,6 +10464,28 @@ create table RDSTransmitter (
 go
 
 /*==============================================================*/
+/* Table: RFNAddress                                            */
+/*==============================================================*/
+create table RFNAddress (
+   DeviceId             numeric              not null,
+   SerialNumber         varchar(30)          not null,
+   Manufacturer         varchar(80)          not null,
+   Model                varchar(80)          not null,
+   constraint PK_CRFAdd primary key (DeviceId)
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_RFNAdd_SerNum_Man_Mod_UNQ                        */
+/*==============================================================*/
+create unique index Indx_RFNAdd_SerNum_Man_Mod_UNQ on RFNAddress (
+SerialNumber ASC,
+Manufacturer ASC,
+Model ASC
+)
+go
+
+/*==============================================================*/
 /* Table: RPHTag                                                */
 /*==============================================================*/
 create table RPHTag (
@@ -10543,9 +10543,13 @@ create table STATE (
 )
 go
 
-INSERT INTO State VALUES(-11,-1, 'Any', 2, 6 , 0);
-INSERT INTO State VALUES(-11, 0, 'Connected', 0, 6 , 0);
-INSERT INTO State VALUES(-11, 1, 'Disconnected', 1, 6 , 0);
+INSERT INTO State VALUES(-12, 0, 'Unknown', 3, 6, 0);
+INSERT INTO State VALUES(-12, 1, 'Connected', 0, 6, 0);
+INSERT INTO State VALUES(-12, 2, 'Disconnected', 1, 6, 0);
+INSERT INTO State VALUES(-12, 3, 'Armed', 4, 6, 0);
+INSERT INTO State VALUES(-11,-1, 'Any', 2, 6, 0);
+INSERT INTO State VALUES(-11, 0, 'Connected', 0, 6, 0);
+INSERT INTO State VALUES(-11, 1, 'Disconnected', 1, 6, 0);
 INSERT INTO State VALUES(-10, 0, 'Unknown', 0, 6, 0);
 INSERT INTO State VALUES(-10, 1, 'A', 1, 6, 0);
 INSERT INTO State VALUES(-10, 2, 'B', 10, 6, 0);
@@ -10628,13 +10632,14 @@ go
 /* Table: STATEGROUP                                            */
 /*==============================================================*/
 create table STATEGROUP (
-   STATEGROUPID         numeric              not null,
-   NAME                 varchar(20)          not null,
+   StateGroupId         numeric              not null,
+   Name                 varchar(60)          not null,
    GroupType            varchar(20)          not null,
-   constraint SYS_C0013128 primary key (STATEGROUPID)
+   constraint SYS_C0013128 primary key (StateGroupId)
 )
 go
 
+INSERT INTO StateGroup VALUES(-12, 'RFN Disconnect Status', 'Status'); 
 INSERT INTO StateGroup VALUES(-11, 'Comm Status State', 'Status'); 
 INSERT INTO StateGroup VALUES(-10, 'PhaseStatus', 'Status');
 INSERT INTO StateGroup VALUES(-9, 'ThreeStateStatus', 'Status');
@@ -10654,10 +10659,10 @@ INSERT INTO StateGroup VALUES( 6, '1LNSUBSTATE', 'Status');
 INSERT INTO StateGroup VALUES( 7, '1LNVERIFY', 'Status');
 
 /*==============================================================*/
-/* Index: Indx_STATEGRP_Nme                                     */
+/* Index: Indx_StateGroup_Name_UNQ                              */
 /*==============================================================*/
-create unique index Indx_STATEGRP_Nme on STATEGROUP (
-NAME ASC
+create unique index Indx_StateGroup_Name_UNQ on STATEGROUP (
+Name ASC
 )
 go
 
@@ -14211,12 +14216,6 @@ alter table CICustomerBase
       references Customer (CustomerID)
 go
 
-alter table CRFAddress
-   add constraint FK_CRFAdd_Device foreign key (DeviceId)
-      references DEVICE (DEVICEID)
-         on delete cascade
-go
-
 alter table CalcPointBaseline
    add constraint FK_CLCBS_BASL foreign key (BaselineID)
       references BaseLine (BaselineID)
@@ -15859,7 +15858,7 @@ go
 
 alter table POINT
    add constraint Ref_STATGRP_PT foreign key (STATEGROUPID)
-      references STATEGROUP (STATEGROUPID)
+      references STATEGROUP (StateGroupId)
 go
 
 alter table POINTACCUMULATOR
@@ -15969,6 +15968,12 @@ alter table RDSTransmitter
          on delete cascade
 go
 
+alter table RFNAddress
+   add constraint FK_CRFAdd_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+         on delete cascade
+go
+
 alter table RPHTag
    add constraint FK_RPHTag_RPH foreign key (ChangeId)
       references RAWPOINTHISTORY (CHANGEID)
@@ -16002,7 +16007,7 @@ go
 
 alter table STATE
    add constraint SYS_C0013342 foreign key (STATEGROUPID)
-      references STATEGROUP (STATEGROUPID)
+      references STATEGROUP (StateGroupId)
 go
 
 alter table ScheduleShipmentMapping
