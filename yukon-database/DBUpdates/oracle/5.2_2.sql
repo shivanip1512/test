@@ -16,7 +16,7 @@ INSERT INTO YukonRoleProperty VALUES(-20911,-209,'Inventory Search','true','Enab
 
 /* Start YUK-9022 */
 DROP INDEX Indx_STATEGRP_Nme;
-ALTER TABLE StateGroup MODIFY Name VARCHAR2(60) NOT NULL;
+ALTER TABLE StateGroup MODIFY Name VARCHAR2(60);
 CREATE UNIQUE INDEX Indx_StateGroup_Name_UNQ ON StateGroup (
     NAME ASC
 );
