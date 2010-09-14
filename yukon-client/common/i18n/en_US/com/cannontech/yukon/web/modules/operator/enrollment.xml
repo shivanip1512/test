@@ -58,7 +58,7 @@
     <entry key="yukon.web.modules.operator.enrollmentList.cancel">Cancel</entry>
 
     <entry key="yukon.web.modules.operator.enrollmentEdit.headerMessage">
-        Select group and hardware for program {0}.
+        Select configuration for program {0}.
     </entry>
     <entry key="yukon.web.modules.operator.enrollmentEdit.group">Group</entry>
     <entry key="yukon.web.modules.operator.enrollmentEdit.groupNotApplicable">Not Applicable</entry>
