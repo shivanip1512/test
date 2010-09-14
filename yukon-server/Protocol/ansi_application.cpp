@@ -357,9 +357,9 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
      case request:
         {
             short pktSize;
-            if ((_currentBytesExpected - _currentTableOffset) < _maxPktSize.sh)
+            if ((_currentBytesExpected - _totalBytesInTable) < _maxPktSize.sh)
             {
-                pktSize = _currentBytesExpected - _currentTableOffset;
+                pktSize = _currentBytesExpected - _totalBytesInTable;
             }
             else
             {

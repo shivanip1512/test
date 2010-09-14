@@ -2922,7 +2922,7 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                             if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
                                                             {
                                                                 CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                                                dout << "    **lpTime:  " << CtiTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<< "  lpQuality: "<<(int)_lpQuality[y]<<endl;
+                                                                dout << endl <<"    **lpTime:  " << CtiTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<< "  lpQuality: "<<(int)_lpQuality[y];
                                                             }
                                                         }
                                                         else
@@ -2945,7 +2945,7 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                             if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
                                                             {
                                                                 CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                                                dout << "    **lpTime:  " << CtiTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<< "  lpQuality: "<<(int)_lpQuality[y]<<endl;
+                                                                dout << endl <<"    **lpTime:  " << CtiTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<< "  lpQuality: "<<(int)_lpQuality[y]<<endl;
                                                             }
                                                         }
 

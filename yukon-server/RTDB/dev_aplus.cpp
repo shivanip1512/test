@@ -1114,11 +1114,12 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
                 {
                     try
                     {
+                        int incount = Transfer.getInCountActual() >  7 ? (Transfer.getInCountActual() - 7 ) : 0;
                         memcpy(&_dataBuffer[getTotalByteCount()],
                                &Transfer.getInBuffer()[5],
-                               (Transfer.getInCountActual()) - 7);
+                               incount);
 
-                        setTotalByteCount (getTotalByteCount() + ((Transfer.getInCountActual())) - 7);
+                        setTotalByteCount (getTotalByteCount() + incount);
 
                         // need to check if have any more info
                         setCurrentState (StateScanValueSet7FirstScan);
@@ -1346,11 +1347,11 @@ INT CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer  &Transfer,
 INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
     INT retCode= NORMAL;
-    INT         iClass;
+    INT         iClass = 0;
     // Class Offset is the position of the requested class in the APlusClasses array
-    INT         classOffset;
+    INT         classOffset = 0;
     // ClassLength is the byte length count of the requested class from the APlusClasses array
-    INT         classLength;
+    INT         classLength = 0;
     AlphaPPlusLoadProfile_t * ptr = (AlphaPPlusLoadProfile_t *)_loadProfileBuffer;
 
 
@@ -1485,14 +1486,15 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                 {
                     try
                     {
+                        int incount = Transfer.getInCountActual() >  7 ? (Transfer.getInCountActual() - 7 ) : 0;
                         memcpy(&_lpWorkBuffer[getTotalByteCount()],
                                &Transfer.getInBuffer()[5],
-                               (Transfer.getInCountActual()) - 7);
+                               incount);
 
-                        setTotalByteCount (getTotalByteCount() + ((Transfer.getInCountActual())) - 7);
+                        setTotalByteCount (getTotalByteCount() + incount);
 
                         // need to check if its time to send back load profile
-                        if (getTotalByteCount() >= ptr->class14.dayRecordSize)
+                        if (getTotalByteCount() >= ptr->class14.dayRecordSize && ptr->class14.dayRecordSize > 6)
                         {
                             BYTE buffer[100];
                             ptr->class18.recordDateTime.Year = (UCHAR) BCDtoBase10(&_lpWorkBuffer[0],   1);
@@ -1696,7 +1698,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                             if (isClassReadComplete())
                             {
                                 // need to check if its time to send back load profile
-                                if (getTotalByteCount() >= ptr->class14.dayRecordSize)
+                                if (getTotalByteCount() >= ptr->class14.dayRecordSize  && ptr->class14.dayRecordSize > 6)
                                 {
                                     BYTE buffer[100];
 
@@ -1721,7 +1723,7 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                             else
                             {
                                 // need to check if its time to send back load profile
-                                if (getTotalByteCount() >= ptr->class14.dayRecordSize)
+                                if (getTotalByteCount() >= ptr->class14.dayRecordSize  && ptr->class14.dayRecordSize > 6)
                                 {
                                     BYTE buffer[100];
 
