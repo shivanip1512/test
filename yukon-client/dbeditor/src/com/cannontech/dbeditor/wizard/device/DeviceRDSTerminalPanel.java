@@ -26,7 +26,6 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.database.data.device.RDSTerminal;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.db.device.RDSTransmitter;
 
 public class DeviceRDSTerminalPanel extends DataInputPanel implements
         CaretListener, ActionListener {
@@ -415,22 +414,22 @@ public class DeviceRDSTerminalPanel extends DataInputPanel implements
         RDSTerminal rdsTerminal = (RDSTerminal) value;
 
         String siteAddress = getSiteAddress().getText();
-        rdsTerminal.getRdsTransmitter().setSiteAddress(new Integer(siteAddress));
+        rdsTerminal.getSiteAddress().setValue(siteAddress);
 
         String encoderAddress = getEncoderAddress().getText();
-        rdsTerminal.getRdsTransmitter().setEncoderAddress(new Integer(encoderAddress));
+        rdsTerminal.getEncoderAddress().setValue(encoderAddress);
 
         String transmitSpeed = getTransmitSpeed().getText();
-        rdsTerminal.getRdsTransmitter().setTransmitSpeed(new Double(transmitSpeed));
+        rdsTerminal.getTransmitSpeed().setValue(transmitSpeed);
 
         String groupType = getGroupType().getText();
-        rdsTerminal.getRdsTransmitter().setGroupType(groupType);
+        rdsTerminal.getGroupType().setValue(groupType);
 
         String paoInfoIpAddress = getPaoInfoIpAddress().getText();
-        rdsTerminal.getPaoInfoIpAddress().setValue(paoInfoIpAddress);
+        rdsTerminal.getRdsIpAddress().setValue(paoInfoIpAddress);
         
         String paoInfoIpPort = getPaoInfoIpPort().getText();
-        rdsTerminal.getPaoInfoIpPort().setValue(paoInfoIpPort);
+        rdsTerminal.getRdsIpPort().setValue(paoInfoIpPort);
         
         return rdsTerminal;
     }
@@ -579,17 +578,12 @@ public class DeviceRDSTerminalPanel extends DataInputPanel implements
         RDSTerminal rdsTerminal = (RDSTerminal) o;
 
         if (rdsTerminal != null) {
-            RDSTransmitter rdsTransmitter = rdsTerminal.getRdsTransmitter();
-
-            getSiteAddress().setText(rdsTransmitter.getSiteAddress().toString());
-            getEncoderAddress().setText(rdsTransmitter.getEncoderAddress()
-                                                      .toString());
-            getTransmitSpeed().setText(rdsTransmitter.getTransmitSpeed()
-                                                     .toString());
-            getGroupType().setText(rdsTransmitter.getGroupType());
-            
-            getPaoInfoIpAddress().setText(rdsTerminal.getPaoInfoIpAddress().getValue());
-            getPaoInfoIpPort().setText(rdsTerminal.getPaoInfoIpPort().getValue());
+            getSiteAddress().setText(rdsTerminal.getSiteAddress().getValue());
+            getEncoderAddress().setText(rdsTerminal.getEncoderAddress().getValue());
+            getTransmitSpeed().setText(rdsTerminal.getTransmitSpeed().getValue());
+            getGroupType().setText(rdsTerminal.getGroupType().getValue());            
+            getPaoInfoIpAddress().setText(rdsTerminal.getRdsIpAddress().getValue());
+            getPaoInfoIpPort().setText(rdsTerminal.getRdsIpPort().getValue());
         }
     }
 

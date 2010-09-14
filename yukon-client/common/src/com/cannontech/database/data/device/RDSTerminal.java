@@ -2,14 +2,18 @@ package com.cannontech.database.data.device;
 
 import java.sql.SQLException;
 
+
+import com.cannontech.common.pao.PaoInfo;
 import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.db.device.RDSTransmitter;
 import com.cannontech.database.db.pao.StaticPaoInfo;
 
 public class RDSTerminal extends IEDBase {
-    private RDSTransmitter rdsTransmitter = null;
-    private StaticPaoInfo paoInfoIpAddress = null;
-    private StaticPaoInfo paoInfoIpPort = null;
+    private StaticPaoInfo rdsIpAddress = new StaticPaoInfo(PaoInfo.RDS_TRANSMITTER_IP_ADDRESS);
+    private StaticPaoInfo rdsIpPort = new StaticPaoInfo(PaoInfo.RDS_TRANSMITTER_IP_PORT);
+    private StaticPaoInfo siteAddress = new StaticPaoInfo(PaoInfo.RDS_TRANSMITTER_SITE_ADDRESS);
+    private StaticPaoInfo encoderAddress = new StaticPaoInfo(PaoInfo.RDS_TRANSMITTER_ENCODER_ADDRESS);
+    private StaticPaoInfo transmitSpeed = new StaticPaoInfo(PaoInfo.RDS_TRANSMITTER_TRANSMIT_SPEED);
+    private StaticPaoInfo groupType = new StaticPaoInfo(PaoInfo.RDS_TRANSMITTER_GROUP_TYPE);
     
     public RDSTerminal(){
         super();
@@ -19,24 +23,33 @@ public class RDSTerminal extends IEDBase {
     @Override
     public void add() throws SQLException {
         super.add();
-        getRdsTransmitter().add();
-        getPaoInfoIpAddress().add();
-        getPaoInfoIpPort().add();
+        getRdsIpAddress().add();
+        getRdsIpPort().add();
+        getSiteAddress().add();
+        getEncoderAddress().add();
+        getTransmitSpeed().add();
+        getGroupType().add();        
     }
     
     @Override
     public void addPartial() throws SQLException {
         super.addPartial();
-        getRdsTransmitter().add();
-        getPaoInfoIpAddress().add();
-        getPaoInfoIpPort().add();
+        getRdsIpAddress().add();
+        getRdsIpPort().add();
+        getSiteAddress().add();
+        getEncoderAddress().add();
+        getTransmitSpeed().add();
+        getGroupType().add();
     }
     
     @Override
     public void delete() throws SQLException {
-        getRdsTransmitter().delete();
-        getPaoInfoIpAddress().delete();
-        getPaoInfoIpPort().delete();
+        getRdsIpAddress().delete();
+        getRdsIpPort().delete();
+        getSiteAddress().delete();
+        getEncoderAddress().delete();
+        getTransmitSpeed().delete();
+        getGroupType().delete();
         super.delete();
     }
     
@@ -48,65 +61,92 @@ public class RDSTerminal extends IEDBase {
     @Override
     public void retrieve() throws SQLException {
         super.retrieve();
-        getRdsTransmitter().retrieve();
-        getPaoInfoIpAddress().retrieve();
-        getPaoInfoIpPort().retrieve();
+        getRdsIpAddress().retrieve();
+        getRdsIpPort().retrieve();
+        getSiteAddress().retrieve();
+        getEncoderAddress().retrieve();
+        getTransmitSpeed().retrieve();
+        getGroupType().retrieve();
     }
 
     @Override
     public void update() throws SQLException {
         super.update();
-        getRdsTransmitter().update();
-        getPaoInfoIpAddress().update();
-        getPaoInfoIpPort().update();
+        getRdsIpAddress().update();
+        getRdsIpPort().update();
+        getSiteAddress().update();
+        getEncoderAddress().update();
+        getTransmitSpeed().update();
+        getGroupType().update();
     }
     
     @Override
     public void setDeviceID(Integer deviceId){
         super.setDeviceID(deviceId);
-        getRdsTransmitter().setPaobjectId(deviceId);
-        getPaoInfoIpAddress().setPaobjectId(deviceId);
-        getPaoInfoIpPort().setPaobjectId(deviceId);
+        getRdsIpAddress().setPaobjectId(deviceId);
+        getRdsIpPort().setPaobjectId(deviceId);
+        getSiteAddress().setPaobjectId(deviceId);
+        getEncoderAddress().setPaobjectId(deviceId);
+        getTransmitSpeed().setPaobjectId(deviceId);
+        getGroupType().setPaobjectId(deviceId);
     }
     
     @Override
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
-        getRdsTransmitter().setDbConnection(conn);
-        getPaoInfoIpAddress().setDbConnection(conn);
-        getPaoInfoIpPort().setDbConnection(conn);
+        getRdsIpAddress().setDbConnection(conn);
+        getRdsIpPort().setDbConnection(conn);
+        getSiteAddress().setDbConnection(conn);
+        getEncoderAddress().setDbConnection(conn);
+        getTransmitSpeed().setDbConnection(conn);
+        getGroupType().setDbConnection(conn);
     }
     
-    public RDSTransmitter getRdsTransmitter(){
-        if(rdsTransmitter == null) {
-            rdsTransmitter = new RDSTransmitter();
-        }
-        return rdsTransmitter;
-    }
-    
-    public void setRdsTransmitter(RDSTransmitter rdsTransmitter){
-        this.rdsTransmitter = rdsTransmitter;
+    public StaticPaoInfo getRdsIpAddress() {
+        return rdsIpAddress;
     }
 
-    public StaticPaoInfo getPaoInfoIpAddress() {
-        if(paoInfoIpAddress == null) {
-            paoInfoIpAddress = new StaticPaoInfo(StaticPaoInfo.INFO_KEY_IP_ADDRESS);
-        }
-        return paoInfoIpAddress;
+    public void setRdsIpAddress(StaticPaoInfo rdsIpAddress) {
+        this.rdsIpAddress = rdsIpAddress;
     }
-    
-    public void setPaoInfoIpAddress(StaticPaoInfo paoInfoIpAddress) {
-        this.paoInfoIpAddress = paoInfoIpAddress;
+
+    public StaticPaoInfo getRdsIpPort() {
+        return rdsIpPort;
     }
-    
-    public StaticPaoInfo getPaoInfoIpPort() {
-        if(paoInfoIpPort == null) {
-            paoInfoIpPort = new StaticPaoInfo(StaticPaoInfo.INFO_KEY_IP_PORT);
-        }
-        return paoInfoIpPort;
+
+    public void setRdsIpPort(StaticPaoInfo rdsIpPort) {
+        this.rdsIpPort = rdsIpPort;
     }
-    
-    public void setPaoInfoIpPort(StaticPaoInfo paoInfoIpPort) {
-        this.paoInfoIpPort = paoInfoIpPort;
+
+    public StaticPaoInfo getSiteAddress() {
+        return siteAddress;
+    }
+
+    public void setSiteAddress(StaticPaoInfo siteAddress) {
+        this.siteAddress = siteAddress;
+    }
+
+    public StaticPaoInfo getEncoderAddress() {
+        return encoderAddress;
+    }
+
+    public void setEncoderAddress(StaticPaoInfo encoderAddress) {
+        this.encoderAddress = encoderAddress;
+    }
+
+    public StaticPaoInfo getTransmitSpeed() {
+        return transmitSpeed;
+    }
+
+    public void setTransmitSpeed(StaticPaoInfo transmitSpeed) {
+        this.transmitSpeed = transmitSpeed;
+    }
+
+    public StaticPaoInfo getGroupType() {
+        return groupType;
+    }
+
+    public void setGroupType(StaticPaoInfo groupType) {
+        this.groupType = groupType;
     }
 }

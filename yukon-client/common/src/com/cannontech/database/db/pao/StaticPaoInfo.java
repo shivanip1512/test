@@ -1,14 +1,13 @@
 package com.cannontech.database.db.pao;
 
+import com.cannontech.common.pao.PaoInfo;
+
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.spring.YukonSpringHook;
 
 public class StaticPaoInfo extends DBPersistent
 {
-    public static String INFO_KEY_IP_PORT = "ip port";
-    public static String INFO_KEY_IP_ADDRESS = "ip address";
-    
 	private Integer staticPaoInfoId = null;
 	private Integer paobjectId = null;
 	private String infoKey = null;
@@ -28,21 +27,17 @@ public class StaticPaoInfo extends DBPersistent
 
 	public static final String TABLE_NAME = "StaticPaoInfo";
 
-	public StaticPaoInfo() {
-		super();
-	}
-
-	public StaticPaoInfo(String infoKey) {
+	public StaticPaoInfo(PaoInfo paoInfo) {
         super();
-        this.infoKey = infoKey;
+        this.infoKey = paoInfo.name();
     }
 	 
 	public StaticPaoInfo(Integer staticPaoInfoId, Integer paobjectId,
-            String infoKey, String value) {
+            PaoInfo paoInfo, String value) {
         super();
         this.staticPaoInfoId = staticPaoInfoId;
         this.paobjectId = paobjectId;
-        this.infoKey = infoKey;
+        this.infoKey = paoInfo.name();
         this.value = value;
     }
 
@@ -117,17 +112,18 @@ public class StaticPaoInfo extends DBPersistent
         this.paobjectId = paobjectId;
     }
 
-
-    public String getInfoKey() {
+    /**
+     * This is the String representation of PaoInfo enum, used to write to the database.
+     * @return
+     */
+    private String getInfoKey() {
         return infoKey;
     }
-
-
-    public void setInfoKey(String infoKey) {
-        this.infoKey = infoKey;
+    
+    public PaoInfo getPaoInfo() {
+        return PaoInfo.valueOf(getInfoKey());
     }
-
-
+    
     public String getValue() {
         return value;
     }
