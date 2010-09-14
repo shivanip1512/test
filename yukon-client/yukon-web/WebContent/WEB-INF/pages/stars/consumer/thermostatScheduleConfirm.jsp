@@ -26,7 +26,15 @@
     <cti:msg key="yukon.dr.consumer.thermostatScheduleConfirm.introText" /><br>
     <br>
     
-    ${scheduleConfirm}
+    <c:forEach var="display" items="${confirmationDisplays}">
+    	<b>${display.timeOfWeekString}</b>
+    	<br/><br/>
+    	<c:forEach var="displayString" items="${display.entryList}">
+    		${displayString}<br/>
+    	</c:forEach>
+    	<br/>
+    </c:forEach>
+    
     <form id="scheduleForm" name="scheduleForm" method="POST" action="/spring/stars/consumer/thermostat/schedule/save">
         
         <input type="hidden" name="schedules" value="<spring:escapeBody htmlEscape="true">${schedules}</spring:escapeBody>"/>

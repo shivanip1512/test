@@ -28,8 +28,14 @@
 				    </form>
 				    
 				    <%-- the meat --%>
-				    ${scheduleConfirm}
-				    <br><br>
+				    <c:forEach var="display" items="${confirmationDisplays}">
+				    	<b>${display.timeOfWeekString}</b>
+				    	<br/><br/>
+				    	<c:forEach var="displayString" items="${display.entryList}">
+				    		${displayString}<br/>
+				    	</c:forEach>
+				    	<br/>
+				    </c:forEach>
 				    
 				    <form id="scheduleForm" name="scheduleForm" method="post" action="/spring/stars/operator/thermostatSchedule/save">
 				        

@@ -8,6 +8,7 @@ import org.joda.time.LocalTime;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
+import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriodStyle;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -18,31 +19,36 @@ public enum SchedulableThermostatType {
 				50, 90,
 				50, 90,
 				Sets.immutableEnumSet(ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_SAT_SUN),
-				ThermostatScheduleMode.WEEKDAY_SAT_SUN
+				ThermostatScheduleMode.WEEKDAY_SAT_SUN,
+				ThermostatSchedulePeriodStyle.FOUR_TIMES
 	),
 	COMMERCIAL_EXPRESSSTAT(HardwareType.COMMERCIAL_EXPRESSSTAT,
 				50, 90,
 				50, 90,
 				Sets.immutableEnumSet(ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_SAT_SUN),
-				ThermostatScheduleMode.WEEKDAY_SAT_SUN
+				ThermostatScheduleMode.WEEKDAY_SAT_SUN,
+                ThermostatSchedulePeriodStyle.TWO_TIMES
 	),
 	UTILITY_PRO(HardwareType.UTILITY_PRO,
 				50, 99, //yes, you read it right. Cool has higher upper-limit than Heat, and Heat has a lower lower-limit than Cool. Go ask a Honeywell device engineer.
 				40, 90,
 				Sets.immutableEnumSet(ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_SAT_SUN, ThermostatScheduleMode.WEEKDAY_WEEKEND),
-				ThermostatScheduleMode.WEEKDAY_SAT_SUN
+				ThermostatScheduleMode.WEEKDAY_SAT_SUN,
+                ThermostatSchedulePeriodStyle.FOUR_TIMES
 	),
 	HEAT_PUMP_EXPRESSSTAT(HardwareType.EXPRESSSTAT_HEAT_PUMP,
                 50, 90, 
                 50, 90,
                 Sets.immutableEnumSet(ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_SAT_SUN),
-                ThermostatScheduleMode.WEEKDAY_SAT_SUN
+                ThermostatScheduleMode.WEEKDAY_SAT_SUN,
+                ThermostatSchedulePeriodStyle.FOUR_TIMES
 	),
     ENERGY_PRO(HardwareType.ENERGYPRO,
                 50, 90, 
                 50, 90,
                 Sets.immutableEnumSet(ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_SAT_SUN, ThermostatScheduleMode.WEEKDAY_WEEKEND),
-                ThermostatScheduleMode.WEEKDAY_SAT_SUN
+                ThermostatScheduleMode.WEEKDAY_SAT_SUN,
+                ThermostatSchedulePeriodStyle.FOUR_TIMES
     ),             
 	;
 	
@@ -53,12 +59,14 @@ public enum SchedulableThermostatType {
 	private int upperLimitHeatInFahrenheit;
 	private Set<ThermostatScheduleMode> supportedScheduleModes;
 	private ThermostatScheduleMode defaultThermostatScheduleMode;
+	private final ThermostatSchedulePeriodStyle periodStyle;
 	
 	SchedulableThermostatType(HardwareType hardwareType,
 							  int lowerLimitCoolInFahrenheit, int upperLimitCoolInFahrenheit,
 							  int lowerLimitHeatInFahrenheit, int upperLimitHeatInFahrenheit,
 							  Set<ThermostatScheduleMode> supportedScheduleModes,
-							  ThermostatScheduleMode defaultThermostatScheduleMode) {
+							  ThermostatScheduleMode defaultThermostatScheduleMode,
+							  ThermostatSchedulePeriodStyle periodStyle) {
 		
 		this.hardwareType = hardwareType;
 		this.lowerLimitCoolInFahrenheit = lowerLimitCoolInFahrenheit;
@@ -67,10 +75,15 @@ public enum SchedulableThermostatType {
 		this.upperLimitHeatInFahrenheit = upperLimitHeatInFahrenheit;
 		this.supportedScheduleModes = supportedScheduleModes;
 		this.defaultThermostatScheduleMode = defaultThermostatScheduleMode;
+		this.periodStyle = periodStyle;
 	}
 	
 	public HardwareType getHardwareType() {
 		return hardwareType;
+	}
+	
+	public ThermostatSchedulePeriodStyle getPeriodStyle(){
+	    return periodStyle;
 	}
 	
 	/**

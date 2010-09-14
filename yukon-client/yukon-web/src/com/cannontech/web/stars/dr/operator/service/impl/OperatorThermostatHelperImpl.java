@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.dr.operator.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -9,17 +10,24 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
+import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleDisplay;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.user.YukonUserContext;
@@ -38,6 +46,7 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	private HardwareService hardwareService;
 	private YukonUserContextMessageSourceResolver messageSourceResolver;
 	private AccountThermostatScheduleDao accountThermostatScheduleDao;
+	private DateFormattingService dateFormattingService;
 	
 	@Override
 	public List<Integer> setupModelMapForThermostats(String thermostatIds, AccountInfoFragment accountInfoFragment, ModelMap modelMap) {
@@ -129,7 +138,6 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 
                 // Convert celsius temp to fahrenheit if needed
                 if (!isFahrenheit) {
-                	
                     coolTemp = (int)CtiUtilities.convertTemperature(coolTemp, CtiUtilities.CELSIUS_CHARACTER, CtiUtilities.FAHRENHEIT_CHARACTER);
                     heatTemp = (int)CtiUtilities.convertTemperature(heatTemp, CtiUtilities.CELSIUS_CHARACTER, CtiUtilities.FAHRENHEIT_CHARACTER);
                 }
@@ -227,6 +235,51 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 		return scheduleName;
 	}
 	
+	@Override
+	public List<ThermostatScheduleDisplay> getScheduleDisplays(
+	           YukonUserContext yukonUserContext, String type, ThermostatScheduleMode thermostatScheduleMode,
+	           AccountThermostatSchedule accountThermostatSchedule, boolean isFahrenheit, String i18nKey){
+	    
+	    List<ThermostatScheduleDisplay> scheduleDisplays = Lists.newArrayList();
+	    MessageSource messageSource = messageSourceResolver.getMessageSource(yukonUserContext);
+	    SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.valueOf(type);
+
+	    for(TimeOfWeek timeOfWeek : thermostatScheduleMode.getAssociatedTimeOfWeeks()){
+	        TimeOfWeek timeOfWeekForDisplay = timeOfWeek;
+	        if (thermostatScheduleMode == ThermostatScheduleMode.ALL && timeOfWeek == TimeOfWeek.WEEKDAY) {
+	            timeOfWeekForDisplay = TimeOfWeek.EVERYDAY;
+	        }
+	        YukonMessageSourceResolvable timeOfWeekResolvable = new YukonMessageSourceResolvable(timeOfWeekForDisplay.getDisplayKey());
+	        String timeOfWeekString = messageSource.getMessage(timeOfWeekResolvable, yukonUserContext.getLocale());
+	        ThermostatScheduleDisplay scheduleDisplay = new ThermostatScheduleDisplay();
+	        scheduleDisplay.setTimeOfWeekString(timeOfWeekString);
+	        
+	        List<AccountThermostatScheduleEntry> entries = accountThermostatSchedule.getEntriesByTimeOfWeekMultimap().get(timeOfWeek);
+	        for(int index = 0; index < entries.size(); index++){
+	            AccountThermostatScheduleEntry entry = entries.get(index);
+	            if(schedulableThermostatType.getPeriodStyle().containsPeriodEntryIndex(index)){
+	                LocalTime startTime = entry.getStartTimeLocalTime();
+	                String startDateString = dateFormattingService.format(startTime, DateFormatEnum.TIME, yukonUserContext);
+	                
+	                int coolTemp = entry.getCoolTemp();
+	                int heatTemp = entry.getHeatTemp();
+	                String tempUnit = (isFahrenheit) ? CtiUtilities.FAHRENHEIT_CHARACTER : CtiUtilities.CELSIUS_CHARACTER;
+	                coolTemp = (int)CtiUtilities.convertTemperature(coolTemp, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
+	                heatTemp = (int)CtiUtilities.convertTemperature(heatTemp, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
+	                
+	                List<Object> argumentList = new ArrayList<Object>();
+	                argumentList.add(startDateString);
+	                argumentList.add(coolTemp);
+	                argumentList.add(heatTemp);
+	                String timeCoolHeatString = messageSource.getMessage(i18nKey, argumentList.toArray(), yukonUserContext.getLocale());
+	                scheduleDisplay.addToEntryList(timeCoolHeatString);
+	            }
+	        }
+	        scheduleDisplays.add(scheduleDisplay);
+	    }
+	    return scheduleDisplays;
+	}
+	
 	@Autowired
 	public void setInventoryDao(InventoryDao inventoryDao) {
 		this.inventoryDao = inventoryDao;
@@ -245,5 +298,10 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	@Autowired
 	public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
 		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
+	}
+	
+	@Autowired
+	public void setDateFormattingService(DateFormattingService dateFormattingService){
+	    this.dateFormattingService = dateFormattingService;
 	}
 }

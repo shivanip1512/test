@@ -41,8 +41,9 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
+import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriod;
+import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriodStyle;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
-//import com.cannontech.stars.dr.thermostat.model.ThermostatSeasonEntry;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.stars.util.StarsUtils;
@@ -57,7 +58,6 @@ public class ThermostatServiceImpl implements ThermostatService {
 
     private Logger logger = YukonLogManager.getLogger(ThermostatServiceImpl.class);
     private AccountEventLogService accountEventLogService;
-    
     private CustomerEventDao customerEventDao;
     private InventoryDao inventoryDao;
     private ECMappingDao ecMappingDao;
@@ -507,61 +507,28 @@ public class ThermostatServiceImpl implements ThermostatService {
         ListMultimap<TimeOfWeek, AccountThermostatScheduleEntry> entriesByTimeOfWeekMap = schedule.getEntriesByTimeOfWeekMultimap();
         List<AccountThermostatScheduleEntry> entries = entriesByTimeOfWeekMap.get(timeOfWeek);
         DateTimeFormatter timeFormatter = systemDateFormattingService.getCommandTimeFormatter();
-
-        if (HardwareType.COMMERCIAL_EXPRESSSTAT.equals(thermostat.getType())) {
-
-        	AccountThermostatScheduleEntry occupiedEntry = entries.get(0);
-            LocalTime occupiedStart = occupiedEntry.getStartTimeLocalTime();
-            String occupiedDate = timeFormatter.print(occupiedStart);
-            int coolOccupiedTemp = occupiedEntry.getCoolTemp();
-            int heatOccupiedTemp = occupiedEntry.getHeatTemp();
-            logMessage.append("Occupied:" + occupiedDate + "," + coolOccupiedTemp + tempUnit + 
-                        "," + heatOccupiedTemp + tempUnit + ", ");
-
-            AccountThermostatScheduleEntry unOccupiedEntry = entries.get(3);
-            LocalTime unOccupiedStart = unOccupiedEntry.getStartTimeLocalTime();
-            String unOccupiedDate = timeFormatter.print(unOccupiedStart);
-            int coolUnOccupiedTemp = unOccupiedEntry.getCoolTemp();
-            int heatUnOccupiedTemp = unOccupiedEntry.getHeatTemp();
-            logMessage.append("Unoccupied:" + unOccupiedDate + "," + coolUnOccupiedTemp + tempUnit +
-                        "," + heatUnOccupiedTemp + tempUnit);
-
-        } else {
-
-        	AccountThermostatScheduleEntry wakeEntry = entries.get(0);
-            LocalTime wakeStart = wakeEntry.getStartTimeLocalTime();
-            String wakeDate = timeFormatter.print(wakeStart);
-            int wakeCoolTemp = wakeEntry.getCoolTemp();
-            int wakeHeatTemp = wakeEntry.getHeatTemp();
-            logMessage.append("Wake:" + wakeDate + "," + wakeCoolTemp + tempUnit + 
-                        "," + wakeHeatTemp + tempUnit + ", ");
-
-            AccountThermostatScheduleEntry leaveEntry = entries.get(1);
-            LocalTime leaveStart = leaveEntry.getStartTimeLocalTime();
-            String leaveDate = timeFormatter.print(leaveStart);
-            int leaveCoolTemp = leaveEntry.getCoolTemp();
-            int leaveHeatTemp = leaveEntry.getHeatTemp();
-            logMessage.append("Leave:" + leaveDate + "," + leaveCoolTemp + tempUnit + 
-                        "," + leaveHeatTemp + tempUnit + ", ");
-
-            AccountThermostatScheduleEntry returnEntry = entries.get(2);
-            LocalTime returnStart = returnEntry.getStartTimeLocalTime();
-            String returnDate = timeFormatter.print(returnStart);
-            int returnCoolTemp = returnEntry.getCoolTemp();
-            int returnHeatTemp = returnEntry.getHeatTemp();
-            logMessage.append("Return:" + returnDate + "," + returnCoolTemp + tempUnit + 
-                        "," + returnHeatTemp + tempUnit + ", ");
-
-            AccountThermostatScheduleEntry sleepEntry = entries.get(3);
-            LocalTime sleepStart = sleepEntry.getStartTimeLocalTime();
-            String sleepDate = timeFormatter.print(sleepStart);
-            int sleepCoolTemp = sleepEntry.getCoolTemp();
-            int sleepHeatTemp = sleepEntry.getHeatTemp();
-            logMessage.append("Sleep:" + sleepDate + "," + sleepCoolTemp + tempUnit + 
-                        "," + sleepHeatTemp + tempUnit + ", ");
-
+        SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.getByHardwareType(thermostat.getType());
+        ThermostatSchedulePeriodStyle periodStyle = schedulableThermostatType.getPeriodStyle();
+        boolean useComma = false;
+        
+        for(int index = 0; index < entries.size(); index++){
+            AccountThermostatScheduleEntry atsEntry = entries.get(index);
+            if(periodStyle.containsPeriodEntryIndex(index)){
+                //add a comma to separate entries if there are several
+                if(useComma){ 
+                    logMessage.append(", ");
+                } else {
+                    useComma = true;
+                }
+                String entryDate = timeFormatter.print(atsEntry.getStartTimeLocalTime());
+                int coolEntryTemp = atsEntry.getCoolTemp();
+                int heatEntryTemp = atsEntry.getHeatTemp();
+                ThermostatSchedulePeriod period = periodStyle.getPeriod(index);
+                logMessage.append(period + ": " + entryDate + "," + coolEntryTemp 
+                                  + tempUnit + "," + heatEntryTemp + tempUnit);
+            }
         }
-
+        
         ActivityLogger.logEvent(userId,
                                 accountId,
                                 energyCompanyId,

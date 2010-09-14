@@ -23,6 +23,7 @@ import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
+import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriodStyle;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -105,8 +106,8 @@ public class ThermostatAdminScheduleController {
         ats.setThermostatScheduleMode(thermostatScheduleMode);
         
         // COMMERCIAL_EXPRESSSTAT setToTwoTimeTemps
-        if (schedulableThermostatType == SchedulableThermostatType.COMMERCIAL_EXPRESSSTAT) {
-        	operatorThermostatHelper.setToTwoTimeTemps(ats);
+        if(schedulableThermostatType.getPeriodStyle() == ThermostatSchedulePeriodStyle.TWO_TIMES){
+            operatorThermostatHelper.setToTwoTimeTemps(ats);
         }
     	
     	// determine if legacy schedule name should be changed 
