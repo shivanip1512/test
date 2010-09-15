@@ -8,14 +8,15 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
-unsigned DlcCommand::getValueFromBits(const payload_t data, const unsigned start_offset, const unsigned length)
+//  throws CommandException
+unsigned DlcCommand::getValueFromBits(const payload_t &data, const unsigned start_offset, const unsigned length)
 {
     if( start_offset + length > data.size() * 8 )
-	{
-		return 0;
-	}
+    {
+        throw CommandException(NOTNORMAL, "Payload too small");
+    }
 
-	unsigned value = 0;
+    unsigned value = 0;
 
     for( unsigned pos = start_offset; pos < start_offset + length; )
     {
@@ -39,12 +40,13 @@ unsigned DlcCommand::getValueFromBits(const payload_t data, const unsigned start
 }
 
 
-vector<unsigned> DlcCommand::getValueVectorFromBits(const payload_t data, const unsigned start_offset, const unsigned length, const unsigned count)
+//  throws CommandException
+vector<unsigned> DlcCommand::getValueVectorFromBits(const payload_t &data, const unsigned start_offset, const unsigned length, const unsigned count)
 {
-	if( start_offset + count * length > data.size() * 8 )
-	{
-		return vector<unsigned>();
-	}
+    if( start_offset + count * length > data.size() * 8 )
+    {
+        return vector<unsigned>();
+    }
 
     vector<unsigned> values;
 

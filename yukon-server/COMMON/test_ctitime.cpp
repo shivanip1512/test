@@ -461,6 +461,17 @@ BOOST_AUTO_TEST_CASE(test_ctitime_GMT_conversions)
     BOOST_CHECK_EQUAL( 59               , theTime.secondGMT()   );
 
 
+    // Sun Mar 14th, 2010 at 2:00:00 CST == Sun Mar 14th, 2010 at 7:00:00 GMT?!?!
+    //  Just for documentation and completeness and fail.
+
+    theTime = CtiTime(CtiDate( 14, 3, 2010),  2,   0,   0  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 7                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+
     // Sun Mar 14th, 2010 at 3:00:00 CDT == Sun Mar 14th, 2010 at 8:00:00 GMT
 
     theTime = CtiTime(CtiDate( 14, 3, 2010),  3,  0,  0  );
@@ -500,9 +511,12 @@ BOOST_AUTO_TEST_CASE(test_ctitime_GMT_conversions)
     BOOST_CHECK_EQUAL( 59               , theTime.minuteGMT()   );
     BOOST_CHECK_EQUAL( 59               , theTime.secondGMT()   );
 
-    /* 
-        Can't test for the overlapping hour between 1:00 and 2:00 CDT.  Software assumes it is in CST.
-    */
+    theTime += 1;  //  Move it to 1:00 CDT (the first 1:00)
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 6                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
 
     // Sun Nov 7th, 2010 at 1:00:00 CST == Sun Nov 7th, 2010 at 7:00:00 GMT
 
@@ -537,3 +551,15 @@ BOOST_AUTO_TEST_CASE(test_ctitime_GMT_conversions)
     BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
 }
 
+
+BOOST_AUTO_TEST_CASE(test_ctitime_fall_dst_creation)
+{
+    {
+        CtiTime t0(CtiDate(7, 11, 2010), 0, 59, 59);
+        CtiTime t1(CtiDate(7, 11, 2010), 1,  0,  0);
+
+        //  verify that the time is always created as the later of the two 1 AMs on the DST change day
+        BOOST_CHECK( t0.isDST() );
+        BOOST_CHECK( ! t1.isDST() );
+    }
+}

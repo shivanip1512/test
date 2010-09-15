@@ -43,7 +43,7 @@ const char *Mct4xxDevice::PutConfigPart_dnp             = "dnp";
 
 const Mct4xxDevice::CommandSet Mct4xxDevice::_commandStore = Mct4xxDevice::initCommandStore();
 
-const Mct4xxDevice::error_set  Mct4xxDevice::_mct_error_info = initErrorInfo();
+const Mct4xxDevice::error_map  Mct4xxDevice::error_codes = initErrorInfo();
 
 const CtiDate                  Mct4xxDevice::DawnOfTime_Date = CtiDate(CtiTime(Mct4xxDevice::DawnOfTime_UtcSeconds));
 
@@ -90,27 +90,27 @@ Mct4xxDevice &Mct4xxDevice::operator=(const Mct4xxDevice &aRef)
     return *this;
 }
 
-Mct4xxDevice::error_set Mct4xxDevice::initErrorInfo( void )
+Mct4xxDevice::error_map Mct4xxDevice::initErrorInfo( void )
 {
-    error_set es;
+    error_map e;
 
-    es.insert(error_info(0xfffffffe, "Meter communications problem",                 InvalidQuality));
+    e.insert(error_map::value_type(0xfffffffe, error_details("Meter communications problem",                 InvalidQuality)));
 
-    es.insert(error_info(0xfffffffd, "No data yet available for requested interval", InvalidQuality));
-    es.insert(error_info(0xfffffffc, "No data yet available for requested interval", InvalidQuality));
+    e.insert(error_map::value_type(0xfffffffd, error_details("No data yet available for requested interval", InvalidQuality)));
+    e.insert(error_map::value_type(0xfffffffc, error_details("No data yet available for requested interval", InvalidQuality)));
 
-    es.insert(error_info(0xfffffffa, "Requested interval outside of valid range",    InvalidQuality));
+    e.insert(error_map::value_type(0xfffffffa, error_details("Requested interval outside of valid range",    InvalidQuality)));
 
-    es.insert(error_info(0xfffffff8, "Device filler",                                DeviceFillerQuality));
+    e.insert(error_map::value_type(0xfffffff8, error_details("Device filler",                                DeviceFillerQuality)));
 
-    es.insert(error_info(0xfffffff6, "Power failure occurred during part or all of this interval",   PowerfailQuality));
+    e.insert(error_map::value_type(0xfffffff6, error_details("Power failure occurred during part or all of this interval",   PowerfailQuality)));
 
-    es.insert(error_info(0xfffffff4, "Power restored during this interval",          PartialIntervalQuality));
+    e.insert(error_map::value_type(0xfffffff4, error_details("Power restored during this interval",          PartialIntervalQuality)));
 
-    es.insert(error_info(0xffffffe1, "Overflow",                                     OverflowQuality));
-    es.insert(error_info(0xffffffe0, "Overflow",                                     OverflowQuality));
+    e.insert(error_map::value_type(0xffffffe1, error_details("Overflow",                                     OverflowQuality)));
+    e.insert(error_map::value_type(0xffffffe0, error_details("Overflow",                                     OverflowQuality)));
 
-    return es;
+    return e;
 }
 
 Mct4xxDevice::CommandSet Mct4xxDevice::initCommandStore()
@@ -287,7 +287,7 @@ Mct4xxDevice::point_info Mct4xxDevice::getAccumulatorData(unsigned char *buf, in
 }
 
 
-Mct4xxDevice::point_info Mct4xxDevice::getData( const unsigned char *buf, int len, ValueType4xx vt ) const
+Mct4xxDevice::point_info Mct4xxDevice::getData( const unsigned char *buf, int len, ValueType4xx vt )
 {
     PointQuality_t quality = NormalQuality;
     unsigned long error_code = 0xffffffff,  //  filled with 0xff because some data types are less than 32 bits
@@ -323,12 +323,12 @@ Mct4xxDevice::point_info Mct4xxDevice::getData( const unsigned char *buf, int le
     {
         value = 0;
 
-        error_set::const_iterator es_itr = _mct_error_info.find(error_info(error_code));
+        error_map::const_iterator error_itr = error_codes.find(error_code);
 
-        if( es_itr != _mct_error_info.end() )
+        if( error_itr != error_codes.end() )
         {
-            quality     = es_itr->quality;
-            description = es_itr->description;
+            quality     = error_itr->second.quality;
+            description = error_itr->second.description;
         }
         else
         {

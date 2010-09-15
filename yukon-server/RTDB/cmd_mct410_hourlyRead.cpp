@@ -1,6 +1,7 @@
 #include "yukon.h"
 
 #include "cmd_mct410_hourlyRead.h"
+#include "dev_mct4xx.h"
 
 #include "ctidate.h"
 #include "dsm2err.h"
@@ -12,61 +13,37 @@ namespace Commands {
 Mct410HourlyReadCommand::Mct410HourlyReadCommand(CtiDate date_begin, CtiDate date_end, const unsigned channel) :
     _date_begin(date_begin),
     _date_end  (date_end),
-    _channel   (channel)
+    _channel   (channel),
+    _retries(2)
 {
-    _retries = 2;
-}
-
-Mct410HourlyReadCommand::request_ptr Mct410HourlyReadCommand::execute(CtiTime now)
-{
-    const CtiDate Today     = CtiDate(now),
-                  Yesterday = Today - 1,
-                  Earliest  = Yesterday - 7;
-
-    if( _date_begin.is_neg_infinity() )
-    {
-        // If the date is not specified, we use yesterday (last full day)
-        _date_begin = Yesterday;
-    }
-
-    if( _date_end.is_neg_infinity() )
-    {
-        //  default to a single day
-        _date_end = _date_begin;
-    }
-
-    if( _channel == 0 || _channel > 2 )
-    {
-        throw CommandException(BADPARAM, "Invalid channel for hourly read request; must be 1 or 2 (" + CtiNumStr(_channel) + ")");
-    }
-
-    if( _date_begin > Yesterday )
-    {
-        throw CommandException(BADPARAM, "Invalid date for hourly read request; must be before today (" + _date_begin.asStringUSFormat() + ")");
-    }
-
-    if( _date_begin < Earliest )
-    {
-        throw CommandException(BADPARAM, "Invalid date for hourly read request; must be less than 7 days ago (" + _date_begin.asStringUSFormat() + ")");
-    }
-
-    if( _date_end < _date_begin )
-    {
-        throw CommandException(BADPARAM, "Invalid end date for multi-day hourly read request; must be after begin date (" + _date_end.asStringUSFormat() + ")");
-    }
-
-    if( _date_end > Yesterday )    //  must end on or before yesterday
-    {
-        throw CommandException(BADPARAM, "Invalid end date for multi-day hourly read request; must be before today (" + _date_end.asStringUSFormat() + ")");
-    }
-
-    //  Read the second half of the day first - it's anchored at midnight,
-    //    but the first read can float due to DST shifts
-    return request_ptr(new read_request_t(requestDayEnd(_date_begin, _channel, Yesterday)));
 }
 
 
-Mct410HourlyReadCommand::read_request_t Mct410HourlyReadCommand::requestDayEnd(CtiDate &date_begin, const unsigned channel, const CtiDate &Yesterday)
+//  throws CommandException
+DlcCommand::request_ptr Mct410HourlyReadCommand::execute(CtiTime now)
+{
+    const CtiDate Yesterday(make_yesterday(now));
+
+    // If the date is not specified, we use yesterday (last full day)
+    _request.date = _date_begin.is_special() ? Yesterday : _date_begin;
+    _request.reading_day_end = true;
+
+    if( ! _date_end.is_special() )
+    {
+        validateDate(_date_end, Yesterday);
+
+        if( _date_end < _request.date )
+        {
+            throw CommandException(BADPARAM, "Invalid end date (" + _date_end.asStringUSFormat() + ") for hourly read request; must be after begin date (" + _request.date.asStringUSFormat() + ")");
+        }
+    }
+
+    return makeRequest(now);
+}
+
+
+//  throws CommandException
+DlcCommand::read_request_t Mct410HourlyReadCommand::requestDayEnd(const CtiDate &date_begin, const unsigned channel, const CtiDate &Yesterday)
 {
     read_request_t request = requestDayBegin(date_begin, channel, Yesterday);
 
@@ -76,8 +53,16 @@ Mct410HourlyReadCommand::read_request_t Mct410HourlyReadCommand::requestDayEnd(C
 }
 
 
-Mct410HourlyReadCommand::read_request_t Mct410HourlyReadCommand::requestDayBegin(CtiDate &date_begin, const unsigned channel, const CtiDate &Yesterday)
+//  throws CommandException
+DlcCommand::read_request_t Mct410HourlyReadCommand::requestDayBegin(const CtiDate &date_begin, const unsigned channel, const CtiDate &Yesterday)
 {
+    if( channel == 0 || channel > 2 )
+    {
+        throw CommandException(BADPARAM, "Invalid channel (" + CtiNumStr(channel) + ") for hourly read request; must be 1 or 2");
+    }
+
+    validateDate(date_begin, Yesterday);
+
     unsigned days_back = Yesterday.daysFrom1970() - date_begin.daysFrom1970();
 
     if( channel == 2 )
@@ -91,182 +76,291 @@ Mct410HourlyReadCommand::read_request_t Mct410HourlyReadCommand::requestDayBegin
 }
 
 
-Mct410HourlyReadCommand::request_ptr Mct410HourlyReadCommand::decode(CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data_t> &points)
+//  throws CommandException
+void Mct410HourlyReadCommand::validateDate(const CtiDate &d, const CtiDate &Yesterday)
 {
-    const CtiDate Today     = CtiDate(now),
-                  Yesterday = Today - 1;
+    //  Yesterday and up to 6 days before yesterday
+    const unsigned DaysBack = 6;
 
+    if( d > Yesterday )
+    {
+        throw CommandException(BADPARAM, "Invalid date (" + d.asStringUSFormat() + ") for hourly read request; must be before today (" + (Yesterday + 1).asStringUSFormat() + ")");
+    }
+
+    if( d < Yesterday - DaysBack )
+    {
+        throw CommandException(BADPARAM, "Invalid date (" + d.asStringUSFormat() + ") for hourly read request; must be no more than 7 days ago (" + (Yesterday - DaysBack).asStringUSFormat() + ")");
+    }
+}
+
+
+//  throws CommandException
+DlcCommand::point_data Mct410HourlyReadCommand::extractBlinkCount(const payload_t &payload)
+{
+    point_data blink;
+
+    blink.name    = "Blink Counter";
+    blink.offset  = 20;
+    blink.type    = PulseAccumulatorPointType;
+    blink.quality = NormalQuality;
+    blink.value   = getValueFromBits(payload, 3, 10);
+
+
+    //  This is the only error case - it's a catch-all for any error value or overflow.
+    if( blink.value == 1023 )
+    {
+        blink.quality = OverflowQuality;
+    }
+
+    return blink;
+}
+
+
+//  throws CommandException
+CtiDeviceSingle::point_info Mct410HourlyReadCommand::extractMidnightKwh(const payload_t &payload)
+{
+    //  we have to manually check this here because we're using Mct4xxDevice::getData(), which only knows pointers
     if( payload.size() < 13 )
     {
         throw CommandException(NOTNORMAL, "Payload too small");
     }
 
+    return Mct4xxDevice::getData(&payload.front() + 10, 3, Mct4xxDevice::ValueType_Accumulator);
+}
+
+
+//  throws CommandException
+vector<unsigned> Mct410HourlyReadCommand::extractDeltas(const payload_t &payload, const request_pointer &rp)
+{
+    CtiTime day_begin(rp.date), day_end(rp.date + 1);
+
+    if( rp.reading_day_end )
+    {
+        if( day_end.isDST() )
+        {
+            //  If it's DST, the last delta (Hour 24) is from 24:00 to 25:00, which we don't need
+            return getValueVectorFromBits(payload, 3, 7, 10);
+        }
+        else
+        {
+            return getValueVectorFromBits(payload, 3, 7, 11);
+        }
+    }
+    else
+    {
+        if( day_begin.isDST() )
+        {
+            return getValueVectorFromBits(payload, 13, 7, 13);
+        }
+        else
+        {
+            //  If it's not DST, the first delta (Hour 00) is from 00:00 to 01:00, which we don't need
+            return getValueVectorFromBits(payload, 20, 7, 12);
+        }
+    }
+}
+
+
+vector<DlcCommand::point_data> Mct410HourlyReadCommand::processDeltas(point_data base_kwh, const vector<unsigned> &deltas)
+{
+    vector<point_data> hourly_readings;
+
+    //  gotta go through the vector of deltas backward
+    vector<unsigned>::const_reverse_iterator delta = deltas.rbegin();
+
+    while( delta != deltas.rend() )
+    {
+        int converted_delta = convertDelta(*delta++);
+
+        if( converted_delta < 0 )
+        {
+            //  Stop right there - we don't have a way to continue
+            break;
+        }
+
+        base_kwh.value -= converted_delta;
+        base_kwh.time  -= 3600;
+
+        hourly_readings.push_back(base_kwh);
+    }
+
+    return hourly_readings;
+}
+
+
+//  throws CommandException
+DlcCommand::request_ptr Mct410HourlyReadCommand::makeRequest(const CtiTime now)
+{
+    if( _request.reading_day_end )
+    {
+        _midday_reading.reset();
+
+        return request_ptr(new read_request_t(requestDayEnd(_request.date, _channel, make_yesterday(now))));
+    }
+    else
+    {
+        read_request_t *request = new read_request_t(requestDayBegin(_request.date, _channel, make_yesterday(now)));
+
+        if( ! _midday_reading )
+        {
+            //  the kWh readings are toast - just read the day of week and blink count
+            request->read_length = 2;
+        }
+
+        return request_ptr(request);
+    }
+}
+
+
+//  throws CommandException
+DlcCommand::request_ptr Mct410HourlyReadCommand::decode(CtiTime now, const unsigned function, const payload_t &payload, string &description, vector<point_data> &points)
+try
+{
     const unsigned weekday = getValueFromBits(payload, 0, 3);
 
-    if( weekday != _date_begin.weekDay() )
+    if( weekday != _request.date.weekDay() )
     {
-        string error_description = "Day of week does not match (" + CtiNumStr(weekday) + " != " + CtiNumStr(_date_begin.weekDay()) + ")";
+        description = "Day of week does not match (" + CtiNumStr(weekday) + " != " + CtiNumStr(_request.date.weekDay()) + ")";
 
-        _retries--;
-
-        if( !_retries )
-        {
-            throw CommandException(ErrorInvalidTimestamp, error_description);
-        }
-
-        description = error_description + ", retrying (" + CtiNumStr(_retries) + " remaining)";
-
-        return request_ptr(new read_request_t(requestDayBegin(_date_begin, _channel, Yesterday)));
+        throw CommandException(ErrorInvalidTimestamp, description);
     }
 
-    if( _midday_reading && function % 2 )
+    validateRead(_request, function, now);
+
+    const CtiTime Midnight(_request.date + 1);
+
+    point_data kwh;
+
+    kwh.name    = "kWh";
+    kwh.offset  = _channel;
+    kwh.type    = PulseAccumulatorPointType;
+    kwh.quality = InvalidQuality;  //  will be reset if there is a valid kWh reading for this decode pass
+    kwh.time    = Midnight;  //  end of the current day
+
+    if( _request.reading_day_end )
     {
-        throw CommandException(NOTNORMAL, "Wrong read was performed");
-    }
-
-    point_data_t kwh;
-
-    kwh.name = "kWh";
-    kwh.offset = _channel;
-    kwh.type = PulseAccumulatorPointType;
-    kwh.quality = NormalQuality;
-
-    //  end of the current day
-    kwh.time = CtiTime(_date_begin + 1);
-
-    std::vector<unsigned> deltas;
-
-    if( _midday_reading )
-    {
-        kwh.value = *_midday_reading;
-
-        if( ! kwh.time.isDST() )
-        {
-            //  If it's not DST, the first delta is from 12 to 1 AM, which we don't need
-            deltas = getValueVectorFromBits(payload, 20, 7, 12);
-            kwh.time -= 11 * 3600;
-        }
-        else
-        {
-            deltas = getValueVectorFromBits(payload, 13, 7, 13);
-            kwh.time -= 10 * 3600;
-        }
-
-        point_data_t blink;
-
-        blink.value = getValueFromBits(payload, 3, 10);
-        blink.name = "Blink Counter";
-        blink.offset = 20;
-        blink.type = PulseAccumulatorPointType;
-        blink.quality = NormalQuality;
-        blink.time = CtiTime(_date_begin + 1);
-
-        if( blink.value == 1023 )
-        {
-            blink.quality = OverflowQuality;
-        }
-
-        points.push_back(blink);
-    }
-    else
-    {
-        if( kwh.time.isDST() )
-        {
-            //  If it's DST, the last delta is from 12 to 1 AM, which we don't need
-            deltas = getValueVectorFromBits(payload, 3, 7, 10);
-        }
-        else
-        {
-            deltas = getValueVectorFromBits(payload, 3, 7, 11);
-        }
-
-        const double midnight_kwh = getValueFromBits(payload, 80, 24) * 0.1;
-
-        kwh.value = midnight_kwh;
+        kwh = extractMidnightKwh(payload);
 
         points.push_back(kwh);
     }
-
-    while( !deltas.empty() )
-    {
-        kwh.value -= convertDelta(deltas.back());
-        kwh.time -= 3600;
-
-        deltas.pop_back();
-        points.push_back(kwh);
-    }
-
-    if( _midday_reading )
-    {
-        if( _date_begin < _date_end  )
-        {
-            _midday_reading.reset();
-
-            _date_begin += 1;
-
-            return request_ptr(new read_request_t(requestDayEnd(_date_begin, _channel, Yesterday)));
-        }
-        else
-        {
-            description = "Hourly read complete";
-
-            return request_ptr();
-        }
-    }
     else
     {
-        _midday_reading = kwh.value;
+        point_data blink_count = extractBlinkCount(payload);
 
-        return request_ptr(new read_request_t(requestDayBegin(_date_begin, _channel, Yesterday)));
-    }
-}
+        blink_count.time = Midnight;
 
+        points.push_back(blink_count);
 
-double Mct410HourlyReadCommand::convertDelta(unsigned delta)
-{
-    if( delta == 0x7f )
-    {
-        return -1.0;
-    }
-
-    if( delta < 60 )
-    {
-        return delta * 0.1;
-    }
-
-    return delta - 54;
-}
-
-
-Mct410HourlyReadCommand::request_ptr Mct410HourlyReadCommand::error(CtiTime now, const unsigned function, std::string &description)
-{
-    const CtiDate Today     = CtiDate(now),
-                  Yesterday = Today - 1,
-                  Earliest  = Yesterday - 7;
-
-    if( _date_begin < Earliest )
-    {
-        description = "Request expired (" + _date_begin.asStringUSFormat() + " < " + Earliest.asStringUSFormat() + ")";
-    }
-    else if( _retries-- <= 0 )
-    {
-        description = "Retries exhausted";
-    }
-    else
-    {
         if( _midday_reading )
         {
-            //  we have the second half of the day, re-request the first half
-            return request_ptr(new read_request_t(requestDayBegin(_date_begin, _channel, Yesterday)));
-        }
-        else
-        {
-            //  we don't have any of this day yet
-            return request_ptr(new read_request_t(requestDayEnd(_date_begin, _channel, Yesterday)));
+            kwh.value   = *_midday_reading;
+            kwh.quality = NormalQuality;
+            kwh.time    = make_midday_time(Midnight);
         }
     }
 
-    return request_ptr();
+    if( kwh.quality == NormalQuality )
+    {
+        vector<unsigned> deltas = extractDeltas(payload, _request);
+
+        vector<point_data> hourly_reads = processDeltas(kwh, deltas);
+
+        //  If we successfully decoded all of the delta-based points offset from midnight,
+        //    store off the mid-day kWh value for the beginning-of-day read
+        if( _request.reading_day_end && hourly_reads.size() == deltas.size() )
+        {
+            _midday_reading = hourly_reads.back().value;
+        }
+
+        points.insert(points.end(), hourly_reads.begin(), hourly_reads.end());
+    }
+
+    if( _request.next(_date_end) )
+    {
+        return makeRequest(now);
+    }
+    else
+    {
+        description = "Hourly read complete";
+
+        return request_ptr();
+    }
+}
+catch( BaseCommand::CommandException &ex )
+{
+    return error(now, ex.error_code, description = ex.error_description);
+}
+
+
+//  throws CommandException
+void Mct410HourlyReadCommand::validateRead(const request_pointer &rp, const unsigned function, const CtiTime &decode_time)
+{
+    if( !!(function % 2) != rp.reading_day_end )
+    {
+        throw CommandException(ErrorInvalidTimestamp, "Wrong read performed (" + CtiNumStr(function).xhex() + ")");
+    }
+
+    validateDate(rp.date, make_yesterday(decode_time));
+}
+
+
+int Mct410HourlyReadCommand::convertDelta(unsigned delta)
+{
+    if( delta >= 0x7f )
+    {
+        return -1;
+    }
+
+    if( delta > 60 )
+    {
+        return (delta - 54) * 10;
+    }
+
+    return delta;
+}
+
+
+//  throws CommandException
+DlcCommand::request_ptr Mct410HourlyReadCommand::error(const CtiTime now, const int error_code, string &description)
+{
+    if( description.empty() )
+    {
+        description = GetError(error_code);
+    }
+
+    description += "\n";
+
+    if( _retries > 0 )
+    {
+        _retries--;
+
+        description += "Retrying (" + CtiNumStr(_retries) + " remaining)";
+
+        return makeRequest(now);
+    }
+    else
+    {
+        throw CommandException(error_code, description + "Retries exhausted");
+    }
+}
+
+
+CtiTime Mct410HourlyReadCommand::make_midday_time(const CtiTime request_midnight)
+{
+    if( request_midnight.isDST() )
+    {
+        return request_midnight - 10 * 3600;
+    }
+    else
+    {
+        return request_midnight - 11 * 3600;
+    }
+}
+
+
+CtiDate Mct410HourlyReadCommand::make_yesterday(const CtiTime t)
+{
+    return CtiDate(t) - 1;
 }
 
 

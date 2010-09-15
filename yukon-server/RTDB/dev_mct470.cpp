@@ -27,12 +27,12 @@ const Mct470Device::read_key_store_t Mct470Device::_readKeyStore = Mct470Device:
 const Mct470Device::ConfigPartsList  Mct470Device::_config_parts_430 = Mct470Device::initConfigParts430();
 const Mct470Device::ConfigPartsList  Mct470Device::_config_parts_470 = Mct470Device::initConfigParts470();
 
-const Mct470Device::error_set Mct470Device::_error_info_old_lp    = Mct470Device::initErrorInfoOldLP();
-const Mct470Device::error_set Mct470Device::_error_info_lgs4      = Mct470Device::initErrorInfoLGS4();
-const Mct470Device::error_set Mct470Device::_error_info_alphaa3   = Mct470Device::initErrorInfoAlphaA3();
-const Mct470Device::error_set Mct470Device::_error_info_alphapp   = Mct470Device::initErrorInfoAlphaPP();
-const Mct470Device::error_set Mct470Device::_error_info_gekv      = Mct470Device::initErrorInfoGEkV();
-const Mct470Device::error_set Mct470Device::_error_info_sentinel  = Mct470Device::initErrorInfoSentinel();
+const Mct470Device::error_map Mct470Device::_error_info_old_lp    = Mct470Device::initErrorInfoOldLP();
+const Mct470Device::error_map Mct470Device::_error_info_lgs4      = Mct470Device::initErrorInfoLGS4();
+const Mct470Device::error_map Mct470Device::_error_info_alphaa3   = Mct470Device::initErrorInfoAlphaA3();
+const Mct470Device::error_map Mct470Device::_error_info_alphapp   = Mct470Device::initErrorInfoAlphaPP();
+const Mct470Device::error_map Mct470Device::_error_info_gekv      = Mct470Device::initErrorInfoGEkV();
+const Mct470Device::error_map Mct470Device::_error_info_sentinel  = Mct470Device::initErrorInfoSentinel();
 
 Mct470Device::Mct470Device( ) :
     _lastConfigRequest(0)
@@ -273,105 +273,105 @@ Mct470Device::read_key_store_t Mct470Device::initReadKeyStore()
 }
 
 
-Mct470Device::error_set Mct470Device::initErrorInfoOldLP( void )
+Mct470Device::error_map Mct470Device::initErrorInfoOldLP( void )
 {
-    error_set es;
+    error_map e;
 
-    es.insert(error_info(0xffff7fff, "Interval not recorded",   InvalidQuality));
-    es.insert(error_info(0xffff7ffe, "Pulse count overflow",    OverflowQuality));
-    es.insert(error_info(0xffff7ffd, "Time adjusted",           DeviceFillerQuality));
+    e.insert(error_map::value_type(0xffff7fff, error_details("Interval not recorded",   InvalidQuality)));
+    e.insert(error_map::value_type(0xffff7ffe, error_details("Pulse count overflow",    OverflowQuality)));
+    e.insert(error_map::value_type(0xffff7ffd, error_details("Time adjusted",           DeviceFillerQuality)));
 
-    return es;
+    return e;
 }
 
 
-Mct470Device::error_set Mct470Device::initErrorInfoLGS4( void )
+Mct470Device::error_map Mct470Device::initErrorInfoLGS4( void )
 {
-    error_set es;
+    error_map e;
 
-    es.insert(error_info(0xffffffff, "Interval not recorded",   InvalidQuality));
-    es.insert(error_info(0xfffffffe, "Pulse count overflow",    OverflowQuality));
-    es.insert(error_info(0xfffffffd, "Time adjusted",           DeviceFillerQuality));
+    e.insert(error_map::value_type(0xffffffff, error_details("Interval not recorded",   InvalidQuality)));
+    e.insert(error_map::value_type(0xfffffffe, error_details("Pulse count overflow",    OverflowQuality)));
+    e.insert(error_map::value_type(0xfffffffd, error_details("Time adjusted",           DeviceFillerQuality)));
 
     //  not available for LLP - indicate somehow?
-    es.insert(error_info(0xfffffffb, "Time adjusted",           DeviceFillerQuality));
+    e.insert(error_map::value_type(0xfffffffb, error_details("Time adjusted",           DeviceFillerQuality)));
 
-    es.insert(error_info(0xfffffffa, "LP data not available",   InvalidQuality));
-    es.insert(error_info(0xfffffff0, "Overflow",                OverflowQuality));
+    e.insert(error_map::value_type(0xfffffffa, error_details("LP data not available",   InvalidQuality)));
+    e.insert(error_map::value_type(0xfffffff0, error_details("Overflow",                OverflowQuality)));
 
-    return es;
+    return e;
 }
 
-Mct470Device::error_set Mct470Device::initErrorInfoAlphaA3( void )
+Mct470Device::error_map Mct470Device::initErrorInfoAlphaA3( void )
 {
-    error_set es;
+    error_map e;
 
-    es.insert(error_info(0xffffffff, "LP data reset",           InvalidQuality));
+    e.insert(error_map::value_type(0xffffffff, error_details("LP data reset",           InvalidQuality)));
     //
     // not available for LP
-    es.insert(error_info(0xfffffffd, "LP error",                InvalidQuality));
+    e.insert(error_map::value_type(0xfffffffd, error_details("LP error",                InvalidQuality)));
 
     //  not available for LLP
-    es.insert(error_info(0xfffffffb, "Time adjusted",           DeviceFillerQuality));
+    e.insert(error_map::value_type(0xfffffffb, error_details("Time adjusted",           DeviceFillerQuality)));
 
-    es.insert(error_info(0xfffffffa, "LP data not available",   InvalidQuality));
-    es.insert(error_info(0xfffffff0, "Overflow",                OverflowQuality));
+    e.insert(error_map::value_type(0xfffffffa, error_details("LP data not available",   InvalidQuality)));
+    e.insert(error_map::value_type(0xfffffff0, error_details("Overflow",                OverflowQuality)));
 
-    return es;
+    return e;
 }
 
-Mct470Device::error_set Mct470Device::initErrorInfoAlphaPP( void )
+Mct470Device::error_map Mct470Device::initErrorInfoAlphaPP( void )
 {
-    error_set es;
+    error_map e;
 
-    es.insert(error_info(0xffffffff, "LP data reset",           InvalidQuality));
-    es.insert(error_info(0xfffffffe, "LP config error",         InvalidQuality));
-    es.insert(error_info(0xfffffffd, "LP error",                InvalidQuality));
+    e.insert(error_map::value_type(0xffffffff, error_details("LP data reset",           InvalidQuality)));
+    e.insert(error_map::value_type(0xfffffffe, error_details("LP config error",         InvalidQuality)));
+    e.insert(error_map::value_type(0xfffffffd, error_details("LP error",                InvalidQuality)));
 
     //  not available for LLP
-    es.insert(error_info(0xfffffffb, "Time adjusted",           DeviceFillerQuality));
+    e.insert(error_map::value_type(0xfffffffb, error_details("Time adjusted",           DeviceFillerQuality)));
 
-    es.insert(error_info(0xfffffffa, "LP data not available",   InvalidQuality));
-    es.insert(error_info(0xfffffff2, "Interval not recorded",   InvalidQuality));
-    es.insert(error_info(0xfffffff1, "Pulse count overflow",    OverflowQuality));
-    es.insert(error_info(0xfffffff0, "Overflow",                OverflowQuality));
+    e.insert(error_map::value_type(0xfffffffa, error_details("LP data not available",   InvalidQuality)));
+    e.insert(error_map::value_type(0xfffffff2, error_details("Interval not recorded",   InvalidQuality)));
+    e.insert(error_map::value_type(0xfffffff1, error_details("Pulse count overflow",    OverflowQuality)));
+    e.insert(error_map::value_type(0xfffffff0, error_details("Overflow",                OverflowQuality)));
 
-    return es;
+    return e;
 }
 
-Mct470Device::error_set Mct470Device::initErrorInfoGEkV( void )
+Mct470Device::error_map Mct470Device::initErrorInfoGEkV( void )
 {
-    error_set es;
+    error_map e;
 
-    es.insert(error_info(0xffffffff, "LP data reset",           InvalidQuality));
+    e.insert(error_map::value_type(0xffffffff, error_details("LP data reset",           InvalidQuality)));
 
     //  not available for LP
-    es.insert(error_info(0xfffffffd, "LP error",                InvalidQuality));
+    e.insert(error_map::value_type(0xfffffffd, error_details("LP error",                InvalidQuality)));
 
     //  not available for LLP
-    es.insert(error_info(0xfffffffb, "Time adjusted",           DeviceFillerQuality));
+    e.insert(error_map::value_type(0xfffffffb, error_details("Time adjusted",           DeviceFillerQuality)));
 
-    es.insert(error_info(0xfffffffa, "LP data not available",   InvalidQuality));
-    es.insert(error_info(0xfffffff0, "Overflow",                OverflowQuality));
+    e.insert(error_map::value_type(0xfffffffa, error_details("LP data not available",   InvalidQuality)));
+    e.insert(error_map::value_type(0xfffffff0, error_details("Overflow",                OverflowQuality)));
 
-    return es;
+    return e;
 }
 
-Mct470Device::error_set Mct470Device::initErrorInfoSentinel( void )
+Mct470Device::error_map Mct470Device::initErrorInfoSentinel( void )
 {
-    error_set es;
+    error_map e;
 
-    es.insert(error_info(0xffffffff, "LP data reset",           InvalidQuality));
-    es.insert(error_info(0xfffffffe, "LP config error",         InvalidQuality));
-    es.insert(error_info(0xfffffffd, "LP error",                InvalidQuality));
+    e.insert(error_map::value_type(0xffffffff, error_details("LP data reset",           InvalidQuality)));
+    e.insert(error_map::value_type(0xfffffffe, error_details("LP config error",         InvalidQuality)));
+    e.insert(error_map::value_type(0xfffffffd, error_details("LP error",                InvalidQuality)));
 
     //  not available for LLP
-    es.insert(error_info(0xfffffffb, "Time adjusted",           DeviceFillerQuality));
+    e.insert(error_map::value_type(0xfffffffb, error_details("Time adjusted",           DeviceFillerQuality)));
 
-    es.insert(error_info(0xfffffffa, "LP data not available",   InvalidQuality));
-    es.insert(error_info(0xfffffff0, "Overflow",                OverflowQuality));
+    e.insert(error_map::value_type(0xfffffffa, error_details("LP data not available",   InvalidQuality)));
+    e.insert(error_map::value_type(0xfffffff0, error_details("Overflow",                OverflowQuality)));
 
-    return es;
+    return e;
 }
 
 
@@ -803,7 +803,7 @@ Mct470Device::point_info Mct470Device::getData( const unsigned char *buf, int le
                   resolution    = 0;
     unsigned char error_pad, error_byte, value_byte;
 
-    const error_set *errors = &_mct_error_info;
+    const error_map *errors = &error_codes;
 
     string description;
     __int64 value = 0;
@@ -871,7 +871,7 @@ Mct470Device::point_info Mct470Device::getData( const unsigned char *buf, int le
         vt == ValueType_PulseDemand )
     {
         //  this was already set in errors' initializer, but this is for clarity
-        errors = &_mct_error_info;
+        errors = &error_codes;
     }
     else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) > SspecRev_IED_LPExtendedRange )
     {
@@ -895,12 +895,12 @@ Mct470Device::point_info Mct470Device::getData( const unsigned char *buf, int le
     {
         value       = 0;
 
-        error_set::const_iterator es_itr = errors->find(error_info(error_code));
+        error_map::const_iterator es_itr = errors->find(error_code);
 
         if( es_itr != errors->end() )
         {
-            quality     = es_itr->quality;
-            description = es_itr->description;
+            quality     = es_itr->second.quality;
+            description = es_itr->second.description;
         }
         else
         {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cmd_base.h"
+#include "dev_single.h"  //  for CtiDeviceSingle::point_info
 
 #include "words.h"
 #include "prot_emetcon.h"
@@ -75,26 +76,37 @@ public:
         }
     };
 
-    struct point_data_t
+    struct point_data : CtiDeviceSingle::point_info
     {
+        point_data()
+        {
+            freeze_bit = false;  //  This is obnoxious.  The freeze_bit only applies to frozen kWh, but it's polluting everything else.
+        }
+
+        point_data &operator=(CtiDeviceSingle::point_info &other)
+        {
+            description = other.description;
+            quality     = other.quality;
+            value       = other.value;
+
+            return *this;
+        }
+
         CtiPointType_t type;
         unsigned offset;
-        double value;
         string name;
-        string description;
         CtiTime time;
-        PointQuality_t quality;
     };
 
     virtual request_ptr execute(const CtiTime now) = 0;
-    virtual request_ptr decode(const CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data_t> &points) = 0;
-    virtual request_ptr error (const CtiTime now, const unsigned function, std::string &description) = 0;
+    virtual request_ptr decode(const CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points) = 0;
+    virtual request_ptr error (const CtiTime now, const int error_code, std::string &description) = 0;
 
 protected:
 
-    static unsigned getValueFromBits(const payload_t data, const unsigned start_offset, const unsigned length);
+    static unsigned getValueFromBits(const payload_t &data, const unsigned start_offset, const unsigned length);
 
-    static std::vector<unsigned> getValueVectorFromBits(const payload_t data, const unsigned start_offset, const unsigned length, const unsigned count);
+    static std::vector<unsigned> getValueVectorFromBits(const payload_t &data, const unsigned start_offset, const unsigned length, const unsigned count);
 
 };
 

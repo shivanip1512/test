@@ -1,25 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_single
-*
-* Class:  CtiDeviceBase
-* Date:   8/19/1999
-*
-* Author: Corey Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.35.2.1 $
-* DATE         :  $Date: 2008/11/17 23:06:32 $
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_SINGLE_H__
-#define __DEV_SINGLE_H__
-#pragma warning( disable : 4786 )
+#pragma once
 
-
-#include <rw\thr\mutex.h>
 #include <vector>
 #include <queue>
 
@@ -70,21 +50,14 @@ public:
         PointOffset_Analog_Port      = 20002,
     };
 
-    struct channelWithID  //  This is used for tracking return messages to commander based on channel and id
+    //  this is more extensible than a pair
+    struct point_info
     {
-        int channel;
-        int identifier;
-        CtiTime creationTime;
-
-        bool channelWithID::operator<(const channelWithID &rhs) const
-        {
-            if( identifier < rhs.identifier )  return true;
-            if( identifier > rhs.identifier )  return false;
-
-            return channel < rhs.channel;
-        }
+        double         value;
+        PointQuality_t quality;
+        bool           freeze_bit;
+        string         description;
     };
-
 
 protected:
 
@@ -113,15 +86,6 @@ protected:
 
     bool isDeviceAddressGlobal();
 
-    //  this is more extensible than a pair
-    struct point_info
-    {
-        double         value;
-        PointQuality_t quality;
-        bool           freeze_bit;
-        string         description;
-    };
-
     virtual CtiTime getDeviceDawnOfTime() const       { return CtiTime(CtiTime::neg_infin); }
     virtual bool is_valid_time(const CtiTime) const   { return false; }
 
@@ -139,6 +103,21 @@ private:
     bool hasRateOrClockChanged(int rate, CtiTime &Now);
     BOOL isAlternateRateActive(bool &bScanIsScheduled, CtiTime &aNow=CtiTime(), int rate = ScanRateInvalid) const;
     BOOL scheduleSignaledAlternateScan( int rate ) const;
+
+    struct channelWithID  //  This is used for tracking return messages to commander based on channel and id
+    {
+        int channel;
+        int identifier;
+        CtiTime creationTime;
+
+        bool channelWithID::operator<(const channelWithID &rhs) const
+        {
+            if( identifier < rhs.identifier )  return true;
+            if( identifier > rhs.identifier )  return false;
+
+            return channel < rhs.channel;
+        }
+    };
 
     typedef map<channelWithID, int > MessageCount_t;
     MessageCount_t _messageCount;
@@ -264,4 +243,3 @@ public:
 
 typedef shared_ptr<CtiDeviceSingle> CtiDeviceSingleSPtr;
 
-#endif // #ifndef __DEV_SINGLE_H__

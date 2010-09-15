@@ -14,7 +14,7 @@ class IM_EX_DEVDB Mct4xxDevice : public MctDevice
 {
 protected:
 
-    typedef vector<const char *> ConfigPartsList;
+    typedef std::vector<const char *> ConfigPartsList;
 
 private:
 
@@ -23,8 +23,8 @@ private:
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();
 
-    int executePutConfigSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool readsOnly);
-    int executePutConfigMultiple(ConfigPartsList & partsList, CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool readsOnly);
+    int executePutConfigSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, bool readsOnly);
+    int executePutConfigMultiple(ConfigPartsList & partsList, CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, bool readsOnly);
 
 protected:
 
@@ -35,37 +35,23 @@ protected:
     bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
     void createTOUDayScheduleString(string &schedule, long (&times)[5], long (&rates)[6]);
 
-    enum ValueType4xx
+    struct error_details
     {
-        ValueType_Accumulator,
-        ValueType_FrozenAccumulator,
-        ValueType_Raw,
-    };
-
-    struct error_info
-    {
-        int error;
         PointQuality_t quality;
         string description;
 
-        error_info(int e, string d = "", PointQuality_t q = NormalQuality) :
-            error(e),
+        error_details(string d, PointQuality_t q) :
             description(d),
             quality(q)
         {
         }
-
-        bool operator<(const error_info &rhs) const
-        {
-            return error < rhs.error;
-        }
     };
 
-    typedef set<error_info> error_set;
+    typedef std::map<unsigned, error_details> error_map;
 
-    static const error_set _mct_error_info;
+    static const error_map error_codes;
 
-    static error_set initErrorInfo( void );
+    static error_map initErrorInfo( void );
 
     enum Commands
     {
@@ -224,40 +210,38 @@ protected:
     virtual point_info getDemandData(unsigned char *buf, int len, bool is_frozen_data) const = 0;
     point_info getAccumulatorData(unsigned char *buf, int len, bool is_frozen_data) const;
 
-    point_info getData(const unsigned char *buf, int len, ValueType4xx vt) const;
-
     virtual long getLoadProfileInterval(unsigned channel) = 0;
     virtual point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len) = 0;
 
     virtual ConfigPartsList getPartsList() = 0;
 
-    virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly = false);
-    virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
-    virtual INT executeGetStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
-    virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
-    virtual INT executePutValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
+    virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList, bool readsOnly = false);
+    virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList);
+    virtual INT executeGetStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList);
+    virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList);
+    virtual INT executePutValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList);
 
-    virtual int executePutConfigLoadProfileChannel (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly = false);
-    virtual int executePutConfigConfigurationByte  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly = false);
-    virtual int executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly = false);
-    virtual int executePutConfigTimezone           (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly = false);
-    virtual int executePutConfigSpid               (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly = false);
-    virtual int executePutConfigDemandLP           (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly = false);
-    virtual int executePutConfigTOU                (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly = false);
-    virtual int executePutConfigPrecannedTable     (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly = false);
-    virtual int executePutConfigRelays            (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool readsOnly = false);
+    virtual int executePutConfigLoadProfileChannel (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList, bool readsOnly = false);
+    virtual int executePutConfigConfigurationByte  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList, bool readsOnly = false);
+    virtual int executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList, bool readsOnly = false);
+    virtual int executePutConfigTimezone           (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList, bool readsOnly = false);
+    virtual int executePutConfigSpid               (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList, bool readsOnly = false);
+    virtual int executePutConfigDemandLP           (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList, bool readsOnly = false);
+    virtual int executePutConfigTOU                (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList, bool readsOnly = false);
+    virtual int executePutConfigPrecannedTable     (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList, bool readsOnly = false);
+    virtual int executePutConfigRelays            (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList, bool readsOnly = false);
 
-    //virtual int executePutConfigDisconnect        (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
-    //virtual int executePutConfigDNP               (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList);
+    //virtual int executePutConfigDisconnect        (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList);
+    //virtual int executePutConfigDNP               (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList);
 
-    INT decodeGetConfigTime      (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
-    INT decodeGetConfigTOU       (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
-    INT decodePutConfig          (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
-    INT decodeGetValuePeakDemand (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
-    INT decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
-    INT decodeScanLoadProfile    (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
+    INT decodeGetConfigTime      (INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList);
+    INT decodeGetConfigTOU       (INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList);
+    INT decodePutConfig          (INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList);
+    INT decodeGetValuePeakDemand (INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList);
+    INT decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList);
+    INT decodeScanLoadProfile    (INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList);
 
-    virtual INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) = 0; // pure virtual, hence this is an abstract class
+    virtual INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList ) = 0; // pure virtual, hence this is an abstract class
 
     static const char *PutConfigPart_basic;
     static const char *PutConfigPart_all;
@@ -306,13 +290,22 @@ public:
         FuncWrite_TSyncLen       =    6
     };
 
+    enum ValueType4xx
+    {
+        ValueType_Accumulator,
+        ValueType_FrozenAccumulator,
+        ValueType_Raw,
+    };
+
+    static point_info getData(const unsigned char *buf, int len, ValueType4xx vt);
+
     //  will start up any outstanding LLP requests
-    void deviceInitialization(list< CtiRequestMsg * > &request_list);
+    void deviceInitialization(std::list< CtiRequestMsg * > &request_list);
 
     static unsigned loadTimeSync(unsigned char *buf);
 
-    INT ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
-    INT ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool &overrideExpectMore);
+    INT ModelDecode(INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList);
+    INT ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList, bool &overrideExpectMore);
 
 };
 

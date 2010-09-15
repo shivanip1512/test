@@ -285,12 +285,12 @@ Mct410Device::point_info Mct410Device::getData(const unsigned char *buf, int len
     {
         value       = 0;
 
-        error_set::const_iterator es_itr = _mct_error_info.find(error_info(error_code));
+        error_map::const_iterator error = error_codes.find(error_code);
 
-        if( es_itr != _mct_error_info.end() )
+        if( error != error_codes.end() )
         {
-            quality     = es_itr->quality;
-            description = es_itr->description;
+            quality     = error->second.quality;
+            description = error->second.description;
         }
         else
         {
@@ -803,71 +803,92 @@ int Mct410Device::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< 
         return NoResultDecodeMethod;
     }
 
-    auto_ptr<CtiReturnMsg>
-        ReturnMsg(
-            new CtiReturnMsg(
-                    getID(),
-                    InMessage.Return));
+    CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return);
 
-    const DSTRUCT &dst = InMessage.Buffer.DSt;
-
-    const DlcCommand::payload_t
-        payload(
-            dst.Message,
-            dst.Message + min<unsigned short>(dst.Length, DSTRUCT::MessageLength_Max));
-
-    string description;
-    std::vector<DlcCommand::point_data_t> points;
-
-    DlcCommand::request_ptr ptr = command->second->decode(TimeNow, InMessage.Return.ProtocolInfo.Emetcon.Function, payload, description, points);
-
-    for each( const DlcCommand::point_data_t &pdata in points )
+    try
     {
-        point_info pi;
+        DlcCommand::request_ptr ptr;
+        string description;
 
-        pi.description  = pdata.description;
-        pi.quality      = pdata.quality;
-        pi.value        = pdata.value;
-        pi.freeze_bit   = false;
+        if( InMessage.EventCode )
+        {
+            ptr = command->second->error(TimeNow, InMessage.EventCode, description);
+        }
+        else
+        {
+            const DSTRUCT &dst = InMessage.Buffer.DSt;
 
-        insertPointDataReport(pdata.type, pdata.offset, ReturnMsg.get(), pi, pdata.name, pdata.time);
+            const DlcCommand::payload_t
+                payload(
+                    dst.Message,
+                    dst.Message + min<unsigned short>(dst.Length, DSTRUCT::MessageLength_Max));
+
+            std::vector<DlcCommand::point_data> points;
+
+            ptr = command->second->decode(TimeNow, InMessage.Return.ProtocolInfo.Emetcon.Function, payload, description, points);
+
+            for each( const DlcCommand::point_data &pdata in points )
+            {
+                point_info pi;
+
+                pi.description  = pdata.description;
+                pi.quality      = pdata.quality;
+                pi.value        = pdata.value;
+                pi.freeze_bit   = false;
+
+                insertPointDataReport(pdata.type, pdata.offset, ReturnMsg, pi, pdata.name, pdata.time);
+            }
+        }
+
+        ReturnMsg->setResultString(description);
+
+        if( ptr.get() )
+        {
+            OUTMESS *OutMessage = new OUTMESS;
+
+            InEchoToOut(InMessage, OutMessage);
+
+            fillOutMessage(*OutMessage, *ptr);
+
+            CtiRequestMsg newReq(getID(),
+                                 InMessage.Return.CommandStr,
+                                 InMessage.Return.UserID,
+                                 InMessage.Return.GrpMsgID,
+                                 InMessage.Return.RouteID,
+                                 selectInitialMacroRouteOffset(InMessage.Return.RouteID),
+                                 InMessage.Return.Attempt,
+                                 0,
+                                 InMessage.Priority);
+
+            newReq.setConnectionHandle((void *)InMessage.Return.Connection);
+
+            executeOnDLCRoute(&newReq,
+                              CtiCommandParser(newReq.CommandString()),
+                              list<OUTMESS *>(1, OutMessage),
+                              vgList, retList, outList, false);
+        }
+        else
+        {
+            //  all done!
+            _activeCommands.erase(command);
+        }
+
+        retMsgHandler(InMessage.Return.CommandStr, NoError, ReturnMsg, vgList, retList);
+
+        return NORMAL;
     }
-
-    ReturnMsg->setResultString(description);
-
-    if( ptr.get() )
+    catch( BaseCommand::CommandException &e )
     {
-        OUTMESS *OutMessage = new OUTMESS;
+        ReturnMsg->setStatus(e.error_code);
+        ReturnMsg->setResultString(getName() + " / " + e.error_description);
 
-        InEchoToOut(InMessage, OutMessage);
+        retList.push_back(ReturnMsg);
 
-        fillOutMessage(*OutMessage, *ptr);
-
-        CtiRequestMsg newReq(getID(),
-                             InMessage.Return.CommandStr,
-                             InMessage.Return.UserID,
-                             InMessage.Return.GrpMsgID,
-                             InMessage.Return.RouteID,
-                             selectInitialMacroRouteOffset(InMessage.Return.RouteID),
-                             InMessage.Return.Attempt,
-                             0,
-                             InMessage.Priority);
-
-        newReq.setConnectionHandle((void *)InMessage.Return.Connection);
-
-        executeOnDLCRoute(&newReq,
-                          CtiCommandParser(newReq.CommandString()),
-                          list<OUTMESS *>(1, OutMessage),
-                          vgList, retList, outList, false);
-    }
-    else
-    {
+        //  broken!
         _activeCommands.erase(command);
+
+        return ExecutionComplete;
     }
-
-    retMsgHandler(InMessage.Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList);
-
-    return NORMAL;
 }
 
 
@@ -976,6 +997,11 @@ INT Mct410Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 INT Mct410Device::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool &overrideExpectMore)
 {
     int retVal = NoError;
+
+    if( InMessage->Sequence > EmetconProtocol::DLCCmd_LAST )
+    {
+        return decodeCommand(*InMessage, TimeNow, vgList, retList, outList);
+    }
 
     switch( InMessage->Sequence )
     {

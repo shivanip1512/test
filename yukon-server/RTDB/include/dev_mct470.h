@@ -188,19 +188,19 @@ protected:
 
     point_info getData(const unsigned char *buf, int len, ValueType470 vt) const;
 
-    static const error_set _error_info_old_lp;
-    static const error_set _error_info_lgs4;
-    static const error_set _error_info_alphaa3;
-    static const error_set _error_info_alphapp;
-    static const error_set _error_info_gekv;
-    static const error_set _error_info_sentinel;
+    static const error_map _error_info_old_lp;
+    static const error_map _error_info_lgs4;
+    static const error_map _error_info_alphaa3;
+    static const error_map _error_info_alphapp;
+    static const error_map _error_info_gekv;
+    static const error_map _error_info_sentinel;
 
-    static error_set initErrorInfoOldLP   ( void );
-    static error_set initErrorInfoLGS4    ( void );
-    static error_set initErrorInfoAlphaA3 ( void );
-    static error_set initErrorInfoAlphaPP ( void );
-    static error_set initErrorInfoGEkV    ( void );
-    static error_set initErrorInfoSentinel( void );
+    static error_map initErrorInfoOldLP   ( void );
+    static error_map initErrorInfoLGS4    ( void );
+    static error_map initErrorInfoAlphaA3 ( void );
+    static error_map initErrorInfoAlphaPP ( void );
+    static error_map initErrorInfoGEkV    ( void );
+    static error_map initErrorInfoSentinel( void );
 
     enum MemoryMap
     {
