@@ -132,10 +132,14 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
             Integer programId = program.getProgramId();
 
             List<ControlHistory> controlHistoryList = new ArrayList<ControlHistory>(controlHistoryMap.get(programId));
-            if (controlHistoryList == null) controlHistoryList = Collections.emptyList();
+            if (controlHistoryList == null) {
+                controlHistoryList = Collections.emptyList();
+            }
 
             DisplayableProgram displayableProgram = getDisplayableProgram(program, controlHistoryList, controlPeriod, applyFilters, past);
-            if (displayableProgram != null) displayableProgramList.add(displayableProgram);
+            if (displayableProgram != null) { 
+                displayableProgramList.add(displayableProgram);
+            }
         }
 
         return displayableProgramList;

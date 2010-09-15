@@ -33,14 +33,4 @@ public interface ControlHistoryEventDao {
      */
     public List<ControlHistoryEvent> toEventList(Integer programId, StarsLMControlHistory controlHistory, YukonUserContext userContext);
  
-    /**
-     * This method removes any invalid control history in regards to enrollment.
-     * If past is true, removes control history for current enrollments. If false,
-     * removes control history for previous enrollments.
-     * @param controlHistory
-     * @param holder
-     * @param past What control history to filter out, past enrollments or current enrollments.
-     */
-    public void removeInvalidEnrollmentControlHistory(StarsLMControlHistory controlHistory, int inventoryId, int groupId, boolean past);
-
 }

@@ -259,6 +259,8 @@
 
     <bean id="controlHistoryService" class="com.cannontech.stars.dr.controlhistory.service.impl.ControlHistoryServiceImpl"/>
     
+    <bean id="lmControlHistoryUtilService" class="com.cannontech.stars.dr.controlhistory.service.impl.LmControlHistoryUtilServiceImpl"/>
+    
     <bean id="controlHistorySummaryService" class="com.cannontech.stars.dr.controlhistory.service.impl.ControlHistorySummaryServiceImpl"/>
 
     <bean id="webConfigurationDao" class="com.cannontech.stars.webconfiguration.dao.impl.WebConfigurationDaoImpl"/>

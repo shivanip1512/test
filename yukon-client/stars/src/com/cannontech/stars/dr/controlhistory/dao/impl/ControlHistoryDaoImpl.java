@@ -59,7 +59,13 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
     
             final Map<Integer, InventoryBase> inventoryMap = inventoryBaseDao.getByIds(new ArrayList<Integer>(inventoryIds));
             for (final Holder holder : holderList) {
+                
                 InventoryBase inventory = inventoryMap.get(holder.inventoryId);
+                
+                // The device has been deleted.  Skipping this control history entry.
+                if (inventory == null && past) {
+                    continue;
+                }
                 
                 ControlHistory controlHistory = new ControlHistory();
 
@@ -140,7 +146,6 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
                                                         userContext,
                                                         past);
             
-            controlHistoryEventDao.removeInvalidEnrollmentControlHistory(starsLMControlHistory, request.inventoryId, groupId, past);
             currentControlHistory.put(groupId, starsLMControlHistory);
         }
         
