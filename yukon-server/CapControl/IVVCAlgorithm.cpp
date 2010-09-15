@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
+#include <sstream>
 
 using Cti::CapControl::PointResponse;
 
@@ -275,9 +276,11 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     }
                     request->reportStatusToLog();
                     state->setState(IVVCState::IVVC_ANALYZE_DATA);
-                    state->setCommsLost(false);
 
-                    {   // Write to the event log...
+                    if ( state->isCommsLost() )
+                    {
+                        state->setCommsLost(false);     // Write to the event log...
+    
                         LONG stationId, areaId, spAreaId;
                         store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
 
@@ -486,7 +489,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     ccEvents->insert(
                         new CtiCCEventLogMsg(
                                 0,
-                                SYS_PID_CAPCONTROL,
+                                ID,
                                 spAreaId,
                                 areaId,
                                 stationId,
@@ -494,18 +497,27 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                                 0,
                                 capControlIvvcMissingPoint,
                                 0,
-                                ID,
+                                0,
                                 "IVVC Missing Point Response",
                                 "cap control") );
                 }
 
-                std::set<long> rejectedIds = state->getGroupRequest()->getRejectedPoints();
-                for each (long ID in rejectedIds)
+
+                PointValueMap rejectedPoints = state->getGroupRequest()->getRejectedPointValues();
+                for each (const PointValueMap::value_type& pv in rejectedPoints)
                 {
+                    std::ostringstream  eventText;
+
+                    eventText
+                        << "IVVC Rejected Point Response - Quality: 0x"
+                        << std::hex << pv.second.quality << std::dec
+                        << " - Timestamp: "
+                        << pv.second.timestamp;
+
                     ccEvents->insert(
                         new CtiCCEventLogMsg(
                                 0,
-                                SYS_PID_CAPCONTROL,
+                                pv.first,   
                                 spAreaId,
                                 areaId,
                                 stationId,
@@ -513,8 +525,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                                 0,
                                 capControlIvvcRejectedPoint,
                                 0,
-                                ID,
-                                "IVVC Rejected Point Response",
+                                pv.second.value,
+                                eventText.str(),
                                 "cap control") );
                 }
 

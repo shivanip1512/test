@@ -217,17 +217,9 @@ std::set<long> DispatchPointDataRequest::getMissingPoints()
     return missingIds;
 }
 
-std::set<long> DispatchPointDataRequest::getRejectedPoints()
+PointValueMap DispatchPointDataRequest::getRejectedPointValues()
 {
-    std::set<long>  rejectedIds;
-
-    // insert received but rejected points
-    for each (PointValueMap::value_type pv in _rejectedValues)
-    {
-        rejectedIds.insert(pv.first);
-    }
-
-    return rejectedIds;
+    return _rejectedValues;
 }
 
 void DispatchPointDataRequest::reportStatusToLog()
