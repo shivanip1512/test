@@ -54,6 +54,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.model.OptOutBackingBean;
 import com.cannontech.web.stars.dr.operator.model.SurveyResultValidator;
 import com.cannontech.web.stars.dr.operator.model.OptOutBackingBean.SurveyResult;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
@@ -162,11 +163,21 @@ public class OptOutController extends AbstractConsumerController {
         Map<Integer, OptOutCountHolder> optOutCounts =
             getOptOutCountsForInventories(displayableInventories, customerAccount.getAccountId());
 
+        Map<DisplayableInventory, Boolean> noOptOutsAvailableLookup = Maps.newHashMap();
         for (DisplayableInventory inventory : displayableInventories) {
-        	if (optOutCounts.get(inventory.getInventoryId()).isOptOutsRemaining()) {
+            OptOutCountHolder optOutCountHolder = optOutCounts.get(inventory.getInventoryId());
+        	if (optOutCountHolder.isOptOutsRemaining()) {
         	    optOutableInventories.add(inventory);
         	}
+        	
+        	boolean optOutAvailable = !optOutCountHolder.isOptOutsRemaining() || 
+                                       inventory.isCurrentlyOptedOut() && isSameDay ||
+                                       inventory.getCurrentlyScheduledOptOut() != null && 
+                                       ((optOutCountHolder.getRemainingOptOuts() - 1) == 0) && isSameDay;
+        	
+        	noOptOutsAvailableLookup.put(inventory, optOutAvailable);
         }
+        model.addAttribute("noOptOutsAvailableLookup", noOptOutsAvailableLookup);
 
         boolean hasDeviceSelection =
             rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_OPT_OUT_DEVICE_SELECTION, user);

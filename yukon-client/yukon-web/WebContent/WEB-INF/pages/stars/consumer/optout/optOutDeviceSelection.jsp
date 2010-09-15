@@ -36,9 +36,7 @@
                     <tr class="<tags:alternateRow odd='altRow' even=""/>">
                         <td align="left">
                             <c:choose>
-                                <c:when test="${!optOutCount.optOutsRemaining || 
-                                                displayableInventory.currentlyOptedOut && isSameDay ||
-                                                not empty displayableInventory.currentlyScheduledOptOut && ((optOutCount.remainingOptOuts - 1) eq 0) && isSameDay}">
+                                <c:when test="${noOptOutsAvailableLookup[displayableInventory]}">
                                     <input id="unused_${inventoryId}" checked="checked" disabled="disabled" type="checkbox"></input>
                                 </c:when>
                                 <c:otherwise>
