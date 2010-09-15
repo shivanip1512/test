@@ -50,7 +50,6 @@
 #include "porter.h"
 #include "master.h"
 #include "portdecl.h"
-#include "tcpsup.h"
 #include "tapterm.h"
 
 #include "portglob.h"

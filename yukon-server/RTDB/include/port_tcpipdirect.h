@@ -22,7 +22,6 @@
 #include "port_serial.h"
 #include "port_dialable.h"
 #include "tbl_port_tcpip.h"
-#include "tcpsup.h"
 
 
 class IM_EX_PRTDB CtiPortTCPIPDirect : public CtiPortSerial

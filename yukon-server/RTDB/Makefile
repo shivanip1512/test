@@ -7,7 +7,6 @@ all:
             @build -nologo -f makepntdb.mak
             @build -nologo -f makedevdb.mak
             @build -nologo -f makeprtdb.mak
-            @build -nologo -f maketcpsup.mak
             @build -nologo -f makeholiday.mak
             @build -nologo -f makeseason.mak
 	    @build -nologo -f maketest.mak
@@ -18,7 +17,6 @@ copy:
             @build -nologo -f makepntdb.mak $@
             @build -nologo -f makedevdb.mak $@
             @build -nologo -f makeprtdb.mak $@
-            @build -nologo -f maketcpsup.mak $@
 	    @build -nologo -f maketest.mak $@
             @build -nologo -f makeholiday.mak
             @build -nologo -f makeseason.mak
@@ -28,7 +26,6 @@ deps:
             @build -nologo -f makepntdb.mak $@
             @build -nologo -f makedevdb.mak $@
             @build -nologo -f makeprtdb.mak $@
-            @build -nologo -f maketcpsup.mak $@
             @build -nologo -f makeholiday.mak $@
             @build -nologo -f makeseason.mak $@
 	    @build -nologo -f maketest.mak $@

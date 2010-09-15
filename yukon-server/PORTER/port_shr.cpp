@@ -21,7 +21,6 @@
 #include "types.h"
 #include "dsm2.h"
 #include "port_shr.h"
-#include "tcpsup.h"
 #include "CTICALLS.H"
 #include "cparms.h"
 #include "numstr.h"

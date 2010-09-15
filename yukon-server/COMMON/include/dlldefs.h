@@ -246,14 +246,6 @@
    #define IM_EX_DEVICEDB      __declspec(dllimport)
 #endif
 
-#ifdef _DLL_TCPSUP                  // The ctisvr.dll
-   #define IM_EX_TCPSUP       __declspec(dllexport)
-#elif defined( STI_UNDERSTAND )
-   #define IM_EX_TCPSUP
-#else
-   #define IM_EX_TCPSUP       __declspec(dllimport)
-#endif
-
 #ifdef _DLL_CTISCN
    #define IM_EX_CTISCN       __declspec(dllexport)
 #elif defined( STI_UNDERSTAND )

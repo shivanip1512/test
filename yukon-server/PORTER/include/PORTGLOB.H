@@ -15,7 +15,7 @@
 
 #include "dlldefs.h"
 #include "types.h"
-#include "tcpsup.h"
+#include "ctinexus.h"
 #include "porter.h"
 #include "logger.h"
 #include "statistics.h"

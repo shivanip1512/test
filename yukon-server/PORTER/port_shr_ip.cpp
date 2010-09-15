@@ -23,7 +23,6 @@
 #include "port_shr_ip.h"
 #include "prot_welco.h"
 #include "porter.h"
-#include "tcpsup.h"
 #include "utility.h"
 #include "numstr.h"
 #include "cti_asmc.h"

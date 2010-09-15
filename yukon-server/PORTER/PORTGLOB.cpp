@@ -24,7 +24,6 @@
 #include "dsm2.h"
 #include "dsm2err.h"
 #include "porter.h"
-#include "tcpsup.h"
 #include "portglob.h"
 
 IM_EX_PORTGLOB HANDLE          hPorterEvents[NUMPORTEREVENTS];
