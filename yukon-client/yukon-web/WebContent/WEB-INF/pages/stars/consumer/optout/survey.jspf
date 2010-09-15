@@ -72,7 +72,7 @@ function dropDownChanged(questionKey) {
             </tags:bind>
         </c:if>
         <div id="textAnswerArea_${question.questionKey}">
-            <tags:input size="80" maxlength="1255"
+            <tags:input size="80" maxlength="255"
                 path="${pathPrefix}.textAnswer"/>
         </div>
     </div>

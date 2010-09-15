@@ -35,10 +35,10 @@ submitForm = function() {
     <form:hidden path="energyCompanyId"/>
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".programs">
-            <c:forEach var="program" items="${programs}" end="2">
-                <spring:escapeBody htmlEscape="true">${program.name.displayName}</spring:escapeBody><br>
+            <c:forEach var="programId" items="${optOutSurvey.programIds}" end="2">
+                <spring:escapeBody htmlEscape="true">${programNamesById[programId]}</spring:escapeBody><br>
             </c:forEach>
-            <c:if test="${fn:length(programs) > 3}">
+            <c:if test="${fn:length(optOutSurvey.programIds) > 3}">
                 <i:inline key=".ellipsis"/>
             </c:if>
         </tags:nameValue2>

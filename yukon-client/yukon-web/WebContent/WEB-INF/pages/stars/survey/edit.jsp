@@ -68,6 +68,15 @@
                         <li>
                             <cti:labeledImg key="sampleXml" href="${sampleXmlUrl}"/>
                         </li>
+                        <c:if test="${hasBeenTaken}">
+                            <cti:url var="reportUrl"
+                                value="/spring/stars/surveyReport/config">
+                                <cti:param name="surveyId" value="${surveyId}"/>
+                            </cti:url>
+                            <li>
+                                <cti:labeledImg key="report" href="${reportUrl}"/>
+                            </li>
+                        </c:if>
                     </ul>
                 </tags:boxContainer2>
             </div>

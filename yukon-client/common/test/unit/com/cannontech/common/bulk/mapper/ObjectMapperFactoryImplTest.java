@@ -1,7 +1,6 @@
 package com.cannontech.common.bulk.mapper;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -297,7 +296,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
         
         @Override
-        public Map<Integer, String> getYukonPAONames(Collection<Integer> ids) {
+        public Map<Integer, String> getYukonPAONames(Iterable<Integer> ids) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 

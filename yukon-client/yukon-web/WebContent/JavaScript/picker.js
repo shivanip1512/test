@@ -243,6 +243,14 @@ Picker.prototype = {
 		}
 	},
 
+	clearSelected: function() {
+		if (this.destinationFieldId) {
+			$(this.destinationFieldId).value = '';
+		} else {
+			this.inputAreaDiv.innerHTML = '';
+		}
+	},
+
 	previous: function() {
 		if (this.previousIndex == -1) {
 			return;

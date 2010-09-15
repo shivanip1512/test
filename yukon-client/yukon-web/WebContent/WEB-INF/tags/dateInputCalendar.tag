@@ -1,3 +1,4 @@
+<%@ tag body-content="empty" %>
 <%@ attribute name="fieldId" required="false" type="java.lang.String"%>
 <%@ attribute name="fieldName" required="true" type="java.lang.String"%>
 <%@ attribute name="fieldValue" required="false" type="java.lang.String"%>

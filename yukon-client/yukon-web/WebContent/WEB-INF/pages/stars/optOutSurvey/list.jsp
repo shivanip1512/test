@@ -44,7 +44,7 @@
                             htmlEscape="true">${optOutSurvey.surveyName}</spring:escapeBody></td>
                         <td>
 						    <c:forEach var="programId" items="${optOutSurvey.programIds}" end="2">
-                                <dr:assignedProgramName assignedProgram="${programsById[programId]}"/><br>
+                                <spring:escapeBody htmlEscape="true">${programNamesById[programId]}</spring:escapeBody><br>
 						    </c:forEach>
 				            <c:if test="${fn:length(optOutSurvey.programIds) > 3}">
 				                <cti:url var="programListUrl" value="/spring/stars/optOutSurvey/programList">
@@ -98,7 +98,7 @@
         <cti:url var="addUrl" value="/spring/stars/optOutSurvey/edit"/>
         <form id="addForm" action="${addUrl}">
             <div class="actionArea">
-	            <tags:pickerDialog type="assignedProgramPicker" id="programPicker"
+	            <tags:pickerDialog type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker" id="programPicker"
 	                destinationFieldName="programIds" endAction="chooseSurvey"
 	                multiSelectMode="true" linkType="button"
 	                extraArgs="${energyCompanyId}"><cti:msg2 key=".add"/></tags:pickerDialog>

@@ -840,9 +840,153 @@
         </property>
         
     </bean>
-    
+
+    <bean id="surveyResultsSummaryModel" class="com.cannontech.analysis.tablemodel.SurveyResultsSummaryModel" scope="prototype"/>
+    <bean id="surveyResultsSummaryDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+        <property name="reportModelName"><idref local="surveyResultsSummaryModel"/></property>
+        <property name="inputs">
+          <bean class="com.cannontech.web.input.InputRoot">
+            <property name="inputList">
+              <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="surveyId"/>
+                    <property name="displayName" value="Survey Id"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="startDate"/>
+                    <property name="displayName" value="Start Date"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.DateType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="endDate"/>
+                    <property name="displayName" value="End Date"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.DateType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="questionId"/>
+                    <property name="displayName" value="Question Id"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="answerIds"/>
+                    <property name="displayName" value="Answer Ids"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerListType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="includeOtherAnswers"/>
+                    <property name="displayName" value="Include Other Answers"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.BooleanType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="programIds"/>
+                    <property name="displayName" value="Program Ids"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerListType"/>
+                    </property>
+                </bean>
+              </list>
+            </property>
+          </bean>
+        </property>
+
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.SurveyResultsSummaryReportLayoutData"/>
+        </property>
+    </bean>
+
+    <bean id="surveyResultsDetailModel" class="com.cannontech.analysis.tablemodel.SurveyResultsDetailModel" scope="prototype"/>
+    <bean id="surveyResultsDetailDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+        <property name="reportModelName"><idref local="surveyResultsDetailModel"/></property>
+        <property name="inputs">
+          <bean class="com.cannontech.web.input.InputRoot">
+            <property name="inputList">
+              <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="surveyId"/>
+                    <property name="displayName" value="Survey Id"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="startDate"/>
+                    <property name="displayName" value="Start Date"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.DateType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="endDate"/>
+                    <property name="displayName" value="End Date"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.DateType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="questionId"/>
+                    <property name="displayName" value="Question Id"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="answerIds"/>
+                    <property name="displayName" value="Answer Ids"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerListType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="includeOtherAnswers"/>
+                    <property name="displayName" value="Include Other Answers"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.BooleanType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="programIds"/>
+                    <property name="displayName" value="Program Ids"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerListType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="accountNumber"/>
+                    <property name="displayName" value="Account Number"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.StringType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="deviceSerialNumber"/>
+                    <property name="displayName" value="Device Serial Number"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.StringType"/>
+                    </property>
+                </bean>
+              </list>
+            </property>
+          </bean>
+        </property>
+
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.SurveyResultsDetailReportLayoutData"/>
+        </property>
+    </bean>
+        
     <bean id="reportGroupService" class="com.cannontech.analysis.service.impl.ReportGroupServiceImpl">
     </bean>
-    
 </beans>
-

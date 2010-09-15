@@ -23,11 +23,10 @@ import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Survey;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
-import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
 import com.cannontech.stars.dr.optout.model.OptOutSurvey;
 import com.cannontech.stars.dr.optout.service.OptOutSurveyService;
@@ -36,7 +35,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.util.ListBackingBean;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @Controller
@@ -48,7 +46,7 @@ public class OptOutSurveyController {
     private OptOutSurveyService optOutSurveyService;
     private SurveyDao surveyDao;
     private EnergyCompanyDao energyCompanyDao;
-    private AssignedProgramDao assignedProgramDao;
+    private PaoDao paoDao;
     private DatePropertyEditorFactory datePropertyEditorFactory;
 
     @RequestMapping
@@ -68,12 +66,8 @@ public class OptOutSurveyController {
             programIds.addAll(optOutSurvey.getProgramIds());
         }
 
-        List<AssignedProgram> programs = assignedProgramDao.getByIds(programIds);
-        Map<Integer, AssignedProgram> programsById = Maps.newHashMap();
-        for (AssignedProgram program : programs) {
-            programsById.put(program.getAssignedProgramId(), program);
-        }
-        model.addAttribute("programsById", programsById);
+        Map<Integer, String> programNamesById = paoDao.getYukonPAONames(programIds);
+        model.addAttribute("programNamesById", programNamesById);
 
         model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyID());
 
@@ -88,9 +82,9 @@ public class OptOutSurveyController {
         verifyEditable(optOutSurvey.getEnergyCompanyId(), userContext);
         model.addAttribute("optOutSurvey", optOutSurvey);
 
-        List<AssignedProgram> programs =
-            assignedProgramDao.getByIds(optOutSurvey.getProgramIds());
-        model.addAttribute("programs", programs);
+        Map<Integer, String> programNamesById =
+            paoDao.getYukonPAONames(optOutSurvey.getProgramIds());
+        model.addAttribute("programNamesById", programNamesById);
 
         Survey survey = surveyDao.getSurveyById(optOutSurvey.getSurveyId());
         model.addAttribute("survey", survey);
@@ -156,9 +150,9 @@ public class OptOutSurveyController {
             YukonUserContext userContext) {
         model.addAttribute("optOutSurvey", optOutSurveyDto);
 
-        List<AssignedProgram> programs =
-            assignedProgramDao.getByIds(Arrays.asList(optOutSurveyDto.getProgramIds()));
-        model.addAttribute("programs", programs);
+        Map<Integer, String> programNamesById =
+            paoDao.getYukonPAONames(Arrays.asList(optOutSurveyDto.getProgramIds()));
+        model.addAttribute("programNamesById", programNamesById);
 
         Survey survey = surveyDao.getSurveyById(optOutSurveyDto.getSurveyId());
         model.addAttribute("survey", survey);
@@ -243,8 +237,8 @@ public class OptOutSurveyController {
     }
 
     @Autowired
-    public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
-        this.assignedProgramDao = assignedProgramDao;
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
     }
 
     @Autowired

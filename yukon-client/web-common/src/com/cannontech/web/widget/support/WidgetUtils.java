@@ -32,11 +32,13 @@ public class WidgetUtils {
     }
     
     public static String generateJsonString(Object obj) {
-        if (obj instanceof String) {
+        if (obj == null) {
+            return "null";
+        } else if (obj instanceof String) {
             return "\"" + StringEscapeUtils.escapeJavaScript((String) obj) + "\"";
-        } else if (obj instanceof Map) {
+        } else if (obj instanceof Map<?, ?>) {
             return new JSONObject((Map<?, ?>)obj).toString();
-        } else if (obj instanceof Collection) {
+        } else if (obj instanceof Collection<?>) {
             return new JSONArray((Collection<?>)obj).toString();
         } else if (obj instanceof Boolean) {
         	Boolean boolObj = (Boolean)obj;
@@ -44,6 +46,8 @@ public class WidgetUtils {
         } else if (obj instanceof PageEditMode) {
         	PageEditMode pageEditModeObj = (PageEditMode)obj;
         	return pageEditModeObj.name();
+        } else if (obj.getClass().isArray()) {
+            return JSONArray.fromObject(obj).toString();
         } else {
             return JSONObject.fromObject(obj).toString();
         }

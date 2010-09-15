@@ -14,10 +14,10 @@ import com.cannontech.web.input.type.InputType;
 
 public class InputUtil {
 
-    public static void applyProperties(InputRoot inputRoot, Object task, Map<String, String> properties) throws BeansException {
+    public static void applyProperties(InputRoot inputRoot, Object task, Map<String, ?> properties) throws BeansException {
         Map<String, ? extends InputSource<?>> inputs = inputRoot.getInputMap();
         for (Entry<String, ? extends InputSource<?>> entry : inputs.entrySet()) {
-            String inputProperty = properties.get(entry.getKey());
+            Object inputProperty = properties.get(entry.getKey());
             if (inputProperty != null) {
                 BeanWrapper beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(task);
                 InputType<?> type = entry.getValue().getType();

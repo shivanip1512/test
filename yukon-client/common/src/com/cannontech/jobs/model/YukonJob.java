@@ -48,7 +48,7 @@ public class YukonJob {
     public YukonUserContext getUserContext() {
         return userContext;
     }
-    public Map<String, String> getJobProperties() {
+    public Map<String, ?> getJobProperties() {
         return jobProperties;
     }
     public void setJobProperties(Map<String, String> jobProperties) {

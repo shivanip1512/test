@@ -1,6 +1,5 @@
 package com.cannontech.core.dao;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -98,7 +97,7 @@ public interface PaoDao {
      */
     public String getYukonPAOName(int paoID);
 
-    public Map<Integer, String> getYukonPAONames(Collection<Integer> ids);
+    public Map<Integer, String> getYukonPAONames(Iterable<Integer> ids);
     
     public LiteYukonPAObject[] getAllLiteRoutes();
     

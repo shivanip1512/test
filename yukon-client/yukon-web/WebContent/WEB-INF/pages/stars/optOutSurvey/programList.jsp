@@ -32,10 +32,10 @@
             <tr>
                 <th><i:inline key=".programName"/></th>
             </tr>
-	        <c:forEach var="program" items="${programs}">
+	        <c:forEach var="programId" items="${optOutSurvey.programIds}">
 	            <tr class="<tags:alternateRow odd="" even="altRow"/>">
 	               <td>
-	                   <dr:assignedProgramName assignedProgram="${program}"/>
+	                   <spring:escapeBody htmlEscape="true">${programNamesById[programId]}</spring:escapeBody>
 	               </td>
 	           </tr>
 	        </c:forEach>

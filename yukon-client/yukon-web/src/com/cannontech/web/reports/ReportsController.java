@@ -1,13 +1,13 @@
 package com.cannontech.web.reports;
 
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -26,6 +26,7 @@ import com.cannontech.simplereport.YukonReportDefinition;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.input.InputUtil;
+import com.google.common.collect.Maps;
 
 public class ReportsController extends MultiActionController  {
     
@@ -37,7 +38,7 @@ public class ReportsController extends MultiActionController  {
     	
     	// get report definition, model
         //-----------------------------------------------------------------------------------------
-        Map<String, String> parameterMap = ServletUtil.getParameterMap(request);
+        Map<String, String> parameterMap = getParameterMap(request);
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
         BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true); // note we do actually load data
         
@@ -60,7 +61,7 @@ public class ReportsController extends MultiActionController  {
     	
     	// get report definition, model
         //-----------------------------------------------------------------------------------------
-        Map<String, String> parameterMap = ServletUtil.getParameterMap(request);
+        Map<String, String> parameterMap = getParameterMap(request);
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
         BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, false); // note we don't actually load data, that is the job of jsonData()
         
@@ -153,7 +154,7 @@ public class ReportsController extends MultiActionController  {
         
         // get report definition, model
         //-----------------------------------------------------------------------------------------
-        Map<String, String> parameterMap = ServletUtil.getParameterMap(request);
+        Map<String, String> parameterMap = getParameterMap(request);
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
         BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true);
         
@@ -201,18 +202,19 @@ public class ReportsController extends MultiActionController  {
     
     @SuppressWarnings("unchecked")
     private Map<String, String> getParameterMap(HttpServletRequest request) {
-        
         Map<String, String[]> parameterMapWithArrays = request.getParameterMap();
         
-        Map<String, String> parameterMap = new HashMap<String, String>();
+        Map<String, String> parameterMap = Maps.newHashMap();
         
         for(String pKey : parameterMapWithArrays.keySet()) {
             String[] vals = parameterMapWithArrays.get(pKey);
-            for(int i = 0; i < vals.length; i++) {
-                parameterMap.put(pKey, vals[i]);
+            if (vals.length == 1) {
+                parameterMap.put(pKey, vals[0]);
+            } else {
+                parameterMap.put(pKey, StringUtils.join(vals, ","));
             }
         }
-        
+
         return parameterMap;
     }
     

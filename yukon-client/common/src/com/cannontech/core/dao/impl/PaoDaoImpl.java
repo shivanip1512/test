@@ -7,7 +7,6 @@ package com.cannontech.core.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -236,7 +235,7 @@ public final class PaoDaoImpl implements PaoDao {
     }
     
     @Override
-    public Map<Integer, String> getYukonPAONames(Collection<Integer> ids) {
+    public Map<Integer, String> getYukonPAONames(Iterable<Integer> ids) {
         
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
         
