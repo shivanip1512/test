@@ -53,6 +53,9 @@
 				<tags:inputNameValue nameKey="yukon.web.modules.operator.contactNotificationEnum.HOME_PHONE" path="homePhone"/>
 				<tags:inputNameValue nameKey="yukon.web.modules.operator.contactNotificationEnum.WORK_PHONE" path="workPhone"/>
 				<tags:inputNameValue nameKey="yukon.web.modules.operator.contactNotificationEnum.EMAIL" path="email"/>
+                <c:if test="${not empty username}">
+                    <tags:nameValue2 nameKey=".usernameLabel">${username}</tags:nameValue2>
+                </c:if>
 			
 			</tags:nameValueContainer2>
 			

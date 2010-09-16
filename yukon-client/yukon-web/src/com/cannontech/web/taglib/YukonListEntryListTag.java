@@ -10,40 +10,42 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListEnum;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.stars.core.dao.ECMappingDao;
 
 @Configurable("yukonListEntryListTagPrototype")
 public class YukonListEntryListTag extends YukonTagSupport {
 
 	private String var;
-	private int accountId;
+	private int energyCompanyId;
 	private String listName;
-	
-	private ECMappingDao ecMappingDao;
+	private StarsDatabaseCache starsDatabaseCache;
     
     @Override
     public void doTag() throws JspException, IOException {
     	
-    	LiteStarsEnergyCompany liteStarsEnergyCompany = ecMappingDao.getCustomerAccountEC(accountId);
+    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
     	YukonSelectionListEnum yukonSelectionListEnum = YukonSelectionListEnum.valueOf(listName);
-    	List<YukonListEntry> yukonListEntries = liteStarsEnergyCompany.getYukonSelectionList(yukonSelectionListEnum.getListName()).getYukonListEntries();
+    	List<YukonListEntry> yukonListEntries = energyCompany.getYukonSelectionList(yukonSelectionListEnum.getListName()).getYukonListEntries();
     	
     	this.getJspContext().setAttribute(var, yukonListEntries);
     }
-
+    
     public void setVar(String var) {
 		this.var = var;
 	}
-    public void setAccountId(int accountId) {
-		this.accountId = accountId;
+    
+    public void setEnergyCompanyId(int energyCompanyId) {
+		this.energyCompanyId = energyCompanyId;
 	}
+    
     public void setListName(String listName) {
 		this.listName = listName;
 	}
     
     @Required
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-		this.ecMappingDao = ecMappingDao;
-	}
+    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+        this.starsDatabaseCache = starsDatabaseCache;
+    }
+    
 }

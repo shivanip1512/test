@@ -20,8 +20,9 @@ public interface AccountService {
      * @param operator
      * @throws AccountNumberUnavailableException
      * @throws UserNameUnavailableException
+     * @return accountId
      */
-    public void addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException;
+    public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException;
     
     /**
      * Method to update an account

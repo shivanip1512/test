@@ -162,8 +162,6 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
         		}
         	}
         }
-        
-    	
     	
     	return operatorGeneralUiExtras;
     }
@@ -251,10 +249,13 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
         // save contact
         LiteContact contact;
         if (contactDto.getContactId() <= 0) {
-            contact = contactService.createAdditionalContact(contactDto.getFirstName(), contactDto.getLastName(), customer.getCustomerID(), null);
+            contact = contactService.createAdditionalContact(contactDto.getFirstName(), contactDto.getLastName(), customer);
         } else {
             contact = contactDao.getContact(contactDto.getContactId());
         }
+        
+        // By using a null for loginId in the updateContact method the login id will not be updated.  
+        // It does NOT mean we are removing the login from the contact. 
         contactService.updateContact(contact, contactDto.getFirstName(), contactDto.getLastName(), null);
 
         // save notifications

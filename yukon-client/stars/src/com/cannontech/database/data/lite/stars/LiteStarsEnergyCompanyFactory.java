@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.core.dao.AddressDao;
+import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
@@ -23,6 +24,7 @@ public class LiteStarsEnergyCompanyFactory {
 	private RolePropertyDao rolePropertyDao;
 	private SystemDateFormattingService systemDateFormattingService;
 	private WarehouseDao warehouseDao;
+	private YukonGroupDao yukonGroupDao;
 	
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
         LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany(energyCompany);
@@ -46,6 +48,7 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setRolePropertyDao(rolePropertyDao);
         energyCompany.setSystemDateFormattingService(systemDateFormattingService);
         energyCompany.setWarehouseDao(warehouseDao);
+        energyCompany.setYukonGroupDao(yukonGroupDao);
         
         energyCompany.initialize();
     }
@@ -97,5 +100,10 @@ public class LiteStarsEnergyCompanyFactory {
     @Autowired
     public void setWarehouseDao(WarehouseDao warehouseDao) {
         this.warehouseDao = warehouseDao;
+    }
+    
+    @Autowired
+    public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
+        this.yukonGroupDao = yukonGroupDao;
     }
 }

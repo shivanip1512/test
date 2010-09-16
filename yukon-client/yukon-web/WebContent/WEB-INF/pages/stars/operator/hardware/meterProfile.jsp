@@ -74,7 +74,7 @@
                             
                         <tags:inputNameValue nameKey="yukon.web.modules.operator.hardware.altTrackingNumber" path="altTrackingNumber"/>
                             
-                        <tags:yukonListEntrySelectNameValue nameKey="yukon.web.modules.operator.hardware.voltage" path="voltageEntryId" accountId="${accountId}" listName="DEVICE_VOLTAGE"/>
+                        <tags:yukonListEntrySelectNameValue nameKey="yukon.web.modules.operator.hardware.voltage" path="voltageEntryId" energyCompanyId="${energyCompanyId}" listName="DEVICE_VOLTAGE"/>
                         
                         <tags:textareaNameValue nameKey="yukon.web.modules.operator.hardware.deviceNotes" path="deviceNotes" rows="4" cols="20" />
                     

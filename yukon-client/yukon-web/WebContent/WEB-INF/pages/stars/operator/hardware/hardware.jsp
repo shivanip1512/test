@@ -204,7 +204,7 @@
                         
                         <tags:inputNameValue nameKey=".altTrackingNumber" path="altTrackingNumber"/>
                         
-                        <tags:yukonListEntrySelectNameValue nameKey=".voltage" path="voltageEntryId" accountId="${accountId}" listName="DEVICE_VOLTAGE"/>
+                        <tags:yukonListEntrySelectNameValue nameKey=".voltage" path="voltageEntryId" energyCompanyId="${energyCompanyId}" listName="DEVICE_VOLTAGE"/>
                         
                         <tags:nameValue2 nameKey=".fieldInstallDate">
                             <tags:dateInputCalendar fieldName="fieldInstallDate" fieldValue="fieldInstallDate" springInput="true"></tags:dateInputCalendar>
@@ -224,7 +224,7 @@
                             <tags:selectNameValue nameKey=".route" path="routeId"  itemLabel="paoName" itemValue="yukonID" items="${routes}"  defaultItemValue="0" defaultItemLabel="${defaultRoute}"/>
                         </c:if>
                         
-                        <tags:yukonListEntrySelectNameValue nameKey=".status" path="deviceStatusEntryId" accountId="${accountId}" listName="DEVICE_STATUS" defaultItemValue="0" defaultItemLabel="(none)"/>
+                        <tags:yukonListEntrySelectNameValue nameKey=".status" path="deviceStatusEntryId" energyCompanyId="${energyCompanyId}" listName="DEVICE_STATUS" defaultItemValue="0" defaultItemLabel="(none)"/>
                         
                         <cti:displayForPageEditModes modes="EDIT,VIEW">
                             

@@ -285,8 +285,7 @@ public class HardwareServiceImpl implements HardwareService {
         }
         
         // Logging Hardware Creation
-        hardwareEventLogService.hardwareCreated(userContext.getYukonUser(), 
-                                                lmHardwareBase.getManufacturerSerialNumber());
+        hardwareEventLogService.hardwareCreated(userContext.getYukonUser(), lmHardwareBase.getManufacturerSerialNumber());
         
         return yukonDevice;
     }
@@ -332,9 +331,7 @@ public class HardwareServiceImpl implements HardwareService {
             
             // Log Serial Number Change
             if (!hardwareDto.getSerialNumber().equals(lmHardware.getManufacturerSerialNumber())) {
-                hardwareEventLogService.serialNumberChanged(userContext.getYukonUser(), 
-                                                            lmHardware.getManufacturerSerialNumber(), 
-                                                            hardwareDto.getSerialNumber());
+                hardwareEventLogService.serialNumberChanged(userContext.getYukonUser(), lmHardware.getManufacturerSerialNumber(), hardwareDto.getSerialNumber());
             }
         }
         
@@ -358,8 +355,7 @@ public class HardwareServiceImpl implements HardwareService {
         }
         
         // Log hardware update
-        hardwareEventLogService.hardwareUpdated(userContext.getYukonUser(), 
-                                                hardwareDto.getSerialNumber());
+        hardwareEventLogService.hardwareUpdated(userContext.getYukonUser(), hardwareDto.getSerialNumber());
         
         /* Tell controller to spawn event for device status change if necessary */
         if(hardwareDto.getOriginalDeviceStatusEntryId() != null) {
@@ -447,8 +443,7 @@ public class HardwareServiceImpl implements HardwareService {
             InventoryManagerUtil.deleteInventory( liteInventoryBase, energyCompany, deleteMCT);
 
             // Log hardware deletion
-            hardwareEventLogService.hardwareDeleted(userContext.getYukonUser(), 
-                                                    liteInventoryBase.getDeviceLabel());
+            hardwareEventLogService.hardwareDeleted(userContext.getYukonUser(), liteInventoryBase.getDeviceLabel());
 
         } else {
             /* Just remove it from the account and put it back in general inventory */
@@ -479,9 +474,7 @@ public class HardwareServiceImpl implements HardwareService {
             inventoryBaseDao.update(inventoryBase);
             
             // Log hardware deletion
-            hardwareEventLogService.hardwareRemoved(userContext.getYukonUser(), 
-                                                    liteInventoryBase.getDeviceLabel(), 
-                                                    customerAccount.getAccountNumber());
+            hardwareEventLogService.hardwareRemoved(userContext.getYukonUser(), liteInventoryBase.getDeviceLabel(), customerAccount.getAccountNumber());
         }
     }
     
@@ -509,8 +502,7 @@ public class HardwareServiceImpl implements HardwareService {
                 starsInventoryBaseService.addInstallHardwareEvent(inventoryBase, energyCompany, userContext.getYukonUser());
                 
                 // Log hardware creation
-                hardwareEventLogService.hardwareCreated(userContext.getYukonUser(), 
-                                                        inventoryBase.getDeviceLabel());
+                hardwareEventLogService.hardwareCreated(userContext.getYukonUser(), inventoryBase.getDeviceLabel());
             } else {
                 /* MeterHardwareBase */
                 LiteMeterHardwareBase meterHardwareBase = getMeterHardware(hardwareDto, accountId, energyCompany); 
@@ -526,15 +518,17 @@ public class HardwareServiceImpl implements HardwareService {
                 }
                 starsInventoryBaseDao.saveSwitchAssignments(inventoryId, assignedSwitches);
                 
-                hardwareEventLogService.hardwareCreated(userContext.getYukonUser(),
-                                                        meterHardwareBase.getDeviceLabel());
+                hardwareEventLogService.hardwareCreated(userContext.getYukonUser(), meterHardwareBase.getDeviceLabel());
             }
         } else {
             /* LMHardwareBase and InventoryBase*/
             LiteStarsLMHardware lmHardware = getLmHardware(hardwareDto, accountId, energyCompany); 
             inventoryId = starsInventoryBaseDao.saveLmHardware(lmHardware, energyCompany.getEnergyCompanyID()).getInventoryID();
             
-            starsInventoryBaseService.initThermostatSchedule(lmHardware, energyCompany);
+            if(hardwareType.isThermostat()) {
+                starsInventoryBaseService.initThermostatSchedule(lmHardware, energyCompany);
+            }
+            
             if (VersionTools.staticLoadGroupMappingExists()) {
                 starsInventoryBaseService.initStaticLoadGroup(lmHardware, energyCompany);
             }
@@ -542,8 +536,7 @@ public class HardwareServiceImpl implements HardwareService {
             starsInventoryBaseService.addInstallHardwareEvent(lmHardware, energyCompany, userContext.getYukonUser());
             
             // Log hardware creation
-            hardwareEventLogService.hardwareCreated(userContext.getYukonUser(),
-                                                    lmHardware.getDeviceLabel());
+            hardwareEventLogService.hardwareCreated(userContext.getYukonUser(), lmHardware.getDeviceLabel());
         }
         
         return inventoryId;

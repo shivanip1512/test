@@ -1115,10 +1115,10 @@
   		<description>var where List of YukonListEntry will be placed</description>
 	</attribute>
  	<attribute>
- 		<name>accountId</name>
+ 		<name>energyCompanyId</name>
   		<required>true</required>
   		<rtexprvalue>true</rtexprvalue>
-  		<description>Customer account ID</description>
+  		<description>Energy Company Id</description>
 	</attribute>
 	<attribute>
  		<name>listName</name>

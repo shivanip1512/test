@@ -22,6 +22,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
 
+@SuppressWarnings("unchecked")
 public class YukonGroupDaoImpl implements YukonGroupDao {
 
     private JdbcOperations jdbcTemplate = null;
@@ -120,4 +121,20 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         }        
         return group;
     }
+    
+    @Override
+    public String getResidentialGroupNameForUser(int userId, List<LiteYukonGroup> ecResidentialGroups) {
+
+        List<LiteYukonGroup> groupsForUser = getGroupsForUser(userId);
+        for (LiteYukonGroup userLiteYukonGroup : groupsForUser) {
+            for (LiteYukonGroup ecResidentialGroup : ecResidentialGroups){
+                if (userLiteYukonGroup.equals(ecResidentialGroup)){
+                    return ecResidentialGroup.getGroupName();
+                }
+            }
+        }
+        
+        return null;
+    }
+    
 }

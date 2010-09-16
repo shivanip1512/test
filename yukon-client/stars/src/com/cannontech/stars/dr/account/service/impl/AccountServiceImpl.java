@@ -117,7 +117,7 @@ public class AccountServiceImpl implements AccountService {
     // ADD ACCOUNT
     @Override
     @Transactional
-    public void addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
+    public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
     	
     	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(operator);
         AccountDto accountDto = updatableAccount.getAccountDto();
@@ -378,6 +378,8 @@ public class AccountServiceImpl implements AccountService {
         log.info("Account: " + accountNumber + " added successfully.");
         
         accountEventLogService.accountAdded(operator, accountNumber);
+        
+        return customerAccount.getAccountId();
     }
 
     // DELETE ACCOUNT

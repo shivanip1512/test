@@ -13,7 +13,7 @@ import com.cannontech.user.YukonUserContext;
 public class AccountServiceAdapter implements AccountService {
 
 	@Override
-	public void addAccount(UpdatableAccount updatableAccount,
+	public int addAccount(UpdatableAccount updatableAccount,
 			LiteYukonUser operator) throws AccountNumberUnavailableException,
 			UserNameUnavailableException {
 		throw new UnsupportedOperationException("Not Implemented");

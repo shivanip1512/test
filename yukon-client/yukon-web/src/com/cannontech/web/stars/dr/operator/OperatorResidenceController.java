@@ -46,6 +46,7 @@ public class OperatorResidenceController {
     							ModelMap modelMap, 
     							YukonUserContext userContext,
     							AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
+	    modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         
         // CustomerResidence
 	    CustomerAccount customerAccount = customerAccountDao.getById(accountId);
@@ -99,10 +100,12 @@ public class OperatorResidenceController {
 		if (bindingResult.hasErrors()) {
 			List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
 			flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+			modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
 			return "operator/residence/residenceEdit.jsp";
 		} 
 		
 		flashScope.setConfirm(Collections.singletonList(okMessage));
+		modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
 		return "redirect:residenceEdit";
 	}
 	
@@ -125,4 +128,5 @@ public class OperatorResidenceController {
 	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
 	}
+	
 }

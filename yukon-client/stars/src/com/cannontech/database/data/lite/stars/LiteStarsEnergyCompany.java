@@ -35,6 +35,7 @@ import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
@@ -59,6 +60,7 @@ import com.cannontech.database.db.stars.LMProgramWebPublishing;
 import com.cannontech.database.db.stars.appliance.ApplianceCategory;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.database.db.stars.hardware.Warehouse;
+import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
@@ -88,15 +90,7 @@ import com.cannontech.stars.xml.serialize.StarsSubstation;
 import com.cannontech.stars.xml.serialize.StarsSubstations;
 import com.google.common.collect.Iterables;
 
-/**
- * @author yao
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
- */
-public class LiteStarsEnergyCompany extends LiteBase {
+public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompany {
 	private final static long serialVersionUID = 1L;
 
     public static final int FAKE_LIST_ID = -9999;   // Magic number for YukonSelectionList ID, used for substation and service company list
@@ -196,6 +190,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private YukonListDao yukonListDao;
     private RolePropertyDao rolePropertyDao;
+    private YukonGroupDao yukonGroupDao;
     private SystemDateFormattingService systemDateFormattingService;
     
     private class EnergyCompanyHierarchy {
@@ -441,8 +436,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public LiteYukonGroup getOperatorAdminGroup() {
-        YukonGroupDao yukonGroupDao = DaoFactory.getYukonGroupDao();
-        if (operDftGroupID < com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID) {
+        if (operDftGroupID < YukonGroup.EDITABLE_MIN_GROUP_ID) {
 
             List<LiteYukonGroup> groups = yukonGroupDao.getGroupsForUser(user);
             for (int i = 0; i < groups.size(); i++) {
@@ -2050,6 +2044,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
         CTILogger.info( "All appliance categories loaded for energy company #" + getEnergyCompanyID() );
     }
     
+    @Override
+    public LiteYukonUser getEnergyCompanyUser() {
+        return getUser();
+    }
+    
     void setAddressDao(AddressDao addressDao) {
         this.addressDao = addressDao;
     }
@@ -2089,4 +2088,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
     public void setWarehouseDao(WarehouseDao warehouseDao) {
         this.warehouseDao = warehouseDao;
     }
+
+    public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
+        this.yukonGroupDao = yukonGroupDao;
+    }
+    
 }

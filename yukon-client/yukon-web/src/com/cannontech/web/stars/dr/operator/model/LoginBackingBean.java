@@ -2,7 +2,7 @@ package com.cannontech.web.stars.dr.operator.model;
 
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 
-public class ChangeLoginBackingBean {
+public class LoginBackingBean {
     private String customerLoginGroupName;
     private boolean loginEnabled;
     private String username;
@@ -54,5 +54,8 @@ public class ChangeLoginBackingBean {
     }
     public void setPassword2(String password2) {
         this.password2 = password2;
+    }
+    public LoginStatusEnum getLoginStatus() {
+        return loginEnabled ? LoginStatusEnum.ENABLED : LoginStatusEnum.DISABLED;
     }
 }

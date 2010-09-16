@@ -2,14 +2,6 @@ package com.cannontech.roles.yukon;
 
 import com.cannontech.roles.YukonRoleDefs;
 
-/**
- * @author yao
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
- */
 public interface EnergyCompanyRole {
 	public static final int ROLEID = YukonRoleDefs.ENERGY_COMPANY_ROLEID;
 	
@@ -26,5 +18,5 @@ public interface EnergyCompanyRole {
     public static final int METER_MCT_BASE_DESIGNATION = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 11;
     public static final int APPLICABLE_POINT_TYPE_KEY = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 12;
 	public static final int INHERIT_PARENT_APP_CATS = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 14;
+	public static final int AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 15;
 }
-

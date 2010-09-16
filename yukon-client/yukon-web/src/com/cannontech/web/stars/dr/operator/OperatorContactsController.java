@@ -21,10 +21,12 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -193,10 +195,10 @@ public class OperatorContactsController {
 
 		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
 		
+		LiteContact contact = contactDao.getContact(deleteAdditionalContactId);
 		contactDao.deleteContact(deleteAdditionalContactId);
 		
 		// Log contact removal
-		LiteContact contact = contactDao.getContact(deleteAdditionalContactId);
 		String contactName = contact.getContFirstName()+" "+contact.getContLastName();
 		accountEventLogService.contactRemoved(userContext.getYukonUser(),
 		                                      accountInfoFragment.getAccountNumber(),
@@ -236,6 +238,11 @@ public class OperatorContactsController {
 		// contact
 		if (contactId != null && contactId > 0) {
 			modelMap.addAttribute("contactId", contactId);
+		
+			LiteYukonUser user = contactDao.getYukonUser(contactId);
+			if(user.getUserID() != UserUtils.USER_DEFAULT_ID) {
+			    modelMap.addAttribute("username", user.getUsername());
+			}
 		}
 		
 		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
@@ -280,4 +287,5 @@ public class OperatorContactsController {
 	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
 	}
+	
 }

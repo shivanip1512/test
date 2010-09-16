@@ -582,7 +582,8 @@ public final class ContactDaoImpl implements ContactDao {
     public void deleteContact(int contactId) {
     	
     	SqlStatementBuilder sql = null;
-    	Integer addressId = getContact(contactId).getAddressID();
+    	LiteContact contact = getContact(contactId); 
+    	int addressId = contact.getAddressID();
 
     	// delete notifications
     	List<Integer> notificationIds = contactNotificationDao.getNotificationIdsForContact(contactId);

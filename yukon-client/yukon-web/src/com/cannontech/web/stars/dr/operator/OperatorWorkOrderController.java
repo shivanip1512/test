@@ -80,6 +80,7 @@ public class OperatorWorkOrderController {
         modelMap.addAttribute("allServiceCompanies", allServiceCompanies);
         
         modelMap.addAttribute("workOrders", workOrders);
+        modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         return "operator/workOrder/workOrderList.jsp";
     }
 
@@ -232,6 +233,7 @@ public class OperatorWorkOrderController {
         List<ServiceCompanyDto> allServiceCompanies = serviceCompanyDao.getAllServiceCompanies();
         modelMap.addAttribute("allServiceCompanies", allServiceCompanies);
         
+        modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
     }
     
     @InitBinder

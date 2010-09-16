@@ -33,7 +33,7 @@ public class NewAccountsRequestEndpointTest {
         impl.setAccountService(new AccountServiceAdapter() {
 
             @Override
-            public void addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
+            public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
                 if(updatableAccount.getAccountNumber().equalsIgnoreCase("DUPLICATE ACCOUNT #")) {
                     throw new AccountNumberUnavailableException("DUPLICATE ACCOUNT #");
                 }
@@ -43,6 +43,7 @@ public class NewAccountsRequestEndpointTest {
                         throw new UserNameUnavailableException("DUPLICATE USERNAME");
                     }
                 }
+                return -1;
             }
             
         });

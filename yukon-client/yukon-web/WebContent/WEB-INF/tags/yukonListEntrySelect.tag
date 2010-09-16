@@ -5,13 +5,13 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <%@ attribute name="path" required="true" type="java.lang.String"%>
-<%@ attribute name="accountId" required="true" type="java.lang.Integer"%>
+<%@ attribute name="energyCompanyId" required="true" type="java.lang.Integer"%>
 <%@ attribute name="listName" required="true" type="java.lang.String"%>
 <%@ attribute name="defaultItemValue" required="false" type="java.lang.String"%>
 <%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>
 <%@ attribute name="onchange" required="false" type="java.lang.String"%>
 
-<cti:yukonListEntryList var="entryList" listName="${listName}" accountId="${accountId}"/>
+<cti:yukonListEntryList var="entryList" listName="${listName}" energyCompanyId="${energyCompanyId}"/>
 
 <tags:selectWithItems path="${path}" items="${entryList}" itemValue="entryID" itemLabel="entryText" 
                       defaultItemValue="${pageScope.defaultItemValue}" 

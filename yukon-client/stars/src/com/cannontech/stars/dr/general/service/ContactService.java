@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.general.service;
 
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface ContactService {
@@ -18,10 +19,10 @@ public interface ContactService {
 	 * Creates a new contact, saves it, process db change add. Associates the contact with a given customer as an additional contact.
 	 * @param firstName First name of contact
 	 * @param lastName Last name of contact
-	 * @param contactUser user the contact is associated with, will be used to pull loginId from. Pass null to use UserUtils.USER_DEFAULT_ID (-9999) as loginId
+	 * @param customer The customer this additional contact is being created for.
 	 * @return newly created LiteContact
 	 */
-	public LiteContact createAdditionalContact(String firstName, String lastName, int customerId, LiteYukonUser contactUser);
+	public LiteContact createAdditionalContact(String firstName, String lastName, LiteCustomer customer);
 	
 	/**
 	 * Updates an existing contact, saves it, process db change update

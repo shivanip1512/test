@@ -45,7 +45,7 @@
 	<tags:operationSection sectionName="Consumer Account Information" sectionImageName="ConsumerLogo">
 		<cti:checkProperty property="ConsumerInfoRole.NEW_ACCOUNT_WIZARD">
 			<tags:sectionLink>
-	        	<a href="Consumer/New.jsp?Init=true<cti:checkProperty property="ConsumerInfoRole.NEW_ACCOUNT_WIZARD">&amp;Wizard=true</cti:checkProperty>">New Account</a>
+	        	<a href="/spring/stars/operator/account/accountCreate">New Account</a>
 	        </tags:sectionLink>
 		</cti:checkProperty>
 		<c:set var="importID" scope="page">

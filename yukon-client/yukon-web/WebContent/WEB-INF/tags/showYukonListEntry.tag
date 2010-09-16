@@ -4,11 +4,11 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <%@ tag body-content="empty" %>
-<%@ attribute name="accountId" required="true" type="java.lang.Integer"%>
+<%@ attribute name="energyCompanyId" required="true" type="java.lang.Integer"%>
 <%@ attribute name="value" required="true" type="java.lang.String"%>
 <%@ attribute name="listName" required="true" type="java.lang.String"%>
 <%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>
 
-<cti:yukonListEntryList var="entryList" listName="${listName}" accountId="${accountId}"/>
+<cti:yukonListEntryList var="entryList" listName="${listName}" energyCompanyId="${energyCompanyId}"/>
 
 <tags:showListEntry value="${value}" items="${entryList}" itemValue="entryID" itemLabel="entryText"/>

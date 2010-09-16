@@ -45,7 +45,7 @@
 					<tags:dateTimeInput path="dateTaken" inline="true" fieldValue="${callReport.dateTaken}"/>
 				</tags:nameValue2>
 				
-				<tags:yukonListEntrySelectNameValue nameKey=".type" path="callTypeId" accountId="${accountId}" listName="CALL_TYPE"/>
+				<tags:yukonListEntrySelectNameValue nameKey=".type" path="callTypeId" energyCompanyId="${energyCompanyId}" listName="CALL_TYPE"/>
 				
 				<tags:inputNameValue nameKey=".takenBy" path="takenBy"/>
 				

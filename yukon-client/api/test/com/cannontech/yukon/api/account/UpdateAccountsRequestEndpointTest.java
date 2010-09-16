@@ -46,7 +46,7 @@ public class UpdateAccountsRequestEndpointTest {
             }
             
             @Override
-            public void addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
+            public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
                 if(updatableAccount.getAccountNumber().equalsIgnoreCase("INVALID ACCOUNT #")) {
                     throw new AccountNumberUnavailableException("INVALID ACCOUNT #");
                 }
@@ -56,6 +56,7 @@ public class UpdateAccountsRequestEndpointTest {
                         throw new UserNameUnavailableException("DUPLICATE USERNAME");
                     }
                 }
+                return -1;
             }
         });
         

@@ -543,16 +543,14 @@
                     <tr>
                         <td>
                             <c:choose>
-                        
                                 <c:when test="${starsMeters}">
-                                        <input type="submit" value="<cti:msg2 key=".add"/>" class="formSubmit">
+                                    <input type="submit" value="<cti:msg2 key=".add"/>" class="formSubmit">
                                 </c:when>
                         
                                 <c:otherwise>
                                     <tags:pickerDialog extraArgs="${energyCompanyId}" id="meterPicker" type="availableMctPicker" destinationFieldId="meterId" immediateSelectMode="true"
                                         endAction="addMeter" linkType="button" buttonStyleClass="formSubmit"><cti:msg2 key=".add"/></tags:pickerDialog>
                                 </c:otherwise>
-                        
                             </c:choose>
                         </td>
                     </tr>

@@ -74,7 +74,7 @@
                         </cti:displayForPageEditModes>
                         
                         
-                        <tags:yukonListEntrySelectNameValue nameKey=".serviceType" path="workOrderBase.workTypeId" accountId="${accountId}" listName="SERVICE_TYPE"/>
+                        <tags:yukonListEntrySelectNameValue nameKey=".serviceType" path="workOrderBase.workTypeId" energyCompanyId="${energyCompanyId}" listName="SERVICE_TYPE"/>
                         
                         <tags:nameValue2 nameKey=".orderedBy">
                             <tags:input path="workOrderBase.orderedBy"/>
@@ -85,7 +85,7 @@
                         </tags:nameValue2>
                         
                         <cti:displayForPageEditModes modes="CREATE">
-                            <tags:yukonListEntrySelectNameValue nameKey=".currentState" path="workOrderBase.currentStateId" accountId="${accountId}" listName="SERVICE_STATUS" />
+                            <tags:yukonListEntrySelectNameValue nameKey=".currentState" path="workOrderBase.currentStateId" energyCompanyId="${energyCompanyId}" listName="SERVICE_STATUS" />
                         
                             <tags:nameValue2 nameKey=".eventDate">
                                 <tags:dateTimeInput path="eventDate" inline="true" fieldValue="${workOrderDto.eventDate}"/>
@@ -112,7 +112,7 @@
                         <tags:nameValueContainer2>
                         
                             <tags:yukonListEntrySelectNameValue nameKey=".currentState" path="workOrderBase.currentStateId" 
-                                                                accountId="${accountId}" listName="SERVICE_STATUS"/>
+                                                                energyCompanyId="${energyCompanyId}" listName="SERVICE_STATUS"/>
                             
                             <tags:nameValue2 nameKey=".eventDate">
                                 <tags:dateTimeInput path="eventDate" inline="true" fieldValue="${workOrderDto.eventDate}" disabled="true"/>
@@ -142,7 +142,7 @@
                                 <c:forEach var="eventBase" items="${eventHistory}">
                                     <tr>
                                         <td class="nonwrapping" ><cti:formatDate value="${eventBase.eventTimestamp}" type="BOTH"/></td>
-                                        <td><tags:showYukonListEntry value="${eventBase.actionId}" accountId="${accountId}" listName="SERVICE_STATUS" /></td>
+                                        <td><tags:showYukonListEntry value="${eventBase.actionId}" energyCompanyId="${energyCompanyId}" listName="SERVICE_STATUS" /></td>
                                     </tr>
                                 </c:forEach>
                                 

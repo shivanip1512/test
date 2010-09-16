@@ -214,7 +214,6 @@ public class OperatorHardwareController {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
         setupHardwareListModelMap(accountInfoFragment, modelMap, energyCompany, userContext);
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         return "operator/hardware/hardwareList.jsp";
     }
     
@@ -362,7 +361,7 @@ public class OperatorHardwareController {
             if(!bindingResult.hasErrors()) {
                 inventoryId = hardwareService.createHardware(hardwareDto, accountInfoFragment.getAccountId(), userContext);
                 /* If the device status was set, spawn an event for it. */
-                if(hardwareDto.getDeviceStatusEntryId() != 0){
+                if(hardwareDto.getDeviceStatusEntryId() != null && hardwareDto.getDeviceStatusEntryId() != 0) {
                     EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, hardwareDto.getDeviceStatusEntryId(), inventoryId, request.getSession());
                 }
             }
@@ -396,10 +395,8 @@ public class OperatorHardwareController {
     @RequestMapping
     public String deleteHardware(ModelMap modelMap, YukonUserContext userContext, HttpServletRequest request, FlashScope flashScope, AccountInfoFragment accountInfoFragment,
                                  int inventoryId, String deleteOption) throws Exception {
-        
-        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
-        hardwareEventLogService.hardwareDeletionAttemptedByOperator(userContext.getYukonUser(),
-                                                                    lmHardwareBase.getManufacturerSerialNumber());
+        HardwareDto hardwareToDelete = hardwareService.getHardwareDto(inventoryId, accountInfoFragment.getEnergyCompanyId(), accountInfoFragment.getAccountId());
+        hardwareEventLogService.hardwareDeletionAttemptedByOperator(userContext.getYukonUser(), hardwareToDelete.getDisplayName());
         
         hardwareService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), accountInfoFragment.getAccountId());
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
@@ -407,8 +404,7 @@ public class OperatorHardwareController {
         /* Delete this hardware or just take it off the account and put in back in the warehouse */
         boolean delete = deleteOption.equalsIgnoreCase("delete");
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-        hardwareService.deleteHardware(userContext, delete, inventoryId, 
-                                       accountInfoFragment.getAccountId(), energyCompany);
+        hardwareService.deleteHardware(userContext, delete, inventoryId, accountInfoFragment.getAccountId(), energyCompany);
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         if(delete) {
@@ -648,6 +644,7 @@ public class OperatorHardwareController {
     private void setupHardwareListModelMap(AccountInfoFragment accountInfoFragment, ModelMap modelMap, 
                                            LiteStarsEnergyCompany energyCompany, 
                                            YukonUserContext userContext) {
+        modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         ListMultimap<LMHardwareClass, HardwareDto> hardwareMap = hardwareService.getHardwareMapForAccount(accountInfoFragment.getAccountId(), 
                                                                                                           accountInfoFragment.getEnergyCompanyId());
         
@@ -674,6 +671,7 @@ public class OperatorHardwareController {
                                            YukonUserContext userContext, 
                                            boolean editing){
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+        modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);

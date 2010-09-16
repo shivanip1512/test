@@ -19,33 +19,24 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.user.YukonGroup;
-import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.i18n.MessageCodeGenerator;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.dr.account.exception.InvalidNotificationException;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -62,7 +53,8 @@ public class ContactController extends AbstractConsumerController {
     private CustomerDao customerDao;
     private YukonListDao yukonListDao;
     private YukonUserDao yukonUserDao;
-    private RolePropertyDao rolePropertyDao;
+    private StarsDatabaseCache starsDatabaseCache;
+    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
 
     @RequestMapping(value = "/consumer/contacts", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
@@ -149,29 +141,20 @@ public class ContactController extends AbstractConsumerController {
                 this.addNewNotification(request, contactId, notificationList);
                 contact.setNotifications(notificationList);
 
-                if (rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_CREATE_LOGIN_FOR_ACCOUNT, user)) {
+                LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+                boolean autoCreateLogin = energyCompanyRolePropertyDao.checkProperty(YukonRoleProperty.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS, energyCompany);
+                // If Auto Create Login is true AND this is not the primary contact AND there is no login for this contact, create one.
+                
+                if (autoCreateLogin 
+                        && !contactDao.isPrimaryContact(contactId) 
+                        && contact.getLoginID() == UserUtils.USER_DEFAULT_ID) {
 
                     StarsYukonUser starsUser = (StarsYukonUser) request.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-                    // If not primary contact and no login exists, create it.
-                    if(!contactDao.isPrimaryContact(contactId) && contact.getLoginID() == UserUtils.USER_DEFAULT_ID) {
+                    LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( starsUser.getEnergyCompanyID() );
+                    LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
 
-                        YukonUser login = new YukonUser();
-                        LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( starsUser.getEnergyCompanyID() );
-                        LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
-                        String newUserName = yukonUserDao.generateUsername(firstName, lastName);
-                        login.getYukonUser().setUsername(newUserName);
-                        login.getYukonUser().setAuthType(AuthType.NONE);
-                        login.getYukonGroups().addElement(((YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
-                        login.getYukonUser().setLoginStatus(LoginStatusEnum.ENABLED);
-                        try {
-                            login = Transaction.createTransaction(Transaction.INSERT, login).execute();
-                        } catch (TransactionException e) {
-                            throw new RuntimeException("Couldn't create user login for the contact, please retry.", e);
-                        }
-                        LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
-                        ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);
-                        contact.setLoginID(login.getUserID().intValue());
-                    }
+                    LiteYukonUser login = yukonUserDao.createLoginForAdditionalContact(firstName, lastName, custGroups[0]);
+                    contact.setLoginID(login.getUserID());
                 }
 
                 contactDao.saveContact(contact);
@@ -308,13 +291,19 @@ public class ContactController extends AbstractConsumerController {
     }
     
     @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
     public void setContactNotificationDao(
             ContactNotificationDao contactNotificationDao) {
         this.contactNotificationDao = contactNotificationDao;
     }
+    
+    @Autowired
+    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+        this.starsDatabaseCache = starsDatabaseCache;
+    }
+    
+    @Autowired
+    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
+        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
+    }
+    
 }

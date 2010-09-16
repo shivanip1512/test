@@ -1002,265 +1002,269 @@
     <skin name="STANDARD" />
     <css file="/WebConfig/yukon/styles/operationsStyles.css" />
   </module>
-  
-  <module name="operator">
-    <skin name="STANDARD"/>
-    <search bean="operatorAccountSearchProducer"/>
-    <menu>
-	   	<options>
-	   		<option name="account">
-	          <link>/spring/stars/operator/home</link>
-	   		  <options>
-		          <option name="accounts">
-		   		    <link>/spring/stars/operator/account/search</link>
-		          </option>
-	          </options>
-	   		</option>
-            <dynamicOptions id="faq" bean="operatorFaqMenuOption">
-              <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ADMIN_FAQ" />
-            </dynamicOptions>
-	  	</options>  
-    </menu>
 
-    <pages>
-    	<page name="home" type="LANDING" hideSearch="true">
-    		<menu>account|accounts</menu>
-           	<link>/spring/stars/operator/home</link>
-    	</page>
-    	<page name="accountImport" type="BASIC" hideSearch="true">
-            <menu>account|accounts</menu>
-            <link>/spring/stars/operator/account/import</link>
-        </page>
-    	<page name="accountList" type="BASIC" hideSearch="true">
-    		<menu>account|accounts</menu>
-    		<link>/spring/stars/operator/account/search</link>
-	        <pages>
-	    	<page name="accountEdit" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
-	    		<menu>account|accounts</menu>
-	           	<link>/spring/stars/operator/account/accountEdit?accountId=${accountId}</link>
-	           	<labelArgument>${accountNumber}</labelArgument>
-	           	<infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
-	           	<pages>
-			   		<page name="contactList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-			    		<menu>account|accounts</menu>
-			           	<link>/spring/stars/operator/contacts/contactList?accountId=${accountId}</link>
-			           	<labelArgument>${accountNumber}</labelArgument>
-				        <pages>
-	                        <page name="contact.EDIT" type="DETAIL">
-	                            <menu>account|accounts</menu>
-	                            <link>/spring/stars/operator/contacts/contactEdit?accountId=${accountId}&amp;contactId=${contactId}</link>
-	                            <labelArgument>${firstName}</labelArgument>
-	                            <labelArgument>${lastName}</labelArgument>
-	                        </page>
-	                        <page name="contact.CREATE" type="BASIC">
-	                            <menu>account|accounts</menu>
-	                            <link>/spring/stars/operator/contacts/contactEdit?accountId=${accountId}&amp;contactId=0</link>
-	                            <labelArgument>${firstName}</labelArgument>
-	                            <labelArgument>${lastName}</labelArgument>
-	                        </page>
-				    	</pages>
-			    	</page>
-			    	<page name="residence" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-			    		<requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_RESIDENCE" />
-			    		<menu>account|accounts</menu>
-			           	<link>/spring/stars/operator/residence/residenceEdit?accountId=${accountId}</link>
-			           	<labelArgument>${accountNumber}</labelArgument>
-			    	</page>
-			    	<page name="callList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-			    		<requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
-			    		<menu>account|accounts</menu>
-			           	<link>/spring/stars/operator/callTracking/callList?accountId=${accountId}</link>
-			           	<labelArgument>${accountNumber}</labelArgument>
-			           	<pages>
-		                  <page name="viewCall.EDIT" type="DETAIL">
-	    	                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
-	        	            <menu>account|accounts</menu>
-	            	        <link>/spring/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
-	                	    <labelArgument>${callNumber}</labelArgument>
-		                  </page>
-		                  <page name="viewCall.CREATE" type="BASIC">
-	    	                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
-	        	            <menu>account|accounts</menu>
-	            	        <link>/spring/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
-	                	    <labelArgument>${callNumber}</labelArgument>
-		                  </page>
-	    	            </pages>
-			    	</page>
-			    	<page name="metering" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-			    	<requireRoleProperty value="OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA, OPERATOR_CONSUMER_INFO_METERING_CREATE" />
-			    		<menu>account|accounts</menu>
-			           	<link>/spring/stars/operator/metering/viewTrend?accountId=${accountId}</link>
-			           	<labelArgument>${accountNumber}</labelArgument>
-			           	<pages>
-			           		<page name="selectTrends" type="DETAIL_CHILD_WITH_INFO">
-					    		<menu>account|accounts</menu>
-					           	<link>/spring/stars/operator/metering/selectTrends?accountId=${accountId}&amp;trendId={trendId}</link>
-					           	<labelArgument>${accountNumber}</labelArgument>
-					    	</page>
-			           	</pages>
-			    	</page>
-			    	<page name="controlHistory" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-			    		<menu>account|accounts</menu>
-			           	<link>/spring/stars/operator/program/controlHistory?accountId=${accountId}</link>
-			           	<labelArgument>${accountNumber}</labelArgument>
-			           	<pages>
-					   		<page name="completeControlHistory" type="DETAIL">
-					    		<menu>account|accounts</menu>
-					           	<link>/spring/stars/operator/program/completeControlHistory?accountId=${accountId}</link>
-			           	        <labelArgument>${program.programName}</labelArgument>
-					    	</page>
-				    	</pages>
-			    	</page>
-			    	<page name="enrollmentList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-			    	    <requireRoleProperty value="OPERATOR_CONSUMER_INFO_PROGRAMS_ENROLLMENT"/>
-			    		<menu>account|accounts</menu>
-			           	<link>/spring/stars/operator/enrollment/list?accountId=${accountId}</link>
-			           	<labelArgument>${accountNumber}</labelArgument>
-	                    <pages>
-	                        <page name="enrollmentHistory" type="DETAIL_CHILD_WITH_INFO">
-	                            <menu>account|accounts</menu>
-	                            <link>/spring/stars/operator/enrollment/history?accountId=${accountId}</link>
-	                        </page>
-	                    </pages>
-			    	</page>
-			    	<page name="optOut.main" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-			    		<menu>account|accounts</menu>
-			           	<link>/spring/stars/operator/program/optOut/view?accountId=${accountId}</link>
-			           	<labelArgument>${accountNumber}</labelArgument>
-	                    <pages>
-	                        <page name="optOut.inventoryList" type="DETAIL_CHILD_WITH_INFO">
-	                            <menu>account|accounts</menu>
-	                            <labelArgument>${optOutBackingBean.startDate}</labelArgument>
-	                        </page>
-	                        <page name="optOut.confirm" type="DETAIL_CHILD_WITH_INFO">
-	                            <menu>account|accounts</menu>
-	                        </page>
-	                        <page name="optOut.history" type="DETAIL_CHILD_WITH_INFO">
-	                            <menu>account|accounts</menu>
-	                        </page>
-	                    </pages>
-			    	</page>
-			    	<page name="appliance.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-	                    <requireRoleProperty value="OPERATOR_CONSUMER_INFO_APPLIANCES"/>
-	                    <menu>account|accounts</menu>
-	                    <link>/spring/stars/operator/appliances/applianceList?accountId=${accountId}</link>
-	                    <labelArgument>${accountNumber}</labelArgument>
-	                    <pages>
-	                        <page name="appliance.edit" type="DETAIL">
-	                            <menu>account|accounts</menu>
-	                            <labelArgument>${applianceCategoryName}</labelArgument>
-	                        </page>
-	                        <page name="appliance.new" type="BASIC">
-	                            <menu>account|accounts</menu>
-	                        </page>
-	                    </pages>
-	                </page>
-			    	<page name="hardware.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-	                    <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES" />
-	                    <menu>account|accounts</menu>
-	                    <link>/spring/stars/operator/hardware/hardwareList?accountId=${accountId}</link>
-	                    <labelArgument>${accountNumber}</labelArgument>
-	                    <pages>
-	                        <page name="hardware.CREATE" type="BASIC">
-	                            <menu>account|accounts</menu>
-	                            <labelArgument>${displayName}</labelArgument>
-	                        </page>
-	                        <page name="hardware.EDIT" type="DETAIL">
-	                            <menu>account|accounts</menu>
-	                            <labelArgument>${displayName}</labelArgument>
-	                        </page>
-	                        <page name="hardware.VIEW" type="DETAIL">
-	                            <menu>account|accounts</menu>
-	                            <labelArgument>${displayName}</labelArgument>
-	                        </page>
-	                        <page name="meterProfile.CREATE" type="BASIC">
-	                            <menu>account|accounts</menu>
-	                        </page>
-	                        <page name="meterProfile.EDIT" type="DETAIL">
-	                            <menu>account|accounts</menu>
-	                            <labelArgument>${displayName}</labelArgument>
-	                        </page>
-	                        <page name="meterProfile.VIEW" type="DETAIL">
-	                            <menu>account|accounts</menu>
-	                            <labelArgument>${displayName}</labelArgument>
-	                        </page>
-	                        <page name="hardwareConfig" type="DETAIL">
-	                            <menu>account|accounts</menu>
-	                            <labelArgument>${displayName}</labelArgument>
-	                        </page>
-	                        <page name="meterConfig" type="DETAIL">
-	                            <menu>account|accounts</menu>
-	                            <labelArgument>${displayName}</labelArgument>
-	                        </page>
-	                        <page name="thermostatSelect" type="DETAIL_CHILD">
-					    		<menu>account|accounts</menu>
-					    		<link>/spring/stars/operator/thermostat/select?accountId=${accountId}</link>
-			           			<labelArgument>${accountNumber}</labelArgument>
-					    	</page>
-	                        <page name="thermostatManual" type="DETAIL_CHILD_WITH_INFO">
-					    		<menu>account|accounts</menu>
-					    		<labelArgument>${accountNumber}</labelArgument>
-					    	</page>
-	                        <page name="thermostatSchedule" type="DETAIL_CHILD_WITH_INFO">
-					    		<menu>account|accounts</menu>
-					    		<labelArgument>${accountNumber}</labelArgument>
-					    	</page>
-	                        <page name="thermostatScheduleConfirm" type="DETAIL_CHILD_WITH_INFO">
-					    		<menu>account|accounts</menu>
-					    		<labelArgument>${accountNumber}</labelArgument>
-					    	</page>
-	                        <page name="thermostatScheduleHints" type="DETAIL_CHILD_WITH_INFO">
-					    		<menu>account|accounts</menu>
-					    		<labelArgument>${accountNumber}</labelArgument>
-					    	</page>
-	                        <page name="thermostatSavedSchedules" type="DETAIL_CHILD_WITH_INFO">
-					    		<menu>account|accounts</menu>
-					    		<labelArgument>${accountNumber}</labelArgument>
-					    	</page>
-	                    </pages>
-	                </page>
-                    <page name="workOrderList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
-                        <menu>account|accounts</menu>
-                        <link>/spring/stars/operator/workOrder/workOrderList?accountId=${accountId}</link>
-                        <labelArgument>${accountNumber}</labelArgument>
-                        <pages>
-                        <page name="viewWorkOrder.EDIT" type="DETAIL">
-                          <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
-                          <menu>account|accounts</menu>
-                          <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>
-                          <labelArgument>${workOrderNumber}</labelArgument>
-                        </page>
-                        <page name="viewWorkOrder.CREATE" type="DETAIL">
-                          <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
-                          <menu>account|accounts</menu>
-                          <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>
-                          <labelArgument>${workOrderNumber}</labelArgument>
-                        </page>
-                      </pages>
+	<module name="operator">
+		<skin name="STANDARD" />
+		<search bean="operatorAccountSearchProducer" />
+		
+		<menu>
+			<options>
+				<option name="account">
+					<link>/spring/stars/operator/home</link>
+					<options>
+						<option name="accounts">
+							<link>/spring/stars/operator/account/search</link>
+						</option>
+					</options>
+				</option>
+				<dynamicOptions id="faq" bean="operatorFaqMenuOption">
+					<requireRoleProperty value="OPERATOR_CONSUMER_INFO_ADMIN_FAQ" />
+				</dynamicOptions>
+			</options>
+		</menu>
+
+		<pages>
+			<page name="home" type="LANDING" hideSearch="true">
+				<menu>account|accounts</menu>
+				<link>/spring/stars/operator/home</link>
+			</page>
+			<page name="accountImport" type="BASIC" hideSearch="true">
+				<menu>account|accounts</menu>
+				<link>/spring/stars/operator/account/import</link>
+			</page>
+			<page name="accountList" type="BASIC" hideSearch="true">
+				<menu>account|accounts</menu>
+				<link>/spring/stars/operator/account/search</link>
+				<pages>
+					<page name="account.CREATE" type="BASIC" hideSearch="true">
+		                <menu>account|accounts</menu>
+		                <link>/spring/stars/operator/account/accountCreate</link>
+		            </page>
+					<page name="account.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
+						<menu>account|accounts</menu>
+						<link>/spring/stars/operator/account/accountEdit?accountId=${accountId}</link>
+						<labelArgument>${accountNumber}</labelArgument>
+						<infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
+						<pages>
+                            <page name="account.EDIT" type="DETAIL_WITH_INFO">
+		                        <menu>account|accounts</menu>
+		                        <link>/spring/stars/operator/account/accountEdit?accountId=${accountId}</link>
+		                        <labelArgument>Edit</labelArgument>
+		                        <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
+		                    </page>
+							<page name="contactList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+								<menu>account|accounts</menu>
+								<link>/spring/stars/operator/contacts/contactList?accountId=${accountId}</link>
+								<labelArgument>${accountNumber}</labelArgument>
+								<pages>
+									<page name="contact.EDIT" type="DETAIL">
+										<menu>account|accounts</menu>
+										<link>/spring/stars/operator/contacts/contactEdit?accountId=${accountId}&amp;contactId=${contactId}</link>
+										<labelArgument>${firstName}</labelArgument>
+										<labelArgument>${lastName}</labelArgument>
+									</page>
+									<page name="contact.CREATE" type="BASIC">
+										<menu>account|accounts</menu>
+										<link>/spring/stars/operator/contacts/contactEdit?accountId=${accountId}&amp;contactId=0</link>
+										<labelArgument>${firstName}</labelArgument>
+										<labelArgument>${lastName}</labelArgument>
+									</page>
+								</pages>
+							</page>
+							<page name="residence" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+								<requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_RESIDENCE" />
+								<menu>account|accounts</menu>
+								<link>/spring/stars/operator/residence/residenceEdit?accountId=${accountId}</link>
+								<labelArgument>${accountNumber}</labelArgument>
+							</page>
+							<page name="callList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+			    		        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
+			    		        <menu>account|accounts</menu>
+                                <link>/spring/stars/operator/callTracking/callList?accountId=${accountId}</link>
+                                <labelArgument>${accountNumber}</labelArgument>
+                                <pages>
+                                    <page name="viewCall.EDIT" type="DETAIL">
+                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
+                                        <menu>account|accounts</menu>
+                                        <link>/spring/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
+                                        <labelArgument>${callNumber}</labelArgument>
+                                    </page>
+                                    <page name="viewCall.CREATE" type="BASIC">
+                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
+                                        <menu>account|accounts</menu>
+                                        <link>/spring/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
+                                        <labelArgument>${callNumber}</labelArgument>
+                                    </page>
+                                </pages>
+                            </page>
+							<page name="metering" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+								<requireRoleProperty value="OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA, OPERATOR_CONSUMER_INFO_METERING_CREATE" />
+								<menu>account|accounts</menu>
+								<link>/spring/stars/operator/metering/viewTrend?accountId=${accountId}</link>
+								<labelArgument>${accountNumber}</labelArgument>
+								<pages>
+									<page name="selectTrends" type="DETAIL_CHILD_WITH_INFO">
+										<menu>account|accounts</menu>
+										<link>/spring/stars/operator/metering/selectTrends?accountId=${accountId}&amp;trendId={trendId}</link>
+										<labelArgument>${accountNumber}</labelArgument>
+									</page>
+								</pages>
+							</page>
+							<page name="controlHistory" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+								<menu>account|accounts</menu>
+								<link>/spring/stars/operator/program/controlHistory?accountId=${accountId}</link>
+								<labelArgument>${accountNumber}</labelArgument>
+								<pages>
+									<page name="completeControlHistory" type="DETAIL">
+										<menu>account|accounts</menu>
+										<link>/spring/stars/operator/program/completeControlHistory?accountId=${accountId}</link>
+										<labelArgument>${program.programName}</labelArgument>
+									</page>
+								</pages>
+							</page>
+							<page name="enrollmentList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+								<requireRoleProperty value="OPERATOR_CONSUMER_INFO_PROGRAMS_ENROLLMENT" />
+								<menu>account|accounts</menu>
+								<link>/spring/stars/operator/enrollment/list?accountId=${accountId}</link>
+								<labelArgument>${accountNumber}</labelArgument>
+								<pages>
+									<page name="enrollmentHistory" type="DETAIL_CHILD_WITH_INFO">
+										<menu>account|accounts</menu>
+										<link>/spring/stars/operator/enrollment/history?accountId=${accountId}</link>
+									</page>
+								</pages>
+							</page>
+							<page name="optOut.main" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+								<menu>account|accounts</menu>
+								<link>/spring/stars/operator/program/optOut/view?accountId=${accountId}</link>
+								<labelArgument>${accountNumber}</labelArgument>
+								<pages>
+									<page name="optOut.inventoryList" type="DETAIL_CHILD_WITH_INFO">
+										<menu>account|accounts</menu>
+										<labelArgument>${optOutBackingBean.startDate}</labelArgument>
+									</page>
+									<page name="optOut.confirm" type="DETAIL_CHILD_WITH_INFO">
+										<menu>account|accounts</menu>
+									</page>
+									<page name="optOut.history" type="DETAIL_CHILD_WITH_INFO">
+										<menu>account|accounts</menu>
+									</page>
+								</pages>
+							</page>
+							<page name="appliance.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+								<requireRoleProperty value="OPERATOR_CONSUMER_INFO_APPLIANCES" />
+								<menu>account|accounts</menu>
+								<link>/spring/stars/operator/appliances/applianceList?accountId=${accountId}</link>
+								<labelArgument>${accountNumber}</labelArgument>
+								<pages>
+									<page name="appliance.edit" type="DETAIL">
+										<menu>account|accounts</menu>
+										<labelArgument>${applianceCategoryName}</labelArgument>
+									</page>
+									<page name="appliance.new" type="BASIC">
+										<menu>account|accounts</menu>
+									</page>
+								</pages>
+							</page>
+							<page name="hardware.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+								<requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES" />
+								<menu>account|accounts</menu>
+								<link>/spring/stars/operator/hardware/hardwareList?accountId=${accountId}</link>
+								<labelArgument>${accountNumber}</labelArgument>
+								<pages>
+									<page name="hardware.CREATE" type="BASIC">
+										<menu>account|accounts</menu>
+										<labelArgument>${displayName}</labelArgument>
+									</page>
+									<page name="hardware.EDIT" type="DETAIL">
+										<menu>account|accounts</menu>
+										<labelArgument>${displayName}</labelArgument>
+									</page>
+									<page name="hardware.VIEW" type="DETAIL">
+										<menu>account|accounts</menu>
+										<labelArgument>${displayName}</labelArgument>
+									</page>
+									<page name="meterProfile.CREATE" type="BASIC">
+										<menu>account|accounts</menu>
+									</page>
+									<page name="meterProfile.EDIT" type="DETAIL">
+										<menu>account|accounts</menu>
+										<labelArgument>${displayName}</labelArgument>
+									</page>
+									<page name="meterProfile.VIEW" type="DETAIL">
+										<menu>account|accounts</menu>
+										<labelArgument>${displayName}</labelArgument>
+									</page>
+									<page name="hardwareConfig" type="DETAIL">
+										<menu>account|accounts</menu>
+										<labelArgument>${displayName}</labelArgument>
+									</page>
+									<page name="meterConfig" type="DETAIL">
+										<menu>account|accounts</menu>
+										<labelArgument>${displayName}</labelArgument>
+									</page>
+									<page name="thermostatSelect" type="DETAIL_CHILD">
+										<menu>account|accounts</menu>
+										<link>/spring/stars/operator/thermostat/select?accountId=${accountId}</link>
+										<labelArgument>${accountNumber}</labelArgument>
+									</page>
+									<page name="thermostatManual" type="DETAIL_CHILD_WITH_INFO">
+										<menu>account|accounts</menu>
+										<labelArgument>${accountNumber}</labelArgument>
+									</page>
+									<page name="thermostatSchedule" type="DETAIL_CHILD_WITH_INFO">
+										<menu>account|accounts</menu>
+										<labelArgument>${accountNumber}</labelArgument>
+									</page>
+									<page name="thermostatScheduleConfirm" type="DETAIL_CHILD_WITH_INFO">
+										<menu>account|accounts</menu>
+										<labelArgument>${accountNumber}</labelArgument>
+									</page>
+									<page name="thermostatScheduleHints" type="DETAIL_CHILD_WITH_INFO">
+										<menu>account|accounts</menu>
+										<labelArgument>${accountNumber}</labelArgument>
+									</page>
+									<page name="thermostatSavedSchedules" type="DETAIL_CHILD_WITH_INFO">
+										<menu>account|accounts</menu>
+										<labelArgument>${accountNumber}</labelArgument>
+									</page>
+								</pages>
+							</page>
+							<page name="workOrderList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
+                                <menu>account|accounts</menu>
+                                <link>/spring/stars/operator/workOrder/workOrderList?accountId=${accountId}</link>
+                                <labelArgument>${accountNumber}</labelArgument>
+                            <pages>
+                            <page name="viewWorkOrder.EDIT" type="DETAIL">
+                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
+                                <menu>account|accounts</menu>
+                                <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>
+                                <labelArgument>${workOrderNumber}</labelArgument>
+                            </page>
+                            <page name="viewWorkOrder.CREATE" type="DETAIL">
+                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
+                                <menu>account|accounts</menu>
+                                <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>
+                                <labelArgument>${workOrderNumber}</labelArgument>
+                            </page>
+                        </pages>
                     </page>
-			    	<page name="changeLogin" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-			    		<requireRoleProperty value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME,
-			    		                            OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD"/>
-	                    <menu>account|accounts</menu>
-			           	<link>/spring/stars/operator/login/changeLogin?accountId=${accountId}</link>
-			           	<labelArgument>${accountNumber}</labelArgument>
-			    	</page>
-			    	<page name="accountLog" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-			    		<menu>account|accounts</menu>
-			           	<link>/spring/stars/operator/account/accountLog?accountId=${accountId}</link>
-			           	<labelArgument>${accountNumber}</labelArgument>
-			    	</page>
-	           	</pages>
-	          </page>
-            </pages>
-        </page>
-      <page name="faq" type="BASIC">
-        <menu>operatorFaq</menu>
-        <link>/spring/stars/operator/faq</link>
-      </page>
-    </pages>
-  </module>
+							<page name="accountLog" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+								<menu>account|accounts</menu>
+								<link>/spring/stars/operator/account/accountLog?accountId=${accountId}</link>
+								<labelArgument>${accountNumber}</labelArgument>
+							</page>
+						</pages>
+					</page>
+				</pages>
+			</page>
+			<page name="faq" type="BASIC">
+				<menu>operatorFaq</menu>
+				<link>/spring/stars/operator/faq</link>
+			</page>
+		</pages>
+	</module>
   
   <module name="userlm">
     <skin name="STANDARD" />

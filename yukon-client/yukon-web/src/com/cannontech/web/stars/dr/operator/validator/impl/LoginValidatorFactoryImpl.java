@@ -4,16 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.stars.dr.operator.validator.ChangeLoginValidator;
-import com.cannontech.web.stars.dr.operator.validator.ChangeLoginValidatorFactory;
+import com.cannontech.web.stars.dr.operator.validator.LoginValidator;
+import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 
-public class ChangeLoginValidatorFactoryImpl implements ChangeLoginValidatorFactory {
+public class LoginValidatorFactoryImpl implements LoginValidatorFactory {
 
     private YukonUserDao yukonUserDao;
     
-    public ChangeLoginValidator getChangeLoginValidator(LiteYukonUser residentialUser) {
+    public LoginValidator getLoginValidator(LiteYukonUser residentialUser) {
 
-        return new ChangeLoginValidator(residentialUser, yukonUserDao);
+        return new LoginValidator(residentialUser, yukonUserDao);
         
     }
     

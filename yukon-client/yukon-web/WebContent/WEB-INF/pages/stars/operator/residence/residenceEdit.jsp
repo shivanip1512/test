@@ -21,12 +21,12 @@
 				
 					<tags:nameValueContainer2>
 					
-						<tags:yukonListEntrySelectNameValue nameKey=".residenceType" path="residenceTypeId" accountId="${accountId}" listName="RESIDENCE_TYPE"/>
-						<tags:yukonListEntrySelectNameValue nameKey=".constructionMaterial" path="constructionMaterialId" accountId="${accountId}" listName="CONSTRUCTION_MATERIAL"/>
-						<tags:yukonListEntrySelectNameValue nameKey=".decadeBuilt" path="decadeBuiltId" accountId="${accountId}" listName="DECADE_BUILT"/>
-						<tags:yukonListEntrySelectNameValue nameKey=".squareFeet" path="squareFeetId" accountId="${accountId}" listName="SQUARE_FEET"/>
-						<tags:yukonListEntrySelectNameValue nameKey=".insulationDepth" path="insulationDepthId" accountId="${accountId}" listName="INSULATION_DEPTH"/>
-						<tags:yukonListEntrySelectNameValue nameKey=".generalCondition" path="generalConditionId" accountId="${accountId}" listName="GENERAL_CONDITION"/>
+						<tags:yukonListEntrySelectNameValue nameKey=".residenceType" path="residenceTypeId" energyCompanyId="${energyCompanyId}" listName="RESIDENCE_TYPE"/>
+						<tags:yukonListEntrySelectNameValue nameKey=".constructionMaterial" path="constructionMaterialId" energyCompanyId="${energyCompanyId}" listName="CONSTRUCTION_MATERIAL"/>
+						<tags:yukonListEntrySelectNameValue nameKey=".decadeBuilt" path="decadeBuiltId" energyCompanyId="${energyCompanyId}" listName="DECADE_BUILT"/>
+						<tags:yukonListEntrySelectNameValue nameKey=".squareFeet" path="squareFeetId" energyCompanyId="${energyCompanyId}" listName="SQUARE_FEET"/>
+						<tags:yukonListEntrySelectNameValue nameKey=".insulationDepth" path="insulationDepthId" energyCompanyId="${energyCompanyId}" listName="INSULATION_DEPTH"/>
+						<tags:yukonListEntrySelectNameValue nameKey=".generalCondition" path="generalConditionId" energyCompanyId="${energyCompanyId}" listName="GENERAL_CONDITION"/>
 					
 					</tags:nameValueContainer2>
 	
@@ -37,11 +37,11 @@
 				
 					<tags:nameValueContainer2>
 					
-						<tags:yukonListEntrySelectNameValue nameKey=".mainCoolingSystem" path="mainCoolingSystemId" accountId="${accountId}" listName="COOLING_SYSTEM"/>
-						<tags:yukonListEntrySelectNameValue nameKey=".mainHeatingSystem" path="mainHeatingSystemId" accountId="${accountId}" listName="HEATING_SYSTEM"/>
-						<tags:yukonListEntrySelectNameValue nameKey=".numberOfOccupants" path="numberOfOccupantsId" accountId="${accountId}" listName="NUM_OF_OCCUPANTS"/>
-						<tags:yukonListEntrySelectNameValue nameKey=".ownershipType" path="ownershipTypeId" accountId="${accountId}" listName="OWNERSHIP_TYPE"/>
-						<tags:yukonListEntrySelectNameValue nameKey=".mainFuelType" path="mainFuelTypeId" accountId="${accountId}" listName="FUEL_TYPE"/>
+						<tags:yukonListEntrySelectNameValue nameKey=".mainCoolingSystem" path="mainCoolingSystemId" energyCompanyId="${energyCompanyId}" listName="COOLING_SYSTEM"/>
+						<tags:yukonListEntrySelectNameValue nameKey=".mainHeatingSystem" path="mainHeatingSystemId" energyCompanyId="${energyCompanyId}" listName="HEATING_SYSTEM"/>
+						<tags:yukonListEntrySelectNameValue nameKey=".numberOfOccupants" path="numberOfOccupantsId" energyCompanyId="${energyCompanyId}" listName="NUM_OF_OCCUPANTS"/>
+						<tags:yukonListEntrySelectNameValue nameKey=".ownershipType" path="ownershipTypeId" energyCompanyId="${energyCompanyId}" listName="OWNERSHIP_TYPE"/>
+						<tags:yukonListEntrySelectNameValue nameKey=".mainFuelType" path="mainFuelTypeId" energyCompanyId="${energyCompanyId}" listName="FUEL_TYPE"/>
 						<tags:textareaNameValue nameKey=".notes" path="notes" rows="4" cols="20"/>
 						
 					</tags:nameValueContainer2>

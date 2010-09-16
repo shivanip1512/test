@@ -14,8 +14,12 @@ public interface YukonGroupDao {
     
     public LiteYukonGroup getLiteYukonGroup(int groupID);
 
-    public Map<Integer, LiteYukonGroup> getLiteYukonGroups(
-            Iterable<Integer> groupIds);
+    public Map<Integer, LiteYukonGroup> getLiteYukonGroups(Iterable<Integer> groupIds);
 
     public LiteYukonGroup getLiteYukonGroupByName(String groupName);
+
+    /**
+     * Returns the first residential login group that the user is in.
+     */
+    public String getResidentialGroupNameForUser(int userId, List<LiteYukonGroup> ecResidentialGroups);
 }
