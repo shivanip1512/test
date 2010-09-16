@@ -580,14 +580,10 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 			 }
 		}
 		
-		if (hasPoints || hasRoute) {
-			if(hasRoute) {
-				objectsToAdd.getDBPersistentVector().add(newRoute);
-			}
-			return objectsToAdd;
-		} else {
-			return val;
+		if(hasRoute) {
+			objectsToAdd.getDBPersistentVector().add(newRoute);
 		}
+		return objectsToAdd;
 	}
 	
 	/**
