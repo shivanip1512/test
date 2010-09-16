@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/13/2010 11:06:25 AM                        */
+/* Created on:     9/15/2010 6:18:10 PM                         */
 /*==============================================================*/
 
 
@@ -10471,7 +10471,7 @@ create table RFNAddress (
    SerialNumber         varchar(30)          not null,
    Manufacturer         varchar(80)          not null,
    Model                varchar(80)          not null,
-   constraint PK_CRFAdd primary key (DeviceId)
+   constraint PK_RFNAdd primary key (DeviceId)
 )
 go
 
@@ -15969,7 +15969,7 @@ alter table RDSTransmitter
 go
 
 alter table RFNAddress
-   add constraint FK_CRFAdd_Device foreign key (DeviceId)
+   add constraint FK_RFNAdd_Device foreign key (DeviceId)
       references DEVICE (DEVICEID)
          on delete cascade
 go

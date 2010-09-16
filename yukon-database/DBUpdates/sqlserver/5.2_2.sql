@@ -34,13 +34,20 @@ INSERT INTO State VALUES(-12, 3, 'Armed', 4, 6, 0);
 /* Renaming CRFAddress table to RFNAddress */
 DROP INDEX CRFAddress.Indx_CRFAdd_SerNum_Man_Mod_UNQ;
 ALTER TABLE CRFAddress
+DROP CONSTRAINT FK_CRFAdd_Device;
+ALTER TABLE CRFAddress
 DROP CONSTRAINT PK_CRFAdd;
+GO
 
 EXEC SP_RENAME 'CRFAddress', 'RFNAddress';
 GO
 
 ALTER TABLE RFNAddress
-ADD CONSTRAINT PK_RFNAddress PRIMARY KEY (DeviceId);
+ADD CONSTRAINT PK_RFNAdd PRIMARY KEY (DeviceId);
+ALTER TABLE RFNAddress
+   ADD CONSTRAINT FK_RFNAdd_Device FOREIGN KEY (DeviceId)
+      REFERENCES Device (DeviceId)
+         ON DELETE CASCADE;
 CREATE UNIQUE INDEX Indx_RFNAdd_SerNum_Man_Mod_UNQ ON RFNAddress (
    SerialNumber ASC,
    Manufacturer ASC,

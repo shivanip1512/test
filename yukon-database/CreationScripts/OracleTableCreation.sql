@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/13/2010 10:19:33 AM                        */
+/* Created on:     9/15/2010 6:21:15 PM                         */
 /*==============================================================*/
 
 
@@ -7412,7 +7412,7 @@ create table RFNAddress  (
    SerialNumber         VARCHAR2(30)                    not null,
    Manufacturer         VARCHAR2(80)                    not null,
    Model                VARCHAR2(80)                    not null,
-   constraint PK_CRFAdd primary key (DeviceId)
+   constraint PK_RFNAdd primary key (DeviceId)
 );
 
 /*==============================================================*/
@@ -12318,7 +12318,7 @@ alter table RDSTransmitter
       on delete cascade;
 
 alter table RFNAddress
-   add constraint FK_CRFAdd_Device foreign key (DeviceId)
+   add constraint FK_RFNAdd_Device foreign key (DeviceId)
       references DEVICE (DEVICEID)
       on delete cascade;
 
