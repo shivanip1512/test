@@ -59,6 +59,12 @@ UPDATE YukonPAObject SET Type = 'RFN-AL' WHERE Type = 'CRF-AL';
 UPDATE YukonPAObject SET Type = 'RFN-AX' WHERE Type = 'CRF-AX';
 /* End YUK-9022 */
 
+/* Start YUK-8976 */
+UPDATE YukonRoleProperty
+SET DefaultValue = '120'
+WHERE RolePropertyId = -10820;
+/* End YUK-8976 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
