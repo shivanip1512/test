@@ -362,7 +362,7 @@ protected:
     static int makeDynamicDemand(double input);
 
     long getLoadProfileInterval(unsigned channel);
-    point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len);
+    point_info getLoadProfileData(unsigned channel, const unsigned char *buf, unsigned len);
 
     bool _intervalsSent;
 
@@ -375,7 +375,7 @@ protected:
     virtual const read_key_store_t &getReadKeyStore(void) const;
 
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
-    virtual INT ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool &overrideExpectMore );
+    virtual INT SubmitRetry( const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
 
     INT decodeGetValueKWH          ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueTOUkWh       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );

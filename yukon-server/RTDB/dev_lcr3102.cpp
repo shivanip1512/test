@@ -114,11 +114,11 @@ INT Lcr3102Device::ExecuteRequest ( CtiRequestMsg *pReq, CtiCommandParser &parse
 }
 
 
-INT Lcr3102Device::ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore )
+INT Lcr3102Device::ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, std::list< CtiMessage* > &retList )
 {
     INT retCode = NOTNORMAL;
 
-    if( InMessage->Sequence == EmetconProtocol::Scan_Integrity )
+    if( InMessage.Sequence == EmetconProtocol::Scan_Integrity )
     {
         resetScanFlag(ScanRateIntegrity);
     }
@@ -664,7 +664,7 @@ INT Lcr3102Device::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNo
 
             const double halfSecondsPerSecond = 2.0;
 
-            point_info pi;
+        point_info pi;
 
             // The LCR 3102 returns the control time remaining in half seconds: we want to return seconds.
             int half_seconds = (DSt->Message[1] << 24) | (DSt->Message[2] << 16) | (DSt->Message[3] << 8) | (DSt->Message[4]);
@@ -822,39 +822,39 @@ INT Lcr3102Device::decodeGetConfigRaw( INMESS *InMessage, CtiTime &TimeNow, list
             results += errorMessage + "\n";
         }
 
-        int rawloc = parse.getiValue("rawloc");
+                int rawloc = parse.getiValue("rawloc");
 
-        int rawlen = parse.isKeyValid("rawlen")
-            ? std::min(parse.getiValue("rawlen"), 13)       // max 13 bytes...
-            : DSt->Length;
+                int rawlen = parse.isKeyValid("rawlen")
+                    ? std::min(parse.getiValue("rawlen"), 13)       // max 13 bytes...
+                    : DSt->Length;
 
-        if( parse.isKeyValid("rawfunc") )
-        {
-            for( int i = 0; i < rawlen; i++ )
-            {
-                results += getName()
-                        + " / FR " + CtiNumStr(rawloc).xhex().zpad(2)
-                        + " byte " + CtiNumStr(i).zpad(2)
-                        + " : "    + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
-                        + "\n";
-            }
-        }
-        else
-        {
-            for( int i = 0; i < rawlen; i++ )
-            {
-                results += getName()
-                        + " / byte " + CtiNumStr(rawloc + i).xhex().zpad(2)
-                        + " : "      + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
-                        + "\n";
-            }
-        }
+                if( parse.isKeyValid("rawfunc") )
+                {
+                    for( int i = 0; i < rawlen; i++ )
+                    {
+                        results += getName()
+                                + " / FR " + CtiNumStr(rawloc).xhex().zpad(2)
+                                + " byte " + CtiNumStr(i).zpad(2)
+                                + " : "    + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
+                                + "\n";
+                    }
+                }
+                else
+                {
+                    for( int i = 0; i < rawlen; i++ )
+                    {
+                        results += getName()
+                                + " / byte " + CtiNumStr(rawloc + i).xhex().zpad(2)
+                                + " : "      + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
+                                + "\n";
+                    }
+                }
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
         ReturnMsg->setResultString( results );
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
+            }
 
     return status;
 }
@@ -869,7 +869,7 @@ INT Lcr3102Device::decodeGetConfigSoftspec( INMESS *InMessage, CtiTime &TimeNow,
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-    {
+            {
         // No error occured, we must do a real decode!
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
@@ -878,7 +878,7 @@ INT Lcr3102Device::decodeGetConfigSoftspec( INMESS *InMessage, CtiTime &TimeNow,
             dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return MEMORY;
-        }
+            }
 
         string results;
 
@@ -902,7 +902,7 @@ INT Lcr3102Device::decodeGetConfigSoftspec( INMESS *InMessage, CtiTime &TimeNow,
         ReturnMsg->setResultString( results );
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
+        }
 
     return status;
 }

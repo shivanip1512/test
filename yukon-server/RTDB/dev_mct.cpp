@@ -1012,20 +1012,20 @@ INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
     return status;
 }
 
-INT MctDevice::ErrorDecode(INMESS *InMessage, CtiTime& Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
+INT MctDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList)
 {
     INT retCode = NORMAL;
 
-    CtiCommandParser  parse(InMessage->Return.CommandStr);
+    CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiReturnMsg     *retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                string(InMessage->Return.CommandStr),
+                                                string(InMessage.Return.CommandStr),
                                                 string(),
-                                                InMessage->EventCode & 0x7fff,
-                                                InMessage->Return.RouteID,
-                                                InMessage->Return.MacroOffset,
-                                                InMessage->Return.Attempt,
-                                                InMessage->Return.GrpMsgID,
-                                                InMessage->Return.UserID);
+                                                InMessage.EventCode & 0x7fff,
+                                                InMessage.Return.RouteID,
+                                                InMessage.Return.MacroOffset,
+                                                InMessage.Return.Attempt,
+                                                InMessage.Return.GrpMsgID,
+                                                InMessage.Return.UserID);
     int i;
 
     {
@@ -1185,7 +1185,7 @@ INT MctDevice::ErrorDecode(INMESS *InMessage, CtiTime& Now, list< CtiMessage* > 
 }
 
 
-int MctDevice::insertPointFail( INMESS *InMessage, CtiReturnMsg *pPIL, int scanType, int pOffset, CtiPointType_t pType )
+int MctDevice::insertPointFail( const INMESS &InMessage, CtiReturnMsg *pPIL, int scanType, int pOffset, CtiPointType_t pType )
 {
     int failed = FALSE;
     CtiPointSPtr pPoint;
@@ -1199,7 +1199,7 @@ int MctDevice::insertPointFail( INMESS *InMessage, CtiReturnMsg *pPIL, int scanT
         pMsg->insert( OP_POINTID );  // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
         pMsg->insert( pPoint->getPointID() );
         pMsg->insert( scanType );
-        pMsg->insert( InMessage->EventCode );  // The error number from dsm2.h or yukon.h which was reported.
+        pMsg->insert( InMessage.EventCode );  // The error number from dsm2.h or yukon.h which was reported.
 
         pPIL->PointData().push_back(pMsg);
         pMsg = NULL;

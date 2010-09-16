@@ -1024,11 +1024,11 @@ INT DnpDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessag
 }
 
 
-INT DnpDevice::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
+INT DnpDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList)
 {
     INT retCode = NORMAL;
 
-    CtiCommandParser  parse(InMessage->Return.CommandStr);
+    CtiCommandParser  parse(InMessage.Return.CommandStr);
 
     CtiPointDataMsg  *commFailed;
     CtiPointSPtr     commPoint;
@@ -1038,12 +1038,12 @@ INT DnpDevice::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
         dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
-    if( strstr(InMessage->Return.CommandStr, "scan integrity") )
+    if( strstr(InMessage.Return.CommandStr, "scan integrity") )
     {
         //  case Protocol::DNPInterface::Command_Class1230Read:
         setScanFlag(ScanRateIntegrity, false);
     }
-    if( strstr(InMessage->Return.CommandStr, "scan general") )
+    if( strstr(InMessage.Return.CommandStr, "scan general") )
     {
         //  case Protocol::DNPInterface::Command_Class123Read:
         setScanFlag(ScanRateGeneral, false);
@@ -1058,9 +1058,9 @@ INT DnpDevice::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
         pMsg->insert(getID());          // The id (device or point which failed)
         pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
-        if(InMessage->EventCode != 0)
+        if(InMessage.EventCode != 0)
         {
-            pMsg->insert(InMessage->EventCode);
+            pMsg->insert(InMessage.EventCode);
         }
         else
         {

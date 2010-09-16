@@ -1598,12 +1598,9 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, list< OUTMESS* > &outLis
 
 
 
-INT CtiDeviceWelco::ErrorDecode(INMESS *InMessage,
-                                CtiTime &TimeNow,
-                                list< CtiMessage* >   &vgList,
-                                list< CtiMessage* > &retList,
-                                list< OUTMESS* > &outList,
-                                bool &overrideExpectMore)
+INT CtiDeviceWelco::ErrorDecode(const INMESS        &InMessage,
+                                const CtiTime        TimeNow,
+                                list< CtiMessage* > &retList)
 {
     INT nRet = NoError;
 
@@ -1616,9 +1613,9 @@ INT CtiDeviceWelco::ErrorDecode(INMESS *InMessage,
         pMsg->insert(getID());              // The id (device or point which failed)
         pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
-        if(InMessage->EventCode != 0)
+        if(InMessage.EventCode != 0)
         {
-            pMsg->insert(InMessage->EventCode);
+            pMsg->insert(InMessage.EventCode);
         }
         else
         {
@@ -1628,10 +1625,7 @@ INT CtiDeviceWelco::ErrorDecode(INMESS *InMessage,
         retList.push_back( pMsg );
     }
 
-    if(InMessage)
-    {
-        resetForScan(desolveScanRateType(string(InMessage->Return.CommandStr)));
-    }
+    resetForScan(desolveScanRateType(string(InMessage.Return.CommandStr)));
 
     /* see what handshake was */
     if( useScanFlags() )            // Do we care about any of the scannable flags?
@@ -1644,7 +1638,7 @@ INT CtiDeviceWelco::ErrorDecode(INMESS *InMessage,
             setPrevFreezeTime(getLastFreezeTime());
             setPrevFreezeNumber(getLastFreezeNumber());
             setLastFreezeNumber(0);
-            setLastFreezeTime(InMessage->Time );
+            setLastFreezeTime(InMessage.Time );
         }
         else if(isScanFlagSet(ScanRateGeneral))
         {

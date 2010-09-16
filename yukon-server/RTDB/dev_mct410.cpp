@@ -348,7 +348,7 @@ Mct410Device::point_info Mct410Device::getData(const unsigned char *buf, int len
 }
 
 
-Mct410Device::point_info Mct410Device::getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len)
+Mct410Device::point_info Mct410Device::getLoadProfileData(unsigned channel, const unsigned char *buf, unsigned len)
 {
     point_info pi;
 
@@ -994,23 +994,23 @@ INT Mct410Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 }
 
 
-INT Mct410Device::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool &overrideExpectMore)
+INT Mct410Device::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int retVal = NoError;
 
-    if( InMessage->Sequence > EmetconProtocol::DLCCmd_LAST )
+    if( InMessage.Sequence > EmetconProtocol::DLCCmd_LAST )
     {
-        return decodeCommand(*InMessage, TimeNow, vgList, retList, outList);
+        return decodeCommand(InMessage, TimeNow, vgList, retList, outList);
     }
 
-    switch( InMessage->Sequence )
+    switch( InMessage.Sequence )
     {
         case EmetconProtocol::GetValue_DailyRead:
         {
             //  submit a retry if we're multi-day and we have any retries left
             if( _daily_read_info.request.type == daily_read_info_t::Request_MultiDay )
             {
-                if( _daily_read_info.request.multi_day_retries-- > 0  && InMessage->EventCode != ErrorRequestCancelled)
+                if( _daily_read_info.request.multi_day_retries-- > 0  && InMessage.EventCode != ErrorRequestCancelled)
                 {
                     string request_str = "getvalue daily read ";
 
@@ -1018,54 +1018,51 @@ INT Mct410Device::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
                                         + " " + printable_date(_daily_read_info.request.begin + 1)
                                         + " " + printable_date(_daily_read_info.request.end);
 
-                    if( strstr(InMessage->Return.CommandStr, " noqueue") )  request_str += " noqueue";
+                    if( strstr(InMessage.Return.CommandStr, " noqueue") )  request_str += " noqueue";
 
                     CtiRequestMsg newReq(getID(),
                                          request_str,
-                                         InMessage->Return.UserID,
-                                         InMessage->Return.GrpMsgID,
-                                         InMessage->Return.RouteID,
-                                         selectInitialMacroRouteOffset(InMessage->Return.RouteID),
+                                         InMessage.Return.UserID,
+                                         InMessage.Return.GrpMsgID,
+                                         InMessage.Return.RouteID,
+                                         selectInitialMacroRouteOffset(InMessage.Return.RouteID),
                                          0,
                                          0,
-                                         InMessage->Priority);
+                                         InMessage.Priority);
 
-                    newReq.setConnectionHandle((void *)InMessage->Return.Connection);
-                    newReq.setUserMessageId(InMessage->Return.UserID);
+                    newReq.setConnectionHandle((void *)InMessage.Return.Connection);
+                    newReq.setUserMessageId(InMessage.Return.UserID);
 
                     CtiReturnMsg *ret = CTIDBG_new CtiReturnMsg(getID(),
-                                                                InMessage->Return.CommandStr,
+                                                                InMessage.Return.CommandStr,
                                                                 "Submitting retry, " + CtiNumStr(_daily_read_info.request.multi_day_retries) + " remaining",
                                                                 NoError,
-                                                                InMessage->Return.RouteID,
-                                                                InMessage->Return.MacroOffset,
-                                                                InMessage->Return.Attempt,
-                                                                InMessage->Return.GrpMsgID,
-                                                                InMessage->Return.UserID,
-                                                                InMessage->Return.SOE);
+                                                                InMessage.Return.RouteID,
+                                                                InMessage.Return.MacroOffset,
+                                                                InMessage.Return.Attempt,
+                                                                InMessage.Return.GrpMsgID,
+                                                                InMessage.Return.UserID,
+                                                                InMessage.Return.SOE);
 
                     //  NOT setting ErrorDecode()'s overrideExpectMore in case ExecuteRequest() fails
                     ret->setExpectMore();
                     retList.push_back(ret);
 
                     //  same UserMessageID, no need to reset the in_progress flag
-                    if( CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList) == NoError )
-                    {
-                        overrideExpectMore = true;
-                    }
+                    retVal = CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
                 }
                 else
                 {
                     retList.push_back(CTIDBG_new CtiReturnMsg(getID(),
-                                                              InMessage->Return.CommandStr,
+                                                              InMessage.Return.CommandStr,
                                                               "Multi-day daily read request failed",
                                                               NOTNORMAL,
-                                                              InMessage->Return.RouteID,
-                                                              InMessage->Return.MacroOffset,
-                                                              InMessage->Return.Attempt,
-                                                              InMessage->Return.GrpMsgID,
-                                                              InMessage->Return.UserID,
-                                                              InMessage->Return.SOE));
+                                                              InMessage.Return.RouteID,
+                                                              InMessage.Return.MacroOffset,
+                                                              InMessage.Return.Attempt,
+                                                              InMessage.Return.GrpMsgID,
+                                                              InMessage.Return.UserID,
+                                                              InMessage.Return.SOE));
 
                     InterlockedExchange(&_daily_read_info.request.in_progress, false);
                 }
@@ -1080,9 +1077,7 @@ INT Mct410Device::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 
         default:
         {
-            retVal = Inherited::ErrorDecode(InMessage, TimeNow, vgList, retList, outList, overrideExpectMore);
-
-            break;
+            retVal = Inherited::SubmitRetry(InMessage, TimeNow, vgList, retList, outList);
         }
     }
 
@@ -1434,8 +1429,8 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
 
                 outList.push_back(interest_om);
             }
-            else
-            {
+    else
+    {
                 delete interest_om;
             }
             nRet  = ExecutionComplete;
@@ -1932,7 +1927,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                 if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
                 {
                     readSspec(*OutMessage, outList);
-                }
+                    }
 
                 //  we need to set it to the requested interval
                 auto_ptr<CtiOutMessage> interest_om(new CtiOutMessage(*OutMessage));

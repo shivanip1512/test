@@ -58,13 +58,6 @@ public:
                             list< CtiMessage* > &retList,
                             list< OUTMESS* >    &outList);
 
-   virtual INT ErrorDecode(INMESS                     *InMessage,
-                           CtiTime                     &TimeNow,
-                           list< CtiMessage* >  &vgList,
-                           list< CtiMessage* >  &retList,
-                           list< OUTMESS* >     &outList,
-                           bool &overrideExpectMore);
-
    virtual INT ExecuteRequest( CtiRequestMsg         *pReq,
                        CtiCommandParser           &parse,
                        OUTMESS                   *&OutMessage,

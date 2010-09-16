@@ -243,12 +243,9 @@ public:
                              list< CtiMessage* > &vgList,
                              list< CtiMessage* > &retList,
                              list< OUTMESS* >    &outList);
-    virtual INT ErrorDecode(INMESS                    *InMessage,
-                            CtiTime                    &TimeNow,
-                            list< CtiMessage* > &vgList,
-                            list< CtiMessage* > &retList,
-                            list< OUTMESS* >    &outList,
-                            bool                &overrideExpectMore);
+    virtual INT ErrorDecode(const INMESS        &InMessage,
+                            const CtiTime        TimeNow,
+                            list< CtiMessage* > &retList);
 
     // all defined in dev_alpha.cpp
     virtual INT generateCommand          (CtiXfer &Transfer, list< CtiMessage* > &traceList);

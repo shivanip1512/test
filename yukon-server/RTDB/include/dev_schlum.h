@@ -155,12 +155,9 @@ public:
                             list< CtiMessage* > &retList,
                             list< OUTMESS* > &outList);
 
-   virtual INT ErrorDecode(INMESS*,
-                           CtiTime&,
-                           list< CtiMessage* >   &vgList,
-                           list< CtiMessage* > &retList,
-                           list< OUTMESS* > &outList,
-                           bool &overrideExpectMore);
+   virtual INT ErrorDecode(const INMESS      &InMessage,
+                           const CtiTime      TimeNow,
+                           list<CtiMessage*> &retList);
 
    virtual BOOL verifyAndAddPointToReturnMsg (LONG          aPointId,
                                               DOUBLE        aValue,

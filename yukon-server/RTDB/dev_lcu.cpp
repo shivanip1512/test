@@ -533,11 +533,11 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessag
 }
 
 
-INT CtiDeviceLCU::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
+INT CtiDeviceLCU::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList)
 {
     INT status = NoError;
 
-    if(InMessage) resetForScan(desolveScanRateType(string(InMessage->Return.CommandStr)));
+    resetForScan(desolveScanRateType(string(InMessage.Return.CommandStr)));
     /* see what handshake was */
     if( useScanFlags() )            // Do we care about any of the scannable flags?
     {
@@ -549,7 +549,7 @@ INT CtiDeviceLCU::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
             setPrevFreezeTime(getLastFreezeTime());
             setPrevFreezeNumber(getLastFreezeNumber());
             setLastFreezeNumber(0);
-            setLastFreezeTime(InMessage->Time);
+            setLastFreezeTime(InMessage.Time);
         }
         else if(isScanFlagSet(ScanRateGeneral))
         {

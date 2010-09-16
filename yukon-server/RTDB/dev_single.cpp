@@ -728,12 +728,8 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                                    list< OUTMESS* > &outList)
 {
     INT   nRet = InMessage->EventCode & 0x3fff;
-    INT   DoAccums;
     INT   status = 0;
     bool  bLastFail = false;
-
-    CtiPointDataMsg *commStatus;
-    CtiPointSPtr    commPoint;
 
     if( !nRet )
     {
@@ -742,15 +738,12 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
     if( nRet )
     {
-        string errStr;
         string CmdStr("Unknown");
-        char ErrStr[80];
 
         if(InMessage->Return.CommandStr[0] != '\0')
         {
             CmdStr = string(InMessage->Return.CommandStr);
             std::transform(CmdStr.begin(), CmdStr.end(), CmdStr.begin(), ::tolower);
-
         }
 
         if( processAdditionalRoutes( InMessage ) )                      // InMessage->Return.MacroOffset != 0)
@@ -786,13 +779,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 }
             }
 
-            // The call to getType here is really asking if this device can have valid executions
-            // with no out messages generated. This is a complete hack and should be re-thought. There
-            // must be a better way to achieve this. The basic problem is that when load profile
-            // is canceled, no message is returned on the final execution and this is NOT an error!
-            // The code below overrides the outlist checking for only 410's and 470's. If this is not
-            // done, canceling a LP request that is on a macro route is impossible.
-            if(cnt == outList.size() && (!(getType() == TYPEMCT410 || getType() == TYPEMCT470 || getType() == TYPEMCT430) && status != NoError) )
+            if( cnt == outList.size() && status != NoError )
             {
                 bLastFail = true;
             }
@@ -841,19 +828,25 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
             retList.push_back( Ret );
 
-            bool overrideExpectMore = false;
-            ErrorDecode(InMessage, TimeNow, vgList, retList, outList, overrideExpectMore);
+            const unsigned outList_size = outList.size();
 
-            list< CtiMessage* >::iterator iter;
-            if( overrideExpectMore )
+            SubmitRetry(*InMessage, TimeNow, vgList, retList, outList);
+
+            if( outList.size() != outList_size )
             {
-                for( iter = retList.begin(); iter != retList.end(); iter++ )
+                //  They generated another request, so we're not done.
+                //  Set all of the ReturnMessages to expectMore = true
+                for each( CtiMessage *msg in retList )
                 {
-                    if( (*iter)->isA() == MSG_PCRETURN )
+                    if( msg && msg->isA() == MSG_PCRETURN )
                     {
-                        ((CtiReturnMsg *)(*iter))->setExpectMore(true);
+                        ((CtiReturnMsg *)msg)->setExpectMore(true);
                     }
                 }
+            }
+            else
+            {
+                ErrorDecode(*InMessage, TimeNow, retList);
             }
         }
     }
@@ -861,6 +854,16 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
     return nRet;
 }
 
+
+INT CtiDeviceSingle::SubmitRetry(const INMESS &InMessage,
+                                 const CtiTime TimeNow,
+                                 list< CtiMessage* > &vgList,
+                                 list< CtiMessage* > &retList,
+                                 list< OUTMESS* > &outList)
+{
+    //  default to no retries
+    return NoError;
+}
 
 INT CtiDeviceSingle::doDeviceInit(void)
 {

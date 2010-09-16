@@ -223,16 +223,13 @@ INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
 //at the moment, all we do is fail in general, without setting points 'non-updated' or anything fancy
 //=====================================================================================================================
 
-INT CtiDeviceMarkV::ErrorDecode( INMESS                     *InMessage,
-                                 CtiTime                     &TimeNow,
-                                 list< CtiMessage* >  &vgList,
-                                 list< CtiMessage* >  &retList,
-                                 list< OUTMESS* >     &outList,
-                                 bool &overrideExpectMore)
+INT CtiDeviceMarkV::ErrorDecode( const INMESS        &InMessage,
+                                 const CtiTime        TimeNow,
+                                 list< CtiMessage* > &retList)
 {
    INT retCode = NORMAL;
 
-   CtiCommandParser parse( InMessage->Return.CommandStr );
+   CtiCommandParser parse( InMessage.Return.CommandStr );
 
    if( getDebugLevel() & DEBUGLEVEL_FACTORY )
    {
@@ -249,9 +246,9 @@ INT CtiDeviceMarkV::ErrorDecode( INMESS                     *InMessage,
       pMsg->insert( getID() );          // The id (device or point which failed)
       pMsg->insert( ScanRateInvalid );  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
-      if( InMessage->EventCode != 0 )
+      if( InMessage.EventCode != 0 )
       {
-         pMsg->insert( InMessage->EventCode );
+         pMsg->insert( InMessage.EventCode );
       }
       else
       {

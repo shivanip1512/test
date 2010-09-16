@@ -3148,11 +3148,11 @@ INT Mct4xxDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 }
 
 
-INT Mct4xxDevice::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool &overrideExpectMore)
+INT Mct4xxDevice::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
 {
     int retVal = NoError;
 
-    switch( InMessage->Sequence )
+    switch( InMessage.Sequence )
     {
         case EmetconProtocol::GetValue_LoadProfile:
         {
@@ -3166,7 +3166,6 @@ INT Mct4xxDevice::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
                 block_len    = interval_len * 6;
 
                 _llpInterest.retry++;
-                overrideExpectMore = true;
 
                 //  we're asking for the same block, not the next block, so don't move ahead a block
                 CtiTime time_begin(_llpInterest.time + _llpInterest.offset + /* block_len + */ interval_len),
@@ -3177,27 +3176,27 @@ INT Mct4xxDevice::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
                 lp_request_str += "channel " + CtiNumStr(_llpInterest.channel + 1) + " " + time_begin.asString() + " " + time_end.asString();
 
                 //  if it's a background message, it's queued
-                if(      strstr(InMessage->Return.CommandStr, " background") )   lp_request_str += " background";
-                else if( strstr(InMessage->Return.CommandStr, " noqueue") )      lp_request_str += " noqueue";
+                if(      strstr(InMessage.Return.CommandStr, " background") )   lp_request_str += " background";
+                else if( strstr(InMessage.Return.CommandStr, " noqueue") )      lp_request_str += " noqueue";
 
                 CtiRequestMsg newReq(getID(),
                                      lp_request_str,
-                                     InMessage->Return.UserID,
+                                     InMessage.Return.UserID,
                                      0,
-                                     InMessage->Return.RouteID,
-                                     selectInitialMacroRouteOffset(InMessage->Return.RouteID),
+                                     InMessage.Return.RouteID,
+                                     selectInitialMacroRouteOffset(InMessage.Return.RouteID),
                                      0,
                                      0,
-                                     InMessage->Priority);
+                                     InMessage.Priority);
 
                 //  this may be NULL if it's a background request, but assign it anyway
-                newReq.setConnectionHandle((void *)InMessage->Return.Connection);
+                newReq.setConnectionHandle((void *)InMessage.Return.Connection);
 
                 CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
 
-                CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+                CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
-                ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+                ReturnMsg->setUserMessageId(InMessage.Return.UserID);
                 ReturnMsg->setResultString("Load profile retry submitted");
 
                 ReturnMsg->setExpectMore(true);
@@ -3215,6 +3214,18 @@ INT Mct4xxDevice::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 
             break;
         }
+    }
+
+    return retVal;
+}
+
+
+INT Mct4xxDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage * > &retList)
+{
+    int retVal = NoError;
+
+    switch( InMessage.Sequence )
+    {
         case EmetconProtocol::GetValue_LoadProfilePeakReport:
         {
             _llpPeakInterest.time = 0;  //  force a resubmit next time
@@ -3224,7 +3235,7 @@ INT Mct4xxDevice::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 
         default:
         {
-            retVal = Inherited::ErrorDecode(InMessage, TimeNow, vgList, retList, outList, overrideExpectMore);
+            retVal = Inherited::ErrorDecode(InMessage, TimeNow, retList);
 
             break;
         }

@@ -94,6 +94,12 @@ protected:
 
     virtual void insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const std::string &default_pointname="", const CtiTime &timestamp=CtiTime(), double default_multiplier=1.0, int tags=0);
 
+    virtual INT  SubmitRetry(const INMESS &InMessage,
+                             const CtiTime TimeNow,
+                             list< CtiMessage * > &vgList,
+                             list< CtiMessage * > &retList,
+                             list< OUTMESS * > &outList);
+
 private:
 
     typedef map< int, bool > ScanFlagsPending_t;

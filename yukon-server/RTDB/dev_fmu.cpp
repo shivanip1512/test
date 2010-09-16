@@ -384,20 +384,20 @@ INT CtiDeviceFMU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
     return ErrReturn;
 }
 
-INT CtiDeviceFMU::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
+INT CtiDeviceFMU::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList)
 {
     INT retCode = NORMAL;
 
-    CtiCommandParser  parse(InMessage->Return.CommandStr);
+    CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                                     string(InMessage->Return.CommandStr),
+                                                     string(InMessage.Return.CommandStr),
                                                      string(),
-                                                     InMessage->EventCode & 0x7fff,
-                                                     InMessage->Return.RouteID,
-                                                     InMessage->Return.MacroOffset,
-                                                     InMessage->Return.Attempt,
-                                                     InMessage->Return.GrpMsgID,
-                                                     InMessage->Return.UserID);
+                                                     InMessage.EventCode & 0x7fff,
+                                                     InMessage.Return.RouteID,
+                                                     InMessage.Return.MacroOffset,
+                                                     InMessage.Return.Attempt,
+                                                     InMessage.Return.GrpMsgID,
+                                                     InMessage.Return.UserID);
     CtiPointDataMsg  *commFailed;
     CtiPointSPtr     commPoint;
 
@@ -419,9 +419,9 @@ INT CtiDeviceFMU::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
             pMsg->insert(getID());          // The id (device or point which failed)
             pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
-            if(InMessage->EventCode != 0)
+            if(InMessage.EventCode != 0)
             {
-                pMsg->insert(InMessage->EventCode);
+                pMsg->insert(InMessage.EventCode);
             }
             else
             {

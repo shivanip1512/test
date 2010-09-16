@@ -793,7 +793,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
     return status;
 }
 
-INT CtiDeviceILEX::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
+INT CtiDeviceILEX::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList)
 {
     INT status = NoError;
 
@@ -801,13 +801,10 @@ INT CtiDeviceILEX::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-    if(InMessage)
+    resetForScan(desolveScanRateType(InMessage.Return.CommandStr));
     {
-        resetForScan(desolveScanRateType(InMessage->Return.CommandStr));
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     /* see what handshake was */
     if( useScanFlags() )            // Do we care about any of the scannable flags?
@@ -820,7 +817,7 @@ INT CtiDeviceILEX::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
             setPrevFreezeTime(getLastFreezeTime());
             setPrevFreezeNumber(getLastFreezeNumber());
             setLastFreezeNumber(0);
-            setLastFreezeTime(InMessage->Time);
+            setLastFreezeTime(InMessage.Time);
         }
         else if(isScanFlagSet(ScanRateGeneral))
         {

@@ -207,12 +207,9 @@ public:
                              list< CtiMessage* >   &vgList,
                              list< CtiMessage* > &retList,
                              list< OUTMESS* > &outList);
-    virtual INT ErrorDecode(INMESS*,
-                            CtiTime&,
-                            list< CtiMessage* >   &vgList,
-                            list< CtiMessage* > &retList,
-                            list< OUTMESS* > &outList,
-                            bool             &overrideExpectMore);
+    virtual INT ErrorDecode(const INMESS      &InMessage,
+                            const CtiTime      TimeNow,
+                            list<CtiMessage*> &retList);
 
     // interrogation routines
     virtual INT decodeResponseHandshake   (CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);

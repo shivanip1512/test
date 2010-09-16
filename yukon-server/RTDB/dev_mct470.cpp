@@ -1008,7 +1008,7 @@ bool Mct470Device::hasPulseInputs() const
 }
 
 
-Mct470Device::point_info Mct470Device::getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len)
+Mct470Device::point_info Mct470Device::getLoadProfileData(unsigned channel, const unsigned char *buf, unsigned len)
 {
     point_info pi;
     string config;
@@ -1361,19 +1361,19 @@ INT Mct470Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
     return status;
 }
 
-INT Mct470Device::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
+INT Mct470Device::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, std::list< CtiMessage* > &retList)
 {
     int retVal = NoError;
-    CtiCommandParser  parse(InMessage->Return.CommandStr);
+    CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiReturnMsg     *retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                                CtiString(InMessage->Return.CommandStr),
+                                                CtiString(InMessage.Return.CommandStr),
                                                 CtiString(),
-                                                InMessage->EventCode & 0x7fff,
-                                                InMessage->Return.RouteID,
-                                                InMessage->Return.MacroOffset,
-                                                InMessage->Return.Attempt,
-                                                InMessage->Return.GrpMsgID,
-                                                InMessage->Return.UserID);
+                                                InMessage.EventCode & 0x7fff,
+                                                InMessage.Return.RouteID,
+                                                InMessage.Return.MacroOffset,
+                                                InMessage.Return.Attempt,
+                                                InMessage.Return.GrpMsgID,
+                                                InMessage.Return.UserID);
 
     if( retMsg != NULL )
     {
@@ -1434,13 +1434,13 @@ INT Mct470Device::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 
                 default:
                 {
-                    retVal = Inherited::ErrorDecode(InMessage, TimeNow, vgList, retList, outList, overrideExpectMore);
+                    retVal = Inherited::ErrorDecode(InMessage, TimeNow, retList);
 
                     break;
                 }
             }
         }
-        else if( InMessage->Sequence == EmetconProtocol::Scan_Integrity || InMessage->Sequence == EmetconProtocol::GetValue_Demand )
+        else if( InMessage.Sequence == EmetconProtocol::Scan_Integrity || InMessage.Sequence == EmetconProtocol::GetValue_Demand )
         {
             insertPointFail( InMessage, retMsg, ScanRateIntegrity, PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType);
             insertPointFail( InMessage, retMsg, ScanRateIntegrity, 1, DemandAccumulatorPointType);
@@ -1448,7 +1448,7 @@ INT Mct470Device::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
             insertPointFail( InMessage, retMsg, ScanRateIntegrity, 3, DemandAccumulatorPointType);
             insertPointFail( InMessage, retMsg, ScanRateIntegrity, 4, DemandAccumulatorPointType);
         }
-        else if( InMessage->Sequence == EmetconProtocol::GetValue_IEDDemand )
+        else if( InMessage.Sequence == EmetconProtocol::GetValue_IEDDemand )
         {
             insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_TotalKW,     AnalogPointType);
             insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_TotalKM,     AnalogPointType);
@@ -1458,7 +1458,7 @@ INT Mct470Device::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
         }
         else
         {
-            retVal = Inherited::ErrorDecode(InMessage, TimeNow, vgList, retList, outList, overrideExpectMore);
+            retVal = Inherited::ErrorDecode(InMessage, TimeNow, retList);
         }
 
         // send the whole mess to dispatch
@@ -1869,10 +1869,10 @@ INT Mct470Device::executeScan(CtiRequestMsg      *pReq,
             CtiString originalString = pReq->CommandString();
             boost::regex re_scan ("scan integrity");
 
-            /* if( deviceConfig )
-             {
-                 options = boost::static_pointer_cast< ConfigurationPart<MCTSystemOptions> >(deviceConfig->getConfigFromType(ConfigTypeMCTSystemOptions));
-             }
+           /* if( deviceConfig )
+            {
+                options = boost::static_pointer_cast< ConfigurationPart<MCTSystemOptions> >(deviceConfig->getConfigFromType(ConfigTypeMCTSystemOptions));
+            }
              */
 
             if( getType() == TYPEMCT470 )
@@ -1898,33 +1898,33 @@ INT Mct470Device::executeScan(CtiRequestMsg      *pReq,
                 }
 
                 /*
-                if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
-                             || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "pulse"))) )
-                {*/
+            if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
+                          || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "pulse"))) )
+            {*/
                 if( hasPulseInputs() )
                 {
-                    //Read the pulse demand
+                //Read the pulse demand
                     function = EmetconProtocol::GetValue_Demand;
-                    found = getOperation(function, OutMessage->Buffer.BSt);
+                found = getOperation(function, OutMessage->Buffer.BSt);
 
-                    if( found )
-                    {
-                        OutMessage->Sequence  = function;     // Helps us figure it out later!
+                if( found )
+                {
+                    OutMessage->Sequence  = function;     // Helps us figure it out later!
 
-                        CtiString createdString = originalString;
-                        CtiString replaceString = "getvalue demand";
+                    CtiString createdString = originalString;
+                    CtiString replaceString = "getvalue demand";
 
-                        createdString.toLower();
-                        createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
-                        strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
+                    createdString.toLower();
+                    createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
+                    strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
 
-                        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
-                    }
-                    else
-                    {
-                        nRet = NoMethod;
-                    }
+                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                }
+                else
+                {
+                    nRet = NoMethod;
+                }
                 }
             }
 
@@ -3704,13 +3704,13 @@ INT Mct470Device::decodeGetValueMinMaxDemand(INMESS *InMessage, CtiTime &TimeNow
 }
 
 
-void Mct470Device::reportPointData(const CtiPointType_t pointType, const int pointOffset, CtiReturnMsg &ReturnMsg, INMESS &InMessage, const point_info &pi, const string pointName)
+void Mct470Device::reportPointData(const CtiPointType_t pointType, const int pointOffset, CtiReturnMsg &ReturnMsg, const INMESS &InMessage, const point_info &pi, const string pointName)
 {
     insertPointDataReport(pointType, pointOffset, &ReturnMsg, pi, pointName);
 
     if( pi.quality == InvalidQuality )
     {
-        insertPointFail(&InMessage, &ReturnMsg, ScanRateGeneral, pointOffset, pointType);
+        insertPointFail(InMessage, &ReturnMsg, ScanRateGeneral, pointOffset, pointType);
     }
 }
 
@@ -3849,13 +3849,13 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< C
 
                     if( parse.getCommandStr().find(" kva") != string::npos )
                     {
-                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_PeakKM,  AnalogPointType);
-                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
+                        insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_PeakKM,  AnalogPointType);
+                        insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
                     }
                     else
                     {
-                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_PeakKW,  AnalogPointType);
-                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
+                        insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_PeakKW,  AnalogPointType);
+                        insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
                     }
                 }
                 else
@@ -3926,18 +3926,18 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< C
                 resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
                 status = ALPHABUFFERERROR;
 
-                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKW,     AnalogPointType);
-                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKM,     AnalogPointType);
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKW,     AnalogPointType);
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKM,     AnalogPointType);
 
                 if( has_volts )
                 {
-                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseA, AnalogPointType);
-                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseB, AnalogPointType);
-                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseC, AnalogPointType);
+                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseA, AnalogPointType);
+                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseB, AnalogPointType);
+                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseC, AnalogPointType);
                 }
                 else
                 {
-                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_OutageCount, AnalogPointType);
+                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_OutageCount, AnalogPointType);
                 }
             }
             else
@@ -3985,8 +3985,8 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< C
                 resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
                 status = ALPHABUFFERERROR;
 
-                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
-                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
             }
             else
             {
@@ -3997,7 +3997,7 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< C
 
                 if( pi.quality == InvalidQuality )
                 {
-                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
+                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
                 }
 
                 pi = getData(DSt->Message + 5, 5, ValueType_IED);
@@ -4007,7 +4007,7 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< C
 
                 if( pi.quality == InvalidQuality )
                 {
-                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
+                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
                 }
 
                 pi = getData(DSt->Message + 10, 2, ValueType_IED);
@@ -4017,7 +4017,7 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< C
 
                 if( pi.quality == InvalidQuality )
                 {
-                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
+                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
                 }
             }
         }
@@ -4054,7 +4054,7 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< C
 
                     for( int byte = 0; byte < 6; byte++ )
                     {
-                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6, AnalogPointType);
+                        insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6, AnalogPointType);
                     }
                 }
             }
@@ -4082,7 +4082,7 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< C
 
                     for( int byte = 0; byte < 6; byte++ )
                     {
-                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPCounter_Precanned1+byte+(i-1)*6, AnalogPointType);
+                        insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPCounter_Precanned1+byte+(i-1)*6, AnalogPointType);
                     }
                 }
             }
@@ -4113,7 +4113,7 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< C
                     {
                         for( int bit = 0; bit < 8; bit++ )
                         {
-                            insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPStatus_PrecannedStart+(byte*8)+bit, StatusPointType);
+                            insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPStatus_PrecannedStart+(byte*8)+bit, StatusPointType);
                         }
                     }
                 }
@@ -4179,12 +4179,12 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< C
                 else if( parse.getFlags() & CMD_FLAG_GV_RATEC )   rate = 2;
                 else if( parse.getFlags() & CMD_FLAG_GV_RATED )   rate = 3;
 
-                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2 + 1), AnalogPointType);
-                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2), AnalogPointType);
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2 + 1), AnalogPointType);
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2), AnalogPointType);
                 if( parse.getFlags() & CMD_FLAG_FROZEN && (offset + rate * 2) == PointOffset_TOU_KWBase ) //Currently we only support frozen rate A
                 {
-                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (PointOffset_TOU_KWBase + 1 + PointOffset_FrozenPointOffset), AnalogPointType);
-                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, (PointOffset_TOU_KWBase +     PointOffset_FrozenPointOffset), AnalogPointType);
+                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, (PointOffset_TOU_KWBase + 1 + PointOffset_FrozenPointOffset), AnalogPointType);
+                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, (PointOffset_TOU_KWBase +     PointOffset_FrozenPointOffset), AnalogPointType);
                 }
             }
             else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
@@ -4591,7 +4591,7 @@ INT Mct470Device::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, list< 
 
                 if( pi.quality == InvalidQuality )
                 {
-                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_OutageCount, AnalogPointType);
+                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_OutageCount, AnalogPointType);
                 }
 
                 break;
@@ -5295,7 +5295,7 @@ void Mct470Device::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &r
             }
             else
             {
-                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, binaryoffset+i, StatusPointType);
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, binaryoffset+i, StatusPointType);
             }
         }
 
@@ -5315,7 +5315,7 @@ void Mct470Device::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &r
             }
             else
             {
-                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, binaryoffset+i, StatusPointType);
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, binaryoffset+i, StatusPointType);
             }
         }
 
@@ -5335,7 +5335,7 @@ void Mct470Device::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &r
             }
             else
             {
-                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, analogoffset+i, AnalogPointType);
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, analogoffset+i, AnalogPointType);
             }
         }
 
@@ -5354,7 +5354,7 @@ void Mct470Device::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &r
             }
             else
             {
-                insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, counteroffset+i, PulseAccumulatorPointType);
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, counteroffset+i, PulseAccumulatorPointType);
             }
         }
 

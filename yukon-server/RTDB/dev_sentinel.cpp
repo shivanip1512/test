@@ -519,16 +519,6 @@ INT CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
 }
 
 
-//=========================================================================================================================================
-//=========================================================================================================================================
-
-INT CtiDeviceSentinel::ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, list < CtiMessage* >&vgList, list< CtiMessage* > &retList,
-                               list< OUTMESS* > &outList, bool &overrideExpectMore)
-{
-
-   return( 1 ); //just a val
-}
-
 /*************************************************************************************
 * build the list of tables and header requested in the device as each ansi device may need a few
 * different tables

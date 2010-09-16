@@ -1884,12 +1884,9 @@ INT  CtiDeviceLandisGyrS4::ResultDecode(INMESS *InMessage,
     return NORMAL;
 }
 
-INT CtiDeviceLandisGyrS4::ErrorDecode (INMESS *InMessage,
-                                       CtiTime &TimeNow,
-                                       list< CtiMessage* >   &vgList,
-                                       list< CtiMessage* > &retList,
-                                       list< OUTMESS* > &outList,
-                                       bool &overrideExpectMore)
+INT CtiDeviceLandisGyrS4::ErrorDecode (const INMESS        &InMessage,
+                                       const CtiTime        TimeNow,
+                                       list< CtiMessage* > &retList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1899,14 +1896,14 @@ INT CtiDeviceLandisGyrS4::ErrorDecode (INMESS *InMessage,
     INT retCode = NORMAL;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            string(InMessage->Return.CommandStr),
+                                            string(InMessage.Return.CommandStr),
                                             string(),
-                                            InMessage->EventCode & 0x7fff,
-                                            InMessage->Return.RouteID,
-                                            InMessage->Return.MacroOffset,
-                                            InMessage->Return.Attempt,
-                                            InMessage->Return.GrpMsgID,
-                                            InMessage->Return.UserID);
+                                            InMessage.EventCode & 0x7fff,
+                                            InMessage.Return.RouteID,
+                                            InMessage.Return.MacroOffset,
+                                            InMessage.Return.Attempt,
+                                            InMessage.Return.GrpMsgID,
+                                            InMessage.Return.UserID);
 
 
     if (pMsg != NULL)
@@ -1915,7 +1912,7 @@ INT CtiDeviceLandisGyrS4::ErrorDecode (INMESS *InMessage,
         pMsg->insert(OP_DEVICEID);    // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
         pMsg->insert(getID());             // The id (device or point which failed)
         pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
-        pMsg->insert(InMessage->EventCode);
+        pMsg->insert(InMessage.EventCode);
     }
 
     insertPointIntoReturnMsg (pMsg, pPIL);

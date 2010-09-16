@@ -73,7 +73,7 @@ INT CtiDeviceDavis::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 }
 
 
-INT CtiDeviceDavis::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
+INT CtiDeviceDavis::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList)
 {
     INT nRet = NoError;
 
@@ -86,9 +86,9 @@ INT CtiDeviceDavis::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
         pMsg->insert(getID());        // The id (device or point which failed)
         pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
-        if(InMessage->EventCode != 0)
+        if(InMessage.EventCode != 0)
         {
-            pMsg->insert(InMessage->EventCode);
+            pMsg->insert(InMessage.EventCode);
         }
         else
         {

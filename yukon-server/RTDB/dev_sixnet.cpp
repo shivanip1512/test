@@ -1784,7 +1784,7 @@ INT  CtiDeviceSixnet::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< Ct
     return status;
 }
 
-INT CtiDeviceSixnet::ErrorDecode (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
+INT CtiDeviceSixnet::ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1793,14 +1793,14 @@ INT CtiDeviceSixnet::ErrorDecode (INMESS *InMessage, CtiTime &TimeNow, list< Cti
 
     INT retCode = NORMAL;
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            string(InMessage->Return.CommandStr),
-                                            FormatError(InMessage->EventCode & 0x7fff),
-                                            InMessage->EventCode & 0x7fff,
-                                            InMessage->Return.RouteID,
-                                            InMessage->Return.MacroOffset,
-                                            InMessage->Return.Attempt,
-                                            InMessage->Return.GrpMsgID,
-                                            InMessage->Return.UserID);
+                                            string(InMessage.Return.CommandStr),
+                                            FormatError(InMessage.EventCode & 0x7fff),
+                                            InMessage.EventCode & 0x7fff,
+                                            InMessage.Return.RouteID,
+                                            InMessage.Return.MacroOffset,
+                                            InMessage.Return.Attempt,
+                                            InMessage.Return.GrpMsgID,
+                                            InMessage.Return.UserID);
 
 
     if (pPIL != NULL)
@@ -1813,7 +1813,7 @@ INT CtiDeviceSixnet::ErrorDecode (INMESS *InMessage, CtiTime &TimeNow, list< Cti
             pMsg->insert(OP_DEVICEID);   // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
             pMsg->insert(getID());         // The id (device or point which failed)
             pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
-            pMsg->insert(InMessage->EventCode);
+            pMsg->insert(InMessage.EventCode);
 
 
             pPIL->PointData().push_back(pMsg);

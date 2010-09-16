@@ -183,7 +183,7 @@ public:
     virtual INT initTrxID( int trx, CtiCommandParser &parse, list< CtiMessage* >  &vgList );
 
     void propagateRequest(OUTMESS *pOM, CtiRequestMsg *pReq );
-    virtual INT ErrorDecode(INMESS*, CtiTime&, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore);
+    virtual INT ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list<CtiMessage*>& retList);
 
     BOOL              getLogOnNeeded() const;
     CtiDeviceBase&    setLogOnNeeded(BOOL b = TRUE);

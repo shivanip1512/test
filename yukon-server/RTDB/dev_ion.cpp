@@ -806,9 +806,9 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, CtiTime &TimeNow, list
 }
 
 
-INT CtiDeviceION::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
+INT CtiDeviceION::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList)
 {
-    INT retCode = NORMAL, ErrReturn = InMessage->EventCode & 0x3fff;
+    INT retCode = NORMAL, ErrReturn = InMessage.EventCode & 0x3fff;
 
     //CtiCommandParser  parse(InMessage->Return.CommandStr);
     CtiReturnMsg     *retMsg;
@@ -821,14 +821,14 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
     }
 
     retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                     string(InMessage->Return.CommandStr),
+                                     string(InMessage.Return.CommandStr),
                                      string(),
-                                     InMessage->EventCode & 0x7fff,
-                                     InMessage->Return.RouteID,
-                                     InMessage->Return.MacroOffset,
-                                     InMessage->Return.Attempt,
-                                     InMessage->Return.GrpMsgID,
-                                     InMessage->Return.UserID);
+                                     InMessage.EventCode & 0x7fff,
+                                     InMessage.Return.RouteID,
+                                     InMessage.Return.MacroOffset,
+                                     InMessage.Return.Attempt,
+                                     InMessage.Return.GrpMsgID,
+                                     InMessage.Return.UserID);
 
     if( retMsg != NULL )
     {
@@ -837,7 +837,7 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 
         if( pMsg != NULL )
         {
-            switch( InMessage->Sequence )
+            switch( InMessage.Sequence )
             {
                 case CtiProtocolION::Command_ExceptionScan:
                 {
@@ -845,7 +845,7 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
                     pMsg->insert(OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
                     pMsg->insert(getID());          //  The id (device or point which failed)
                     pMsg->insert(ScanRateGeneral);  //  defined in yukon.h
-                    pMsg->insert(InMessage->EventCode);
+                    pMsg->insert(InMessage.EventCode);
 
                     break;
                 }
@@ -856,7 +856,7 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
                     pMsg->insert(OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
                     pMsg->insert(getID());          //  The id (device or point which failed)
                     pMsg->insert(ScanRateIntegrity);
-                    pMsg->insert(InMessage->EventCode);
+                    pMsg->insert(InMessage.EventCode);
 
                     break;
                 }
@@ -867,7 +867,7 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
                     pMsg->insert(OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
                     pMsg->insert(getID());          //  The id (device or point which failed)
                     pMsg->insert(ScanRateAccum);
-                    pMsg->insert(InMessage->EventCode);
+                    pMsg->insert(InMessage.EventCode);
 
                     break;
                 }

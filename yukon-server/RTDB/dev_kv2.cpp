@@ -546,17 +546,6 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
 }
 
 
-//=========================================================================================================================================
-//=========================================================================================================================================
-
-INT CtiDeviceKV2::ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, list < CtiMessage* >&vgList, list< CtiMessage* > &retList,
-                               list< OUTMESS* > &outList,
-                               bool &overrideExpectMore)
-{
-
-   return( 1 ); //just a val
-}
-
 /*************************************************************************************
 * build the list of tables and header requested in the device as each ansi device may need a few
 * different tables

@@ -211,7 +211,7 @@ protected:
     point_info getAccumulatorData(unsigned char *buf, int len, bool is_frozen_data) const;
 
     virtual long getLoadProfileInterval(unsigned channel) = 0;
-    virtual point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len) = 0;
+    virtual point_info getLoadProfileData(unsigned channel, const unsigned char *buf, unsigned len) = 0;
 
     virtual ConfigPartsList getPartsList() = 0;
 
@@ -234,6 +234,9 @@ protected:
     //virtual int executePutConfigDisconnect        (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList);
     //virtual int executePutConfigDNP               (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList);
 
+    INT ModelDecode(INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList);
+    INT ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, std::list< CtiMessage * > &retList);
+    INT SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList);
     INT decodeGetConfigTime      (INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList);
     INT decodeGetConfigTOU       (INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList);
     INT decodePutConfig          (INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList);
@@ -303,9 +306,6 @@ public:
     void deviceInitialization(std::list< CtiRequestMsg * > &request_list);
 
     static unsigned loadTimeSync(unsigned char *buf);
-
-    INT ModelDecode(INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList);
-    INT ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage * > &vgList, std::list< CtiMessage * > &retList, std::list< OUTMESS * > &outList, bool &overrideExpectMore);
 
 };
 

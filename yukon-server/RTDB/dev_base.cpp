@@ -582,7 +582,7 @@ INT CtiDeviceBase::ProcessResult(INMESS*, CtiTime&, list< CtiMessage* > &vgList,
 }
 
 
-INT CtiDeviceBase::ErrorDecode(INMESS*, CtiTime&,  list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
+INT CtiDeviceBase::ErrorDecode(const INMESS & InMessage, const CtiTime TimeNow,  list< CtiMessage* > &retList)
 {
     return NoErrorDecodeMethod;
 }
