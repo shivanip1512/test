@@ -1,11 +1,16 @@
 package com.cannontech.stars.dr.appliance.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -16,6 +21,9 @@ import com.cannontech.stars.dr.appliance.dao.AssignedProgramRowMapper;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
+import com.google.common.collect.Maps;
 
 public class AssignedProgramDaoImpl implements AssignedProgramDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
@@ -58,6 +66,38 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
 
         List<AssignedProgram> retVal =
             template.query(sqlGenerator, assignedProgramIds, rowMapper);
+
+        return retVal;
+    }
+
+    @Override
+    public Map<Integer, Integer> getProgramIdsByAssignedProgramIds(
+            Iterable<Integer> assignedProgramIds) {
+        ChunkingMappedSqlTemplate template =
+            new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT deviceId, programId");
+                sql.append("FROM lmProgramWebPublishing");
+                sql.append("WHERE programId").in(subList);
+                return sql;
+            }
+        };
+
+        Function<Integer, Integer> typeMapper = Functions.identity();
+        ParameterizedRowMapper<Map.Entry<Integer, Integer>> rowMapper = new ParameterizedRowMapper<Entry<Integer,Integer>>() {
+            @Override
+            public Entry<Integer, Integer> mapRow(ResultSet rs, int rowNum)
+                    throws SQLException {
+                Integer programId = rs.getInt("deviceId");
+                Integer assignedProgramId = rs.getInt("programId");
+                return Maps.immutableEntry(assignedProgramId, programId);
+            }
+        };
+
+        Map<Integer, Integer> retVal = template.mappedQuery(sqlGenerator, assignedProgramIds, rowMapper, typeMapper);
 
         return retVal;
     }

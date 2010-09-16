@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.optout.service.impl;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlBuilder;
+import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
@@ -27,6 +29,7 @@ public class OptOutSurveyServiceImpl implements OptOutSurveyService {
     private OptOutSurveyDao optOutSurveyDao;
     private FilterService filterService;
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
+    private AssignedProgramDao assignedProgramDao;
 
     private final static RowMapperWithBaseQuery<OptOutSurvey> rowMapper =
         new OptOutSurveyRowMapper();
@@ -38,20 +41,25 @@ public class OptOutSurveyServiceImpl implements OptOutSurveyService {
         Multimap<Integer, LMHardwareControlGroup> enrollmentsByInventoryId =
             lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIds(inventoryIds);
 
-        Multimap<Integer, Integer> inventoryIdsByProgramId = ArrayListMultimap.create();
+        Multimap<Integer, Integer> inventoryIdsByAssignedProgramId = ArrayListMultimap.create();
 
-        Set<Integer> programIds = Sets.newHashSet();
+        Set<Integer> assignedProgramIds = Sets.newHashSet();
         for (LMHardwareControlGroup enrollment : enrollmentsByInventoryId.values()) {
-            programIds.add(enrollment.getProgramId());
-            inventoryIdsByProgramId.put(enrollment.getProgramId(), enrollment.getInventoryId());
+            assignedProgramIds.add(enrollment.getProgramId());
+            inventoryIdsByAssignedProgramId.put(enrollment.getProgramId(), enrollment.getInventoryId());
         }
 
-        Multimap<Integer, Integer> surveyIdsByProgramId = optOutSurveyDao.getCurrentSurveysByProgramId(programIds);
+        Map<Integer, Integer> programIdsByAssignedProgramId =
+            assignedProgramDao.getProgramIdsByAssignedProgramIds(assignedProgramIds);
+        Multimap<Integer, Integer> surveyIdsByProgramId =
+            optOutSurveyDao.getCurrentSurveysByProgramId(programIdsByAssignedProgramId.values());
 
         Multimap<Integer, Integer> surveyIdsByInventoryId = HashMultimap.create();
-        for (Integer programId : surveyIdsByProgramId.keySet()) {
+        for (Integer assignedProgramId : programIdsByAssignedProgramId.keySet()) {
+            Integer programId = programIdsByAssignedProgramId.get(assignedProgramId);
             Collection<Integer> surveyIdsForProgram = surveyIdsByProgramId.get(programId);
-            Collection<Integer> inventoryIdsForProgram = inventoryIdsByProgramId.get(programId);
+            Collection<Integer> inventoryIdsForProgram =
+                inventoryIdsByAssignedProgramId.get(assignedProgramId);
             for (Integer surveyId : surveyIdsForProgram) {
                 for (Integer inventoryId : inventoryIdsForProgram) {
                     surveyIdsByInventoryId.put(inventoryId, surveyId);
@@ -100,5 +108,10 @@ public class OptOutSurveyServiceImpl implements OptOutSurveyService {
     public void setLmHardwareControlGroupDao(
             LMHardwareControlGroupDao lmHardwareControlGroupDao) {
         this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
+    }
+
+    @Autowired
+    public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
+        this.assignedProgramDao = assignedProgramDao;
     }
 }
