@@ -745,9 +745,9 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             attributeDefinition = new BasicAttributeDefinition(attribute, pointTemplate);
         } else if(choiceLookup instanceof MappedLookup) {
             MappedLookup lookup = (MappedLookup) choiceLookup;
-            TypeFilter pointTypeFilter = lookup.getTypeFilter();
-            String filterTypeString = pointTypeFilter.getType();
-            FilterType filterType = FilterType.valueOf(filterTypeString);
+            TypeFilter typeFilter = lookup.getTypeFilter();
+            String typeString = typeFilter.getType();
+            FilterType filterType = FilterType.valueOf(typeString);
             attributeDefinition = new MappedAttributeDefinition(attribute, filterType, extraPaoPointAssignmentDao);
         }
 

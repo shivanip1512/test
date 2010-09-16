@@ -12,9 +12,9 @@ public class MappedAttributeDefinition extends AttributeDefinition {
     private ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao;
     private FilterType filterType;
     
-    public MappedAttributeDefinition(Attribute attribute, FilterType pointType, ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao) {
+    public MappedAttributeDefinition(Attribute attribute, FilterType filterType, ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao) {
         super(attribute);
-        this.filterType = pointType;
+        this.filterType = filterType;
         this.extraPaoPointAssignmentDao = extraPaoPointAssignmentDao;
     }
 

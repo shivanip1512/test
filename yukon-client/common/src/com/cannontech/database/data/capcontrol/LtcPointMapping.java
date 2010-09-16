@@ -44,12 +44,18 @@ public class LtcPointMapping implements Comparable<LtcPointMapping>{
         return filterType;
     }
     
-    //Hiding the FilterType Enum from JSF so it doesn't error on the submit.
+    /**
+     * Returns the String value of the FilterType Enum
+     */
     public String getFilterName() {
     	return filterType.name();
     }
     
-    //Hiding the FilterType Enum from JSF so it doesn't error on the submit.
+    /**
+     * This is only needed since JSF needs to set bean properties as part of it's lifecycle.
+     * Calling this function will not set the FilterName.
+     * @param name
+     */
     public void setFilterName(String name) {
     	
     }

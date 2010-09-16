@@ -4,8 +4,8 @@ import com.cannontech.common.search.FilterType;
 
 public class MappableAttribute {
 
-    Attribute attribute;
-    FilterType filterType;
+    private Attribute attribute;
+    private FilterType filterType;
     
     public MappableAttribute(Attribute attribute, FilterType filterType) {
         this.attribute = attribute;
