@@ -6,16 +6,36 @@ import com.cannontech.message.util.Message;
 import com.google.common.collect.Maps;
 
 public class DynamicCommand extends Message {
-    
-    public enum Parameter {
-        DEVICE_ID,
-        POINT_ID,
-        POINT_RESPONSE_DELTA
+	
+    public enum Parameter implements SerializableObject {
+        DEVICE_ID(0),
+        POINT_ID(1),
+        POINT_RESPONSE_DELTA(2);
+        
+        private int parameterId;
+        
+        private Parameter(int parameterId) {
+        	this.parameterId = parameterId;
+        }
+        
+        public int getSerializeId() {
+        	return parameterId;
+        }
     }
     
-    public enum CommandType {
-        UNDEFINED,
-        DELTA
+    public enum CommandType implements SerializableObject {
+        UNDEFINED(0),
+        DELTA(1);
+        
+        private int commandTypeId;
+        
+        private CommandType(int commandTypeId) {
+        	this.commandTypeId = commandTypeId;
+        }
+        
+        public int getSerializeId() {
+        	return commandTypeId;
+        }
     }
     
     private Map<Parameter,Integer> intParameters = Maps.newHashMap();

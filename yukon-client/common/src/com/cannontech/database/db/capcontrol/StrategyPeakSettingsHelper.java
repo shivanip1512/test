@@ -206,7 +206,7 @@ public class StrategyPeakSettingsHelper {
     
     private static PeakTargetSetting getPeakTargetSetting(TargetSettingType settingType, List<PeakTargetSetting> settings) {
         for(PeakTargetSetting setting : settings) {
-            if(setting.getName().equalsIgnoreCase(settingType.getName())){
+            if(setting.getName().equalsIgnoreCase(settingType.getDisplayName())){
                 return setting;
             }
         }

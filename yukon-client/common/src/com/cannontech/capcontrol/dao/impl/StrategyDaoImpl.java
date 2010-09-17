@@ -316,7 +316,7 @@ public class StrategyDaoImpl implements StrategyDao{
                 String peakValue = rs.getString("peakValue");
                 String offPeakValue = rs.getString("offPeakValue");
                 
-                TargetSettingType targetSetting = TargetSettingType.getByName(name);
+                TargetSettingType targetSetting = TargetSettingType.getByDisplayName(name);
                 PeakTargetSetting setting = new PeakTargetSetting(name, peakValue, offPeakValue, targetSetting.getUnits());
                 
                 return setting;

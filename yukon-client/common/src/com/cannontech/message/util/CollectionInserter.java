@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.yukon.cbc.SerializableObject;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.VirtualOutputStream;
 
@@ -30,20 +31,20 @@ public class CollectionInserter
         }
     }
     
-    public static <K extends Enum<K>> void insertIntegerMap(Map<K,Integer> map, VirtualOutputStream vstr, CollectableStreamer polystr) throws IOException {
+    public static <K extends SerializableObject> void insertIntegerMap(Map<K,Integer> map, VirtualOutputStream vstr, CollectableStreamer polystr) throws IOException {
         vstr.insertUnsignedInt(map.size());
         
         for (Map.Entry<K,Integer> entry : map.entrySet()) {
-            vstr.insertUnsignedInt(entry.getKey().ordinal());
+            vstr.insertUnsignedInt(entry.getKey().getSerializeId());
             vstr.insertUnsignedInt(entry.getValue());
         }
     }
     
-    public static <K extends Enum<K>> void insertDoubleMap(Map<K,Double> map, VirtualOutputStream vstr, CollectableStreamer polystr) throws IOException {
+    public static <K extends SerializableObject> void insertDoubleMap(Map<K,Double> map, VirtualOutputStream vstr, CollectableStreamer polystr) throws IOException {
         vstr.insertUnsignedInt(map.size());
         
         for (Map.Entry<K,Double> entry : map.entrySet()) {
-            vstr.insertUnsignedInt(entry.getKey().ordinal());
+            vstr.insertUnsignedInt(entry.getKey().getSerializeId());
             vstr.insertDouble(entry.getValue());
         }
     }

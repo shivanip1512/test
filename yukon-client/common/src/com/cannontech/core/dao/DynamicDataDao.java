@@ -2,10 +2,10 @@ package com.cannontech.core.dao;
 
 import java.util.List;
 
-import com.cannontech.capcontrol.model.PointDelta;
+import com.cannontech.capcontrol.model.CapBankPointDelta;
 
 public interface DynamicDataDao {
 
-    public List<PointDelta> getAllPointDeltasForBankIds(List<Integer> bankIds);
+    public List<CapBankPointDelta> getAllPointDeltasForBankIds(List<Integer> bankIds);
     
 }

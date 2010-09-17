@@ -39,18 +39,18 @@ public enum TargetSettingType {
     HOUR_TWENTYTWO("22:00", "0", "%"),
     HOUR_TWENTYTHREE("23:00", "0", "%");
     
-    private String name;
+    private String displayName;
     private String defaultValue;
     private String units;
     
-    private TargetSettingType(String name, String defaultValue, String units){
-        this.name = name;
+    private TargetSettingType(String displayName, String defaultValue, String units){
+        this.displayName = displayName;
         this.defaultValue = defaultValue;
         this.units = units;
     }
     
-    public String getName() {
-        return name;
+    public String getDisplayName() {
+        return displayName;
     }
     
     public String getDefaultValue() {
@@ -58,7 +58,7 @@ public enum TargetSettingType {
     }
     
     public PeakTargetSetting getPeakTargetSetting(){
-        PeakTargetSetting setting = new PeakTargetSetting(name, defaultValue, defaultValue, units);
+        PeakTargetSetting setting = new PeakTargetSetting(displayName, defaultValue, defaultValue, units);
         return setting;
     }
     
@@ -66,14 +66,14 @@ public enum TargetSettingType {
         return units;
     }
     
-    public static TargetSettingType getByName(String name) {
+    public static TargetSettingType getByDisplayName(String displayName) {
         
         for (TargetSettingType type : TargetSettingType.values()) {
-            if (type.getName().equals(name)) {
+            if (type.getDisplayName().equals(displayName)) {
                 return type;
             }
         }
 
-        throw new NotFoundException("TargetSettingType not found : " + name);
+        throw new NotFoundException("TargetSettingType not found : " + displayName);
     }
 }

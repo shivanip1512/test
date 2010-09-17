@@ -64,7 +64,7 @@ public class DefineCollectableDynamicCommand  implements com.roguewave.vsj.Defin
         Map<Parameter, Integer> intMap = command.getIntParameters();
         Map<Parameter, Double> doubleMap = command.getDoubleParameters();
         
-        vstr.insertUnsignedInt(commandType.ordinal());
+        vstr.insertUnsignedInt(commandType.getSerializeId());
         CollectionInserter.insertIntegerMap(intMap, vstr, polystr);
         CollectionInserter.insertDoubleMap(doubleMap, vstr, polystr);
     }

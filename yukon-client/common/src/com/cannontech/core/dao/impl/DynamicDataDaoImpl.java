@@ -7,33 +7,32 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
-import com.cannontech.capcontrol.model.PointDelta;
+import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DynamicDataDao;
 import com.cannontech.database.YukonJdbcTemplate;
 
 public class DynamicDataDaoImpl implements DynamicDataDao {
 
-    private final ParameterizedRowMapper<PointDelta> pointDeltaRowMapper = new PointDeltaRowMapper();
+    private final ParameterizedRowMapper<CapBankPointDelta> pointDeltaRowMapper = new PointDeltaRowMapper();
     private YukonJdbcTemplate yukonJdbcTemplate;
     
     @Override
-    public List<PointDelta> getAllPointDeltasForBankIds(List<Integer> bankIds) {
+    public List<CapBankPointDelta> getAllPointDeltasForBankIds(List<Integer> bankIds) {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        sqlBuilder.append("SELECT dmpr.BankID,dmpr.PointID,yp.paoname as BankName,");
-        sqlBuilder.append("ypc.PAOName as CbcName,yp2.paoname as AffectedDeviceName,");
-        sqlBuilder.append("pp.pointname as AffectedPointName,dmpr.preopvalue,dmpr.delta");
-        sqlBuilder.append("FROM dynamicccmonitorpointresponse dmpr,YukonPAObject yp,");
-        sqlBuilder.append("YukonPAObject ypc,capbank c,YukonPAObject yp2,point pp,");
-        sqlBuilder.append("ccfeederbanklist fb,CCFeederSubAssignment fsa");
-        sqlBuilder.append("WHERE pp.POINTID = dmpr.PointID");
-        sqlBuilder.append("and dmpr.BankID = yp.PAObjectID");
-        sqlBuilder.append("and pp.PAObjectID = yp2.PAObjectID");
-        sqlBuilder.append("and ypc.PAObjectID = c.CONTROLDEVICEID");
-        sqlBuilder.append("and c.DEVICEID = dmpr.BankID");
-        sqlBuilder.append("and fb.DeviceID = c.DEVICEID");
-        sqlBuilder.append("and fsa.FeederID = fb.FeederID");
-        sqlBuilder.append("and dmpr.BankID");
+        
+        sqlBuilder.append("SELECT DMPR.BankId, DMPR.PointId, PAO.PAOName AS BankName,");
+        sqlBuilder.append(       "PAO.PAOName AS CbcName, PAO2.PAOName AS AffectedDeviceName,");
+        sqlBuilder.append(       "P.PointName AS AffectedPointName, DMPR.PreOpValue, DMPR.Delta");
+        sqlBuilder.append("FROM DynamicCCMonitorPointResponse DMPR");
+        sqlBuilder.append("JOIN Point P ON P.PointId = DMPR.PointId");
+        sqlBuilder.append("JOIN YukonPAObject PAO ON DMPR.BankId = PAO.PAObjectId");
+        sqlBuilder.append("JOIN YukonPAObject PAO2 ON P.PAObjectId = PAO2.PAObjectId");
+        sqlBuilder.append("JOIN CapBank CB ON CB.DeviceId = DMPR.BankId");
+        sqlBuilder.append("JOIN YukonPAObject PAOC ON PAOC.PAObjectId = CB.ControlDeviceId");
+        sqlBuilder.append("JOIN CCFeederBankList FBL ON FBL.DeviceId = CB.DeviceId");
+        sqlBuilder.append("JOIN CCFeederSubAssignment FSA ON FSA.FeederId = FBL.FeederId");
+        sqlBuilder.append("WHERE DMPR.BankId");
         sqlBuilder.in(bankIds);
         
         return yukonJdbcTemplate.query(sqlBuilder, pointDeltaRowMapper);
@@ -44,20 +43,21 @@ public class DynamicDataDaoImpl implements DynamicDataDao {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 
-    private class PointDeltaRowMapper implements ParameterizedRowMapper<PointDelta> {
+    private class PointDeltaRowMapper implements ParameterizedRowMapper<CapBankPointDelta> {
         @Override
-        public PointDelta mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public CapBankPointDelta mapRow(ResultSet rs, int rowNum) throws SQLException {
+        	CapBankPointDelta capBankPointDelta = new CapBankPointDelta();
+        	
+        	capBankPointDelta.setPointId(rs.getInt("PointId"));
+            capBankPointDelta.setBankId(rs.getInt("BankId"));
+            capBankPointDelta.setBankName(rs.getString("BankName"));
+            capBankPointDelta.setCbcName(rs.getString("CbcName"));
+            capBankPointDelta.setAffectedDeviceName(rs.getString("AffectedDeviceName"));
+            capBankPointDelta.setAffectedPointName(rs.getString("AffectedPointName"));
+            capBankPointDelta.setPreOpValue(rs.getDouble("PreOpValue"));
+            capBankPointDelta.setDelta(rs.getDouble("Delta"));
             
-            int pointId = rs.getInt("PointID");
-            int bankId = rs.getInt("BankID");
-            String bankName = rs.getString("BankName");
-            String cbcName = rs.getString("CbcName");
-            String affectedDeviceName = rs.getString("AffectedDeviceName");
-            String affectedPointName = rs.getString("AffectedPointName");
-            double preOpValue = rs.getDouble("preopvalue");
-            double delta = rs.getDouble("delta");
-            
-            return new PointDelta(pointId,bankId,bankName,cbcName,affectedDeviceName,affectedPointName,preOpValue,delta);
+            return capBankPointDelta;
         }
     }
     
