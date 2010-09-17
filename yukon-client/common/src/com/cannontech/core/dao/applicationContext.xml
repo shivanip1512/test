@@ -181,6 +181,8 @@
   
   <bean id="tamperFlagMonitorDao" class="com.cannontech.amr.tamperFlagProcessing.dao.impl.TamperFlagMonitorDaoImpl"/>
 
+  <bean id="statusPointMonitorDao" class="com.cannontech.amr.statusPointProcessing.dao.impl.StatusPointMonitorDaoImpl"/>
+
   <bean id="persistedSystemValueDaoImpl" class="com.cannontech.core.dao.impl.PersistedSystemValueDaoImpl"/>
 
   <bean class="com.cannontech.common.survey.dao.impl.SurveyDaoImpl"/>

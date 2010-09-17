@@ -57,6 +57,10 @@ public final class SimpleTableAccessTemplate<T> {
             update(object);
         }
     }
+    
+    public final boolean saveWillUpdate(T object) {
+        return !needsPrimaryKey(object);
+    }
 
     protected boolean needsPrimaryKey(T object) {
         if (primaryKeyValidOver == null) {

@@ -1,9 +1,3 @@
-/*
- * Created on Aug 31, 2005
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package com.cannontech.multispeak.client;
 
 import java.util.HashMap;
@@ -14,16 +8,9 @@ import java.util.Map;
 import org.apache.axis.message.SOAPHeaderElement;
 
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
-import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.db.MultispeakInterface;
-import com.cannontech.spring.YukonSpringHook;
+import com.google.common.collect.Lists;
 
-/**
- * @author stacey
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public class MultispeakVendor
 {
     public static final String CANNON_MSP_COMPANYNAME = "Cannon";
@@ -75,13 +62,12 @@ public class MultispeakVendor
     
     private String url = "http://127.0.0.1:8080/soap/";    //some default url string for formatting example
     
-	private List<MultispeakInterface> mspInterfaces = null;
+	private List<MultispeakInterface> mspInterfaces = Lists.newArrayList();
     
     public MultispeakVendor()
     {
         super();
     }
-
     
     public MultispeakVendor(Integer vendorID, String companyName, String appName, String userName, 
             String password, String outUserName, String outPassword,   
@@ -103,18 +89,6 @@ public class MultispeakVendor
         this.url = url;
     }
 
-
-    public MultispeakVendor(Integer vendorID, String companyName, String userName, String password, 
-            String url)
-    {
-        super();
-        this.vendorID = vendorID;
-        this.companyName = companyName;
-        this.userName = userName;
-        this.password = password;
-        this.url = url;
-    }
-
     /**
      * @return
      */
@@ -129,9 +103,6 @@ public class MultispeakVendor
      */
     public List<MultispeakInterface> getMspInterfaces()
     {
-        if( mspInterfaces == null)
-            
-            mspInterfaces = (YukonSpringHook.getBean("multispeakDao", MultispeakDao.class)).getMultispeakInterfaces(getVendorID().intValue());
         return mspInterfaces;
     }
 
@@ -147,7 +118,6 @@ public class MultispeakVendor
 	/**
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
     public Map<String, MultispeakInterface> getMspInterfaceMap()
 	{
         Map<String, MultispeakInterface> mspInterfaceMap = new HashMap<String, MultispeakInterface>();

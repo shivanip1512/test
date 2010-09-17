@@ -363,5 +363,13 @@
     <entry key="yukon.common.events.system.login.loginClient">User {1} logged in via GUI Client from remote address {2}</entry>
     <entry key="yukon.common.events.system.login.loginInboundVoice">User {1} logged in via Inbound voice from remote address {2}</entry>
     <entry key="yukon.common.events.system.login.loginOutboundVoice">User {1} logged in via Outbound voice from remote address {2}</entry>    
+
+<!--  Monitors -->
+    <!-- Status Point Monitor -->
+    <entry key="yukon.common.events.system.monitors.statusPointMonitorCreated">Status Point Monitor Created with Id={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by user {6}</entry>
+    <entry key="yukon.common.events.system.monitors.statusPointMonitorUpdated">Status Point Monitor Updated with Id={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by user {6}</entry>
+    <entry key="yukon.common.events.system.monitors.statusPointMonitorDeleted">Status Point Monitor Deleted with Id={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by user {6}</entry>
+    <entry key="yukon.common.events.system.monitors.statusPointMonitorEnableDisable">Status Point Monitor with Id={7} set to {1} by user {2}</entry>
     
+    <entry key="yukon.common.events.system.outageEvent.mspMessageSentToVendor">Status Point Monitor {1} sent OutageDetectionEvent with EventType={2} ObjectId={3} DeviceType={4} to msp vendor={5}.</entry>
 </properties>

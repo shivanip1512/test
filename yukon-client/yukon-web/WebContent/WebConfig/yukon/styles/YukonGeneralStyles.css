@@ -1135,3 +1135,7 @@ div.compactResultsFooter {
 span.dateRangeInputField {
     white-space: nowrap;
 }
+
+div.pointMonitorContainer {
+    width: 50%;
+}

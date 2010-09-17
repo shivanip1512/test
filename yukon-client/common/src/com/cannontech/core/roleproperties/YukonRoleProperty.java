@@ -329,6 +329,7 @@ public enum YukonRoleProperty {
     TAMPER_FLAG_PROCESSING(METERING, com.cannontech.roles.operator.MeteringRole.TAMPER_FLAG_PROCESSING, booleanType()),
     PHASE_DETECT(METERING, com.cannontech.roles.operator.MeteringRole.PHASE_DETECT, booleanType()),
     VALIDATION_ENGINE(METERING, com.cannontech.roles.operator.MeteringRole.VALIDATION_ENGINE, booleanType()),
+    STATUS_POINT_PROCESSING(METERING, com.cannontech.roles.operator.MeteringRole.STATUS_POINT_PROCESSING, booleanType()),
     
     ODDS_FOR_CONTROL_LABEL(ODDS_FOR_CONTROL, com.cannontech.roles.operator.OddsForControlRole.ODDS_FOR_CONTROL_LABEL, stringType()),
     

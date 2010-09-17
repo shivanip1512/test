@@ -1,6 +1,7 @@
 package com.cannontech.common.device.groups.editor.dao;
 
 public enum SystemGroupEnum {
+    ROOT("/"),
     METERS("/Meters/"), 
     BILLING("/Meters/Billing/"), 
     COLLECTION("/Meters/Collection/"), 

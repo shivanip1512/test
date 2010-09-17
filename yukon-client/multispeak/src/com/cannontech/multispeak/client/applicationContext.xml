@@ -43,6 +43,16 @@
   	<property name="porterConnection" ref="porterConnection"/>
   </bean>
   
+  <bean id="outageJmsMessageListener" class="com.cannontech.multispeak.service.OutageJmsMessageListener" />
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.notif.obj.amr.OutageJmsMessage" />
+        <property name="pubSubDomain" value="true"/>
+        <property name="concurrentConsumers" value="1"/>
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="taskExecutor" ref="globalTaskExecutor"/>
+        <property name="messageListener" ref="outageJmsMessageListener"/>
+    </bean>
+    
   <bean id="multispeakDeviceGroupSyncService" class="com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceImpl"/>
      
   <bean id="multispeakLMService" class="com.cannontech.multispeak.service.impl.MultispeakLMServiceImpl">
@@ -68,6 +78,7 @@
   
   <bean id="multispeakDao" class="com.cannontech.multispeak.dao.impl.MultispeakDaoImpl">
     <property name="jdbcOps" ref="jdbcTemplate"/> 
+    <property name="yukonJdbcTemplate" ref="simpleJdbcTemplate" />
     <property name="transactionTemplate" ref="transactionTemplate"/> 
     <property name="nextValueHelper" ref="nextValueHelper"/>  
   </bean>
@@ -79,6 +90,9 @@
   </bean>
 
   <bean id="mspValidationService" class="com.cannontech.multispeak.service.impl.MspValidationServiceImpl">
+  </bean>
+  
+  <bean id="mspIdentifiablePaoService" class="com.cannontech.multispeak.service.impl.MspIdentifiablePaoServiceImpl">
   </bean>
   
   <bean id="mspAccountInfoDao" class="com.cannontech.multispeak.dao.impl.MspAccountInfoDaoImpl">

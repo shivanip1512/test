@@ -27,6 +27,10 @@
         <property name="listenerFactory" ref="generalAlarmPointMonitorProcessor"/>
     </bean>
     
+    <bean id="statusPointMonitorServer" class="com.cannontech.core.monitors.RichPointDataProcessorServer">
+        <property name="listenerFactory" ref="statusPointMonitorProcessor"/>
+    </bean>
+    
     <bean id="outagePointMonitorServer" class="com.cannontech.core.monitors.RichPointDataProcessorServer">
         <property name="listenerFactory" ref="outagePointMonitorProcessor"/>
     </bean>
@@ -39,6 +43,7 @@
         container-type="simple">
         <jms:listener destination="yukon.topic.RichPointUpdateObj" ref="tamperFlagMonitorServer" method="pointDataReceived"/>
         <jms:listener destination="yukon.topic.RichPointUpdateObj" ref="outagePointMonitorServer" method="pointDataReceived"/>
+        <jms:listener destination="yukon.topic.RichPointUpdateObj" ref="statusPointMonitorServer" method="pointDataReceived"/>
     </jms:listener-container>
       
 </beans>

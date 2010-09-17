@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+	<!-- StatusPointMonitorsWidget render.jsp -->
+    <entry key="yukon.web.modules.amr.statusPointMonitorsWidget.noMonitorsSetup">No Status Point Monitors Setup</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorsWidget.tableHeader.name">Name</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorsWidget.tableHeader.outages">Outages</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorsWidget.tableHeader.enabled">Enabled</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorsWidget.createNew">Create</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorsWidget.actionTitle.edit">Edit Status Point Monitor</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorsWidget.actionTitle.statusPointProcessing">Manage Processor Output</entry>
+
+    <!-- StatusPointProcessingEditorController create.jsp -->
+    <entry key="yukon.web.modules.amr.statusPointMonitorCreator.title">Status Point Monitoring</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorCreator.setup">Setup</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorCreator.name">Name</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorCreator.selectStateGroup">Select State Group</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorCreator.create">Save</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorCreator.create.busy">Saving</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorCreator.cancel">Cancel</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorCreator.cancel.busy">Cancel</entry>
+
+    <!-- StatusPointProcessingEditorController edit.jsp -->
+    <entry key="yukon.web.modules.amr.statusPointEditor.title">Status Point Monitoring</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.sectionHeader.title">Edit</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.section.editSetup">Edit Setup</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.name">Name</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.deviceGroup">Device Group</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.attribute">Attribute</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.stateGroup">State Group</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.enabled">Enabled</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.disabled">Disabled</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.statusPointMonitoring">Status Point Monitoring</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.statusPointMonitoringEnable.label">Enable</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.statusPointMonitoringDisable.label">Disable</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.update.label">Update</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.update.busy">Updating</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.delete">Delete</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.delete.busy">Delete</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.delete.title">Delete Status Point Monitor</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.delete.hoverText">Delete Monitor</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.cancel">Cancel</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.cancel.busy">Cancel</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.back.label">Back</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.deleteConfirm">Are you sure you want to delete {0}?</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.monitorDeleted">Successfully deleted Status Point Monitor: {0}</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.stateActionsTable.title">Message Processing Actions</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.stateActionsTable.prevState">Previous State</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.stateActionsTable.nextState">Next State</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.stateActionsTable.action">Action</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.stateActionsTable.delete">Delete</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.state.dontCare">Don't Care</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.state.difference">Difference</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.stateActionsTable.helpText"><![CDATA[
+         <br>
+         Previous State: The last value of a point saved in the database.
+         <br><br>
+         Next State: The next value of a point that comes in from a device.
+         <br><br>
+         Action: The message to be sent to all multispeak vendors supporting ODEventNotification messages.
+         <br><br>
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.addAction.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.addAction.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.addAction.hoverText">Add a processing action.</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.addAction.label">Add Action</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.addAction.title">Add Action</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.deleteAction.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.deleteAction.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.deleteAction.hoverText">Delete Action</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.deleteAction.title">Delete Action</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.popupInfo.deviceGroup.title">Device Group Picker Help</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.popupInfo.deviceGroup"><![CDATA[
+    	 <br>
+	     The group of devices who's status points will be monitored.
+	     <br><br>
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.ok">OK</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.cancel">Cancel</entry>
+    
+    <!-- validation errors -->
+    <entry key="yukon.web.modules.amr.statusPointEditor.empty.statusPointMonitorName">Name cannot be empty.</entry>
+    <entry key="yukon.web.modules.amr.statusPointEditor.alreadyExists.statusPointMonitorName">Name already exists.</entry>
+    
+    <!-- StatusPointProcessingController process.jsp -->
+	<entry key="yukon.web.modules.amr.statusPointProcessing.title">Status Point Processing</entry>
+	<entry key="yukon.web.modules.amr.statusPointProcessing.sectionHeader.title">Info</entry>
+	<entry key="yukon.web.modules.amr.statusPointProcessing.name">Name</entry>
+    <entry key="yukon.web.modules.amr.statusPointProcessing.deviceGroup">Device Group</entry>
+    <entry key="yukon.web.modules.amr.statusPointProcessing.attribute">Attribute</entry>
+    <entry key="yukon.web.modules.amr.statusPointProcessing.stateGroup">State Group</entry>
+    <entry key="yukon.web.modules.amr.statusPointProcessing.monitoring">Monitoring</entry>
+    <entry key="yukon.web.modules.amr.statusPointProcessing.statusPointMonitoring">Status Point Monitoring</entry>
+    <entry key="yukon.web.modules.amr.statusPointProcessing.stateActionsTable.title">Message Processing Actions</entry>
+    <entry key="yukon.web.modules.amr.statusPointProcessing.stateActionsTable.prevState">Previous State</entry>
+    <entry key="yukon.web.modules.amr.statusPointProcessing.stateActionsTable.nextState">Next State</entry>
+    <entry key="yukon.web.modules.amr.statusPointProcessing.stateActionsTable.action">Action</entry>
+    <entry key="yukon.web.modules.amr.statusPointProcessing.stateActionsTable.noProcessors">**No Message Processing Actions Setup</entry>
+    <entry key="yukon.web.modules.amr.statusPointProcessing.stateActionsTable.helpText"><![CDATA[
+         <br>
+         Previous State: The last value of a point saved in the database.
+         <br><br>
+         Next State: The next value of a point that comes in from a device.
+         <br><br>
+         Action: The message to be sent to all multispeak vendors supporting ODEventNotification messages.
+         <br><br>
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.statusPointProcessing.popupInfo.deviceGroup.title">Device Group Picker Help</entry>
+    <entry key="yukon.web.modules.amr.statusPointProcessing.popupInfo.deviceGroup"><![CDATA[
+         <br>
+         The group of devices who's status points will be monitored.
+         <br><br>
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.statusPointProcessing.edit.label">Edit</entry>
+    
+    <!-- FlashScope messages -->
+    <entry key="yukon.web.modules.amr.statusPointProcessing.statusPointMonitorCreated">Status Point Monitor Created</entry>
+    <entry key="yukon.web.modules.amr.statusPointProcessing.statusPointMonitorUpdated">Status Point Monitor Updated</entry>
+    
+</properties>

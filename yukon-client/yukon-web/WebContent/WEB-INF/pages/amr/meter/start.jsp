@@ -27,6 +27,9 @@
 					<%-- TAMPER FLAGS WIDGET --%>
 					<ct:widget bean="tamperFlagMonitorsWidget"/>
                     
+                    <%-- STATUS POINT MONITORS WIDGET --%>
+                    <ct:widget bean="statusPointMonitorsWidget"/>
+                    
                     <%-- VALIDATION MONITORS WIDGET --%>
                     <ct:widget bean="validationMonitorsWidget"/>
 					

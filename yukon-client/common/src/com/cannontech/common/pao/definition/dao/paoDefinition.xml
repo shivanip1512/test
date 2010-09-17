@@ -225,6 +225,9 @@
             <tag name="PORTER_COMMAND_REQUESTS">
                 <value>true</value>
             </tag>
+            <tag name="USES_METER_NUMBER_FOR_MSP">
+                <value>true</value>
+            </tag>
         </tags>
 	</pao>
     
@@ -4382,6 +4385,9 @@
             <tag name="NETWORK_MANAGER_ATTRIBUTE_READS">
                 <value>true</value>
             </tag>
+            <tag name="USES_METER_NUMBER_FOR_MSP">
+                <value>true</value>
+            </tag>
         </tags>
     </pao>
     
@@ -4644,6 +4650,11 @@
                 <decimalplaces value="3"/>
             </point>
         </points>    
+        <attributes>
+            <attribute name="FAULT_STATUS">
+                <basicLookup point="Fault Status" />
+            </attribute>
+        </attributes>
     </pao>
     <pao id="NEUTRAL_MONITOR">
         <displayName>Capacitor Bank Neutral Monitor</displayName>

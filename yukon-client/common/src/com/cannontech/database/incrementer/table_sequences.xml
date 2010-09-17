@@ -192,6 +192,10 @@
       <sequence name="TamperFlagMonitor">
         <table name="TamperFlagMonitor" identitycolumn="TamperFlagMonitorId" initsequence="true"/>
       </sequence>
+      <sequence name="StatusPointMonitor">
+        <table name="StatusPointMonitor" identitycolumn="StatusPointMonitorId" initsequence="true"/>
+		<table name="StatusPointMonitorMessageProcessor" identitycolumn="StatusPointMonitorMessageProcessorId" initsequence="true"/>
+      </sequence>
       <sequence name="CRE">
         <table name="CommandRequestExec" identitycolumn="CommandRequestExecId"/>
         <table name="CommandRequestExecResult" identitycolumn="CommandRequestExecResultId"/>

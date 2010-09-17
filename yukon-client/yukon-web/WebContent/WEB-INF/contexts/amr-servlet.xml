@@ -129,6 +129,11 @@
     
     <bean class="com.cannontech.web.amr.tamperFlagProcessing.TamperFlagProcessingController" />
     
+    <!-- STATUS POINT PROCESSING -->
+    <bean class="com.cannontech.web.amr.statusPointProcessing.StatusPointEditorController" />
+    
+    <bean class="com.cannontech.web.amr.statusPointProcessing.StatusPointProcessingController" />
+    
     <!-- PHASE DETECTION -->
     <bean id="PhaseDetectController" class="com.cannontech.web.amr.phaseDetect.PhaseDetectController"/>
 

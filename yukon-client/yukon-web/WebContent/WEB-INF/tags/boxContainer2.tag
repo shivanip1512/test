@@ -9,7 +9,7 @@
 
 <cti:msgScope paths=".${nameKey},">
 	<cti:msg2 var="title" key=".title"/>
-	<cti:msg2 var="helpText" key=".helpText" blankIfMissing="true"/>
+	<cti:msg2 var="helpText" key=".helpText" blankIfMissing="true" htmlEscape="false"/>
 </cti:msgScope>
 
 <tags:boxContainer title="${pageScope.title}" 

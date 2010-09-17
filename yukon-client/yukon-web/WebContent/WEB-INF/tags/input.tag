@@ -12,6 +12,7 @@
 <%@ attribute name="autocomplete" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="id"%>
 <%@ attribute name="onkeyup"%>
+<%@ attribute name="onchange"%>
 <%@ attribute name="onblur"%>
 
 <spring:bind path="${path}">
@@ -32,7 +33,7 @@ ${status.value}
     <c:set var="id" value="${path}"/>
 </c:if>
 
-<form:input path="${pageScope.path}" id="${pageScope.id}" disabled="${pageScope.disabled}" readonly="${pageScope.readonly}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" autocomplete="${pageScope.autocomplete}" cssClass="${pageScope.inputClass}" onkeyup="${pageScope.onkeyup}" onblur="${pageScope.onblur}"/>
+<form:input path="${pageScope.path}" id="${pageScope.id}" disabled="${pageScope.disabled}" readonly="${pageScope.readonly}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" autocomplete="${pageScope.autocomplete}" cssClass="${pageScope.inputClass}" onkeyup="${pageScope.onkeyup}" onchange="${pageScope.onchange}" onblur="${pageScope.onblur}"/>
 
 <c:if test="${status.error}">
 	<br>

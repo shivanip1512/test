@@ -6,6 +6,7 @@ public enum BuiltInAttribute implements Attribute {
     BLINK_COUNT("Blink Count"), 
     DEMAND("Demand"), 
     DISCONNECT_STATUS("Disconnect Status"),
+    FAULT_STATUS("Fault Status"),
     GENERAL_ALARM_FLAG("General Alarm Flag"),
     KEEP_ALIVE("Keep Alive"),
     KVAR("kVAr"),
@@ -59,6 +60,11 @@ public enum BuiltInAttribute implements Attribute {
     
     public String getKey() {
         return this.name();
+    }
+    
+    @Override
+    public Object getDatabaseRepresentation() {
+        return getKey();
     }
     
 }
