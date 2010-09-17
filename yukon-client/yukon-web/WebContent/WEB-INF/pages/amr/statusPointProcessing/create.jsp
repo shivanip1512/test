@@ -39,8 +39,7 @@
                 <%-- name --%>
                 <tags:inputNameValue nameKey=".name" path="statusPointMonitorName" 
                                     size="50" 
-                                    maxlength="50">
-                </tags:inputNameValue>
+                                    maxlength="50"/>
                 
                 <%-- state group --%>
                 <tags:nameValue2 nameKey=".selectStateGroup">
