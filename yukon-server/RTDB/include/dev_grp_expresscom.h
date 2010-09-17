@@ -34,6 +34,8 @@ private:
     typedef std::map< long, CtiDeviceGroupBaseWPtr > WPtrGroupMap;
     WPtrGroupMap _children;
 
+    string getAddressingAsString();
+
 protected:
 
     CtiTableExpresscomLoadGroup     _expresscomGroup;

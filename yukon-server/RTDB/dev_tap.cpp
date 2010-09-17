@@ -1158,6 +1158,10 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(slog);
                             slog << CtiTime() << " " <<  getName() << ": " << _outMessage->Request.CommandStr << endl;
+                            if(_outMessage->TargetID != 0 && _outMessage->TargetID != _outMessage->DeviceID)
+                            {
+                                slog << CtiTime() << "    Group Id: " << _outMessage->TargetID << endl;
+                            }
                         }
 
                         //Message sent and accepted. Add to verification list!

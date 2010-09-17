@@ -267,6 +267,15 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
                 reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, removeCommandDynamicText(parse.getCommandStr()), priority );
             }
 
+            string addressing = getAddressingAsString();
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                slog << CtiTime() << " " <<  getName() << ": Preparing command for transmission." << endl;
+                slog << CtiTime() << "    Group ID " << getID() << ", Addressing: " << addressing << endl;
+                slog << CtiTime() << "    Command: " << pRet->CommandString() << endl;
+            }
+
             delete pRet;
         }
     }
@@ -295,26 +304,6 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
 
 string CtiDeviceGroupExpresscom::getPutConfigAssignment(UINT modifier)
 {
-    #if 0
-    string assign = string("xcom assign") +
-                       " S" + CtiNumStr(_expresscomGroup.getServiceProvider()) +
-                       " G" + CtiNumStr(_expresscomGroup.getGeo()) +
-                       " B" + CtiNumStr(_expresscomGroup.getSubstation()) +
-                       " F" + CtiNumStr(_expresscomGroup.getFeeder()) +
-                       " Z" + CtiNumStr(_expresscomGroup.getZip()) +
-                       " U" + CtiNumStr(_expresscomGroup.getUda()) +
-                       " P" + CtiNumStr(_expresscomGroup.getProgram()) +
-                       " R" + CtiNumStr(_expresscomGroup.getSplinter()) + " Load ";
-
-    for(int i = 0; i < 15; i++)
-    {
-        if(_expresscomGroup.getLoadMask() & (0x01 << i))
-        {
-            assign += CtiNumStr(i+1) + " ";
-        }
-    }
-
-    #else
     /*
      *  This putconfig assign should give us addressability only for the address components which are assigned to be controlled by the group.
      *  Any additional addressing should not be affected.  This is what we would want for any STARS web configurations.
@@ -351,9 +340,44 @@ string CtiDeviceGroupExpresscom::getPutConfigAssignment(UINT modifier)
         }
     }
 
-    #endif
-
     return  assign;
+}
+
+string CtiDeviceGroupExpresscom::getAddressingAsString()
+{
+    string addressing;
+
+    if(getExpresscomGroup().getSerial() != 0)
+    {
+        addressing += " Serial "   + CtiNumStr(_expresscomGroup.getSerial());
+    }
+    else
+    {
+        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSpid)           addressing += " SPID "     + CtiNumStr(_expresscomGroup.getServiceProvider());
+        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atGeo)            addressing += " GEO "      + CtiNumStr(_expresscomGroup.getGeo());
+        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSubstation)     addressing += " Sub "      + CtiNumStr(_expresscomGroup.getSubstation());
+        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atFeeder)         addressing += " Feeder "   + CtiNumStr(_expresscomGroup.getFeeder());
+        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atZip)            addressing += " ZIP "      + CtiNumStr(_expresscomGroup.getZip());
+        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atUser)           addressing += " User "     + CtiNumStr(_expresscomGroup.getUda());
+    
+        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atProgram)        addressing += " Program "  + CtiNumStr(_expresscomGroup.getProgram());
+        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSplinter)       addressing += " Splinter " + CtiNumStr(_expresscomGroup.getSplinter());
+    }
+
+    if(_expresscomGroup.getLoadMask())
+    {
+        addressing += " Load ";
+
+        for(int i = 0; i < 15; i++)
+        {
+            if(_expresscomGroup.getLoadMask() & (0x01 << i))
+            {
+                addressing += CtiNumStr(i+1) + " ";
+            }
+        }
+    }
+
+    return addressing;
 }
 
 bool CtiDeviceGroupExpresscom::checkForEmptyParseAddressing( CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &retList )

@@ -906,6 +906,10 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage* > &
             {
                 CtiLockGuard<CtiLogger> doubt_guard(slog);
                 slog << CtiTime() << " " <<  getName() << ": " << _outMessage->Request.CommandStr << endl;
+                if(_outMessage->TargetID != 0 && _outMessage->TargetID != _outMessage->DeviceID)
+                {
+                    slog << CtiTime() << "    Group Id: " << _outMessage->TargetID << endl;
+                }
             }
 
             setCurrentState( StateScanDecode1 );
