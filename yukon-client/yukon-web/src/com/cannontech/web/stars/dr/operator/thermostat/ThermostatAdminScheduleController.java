@@ -2,7 +2,7 @@ package com.cannontech.web.stars.dr.operator.thermostat;
 
 import java.util.List;
 
-import net.sf.json.JSONObject;
+import net.sf.jsonOLD.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

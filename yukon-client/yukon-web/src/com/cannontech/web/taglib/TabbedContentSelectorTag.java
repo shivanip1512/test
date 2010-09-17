@@ -7,8 +7,8 @@ import java.util.List;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import net.sf.jsonOLD.JSONArray;
+import net.sf.jsonOLD.JSONObject;
 
 public class TabbedContentSelectorTag extends SimpleTagSupport {
 

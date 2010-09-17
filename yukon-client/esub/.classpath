@@ -25,6 +25,5 @@
 	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
 	<classpathentry kind="lib" path="resource"/>
 	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
-	<classpathentry kind="lib" path="/third-party/json-lib-0.7.1.jar" sourcepath="Z:/java/Third-Party Sources/json-lib-1.0-jdk15-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

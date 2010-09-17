@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import net.sf.jsonOLD.JSONArray;
+import net.sf.jsonOLD.JSONObject;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -50,6 +50,31 @@ public class WidgetUtils {
             return JSONArray.fromObject(obj).toString();
         } else {
             return JSONObject.fromObject(obj).toString();
+        }
+    }
+    
+    public static String generateJsonString2(Object obj) {
+        if (obj == null) {
+            return "null";
+        } else if (obj instanceof String) {
+            return "\"" + StringEscapeUtils.escapeJavaScript((String) obj) + "\"";
+        } else if (obj instanceof Map<?, ?>) {
+            //have not confirmed that this works
+            return net.sf.json.JSONObject.fromObject(obj).toString();
+        } else if (obj instanceof Collection<?>) {
+            return net.sf.json.JSONArray.fromObject(obj).toString();
+        } else if (obj instanceof Boolean) {
+            Boolean boolObj = (Boolean)obj;
+            return boolObj.toString();
+        } else if (obj instanceof PageEditMode) {
+            PageEditMode pageEditModeObj = (PageEditMode)obj;
+            return pageEditModeObj.name();
+        } else if (obj.getClass().isArray()) {
+            //have not confirmed that this works
+            return net.sf.json.JSONArray.fromObject(obj).toString();
+        } else {
+            //have not confirmed that this works
+            return net.sf.json.JSONObject.fromObject(obj).toString();
         }
     }
     

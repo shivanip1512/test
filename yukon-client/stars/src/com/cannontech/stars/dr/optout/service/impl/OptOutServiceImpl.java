@@ -13,8 +13,8 @@ import java.util.concurrent.Executor;
 
 import javax.mail.MessagingException;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import net.sf.jsonOLD.JSONArray;
+import net.sf.jsonOLD.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;

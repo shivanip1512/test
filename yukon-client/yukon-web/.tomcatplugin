@@ -55,6 +55,7 @@
         <webClassPathEntry>/third-party/dom4j-1.6.1.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/ecs-1.4.2.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/ejbonly.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/ezmorph-1.0.6.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/google-collect-1.0.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/itext.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jaxm-api.jar</webClassPathEntry>
@@ -71,7 +72,7 @@
         <webClassPathEntry>/third-party/jopcbridge.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jradius-client.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jruntags.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/json-lib-0.7.1.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/json-lib-2.3-jdk15.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jta.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jtds.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/led.jar</webClassPathEntry>

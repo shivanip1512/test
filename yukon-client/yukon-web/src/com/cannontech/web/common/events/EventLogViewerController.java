@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import net.sf.json.JSONObject;
+import net.sf.jsonOLD.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
