@@ -8,7 +8,7 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 
-<cti:msgScope paths="modules.optOutSurvey.edit">
+<cti:msgScope paths="modules.dr.surveyEdit">
 
 <script type="text/javascript">
 specifyStopDateChecked = function() {

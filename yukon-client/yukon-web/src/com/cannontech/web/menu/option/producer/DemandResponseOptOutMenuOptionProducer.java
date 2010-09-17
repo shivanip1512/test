@@ -20,6 +20,7 @@ import com.cannontech.web.menu.option.SubMenuOption;
 public class DemandResponseOptOutMenuOptionProducer extends DynamicMenuOptionProducer {
     private final static String adminUrl = "/spring/stars/operator/optOut/admin";
     private final static String scheduledEventsUrl = "/spring/stars/operator/optOut/admin/viewScheduled";
+    private final static String surveyListUrl = "/spring/stars/optOutSurvey/list";
     private final static String baseKey = "yukon.web.menu.config.dr.optout";
 
     private RolePropertyDao rolePropertyDao;
@@ -43,12 +44,16 @@ public class DemandResponseOptOutMenuOptionProducer extends DynamicMenuOptionPro
         boolean scheduledEventsAllowed =
             rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS,
                                           userContext.getYukonUser());
-        if (!adminAllowed && ! scheduledEventsAllowed) {
+        boolean surveyListAllowed =
+            rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_OPT_OUT_SURVEY_EDIT,
+                                          userContext.getYukonUser());
+        if (!adminAllowed && !scheduledEventsAllowed && !surveyListAllowed) {
             return Collections.emptyList();
         }
 
         SubMenuOption option = new SubMenuOption("optout", baseKey, false);
-        option.setLinkUrl(adminAllowed ? adminUrl : scheduledEventsUrl);
+        option.setLinkUrl(adminAllowed ? adminUrl
+                : (scheduledEventsAllowed ? scheduledEventsUrl : surveyListUrl));
 
         List<MenuOptionProducer> subOptions = new ArrayList<MenuOptionProducer>(2);
         if (adminAllowed) {
@@ -56,6 +61,9 @@ public class DemandResponseOptOutMenuOptionProducer extends DynamicMenuOptionPro
         }
         if (scheduledEventsAllowed) {
             subOptions.add(createLink("scheduledevents", scheduledEventsUrl));
+        }
+        if (surveyListAllowed) {
+            subOptions.add(createLink("surveyList", surveyListUrl));
         }
         option.setSubOptions(subOptions);
 

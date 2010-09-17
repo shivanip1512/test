@@ -121,6 +121,7 @@
 <entry key="yukon.web.modules.survey.edit.answerValueRequired">No answer key can be empty.</entry>
 <entry key="yukon.web.modules.survey.edit.answerTooLarge">Answer keys can be no more than 64 characters.</entry>
 <entry key="yukon.web.modules.survey.edit.answerHasInvalidChars">Only letters, numbers and the underscore character are allowed in answer keys.</entry>
+<entry key="yukon.web.modules.survey.edit.answerReserved">The words "other" and "pleaseChoose" are reserved for specific purpose and cannot be used for answer keys.</entry>
 <entry key="yukon.web.modules.survey.edit.answerKeysNotUnique">Answer keys must all be unique.</entry>
 <entry key="yukon.web.modules.survey.edit.notEnoughAnswers">At least two answers are required for drop down questions.</entry>
 
@@ -165,55 +166,55 @@
 
 <!-- Opt Out Survey List Page -->
 
-<entry key="yukon.web.modules.optOutSurvey.list.pageName">Opt Out Surveys</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.pageDescription">Opt Out Surveys</entry>
+<entry key="yukon.web.modules.dr.surveyList.pageName">Opt Out Surveys</entry>
+<entry key="yukon.web.modules.dr.surveyList.pageDescription">Opt Out Surveys</entry>
 
-<entry key="yukon.web.modules.optOutSurvey.list.optOutSurveys">Opt Out Surveys</entry>
+<entry key="yukon.web.modules.dr.surveyList.optOutSurveys">Opt Out Surveys</entry>
 
-<entry key="yukon.web.modules.optOutSurvey.list.noResults">No opt out surveys currently exist.</entry>
+<entry key="yukon.web.modules.dr.surveyList.noResults">No opt out surveys currently exist.</entry>
 
-<entry key="yukon.web.modules.optOutSurvey.list.surveyName">Name</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.programs">Programs</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.programs.title">Programs</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.morePrograms">more</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.programListTitle">Opt Out Survey Programs</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.startDate">Start</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.stopDate">End</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.noStopDate">Open Ended</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.actions">Actions</entry>
+<entry key="yukon.web.modules.dr.surveyList.surveyName">Name</entry>
+<entry key="yukon.web.modules.dr.surveyList.programs">Programs</entry>
+<entry key="yukon.web.modules.dr.surveyList.programs.title">Programs</entry>
+<entry key="yukon.web.modules.dr.surveyList.morePrograms">more</entry>
+<entry key="yukon.web.modules.dr.surveyList.programListTitle">Opt Out Survey Programs</entry>
+<entry key="yukon.web.modules.dr.surveyList.startDate">Start</entry>
+<entry key="yukon.web.modules.dr.surveyList.stopDate">End</entry>
+<entry key="yukon.web.modules.dr.surveyList.noStopDate">Open Ended</entry>
+<entry key="yukon.web.modules.dr.surveyList.actions">Actions</entry>
 
-<entry key="yukon.web.modules.optOutSurvey.list.virtualProgramName">Virtual Program {0}</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.programName">Name</entry>
+<entry key="yukon.web.modules.dr.surveyList.virtualProgramName">Virtual Program {0}</entry>
+<entry key="yukon.web.modules.dr.surveyList.programName">Name</entry>
 
-<entry key="yukon.web.modules.optOutSurvey.list.edit.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.gif</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.edit.hoverText">Edit Opt Out Survey.</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.edit.title">Edit Opt Out Survey</entry>
+<entry key="yukon.web.modules.dr.surveyList.edit.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
+<entry key="yukon.web.modules.dr.surveyList.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.gif</entry>
+<entry key="yukon.web.modules.dr.surveyList.edit.hoverText">Edit Opt Out Survey.</entry>
+<entry key="yukon.web.modules.dr.surveyList.edit.title">Edit Opt Out Survey</entry>
 
-<entry key="yukon.web.modules.optOutSurvey.list.optOutSurveySaved">Successfully saved {0}.</entry>
+<entry key="yukon.web.modules.dr.surveyList.optOutSurveySaved">Successfully saved {0}.</entry>
 
-<entry key="yukon.web.modules.optOutSurvey.list.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.delete.hoverText">Delete Opt Out Survey</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.delete.title">Delete Opt Out Survey</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.confirmDelete">Are you sure you want to delete {0}.</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.optOutSurveyDeleted">Successfully deleted {0}.</entry>
+<entry key="yukon.web.modules.dr.surveyList.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
+<entry key="yukon.web.modules.dr.surveyList.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+<entry key="yukon.web.modules.dr.surveyList.delete.hoverText">Delete Opt Out Survey</entry>
+<entry key="yukon.web.modules.dr.surveyList.delete.title">Delete Opt Out Survey</entry>
+<entry key="yukon.web.modules.dr.surveyList.confirmDelete">Are you sure you want to delete {0}.</entry>
+<entry key="yukon.web.modules.dr.surveyList.optOutSurveyDeleted">Successfully deleted {0}.</entry>
 
-<entry key="yukon.web.modules.optOutSurvey.list.add">Add</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.addTitle">Add Opt Out Survey</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.addDialogTitle">Add Opt Out Survey</entry>
+<entry key="yukon.web.modules.dr.surveyList.add">Add</entry>
+<entry key="yukon.web.modules.dr.surveyList.addTitle">Add Opt Out Survey</entry>
+<entry key="yukon.web.modules.dr.surveyList.addDialogTitle">Add Opt Out Survey</entry>
 
-<entry key="yukon.web.modules.optOutSurvey.list.ok">OK</entry>
-<entry key="yukon.web.modules.optOutSurvey.list.cancel">Cancel</entry>
+<entry key="yukon.web.modules.dr.surveyList.ok">OK</entry>
+<entry key="yukon.web.modules.dr.surveyList.cancel">Cancel</entry>
 
-<entry key="yukon.web.modules.optOutSurvey.edit.programs">Programs</entry>
-<entry key="yukon.web.modules.optOutSurvey.edit.ellipsis">...</entry>
-<entry key="yukon.web.modules.optOutSurvey.edit.survey">Survey</entry>
-<entry key="yukon.web.modules.optOutSurvey.edit.startDate">Start</entry>
-<entry key="yukon.web.modules.optOutSurvey.edit.stopDate">End</entry>
-<entry key="yukon.web.modules.optOutSurvey.edit.specifyStopDate">Specify an end date</entry>
+<entry key="yukon.web.modules.dr.surveyEdit.programs">Programs</entry>
+<entry key="yukon.web.modules.dr.surveyEdit.ellipsis">...</entry>
+<entry key="yukon.web.modules.dr.surveyEdit.survey">Survey</entry>
+<entry key="yukon.web.modules.dr.surveyEdit.startDate">Start</entry>
+<entry key="yukon.web.modules.dr.surveyEdit.stopDate">End</entry>
+<entry key="yukon.web.modules.dr.surveyEdit.specifyStopDate">Specify an end date</entry>
 
-<entry key="yukon.web.modules.optOutSurvey.edit.ok">OK</entry>
-<entry key="yukon.web.modules.optOutSurvey.edit.cancel">Cancel</entry>
+<entry key="yukon.web.modules.dr.surveyEdit.ok">OK</entry>
+<entry key="yukon.web.modules.dr.surveyEdit.cancel">Cancel</entry>
 
 </properties>

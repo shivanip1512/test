@@ -284,7 +284,9 @@ public enum YukonRoleProperty {
     OPERATOR_THERMOSTAT_SCHEDULE_5_2(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.THERMOSTAT_SCHEDULE_5_2, booleanType()),
     OPERATOR_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY, booleanType()),
     OPERATOR_ACCOUNT_SEARCH(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ACCOUNT_SEARCH, booleanType()),
-    
+    OPERATOR_SURVEY_EDIT(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.SURVEY_EDIT, booleanType()),
+    OPERATOR_OPT_OUT_SURVEY_EDIT(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.OPT_OUT_SURVEY_EDIT, booleanType()),
+
     BULK_IMPORT_OPERATION(DEVICE_ACTIONS, com.cannontech.roles.operator.DeviceActionsRole.BULK_IMPORT_OPERATION, booleanType()),
     BULK_UPDATE_OPERATION(DEVICE_ACTIONS, com.cannontech.roles.operator.DeviceActionsRole.BULK_UPDATE_OPERATION, booleanType()),
     DEVICE_GROUP_EDIT(DEVICE_ACTIONS, com.cannontech.roles.operator.DeviceActionsRole.DEVICE_GROUP_EDIT, booleanType()),

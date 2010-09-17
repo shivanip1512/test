@@ -153,6 +153,11 @@
             <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
           </option>
 
+          <option name="surveys">
+            <link>/spring/stars/optOutSurvey/list</link>
+            <requireRoleProperty value="OPERATOR_SURVEY_EDIT" />
+          </option>
+
         </options>
       </option>
 
@@ -392,6 +397,10 @@
     				<menu>optout|scheduledevents</menu>
     				<link>/spring/stars/operator/optOut/admin/viewScheduled</link>
     			</page>
+                <page name="surveyList" type="BASIC">
+                    <menu>optout|surveyList</menu>
+                    <link>/spring/stars/optOutSurvey/list</link>
+                </page>
     		</pages>
     	</page>
     </pages>
@@ -433,24 +442,6 @@
             <labelArgument>${survey.surveyName}</labelArgument>
           </page>
         </pages>
-      </page>
-    </pages>
-  </module>
-
-  <module name="optOutSurvey">
-    <skin name="STANDARD"/>
-    <menu>
-      <options>
-        <option name="list">
-          <link>/spring/stars/optOutSurvey/list</link>
-        </option>
-      </options>
-    </menu>
-
-    <pages>
-      <page name="list" type="BASIC">
-        <menu>list</menu>
-        <link>/spring/stars/optOutSurvey/list</link>
       </page>
     </pages>
   </module>

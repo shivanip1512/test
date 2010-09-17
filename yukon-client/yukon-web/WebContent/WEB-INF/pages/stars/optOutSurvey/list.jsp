@@ -7,7 +7,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 
-<cti:standardPage module="optOutSurvey" page="list">
+<cti:standardPage module="dr" page="surveyList">
     <tags:simpleDialog id="ajaxDialog"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeCss link="/WebConfig/yukon/styles/operator/survey.css"/>

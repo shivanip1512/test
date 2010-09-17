@@ -33,12 +33,14 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
 import com.cannontech.web.util.ListBackingBean;
 import com.google.common.base.Function;
@@ -47,6 +49,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @Controller
+@CheckRoleProperty(YukonRoleProperty.OPERATOR_SURVEY_EDIT)
 @RequestMapping("/survey/*")
 public class SurveyController {
     private final static String baseKey = "yukon.web.modules.survey.";
@@ -118,6 +121,9 @@ public class SurveyController {
                     if (!foundInvalidChars && !matcher.matches()) {
                         errors.reject(baseKey + "edit.answerHasInvalidChars");
                         foundInvalidChars = true;
+                    }
+                    if ("other".equals(answerKey) || "pleaseChoose".equals(answerKey)) {
+                        errors.reject(baseKey + "edit.answerReserved");
                     }
                 }
                 if (answers.size() < 1 || !target.isTextAnswerAllowed() && answers.size() < 2) {

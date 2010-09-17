@@ -24,6 +24,7 @@ import com.cannontech.common.survey.model.Survey;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -34,10 +35,12 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Sets;
 
 @Controller
+@CheckRoleProperty(YukonRoleProperty.OPERATOR_OPT_OUT_SURVEY_EDIT)
 @RequestMapping("/optOutSurvey/*")
 public class OptOutSurveyController {
     private final static String baseKey = "yukon.web.modules.optOutSurvey.";

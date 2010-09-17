@@ -8,7 +8,7 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 
-<cti:msgScope paths="modules.optOutSurvey.list">
+<cti:msgScope paths="modules.dr.surveyList">
 
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".surveyName">
