@@ -14,7 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -24,6 +26,7 @@ import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.toggleProfiling.service.ToggleProfilingService;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -51,6 +54,8 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 /**
  * Widget used to display point data in a trend
@@ -72,7 +77,8 @@ public class ProfileWidget extends WidgetControllerBase {
     private ToggleProfilingService toggleProfilingService = null;
     private TemplateProcessorFactory templateProcessorFactory = null;
     private RolePropertyDao rolePropertyDao;
-    
+
+    private final static Logger log = YukonLogManager.getLogger(ProfileWidget.class);
     /*
      * Long load profile email message format NOTE: Outlook will sometimes strip
      * extra line breaks of its own accord. For some reason putting extra spaces
@@ -89,6 +95,16 @@ public class ProfileWidget extends WidgetControllerBase {
                 return deviceLoadProfile.getLoadProfileDemandRate();
             }
         },
+        PROFILE_CHANNEL_2(BuiltInAttribute.PROFILE_CHANNEL_2, 2) {
+            public int getRate(DeviceLoadProfile deviceLoadProfile) {
+                return deviceLoadProfile.getLoadProfileDemandRate();
+            }
+        },
+        PROFILE_CHANNEL_3(BuiltInAttribute.PROFILE_CHANNEL_3, 3) {
+            public int getRate(DeviceLoadProfile deviceLoadProfile) {
+                return deviceLoadProfile.getLoadProfileDemandRate();
+            }
+        },
         VOLTAGE_PROFILE(BuiltInAttribute.VOLTAGE_PROFILE, 4) {
             public int getRate(DeviceLoadProfile deviceLoadProfile) {
                 return deviceLoadProfile.getVoltageDmdRate();
@@ -98,6 +114,20 @@ public class ProfileWidget extends WidgetControllerBase {
         private BuiltInAttribute attribute;
         private Integer channel;
         
+        private final static ImmutableMap<Integer, ProfileAttributeChannelEnum> lookupByChannel;
+        
+        static {
+            try {
+                Builder<Integer, ProfileAttributeChannelEnum> channelBuilder = ImmutableMap.builder();
+                for (ProfileAttributeChannelEnum profileAttributeChannel: values()) {
+                    channelBuilder.put(profileAttributeChannel.channel, profileAttributeChannel);
+                }
+                lookupByChannel = channelBuilder.build();
+            } catch (IllegalArgumentException e) {
+                log.warn("Caught exception while building lookup maps, look for a duplicate name or db string.", e);
+                throw e;
+            }
+        }
         private ProfileAttributeChannelEnum(BuiltInAttribute attribute, Integer channel) {
             this.attribute = attribute;
             this.channel = channel;
@@ -115,6 +145,17 @@ public class ProfileWidget extends WidgetControllerBase {
             return this.getRate(deviceLoadProfile);
         }
         
+        /**
+         * Looks up the ProfileAttributeChannelEnum based on its channel.
+         * @param channel
+         * @return
+         * @throws IllegalArgumentException - if no match for channel
+         */
+        public static ProfileAttributeChannelEnum getForChannel(Integer channel) throws IllegalArgumentException {
+            ProfileAttributeChannelEnum profileAttributeChannel = lookupByChannel.get(channel);
+            Validate.notNull(profileAttributeChannel, Integer.toString(channel));
+            return profileAttributeChannel;
+        }
     }
     
     private String calcIntervalStr(int secs) {
@@ -197,7 +238,10 @@ public class ProfileWidget extends WidgetControllerBase {
     private Set<Attribute> getSupportedProfileAttributes(Meter meter) {
         
         Set<Attribute> supportedProfileAttributes = new HashSet<Attribute>(attributeService.getAllExistingAttributes(meter));
-        supportedProfileAttributes.retainAll(CtiUtilities.asSet(BuiltInAttribute.LOAD_PROFILE, BuiltInAttribute.VOLTAGE_PROFILE));
+        supportedProfileAttributes.retainAll(CtiUtilities.asSet(BuiltInAttribute.LOAD_PROFILE,
+                                                                BuiltInAttribute.PROFILE_CHANNEL_2,
+                                                                BuiltInAttribute.PROFILE_CHANNEL_3,
+                                                                BuiltInAttribute.VOLTAGE_PROFILE));
         
         return supportedProfileAttributes;
     }
@@ -334,14 +378,11 @@ public class ProfileWidget extends WidgetControllerBase {
                 // determine pointId in order to build report URL
                 Attribute attribute = null;
                 String channelName = "";
-                if(channel == 1){
-                    attribute = BuiltInAttribute.LOAD_PROFILE;
-                    channelName = BuiltInAttribute.LOAD_PROFILE.getDescription();
-                }
-                else if(channel == 4) {
-                    attribute = BuiltInAttribute.VOLTAGE_PROFILE;
-                    channelName = BuiltInAttribute.VOLTAGE_PROFILE.getDescription();
-                }
+                
+                ProfileAttributeChannelEnum profileAttributeChannel = ProfileAttributeChannelEnum.getForChannel(channel);
+                attribute = profileAttributeChannel.getAttribute();
+                channelName = profileAttributeChannel.getAttribute().getDescription();
+
                 LitePoint litePoint = attributeService.getPointForAttribute(deviceDao.getYukonDevice(device), attribute);
                 msgData.put("channelName", channelName);
                 

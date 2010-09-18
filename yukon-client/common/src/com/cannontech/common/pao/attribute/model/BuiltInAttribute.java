@@ -19,6 +19,8 @@ public enum BuiltInAttribute implements Attribute {
     PEAK_DEMAND("Peak Demand"),
     PHASE("Phase"),
     POWER_FAIL_FLAG("Power Fail Flag"),
+    PROFILE_CHANNEL_2("Profile Channel 2", true),
+    PROFILE_CHANNEL_3("Profile Channel 3", true),
     TAP_UP("Raise Tap Position"),
     REVERSE_POWER_FLAG("Reverse Power Flag"),
     TAMPER_FLAG("Tamper Flag"),
