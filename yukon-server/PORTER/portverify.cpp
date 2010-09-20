@@ -311,8 +311,6 @@ void CtiPorterVerification::processWorkQueue(bool purge)
     {
         Cti::Database::DatabaseConnection   conn;
 
-        bool dbstat;
-
         conn.beginTransaction();
 
         while( !_work_queue.empty() && (purge || (_work_queue.top()->getExpiration() < second_clock::universal_time())) )
@@ -330,7 +328,7 @@ void CtiPorterVerification::processWorkQueue(bool purge)
                 dout << CtiTime() << " **** Checkpoint - writing code sequence \"" << work->getSequence() << "\" **** Expires at " << to_simple_string(work->getExpiration()) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            writeWorkRecord(*work, conn, dbstat);
+            writeWorkRecord(*work, conn);
 
             if( status == CtiVerificationBase::CodeStatus_Retry )
             {
@@ -536,7 +534,7 @@ void CtiPorterVerification::loadAssociations(void)
 }
 
 
-void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, Cti::Database::DatabaseConnection &conn, bool &dbstat)
+void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, Cti::Database::DatabaseConnection &conn)
 {
     //  note that this should be called from within a transaction
 
@@ -592,7 +590,7 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, Cti
         dout << CtiTime() << " **** Checkpoint - error while inserting in CtiPorterVerification::writeWorkRecord **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    for( r_itr = receipts.begin(); (r_itr != receipts.end()) && dbstat; r_itr++ )
+    for( r_itr = receipts.begin(); r_itr != receipts.end(); r_itr++ )
     {
         inserter
             << logIDGen()
@@ -612,7 +610,7 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, Cti
         }
     }
 
-    for( e_itr = expectations.begin(); (e_itr != expectations.end()) && dbstat; e_itr++ )
+    for( e_itr = expectations.begin(); e_itr != expectations.end(); e_itr++ )
     {
         inserter
             << logIDGen()

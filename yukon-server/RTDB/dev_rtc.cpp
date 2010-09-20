@@ -5,181 +5,6 @@
 * Date:   3/18/2004
 *
 * Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2008/10/28 19:21:42 $
-*
-* HISTORY      :
-* $Log: dev_rtc.cpp,v $
-* Revision 1.51  2008/10/28 19:21:42  mfisher
-* YUK-6589 Scanner should not load non-scannable devices
-* refreshList() now takes a list of paoids, which may be empty if it's a full reload
-* Changed CtiDeviceBase, CtiPointBase, and CtiRouteBase::getSQL() (and all inheritors) to be const
-* Removed a couple unused Porter functions
-* Added logger unit test
-* Simplified DebugTimer's variables
-*
-* Revision 1.50  2008/10/15 17:49:56  jotteson
-* YUK-6588 Porter's memory use needs to be trimmed
-* Removed unused counters.
-*
-* Revision 1.49  2008/08/14 15:57:40  jotteson
-* YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
-* Cancellation now uses the new group message ID.
-* Group Message ID name added to Request, Result, Out, and In messages.
-*
-* Revision 1.48  2008/06/06 20:28:01  jotteson
-* YUK-6005 Porter LLP expect more set incorrectly
-* Added an option to override expect more in the error decode call.
-* Made LLP retry 3 times before failing.
-*
-* Revision 1.47  2007/03/26 21:41:12  jotteson
-* Bug Id: 892
-* Fixed problem with uninitialized pointer being used and throwing exceptions
-*
-* Revision 1.46  2006/10/16 17:38:10  jotteson
-* Adding sa305 and saDigital to verification process.
-*
-* Revision 1.45  2006/09/26 14:28:47  mfisher
-* standardizing the code for the "Decoding" printout
-*
-* Revision 1.44  2006/04/21 15:20:13  mfisher
-* zero-padded the Golay address string
-*
-* Revision 1.43  2006/04/19 15:52:18  mfisher
-* changed code reporting to match the RTM's format (bbaabb-f)
-*
-* Revision 1.42  2006/03/23 15:29:18  jotteson
-* Mass update of point* to smart pointers. Point manager now uses smart pointers.
-*
-* Revision 1.41  2006/02/27 23:58:31  tspar
-* Phase two of RWTPtrSlist replacement.
-*
-* Revision 1.40  2006/02/24 00:19:12  tspar
-* First Series of replacements of RWTPtrSlist to std::list. Scanner, Pil, Porter.
-*
-* Revision 1.39  2006/02/17 17:04:35  tspar
-* CtiMultiMsg:  replaced RWOrdered with vector<RWCollectable*> throughout the tree
-*
-* Revision 1.38  2006/01/16 20:40:33  mfisher
-* Message Flags naming change
-*
-* Revision 1.37  2005/12/20 17:20:24  tspar
-* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-*
-* Revision 1.36  2005/09/15 16:39:37  cplender
-* Simulate log was repeatedly logging the first controlled group for each group in a block to the simulate log.
-*
-* Revision 1.35  2005/08/30 19:34:12  cplender
-* PutConfig requests were not being followed by a time slot message.
-*
-* Revision 1.34  2005/08/24 20:48:49  cplender
-* Improved some debug output.
-*
-* Revision 1.33  2005/08/18 22:05:30  cplender
-* Reformat the printouts
-*
-* Revision 1.32  2005/08/15 15:12:17  cplender
-* Minor change for the verification log table writes.
-*
-* Revision 1.31  2005/07/29 16:26:02  cplender
-* Making slight adjustments to better serve GRE's simple protocols.  Need to verify and have a plain text decode to review.
-*
-* Revision 1.30  2005/07/25 16:37:38  cplender
-* Expiration time is printed as an RWTime asString.
-*
-* Revision 1.29  2005/06/16 21:25:14  cplender
-* Adding the RTC scan command and decode. Must be trested with a device.
-*
-* Revision 1.28  2005/05/24 00:38:38  cplender
-* Prevent verification objects if they are not valid.
-*
-* Revision 1.27  2005/04/15 19:04:10  mfisher
-* got rid of magic number debuglevel checks
-*
-* Revision 1.26  2005/03/14 01:30:22  cplender
-* Make certain we don't walk out of the OutMessage.Buffer!
-*
-* Revision 1.25  2005/02/17 23:03:30  cplender
-* Make certain we do not GIGO the OutMessage
-*
-* Revision 1.24  2005/02/10 23:24:00  alauinger
-* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-*
-* Revision 1.23  2005/01/13 17:49:57  mfisher
-* Returning ErrReturn for error instead of InMessage->EventCode
-*
-* Revision 1.22  2005/01/04 22:16:03  cplender
-* Completed the asString() method.
-*
-* Revision 1.21  2004/12/14 22:27:58  cplender
-* Added 305
-*
-* Revision 1.20  2004/12/08 21:17:38  cplender
-* Expiration Code was shady.  Expired commands which had not set an expiration time...
-*
-* Revision 1.19  2004/12/02 22:15:14  cplender
-* Added OM-ExpirationTime to the device queue processing.
-*
-* Revision 1.18  2004/12/01 20:14:37  cplender
-* Verification Thread now looks for '\0'.
-*
-* Revision 1.17  2004/11/24 17:11:39  cplender
-* SA305 Verification was not complete.
-*
-* Revision 1.16  2004/11/09 06:15:34  cplender
-* Improved the destructor if the verificationobjects are not empty..
-*
-* Revision 1.15  2004/11/08 16:24:54  mfisher
-* implemented getVerificationObjects() instead of just thinking about it
-*
-* Revision 1.14  2004/10/29 20:02:11  mfisher
-* added verification support
-*
-* Revision 1.13  2004/10/08 20:32:57  cplender
-* Added method queuedWorkCount()
-*
-* Revision 1.12  2004/06/24 13:16:11  cplender
-* Some cleanup on the simulator to make RTC and LMIRTU trx sessions look the same.
-* Added PORTER_SA_RTC_MAXCODES the maimum number of codes that can be sent in one block
-*
-* Revision 1.11  2004/06/23 18:38:05  cplender
-* Memory leak removal and slog addition.
-*
-* Revision 1.10  2004/06/03 21:46:17  cplender
-* Simulator mods.
-*
-* Revision 1.9  2004/05/24 20:25:36  cplender
-* Scramble
-*
-* Revision 1.8  2004/05/24 19:08:27  cplender
-* Must have exclusions to queue work into self.
-*
-* Revision 1.7  2004/05/24 13:49:19  cplender
-* Changed destructor to use value_type, not reference.  Harder to destruct a reference...
-*
-* Revision 1.6  2004/05/20 22:43:12  cplender
-* Support for repeating 205 messages after n minutes.
-*
-* Revision 1.5  2004/05/19 14:48:53  cplender
-* Exclusion changes
-*
-* Revision 1.4  2004/05/10 21:35:50  cplender
-* Exclusions a'la GRE are a bit closer here.  The proximity exclusions should work ok now.
-*
-* Revision 1.3  2004/04/29 19:59:09  cplender
-* Initial sa protocol/load group support
-*
-* Revision 1.2  2004/03/19 15:56:16  cplender
-* Adding the RTC and non-305 SA protocols.
-*
-* Revision 1.1  2004/03/18 19:50:34  cplender
-* Initial Checkin
-* Builds, but not too complete.
-*
-*
-* Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
@@ -203,6 +28,10 @@
 
 #include "numstr.h"
 
+ptime::time_duration_type getRTCVerificationTimeoutDuration()
+{
+    return seconds(gConfigParms.getValueAsInt("RTC_VERIFICATION_DURATION", 300));
+}
 
 CtiDeviceRTC::CtiDeviceRTC() :
 _millis(0)
@@ -775,7 +604,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                 memcpy((void*)codestr, (void*)(OutMessage->Buffer.SASt._code305), OutMessage->Buffer.SASt._bufferLen);
                 codestr[OutMessage->Buffer.SASt._bufferLen + 1] = 0;
                 cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
-                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA305, *OutMessage, cmdStr, codestr, seconds(60));
+                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA305, *OutMessage, cmdStr, codestr, getRTCVerificationTimeoutDuration());
             }
             else if( OutMessage->Buffer.SASt._code205 )
             {
@@ -786,7 +615,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << getName() << ": " << cmdStr << endl;
                 }
-                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *OutMessage, cmdStr, code, seconds(60));
+                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *OutMessage, cmdStr, code, getRTCVerificationTimeoutDuration());
             }
             else if( OutMessage->Buffer.SASt._groupType == SADIG )
             {
@@ -798,7 +627,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << cmdStr << endl;
                 }
-                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SADigital, *OutMessage, cmdStr, codestr, seconds(60));
+                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SADigital, *OutMessage, cmdStr, codestr, getRTCVerificationTimeoutDuration());
             }
             else
             {
@@ -810,7 +639,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << getName() << ": " << cmdStr << endl;
                 }
-                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *OutMessage, cmdStr, codestr, seconds(60));
+                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *OutMessage, cmdStr, codestr, getRTCVerificationTimeoutDuration());
             }
 
             if(work) _verification_objects.push(work);
@@ -830,7 +659,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                         memcpy((void*)codestr, (void*)(rtcOutMessage->Buffer.SASt._code305), rtcOutMessage->Buffer.SASt._bufferLen);
                         codestr[rtcOutMessage->Buffer.SASt._bufferLen + 1] = 0;
                         cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
-                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA305, *OutMessage, cmdStr, codestr, seconds(60));
+                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA305, *OutMessage, cmdStr, codestr, getRTCVerificationTimeoutDuration());
                     }
                     else if( rtcOutMessage->Buffer.SASt._code205 )
                     {
@@ -841,7 +670,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " " << cmdStr << endl;
                         }
-                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *rtcOutMessage, cmdStr, code, seconds(60));
+                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *rtcOutMessage, cmdStr, code, getRTCVerificationTimeoutDuration());
                     }
                     else if( rtcOutMessage->Buffer.SASt._groupType == SADIG )
                     {
@@ -853,7 +682,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " " << cmdStr << endl;
                         }
-                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SADigital, *rtcOutMessage, cmdStr, codestr, seconds(60));
+                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SADigital, *rtcOutMessage, cmdStr, codestr, getRTCVerificationTimeoutDuration());
                     }
                     else
                     {
@@ -865,7 +694,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " " << getName() << ": " << cmdStr << endl;
                         }
-                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *rtcOutMessage, cmdStr, codestr, seconds(60));
+                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *rtcOutMessage, cmdStr, codestr, getRTCVerificationTimeoutDuration());
                     }
 
                     if(work) _verification_objects.push(work);

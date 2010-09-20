@@ -68,7 +68,7 @@ private:
     void verificationThread(void);
     void loadAssociations(void);
     void processWorkQueue(bool purge=false);
-    void writeWorkRecord(const CtiVerificationWork &work, Cti::Database::DatabaseConnection &conn, bool &dbstat);
+    void writeWorkRecord(const CtiVerificationWork &work, Cti::Database::DatabaseConnection &conn);
     void writeUnknown(const CtiVerificationReport &report);
     void pruneEntries(const ptime::time_duration_type &earliest);
 
