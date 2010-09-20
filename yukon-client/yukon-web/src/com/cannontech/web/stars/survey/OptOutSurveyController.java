@@ -43,7 +43,7 @@ import com.google.common.collect.Sets;
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_OPT_OUT_SURVEY_EDIT)
 @RequestMapping("/optOutSurvey/*")
 public class OptOutSurveyController {
-    private final static String baseKey = "yukon.web.modules.optOutSurvey.";
+    private final static String baseKey = "yukon.web.modules.dr.survey";
 
     private OptOutSurveyDao optOutSurveyDao;
     private OptOutSurveyService optOutSurveyService;
@@ -115,7 +115,7 @@ public class OptOutSurveyController {
         Survey survey = surveyDao.getSurveyById(optOutSurvey.getSurveyId());
         MessageSourceResolvable confirmMsg =
             new YukonMessageSourceResolvable(baseKey +
-                                             "list.optOutSurveyDeleted",
+                                             "List.optOutSurveyDeleted",
                                              survey.getSurveyName());
         flashScope.setConfirm(confirmMsg);
         return closeDialog(model);
@@ -184,7 +184,7 @@ public class OptOutSurveyController {
         Survey survey = surveyDao.getSurveyById(optOutSurveyDto.getSurveyId());
         MessageSourceResolvable confirmMsg =
             new YukonMessageSourceResolvable(baseKey +
-                                             "list.optOutSurveySaved",
+                                             "List.optOutSurveySaved",
                                              survey.getSurveyName());
         flashScope.setConfirm(confirmMsg);
 
