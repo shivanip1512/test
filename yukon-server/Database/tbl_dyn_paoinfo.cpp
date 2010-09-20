@@ -132,6 +132,11 @@ const string CtiTableDynamicPaoInfo::_key_mct_dnp_accumulator_crc2          = "m
 const string CtiTableDynamicPaoInfo::_key_mct_dnp_accumulator_crc3          = "mct dnp accumulator crc3";
 const string CtiTableDynamicPaoInfo::_key_mct_dnp_accumulator_crc4          = "mct dnp accumulator crc4";
 
+const string CtiTableDynamicPaoInfo::_key_mct_phase_current_neutral         = "phase current neutral";
+const string CtiTableDynamicPaoInfo::_key_mct_phase_current_a               = "phase current a";
+const string CtiTableDynamicPaoInfo::_key_mct_phase_current_b               = "phase current b";
+const string CtiTableDynamicPaoInfo::_key_mct_phase_current_c               = "phase current c";
+
 const string CtiTableDynamicPaoInfo::_key_mct_display_parameters            = "mct display parameters";
 const string CtiTableDynamicPaoInfo::_key_mct_transformer_ratio             = "mct transformer ratio";
 
@@ -271,6 +276,10 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_MCT_DNP_AccumulatorCRC2,        &_key_mct_dnp_accumulator_crc2));
     retval.insert(make_pair(Key_MCT_DNP_AccumulatorCRC3,        &_key_mct_dnp_accumulator_crc3));
     retval.insert(make_pair(Key_MCT_DNP_AccumulatorCRC4,        &_key_mct_dnp_accumulator_crc4));
+    retval.insert(make_pair(Key_MCT_PhaseCurrentNeutral,        &_key_mct_phase_current_neutral));
+    retval.insert(make_pair(Key_MCT_PhaseCurrentA,              &_key_mct_phase_current_a));
+    retval.insert(make_pair(Key_MCT_PhaseCurrentB,              &_key_mct_phase_current_b));
+    retval.insert(make_pair(Key_MCT_PhaseCurrentC,              &_key_mct_phase_current_c));
     retval.insert(make_pair(Key_MCT_DNP_AnalogCRC1,             &_key_mct_dnp_analog_crc1));
     retval.insert(make_pair(Key_MCT_DNP_AnalogCRC2,             &_key_mct_dnp_analog_crc2));
     retval.insert(make_pair(Key_MCT_DNP_AnalogCRC3,             &_key_mct_dnp_analog_crc3));

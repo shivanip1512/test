@@ -95,6 +95,10 @@ public:
         Key_MCT_DNP_AccumulatorCRC2,
         Key_MCT_DNP_AccumulatorCRC3,
         Key_MCT_DNP_AccumulatorCRC4,
+        Key_MCT_PhaseCurrentNeutral,
+        Key_MCT_PhaseCurrentA,
+        Key_MCT_PhaseCurrentB,
+        Key_MCT_PhaseCurrentC,
 
         //  run-time info
         Key_MCT_LLPInterest_Time,
@@ -281,6 +285,11 @@ protected:
     static const string _key_mct_dnp_accumulator_crc2;
     static const string _key_mct_dnp_accumulator_crc3;
     static const string _key_mct_dnp_accumulator_crc4;
+
+    static const string _key_mct_phase_current_neutral;
+    static const string _key_mct_phase_current_a;
+    static const string _key_mct_phase_current_b;     
+    static const string _key_mct_phase_current_c;     
 
     static const string _key_udp_ip;
     static const string _key_udp_port;
