@@ -3,6 +3,7 @@
 #include "database_writer.h"
 #include "ctidate.h"
 #include "logger.h"
+#include "boost_time.h"
 
 using namespace Cti::Database;
 using Cti::RowWriter;
@@ -117,8 +118,9 @@ RowWriter &DatabaseWriter::operator<<(const CtiTime &operand)
 
 RowWriter &DatabaseWriter::operator<<(const boost::posix_time::ptime &operand)
 {
-    struct tm theTime = to_tm(operand);
-    _command << theTime;
+    time_t time = ptime_to_utc_seconds(operand);
+    struct tm* tm = CtiTime::localtime_r(&time);
+    _command << *tm;
     return *this;
 }
 
