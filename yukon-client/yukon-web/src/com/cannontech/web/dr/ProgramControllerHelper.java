@@ -37,6 +37,7 @@ import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.program.filter.PriorityFilter;
 import com.cannontech.dr.program.filter.StartStopFilter;
 import com.cannontech.dr.program.filter.StateFilter;
+import com.cannontech.dr.program.filter.StateFilter.FilteredState;
 import com.cannontech.dr.program.model.ProgramNameField;
 import com.cannontech.dr.program.service.ProgramFieldService;
 import com.cannontech.dr.program.service.ProgramService;
@@ -163,11 +164,9 @@ public class ProgramControllerHelper {
         }
         String stateFilter = backingBean.getState();
         if (!StringUtils.isEmpty(stateFilter)) {
-            if (stateFilter.equals("active")) {
-                filters.add(new StateFilter(programService, true));
-                isFiltered = true;
-            } else if (stateFilter.equals("inactive")) {
-                filters.add(new StateFilter(programService, false));
+            FilteredState filteredState = FilteredState.valueOf(stateFilter);
+            if (filteredState != FilteredState.ALL) {
+                filters.add(new StateFilter(programService, filteredState));
                 isFiltered = true;
             }
         }

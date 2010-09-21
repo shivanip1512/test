@@ -3,6 +3,8 @@ package com.cannontech.loadcontrol.data;
 import java.util.List;
 import java.util.Vector;
 
+import com.cannontech.dr.program.model.ProgramState;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/17/00 3:06:09 PM)
@@ -236,6 +238,11 @@ public java.lang.Integer getMinResponseTime() {
 public java.lang.Integer getProgramStatus() {
 	return programStatus;
 }
+
+public ProgramState getProgramState() {
+    return ProgramState.valueOf(programStatus);
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/3/2001 10:58:13 AM)

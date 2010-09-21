@@ -8,19 +8,27 @@ import com.cannontech.common.bulk.filter.PostProcessingFilterAdapter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.dr.program.model.ProgramState;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 
 public class StateFilter implements UiFilter<DisplayablePao> {
+    public static enum FilteredState {
+        ALL,
+        ACTIVE,
+        SCHEDULED,
+        INACTIVE
+    }
+
     private ProgramService programService;
 
     // we either show active (or similar) or show inactive
     // if the filter is off, we don't create an instance of this class at all
-    private boolean showActive;
+    private FilteredState filteredState;
 
-    public StateFilter(ProgramService programService, boolean showActive) {
+    public StateFilter(ProgramService programService, FilteredState filterState) {
         this.programService = programService;
-        this.showActive = showActive;
+        this.filteredState = filterState;
     }
 
     @Override
@@ -31,10 +39,26 @@ public class StateFilter implements UiFilter<DisplayablePao> {
 
             @Override
             public boolean matches(DisplayablePao pao) {
+                if (filteredState == FilteredState.ALL) {
+                    return true;
+                }
                 LMProgramBase program = programService.getProgramForPao(pao);
-                return program != null
-                    && (program.isActive() && showActive
-                    || !program.isActive() && !showActive);
+                if (program == null) {
+                    // Program is not in load management; it cannot be active,
+                    // or inactive.
+                    return false;
+                }
+                if (filteredState == FilteredState.ACTIVE) {
+                    return program.isActive();
+                }
+                if (filteredState == FilteredState.SCHEDULED) {
+                    return program.getProgramState() == ProgramState.SCHEDULED;
+                }
+                if (filteredState == FilteredState.INACTIVE) {
+                    return !program.isActive()
+                        && program.getProgramState() != ProgramState.SCHEDULED;
+                }
+                return true;
             }});
         return retVal;
     }

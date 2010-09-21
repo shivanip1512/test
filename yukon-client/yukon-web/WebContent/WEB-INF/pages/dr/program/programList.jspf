@@ -63,14 +63,18 @@
 						key="yukon.web.modules.dr.programList.filter.state" />
 					<td>${fieldName}</td>
 					<td><form:select path="state">
-						<form:option value="all">
+						<form:option value="ALL">
 							<cti:msg key="yukon.web.modules.dr.programList.filter.state.all" />
 						</form:option>
-						<form:option value="active">
+						<form:option value="ACTIVE">
 							<cti:msg
 								key="yukon.web.modules.dr.programList.filter.state.active" />
 						</form:option>
-						<form:option value="inactive">
+						<form:option value="SCHEDULED">
+							<cti:msg
+								key="yukon.web.modules.dr.programList.filter.state.scheduled" />
+						</form:option>
+						<form:option value="INACTIVE">
 							<cti:msg
 								key="yukon.web.modules.dr.programList.filter.state.inactive" />
 						</form:option>
