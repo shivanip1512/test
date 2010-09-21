@@ -1,9 +1,9 @@
 package com.cannontech.analysis.tablemodel;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.google.common.collect.Multimap;
@@ -27,21 +27,21 @@ public class SurveyResultsSummaryModel extends
     }
 
     public void doLoadData() {
+        if (startDate == null) {
+            startDate = new Instant(0).toDate();
+        }
+        Multimap<Integer, ProgramControlHistory> controlHistory =
+            loadControlProgramDao.getHistoryByProgramIds(programIds, startDate,
+                                                         endDate);
+
         ModelRow row = new ModelRow();
-        row.reason = "summary from " + startDate + " to " + endDate +
-            " for question " + questionId;
+        row.reason = "found " + controlHistory.size() + " history events from " +
+            startDate + " to " + endDate + " for question " + questionId;
         row.numDevicesOverridden = programIds == null ? 0 : programIds.size();
         row.loadProgram = "answers: " + StringUtils.join(answerIds, ",");
         row.gear = "other:" + includeOtherAnswers + ", unanswerd:" + includeUnanswered;
         data.add(row);
 
-        if (startDate == null) {
-            startDate = CtiUtilities.get1990GregCalendar().getTime();
-        }
-        /*
-        Multimap<Integer, ProgramControlHistory> controlHistory =
-            loadControlProgramDao.getHistoryByProgramIds(programIds, startDate,
-                                                         endDate);
 
         for (Integer programId : controlHistory.keySet()) {
             for (ProgramControlHistory hist : controlHistory.get(programId)) {
@@ -50,9 +50,9 @@ public class SurveyResultsSummaryModel extends
                 row.numDevicesOverridden = hist.getProgramId();
                 row.loadProgram = hist.getProgramName();
                 row.gear = hist.getGearName();
+                data.add(row);
             }
         }
-        */
         if (programIds == null) {
             return;
         }

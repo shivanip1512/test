@@ -1,6 +1,5 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -8,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.google.common.collect.Lists;
 
 public abstract class SurveyResultsModelBase<T> extends BareReportModelBase<T> {
     protected YukonJdbcTemplate yukonJdbcTemplate;
@@ -23,7 +23,7 @@ public abstract class SurveyResultsModelBase<T> extends BareReportModelBase<T> {
     protected boolean includeUnanswered;
     protected List<Integer> programIds;
 
-    protected List<T> data = new ArrayList<T>();
+    protected List<T> data = Lists.newArrayList();
 
     @Override
     protected T getRow(int rowIndex) {
