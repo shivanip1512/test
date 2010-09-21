@@ -30,6 +30,7 @@ public class SurveyResultsSummaryModel extends
         if (startDate == null) {
             startDate = new Instant(0).toDate();
         }
+        /*
         Multimap<Integer, ProgramControlHistory> controlHistory =
             loadControlProgramDao.getHistoryByProgramIds(programIds, startDate,
                                                          endDate);
@@ -53,11 +54,12 @@ public class SurveyResultsSummaryModel extends
                 data.add(row);
             }
         }
+        */
         if (programIds == null) {
             return;
         }
         for (Integer programId : programIds) {
-            row = new ModelRow();
+            ModelRow row = new ModelRow();
             row.reason = "program";
             row.numDevicesOverridden = programId;
             row.loadProgram = "";
