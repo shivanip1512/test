@@ -99,7 +99,7 @@
 							<form:hidden path="otherNotifications[${notifRow.index}].notificationId"/>
 						</td>
 						
-						<td><tags:input path="otherNotifications[${notifRow.index}].notificationValue"></tags:input></td>
+						<td <c:if test="${newNotification}">colspan="2"</c:if>><tags:input path="otherNotifications[${notifRow.index}].notificationValue"></tags:input></td>
 						
 						<c:if test="${!newNotification}">
 							<td style="text-align:center;">
