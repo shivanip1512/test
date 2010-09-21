@@ -55,6 +55,7 @@ public:
 
    int recvCommRequest( OUTMESS *OutMessage );
 
+   virtual string getSQLCoreStatement() const;
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                           CtiCommandParser               &parse,

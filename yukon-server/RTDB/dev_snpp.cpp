@@ -686,6 +686,20 @@ void CtiDeviceSnppPagingTerminal::resetStates()
 }
 
 //Database Functions
+string CtiDeviceSnppPagingTerminal::getSQLCoreStatement() const
+{
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+                                     "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.portid, "
+                                     "DUS.phonenumber, DUS.minconnecttime, DUS.maxconnecttime, DUS.linesettings, "
+                                     "DUS.baudrate, DTPS.pagernumber, DTPS.sender, DTPS.securitycode, DTPS.postpath "
+                                  "FROM Device DV, DeviceDirectCommSettings CS, YukonPAObject YP LEFT OUTER JOIN "
+                                     "DeviceTapPagingSettings DTPS ON YP.paobjectid = DTPS.deviceid LEFT OUTER JOIN "
+                                    "DEVICEDIALUPSETTINGS DUS ON YP.paobjectid = DUS.deviceid "
+                                   "WHERE YP.paobjectid = DV.deviceid AND YP.paobjectid = CS.deviceid";
+
+    return sqlCore;
+}
+
 void CtiDeviceSnppPagingTerminal::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
