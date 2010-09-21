@@ -29,8 +29,7 @@ const Mct410Device::ConfigPartsList  Mct410Device::_config_parts = Mct410Device:
 
 
 Mct410Device::Mct410Device( ) :
-    _intervalsSent(false),
-    _activeIndex(EmetconProtocol::DLCCmd_LAST)
+    _intervalsSent(false)
 {
     _daily_read_info.request.multi_day_retries = -1;
     _daily_read_info.request.in_progress = false;
@@ -794,104 +793,6 @@ const Mct410Device::read_key_store_t &Mct410Device::getReadKeyStore(void) const
 }
 
 
-int Mct410Device::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
-{
-    active_command_map::iterator command = _activeCommands.find(InMessage.Sequence);
-
-    if( command == _activeCommands.end() )
-    {
-        return NoResultDecodeMethod;
-    }
-
-    CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return);
-
-    try
-    {
-        DlcCommand::request_ptr ptr;
-        string description;
-
-        if( InMessage.EventCode )
-        {
-            ptr = command->second->error(TimeNow, InMessage.EventCode, description);
-        }
-        else
-        {
-            const DSTRUCT &dst = InMessage.Buffer.DSt;
-
-            const DlcCommand::payload_t
-                payload(
-                    dst.Message,
-                    dst.Message + min<unsigned short>(dst.Length, DSTRUCT::MessageLength_Max));
-
-            std::vector<DlcCommand::point_data> points;
-
-            ptr = command->second->decode(TimeNow, InMessage.Return.ProtocolInfo.Emetcon.Function, payload, description, points);
-
-            for each( const DlcCommand::point_data &pdata in points )
-            {
-                point_info pi;
-
-                pi.description  = pdata.description;
-                pi.quality      = pdata.quality;
-                pi.value        = pdata.value;
-                pi.freeze_bit   = false;
-
-                insertPointDataReport(pdata.type, pdata.offset, ReturnMsg, pi, pdata.name, pdata.time);
-            }
-        }
-
-        ReturnMsg->setResultString(description);
-
-        if( ptr.get() )
-        {
-            OUTMESS *OutMessage = new OUTMESS;
-
-            InEchoToOut(InMessage, OutMessage);
-
-            fillOutMessage(*OutMessage, *ptr);
-
-            CtiRequestMsg newReq(getID(),
-                                 InMessage.Return.CommandStr,
-                                 InMessage.Return.UserID,
-                                 InMessage.Return.GrpMsgID,
-                                 InMessage.Return.RouteID,
-                                 selectInitialMacroRouteOffset(InMessage.Return.RouteID),
-                                 InMessage.Return.Attempt,
-                                 0,
-                                 InMessage.Priority);
-
-            newReq.setConnectionHandle((void *)InMessage.Return.Connection);
-
-            executeOnDLCRoute(&newReq,
-                              CtiCommandParser(newReq.CommandString()),
-                              list<OUTMESS *>(1, OutMessage),
-                              vgList, retList, outList, false);
-        }
-        else
-        {
-            //  all done!
-            _activeCommands.erase(command);
-        }
-
-        retMsgHandler(InMessage.Return.CommandStr, NoError, ReturnMsg, vgList, retList);
-
-        return NORMAL;
-    }
-    catch( BaseCommand::CommandException &e )
-    {
-        ReturnMsg->setStatus(e.error_code);
-        ReturnMsg->setResultString(getName() + " / " + e.error_description);
-
-        retList.push_back(ReturnMsg);
-
-        //  broken!
-        _activeCommands.erase(command);
-
-        return ExecutionComplete;
-    }
-}
-
-
 /*
  *  ModelDecode MUST decode all CtiDLCCommand_t which are defined in the initCommandStore object.  The only exception to this
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
@@ -902,25 +803,6 @@ INT Mct410Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
     if( !InMessage )
     {
         return MEMORY;
-    }
-
-    if( InMessage->Sequence > EmetconProtocol::DLCCmd_LAST )
-    {
-        try
-        {
-            return decodeCommand(*InMessage, TimeNow, vgList, retList, outList);
-        }
-        catch( BaseCommand::CommandException &e )
-        {
-            retList.push_back(
-                new CtiReturnMsg(
-                    getID(),
-                    InMessage->Return,
-                    getName() + " / " + e.error_description,
-                    e.error_code));
-
-            return ExecutionComplete;
-        }
     }
 
     INT status = NORMAL;
@@ -997,11 +879,6 @@ INT Mct410Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 INT Mct410Device::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int retVal = NoError;
-
-    if( InMessage.Sequence > EmetconProtocol::DLCCmd_LAST )
-    {
-        return decodeCommand(InMessage, TimeNow, vgList, retList, outList);
-    }
 
     switch( InMessage.Sequence )
     {
@@ -1090,8 +967,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                                        OUTMESS                   *&OutMessage,
                                        list< CtiMessage* >  &vgList,
                                        list< CtiMessage* >  &retList,
-                                       list< OUTMESS* >     &outList,
-                                       bool readsOnly)
+                                       list< OUTMESS* >     &outList )
 {
     INT nRet = NoMethod;
 
@@ -1565,63 +1441,6 @@ void Mct410Device::readSspec(const OUTMESS &OutMessage, list<OUTMESS *> &outList
 
         outList.push_back(sspec_om.release());
     }
-}
-
-
-void Mct410Device::fillOutMessage(OUTMESS &OutMessage, DlcCommand::request_t &request)
-{
-    OutMessage.DeviceID  = getID();
-    OutMessage.TargetID  = getID();
-    OutMessage.Port      = getPortID();
-    OutMessage.Remote    = getAddress();
-    OutMessage.TimeOut   = 2;
-    OutMessage.Retry     = 2;
-
-    OutMessage.Request.RouteID     = getRouteID();
-    OutMessage.Request.MacroOffset = selectInitialMacroRouteOffset(OutMessage.Request.RouteID);
-
-    OutMessage.Buffer.BSt.Function = request.function;
-    OutMessage.Buffer.BSt.IO       = request.io();
-    OutMessage.Buffer.BSt.Length   = request.length();
-
-    DlcCommand::payload_t payload = request.payload();
-
-    std::copy(payload.begin(),
-              payload.begin() + min<unsigned>(payload.size(), BSTRUCT::MessageLength_Max),
-              OutMessage.Buffer.BSt.Message);
-}
-
-
-bool Mct410Device::tryExecuteCommand(OUTMESS &OutMessage, auto_ptr<Mct410Command> command)
-{
-    DlcCommand::request_ptr request = command->execute(CtiTime());
-
-    if( request.get() )
-    {
-        //  this makes me nervous - if we have two calls to ExecuteRequest()/tryExecuteCommand() at once,
-        //    this probably isn't threadsafe
-        if( _activeCommands.empty() )
-        {
-            InterlockedCompareExchange(&_activeIndex, EmetconProtocol::DLCCmd_LAST, _activeIndex);
-        }
-
-        long activeIndex;
-
-        do
-        {
-            activeIndex = InterlockedIncrement(&_activeIndex);
-
-        } while( activeIndex < EmetconProtocol::DLCCmd_LAST
-                 || _activeCommands.find(activeIndex) != _activeCommands.end() );
-
-        fillOutMessage(OutMessage, *request);
-
-        OutMessage.Sequence = activeIndex;
-
-        _activeCommands.insert(activeIndex, command);
-    }
-
-    return request.get();
 }
 
 

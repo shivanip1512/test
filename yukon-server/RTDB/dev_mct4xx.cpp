@@ -1068,8 +1068,7 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg         *pReq,
                                       OUTMESS              *&OutMessage,
                                       list< CtiMessage * >  &vgList,
                                       list< CtiMessage * >  &retList,
-                                      list< OUTMESS * >     &outList,
-                                      bool readsOnly)
+                                      list< OUTMESS * >     &outList)
 {
     bool  found = false;
     INT   nRet = NoError, sRet, function;
@@ -1096,12 +1095,12 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg         *pReq,
             || parse.getsValue("installvalue") == PutConfigPart_all )
         {
             ConfigPartsList tempList = getPartsList();
-            sRet = executePutConfigMultiple(tempList, pReq, parse, OutMessage, vgList, retList, outList,readsOnly);
+            sRet = executePutConfigMultiple(tempList, pReq, parse, OutMessage, vgList, retList, outList, false);
         }
         else
         {
             strncpy(OutMessage->Request.CommandStr, (pReq->CommandString()).c_str(), COMMAND_STR_SIZE);
-            sRet = executePutConfigSingle(pReq, parse, OutMessage, vgList, retList, outList,readsOnly);
+            sRet = executePutConfigSingle(pReq, parse, OutMessage, vgList, retList, outList, false);
         }
         incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.size());
 
@@ -3150,8 +3149,6 @@ INT Mct4xxDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 
 INT Mct4xxDevice::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
 {
-    int retVal = NoError;
-
     switch( InMessage.Sequence )
     {
         case EmetconProtocol::GetValue_LoadProfile:
@@ -3212,36 +3209,29 @@ INT Mct4xxDevice::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, li
                 InterlockedExchange(&_llpInterest.in_progress, false);
             }
 
-            break;
+            return NoError;
         }
     }
 
-    return retVal;
+    return Inherited::SubmitRetry(InMessage, TimeNow, vgList, retList, outList);
 }
 
 
 INT Mct4xxDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage * > &retList)
 {
-    int retVal = NoError;
-
     switch( InMessage.Sequence )
     {
         case EmetconProtocol::GetValue_LoadProfilePeakReport:
         {
             _llpPeakInterest.time = 0;  //  force a resubmit next time
+
             InterlockedExchange(&_llpPeakInterest.in_progress, false);
-            break;
-        }
 
-        default:
-        {
-            retVal = Inherited::ErrorDecode(InMessage, TimeNow, retList);
-
-            break;
+            return NoError;
         }
     }
 
-    return retVal;
+    return Inherited::ErrorDecode(InMessage, TimeNow, retList);
 }
 
 

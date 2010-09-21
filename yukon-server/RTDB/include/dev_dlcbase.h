@@ -3,28 +3,30 @@
 #include "dev_single.h"
 #include "tbl_route.h"
 #include "tbl_carrier.h"
-#include "dlldefs.h"
 #include "rte_base.h"
-#include "logger.h"
 #include "prot_emetcon.h"
 
-#include <set>
-#include <utility>
-using std::set;
+#include "cmd_dlc.h"
 
+#include <set>
+#include <map>
 
 namespace Cti {
 namespace Devices {
 
 class IM_EX_DEVDB DlcBaseDevice : public CtiDeviceSingle
 {
+public:
+
+    typedef boost::shared_ptr<Devices::Commands::DlcCommand> DlcCommandSPtr;
+    typedef boost::weak_ptr  <Devices::Commands::DlcCommand> DlcCommandWPtr;
+
 private:
 
     typedef CtiDeviceSingle Inherited;
 
     CtiTableDeviceRoute  getDeviceRoute() const;
     CtiTableDeviceRoute &getDeviceRoute();
-    DlcBaseDevice           &setDeviceRoute(const CtiTableDeviceRoute& aRoute);
 
     static unsigned int _lpRetryMultiplier;
     static unsigned int _lpRetryMinimum;
@@ -37,6 +39,12 @@ private:
         DefaultLPRetryMaximum    = 10800    //  maximum is 3 hours
     };
 
+    typedef std::map<long, DlcCommandSPtr> active_command_map;
+
+    active_command_map _activeCommands;
+
+    long _activeIndex;
+
 protected:
 
     CtiTableDeviceCarrier      CarrierSettings;
@@ -44,7 +52,11 @@ protected:
 
     enum
     {
-        LPBlockEvacuationTime    = 300
+        LPBlockEvacuationTime    = 300,
+
+        // Return value to allow non error returns
+        // where error was handled in code.
+        ExecutionComplete = NoError
     };
 
     enum ArmFlags
@@ -56,6 +68,24 @@ protected:
 
     unsigned int getLPRetryRate( unsigned int interval );
 
+    virtual INT executeLoopback ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  return NoMethod;  };
+    virtual INT executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  return NoMethod;  };
+    virtual INT executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  return NoMethod;  };
+    virtual INT executeGetStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  return NoMethod;  };
+    virtual INT executeControl  ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  return NoMethod;  };
+    virtual INT executePutValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  return NoMethod;  };
+    virtual INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  return NoMethod;  };
+    virtual INT executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  return NoMethod;  };
+
+    // Places error onto the retlist, DELETES OUT MESSAGE
+    void returnErrorMessage( int retval, OUTMESS *&om, list< CtiMessage* > &retList, const string &error ) const;
+
+    bool tryExecuteCommand(OUTMESS &OutMessage, DlcCommandSPtr command);
+
+    int decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+
+    void fillOutMessage(OUTMESS &OutMessage, Devices::Commands::DlcCommand::request_t &request);
+
     int executeOnDLCRoute( CtiRequestMsg              *pReq,
                            CtiCommandParser           &parse,
                            list< OUTMESS* >     &tmpOutList,
@@ -63,6 +93,13 @@ protected:
                            list< CtiMessage* >  &retList,
                            list< OUTMESS* >     &outList,
                            bool                  broadcastWritesOnMacroSubroutes );
+
+    virtual INT SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList);
+
+    virtual INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList);
+
+    INT retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, bool expectMore = false ) const;
+    INT decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
     class CommandStore
     {
@@ -117,7 +154,6 @@ public:
 
     CtiTableDeviceCarrier  getCarrierSettings() const;
     CtiTableDeviceCarrier &getCarrierSettings();
-    DlcBaseDevice      &setCarrierSettings( const CtiTableDeviceCarrier & aCarrierSettings );
 
     virtual string getSQLCoreStatement() const;
 
@@ -126,8 +162,7 @@ public:
     virtual LONG getAddress() const;
     virtual LONG getRouteID() const;
 
-    INT retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, bool expectMore = false ) const;
-    INT decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    virtual INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
     virtual bool processAdditionalRoutes( INMESS *InMessage ) const;
     virtual ULONG selectInitialMacroRouteOffset(LONG routeid = 0) const;

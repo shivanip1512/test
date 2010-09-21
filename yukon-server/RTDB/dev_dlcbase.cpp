@@ -15,6 +15,8 @@
 
 using Cti::Protocols::EmetconProtocol;
 
+using namespace Cti::Devices::Commands;
+
 namespace Cti {
 namespace Devices {
 
@@ -22,7 +24,9 @@ unsigned int DlcBaseDevice::_lpRetryMultiplier = 0;
 unsigned int DlcBaseDevice::_lpRetryMinimum    = 0;
 unsigned int DlcBaseDevice::_lpRetryMaximum    = 0;
 
-DlcBaseDevice::DlcBaseDevice()   {}
+DlcBaseDevice::DlcBaseDevice() :
+    _activeIndex(EmetconProtocol::DLCCmd_LAST)
+{}
 
 DlcBaseDevice::DlcBaseDevice(const DlcBaseDevice& aRef)
 {
@@ -33,8 +37,6 @@ DlcBaseDevice::~DlcBaseDevice() {}
 
 DlcBaseDevice& DlcBaseDevice::operator=(const DlcBaseDevice& aRef)
 {
-    int i;
-
     if(this != &aRef)
     {
         Inherited::operator=(aRef);
@@ -56,13 +58,6 @@ CtiTableDeviceRoute& DlcBaseDevice::getDeviceRoute()
     return DeviceRoutes;
 }
 
-DlcBaseDevice& DlcBaseDevice::setDeviceRoute(const CtiTableDeviceRoute& aRoute)
-{
-    CtiLockGuard<CtiMutex> guard(_classMutex);
-    DeviceRoutes = aRoute;
-    return *this;
-}
-
 CtiTableDeviceCarrier  DlcBaseDevice::getCarrierSettings() const
 {
     return CarrierSettings;
@@ -72,13 +67,6 @@ CtiTableDeviceCarrier& DlcBaseDevice::getCarrierSettings()
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
     return CarrierSettings;
-}
-
-DlcBaseDevice& DlcBaseDevice::setCarrierSettings( const CtiTableDeviceCarrier & aCarrierSettings )
-{
-    CtiLockGuard<CtiMutex> guard(_classMutex);
-    CarrierSettings = aCarrierSettings;
-    return *this;
 }
 
 string DlcBaseDevice::getSQLCoreStatement() const
@@ -114,7 +102,7 @@ void DlcBaseDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
     CarrierSettings.DecodeDatabaseReader(rdr);
 
     if( oldAddress && *oldAddress != CarrierSettings.getAddress() )
-    {    
+    {
         purgeDynamicPaoInfo();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -128,6 +116,208 @@ void DlcBaseDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 LONG DlcBaseDevice::getAddress() const   {   return CarrierSettings.getAddress();    }
 LONG DlcBaseDevice::getRouteID() const   {   return DeviceRoutes.getRouteID();       }   //  From CtiTableDeviceRoute
+
+
+INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg        *pReq,
+                                   CtiCommandParser     &parse,
+                                   OUTMESS             *&OutMessage,
+                                   list< CtiMessage* >  &vgList,
+                                   list< CtiMessage* >  &retList,
+                                   list< OUTMESS* >     &outList )
+{
+    int nRet = NoError;
+    bool broadcast = false;
+    list< OUTMESS* > tmpOutList;
+
+    if( OutMessage )
+    {
+        EstablishOutMessagePriority( OutMessage, MAXPRIORITY - 4 );
+    }
+
+    try
+    {
+        switch( parse.getCommand( ) )
+        {
+            case LoopbackRequest:
+            {
+                nRet = executeLoopback( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                break;
+            }
+            case ScanRequest:
+            {
+                nRet = executeScan( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                break;
+            }
+            case GetValueRequest:
+            {
+                nRet = executeGetValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                break;
+            }
+            case PutValueRequest:
+            {
+                nRet = executePutValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                broadcast = true;
+                break;
+            }
+            case ControlRequest:
+            {
+                nRet = executeControl( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                broadcast = true;
+                break;
+            }
+            case GetStatusRequest:
+            {
+                nRet = executeGetStatus( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                break;
+            }
+            case PutStatusRequest:
+            {
+                nRet = executePutStatus( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                broadcast = true;
+                break;
+            }
+            case GetConfigRequest:
+            {
+                nRet = executeGetConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                break;
+            }
+            case PutConfigRequest:
+            {
+                nRet = executePutConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+                broadcast = true;
+                break;
+            }
+            default:
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "Unsupported command on EMETCON route. Command = " << parse.getCommand( ) << endl;
+                }
+                nRet = NoMethod;
+
+                break;
+            }
+        }
+    }
+    catch( BaseCommand::CommandException &e )
+    {
+        returnErrorMessage(e.error_code, OutMessage, retList, e.error_description);
+
+        nRet = ExecutionComplete;
+    }
+
+    if( nRet != NORMAL )
+    {
+        string resultString;
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
+            dout << CtiTime( ) << "   Command: " << pReq->CommandString( ) << endl;
+        }
+
+        resultString = "NoMethod or invalid command.";
+        retList.push_back( CTIDBG_new CtiReturnMsg(getID( ),
+                                                string(OutMessage->Request.CommandStr),
+                                                resultString,
+                                                nRet,
+                                                OutMessage->Request.RouteID,
+                                                OutMessage->Request.MacroOffset,
+                                                OutMessage->Request.Attempt,
+                                                OutMessage->Request.GrpMsgID,
+                                                OutMessage->Request.UserID,
+                                                OutMessage->Request.SOE,
+                                                CtiMultiMsg_vec( )) );
+    }
+    else
+    {
+        long msgId = pReq->UserMessageId();
+        long connHandle = (long)pReq->getConnectionHandle();
+
+        if(OutMessage != NULL)
+        {
+            tmpOutList.push_back( OutMessage );
+            OutMessage = NULL;
+        }
+
+        executeOnDLCRoute(pReq, parse, tmpOutList, vgList, retList, outList, broadcast);
+
+        if (getGroupMessageCount(msgId, connHandle))
+        {
+            for (list< CtiMessage* >::iterator itr = retList.begin(); itr != retList.end(); itr++)
+            {
+                ((CtiReturnMsg*)*itr)->setExpectMore(true);
+            }
+        }
+    }
+
+    return nRet;
+}
+
+
+void DlcBaseDevice::returnErrorMessage( int retval, OUTMESS *&om, list< CtiMessage* > &retList, const string &error ) const
+{
+    retList.push_back(
+        new CtiReturnMsg(
+                getID(),
+                om->Request,
+                getName() + " / " + error,
+                retval));
+
+    delete om;
+    om = NULL;
+}
+
+
+INT DlcBaseDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList)
+try
+{
+    int status = decodeCommand(*InMessage, TimeNow, vgList, retList, outList);
+
+    if( status == NoResultDecodeMethod )
+    {
+        status = Inherited::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
+    }
+
+    return status;
+}
+catch( BaseCommand::CommandException &e )
+{
+    retList.push_back(
+        new CtiReturnMsg(
+            getID(),
+            InMessage->Return,
+            getName() + " / " + e.error_description,
+            e.error_code));
+
+    return ExecutionComplete;
+}
+
+
+INT DlcBaseDevice::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList)
+try
+{
+    int status = decodeCommand(InMessage, TimeNow, vgList, retList, outList);
+
+    if( status == NoResultDecodeMethod )
+    {
+        status = Inherited::SubmitRetry(InMessage, TimeNow, vgList, retList, outList);
+    }
+
+    return status;
+}
+catch( BaseCommand::CommandException &e )
+{
+    retList.push_back(
+        new CtiReturnMsg(
+            getID(),
+            InMessage.Return,
+            getName() + " / " + e.error_description,
+            e.error_code));
+
+    return ExecutionComplete;
+}
 
 
 INT DlcBaseDevice::retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, bool expectMore ) const
@@ -372,6 +562,165 @@ INT DlcBaseDevice::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage* >
     }
 
     return ErrReturn;
+}
+
+
+int DlcBaseDevice::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    //  We need to protect _activeCommands
+    CtiLockGuard<CtiMutex> lock(getMux());
+
+    active_command_map::iterator command_itr = _activeCommands.find(InMessage.Sequence);
+
+    if( command_itr == _activeCommands.end() )
+    {
+        return NoResultDecodeMethod;
+    }
+
+    if( ! command_itr->second )
+    {
+        _activeCommands.erase(command_itr);
+
+        return NoResultDecodeMethod;
+    }
+
+    DlcCommand &command = *(command_itr->second);
+
+    CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return);
+
+    try
+    {
+        DlcCommand::request_ptr ptr;
+        string description;
+
+        if( InMessage.EventCode )
+        {
+            ptr = command.error(TimeNow, InMessage.EventCode, description);
+        }
+        else
+        {
+            const DSTRUCT &dst = InMessage.Buffer.DSt;
+
+            const DlcCommand::payload_t
+                payload(
+                    dst.Message,
+                    dst.Message + std::min<unsigned short>(dst.Length, DSTRUCT::MessageLength_Max));
+
+            std::vector<DlcCommand::point_data> points;
+
+            ptr = command.decode(TimeNow, InMessage.Return.ProtocolInfo.Emetcon.Function, payload, description, points);
+
+            for each( const DlcCommand::point_data &pdata in points )
+            {
+                point_info pi;
+
+                pi.description  = pdata.description;
+                pi.quality      = pdata.quality;
+                pi.value        = pdata.value;
+                pi.freeze_bit   = false;
+
+                insertPointDataReport(pdata.type, pdata.offset, ReturnMsg, pi, pdata.name, pdata.time);
+            }
+        }
+
+        ReturnMsg->setResultString(description);
+
+        if( ptr.get() )
+        {
+            OUTMESS *OutMessage = new OUTMESS;
+
+            InEchoToOut(InMessage, OutMessage);
+
+            fillOutMessage(*OutMessage, *ptr);
+
+            CtiRequestMsg newReq(getID(),
+                                 InMessage.Return.CommandStr,
+                                 InMessage.Return.UserID,
+                                 InMessage.Return.GrpMsgID,
+                                 InMessage.Return.RouteID,
+                                 selectInitialMacroRouteOffset(InMessage.Return.RouteID),
+                                 InMessage.Return.Attempt,
+                                 0,
+                                 InMessage.Priority);
+
+            newReq.setConnectionHandle((void *)InMessage.Return.Connection);
+
+            executeOnDLCRoute(&newReq,
+                              CtiCommandParser(newReq.CommandString()),
+                              list<OUTMESS *>(1, OutMessage),
+                              vgList, retList, outList, false);
+        }
+        else
+        {
+            //  all done!
+            _activeCommands.erase(command_itr);
+        }
+
+        retMsgHandler(InMessage.Return.CommandStr, NoError, ReturnMsg, vgList, retList);
+
+        return NORMAL;
+    }
+    catch( BaseCommand::CommandException &e )
+    {
+        ReturnMsg->setStatus(e.error_code);
+        ReturnMsg->setResultString(getName() + " / " + e.error_description);
+
+        retList.push_back(ReturnMsg);
+
+        //  broken!
+        _activeCommands.erase(command_itr);
+
+        return ExecutionComplete;
+    }
+}
+
+
+void DlcBaseDevice::fillOutMessage(OUTMESS &OutMessage, DlcCommand::request_t &request)
+{
+    OutMessage.DeviceID  = getID();
+    OutMessage.TargetID  = getID();
+    OutMessage.Port      = getPortID();
+    OutMessage.Remote    = getAddress();
+    OutMessage.TimeOut   = 2;
+    OutMessage.Retry     = 2;
+
+    OutMessage.Request.RouteID     = getRouteID();
+    OutMessage.Request.MacroOffset = selectInitialMacroRouteOffset(OutMessage.Request.RouteID);
+
+    OutMessage.Buffer.BSt.Function = request.function;
+    OutMessage.Buffer.BSt.IO       = request.io();
+    OutMessage.Buffer.BSt.Length   = request.length();
+
+    DlcCommand::payload_t payload = request.payload();
+
+    std::copy(payload.begin(),
+              payload.begin() + std::min<unsigned>(payload.size(), BSTRUCT::MessageLength_Max),
+              OutMessage.Buffer.BSt.Message);
+}
+
+
+bool DlcBaseDevice::tryExecuteCommand(OUTMESS &OutMessage, DlcCommandSPtr command)
+{
+    DlcCommand::request_ptr request = command->execute(CtiTime());
+
+    if( request.get() )
+    {
+        //  ExecuteRequest already has the CtiDeviceBase::_classMutex at this point, so we'll count on that protecting _activeCommands
+
+        //  PIL is single-threaded, so this is threadsafe
+        if( _activeCommands.empty() )
+        {
+            _activeIndex = EmetconProtocol::DLCCmd_LAST;
+        }
+
+        fillOutMessage(OutMessage, *request);
+
+        OutMessage.Sequence = _activeIndex;
+
+        _activeCommands.insert(std::make_pair(_activeIndex++, command));
+    }
+
+    return request.get();
 }
 
 

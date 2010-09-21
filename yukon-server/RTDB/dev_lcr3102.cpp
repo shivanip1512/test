@@ -22,12 +22,6 @@ Lcr3102Device::Lcr3102Device( const Lcr3102Device &aRef )
 }
 
 
-Lcr3102Device::~Lcr3102Device( )
-{
-
-}
-
-
 Lcr3102Device& Lcr3102Device::operator=( const Lcr3102Device &aRef )
 {
     if(this != &aRef)
@@ -37,80 +31,6 @@ Lcr3102Device& Lcr3102Device::operator=( const Lcr3102Device &aRef )
 //        CtiLockGuard<CtiMutex> guard(_classMutex);            // Protect this device!
     }
     return *this;
-}
-
-
-INT Lcr3102Device::ExecuteRequest ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
-{
-    int nRet = NoMethod;
-
-    bool broadcast = false;
-    list< OUTMESS* > tmpOutList;
-
-    if( OutMessage )
-    {
-        EstablishOutMessagePriority( OutMessage, MAXPRIORITY - 4 );
-    }
-
-    switch( parse.getCommand( ) )
-    {
-        case GetValueRequest:
-        {
-            nRet = executeGetValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            break;
-        }
-        case ScanRequest:
-        {
-            nRet = executeScan( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            break;
-        }
-        case GetConfigRequest:
-        {
-            nRet = executeGetConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            break;
-        }
-        case PutConfigRequest:
-        {
-            nRet = executePutConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            break;
-        }
-    }
-
-    if( nRet != NORMAL )
-    {
-        string resultString;
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
-            dout << CtiTime( ) << "   Command: " << pReq->CommandString( ) << endl;
-        }
-
-        resultString = "NoMethod or invalid command.";
-        retList.push_back( CTIDBG_new CtiReturnMsg(getID( ),
-                                                string(OutMessage->Request.CommandStr),
-                                                resultString,
-                                                nRet,
-                                                OutMessage->Request.RouteID,
-                                                OutMessage->Request.MacroOffset,
-                                                OutMessage->Request.Attempt,
-                                                OutMessage->Request.GrpMsgID,
-                                                OutMessage->Request.UserID,
-                                                OutMessage->Request.SOE,
-                                                CtiMultiMsg_vec( )) );
-    }
-    else
-    {
-        if(OutMessage != NULL)
-        {
-            tmpOutList.push_back( OutMessage );
-            OutMessage = NULL;
-        }
-
-        nRet = executeOnDLCRoute(pReq, parse, tmpOutList, vgList, retList, outList, broadcast);
-    }
-
-    return nRet;
 }
 
 
@@ -308,8 +228,8 @@ INT Lcr3102Device::decodeGetValueDutyCycle(INMESS *InMessage, CtiTime &TimeNow, 
         /* A nice little workaround. Firmware isn't working as intended right now and isn't correctly
            giving back the Current Transformer number from the message in the function above. This
            statement allows us to get the correct CT from the function we sent originally.
-           In the future we will probably still want to rely on the message decoding to get the CT 
-           back since the message from the LCR SHOULD return the correct CT... but for now this is a 
+           In the future we will probably still want to rely on the message decoding to get the CT
+           back since the message from the LCR SHOULD return the correct CT... but for now this is a
            reasonable fix.                                                                              */
         currentTransformer = InMessage->Return.ProtocolInfo.Emetcon.Function - FuncRead_DutyCyclePos + 1;
 
@@ -1110,7 +1030,7 @@ Lcr3102Device::CommandSet Lcr3102Device::initCommandStore()
     cs.insert(CommandStore(EmetconProtocol::GetValue_DutyCycle,         EmetconProtocol::IO_Function_Read, FuncRead_DutyCyclePos,         FuncRead_DutyCycleLen));
     cs.insert(CommandStore(EmetconProtocol::PutConfig_Raw,              EmetconProtocol::IO_Write,         0,                             0));    // filled in later
     cs.insert(CommandStore(EmetconProtocol::GetConfig_Raw,              EmetconProtocol::IO_Read,          0,                             0));    // ...ditto
-                                                                                                                        
+
     /****************************** Data Reads *****************************/
     cs.insert(CommandStore(EmetconProtocol::GetValue_TransmitPower,   EmetconProtocol::IO_Read, DataRead_TransmitPowerPos,  DataRead_TransmitPowerLen));
     cs.insert(CommandStore(EmetconProtocol::GetConfig_Time,           EmetconProtocol::IO_Read, DataRead_DeviceTimePos,     DataRead_DeviceTimeLen));

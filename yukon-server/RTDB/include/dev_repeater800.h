@@ -24,6 +24,8 @@ protected:
         Rpt800_PFCountLen =    3
     };
 
+    virtual INT ResultDecode(INMESS*InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+
     INT decodeGetValuePFCount(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
 public:
@@ -34,9 +36,6 @@ public:
    virtual ~Repeater800Device();
 
    Repeater800Device& operator=(const Repeater800Device& aRef);
-
-   virtual INT ResultDecode(INMESS*InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-
 };
 
 }

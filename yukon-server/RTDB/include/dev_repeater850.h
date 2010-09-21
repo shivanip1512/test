@@ -25,18 +25,15 @@ protected:
         Rpt850_SSPecLen =    6
     };
 
-    enum 
+    enum
     {
         SspecRev_BetaLo = 9,
         SspecRev_BetaHi = 200
     };
 
+    virtual INT ResultDecode(INMESS*InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+
     INT decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-
-public:
-
-   virtual INT ResultDecode(INMESS*InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-
 };
 
 }

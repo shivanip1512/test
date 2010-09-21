@@ -27,12 +27,6 @@ private:
 
     static CtiDate parseDateValue(string date_str);
 
-    typedef boost::ptr_map<long, Devices::Commands::Mct410Command> active_command_map;
-
-    active_command_map _activeCommands;
-
-    long _activeIndex;
-
     struct daily_read_info_t
     {
         enum RequestType
@@ -99,12 +93,6 @@ private:
     void readSspec(const OUTMESS &OutMessage, list<OUTMESS *> &outList) const;
 
 protected:
-
-    bool tryExecuteCommand(OUTMESS &OutMessage, std::auto_ptr<Devices::Commands::Mct410Command> hourlyRead);
-
-    int decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-
-    void fillOutMessage(OUTMESS &OutMessage, Devices::Commands::DlcCommand::request_t &request);
 
     virtual bool getOperation( const UINT &cmd,  BSTRUCT &bst ) const;
 
@@ -368,7 +356,7 @@ protected:
 
     virtual INT executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
     virtual INT executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
-    virtual INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool readsOnly );
+    virtual INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
 
     Mct4xxDevice::ConfigPartsList getPartsList();
 

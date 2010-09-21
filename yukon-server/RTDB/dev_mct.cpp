@@ -423,160 +423,6 @@ MctDevice::CommandSet MctDevice::initCommandStore()
 }
 
 
-INT MctDevice::ExecuteRequest( CtiRequestMsg              *pReq,
-                                  CtiCommandParser           &parse,
-                                  OUTMESS                   *&OutMessage,
-                                  list< CtiMessage* >  &vgList,
-                                  list< CtiMessage* >  &retList,
-                                  list< OUTMESS* >     &outList )
-{
-    int nRet = NoError;
-    bool broadcast = false;
-    list< OUTMESS* > tmpOutList;
-
-    if( OutMessage )
-    {
-        EstablishOutMessagePriority( OutMessage, MAXPRIORITY - 4 );
-    }
-
-    try
-    {
-        switch( parse.getCommand( ) )
-        {
-            case LoopbackRequest:
-            {
-                nRet = executeLoopback( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                break;
-            }
-            case ScanRequest:
-            {
-                nRet = executeScan( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                break;
-            }
-            case GetValueRequest:
-            {
-                nRet = executeGetValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                break;
-            }
-            case PutValueRequest:
-            {
-                nRet = executePutValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                broadcast = true;
-                break;
-            }
-            case ControlRequest:
-            {
-                nRet = executeControl( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                broadcast = true;
-                break;
-            }
-            case GetStatusRequest:
-            {
-                nRet = executeGetStatus( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                break;
-            }
-            case PutStatusRequest:
-            {
-                nRet = executePutStatus( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                broadcast = true;
-                break;
-            }
-            case GetConfigRequest:
-            {
-                nRet = executeGetConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                break;
-            }
-            case PutConfigRequest:
-            {
-                nRet = executePutConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-                broadcast = true;
-                break;
-            }
-            default:
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "Unsupported command on EMETCON route. Command = " << parse.getCommand( ) << endl;
-                }
-                nRet = NoMethod;
-
-                break;
-            }
-        }
-    }
-    catch( BaseCommand::CommandException &e )
-    {
-        returnErrorMessage(e.error_code, OutMessage, retList, e.error_description);
-
-        nRet = ExecutionComplete;
-    }
-
-    if( nRet != NORMAL )
-    {
-        string resultString;
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
-            dout << CtiTime( ) << "   Command: " << pReq->CommandString( ) << endl;
-        }
-
-        resultString = "NoMethod or invalid command.";
-        retList.push_back( CTIDBG_new CtiReturnMsg(getID( ),
-                                                string(OutMessage->Request.CommandStr),
-                                                resultString,
-                                                nRet,
-                                                OutMessage->Request.RouteID,
-                                                OutMessage->Request.MacroOffset,
-                                                OutMessage->Request.Attempt,
-                                                OutMessage->Request.GrpMsgID,
-                                                OutMessage->Request.UserID,
-                                                OutMessage->Request.SOE,
-                                                CtiMultiMsg_vec( )) );
-    }
-    else
-    {
-        long msgId = pReq->UserMessageId();
-        long connHandle = (long)pReq->getConnectionHandle();
-
-        if(OutMessage != NULL)
-        {
-            tmpOutList.push_back( OutMessage );
-            OutMessage = NULL;
-        }
-
-        executeOnDLCRoute(pReq, parse, tmpOutList, vgList, retList, outList, broadcast);
-
-        if (getGroupMessageCount(msgId, connHandle))
-        {
-            for (list< CtiMessage* >::iterator itr = retList.begin(); itr != retList.end(); itr++)
-            {
-                ((CtiReturnMsg*)*itr)->setExpectMore(true);
-            }
-        }
-    }
-
-
-
-    return nRet;
-}
-
-
-void MctDevice::returnErrorMessage( int retval, OUTMESS *&om, list< CtiMessage* > &retList, const string &error ) const
-{
-    retList.push_back(
-        new CtiReturnMsg(
-                getID(),
-                om->Request,
-                getName() + " / " + error,
-                retval));
-
-    delete om;
-    om = NULL;
-}
-
-
 /*****************************************************************************************
  *  The general scan for a mct type device is performed and collects DEMAND accumulators
  *  from the device, as well as status info, if the device can supply it in the same read.
@@ -829,14 +675,25 @@ INT MctDevice::LoadProfileScan(CtiRequestMsg *pReq,
 
 INT MctDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    INT status = NORMAL;
+    INT status = ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
-    extractDynamicPaoInfo(*InMessage);
+    if( status == NoResultDecodeMethod )
+    {
+        status = Inherited::ResultDecode(InMessage, TimeNow, vgList, retList, outList);
+    }
 
-    status = ModelDecode(InMessage, TimeNow, vgList, retList, outList);
+    if( status == NoResultDecodeMethod )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
+    }
 
     if( !status && InMessage->Buffer.DSt.Length )
     {
+        //  living in here in case the address of the D word doesn't match
+        extractDynamicPaoInfo(*InMessage);
+
         CtiPointStatusSPtr point_powerfail, point_generalalarm;
         CtiReturnMsg *retMsg;
         string pointResult;
@@ -999,12 +856,7 @@ INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
-            }
-            status = NoMethod;
+            status = NoResultDecodeMethod;
             break;
         }
     }
@@ -2199,8 +2051,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg                  *pReq,
                                    OUTMESS                        *&OutMessage,
                                    list< CtiMessage* >      &vgList,
                                    list< CtiMessage* >      &retList,
-                                   list< OUTMESS* >         &outList,
-                                   bool readsOnly)
+                                   list< OUTMESS* >         &outList)
 {
     bool  found = false;
     INT   function;
@@ -3897,91 +3748,6 @@ bool MctDevice::hasVariableDemandRate( int type, int sspec )
     return retVal;
 }
 
-
-INT MctDevice::extractStatusData( const INMESS *InMessage, INT type, USHORT *StatusData)
-{
-   INT i;
-   INT status = NORMAL;
-   const DSTRUCT &DSt = InMessage->Buffer.DSt;
-
-   /* extract status data by device type */
-   switch(type)
-   {
-   case TYPEMCT210:
-   case TYPEMCT310:
-      /* only 2 bytes for these guys */
-      StatusData[4] = MAKESHORT(DSt.Message[0], 0);
-      StatusData[5] = MAKESHORT(DSt.Message[1], 0);
-      break;
-
-   case TYPEMCT318:
-   case TYPEMCT318L:
-   case TYPEMCT360:
-   case TYPEMCT370:
-      /* only 1 byte of status data */
-      StatusData[0] = MAKESHORT (DSt.Message[0], 0);
-      break;
-
-   case TYPEMCT248:
-      /* 248'S must be change around alittle so it looks like the
-      other devices because we must read more data to get the
-      mct248 relay status */
-
-      for(i = 0; i < 6; i++)
-      {
-         /* put the data in order for translating */
-         StatusData[i] = MAKESHORT(DSt.Message[i + 7], 0);
-      }
-
-      /* make the cap status the last byte */
-      StatusData[7] = MAKESHORT(DSt.Message[0], 0);
-      break;
-
-   default:
-      for(i = 0; i < 7; i++)
-      {
-         /* put the data in order for translating */
-         StatusData[i] = MAKESHORT(DSt.Message[i], 0);
-
-      }
-      StatusData[7] = 0;
-
-   }   /* end of device type switch */
-
-   return status;
-}
-
-// static method
-INT MctDevice::verifyAlphaBuffer( const DSTRUCT &DSt )
-{
-   int x;
-   int status = NORMAL;
-
-   /* this indicates that the data we have back is the
-    * Alpha Meter Demand Data and we need to make sure
-    * that the data buffer is good (if each byte is the
-    * same and not 0 its bad).
-    */
-
-   if(DSt.Message[1] != 0)
-   {
-      /* check to make sure that all values are not the same */
-      for(x = 2; x < DSt.Length; x++)
-      {
-         if(DSt.Message[x - 1] != DSt.Message[x])
-         {
-            break;   /* values are different buffer is good */
-         }
-      }
-
-      if(x == DSt.Length)
-      {
-         status = ALPHABUFFERERROR;  /* went through the whole loop and all is was the same */
-      }
-   }
-
-   return status;
-}
 
 bool MctDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {

@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio)
 
     CtiCommandParser        parse( "putconfig emetcon centron display 5x1 test 0s errors disable" );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
 
     BOOST_CHECK_EQUAL(    2 , om->Buffer.BSt.Length );
     BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio)
 
     CtiCommandParser        parse( "putconfig emetcon centron ratio 40 display 5x1 test 0s errors disable" );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
 
     BOOST_CHECK_EQUAL(    3 , om->Buffer.BSt.Length );
     BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -222,7 +222,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_4x1_1s_ena
 
     CtiCommandParser        parse( "putconfig emetcon centron display 4x1 test 1s errors enable" );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
 
     BOOST_CHECK_EQUAL(    2 , om->Buffer.BSt.Length );
     BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_4x1_1s_enable
 
     CtiCommandParser        parse( "putconfig emetcon centron ratio 60 display 4x1 test 1s errors enable" );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
 
     BOOST_CHECK_EQUAL(    3 , om->Buffer.BSt.Length );
     BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -261,7 +261,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_4x10_7s_en
 
     CtiCommandParser        parse( "putconfig emetcon centron display 4x10 test 7s errors enable" );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
 
     BOOST_CHECK_EQUAL(    2 , om->Buffer.BSt.Length );
     BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_4x10_7s_enabl
 
     CtiCommandParser        parse( "putconfig emetcon centron ratio 200 display 4x10 test 7s errors enable" );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
 
     BOOST_CHECK_EQUAL(    3 , om->Buffer.BSt.Length );
     BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -302,7 +302,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_invalid_di
 
     BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
 
     BOOST_CHECK_EQUAL(    1 , retList.size() );
 
@@ -328,7 +328,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_displ
 
     BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
 
     BOOST_CHECK_EQUAL(    1 , retList.size() );
 
@@ -354,7 +354,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_invalid_te
 
     BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
 
     BOOST_CHECK_EQUAL(    1 , retList.size() );
 
@@ -380,7 +380,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_test)
 
     BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
 
     BOOST_CHECK_EQUAL(    1 , retList.size() );
 
@@ -406,7 +406,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_out_of_bounds
 
     BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
 
     BOOST_CHECK_EQUAL(    1 , retList.size() );
 
@@ -430,7 +430,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_errors)
 
     CtiCommandParser        parse( "putconfig emetcon centron display 5x1 test 0s" );
 
-    BOOST_CHECK_EQUAL( NoMethod , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoMethod , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
 
     BOOST_CHECK_EQUAL(    0 , om->Buffer.BSt.Length );
 }
@@ -447,7 +447,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_test)
 
     CtiCommandParser        parse( "putconfig emetcon centron display 5x1 errors enable" );
 
-    BOOST_CHECK_EQUAL( NoMethod , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoMethod , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
 
     BOOST_CHECK_EQUAL(    0 , om->Buffer.BSt.Length );
 }
@@ -464,7 +464,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_display)
 
     CtiCommandParser        parse( "putconfig emetcon centron test 0 errors enable" );
 
-    BOOST_CHECK_EQUAL( NoMethod , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoMethod , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
 
     BOOST_CHECK_EQUAL(    0 , om->Buffer.BSt.Length );
 }
@@ -481,7 +481,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_all_with_ratio)
 
     CtiCommandParser        parse( "putconfig emetcon centron ratio 40" );
 
-    BOOST_CHECK_EQUAL( NoMethod , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoMethod , mct410.executePutConfig(&request, parse, om, vgList , retList, outList) );
 
     BOOST_CHECK_EQUAL(    0 , om->Buffer.BSt.Length );
 }

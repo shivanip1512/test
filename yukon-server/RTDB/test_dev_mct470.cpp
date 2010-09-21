@@ -16,6 +16,7 @@ struct test_Mct470Device : Mct470Device
     using Mct470Device::extractDynamicPaoInfo;
     using Mct470Device::convertTimestamp;
     using Mct470Device::computeResolutionByte;
+    using Mct470Device::ResultDecode;
 };
 
 

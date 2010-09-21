@@ -89,6 +89,8 @@ protected:
     int parseLoadValue(CtiCommandParser &parse);
     int parsePreviousValue(CtiCommandParser &parse);
 
+    virtual INT ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+
     INT decodeGetValueTransmitPower        ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueTemperature          ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueIntervalLast         ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
@@ -114,20 +116,14 @@ protected:
     void decodeMessageTime                 ( BYTE Message[], CtiTime &time);
     void decodeMessageTransmitPower        ( BYTE Message[], int &transmitPower );
 
+    virtual INT ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, list<CtiMessage*>& retList);
+
 public:
 
     Lcr3102Device( );
     Lcr3102Device( const Lcr3102Device &aRef );
 
-    virtual ~Lcr3102Device( );
-
     Lcr3102Device& operator=( const Lcr3102Device &aRef );
-
-    virtual INT ExecuteRequest ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-
-    virtual INT ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, list<CtiMessage*>& retList);
-
-    virtual INT ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
     virtual LONG getAddress() const;
 
