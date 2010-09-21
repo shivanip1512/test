@@ -83,7 +83,7 @@ public class JobManagerImpl implements JobManager {
                 final RunnableRetryJob runnable = new RunnableRetryJob(status) {
                     @Override
                     protected void afterRun() {
-                        doScheduleScheduledJob(status.getJob());
+                        doScheduleScheduledJob(status.getJob(), null);
                     }
                 };
                 Date nextStartupTime = getNextStartupTime();
@@ -96,7 +96,7 @@ public class JobManagerImpl implements JobManager {
             // this means we never do a catchup if the server was
             // off when a job was supposed to run
             if (!job.isDisabled()) {
-                doScheduleScheduledJob(job);
+                doScheduleScheduledJob(job, null);
             } else {
                 log.debug("Skipping disabled repeating job: " + job);
             }
@@ -220,7 +220,7 @@ public class JobManagerImpl implements JobManager {
         repeatingJob.setCronString(cronExpression);
         scheduledRepeatingJobDao.save(repeatingJob);
 
-        doScheduleScheduledJob(repeatingJob);
+        doScheduleScheduledJob(repeatingJob, null);
         
         return repeatingJob;
     }
@@ -238,17 +238,18 @@ public class JobManagerImpl implements JobManager {
         job.setJobProperties(properties);
     }
 
-    private void doScheduleScheduledJob(final ScheduledRepeatingJob job) {
+    private void doScheduleScheduledJob(final ScheduledRepeatingJob job, Date lastTimeScheduled) {
         log.debug("doScheduleScheduledJob for " + job);
         try {
+            Date getAfterTime = lastTimeScheduled != null ? lastTimeScheduled : timeSource.getCurrentTime();
+            final Date nextRuntime = getNextRuntime(job, getAfterTime);
             Runnable runnable = new BaseRunnableJob(job) {
                 @Override
                 protected void afterRun() {
-                    doScheduleScheduledJob(job);
+                    doScheduleScheduledJob(job, nextRuntime);
                 }
             };
 
-            Date nextRuntime = getNextRuntime(job, timeSource.getCurrentTime());
             if (nextRuntime != null) {
             	
             	doSchedule(job, runnable, nextRuntime);
@@ -346,7 +347,7 @@ public class JobManagerImpl implements JobManager {
             ScheduledRepeatingJob repeatingJob = (ScheduledRepeatingJob) job;
             
             // put it into the schedule
-            doScheduleScheduledJob(repeatingJob);
+            doScheduleScheduledJob(repeatingJob, null);
         }
         
         
