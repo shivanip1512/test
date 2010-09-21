@@ -261,9 +261,10 @@ public class ContactController extends AbstractConsumerController {
                                                                         "addNotification",
                                                                         null);
         if (addNotification != null) {
+            /* Default the notification to home phone. */
             LiteContactNotification notification = new LiteContactNotification(-1,
                                                                                contactId,
-                                                                               0,
+                                                                               ContactNotificationType.HOME_PHONE.getDefinitionId(),
                                                                                "N",
                                                                                "");
             notificationList.add(notification);
