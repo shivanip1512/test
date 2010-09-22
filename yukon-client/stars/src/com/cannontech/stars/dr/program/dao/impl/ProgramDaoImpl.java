@@ -62,12 +62,12 @@ public class ProgramDaoImpl implements ProgramDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Program> getByAppliances(final List<Appliance> applianceList) {
-        final List<Integer> programIdList = new ArrayList<Integer>(applianceList.size());
+        final List<Integer> assignedProgramIdList = new ArrayList<Integer>(applianceList.size());
         for (final Appliance appliance : applianceList) {
             Integer programId = appliance.getProgramId();
-            programIdList.add(programId);
+            assignedProgramIdList.add(programId);
         }
-        List<Program> programList = getByProgramIds(programIdList);
+        List<Program> programList = getByAssignedProgramIds(assignedProgramIdList);
         return programList;
     }
 
@@ -135,11 +135,11 @@ public class ProgramDaoImpl implements ProgramDao {
     
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<Program> getByProgramIds(final List<Integer> programIdList) {
+    public List<Program> getByAssignedProgramIds(final List<Integer> assignedProgramIdList) {
         final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append(selectSql);
         sqlBuilder.append(" AND pwp.ProgramID IN (");
-        sqlBuilder.append(programIdList);
+        sqlBuilder.append(assignedProgramIdList);
         sqlBuilder.append(")");
         sqlBuilder.append(" ORDER BY ProgramOrder");
         
@@ -148,6 +148,18 @@ public class ProgramDaoImpl implements ProgramDao {
         return programList;
     }
 
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<Program> getByProgramIds(final List<Integer> programIdList) {
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(selectSql);
+        sql.append(" AND PWP.DeviceId").in(programIdList);
+        sql.append(" ORDER BY ProgramOrder");
+        
+        List<Program> programList = yukonJdbcTemplate.query(sql, new ProgramRowMapper(yukonJdbcTemplate));
+        return programList;
+    }
+    
     @Override
     @Transactional(readOnly = true)
     public Program getByProgramName(String programName,

@@ -3,6 +3,10 @@ package com.cannontech.stars.dr.optout.model;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.Instant;
+import org.joda.time.Interval;
+import org.joda.time.ReadableInterval;
+
 import com.cannontech.stars.dr.program.model.Program;
 import com.google.common.collect.Lists;
 
@@ -107,6 +111,18 @@ public class OverrideHistory {
 	public void setCountedAgainstLimit(boolean countedAgainstLimit) {
 		this.countedAgainstLimit = countedAgainstLimit;
 	}
+	
+    public ReadableInterval getInterval() {
+        Interval interval;
+        if (stopDate == null) {
+            Instant stopInstant = null;
+            interval = new Interval(new Instant(startDate), stopInstant);
+        } else {
+            interval = new Interval(new Instant(startDate), new Instant(stopDate));
+        }
+        return interval;
+    }
+
 	
 	public OverrideHistory getACopy() {
 
@@ -214,4 +230,5 @@ public class OverrideHistory {
 			return false;
 		return true;
 	}
+
 }

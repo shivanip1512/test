@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.hardware.dao;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.Interval;
 import org.joda.time.ReadableInstant;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -110,4 +111,14 @@ public interface LMHardwareControlGroupDao {
      * @return
      */
     public List<DistinctEnrollment> getDistinctEnrollments(int accountId, boolean past);
+
+    /**
+     * This method retrieves all enrollments that intersect with the supplied interval.  This
+     * also includes active enrollments that would intersect with the intersection.
+     * @return
+     */
+    public List<LMHardwareControlGroup> getIntersectingEnrollments(int accountId,
+                                                                   int inventoryId,
+                                                                   int loadGroupId,
+                                                                   Interval controlHistoryInterval);
 }

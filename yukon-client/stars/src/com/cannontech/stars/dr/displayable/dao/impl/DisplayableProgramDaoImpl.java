@@ -111,8 +111,8 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
             List<Appliance> applianceList = applianceDao.getAssignedAppliancesByAccountId(accountId);
             programList = programDao.getByAppliances(applianceList);
         } else {
-            List<Integer> programIds = lmHardwareControlGroupDao.getPastEnrollmentProgramIds(accountId);
-            programList = programDao.getByProgramIds(programIds);
+            List<Integer> assignedProgramIds = lmHardwareControlGroupDao.getPastEnrollmentProgramIds(accountId);
+            programList = programDao.getByAssignedProgramIds(assignedProgramIds);
         }
 
         return getForAccount(accountId, userContext, controlPeriod, applyFilters, programList, past);

@@ -144,7 +144,8 @@ public enum ReportTypes {
     //TODO  STARS_AMR_SUMMARY("STARS AMR Summary", StarsAMRSummaryModel.class, ReportGroup.STARS),
     STARS_AMR_DETAIL("STARS AMR Detail", StarsAMRDetailModel.class, ReportGroup.STARS,
         "Detailed report of meters assigned to customers; includes account information, meter information, and latest archived kWh."),
-    
+    OPT_OUT_INFO("Opt Out Info", OptOutInfoController.class, ReportGroup.STARS),
+        
     // commercial curtailment
     CCURT_EVENT_SUMMARY("Event Summary", CurtailmentEventSummaryController.class, ReportGroup.CCURT,
         "Detail report of curtailment events for C&I customers."),

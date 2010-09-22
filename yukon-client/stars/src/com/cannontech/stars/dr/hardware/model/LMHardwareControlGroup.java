@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.hardware.model;
 
 import org.joda.time.Instant;
+import org.joda.time.Interval;
 
 import com.cannontech.user.UserUtils;
 
@@ -202,6 +203,10 @@ public class LMHardwareControlGroup implements Cloneable{
     	}
     	
     	return false;
+    }
+
+    public Interval getInterval() {
+        return new Interval(groupEnrollStart, groupEnrollStop);
     }
     
 }

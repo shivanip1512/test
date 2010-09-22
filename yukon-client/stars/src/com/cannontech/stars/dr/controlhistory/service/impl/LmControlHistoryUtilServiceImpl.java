@@ -1,16 +1,25 @@
 package com.cannontech.stars.dr.controlhistory.service.impl;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.joda.time.Duration;
+import org.joda.time.Interval;
 import org.joda.time.ReadableInstant;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.stars.dr.controlhistory.service.LmControlHistoryUtilService;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.xml.serialize.ControlHistory;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilService {
 
+    private LMHardwareControlGroupDao lmHardwareControlGroupDao;
+    
     public Duration calculateCurrentEnrollmentControlPeriod(ControlHistory controlHistory,
                                                             Duration controlHistoryTotal,
                                                             ReadableInstant controlHistoryStopDateTime,
@@ -182,4 +191,44 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
         
         return controlHistoryTotal;
     }
+    
+    @Override
+    public List<Interval> controlHistoryEnrollmentIntervals(ControlHistory controlHistory,
+                                                            int accountId,
+                                                            int inventoryId,
+                                                            int loadGroupId){
+        // Build up a sington list from the control history event.
+        Interval controlHistoryInterval = 
+            new Interval(controlHistory.getStartInstant(), controlHistory.getStopInstant());
+        List<Interval> controlHistoryIntervalList = Collections.singletonList(controlHistoryInterval);
+        
+        // Get the enrollments that intersect with the supplied control history
+        List<LMHardwareControlGroup> enrollments = 
+            lmHardwareControlGroupDao.getIntersectingEnrollments(accountId,
+                                                                 inventoryId,
+                                                                 loadGroupId,
+                                                                 controlHistoryInterval);
+     
+        // Get a list of intervales from the list of enrollments
+        List<Interval> enrollmentIntervals = 
+            Lists.transform(enrollments, new Function<LMHardwareControlGroup, Interval>() {
+
+                @Override
+                public Interval apply(LMHardwareControlGroup lmHardwareControlGroup) {
+                    return lmHardwareControlGroup.getInterval();
+                }
+            
+            });
+        
+        List<Interval> enrollmentControlHistoryList = 
+            TimeUtil.overlaps(controlHistoryIntervalList, enrollmentIntervals);
+        
+        return enrollmentControlHistoryList;
+    }
+
+    @Autowired
+    public void setLmHardwareControlGroupDao(LMHardwareControlGroupDao lmHardwareControlGroupDao) {
+        this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
+    }
+    
 }

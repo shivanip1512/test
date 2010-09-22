@@ -17,6 +17,8 @@ public interface ProgramDao {
 
     public List<Program> getByAppliances(List<Appliance> applianceList); 
     
+    public List<Program> getByAssignedProgramIds(List<Integer> assignedProgramIdList);
+    
     public List<Program> getByProgramIds(List<Integer> programIdList);
     
     /**

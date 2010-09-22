@@ -675,18 +675,35 @@ public class LMControlHistoryUtil {
 
     
     private static StarsLMControlHistory buildStarsControlHistoryForPeriod(LiteStarsLMControlHistory liteCtrlHist, StarsCtrlHistPeriod period, DateTimeZone dateTimeZone) {
-
-        StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
         DateTime periodStartDateTime = getPeriodStartTime( period, dateTimeZone );
 
+        return buildStarsControlHistoryForPeriod(liteCtrlHist, periodStartDateTime, null, dateTimeZone);
+    }
+    
+    private static StarsLMControlHistory buildStarsControlHistoryForPeriod(LiteStarsLMControlHistory liteCtrlHist, 
+                                                                           ReadableInstant startInstant, ReadableInstant stopInstant,
+                                                                           DateTimeZone dateTimeZone) {
+
+        StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
+        DateTime periodStartDateTime = startInstant.toInstant().toDateTime(dateTimeZone);
+
         Instant now = new Instant();
-        
+
         ControlHistory hist = null;
         Instant lastStartTime = null;
         Instant histStartDate = null;
         
         for (int i = 0; i < liteCtrlHist.getLmControlHistory().size(); i++) {
             LiteLMControlHistory lmCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(i);
+            
+            if (lmCtrlHist.getStartDateInstant().isAfter(stopInstant)) {
+                if (hist != null) {
+                    hist.setCurrentlyControlling(false);
+                    
+                    Duration controlHistoryDuration = new Duration(histStartDate, stopInstant);
+                    hist.setControlDuration(controlHistoryDuration);
+                }
+            }
             
             
             if (StarsUtils.isReadableInsantBefore(lmCtrlHist.getStopDateInstant(), periodStartDateTime)) {
@@ -714,8 +731,7 @@ public class LMControlHistoryUtil {
                 if (!StarsUtils.isReadableInsantEqual(lmCtrlHistStart, lastStartTime)) {
                     lastStartTime = lmCtrlHistStart;
 
-                    if (StarsUtils.isReadableInsantBefore(lmCtrlHistStart,
-                                                          periodStartDateTime)) {
+                    if (StarsUtils.isReadableInsantBefore(lmCtrlHistStart, periodStartDateTime)) {
                         histStartDate = periodStartDateTime.toInstant();
                     } else {
                         histStartDate = lmCtrlHistStart;
@@ -732,8 +748,7 @@ public class LMControlHistoryUtil {
                 
                 // This is a new control
                 if (hist == null && 
-                    StarsUtils.isReadableInsantBefore(lmCtrlHistStart,
-                                                      periodStartDateTime)) {
+                    StarsUtils.isReadableInsantBefore(lmCtrlHistStart, periodStartDateTime)) {
                     lastStartTime = lmCtrlHistStart;
 
                     histStartDate = periodStartDateTime.toInstant();
@@ -862,6 +877,24 @@ public class LMControlHistoryUtil {
     }
     
     /**
+     * @param groupID - The load group Id for the control history we would like to see
+     * @param startDateTime - The DateTime of the user submitting the request.
+     * @param energyCompanyId - The energy company id.
+     * @return
+     */
+    public static StarsLMControlHistory getSTARSFormattedLMControlHistory(int groupID, 
+                                                                          ReadableInstant startDateTime,
+                                                                          ReadableInstant stopDateTime,
+                                                                          int energyCompanyId) {
+        LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( energyCompanyId );
+        
+        LiteStarsLMControlHistory liteCtrlHist = 
+            StarsDatabaseCache.getInstance().getLMControlHistory( groupID, startDateTime);
+        
+        return buildStarsControlHistoryForPeriod(liteCtrlHist, startDateTime, stopDateTime, liteEC.getDefaultDateTimeZone());
+    }
+    
+    /**
      * This method goes through the supplied list of control history entries and 
      * fixes the entries to account for optOuts and enrollments.
      */
@@ -968,9 +1001,9 @@ public class LMControlHistoryUtil {
                     //before worrying about control periods, let's calculate the total opt out time
                     //opt out started after our start date
                     ReadableInstant optOutStartInstant = optOutEntry.getOptOutStart();
-					ReadableInstant optOutStopInstant = optOutEntry.getOptOutStop();
-					
-					if (startDateTime.isBefore(optOutStartInstant)) {
+                    ReadableInstant optOutStopInstant = optOutEntry.getOptOutStop();
+                    
+                    if (startDateTime.isBefore(optOutStartInstant)) {
                         //opt out stopped within our specified range
                         if (optOutStopInstant != null && optOutStopInstant.isBefore(stopDateTime)) {
                             Duration optOutDuration =
@@ -981,14 +1014,14 @@ public class LMControlHistoryUtil {
 
                         //opt out stopped outside of our specified range or is ongoing
                         } else {
-                        	// make sure this opt out started inside our report date range
-                        	if (optOutStartInstant.isBefore(stopDateTime)) {
-                        	    Duration optOutDurationDuringControl =
-                        	        new Duration(optOutStartInstant, stopDateTime);
-                        	    
-                        	    totalOptOutTime = totalOptOutTime.plus(optOutDurationDuringControl);
-	                            optOutEvent++;
-                        	}
+                            // make sure this opt out started inside our report date range
+                            if (optOutStartInstant.isBefore(stopDateTime)) {
+                                Duration optOutDurationDuringControl =
+                                    new Duration(optOutStartInstant, stopDateTime);
+                                
+                                totalOptOutTime = totalOptOutTime.plus(optOutDurationDuringControl);
+                                optOutEvent++;
+                            }
                         }
                     }
                     //opt out started before our specified range but stopped
@@ -1008,11 +1041,11 @@ public class LMControlHistoryUtil {
                        (optOutStartInstant.isBefore(ctrlHistStartDateTime) && 
                         (optOutStopInstant == null || 
                          optOutStopInstant.isAfter(startDateTime)))) {
-                    	
+                        
                         //period falls entirely within an opt out period.  Discard it.
                         if (optOutStartInstant.isBefore(ctrlHistStartDateTime) && 
                             (optOutStopInstant == null || 
-                        	 optOutStopInstant.isAfter(ctrlHistStopDateTime))) {
+                             optOutStopInstant.isAfter(ctrlHistStopDateTime))) {
 
                             newDuration = Duration.ZERO;
                             

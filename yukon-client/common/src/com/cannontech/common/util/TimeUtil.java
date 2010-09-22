@@ -3,6 +3,7 @@ package com.cannontech.common.util;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.Validate;
@@ -10,6 +11,9 @@ import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Hours;
+import org.joda.time.Interval;
+
+import com.google.common.collect.Lists;
 
 /**
  * This type really needs to be looked at before it is used
@@ -405,5 +409,21 @@ public static int differenceMinutes(Date from, Date to) {
         return cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA)
             && cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
             && cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+    }
+
+    public static List<Interval> overlaps(List<Interval> intervalListOne, List<Interval> intervalListTwo) {
+        List<Interval> resultList = Lists.newArrayList();
+        
+        for (Interval intervalOne : intervalListOne) {
+            for (Interval intervalTwo : intervalListTwo) {
+                Interval overlapInterval = intervalOne.overlap(intervalTwo);
+                
+                if (overlapInterval != null) {
+                    resultList.add(overlapInterval);
+                }
+            }
+        }
+        
+        return resultList;
     }
 }
