@@ -8,7 +8,7 @@ import com.cannontech.database.db.contact.ContactNotification;
 public class LiteContactNotification extends LiteBase
 {
 	private int contactID = 0;
-	private int notificationCategoryID = 5; /* Home Phone category */
+	private int notificationCategoryID = ContactNotificationType.HOME_PHONE.getDefinitionId(); /* Home Phone category */
 	private String disableFlag = null;
 	private String notification = null;
 	
