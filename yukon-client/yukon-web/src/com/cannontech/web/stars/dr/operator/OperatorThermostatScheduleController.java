@@ -176,8 +176,13 @@ public class OperatorThermostatScheduleController {
 					    		String schedules,
 					    		HttpServletRequest request, ModelMap modelMap,
 					    		AccountInfoFragment accountInfoFragment) {
-		
+	    
 		operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
+		
+		if(StringUtils.isBlank(scheduleName)){
+            modelMap.addAttribute("canceledAction", "emptyName");
+            return "redirect:view";
+        }
 		
     	modelMap.addAttribute("saveAction", saveAction);
     	modelMap.addAttribute("scheduleId", scheduleId);
@@ -187,11 +192,6 @@ public class OperatorThermostatScheduleController {
     	modelMap.addAttribute("temperatureUnit", temperatureUnit);
     	modelMap.addAttribute("scheduleId", scheduleId);
     	modelMap.addAttribute("scheduleName", scheduleName);
-    	
-    	if(StringUtils.isBlank(scheduleName)){
-    	    modelMap.addAttribute("canceledAction", "emptyName");
-    	    return "redirect:view";
-    	}
     	
     	return "redirect:confirm";
     }
