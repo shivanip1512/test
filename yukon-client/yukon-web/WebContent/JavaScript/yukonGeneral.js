@@ -272,8 +272,11 @@ function alignTableColumnsByTable() {
 }
 
 // Flash an element yellow
-function flashYellow(element) {
-	new Effect.Highlight(element, {'duration': 0.8, 'startcolor': '#FFFF00'});
+function flashYellow(element, duration) {
+    if(!duration) {
+        duration = 0.8;
+    }
+    new Effect.Highlight(element, {'duration': duration, 'startcolor': '#FFFF00'});
 }
 
 function showBusy() {
