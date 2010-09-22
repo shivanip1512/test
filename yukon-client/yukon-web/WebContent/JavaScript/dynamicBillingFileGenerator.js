@@ -178,7 +178,7 @@ function saveButton(){
 		//check if it's less than 2 sec = 2000 ms
 		if ( currTime - errorHighlight >= 2000){
 			//do highlighting and set new date 
-			new Effect.Highlight($('errorMsg'), {'duration': 2, 'startcolor': '#FFE900'});
+			flashYellow($('errorMsg'), 2);
 			errorHighlight = new Date();
 		}
 	}
@@ -487,7 +487,7 @@ function updatePreview(){
 		//do nothing
 	} else {
 		//do highlighting and set new date 
-		new Effect.Highlight(theDiv, {'duration': 1, 'startcolor': '#FFE900'});
+		flashYellow(theDiv);
 		prevHighlight = new Date();
 	}
 }

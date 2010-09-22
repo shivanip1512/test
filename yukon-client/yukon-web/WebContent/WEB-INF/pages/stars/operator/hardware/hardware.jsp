@@ -14,7 +14,7 @@
             var selectedPao = selectedItems[0];
             var nameField = $('chosenYukonDeviceNameField');
             nameField.innerHTML = selectedPao.paoName.escapeHTML();
-            new Effect.Highlight(nameField , {'duration': 3.5, 'startcolor': '#FFE900'});
+            flashYellow(nameField);
             return true;
         }
 
@@ -79,7 +79,7 @@
                         $('createTwoWayDeviceName').value = '';
                         $('createDevicePopup').hide();
                         var nameField = $('chosenYukonDeviceNameField');
-                        new Effect.Highlight(nameField , {'duration': 3.5, 'startcolor': '#FFE900'});
+                        flashYellow(nameField);
                     }
                 }
             });

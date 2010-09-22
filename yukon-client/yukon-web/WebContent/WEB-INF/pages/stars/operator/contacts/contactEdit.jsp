@@ -13,9 +13,7 @@
 	<script type="text/javascript">
 		Event.observe(window, 'load', function() {
 			var additionalNotificationTrs = $$('tr.additionalNotificationTr');
-			additionalNotificationTrs.each(function(el) {
-				new Effect.Highlight(el, {'duration': 0.5, 'startcolor': '#FFFF00'});
-			});
+			additionalNotificationTrs.each(flashYellow);
 		});
 	
 		function removeNotification(it) {

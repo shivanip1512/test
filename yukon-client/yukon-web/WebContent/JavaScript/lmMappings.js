@@ -1,6 +1,5 @@
 var currentOrderByColum = 'STRATEGY';
 var currentAscendingOrder = true;
-var highlightDuration = 0.8;
 
 var setMappedNameId = function() {
 	
@@ -37,7 +36,7 @@ var setMappedNameId = function() {
 					$('mappedNameDisplay').innerHTML = $('mappedName').innerHTML;
 					
 					toggleLmMappingsWaitIndicators(false, $('addButton'));
-					new Effect.Highlight($('mappedNameDisplay'), {'duration': highlightDuration, 'startcolor': '#FFE900'});
+					flashYellow($('mappedNameDisplay'));
 					reloadAllMappingsTable(null, false);
 				},
 				'onException': function(e) {
@@ -88,7 +87,7 @@ function doLmMappingNameSearch(){
 		}
 		
 		toggleLmMappingsWaitIndicators(false, $('searchButton'));
-		new Effect.Highlight($('mappedNameDisplay'), {'duration': highlightDuration, 'startcolor': '#FFE900'});
+		flashYellow($('mappedNameDisplay'));
 	
 	});
 }

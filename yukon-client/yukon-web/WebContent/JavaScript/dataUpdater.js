@@ -28,7 +28,7 @@ function initiateCannonDataUpdate(url, delayMs) {
                 someValueHasUpdated = true;
                 // make it glow
                 if (!disableHighlight) {
-                    new Effect.Highlight(it, {'duration': 3.5, 'startcolor': '#FFE900'});
+                    flashYellow(it, 3.5);
                 }    
             }
            
