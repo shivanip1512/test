@@ -33,7 +33,7 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao, InitializingBea
     
     private SqlStatementBuilder selectSql = new SqlStatementBuilder();
     {
-        selectSql.append("SELECT EB.EventId, EB.UserId, EB.SystemCategoryId, EB.ActionId, EB.EventTimestamp");
+        selectSql.append("SELECT EB.EventId, EB.UserId, EB.SystemCategoryId, EB.ActionId, EB.EventTimestamp, OrderId");
         selectSql.append("FROM EventBase EB");
         selectSql.append("JOIN EventWorkOrder EWO ON EWO.EventId = EB.EventId");
         selectSql.append("JOIN ECToWorkOrderMapping MAP ON MAP.WorkOrderId = EWO.OrderId");

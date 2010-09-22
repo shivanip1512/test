@@ -1,5 +1,6 @@
 package com.cannontech.stars.util;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -10,6 +11,8 @@ import java.util.TimeZone;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.joda.time.Instant;
 
 import com.cannontech.common.exception.NotLoggedInException;
 import com.cannontech.core.dao.DaoFactory;
@@ -471,5 +474,49 @@ public class ServletUtils {
             throw new NotLoggedInException();
         }
         return starsYukonUser;
+    }
+    
+    /** 
+     * This method should be removed once Work Order processing is removed.  Do not use.
+     * @param instant
+     * @param format
+     * @return
+     */
+    public static String formatInstant(Instant instant, SimpleDateFormat format) {
+        return formatDate(instant.toDate(), format);
+    }
+    
+    /**
+     * This method should be removed once Work Order processing is removed.  Do not use.
+     * @param str
+     * @return
+     */
+    public static String forceNotEmpty(String str) {
+        if (str == null || str.trim().equals(""))
+            return "&nbsp;";
+        return str;
+    }
+    
+    /**
+     * This method should be removed once Work Order processing is removed.  Do not use. 
+     * @param starsAddr
+     * @return
+     */
+    public static String formatAddress(StarsCustomerAddress starsAddr) {
+        if (starsAddr == null) return "";
+        
+        StringBuffer sBuf = new StringBuffer();
+        if (starsAddr.getStreetAddr1().trim().length() > 0)
+            sBuf.append( starsAddr.getStreetAddr1() ).append( "<br>" );
+        if (starsAddr.getStreetAddr2().trim().length() > 0)
+            sBuf.append( starsAddr.getStreetAddr2() ).append( "<br>" );
+        if (starsAddr.getCity().trim().length() > 0)
+            sBuf.append( starsAddr.getCity() ).append( ", " );
+        if (starsAddr.getState().trim().length() > 0)
+            sBuf.append( starsAddr.getState() ).append( " " );
+        if (starsAddr.getZip().trim().length() > 0)
+            sBuf.append( starsAddr.getZip() );
+        
+        return sBuf.toString();
     }
 }

@@ -13,9 +13,12 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.ActionBase;
+import com.cannontech.stars.web.action.CreateServiceRequestAction;
+import com.cannontech.stars.web.action.DeleteServiceRequestAction;
 import com.cannontech.stars.web.action.MultiAction;
 import com.cannontech.stars.web.action.NewCustAccountAction;
 import com.cannontech.stars.web.action.SendOddsForControlAction;
+import com.cannontech.stars.web.action.UpdateServiceRequestAction;
 import com.cannontech.stars.xml.util.StarsConstants;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.navigation.CtiNavObject;
@@ -130,8 +133,14 @@ public class SOAPClientController implements Controller {
             clientAction = new SendOddsForControlAction();
             if (destURL == null) destURL = request.getContextPath() + "/operator/Consumer/Odds.jsp";
             if (errorURL == null) errorURL = request.getContextPath() + "/operator/Consumer/Odds.jsp";
-        }
-        else {
+        } else if (action.equalsIgnoreCase("CreateWorkOrder")) {
+            clientAction = new CreateServiceRequestAction();
+            session.setAttribute(ServletUtils.ATT_REDIRECT, destURL);
+        } else if (action.equalsIgnoreCase("UpdateWorkOrder")) {
+            clientAction = new UpdateServiceRequestAction();
+        } else if (action.equalsIgnoreCase("DeleteWorkOrder")) {
+            clientAction = new DeleteServiceRequestAction();
+        } else {
             CTILogger.info( "SOAPClient: Invalid action type '" + action + "'");
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid action type '" + action + "'");
             String location = ServletUtil.createSafeRedirectUrl(request, referer);
