@@ -188,6 +188,11 @@ public class OperatorThermostatScheduleController {
     	modelMap.addAttribute("scheduleId", scheduleId);
     	modelMap.addAttribute("scheduleName", scheduleName);
     	
+    	if(StringUtils.isBlank(scheduleName)){
+    	    modelMap.addAttribute("canceledAction", "emptyName");
+    	    return "redirect:view";
+    	}
+    	
     	return "redirect:confirm";
     }
 	
