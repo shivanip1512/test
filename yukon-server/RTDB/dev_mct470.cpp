@@ -5381,31 +5381,24 @@ INT Mct470Device::decodeGetValuePhaseCurrent(INMESS *InMessage, CtiTime &TimeNow
         pi.value /= 1000;
         insertPointDataReport(AnalogPointType, PointOffset_CurrentNeutral,
                               ReturnMsg, pi, "Neutral Current");
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PhaseCurrentNeutral, pi.value);
-
         pi = getData(DSt.Message + 2, 2, ValueType_IED);
         //current reported back from mct in mA.
         //converting to Amps.
         pi.value /= 1000;
         insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseA,
                               ReturnMsg, pi, "Phase A Current");
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PhaseCurrentA, pi.value);
-
         pi = getData(DSt.Message + 4, 2, ValueType_IED);
         //current reported back from mct in mA.
         //converting to Amps.
         pi.value /= 1000;
         insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseB,
                               ReturnMsg, pi, "Phase B Current");
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PhaseCurrentB, pi.value);
-
         pi = getData(DSt.Message + 6, 2, ValueType_IED);
         //current reported back from mct in mA.
         //converting to Amps.
         pi.value /= 1000;
         insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseC,
                               ReturnMsg, pi, "Phase C Current");
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PhaseCurrentC, pi.value);
 
 
 
