@@ -5,13 +5,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
-<script type="text/javascript">
-overrideConstraintsChecked = function() {
-    <%-- never called if there are no violations so we don't have to check that --%>
-    $('okButton').disabled = !$('overrideConstraints').checked;
-}
-</script>
-
 <cti:url var="submitUrl" value="/spring/dr/program/start/start"/>
 <form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('drDialog', 'startProgramForm');">
@@ -53,8 +46,7 @@ overrideConstraintsChecked = function() {
         <br>
 
         <c:if test="${overrideAllowed}">
-            <p><input type="checkbox" id="overrideConstraints"
-                name="overrideConstraints" onclick="overrideConstraintsChecked();">
+            <p><input type="checkbox" id="overrideConstraints" name="overrideConstraints">
             <label for="overrideConstraints">
                 <cti:msg key="yukon.web.modules.dr.program.startProgram.overrideConstraints"/>
             </label></p>
@@ -73,10 +65,6 @@ overrideConstraintsChecked = function() {
             onclick="submitFormViaAjax('drDialog', 'startProgramForm', '${backUrl}')"/>
         <c:if test="${empty violations.constraintContainers || overrideAllowed}">
             <input type="submit" id="okButton" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.okButton"/>"/>
-            <c:if test="${!empty violations.constraintContainers}">
-                <script type="text/javascript">$('okButton').disabled = true</script>
-                <!-- TODO:  need to disable submit via text field too -->
-            </c:if>
         </c:if>
         <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.cancelButton"/>"
             onclick="parent.$('drDialog').hide()"/>
