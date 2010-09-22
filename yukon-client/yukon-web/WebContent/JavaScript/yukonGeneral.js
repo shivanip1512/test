@@ -271,6 +271,11 @@ function alignTableColumnsByTable() {
 	});
 }
 
+// Flash an element yellow
+function flashYellow(element) {
+	new Effect.Highlight(element, {'duration': 0.8, 'startcolor': '#FFFF00'});
+}
+
 function showBusy() {
 	$('busyBox').show();
 }
