@@ -62,23 +62,19 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
                 
                 InventoryBase inventory = inventoryMap.get(holder.inventoryId);
                 
-                // The device has been deleted.  Skipping this control history entry.
-                if (inventory == null && past) {
-                    continue;
-                }
-                
                 ControlHistory controlHistory = new ControlHistory();
 
                 StarsLMControlHistory starsLMControlHistory = controlHistoryEventDao.getEventsByGroup(accountId, holder.groupId, holder.inventoryId, controlPeriod, userContext, past);
                 List<ControlHistoryEvent> controlHistoryEventList = controlHistoryEventDao.toEventList(enrollment.getProgramId(), starsLMControlHistory, userContext);
                 controlHistory.setCurrentHistory(controlHistoryEventList);
                 
-                controlHistory.setInventory(inventory);
+                if (inventory != null) {
+                    controlHistory.setInventory(inventory);
+                    controlHistory.setDisplayName(inventoryBaseDao.getDisplayName(inventory));
+                }
 
                 ControlHistoryRequest request = new ControlHistoryRequest(enrollment.getProgramId(), holder.inventoryId, accountId, controlPeriod);
                 ControlGroupHolder controlGroupHolder = createControlGroupHolder(request, Collections.singletonList(holder.groupId), userContext, past);
-
-                controlHistory.setDisplayName(inventoryBaseDao.getDisplayName(inventory));
 
                 ControlHistorySummary programControlHistorySummary = new ControlHistorySummary();
                 

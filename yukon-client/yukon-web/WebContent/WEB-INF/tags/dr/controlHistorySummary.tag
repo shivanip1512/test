@@ -109,7 +109,14 @@
 								<c:when test="${displayableControlHistory.controlStatusDisplay or 
 								              displayableControlHistory.deviceLabelControlStatusDisplay}">
 									<td class="inventoryLabel">
-										<spring:escapeBody htmlEscape="true">${controlHistory.displayName}</spring:escapeBody>
+                                        <c:choose>
+                                            <c:when test="${not empty controlHistory.displayName}">
+                                                <spring:escapeBody htmlEscape="true">${controlHistory.displayName}</spring:escapeBody>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <i18n:inline key=".deviceRemoved"/>
+                                            </c:otherwise>
+                                        </c:choose>
 									</td>
 									<td>
 										<c:choose>

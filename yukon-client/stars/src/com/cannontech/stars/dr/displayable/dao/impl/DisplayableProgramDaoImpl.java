@@ -92,10 +92,14 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
     private static Comparator<DisplayableControlHistory> DEVICE_LABLE_COMPARATOR = new Comparator<DisplayableControlHistory>() {
         public int compare(DisplayableControlHistory o1, DisplayableControlHistory o2) {
             try {
-                String strA = o1.getControlHistory().getInventory().getDeviceLabel();
-                String strB = o2.getControlHistory().getInventory().getDeviceLabel();
+                InventoryBase inventory1 = o1.getControlHistory().getInventory();
+                InventoryBase inventory2 = o2.getControlHistory().getInventory();
 
-                return strA.compareToIgnoreCase(strB);
+                if (inventory1 == null && inventory2 == null) return 0;
+                if (inventory1 != null && inventory2 == null) return -1;
+                if (inventory1 == null && inventory2 != null) return 1; 
+                
+                return inventory1.getDeviceLabel().compareToIgnoreCase(inventory2.getDeviceLabel());
             } catch (Exception e) {
                 CTILogger.error("Something went wrong with sorting, ignoring sorting rules", e);
                 return 0;
