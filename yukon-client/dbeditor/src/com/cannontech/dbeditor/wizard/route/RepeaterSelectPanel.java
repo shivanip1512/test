@@ -363,7 +363,7 @@ public boolean isInputValid()
        
        if(pao.getPaoIdentifier().getPaoType() == PaoType.REPEATER_850) {
            if(i != rightListModel.getSize()-1) {
-               setErrorString("When present, a repeater 850 MUST be the last repeater in the repeater chain");
+               setErrorString("When present, a Repeater 850 MUST be the last repeater in the repeater chain");
                getErrorMessageLabel().setText(getErrorString());
                return false;
            }
