@@ -294,8 +294,9 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     }
     
     private AccountThermostatSchedule createAndSaveDefaultSchedule(int ecId, SchedulableThermostatType type){
-        // create and save schedule without entries
-        AccountThermostatSchedule ats = type.getDefaultAccountThermostatSchedule();
+        // create and save schedule
+        DefaultAccountThermostatScheduleHelper atsHelper = new DefaultAccountThermostatScheduleHelper();
+        AccountThermostatSchedule ats = atsHelper.getDefaultAccountThermostatSchedule(type);
         save(ats);
         
         // insert AcctThermostatScheduleToEc record

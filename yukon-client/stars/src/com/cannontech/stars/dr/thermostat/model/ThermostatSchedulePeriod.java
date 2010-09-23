@@ -1,83 +1,45 @@
 package com.cannontech.stars.dr.thermostat.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.joda.time.LocalTime;
 
-import com.cannontech.stars.dr.hardware.model.HardwareType;
-import com.google.common.collect.ImmutableList;
 
 public enum ThermostatSchedulePeriod {
-    OCCUPIED(
-             2,
-             HardwareType.COMMERCIAL_EXPRESSSTAT
-    ),
-    UNOCCUPIED(
-               3,
-               HardwareType.COMMERCIAL_EXPRESSSTAT
-    ),
-    WAKE(
-         0,
-         HardwareType.EXPRESSSTAT,
-         HardwareType.EXPRESSSTAT_HEAT_PUMP,
-         HardwareType.UTILITY_PRO,
-         HardwareType.ENERGYPRO
-    ),
-    LEAVE(
-          1,
-          HardwareType.EXPRESSSTAT,
-          HardwareType.EXPRESSSTAT_HEAT_PUMP,
-          HardwareType.UTILITY_PRO,
-          HardwareType.ENERGYPRO
-    ),
-    RETURN(
-           2,
-           HardwareType.EXPRESSSTAT,
-           HardwareType.EXPRESSSTAT_HEAT_PUMP,
-           HardwareType.UTILITY_PRO,
-           HardwareType.ENERGYPRO
-    ),
-    SLEEP(
-          3,
-          HardwareType.EXPRESSSTAT,
-          HardwareType.EXPRESSSTAT_HEAT_PUMP,
-          HardwareType.UTILITY_PRO,
-          HardwareType.ENERGYPRO
-    );
+    FAKE_1(0, new LocalTime(1,0), true),
+    FAKE_2(1, new LocalTime(2,0), true),
+    
+    OCCUPIED(2, new LocalTime(8,0)),
+    UNOCCUPIED(3, new LocalTime(17,0)),
+    
+    WAKE(0, new LocalTime(6,0)),
+    LEAVE(1, new LocalTime(8,30)),
+    RETURN(2, new LocalTime(17,0)),
+    SLEEP(3, new LocalTime(21,0)),
+    ;
     
     private int entryIndex;
-    private List<HardwareType> supportedHardwareTypes;
+    private final boolean psuedo;
+    private final LocalTime defaultStartTime;
     
-    private ThermostatSchedulePeriod(int entryIndex, HardwareType... hardwareTypes){
+    private ThermostatSchedulePeriod(int entryIndex, LocalTime defaultStartTime, boolean psuedo) {
         this.entryIndex = entryIndex;
-        this.supportedHardwareTypes = ImmutableList.of(hardwareTypes);
+        this.defaultStartTime = defaultStartTime;
+        this.psuedo = psuedo;
+    }
+    
+    private ThermostatSchedulePeriod(int entryIndex, LocalTime defaultStartTime) {
+        this(entryIndex, defaultStartTime, false);
+    }
+    
+    public boolean isPsuedo() {
+        return psuedo;
     }
     
     public int getEntryIndex(){
         return entryIndex;
     }
     
-    public static List<ThermostatSchedulePeriod> commercialStyle(){
-        return ImmutableList.of(OCCUPIED, UNOCCUPIED);
+    public LocalTime getDefaultStartTime() {
+        return defaultStartTime;
     }
     
-    public static List<ThermostatSchedulePeriod> residentialStyle(){
-        return ImmutableList.of(WAKE, LEAVE, RETURN, SLEEP);
-    }
-    
-    public List<HardwareType> getSupportedHardwareTypes(){
-        return supportedHardwareTypes;
-    }
- 
-    public static List<ThermostatSchedulePeriod> getPeriodsForHardwareType(HardwareType type){
-       ThermostatSchedulePeriod[] allPeriods = ThermostatSchedulePeriod.values();
-       List<ThermostatSchedulePeriod> periodsForType = new ArrayList<ThermostatSchedulePeriod>();
-       
-       for(int i = 0; i < allPeriods.length; i++){
-           if(allPeriods[i].getSupportedHardwareTypes().contains(type)){
-               periodsForType.add(allPeriods[i]);
-           }
-       }
-       
-       return periodsForType;
-    }
 }
