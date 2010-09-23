@@ -13,8 +13,12 @@ using namespace std;
 const string CtiTableStaticPaoInfo::_empty_string = "(empty)";
 
 //  !!!  these strings MUST NOT CHANGE - this is what the DB keys on  !!!
-const string CtiTableStaticPaoInfo::_key_ip_address = "ip address";
-const string CtiTableStaticPaoInfo::_key_ip_port    = "ip port";
+const string CtiTableStaticPaoInfo::_key_rds_ip_address      = "RDS_TRANSMITTER_IP_ADDRESS";
+const string CtiTableStaticPaoInfo::_key_rds_ip_port         = "RDS_TRANSMITTER_IP_PORT";
+const string CtiTableStaticPaoInfo::_key_rds_site_address    = "RDS_TRANSMITTER_SITE_ADDRESS";
+const string CtiTableStaticPaoInfo::_key_rds_encoder_address = "RDS_TRANSMITTER_ENCODER_ADDRESS";
+const string CtiTableStaticPaoInfo::_key_rds_transmit_speed  = "RDS_TRANSMITTER_TRANSMIT_SPEED";
+const string CtiTableStaticPaoInfo::_key_rds_group_type      = "RDS_TRANSMITTER_GROUP_TYPE";
 
 const CtiTableStaticPaoInfo::key_map_t   CtiTableStaticPaoInfo::_key_map   = CtiTableStaticPaoInfo::init_key_map();
 
@@ -22,8 +26,12 @@ CtiTableStaticPaoInfo::key_map_t CtiTableStaticPaoInfo::init_key_map()
 {
     key_map_t retval;
 
-    retval.insert(make_pair(Key_IP_Address,     &_key_ip_address));
-    retval.insert(make_pair(Key_IP_Port,        &_key_ip_port));
+    retval.insert(make_pair(Key_RDS_IP_Address,      &_key_rds_ip_address));
+    retval.insert(make_pair(Key_RDS_IP_Port,         &_key_rds_ip_port));
+    retval.insert(make_pair(Key_RDS_Site_Address,    &_key_rds_site_address));
+    retval.insert(make_pair(Key_RDS_Encoder_Address, &_key_rds_encoder_address));
+    retval.insert(make_pair(Key_RDS_Transmit_Speed,  &_key_rds_transmit_speed));
+    retval.insert(make_pair(Key_RDS_Group_Type,      &_key_rds_group_type));
 
     return retval;
 }

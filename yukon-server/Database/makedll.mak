@@ -94,7 +94,6 @@ tbl_pt_limit.obj \
 tbl_pt_status.obj \
 tbl_pt_trigger.obj \
 tbl_pt_unit.obj \
-tbl_rds_transmitter.obj \
 tbl_route.obj \
 tbl_rtcarrier.obj \
 tbl_rtcomm.obj \
@@ -698,11 +697,6 @@ tbl_pt_unit.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		dsm2err.h words.h dbmemobject.h dbaccess.h sema.h resolvers.h \
 		pointtypes.h db_entry_defines.h desolvers.h tbl_unitmeasure.h \
 		logger.h thread.h CtiPCPtrQueue.h
-tbl_rds_transmitter.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		tbl_rds_transmitter.h dbmemobject.h dlldefs.h dllbase.h \
-		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
-		ctitime.h queues.h numstr.h sorted_vector.h cticonnect.h \
-		netports.h dsm2err.h words.h
 tbl_route.obj:	yukon.h precompiled.h types.h ctidbgmem.h tbl_route.h \
 		dllbase.h os2_2w32.h dlldefs.h cticalls.h dsm2.h mutex.h \
 		guard.h utility.h ctitime.h queues.h numstr.h sorted_vector.h \

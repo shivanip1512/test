@@ -270,9 +270,10 @@ portentry.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		tbl_dv_idlcremote.h trx_info.h trx_711.h CtiLocalConnect.h \
 		fifo_multiset.h prot_emetcon.h dev_mct4xx.h dev_mct.h \
 		dev_carrier.h dev_dlcbase.h tbl_route.h tbl_carrier.h \
-		tbl_metergrp.h vcomdefs.h tbl_loadprofile.h da_load_profile.h \
-		tbl_dv_mctiedport.h pt_numeric.h tbl_pt_unit.h \
-		tbl_unitmeasure.h config_data_mct.h ctidate.h
+		cmd_dlc.h cmd_base.h tbl_metergrp.h vcomdefs.h \
+		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h \
+		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
+		config_data_mct.h ctidate.h
 porter.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		dlldefs.h cticalls.h color.h cparms.h rwutil.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h mutex.h \
@@ -384,14 +385,15 @@ portfield.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		std_ansi_tbl_64.h ansi_kv2_mtable_000.h ansi_kv2_mtable_070.h \
 		ansi_kv2_mtable_110.h dllyukon.h dev_mct.h dev_carrier.h \
 		dev_dlcbase.h tbl_route.h tbl_carrier.h prot_emetcon.h \
-		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h \
-		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h dev_sentinel.h \
-		prot_ansi_sentinel.h dev_focus.h prot_ansi_focus.h \
-		dev_mark_v.h prot_transdata.h transdata_application.h \
-		transdata_tracker.h transdata_datalink.h prot_ymodem.h \
-		ctidate.h transdata_data.h msg_cmd.h msg_trace.h pilserver.h \
-		server_b.h con_mgr.h mgr_point.h mgr_route.h repeaterrole.h \
-		mgr_config.h port_udp.h port_serial.h tbl_port_settings.h \
+		cmd_dlc.h cmd_base.h tbl_loadprofile.h da_load_profile.h \
+		tbl_dv_mctiedport.h pt_numeric.h tbl_pt_unit.h \
+		tbl_unitmeasure.h dev_sentinel.h prot_ansi_sentinel.h \
+		dev_focus.h prot_ansi_focus.h dev_mark_v.h prot_transdata.h \
+		transdata_application.h transdata_tracker.h \
+		transdata_datalink.h prot_ymodem.h ctidate.h transdata_data.h \
+		msg_cmd.h msg_trace.h pilserver.h server_b.h con_mgr.h \
+		mgr_point.h mgr_route.h repeaterrole.h mgr_config.h \
+		port_udp.h port_serial.h tbl_port_settings.h \
 		tbl_port_timing.h tbl_port_tcpip.h prot_711.h portfield.h
 portfill.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		dlldefs.h cticalls.h cparms.h rwutil.h database_connection.h \
@@ -618,8 +620,8 @@ porttime.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		dnp_objects.h dnp_transport.h dnp_datalink.h \
 		dnp_datalink_packet.h dnp_object_binaryoutput.h dev_ilex.h \
 		dev_mct4xx.h dev_mct.h dev_carrier.h dev_dlcbase.h \
-		tbl_route.h tbl_carrier.h prot_emetcon.h tbl_metergrp.h \
-		vcomdefs.h tbl_loadprofile.h da_load_profile.h \
+		tbl_route.h tbl_carrier.h prot_emetcon.h cmd_dlc.h cmd_base.h \
+		tbl_metergrp.h vcomdefs.h tbl_loadprofile.h da_load_profile.h \
 		tbl_dv_mctiedport.h pt_numeric.h tbl_pt_unit.h \
 		tbl_unitmeasure.h config_data_mct.h ctidate.h mgr_route.h \
 		repeaterrole.h thread_monitor.h thread_register_data.h \
@@ -741,8 +743,8 @@ port_thread_udp.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		tbl_dialup.h tbl_direct.h prot_dnp.h dnp_application.h \
 		dnp_objects.h dnp_transport.h dnp_datalink.h \
 		dnp_datalink_packet.h dnp_object_binaryoutput.h \
-		tbl_dv_address.h dev_gridadvisor.h dev_rds.h \
-		tbl_rds_transmitter.h ctistring.h portdecl.h portfield.h
+		tbl_dv_address.h dev_gridadvisor.h dev_rds.h portdecl.h \
+		portfield.h
 precompiled.obj:	yukon.h precompiled.h types.h ctidbgmem.h
 ripple.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		dlldefs.h cticalls.h connection.h exchange.h dllbase.h dsm2.h \

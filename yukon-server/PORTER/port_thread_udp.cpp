@@ -142,9 +142,9 @@ void UdpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
     {
         _dnpAddress_to_id.insert(dnp_address_id_bimap::value_type(makeDnpAddressPair(device), device_id));
     }
-    else if( isUecpDevice(device) )
+    else if( isRdsDevice(device) )
     {
-        loadStaticDeviceIPAndPort(device);
+        loadStaticRdsIPAndPort(device);
     }
 
     if( !device.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP) ||
@@ -222,9 +222,9 @@ void UdpPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
             }
         }
     }
-    else if( isUecpDevice(device) )
+    else if( isRdsDevice(device) )
     {
-        loadStaticDeviceIPAndPort(device);
+        loadStaticRdsIPAndPort(device);
         
     }
 }
@@ -243,10 +243,10 @@ UdpPortHandler::gpuff_type_serial_pair UdpPortHandler::makeGpuffTypeSerialPair(c
                                   device.getAddress());
 }
 
-void UdpPortHandler::loadStaticDeviceIPAndPort(const CtiDeviceSingle &device)
+void UdpPortHandler::loadStaticRdsIPAndPort(const CtiDeviceSingle &device)
 {
-    if( !device.hasStaticInfo(CtiTableStaticPaoInfo::Key_IP_Address) ||
-        !device.hasStaticInfo(CtiTableStaticPaoInfo::Key_IP_Port) )
+    if( !device.hasStaticInfo(CtiTableStaticPaoInfo::Key_RDS_IP_Address) ||
+        !device.hasStaticInfo(CtiTableStaticPaoInfo::Key_RDS_IP_Port) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Unable to load devices IP and Port " << device.getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -255,10 +255,10 @@ void UdpPortHandler::loadStaticDeviceIPAndPort(const CtiDeviceSingle &device)
 
     const long device_id = device.getID();
     string ip_string;
-    device.getStaticInfo(CtiTableStaticPaoInfo::Key_IP_Address, ip_string);
+    device.getStaticInfo(CtiTableStaticPaoInfo::Key_RDS_IP_Address, ip_string);
 
     _ip_addresses[device_id] = string_to_ip(ip_string);
-    _ports       [device_id] = device.getStaticInfo(CtiTableStaticPaoInfo::Key_IP_Port);
+    _ports       [device_id] = device.getStaticInfo(CtiTableStaticPaoInfo::Key_RDS_IP_Port);
 
     if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {

@@ -23,15 +23,23 @@ public:
         //  this ordering can change without adverse effects - the strings are what the DB keys on
         Key_Invalid   =  -1,
 
-        Key_IP_Address = 1000,
-        Key_IP_Port,
+        Key_RDS_IP_Address = 1000,
+        Key_RDS_IP_Port,
+        Key_RDS_Site_Address,
+        Key_RDS_Encoder_Address,
+        Key_RDS_Transmit_Speed,
+        Key_RDS_Group_Type,
         //  make sure to add any new enum values to the string map
     };
 
 protected:
 
-    static const string _key_ip_address;
-    static const string _key_ip_port;
+    static const string _key_rds_ip_address;
+    static const string _key_rds_ip_port;
+    static const string _key_rds_site_address;
+    static const string _key_rds_encoder_address;
+    static const string _key_rds_transmit_speed;
+    static const string _key_rds_group_type;
 
     typedef map<PaoInfoKeys,             const string *> key_map_t;
 

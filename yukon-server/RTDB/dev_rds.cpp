@@ -1,5 +1,7 @@
 #include "yukon.h"
 #include "dev_rds.h"
+#include "tbl_static_paoinfo.h"
+#include "ctistring.h"
 
 namespace Cti       {
 namespace Devices    {
@@ -210,7 +212,7 @@ void RDSTransmitter::createCompletePackedMessage(MessageStore &message)
     }
 }
 
-unsigned char RDSTransmitter::getMessageCountFromBufSize(unsigned char size)
+unsigned char RDSTransmitter::getMessageCountFromBufSize(unsigned char size) const
 {
     // 4 bytes to a message, but only 3 in the first
     return size/4 + 1;
@@ -277,17 +279,17 @@ void RDSTransmitter::addStartStopBytes(MessageStore &message)
     message.push_back(UECPEnd);
 }
 
-unsigned short RDSTransmitter::getSiteAddress()
+unsigned short RDSTransmitter::getSiteAddress() const
 {
-    return _rdsTable.getSiteAddress();
+    return getStaticInfo(CtiTableStaticPaoInfo::Key_RDS_Site_Address);
 }
 
-unsigned char RDSTransmitter::getEncoderAddress()
+unsigned char RDSTransmitter::getEncoderAddress() const
 {
-    return _rdsTable.getEncoderAddress();
+    return getStaticInfo(CtiTableStaticPaoInfo::Key_RDS_Encoder_Address);
 }
 
-unsigned char RDSTransmitter::getSequenceCount()
+unsigned char RDSTransmitter::getSequenceCount() const
 {
     // 0 is allowed if we have no intention of repeating our messages to the encoder
     // If we need this for reliability reasons, it can be implemented here.
@@ -306,14 +308,30 @@ unsigned char RDSTransmitter::getSequenceCount()
 //7A 0 1 1 1 0 Y Radio Paging or ODA
 //7B 0 1 1 1 1 Open Data Applications
 
-unsigned char RDSTransmitter::getGroupTypeCode()
+unsigned char RDSTransmitter::getGroupTypeCode() const
 {
-    return _rdsTable.getGroupType();
+    // Convert string (11A) to integer ((Number(11) << 1) | A = 0, B =  1)
+    CtiString groupType;
+    unsigned char retVal = 0;
+
+    if( getStaticInfo(CtiTableStaticPaoInfo::Key_RDS_Group_Type, groupType) )
+    {
+        retVal = (atoi(groupType.c_str())) << 1;
+        
+        if (groupType.contains("b",CtiString::ignoreCase))
+        {
+            retVal |= 1;
+        }
+    }
+
+    return retVal;
 }
 
-float RDSTransmitter::getGroupsPerSecond()
+float RDSTransmitter::getGroupsPerSecond() const
 {
-    return _rdsTable.getGroupRate();
+    double retVal = 0;
+    getStaticInfo(CtiTableStaticPaoInfo::Key_RDS_Transmit_Speed, retVal);
+    return retVal;
 }
 
 void RDSTransmitter::copyMessageToXfer(CtiXfer &xfer, MessageStore &message)
@@ -547,12 +565,11 @@ string RDSTransmitter::getSQLCoreStatement() const
     static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
                                      "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.portid, "
                                      "DUS.phonenumber, DUS.minconnecttime, DUS.maxconnecttime, DUS.linesettings, "
-                                     "DUS.baudrate, RDS.siteaddress, RDS.encoderaddress, RDS.grouptype, RDS.transmitspeed "
-                                   "FROM Device DV, RDSTransmitter RDS, DeviceDirectCommSettings CS, "
+                                     "DUS.baudrate "
+                                   "FROM Device DV, DeviceDirectCommSettings CS, "
                                      "YukonPAObject YP LEFT OUTER JOIN DeviceDialupSettings DUS ON "
                                      "YP.paobjectid = DUS.deviceid "
-                                   "WHERE YP.paobjectid = RDS.paobjectid AND YP.paobjectid = DV.deviceid AND "
-                                     "YP.paobjectid = CS.deviceid";
+                                   "WHERE YP.paobjectid = DV.deviceid AND YP.paobjectid = CS.deviceid";
 
     return sqlCore;
 }
@@ -566,8 +583,6 @@ void RDSTransmitter::DecodeDatabaseReader(Cti::RowReader &rdr)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-
-    _rdsTable.DecodeDatabaseReader(rdr);
 }
 
 bool RDSTransmitter::isPacketValid(const unsigned char *buf, const size_t len)
@@ -590,7 +605,7 @@ bool RDSTransmitter::isPacketValid(const unsigned char *buf, const size_t len)
 
 LONG RDSTransmitter::getAddress() const
 {
-    return ((long)_rdsTable.getSiteAddress() << 6) | _rdsTable.getEncoderAddress();
+    return ((long)getSiteAddress() << 6) | getEncoderAddress();
 }
 
 

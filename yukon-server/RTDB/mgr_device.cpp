@@ -819,7 +819,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
 
                         rowFound |= loadDeviceType(paoid_subset, "TAP devices",            CtiDeviceTapPagingTerminal());
                         rowFound |= loadDeviceType(paoid_subset, "TNPP devices",           CtiDeviceTnppPagingTerminal());
-                        rowFound |= loadDeviceType(paoid_subset, "RDS devices",            Devices::RDSTransmitter());
+                        rowFound |= loadDeviceType(paoid_subset, "RDS devices",            Devices::RDSTransmitter(),     "RDS TERMINAL");
 
                         //  exclude the CCU 721
                         rowFound |= loadDeviceType(paoid_subset, "IDLC target devices",    CtiDeviceIDLC(),        "CCU-721", false);

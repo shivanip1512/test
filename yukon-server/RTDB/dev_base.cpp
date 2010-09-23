@@ -888,7 +888,22 @@ bool CtiDeviceBase::setDynamicInfo(const CtiTableDynamicPaoInfo &info)
     return new_record;
 }
 
-bool CtiDeviceBase::getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k,        string &destination) const
+bool CtiDeviceBase::getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k, double &destination) const
+{
+    bool success = false;
+
+    std::set<CtiTableStaticPaoInfo>::const_iterator itr;
+
+    if( (itr = _staticPaoInfo.find(CtiTableStaticPaoInfo(getID(), k))) != _staticPaoInfo.end() )
+    {
+        itr->getValue(destination);
+        success = true;
+    }
+
+    return success;
+}
+
+bool CtiDeviceBase::getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k, string &destination) const
 {
     bool success = false;
 

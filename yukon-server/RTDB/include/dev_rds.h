@@ -2,7 +2,6 @@
 #pragma warning( disable : 4786)
 
 #include "dev_remote.h"
-#include "tbl_rds_transmitter.h"
 
 namespace Cti       {
 namespace Devices    {
@@ -65,15 +64,13 @@ protected:
     bool                  _messageToggleFlag;
     bool                  _twoWay;
 
-    CtiTableRDSTransmitter       _rdsTable;
-
     void resetStates();
-    unsigned char  getEncoderAddress();
-    unsigned short getSiteAddress();
-    unsigned char  getSequenceCount();
-    unsigned char  getGroupTypeCode();
-    float          getGroupsPerSecond();
-    unsigned char  getMessageCountFromBufSize(unsigned char size);
+    unsigned char  getEncoderAddress() const;
+    unsigned short getSiteAddress() const;
+    unsigned char  getSequenceCount() const;
+    unsigned char  getGroupTypeCode() const;
+    float          getGroupsPerSecond() const;
+    unsigned char  getMessageCountFromBufSize(unsigned char size) const;
 
     // Message to ask unit to give us immediate responses
     void createBiDirectionRequest   (MessageStore &message);

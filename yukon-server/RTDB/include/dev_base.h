@@ -251,6 +251,7 @@ public:
     bool hasStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const;
     bool setStaticInfo(const CtiTableStaticPaoInfo &info);
     bool getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k, string &destination) const;
+    bool getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k, double &destination) const;
     long getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const;
 
     int getCurrentTrxID() const;
