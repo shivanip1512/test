@@ -202,16 +202,16 @@ public class WorkOrderBean {
         htmlBuf.append("    checkBoxArray[i].checked = false ;").append(LINE_SEPARATOR);
         htmlBuf.append("  }  }").append(LINE_SEPARATOR);
         
-        htmlBuf.append("function manipSelected(form) {").append(LINE_SEPARATOR);
-        htmlBuf.append("	form.action.value = \"ManipulateSelectedResults\";").append(LINE_SEPARATOR);
-        htmlBuf.append(" 	form.submit();").append(LINE_SEPARATOR);
+        htmlBuf.append("function manipSelected() {").append(LINE_SEPARATOR);
+        htmlBuf.append("	document.MForm.action.value = \"ManipulateSelectedResults\";").append(LINE_SEPARATOR);
+        htmlBuf.append(" 	document.MForm.submit();").append(LINE_SEPARATOR);
         htmlBuf.append("}").append(LINE_SEPARATOR);
 
-        htmlBuf.append("function searchOrderID(form, orderID, memberID) {").append(LINE_SEPARATOR);
-        htmlBuf.append("    form.action.value = \"SearchWorkOrder\";").append(LINE_SEPARATOR);
-        htmlBuf.append("    form.SearchValue.value = orderID;").append(LINE_SEPARATOR);
-        htmlBuf.append("    form.SwitchContext.value = memberID;").append(LINE_SEPARATOR);
-        htmlBuf.append("    form.submit();").append(LINE_SEPARATOR);
+        htmlBuf.append("function searchOrderID(orderID, memberID) {").append(LINE_SEPARATOR);
+        htmlBuf.append("    document.MForm.action.value = \"SearchWorkOrder\";").append(LINE_SEPARATOR);
+        htmlBuf.append("    document.MForm.SearchValue.value = orderID;").append(LINE_SEPARATOR);
+        htmlBuf.append("    document.MForm.SwitchContext.value = memberID;").append(LINE_SEPARATOR);
+        htmlBuf.append("    document.MForm.submit();").append(LINE_SEPARATOR);
         htmlBuf.append("}").append(LINE_SEPARATOR);
         htmlBuf.append("</script>").append(LINE_SEPARATOR);
 
@@ -281,7 +281,7 @@ public class WorkOrderBean {
                 htmlBuf.append("</td>").append(LINE_SEPARATOR);
             }        
 			htmlBuf.append("          <td class='TableCell' width='13%' >")
-					.append("<a href='javascript:searchOrderID(this.form, ").append(liteOrder.getOrderID()).append(", ").append(liteOrder.getEnergyCompanyID()).append(")' class='Link1'>")
+					.append("<a href='javascript:searchOrderID(").append(liteOrder.getOrderID()).append(", ").append(liteOrder.getEnergyCompanyID()).append(")' class='Link1'>")
 					.append(starsOrder.getOrderNumber()).append("</a></td>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='13%' >").append(dateStr).append("</td>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='13%' >").append(ServletUtils.forceNotEmpty( starsOrder.getServiceType().getContent() )).append("</td>").append(LINE_SEPARATOR);
@@ -330,7 +330,7 @@ public class WorkOrderBean {
             htmlBuf.append("      <input type='button' name='UncheckAll' value='Uncheck All On Page' onclick='uncheckAll()'>").append(LINE_SEPARATOR);
             htmlBuf.append("    </td>").append(LINE_SEPARATOR);
             htmlBuf.append("    <td align='left'>").append(LINE_SEPARATOR);
-            htmlBuf.append("      <input type='button' name='ChooseSelected' value='Manipulate Selected' onclick='manipSelected(this.form)'>").append(LINE_SEPARATOR);
+            htmlBuf.append("      <input type='button' name='ChooseSelected' value='Manipulate Selected' onclick='manipSelected()'>").append(LINE_SEPARATOR);
             htmlBuf.append("    </td>").append(LINE_SEPARATOR);
             htmlBuf.append("    <td>").append(LINE_SEPARATOR);
             if (referer != null)
