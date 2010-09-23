@@ -544,7 +544,7 @@
                         <td>
                             <c:choose>
                                 <c:when test="${starsMeters}">
-                                    <input type="submit" value="<cti:msg2 key=".add"/>" class="formSubmit">
+                                    <cti:imageButton key="add" type="submit"/>
                                 </c:when>
                         
                                 <c:otherwise>
