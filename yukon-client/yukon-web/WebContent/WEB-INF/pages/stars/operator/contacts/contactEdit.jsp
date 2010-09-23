@@ -112,14 +112,7 @@
 				<cti:displayForPageEditModes modes="EDIT">
 					<tr style="background-color:#EEE;">
 						<td colspan="3">
-						
-							<%-- replicates look and feel of LabeledImgTag but since this action won't work as an href it is done as a <input type="image"/> --%>
-							<cti:msg2 var="addNotificationhoverText" key=".addNotification.hoverText"/>
-							<span title="${addNotificationhoverText}" class="pointer" onmouseover="javascript:$('addNotificationImgInput').src='${addOver}'" onmouseout="javascript:$('addNotificationImgInput').src='${add}'">
-								<input id="addNotificationImgInput" type="image" src="${add}" name="newNotification" value="true" class="logoImage">
-								<label for="addNotificationImgInput" class="logoImage pointer"><cti:msg2 key=".addNotification.label"/></label>
-							</span>
-							 
+							 <cti:imageButton key="addNotification" type="submit" name="newNotification"/>
 						</td>
 					</tr>
 				</cti:displayForPageEditModes>
@@ -127,7 +120,7 @@
 			</table>
 			
 		</tags:formElementContainer>
-		
+        
 		<%-- BUTTONS --%>
 		<br>
 		<tags:slowInput2 formId="contactsUpdateForm" key="save"/>

@@ -32,6 +32,7 @@
         	$('newRow').show();
         	$('newCommentInput').enable();
             $('newCommentInput').focus();
+            flashYellow($('newRow'));
         }
 
         addOrCancel = function (event) {
@@ -168,10 +169,7 @@
             <span class="textFieldLabel"><a href="javascript:addComment()">Save</a> <a href="javascript:hideNewRow()">Cancel</a></span>
         </div>
         <div class="compactResultsFooter">
-            <span title="Click to add a comment" class="pointer" onmouseover="javascript:$('addCommentImgInput').src='${addOver}'" onmouseout="javascript:$('addCommentImgInput').src='${add}'">
-                <input id="addCommentImgInput" type="image" src="${add}" name="newComment" value="true" class="logoImage" onclick="showNewRow()">
-                <label for="addCommentImgInput" class="logoImage pointer">Add Comment</label>
-            </span>
+            <cti:imageButton key="add" onclick="javascript:showNewRow()"/>
         </div>
     </c:if>
 </cti:msgScope>

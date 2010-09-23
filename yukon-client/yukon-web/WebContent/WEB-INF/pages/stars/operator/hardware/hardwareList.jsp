@@ -360,7 +360,7 @@
                             </c:when>
                             <c:otherwise>
                                 <br>
-                                <input type="button" value="<cti:msg2 key=".add"/>" class="formSubmit" onclick="showInvCheckingPopup('switch');">
+                                <cti:imageButton key="add" type="button" onclick="showInvCheckingPopup('switch');"/>
                             </c:otherwise>
                         </c:choose>
                     </td>
@@ -446,7 +446,7 @@
                                     </cti:checkRolesAndProperties>
                                 </c:when>
                                 <c:otherwise>
-                                    <input type="button" value="<cti:msg2 key=".add"/>" class="formSubmit" onclick="showInvCheckingPopup('thermostat');">
+                                    <cti:imageButton key="add" type="button" onclick="showInvCheckingPopup('thermostat');"/>
                                 </c:otherwise>
                             </c:choose>
                         </form>
@@ -549,7 +549,8 @@
                         
                                 <c:otherwise>
                                     <tags:pickerDialog extraArgs="${energyCompanyId}" id="meterPicker" type="availableMctPicker" destinationFieldId="meterId" immediateSelectMode="true"
-                                        endAction="addMeter" linkType="button" buttonStyleClass="formSubmit"><cti:msg2 key=".add"/></tags:pickerDialog>
+                                        endAction="addMeter" linkType="none" />
+                                        <cti:imageButton key="add" type="button" onclick="javascript:meterPicker.show();"/>
                                 </c:otherwise>
                             </c:choose>
                         </td>

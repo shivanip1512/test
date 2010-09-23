@@ -5,7 +5,6 @@
 <%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext"%>
 
 <cti:msg var="pageTitle" key="yukon.web.deviceGroups.composedGroup.pageTitle"/>
-<cti:msg var="addAnotherGroup" key="yukon.web.deviceGroups.composedGroup.addAnotherDeviceGroup"/>
 <cti:msg var="nameLabelText" key="yukon.web.deviceGroups.composedGroup.nameLabel"/>
 <cti:msg var="headerRulesText" key="yukon.web.deviceGroups.composedGroup.header.rules"/>
 <cti:msg var="headerRemoveText" key="yukon.web.deviceGroups.composedGroup.header.remove"/>
@@ -23,7 +22,7 @@
 <cti:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
 
 <cti:standardPage title="${pageTitle}" module="amr">
-
+    <cti:msgScope paths="yukon.web.deviceGroups.composedGroup">
     <cti:standardMenu menuSelection="" />
     
     <cti:breadCrumbs>
@@ -131,8 +130,7 @@
 		<%-- ADD RULE --%>
 		<tr style="background-color:#EEE;">
 			<td colspan="3">
-				<input type="image" src="${add}" onmouseover="javascript:this.src='${addOver}'" onmouseout="javascript:this.src='${add}'" name="addRow">
-				${addAnotherGroup}
+                <cti:imageButton key="addAnotherDeviceGroup" type="submit" name="addRow"/>
 			</td>
 		</tr>
 	
@@ -143,5 +141,5 @@
 	<tags:slowInput myFormId="buildForm" labelBusy="${saveButtonText}" label="${saveButtonText}"/>
 	
 	</form>
-
+    </cti:msgScope>
 </cti:standardPage>

@@ -45,6 +45,7 @@
     <entry key="yukon.web.components.image.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
     <entry key="yukon.web.components.image.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
     <entry key="yukon.web.components.image.add.hoverText">Add</entry>
+    <entry key="yukon.web.components.image.add.label">Add</entry>
     <entry key="yukon.web.components.image.remove.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
     <entry key="yukon.web.components.image.remove.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
     <entry key="yukon.web.components.image.remove.hoverText">Remove</entry>

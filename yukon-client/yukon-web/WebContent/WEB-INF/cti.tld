@@ -1551,6 +1551,66 @@
             </description>
         </attribute>
     </tag>
+    
+    <tag>
+        <name>imageButton</name>
+        <tag-class>com.cannontech.web.i18n.ImageButtonTag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            Outputs localized button with image and label.
+        </description>
+        <attribute>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Base i18n key, with ".imageUrl", specifies the main image,
+                with ".label" for required label key, with ".hoverUrl" for
+                optional hover image and with ".hoverText" for optional hover
+                text 
+            </description>
+        </attribute>
+        <attribute>
+            <name>id</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                id for generated button tag wrapping image and span
+            </description>
+        </attribute>
+        <attribute>
+            <name>onclick</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                onclick for button tag
+            </description>
+        </attribute>
+        <attribute>
+            <name>styleClass</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                button class, button class will always contian 'formSumbit'
+            </description>
+        </attribute>
+        <attribute>
+            <name>type</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                button type (sumbit, button, reset), defaults to button if not supplied
+            </description>
+        </attribute>
+        <attribute>
+            <name>name</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                button name
+            </description>
+        </attribute>
+    </tag>
 
     <tag>
         <name>css</name>
