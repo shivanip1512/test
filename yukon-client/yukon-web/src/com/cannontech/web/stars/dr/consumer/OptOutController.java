@@ -170,12 +170,13 @@ public class OptOutController extends AbstractConsumerController {
         	    optOutableInventories.add(inventory);
         	}
         	
-        	boolean optOutAvailable = !optOutCountHolder.isOptOutsRemaining() || 
-                                       inventory.isCurrentlyOptedOut() && isSameDay ||
-                                       inventory.getCurrentlyScheduledOptOut() != null && 
-                                       ((optOutCountHolder.getRemainingOptOuts() - 1) == 0) && isSameDay;
+        	boolean optOutNotAvailable = !optOutCountHolder.isOptOutsRemaining() || 
+        	                              inventory.isCurrentlyOptedOut() && isSameDay ||
+        	                              (inventory.getCurrentlyScheduledOptOut() != null && 
+        	                               (optOutCountHolder.getRemainingOptOuts() - 1) == 0 && 
+        	                               isSameDay);
         	
-        	noOptOutsAvailableLookup.put(inventory, optOutAvailable);
+        	noOptOutsAvailableLookup.put(inventory, optOutNotAvailable);
         }
         model.addAttribute("noOptOutsAvailableLookup", noOptOutsAvailableLookup);
 
