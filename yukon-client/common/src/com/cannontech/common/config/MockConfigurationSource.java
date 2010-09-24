@@ -1,5 +1,11 @@
 package com.cannontech.common.config;
 
+import org.joda.time.Duration;
+import org.joda.time.DurationFieldType;
+import org.joda.time.Period;
+import org.joda.time.ReadableDuration;
+import org.joda.time.ReadablePeriod;
+
 public class MockConfigurationSource implements ConfigurationSource {
 
     @Override
@@ -34,6 +40,28 @@ public class MockConfigurationSource implements ConfigurationSource {
 
     @Override
     public String getString(String key, String defaultValue) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public Duration getDuration(String key, ReadableDuration defaultValue) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public Duration getDuration(String key, ReadableDuration defaultValue,
+            DurationFieldType durationFieldType) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public Period getPeriod(String key, ReadablePeriod defaultValue) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public Period getPeriod(String key, ReadablePeriod defaultValue,
+            DurationFieldType durationFieldType) {
         throw new UnsupportedOperationException();
     }
     

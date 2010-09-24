@@ -9,9 +9,16 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
+import org.joda.time.DurationFieldType;
+import org.joda.time.Period;
+import org.joda.time.ReadableDuration;
+import org.joda.time.ReadablePeriod;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.SimplePeriodFormat;
 
 public class MasterConfigMap implements ConfigurationSource {
     private Map<String, String> configMap = new HashMap<String, String>();
@@ -113,6 +120,36 @@ public class MasterConfigMap implements ConfigurationSource {
         }
     	
     	return Boolean.parseBoolean(configMap.get(key));
+    }
+    
+    @Override
+    public Period getPeriod(String key, ReadablePeriod defaultValue) {
+        String string = getString(key);
+        if (StringUtils.isBlank(string)) {
+            return defaultValue.toPeriod();
+        }
+        Period result = SimplePeriodFormat.getConfigPeriodFormatter().parsePeriod(string);
+        return result;
+    }
+    
+    @Override
+    public Period getPeriod(String key, ReadablePeriod defaultValue, DurationFieldType duationFieldType) {
+        String string = getString(key);
+        if (StringUtils.isBlank(string)) {
+            return defaultValue.toPeriod();
+        }
+        Period result = SimplePeriodFormat.getConfigPeriodFormatterWithFallback(duationFieldType).parsePeriod(string);
+        return result;
+    }
+    
+    @Override
+    public Duration getDuration(String key, ReadableDuration defaultValue) {
+        return getPeriod(key, defaultValue.toPeriod()).toStandardDuration();
+    }
+    
+    @Override
+    public Duration getDuration(String key, ReadableDuration defaultValue, DurationFieldType duationFieldType) {
+        return getPeriod(key, defaultValue.toPeriod(), duationFieldType).toStandardDuration();
     }
     
 }

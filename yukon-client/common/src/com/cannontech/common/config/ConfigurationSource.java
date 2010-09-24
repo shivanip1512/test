@@ -1,5 +1,11 @@
 package com.cannontech.common.config;
 
+import org.joda.time.Duration;
+import org.joda.time.DurationFieldType;
+import org.joda.time.Period;
+import org.joda.time.ReadableDuration;
+import org.joda.time.ReadablePeriod;
+
 
 public interface ConfigurationSource {
 
@@ -41,5 +47,10 @@ public interface ConfigurationSource {
      * @return the boolean value of the key, or defaultValue if the key didn't exist
      */
     public boolean getBoolean(String key, boolean defaultValue);
+    
+    public Period getPeriod(String key, ReadablePeriod defaultValue, DurationFieldType durationFieldType);
+    public Period getPeriod(String key, ReadablePeriod defaultValue);
+    public Duration getDuration(String key, ReadableDuration defaultValue, DurationFieldType durationFieldType);
+    public Duration getDuration(String key, ReadableDuration defaultValue);
     
 }

@@ -2,6 +2,8 @@ package com.cannontech.common.config;
 
 import java.io.InputStream;
 
+import org.joda.time.Period;
+
 import junit.framework.TestCase;
 
 public class MasterConfigMapTest extends TestCase {
@@ -49,6 +51,37 @@ public class MasterConfigMapTest extends TestCase {
             fail("YUKON_EMAIL_FROM should be commented out in the file");
         } catch (RuntimeException e) {
             // expected
+        }
+    }
+    
+    public void testPeriods() {
+        Period p1 = masterConfigMap.getPeriod("PERIOD_TEST_1", null);
+        assertEquals(new Period().withWeeks(2).withDays(1).withHours(6).withSeconds(8), p1);
+        Period p2 = masterConfigMap.getPeriod("PERIOD_TEST_2", null);
+        assertEquals(new Period().withMinutes(3), p2);
+        Period p3 = masterConfigMap.getPeriod("PERIOD_TEST_3", null);
+        assertEquals(new Period().withMinutes(3).withSeconds(3).withMillis(400), p3);
+        Period p4 = masterConfigMap.getPeriod("PERIOD_TEST_4", null);
+        assertEquals(new Period().withSeconds(65), p4);
+    }
+    
+    public void testDefaultPeriod() {
+        Period defaultPeriod = new Period().withDays(5).withHours(2);
+        Period p = masterConfigMap.getPeriod("PERIOD_TEST_9999", defaultPeriod);
+        assertEquals(defaultPeriod, p);
+
+    }
+    
+    public void testBadPeriods() {
+        try {
+            masterConfigMap.getPeriod("PERIOD_TEST_BAD_1", null);
+            fail();
+        } catch (Exception e) {
+        }
+        try {
+            masterConfigMap.getPeriod("PERIOD_TEST_BAD_2", null);
+            fail();
+        } catch (Exception e) {
         }
     }
     
