@@ -578,7 +578,7 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
 
     if( start_ctrl_window == 0 && stop_ctrl_window != 0 )
     {
-        CtiTime proposed  = CtiTime(proposed_stop_from_1901);
+        CtiTime proposed  = CtiTime(proposed_start_from_1901);
         CtiTime startTime = stop_ctrl_window->getAvailableStartTime();
         CtiTime stopTime  = stop_ctrl_window->getAvailableStopTime();
 
