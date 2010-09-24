@@ -2,38 +2,27 @@ package com.cannontech.amr.rfn.service;
 
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
-import javax.jms.TemporaryQueue;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.SessionCallback;
-import org.springframework.jms.support.destination.DynamicDestinationResolver;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.cannontech.amr.rfn.dao.RfnMeterDao;
 import com.cannontech.amr.rfn.message.read.ChannelData;
 import com.cannontech.amr.rfn.message.read.ChannelDataStatus;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadDataReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadRequest;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
+import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
-import com.cannontech.amr.rfn.dao.RfnMeterDao;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -43,6 +32,8 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.util.jms.JmsReplyReplyHandler;
+import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -62,9 +53,7 @@ public class RfnMeterReadService {
     private String meterTemplatePrefix;
     private TransactionTemplate transactionTemplate;
     private ConnectionFactory connectionFactory;
-    private ExecutorService readRequestThreadPool;
-    private int statusTimeout;
-    private int dataTimeout;
+    private RequestReplyReplyTemplate rrrTemplate;
     
     private static final Logger log = YukonLogManager.getLogger(RfnMeterReadService.class);
     
@@ -90,74 +79,69 @@ public class RfnMeterReadService {
      * @param callback The callback to use for updating status, errors and read data.
      */
     public void send(final RfnMeterIdentifier meter, final RfnMeterReadCompletionCallback callback) {
-        
-        readRequestThreadPool.execute(new Runnable() {
-            
+        JmsReplyReplyHandler<RfnMeterReadReply, RfnMeterReadDataReply> handler = new JmsReplyReplyHandler<RfnMeterReadReply, RfnMeterReadDataReply>() {
+
             @Override
-            public void run() {
-                JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
-                
-                jmsTemplate.execute(new SessionCallback() {
-                    
-                    @Override
-                    public Object doInJms(Session session) throws JMSException {
-                        try {
-                            DynamicDestinationResolver resolver = new DynamicDestinationResolver();
-                            MessageProducer producer = session.createProducer(resolver.resolveDestinationName(session, "yukon.rr.obj.amr.rfn.MeterReadRequest", false));
-                            
-                            TemporaryQueue replyQueue = session.createTemporaryQueue();
-                            MessageConsumer replyConsumer = session.createConsumer(replyQueue);
-                            
-                            ObjectMessage requestMessage = session.createObjectMessage(new RfnMeterReadRequest(meter));
-                            
-                            requestMessage.setJMSReplyTo(replyQueue);
-                            producer.send(requestMessage);
-                            
-                            /* Blocks for status response or until timeout*/
-                            ObjectMessage replyMessage = (ObjectMessage) replyConsumer.receive(Duration.standardSeconds(statusTimeout).getMillis());
-                            
-                            RfnMeterReadReply statusReply = (RfnMeterReadReply) replyMessage.getObject();
-                            
-                            if (statusReply == null || !statusReply.isSuccess()) {
-                                /* Request failed */
-                                if(statusReply == null) {
-                                    callback.receivedStatus(RfnMeterReadingReplyType.TIMEOUT);
-                                } else {
-                                    callback.receivedStatusError(statusReply.getReplyType());
-                                    callback.receivedStatus(statusReply.getReplyType());
-                                }
-                            } else {
-                                /* Request successful */
-                                callback.receivedStatus(statusReply.getReplyType());
-                                List<PointValueHolder> pointDatas = Lists.newArrayList();
-                                
-                                /* Blocks for reading point data or until timeout*/
-                                ObjectMessage dataReply = (ObjectMessage) replyConsumer.receive(Duration.standardMinutes(dataTimeout).getMillis());
-                                
-                                RfnMeterReadDataReply dataReplyMessage = (RfnMeterReadDataReply) dataReply.getObject();
-                                
-                                if (!dataReplyMessage.isSuccess()) {
-                                    /* Data response failed */
-                                    callback.receivedDataError(dataReplyMessage.getReplyType());
-                                } else {
-                                    /* Data response successful, process point data */
-                                    processMeterReadingDataMessage(dataReplyMessage.getData(), RfnMeterReadingType.CURRENT, pointDatas);
-                                    
-                                    for (PointValueHolder pointValueHolder : pointDatas) {
-                                        callback.receivedData(pointValueHolder);
-                                    }
-                                }
-                            }
-                        } catch (Exception e) {
-                            callback.processingExceptionOccured(e.getMessage());
-                        } finally {
-                            callback.complete();
-                        }
-                        return null;
-                    }
-                }, true);
+            public void complete() {
+                callback.complete();
             }
-        });
+
+            @Override
+            public Class<RfnMeterReadReply> getExpectedType1() {
+                return RfnMeterReadReply.class;
+            }
+
+            @Override
+            public Class<RfnMeterReadDataReply> getExpectedType2() {
+                return RfnMeterReadDataReply.class;
+            }
+
+            @Override
+            public void handleException(Exception e) {
+                callback.processingExceptionOccured(e.getMessage());
+            }
+
+            @Override
+            public boolean handleReply1(RfnMeterReadReply statusReply) {
+                if (!statusReply.isSuccess()) {
+                    /* Request failed */
+                    callback.receivedStatusError(statusReply.getReplyType());
+                    return false;
+                } else {
+                    /* Request successful */
+                    callback.receivedStatus(statusReply.getReplyType());
+                    return true;
+                }
+            }
+
+            @Override
+            public void handleReply2(RfnMeterReadDataReply dataReplyMessage) {
+                if (!dataReplyMessage.isSuccess()) {
+                    /* Data response failed */
+                    callback.receivedDataError(dataReplyMessage.getReplyType());
+                } else {
+                    /* Data response successful, process point data */
+                    List<PointValueHolder> pointDatas = Lists.newArrayList();
+                    processMeterReadingDataMessage(dataReplyMessage.getData(), RfnMeterReadingType.CURRENT, pointDatas);
+
+                    for (PointValueHolder pointValueHolder : pointDatas) {
+                        callback.receivedData(pointValueHolder);
+                    }
+                }
+           }
+
+            @Override
+            public void handleTimeout1() {
+                callback.receivedStatusError(RfnMeterReadingReplyType.TIMEOUT);
+            }
+
+            @Override
+            public void handleTimeout2() {
+                callback.receivedDataError(RfnMeterReadingDataReplyType.TIMEOUT);
+            }
+        };
+        
+        rrrTemplate.send(new RfnMeterReadRequest(meter), handler);
     }
     
     public void processMeterReadingDataMessage(RfnMeterReadingData meterReadingDataNotification, RfnMeterReadingType readingType, List<? super PointData> pointDatas) {
@@ -286,8 +270,11 @@ public class RfnMeterReadService {
     @PostConstruct
     public void initialize() {
         meterTemplatePrefix = configurationSource.getString("RFN_METER_TEMPLATE_PREFIX", "*RfnTemplate_");
-        statusTimeout = configurationSource.getInteger("RFN_METER_READ_STATUS_TIMEOUT_SECONDS", 10);
-        dataTimeout = configurationSource.getInteger("RFN_METER_READ_DATA_TIMEOUT_MINUTES", 15);
-        readRequestThreadPool = Executors.newFixedThreadPool(6);
+        
+        rrrTemplate = new RequestReplyReplyTemplate();
+        rrrTemplate.setConfigurationName("RFN_METER_READ");
+        rrrTemplate.setConfigurationSource(configurationSource);
+        rrrTemplate.setConnectionFactory(connectionFactory);
+        rrrTemplate.setRequestQueueName("yukon.rr.obj.amr.rfn.MeterReadRequest", false);
     }
 }
