@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,6 +19,7 @@ import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.DynamicVerification;
 import com.cannontech.spring.YukonSpringHook;
@@ -234,14 +236,9 @@ public class LoadControlVerificationModel extends ReportModelBase
 			{
 				case DATE_COLUMN:
 				{
-					//Set the date to the begining of the day so we can "group" by date
-					GregorianCalendar cal = new GregorianCalendar();
-					cal.setTime(dv.getTimeArrival());
-					cal.set(Calendar.HOUR, 0);
-					cal.set(Calendar.MINUTE, 0);
-					cal.set(Calendar.SECOND, 0);
-					cal.set(Calendar.MILLISECOND, 0);
-					return cal.getTime();
+				    //Set the date to the beginning of the day so we can "group" by date
+				    Date date = TimeUtil.getMidnight(dv.getTimeArrival(), TimeZone.getDefault());
+					return date;
 				}
 				case TIME_COLUMN:
 					return dv.getTimeArrival();
