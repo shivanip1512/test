@@ -409,7 +409,13 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         definitionResources.add(inputFile);
         
         // merge resources, sort
-        Map<String, PaoStore> paoStores = mergeDefinitionResourcesIntoPaoStoreMap(definitionResources);
+        Map<String, PaoStore> paoStores;
+        try {
+            paoStores = mergeDefinitionResourcesIntoPaoStoreMap(definitionResources);
+        } catch (Exception e) {
+            log.warn("Unable to read PAO definitions. Check that there is not a <deviceDefinitions> element in the custom deviceDefinition.xml file (see YUK-8738).", e);
+            throw e;
+        }
         Map<String, PaoStore> sortedPaoStores = new LinkedHashMap<String, PaoStore>();
         for (String id : this.fileIdOrder) {
     		sortedPaoStores.put(id, paoStores.remove(id));

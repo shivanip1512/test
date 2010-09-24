@@ -42,7 +42,7 @@ public class MetaDataDatabaseVendorResolver implements DatabaseVendorResolver {
             logger.info("Your database version is: " + databaseVendor.toString());
             
         } catch (MetaDataAccessException e) {
-            throw new RuntimeException("Unable to determine DB Vendor");
+            throw new RuntimeException("Unable to determine DB Vendor", e);
         }
     }
 
