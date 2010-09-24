@@ -65,7 +65,7 @@ private:
     device_record *getDeviceRecordByGpuffDeviceTypeSerial( unsigned short device_type, unsigned long serial );
 
     void updateDeviceIpAndPort( device_record &dr, const packet &p );
-    void loadStaticDeviceIPAndPort( const CtiDeviceSingle &device);
+    void loadStaticRdsIPAndPort( const CtiDeviceSingle &device);
 
     void setDeviceIp  ( const long device_id, const u_long ip );
     void setDevicePort( const long device_id, const u_short port );

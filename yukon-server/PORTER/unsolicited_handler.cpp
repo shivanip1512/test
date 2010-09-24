@@ -493,7 +493,7 @@ bool UnsolicitedHandler::isDnpDevice(const CtiDeviceSingle &ds)
     return false;
 }
 
-bool UnsolicitedHandler::isUecpDevice(const CtiDeviceSingle &ds)
+bool UnsolicitedHandler::isRdsDevice(const CtiDeviceSingle &ds)
 {
     switch( ds.getType() )
     {

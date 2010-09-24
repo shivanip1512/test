@@ -176,7 +176,7 @@ protected:
 
     static bool isDnpDevice  (const CtiDeviceSingle &ds);
     static bool isGpuffDevice(const CtiDeviceSingle &ds);
-    static bool isUecpDevice (const CtiDeviceSingle &ds);
+    static bool isRdsDevice (const CtiDeviceSingle &ds);
 
     virtual string ip_to_string(u_long ip) const = 0;
 
