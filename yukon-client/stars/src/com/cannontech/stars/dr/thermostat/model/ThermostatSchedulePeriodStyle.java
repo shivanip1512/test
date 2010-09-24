@@ -3,9 +3,13 @@ package com.cannontech.stars.dr.thermostat.model;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 
 public enum ThermostatSchedulePeriodStyle {
     TWO_TIMES(
+              //all schedules have four periods, but commercial t-stats only use two
+              ThermostatSchedulePeriod.FAKE_1, 
+              ThermostatSchedulePeriod.FAKE_2, 
               ThermostatSchedulePeriod.OCCUPIED, 
               ThermostatSchedulePeriod.UNOCCUPIED
     ),
@@ -16,30 +20,38 @@ public enum ThermostatSchedulePeriodStyle {
                ThermostatSchedulePeriod.SLEEP
     );
     
-    private ImmutableList<ThermostatSchedulePeriod> periods;
+    private ImmutableList<ThermostatSchedulePeriod> allPeriods;
+    private ImmutableList<ThermostatSchedulePeriod> realPeriods;
     
     private ThermostatSchedulePeriodStyle(ThermostatSchedulePeriod... periods){
-        this.periods = ImmutableList.of(periods);
+        this.allPeriods = ImmutableList.of(periods);
+        Builder<ThermostatSchedulePeriod> realPeriodsBuilder = ImmutableList.builder();
+        for (ThermostatSchedulePeriod thermostatSchedulePeriod : allPeriods) {
+            if (!thermostatSchedulePeriod.isPsuedo()) {
+                realPeriodsBuilder.add(thermostatSchedulePeriod);
+            }
+        }
+        realPeriods = realPeriodsBuilder.build();
     }
     
-    public List<ThermostatSchedulePeriod> getPeriods(){
-        return periods;
+    public List<ThermostatSchedulePeriod> getRealPeriods() {
+        return realPeriods;
+    }
+    
+    public List<ThermostatSchedulePeriod> getAllPeriods() {
+        return allPeriods;
     }
     
     public ThermostatSchedulePeriod getPeriod(int index){
-        return getPeriods().get(index);
+        return getRealPeriods().get(index);
     }
     
     public int getCount(){
-        return periods.size();
-    }
-    
-    public boolean containsPeriod(ThermostatSchedulePeriod period){
-        return getPeriods().contains(period);
+        return allPeriods.size();
     }
     
     public boolean containsPeriodEntryIndex(int index){
-        List<ThermostatSchedulePeriod> periods = getPeriods();
+        List<ThermostatSchedulePeriod> periods = getRealPeriods();
         for(ThermostatSchedulePeriod period : periods){
             if(period.getEntryIndex() == index){
                 return true;
