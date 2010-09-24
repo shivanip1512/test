@@ -37,9 +37,9 @@
 		    </select>
     	</td>
     	<td style="vertical-align:bottom;">
-    		<input type="submit" value="Delete" size="5" name="remove" class="formSubmit"/>
+    		<input type="submit" value="Delete" name="remove" class="formSubmit"/>
 		    <br><br>
-		    <input type="button" value="Delete All" size="5" onclick="removeAllCheck();" class="formSubmit"/>
+		    <input type="button" value="Delete All" onclick="removeAllCheck();" class="formSubmit"/>
     	</td>
     </tr>
         
@@ -51,12 +51,12 @@
     		<input type="text" value="" name="name" size="20" style="width:200px;"/>
     	</td>
     	<td style="vertical-align:bottom;">
-    		<input id="addButton" type="submit" value="Add" size="5" name="add" class="formSubmit"/>
+    		<input id="addButton" type="submit" value="Add" name="add" class="formSubmit"/>
     		
     		<c:if test="${hasVendorId}"> 
 		    	
 		    	<cti:url var="mspAddUrl" value="/spring/multispeak/setup/routemapping/mspSubstations/choose"/>
-		    	<input id="mspAddButton" type="button" value="MSP" size="5" onclick="SubstationToRouteMappings_disableInputs(true);openSimpleDialog('mspAddDialog', '${mspAddUrl}', 'Choose Substations');" class="formSubmit">
+		    	<input id="mspAddButton" type="button" value="MSP" onclick="SubstationToRouteMappings_disableInputs(true);openSimpleDialog('mspAddDialog', '${mspAddUrl}', 'Choose Substations');" class="formSubmit">
 		    </c:if>
     
     	</td>

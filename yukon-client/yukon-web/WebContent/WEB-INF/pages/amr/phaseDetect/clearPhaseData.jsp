@@ -45,7 +45,7 @@
 				                   </tags:nameValueContainer>
 				                </td>
 				                <td style="padding-left: 10px;">
-				                    <input id="clear" type="submit" value="Clear Phase Data" onclick="startSpinner();">
+				                    <input id="clear" type="submit" value="Clear Phase Data" onclick="startSpinner();" class="formSubmit">
 				                    <img style="display: none;" id="spinner" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
 				                </td>
 				            </tr>
@@ -63,6 +63,6 @@
 	            </tr>
 	        </table>
         </tags:sectionContainer>
-        <input id="cancelButton" name="cancel" type="submit" value="Cancel Test">
+        <input id="cancelButton" name="cancel" type="submit" value="Cancel Test" class="formSubmit">
     </form>
 </cti:standardPage>

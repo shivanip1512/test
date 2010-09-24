@@ -135,6 +135,6 @@
 		        </tr>
 		    </table>
         </tags:sectionContainer>
-        <input id="nextButton" name="next" type="submit" value="Next" disabled="disabled">
+        <input id="nextButton" name="next" type="submit" value="Next" disabled="disabled" class="formSubmit">
 	</form>
 </cti:standardPage>

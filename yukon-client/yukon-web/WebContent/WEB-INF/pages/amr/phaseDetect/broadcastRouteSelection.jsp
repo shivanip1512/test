@@ -81,8 +81,8 @@
             </table>
                 
         </tags:sectionContainer>
-        <input id="cancelButton" name="cancel" type="submit" value="Cancel Test">
-        <input id="nextButton" type="submit" value="Next">
+        <input id="cancelButton" name="cancel" type="submit" value="Cancel Test" class="formSubmit">
+        <input id="nextButton" type="submit" value="Next" class="formSubmit">
     </form>
 </cti:standardPage>
     
