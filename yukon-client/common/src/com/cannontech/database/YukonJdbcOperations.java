@@ -13,6 +13,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 
 public interface YukonJdbcOperations extends SimpleJdbcOperations {
     public void query(SqlFragmentSource sql, RowCallbackHandler rch) throws DataAccessException;
+    public void query(SqlFragmentSource sql, YukonRowCallbackHandler rch) throws DataAccessException;
     public void query(SqlFragmentSource sql, ResultSetExtractor rse) throws DataAccessException;
     public <T> List<T> query(SqlFragmentSource sql, ParameterizedRowMapper<T> rm) throws DataAccessException;
     public <T> List<T> query(SqlFragmentSource sql, YukonRowMapper<T> rm) throws DataAccessException;

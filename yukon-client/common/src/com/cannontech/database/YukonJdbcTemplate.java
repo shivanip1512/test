@@ -30,6 +30,12 @@ public class YukonJdbcTemplate extends SimpleJdbcTemplate implements
         getJdbcOperations().query(sql.getSql(), sql.getArguments(), rch);
     }
     
+    @Override
+    public void query(SqlFragmentSource sql, YukonRowCallbackHandler rch)
+            throws DataAccessException {
+        getJdbcOperations().query(sql.getSql(), sql.getArguments(), new YukonRowCallbackHandlerAdapter(rch));
+    }
+    
     public void query(SqlFragmentSource sql, ResultSetExtractor rse) throws DataAccessException {
         getJdbcOperations().query(sql.getSql(), sql.getArguments(), rse);
     }

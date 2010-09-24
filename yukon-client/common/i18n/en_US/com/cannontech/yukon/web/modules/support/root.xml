@@ -18,4 +18,6 @@
     
     <entry key="yukon.web.modules.support.pointInjection.pageName">Point Injection</entry>
     
+    <entry key="yukon.web.modules.support.setup.pageName">Setup</entry>
+    <entry key="yukon.web.modules.support.setup.loginGroupRoleUpdated">Login Group Role Updated</entry>
 </properties>

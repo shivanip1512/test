@@ -1,20 +1,18 @@
 package com.cannontech.core.roleproperties;
 
 import java.beans.PropertyEditor;
-import java.beans.PropertyEditorSupport;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.joda.time.Instant;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.input.type.BaseEnumeratedType;
 import com.cannontech.web.input.type.BooleanType;
 import com.cannontech.web.input.type.InputOption;
 import com.cannontech.web.input.type.InputType;
-import com.cannontech.web.input.type.InstantType;
 import com.cannontech.web.input.type.IntegerType;
 import com.cannontech.web.input.type.LongType;
 import com.cannontech.web.input.type.StringType;
@@ -29,10 +27,9 @@ public class InputTypeFactory {
     private static final Logger log = YukonLogManager.getLogger(InputTypeFactory.class);
     
     private static final InputType<String> stringType = new StringType();
-    private static final InputType<Boolean> booleanType = new BooleanType();
+    private static final InputType<Boolean> booleanType = new BooleanType(true);
     private static final InputType<Integer> integerType = new IntegerType();
     private static final InputType<Long> longType = new LongType();
-    private static final InputType<Instant> instantType = new InstantType();
 
 
     public static <T extends Enum<T>> InputType<T> enumType(final Class<T> enumClass) {
@@ -79,40 +76,6 @@ public class InputTypeFactory {
         return longType;
     }
     
-    public static InputType<Instant> instantType() {
-        return instantType;
-    }
-    
-    private static class EnumPropertyEditor<T extends Enum<T>> extends PropertyEditorSupport {
-        
-        private final Class<T> enumClass;
-
-        public EnumPropertyEditor(Class<T> enumClass) {
-            this.enumClass = enumClass;
-        }
-        
-        public void setAsText(String text) throws IllegalArgumentException {
-            if (org.apache.commons.lang.StringUtils.isNotBlank(text)) {
-                T enumValue = Enum.valueOf(enumClass, text);
-                setValue(enumValue);
-            }
-            else {
-                setValue(null);
-            }
-        }
-
-        public String getAsText() {
-            Object value = getValue();
-            T enumValue = enumClass.cast(value);
-            if (enumValue != null) {
-                return enumValue.name();
-            }
-            else {
-                return "";
-            }
-        }
-    }
-    
     public static Object convertPropertyValue(InputType<?> type, String value) {
         if (StringUtils.isBlank(value)) {
             if (log.isDebugEnabled()) {
@@ -133,6 +96,22 @@ public class InputTypeFactory {
         if (log.isDebugEnabled()) {
             log.debug("converted '" + value + "' with " + type + " to " + result + " (as " + result.getClass().getSimpleName() + ")");
         }
+        return result;
+    }
+    
+    public static String convertPropertyValue(Object value, InputType<?> type) {
+        if (value == null) {
+            log.debug("converted null value to empty string");
+            return "";
+        }
+        
+        PropertyEditor propertyEditor = type.getPropertyEditor();
+        propertyEditor.setValue(value);
+        String result = propertyEditor.getAsText();
+        if (log.isDebugEnabled()) {
+            log.debug("converted '" + value + "' (of " + value.getClass().getSimpleName() + ") with " + type + " to " + result);
+        }
+        
         return result;
     }
 

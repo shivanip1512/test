@@ -941,6 +941,9 @@
             <option name="threadDump">
               <link>/spring/support/threadDump</link>
             </option>
+            <option name="setup">
+              <link>/spring/support/setup/view</link>
+            </option>
           </options>
         </option>
       </options>
@@ -974,6 +977,9 @@
                 </page>
                 <page name="pointInjection" type="BASIC">
                     <menu>development|pointInjection</menu>
+                </page>
+                <page name="setup" type="BASIC">
+                    <menu>other|setup</menu>
                 </page>
             </pages>
         </page>

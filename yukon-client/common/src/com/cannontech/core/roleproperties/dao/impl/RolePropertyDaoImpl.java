@@ -633,6 +633,14 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         if (!checkRole(role, user)) throw NotAuthorizedException.role(user, role);
     }
     
+    /**
+     * This is public but not in the interface. Designed to be used by other 
+     * role property DAO implementations.
+     */
+    public ImmutableMap<YukonRoleProperty, Object> getDefaultValueLookup() {
+        return defaultValueLookup;
+    }
+    
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;

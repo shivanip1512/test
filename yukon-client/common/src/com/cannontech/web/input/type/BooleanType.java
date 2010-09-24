@@ -10,7 +10,15 @@ import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 public class BooleanType extends DefaultValidatedType<Boolean> {
 
     private String renderer = "booleanType.jsp";
+    private boolean allowEmpty = false;
 
+    public BooleanType(boolean allowEmpty) {
+        this.allowEmpty = allowEmpty;
+    }
+    
+    public BooleanType() {
+    }
+    
     public String getRenderer() {
         return renderer;
     }
@@ -24,7 +32,7 @@ public class BooleanType extends DefaultValidatedType<Boolean> {
     }
 
     public PropertyEditor getPropertyEditor() {
-        return new CustomBooleanEditor(false);
+        return new CustomBooleanEditor(allowEmpty);
     }
 
 }

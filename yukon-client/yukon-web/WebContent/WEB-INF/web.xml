@@ -613,16 +613,6 @@
 			com.cannontech.servlet.PWordRequest
 		</servlet-class>
 	</servlet>
-	<servlet>
-		<description>
-			Allows a user to configure Yukon specific settings.
-		</description>
-		<display-name>SetupServlet</display-name>
-		<servlet-name>SetupServlet</servlet-name>
-		<servlet-class>
-			com.cannontech.servlet.SetupServlet
-		</servlet-class>
-	</servlet>
 
 	<!-- CapControl specific configs -->
 	<servlet>
@@ -1033,10 +1023,6 @@
 	<servlet-mapping>
 		<servlet-name>PWordRequest</servlet-name>
 		<url-pattern>/servlet/PWordRequest</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>SetupServlet</servlet-name>
-		<url-pattern>/servlet/SetupServlet</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

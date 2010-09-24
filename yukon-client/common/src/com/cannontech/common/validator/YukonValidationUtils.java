@@ -11,6 +11,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.validation.ValidationUtils;
 
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class YukonValidationUtils extends ValidationUtils {
@@ -47,14 +48,12 @@ public class YukonValidationUtils extends ValidationUtils {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static List<MessageSourceResolvable> errorsForBindingResult(
             BindingResult bindingResult) {
         List<MessageSourceResolvable> retVal = Lists.newArrayList();
 
         // global
-        List<ObjectError> globalErrors =
-            (List<ObjectError>) bindingResult.getGlobalErrors();
+        Iterable<ObjectError> globalErrors = Iterables.filter(bindingResult.getGlobalErrors(), ObjectError.class);
         for (ObjectError objectError : globalErrors) {
             YukonMessageSourceResolvable message =
                 new YukonMessageSourceResolvable(objectError.getCodes(),
@@ -72,7 +71,7 @@ public class YukonValidationUtils extends ValidationUtils {
 
         return retVal;
 	}
-
+    
     /**
      * This method allows you to use one error key for multiple fields. 
      * A good example of this would be a date range.  If the startDate is after the stopDate
