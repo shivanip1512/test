@@ -2,6 +2,7 @@ package com.cannontech.common.config;
 
 import java.io.InputStream;
 
+import org.joda.time.DurationFieldType;
 import org.joda.time.Period;
 
 import junit.framework.TestCase;
@@ -61,7 +62,7 @@ public class MasterConfigMapTest extends TestCase {
         assertEquals(new Period().withMinutes(3), p2);
         Period p3 = masterConfigMap.getPeriod("PERIOD_TEST_3", null);
         assertEquals(new Period().withMinutes(3).withSeconds(3).withMillis(400), p3);
-        Period p4 = masterConfigMap.getPeriod("PERIOD_TEST_4", null);
+        Period p4 = masterConfigMap.getPeriod("PERIOD_TEST_4", null, DurationFieldType.seconds());
         assertEquals(new Period().withSeconds(65), p4);
     }
     
@@ -80,6 +81,11 @@ public class MasterConfigMapTest extends TestCase {
         }
         try {
             masterConfigMap.getPeriod("PERIOD_TEST_BAD_2", null);
+            fail();
+        } catch (Exception e) {
+        }
+        try {
+            masterConfigMap.getPeriod("PERIOD_TEST_4", null);
             fail();
         } catch (Exception e) {
         }
