@@ -64,4 +64,6 @@
 	<entry key="yukon.web.components.image.down.hoverText">Move Down</entry>
 	<entry key="yukon.web.components.image.down.disabled.imageUrl">/WebConfig/yukon/Icons/green_arrow_down_disabled.gif</entry>
 
+    <entry key="yukon.web.components.tokenRequest.passwordPrompt">Password</entry>
+
 </properties>

@@ -220,6 +220,12 @@
     </attribute>
   </tag>
   
+  <tag>
+  	<name>getCsrfToken</name>
+    <body-content>empty</body-content>
+  	<tag-class>com.cannontech.web.taglib.GetCsrfTokenTag</tag-class>
+  </tag>
+  
    <tag>
   	<name>getProperty</name>
 	<tag-class>com.cannontech.web.taglib.RoleProperty</tag-class>	

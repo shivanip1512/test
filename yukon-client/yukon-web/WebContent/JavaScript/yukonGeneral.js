@@ -315,3 +315,20 @@ Object.extend(YEvent, {
 });
 
 Event.observe(document, 'click', YEvent._handleClickEvent);
+
+Event.observe(window, 'load', function() {
+    $$('.csrfPasswordPrompt').each(function(element) {
+        var passwordField = element.down('input[type=password]');
+        var buttons = element.getElementsBySelector('.formSubmit');
+        Event.observe(passwordField, 'keyup', function() {
+            if ($F(passwordField) != '') {
+                // not using prototype disable/enable because it does not support <button>
+                buttons.each(function(button) {button.disabled = false});
+            } else {
+                buttons.each(function(button) {button.disabled = true});
+            }
+        });
+        buttons.each(function(button) {button.disabled = true});
+    });
+});
+

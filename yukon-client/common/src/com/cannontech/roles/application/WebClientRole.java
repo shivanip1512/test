@@ -2,9 +2,6 @@ package com.cannontech.roles.application;
 
 import com.cannontech.roles.ApplicationRoleDefs;
 
-/**
- * @author aaron
- */
 public interface WebClientRole {
 	public static final int ROLEID = ApplicationRoleDefs.WEB_CLIENT_ROLEID;
 	
@@ -30,4 +27,5 @@ public interface WebClientRole {
     public static final int VIEW_ALARMS_AS_ALERTS = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 18;
     public static final int DEFAULT_TIMEZONE = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 19; //client timezone
     public static final int SESSION_TIMEOUT = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 20;
+    public static final int CSRF_TOKEN_MODE = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 21;
 }

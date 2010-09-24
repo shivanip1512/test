@@ -1138,3 +1138,23 @@ span.dateRangeInputField {
 div.pointMonitorContainer {
     width: 50%;
 }
+
+.usingDefaultValue {
+    color: #ccc;
+}
+
+.focusedFieldDescription {
+    display: none;
+}
+
+.childHasFocus .focusedFieldDescription {
+    display: inline;
+    font-size: .8em;
+}
+
+.csrfPasswordPrompt {
+    display: inline-block;
+    background-color: #eee;
+    border: 1px red solid;
+    padding: 5px;
+}

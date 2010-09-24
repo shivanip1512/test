@@ -9,6 +9,7 @@ import org.apache.commons.lang.Validate;
 
 import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.roleproperties.enums.CsrfTokenMode;
 import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -93,6 +94,7 @@ public enum YukonRoleProperty {
     VIEW_ALARMS_AS_ALERTS(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.VIEW_ALARMS_AS_ALERTS, booleanType()),
     DEFAULT_TIMEZONE(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.DEFAULT_TIMEZONE, stringType()),
     SESSION_TIMEOUT(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.SESSION_TIMEOUT, integerType()),
+    CSRF_TOKEN_MODE(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.CSRF_TOKEN_MODE, InputTypeFactory.enumType(CsrfTokenMode.class)),
     
     HOME_DIRECTORY(WEB_GRAPH, com.cannontech.roles.application.WebGraphRole.HOME_DIRECTORY, stringType()),
     RUN_INTERVAL(WEB_GRAPH, com.cannontech.roles.application.WebGraphRole.RUN_INTERVAL, stringType()),
@@ -402,22 +404,22 @@ public enum YukonRoleProperty {
     MSP_PAONAME_EXTENSION(MULTISPEAK, com.cannontech.roles.yukon.MultispeakRole.MSP_PAONAME_EXTENSION, stringType()),
     
     DISPATCH_MACHINE(SYSTEM, com.cannontech.roles.yukon.SystemRole.DISPATCH_MACHINE, stringType()),
-    DISPATCH_PORT(SYSTEM, com.cannontech.roles.yukon.SystemRole.DISPATCH_PORT, stringType()),
+    DISPATCH_PORT(SYSTEM, com.cannontech.roles.yukon.SystemRole.DISPATCH_PORT, integerType()),
     PORTER_MACHINE(SYSTEM, com.cannontech.roles.yukon.SystemRole.PORTER_MACHINE, stringType()),
-    PORTER_PORT(SYSTEM, com.cannontech.roles.yukon.SystemRole.PORTER_PORT, stringType()),
+    PORTER_PORT(SYSTEM, com.cannontech.roles.yukon.SystemRole.PORTER_PORT, integerType()),
     MACS_MACHINE(SYSTEM, com.cannontech.roles.yukon.SystemRole.MACS_MACHINE, stringType()),
-    MACS_PORT(SYSTEM, com.cannontech.roles.yukon.SystemRole.MACS_PORT, stringType()),
+    MACS_PORT(SYSTEM, com.cannontech.roles.yukon.SystemRole.MACS_PORT, integerType()),
     CAP_CONTROL_MACHINE(SYSTEM, com.cannontech.roles.yukon.SystemRole.CAP_CONTROL_MACHINE, stringType()),
-    CAP_CONTROL_PORT(SYSTEM, com.cannontech.roles.yukon.SystemRole.CAP_CONTROL_PORT, stringType()),
+    CAP_CONTROL_PORT(SYSTEM, com.cannontech.roles.yukon.SystemRole.CAP_CONTROL_PORT, integerType()),
     LOADCONTROL_MACHINE(SYSTEM, com.cannontech.roles.yukon.SystemRole.LOADCONTROL_MACHINE, stringType()),
-    LOADCONTROL_PORT(SYSTEM, com.cannontech.roles.yukon.SystemRole.LOADCONTROL_PORT, stringType()),
+    LOADCONTROL_PORT(SYSTEM, com.cannontech.roles.yukon.SystemRole.LOADCONTROL_PORT, integerType()),
     SMTP_HOST(SYSTEM, com.cannontech.roles.yukon.SystemRole.SMTP_HOST, stringType()),
     MAIL_FROM_ADDRESS(SYSTEM, com.cannontech.roles.yukon.SystemRole.MAIL_FROM_ADDRESS, stringType()),
     STARS_PRELOAD_DATA(SYSTEM, com.cannontech.roles.yukon.SystemRole.STARS_PRELOAD_DATA, stringType()),
     WEB_LOGO_URL(SYSTEM, com.cannontech.roles.yukon.SystemRole.WEB_LOGO_URL, stringType()),
     VOICE_HOST(SYSTEM, com.cannontech.roles.yukon.SystemRole.VOICE_HOST, stringType()),
     NOTIFICATION_HOST(SYSTEM, com.cannontech.roles.yukon.SystemRole.NOTIFICATION_HOST, stringType()),
-    NOTIFICATION_PORT(SYSTEM, com.cannontech.roles.yukon.SystemRole.NOTIFICATION_PORT, stringType()),
+    NOTIFICATION_PORT(SYSTEM, com.cannontech.roles.yukon.SystemRole.NOTIFICATION_PORT, integerType()),
     BATCHED_SWITCH_COMMAND_TOGGLE(SYSTEM, com.cannontech.roles.yukon.SystemRole.BATCHED_SWITCH_COMMAND_TOGGLE, stringType()),
     STARS_ACTIVATION(SYSTEM, com.cannontech.roles.yukon.SystemRole.STARS_ACTIVATION, stringType()),
     BULK_IMPORTER_COMMUNICATIONS_ENABLED(SYSTEM, com.cannontech.roles.yukon.SystemRole.BULK_IMPORTER_COMMUNICATIONS_ENABLED, stringType()),
