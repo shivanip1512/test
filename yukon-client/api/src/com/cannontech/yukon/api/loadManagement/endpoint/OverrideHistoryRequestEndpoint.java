@@ -60,6 +60,7 @@ public class OverrideHistoryRequestEndpoint {
         try {
             // Check authorization
         	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
+            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_DATA_ACCESS, user);
         	
             overrideHistoryList = optOutService.getOptOutHistoryForAccount(accountNumber,
                                                                            startTime,
@@ -114,6 +115,7 @@ public class OverrideHistoryRequestEndpoint {
         try {
             // Check authorization
         	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
+        	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_DATA_ACCESS, user);
         	
             overrideHistoryList = optOutService.getOptOutHistoryByProgram(programName,
                                                                           startTime,
@@ -212,5 +214,5 @@ public class OverrideHistoryRequestEndpoint {
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
 	}
-
+    
 }

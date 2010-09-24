@@ -14,6 +14,8 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.message.util.TimeoutException;
@@ -27,6 +29,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 public class ProgramStopRequestEndpoint {
 
     private LoadControlService loadControlService;
+    private RolePropertyDao rolePropertyDao;
     
     private Namespace ns = YukonXml.getYukonNamespace();
     private String programNameExpressionStr = "/y:programStopRequest/y:programName";
@@ -54,6 +57,10 @@ public class ProgramStopRequestEndpoint {
         
         // run service
         try {
+            
+            // Check authorization
+            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS, user);
+            
             loadControlService.stopControlByProgramName(programName, stopTime, false, true, user);
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(programStopRequest, e, "InvalidProgramName", "No program named: " + programName);
@@ -80,4 +87,10 @@ public class ProgramStopRequestEndpoint {
     public void setLoadControlService(LoadControlService loadControlService) {
         this.loadControlService = loadControlService;
     }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
+    
 }

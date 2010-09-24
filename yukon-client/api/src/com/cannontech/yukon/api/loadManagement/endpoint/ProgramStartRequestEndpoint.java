@@ -16,6 +16,8 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.GearNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.message.util.TimeoutException;
@@ -29,6 +31,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 public class ProgramStartRequestEndpoint {
 
     private LoadControlService loadControlService;
+    private RolePropertyDao rolePropertyDao;
     
     private Namespace ns = YukonXml.getYukonNamespace();
     private String programNameExpressionStr = "/y:programStartRequest/y:programName";
@@ -60,6 +63,9 @@ public class ProgramStartRequestEndpoint {
         
         // run service
         try {
+            
+            // Check authorization
+            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS, user);
         	
         	if (gearName == null) {
         		loadControlService.startControlByProgramName(programName, startTime, stopTime, false, true, user);
@@ -96,9 +102,14 @@ public class ProgramStartRequestEndpoint {
         return resp;
     }
     
-    
     @Autowired
     public void setLoadControlService(LoadControlService loadControlService) {
         this.loadControlService = loadControlService;
     }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
+    
 }

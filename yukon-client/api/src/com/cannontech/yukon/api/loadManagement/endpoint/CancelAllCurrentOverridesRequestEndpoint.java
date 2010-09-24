@@ -45,7 +45,9 @@ public class CancelAllCurrentOverridesRequestEndpoint {
         Element resultElement;
         try {
             
+            // Check authorization
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
+            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS, user);
             
             if (StringUtils.isBlank(programName)) {
             	optOutService.cancelAllOptOuts(user);
@@ -81,4 +83,5 @@ public class CancelAllCurrentOverridesRequestEndpoint {
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
 	}
+    
 }

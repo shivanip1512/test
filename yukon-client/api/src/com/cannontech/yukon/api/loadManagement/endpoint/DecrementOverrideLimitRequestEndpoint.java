@@ -45,23 +45,19 @@ public class DecrementOverrideLimitRequestEndpoint {
         // init response
         Element resp = new Element("decrementDeviceOverrideLimitResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-
+        
         // run service
         Element resultElement;
         try {
-            accountEventLogService.optOutLimitReductionAttemptedThroughApi(user,
-                                                                           accountNumber,
-                                                                           serialNumber);
+            accountEventLogService.optOutLimitReductionAttemptedThroughApi(user, accountNumber, serialNumber);
             
             // Check authorization
-        	rolePropertyDao.verifyProperty(
-        			YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
+        	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
+            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_DATA_ACCESS, user);
 
-        	optOutService.allowAdditionalOptOuts(accountNumber,
-                                                 serialNumber,
-                                                 1,
-                                                 user);
+        	optOutService.allowAdditionalOptOuts(accountNumber, serialNumber, 1, user);
             resultElement = XmlUtils.createStringElement("success", ns, "");
+            
         } catch (NotAuthorizedException e) {
             resultElement = XMLFailureGenerator.generateFailure(decrementDeviceOverrideLimitRequest,
                                                                 e,
@@ -107,4 +103,3 @@ public class DecrementOverrideLimitRequestEndpoint {
 	}
     
 }
-

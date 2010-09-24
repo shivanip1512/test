@@ -16,6 +16,8 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
@@ -30,6 +32,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 public class ListAllScenarioProgramsRequestEndpoint {
 
     private LoadControlService loadControlService;
+    private RolePropertyDao rolePropertyDao;
     
     private Namespace ns = YukonXml.getYukonNamespace();
     private String scenarioNameExpressionStr = "/y:listAllScenarioProgramsRequest/y:scenarioName";
@@ -54,9 +57,11 @@ public class ListAllScenarioProgramsRequestEndpoint {
         Attribute versionAttribute = new Attribute("version", "1.0");
         resp.setAttribute(versionAttribute);
         
-        
         // run service
         try {
+            
+            // Check authorization
+            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_DATA_ACCESS, user);
         	
         	List<ScenarioProgramStartingGears> allScenarioProgramStartingGears = null;
         	if (StringUtils.isBlank(scenarioName)) {
@@ -114,4 +119,10 @@ public class ListAllScenarioProgramsRequestEndpoint {
     public void setLoadControlService(LoadControlService loadControlService) {
         this.loadControlService = loadControlService;
     }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
+    
 }

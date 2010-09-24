@@ -47,11 +47,14 @@ public class ResetOverrideCountBySerialNumberRequestEndpoint {
         // run service
         Element resultElement;
         try {
+            
             // Log opt out limit reset attempt
             accountEventLogService.optOutLimitResetAttemptedThroughApi(user, 
                                                                        accountNumber, 
                                                                        serialNumber);
             
+            // Check authorization
+            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_DATA_ACCESS, user);
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
         	
         	optOutService.resetOptOutLimitForInventory(accountNumber, serialNumber, user);
@@ -89,4 +92,5 @@ public class ResetOverrideCountBySerialNumberRequestEndpoint {
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
 	}
+    
 }

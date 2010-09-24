@@ -7,9 +7,9 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
@@ -21,7 +21,7 @@ public class ProhibitConsumerOverridesRequestEndpoint {
 
     private OptOutService optOutService;
     private Namespace ns = YukonXml.getYukonNamespace();
-	private AuthDao authDao;
+	private RolePropertyDao rolePropertyDao;
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="prohibitConsumerOverridesRequest")
     public Element invoke(Element prohibitConsumerOverridesRequest, LiteYukonUser user) throws Exception {
@@ -36,10 +36,12 @@ public class ProhibitConsumerOverridesRequestEndpoint {
         Element resultElement;
         try {
             // Check authorization
-            authDao.verifyTrueProperty(user,
-                                       ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
+            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
+            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS, user);
+            
             optOutService.changeOptOutEnabledStateForToday(user, false);
             resultElement = XmlUtils.createStringElement("success", ns, "");
+            
         } catch (NotAuthorizedException e) {
             resultElement = XMLFailureGenerator.generateFailure(prohibitConsumerOverridesRequest,
                                                                 e,
@@ -58,8 +60,8 @@ public class ProhibitConsumerOverridesRequestEndpoint {
 	}
     
     @Autowired
-    public void setAuthDao(AuthDao authDao) {
-		this.authDao = authDao;
-	}
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
+    
 }
-

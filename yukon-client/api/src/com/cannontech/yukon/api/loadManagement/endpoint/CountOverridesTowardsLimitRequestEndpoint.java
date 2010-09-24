@@ -45,6 +45,7 @@ public class CountOverridesTowardsLimitRequestEndpoint {
         	
         	// Check authorization
         	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
+        	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_DATA_ACCESS, user);
         	
         	if (StringUtils.isBlank(programName)) {
         		
@@ -77,4 +78,5 @@ public class CountOverridesTowardsLimitRequestEndpoint {
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
 	}
+    
 }

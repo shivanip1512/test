@@ -12,9 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
+import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
@@ -23,6 +27,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 public class CurrentlyActiveProgramsRequestEndpoint {
 
     private LoadControlService loadControlService;
+    private RolePropertyDao rolePropertyDao;
     
     private Namespace ns = YukonXml.getYukonNamespace();
     
@@ -40,28 +45,41 @@ public class CurrentlyActiveProgramsRequestEndpoint {
         Attribute versionAttribute = new Attribute("version", "1.0");
         resp.setAttribute(versionAttribute);
         
-        // run service
-        List<ProgramStatus> allCurrentlyActivePrograms = loadControlService.getAllCurrentlyActivePrograms(user);
-        
         // build response
         Element programStatuses = new Element("programStatuses", ns);
+
+        // run service
+        try {
         
-        for (ProgramStatus programStatus : allCurrentlyActivePrograms) {
+            // Check authorization
+            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_DATA_ACCESS, user);
             
-            Element programStatusElement = new Element("programStatus", ns);
-            programStatusElement.addContent(XmlUtils.createStringElement("programName", ns, programStatus.getProgramName()));
-            if (programStatus.isActive()) {
-                programStatusElement.addContent(XmlUtils.createStringElement("currentStatus", ns, "Active"));
-            } else {
-                programStatusElement.addContent(XmlUtils.createStringElement("currentStatus", ns, "Inactive"));
-            }
-            programStatusElement.addContent(XmlUtils.createDateElement("startDateTime", ns, programStatus.getStartTime()));
-            if (programStatus.getStopTime() != null) {
-                programStatusElement.addContent(XmlUtils.createDateElement("stopDateTime", ns, programStatus.getStopTime()));
-            }
-            programStatusElement.addContent(XmlUtils.createStringElement("gearName", ns, programStatus.getGearName()));
+            List<ProgramStatus> allCurrentlyActivePrograms = loadControlService.getAllCurrentlyActivePrograms(user);
             
-            programStatuses.addContent(programStatusElement);
+            
+            for (ProgramStatus programStatus : allCurrentlyActivePrograms) {
+                
+                Element programStatusElement = new Element("programStatus", ns);
+                programStatusElement.addContent(XmlUtils.createStringElement("programName", ns, programStatus.getProgramName()));
+                if (programStatus.isActive()) {
+                    programStatusElement.addContent(XmlUtils.createStringElement("currentStatus", ns, "Active"));
+                } else {
+                    programStatusElement.addContent(XmlUtils.createStringElement("currentStatus", ns, "Inactive"));
+                }
+                programStatusElement.addContent(XmlUtils.createDateElement("startDateTime", ns, programStatus.getStartTime()));
+                if (programStatus.getStopTime() != null) {
+                    programStatusElement.addContent(XmlUtils.createDateElement("stopDateTime", ns, programStatus.getStopTime()));
+                }
+                programStatusElement.addContent(XmlUtils.createStringElement("gearName", ns, programStatus.getGearName()));
+                
+                programStatuses.addContent(programStatusElement);
+            }
+        
+        } catch (NotAuthorizedException e) {
+            programStatuses = XMLFailureGenerator.generateFailure(currentlyActiveProgramsRequest,
+                                                                e,
+                                                                "UserNotAuthorized",
+                                                                "The user is not authorized to cancel all current overrides.");
         }
         
         resp.addContent(programStatuses);
@@ -74,4 +92,10 @@ public class CurrentlyActiveProgramsRequestEndpoint {
     public void setLoadControlService(LoadControlService loadControlService) {
         this.loadControlService = loadControlService;
     }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
+    
 }

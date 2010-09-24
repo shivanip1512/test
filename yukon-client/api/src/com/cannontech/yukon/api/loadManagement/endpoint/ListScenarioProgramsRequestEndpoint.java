@@ -14,6 +14,8 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
@@ -28,6 +30,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 public class ListScenarioProgramsRequestEndpoint {
 
     private LoadControlService loadControlService;
+    private RolePropertyDao rolePropertyDao;
     
     private Namespace ns = YukonXml.getYukonNamespace();
     private String scenarioNameExpressionStr = "/y:listScenarioProgramsRequest/y:scenarioName";
@@ -54,6 +57,10 @@ public class ListScenarioProgramsRequestEndpoint {
         // run service
         ScenarioProgramStartingGears scenarioProgramStartingGears = null;
         try {
+            
+            // Check authorization
+            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_DATA_ACCESS, user);
+            
             scenarioProgramStartingGears = loadControlService.getScenarioProgramStartingGearsByScenarioName(scenarioName, user);
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(listScenarioProgramsRequest, e, "InvalidScenarioName", "No scenario named: " + scenarioName);
@@ -95,4 +102,10 @@ public class ListScenarioProgramsRequestEndpoint {
     public void setLoadControlService(LoadControlService loadControlService) {
         this.loadControlService = loadControlService;
     }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
+    
 }
