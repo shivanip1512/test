@@ -65,7 +65,7 @@ public interface HardwareEventLogService {
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
     public void hardwareDeletionAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                    @Arg(ArgEnum.deviceName) String deviceName);
+                                                    @Arg(ArgEnum.deviceLabel) String deviceLabel);
 
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
