@@ -1,6 +1,6 @@
 package com.cannontech.amr.rfn.message.disconnect;
 
-public enum RfnMeterDisconnectReplyType {
+public enum RfnMeterDisconnectConfirmationReplyType {
     SUCCESS,
     FAILURE,
     NOT_SUPPORTED,

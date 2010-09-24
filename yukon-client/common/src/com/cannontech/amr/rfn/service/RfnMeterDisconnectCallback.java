@@ -1,19 +1,32 @@
 package com.cannontech.amr.rfn.service;
 
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectReplyType;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReplyType;
 
-public interface RfnMeterDisconnectCallback extends RfnMeterCallback {
+public interface RfnMeterDisconnectCallback extends RfnMeterCallback{
     
     /**
-     * Handles the response for a disconnect request.
+     * Handles the initial response for a disconnect request.
      * @param replyType
      */
-    public void receivedData(RfnMeterDisconnectReplyType replyType);
-
-    /**
-     * Handles the error code returned when we receive a reply type of FAILURE.
-     * @param errorCode
-     */
-    public void receivedError(String errorCode);
+    public void receivedInitialReply(RfnMeterDisconnectInitialReplyType replyType);
     
+    /**
+     * Handles the errors for the initial response of a disconnect request.
+     * @param replyType
+     */
+    public void receivedInitialError(RfnMeterDisconnectInitialReplyType replyType);
+    
+    /**
+     * Handles the confirmation response for a disconnect request.
+     * @param replyType
+     */
+    public void receivedConfirmationReply(RfnMeterDisconnectConfirmationReplyType replyType);
+    
+    /**
+     * Handles the errors for the confirmation response of a disconnect request.
+     * @param replyType
+     */
+    public void receivedConfirmationError(RfnMeterDisconnectConfirmationReplyType replyType);
+
 }

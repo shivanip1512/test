@@ -13,12 +13,6 @@ public interface RfnMeterReadCompletionCallback extends RfnMeterCallback {
     public void receivedData(PointValueHolder value);
     
     /**
-     * Method to signal the that the read has completed.
-     * Should be called once regardless of success or failure.
-     */
-    public void complete();
-    
-    /**
      * Method to keep track of errors for the data response.
      * @param RfnMeterReadingReplyType replyType
      */

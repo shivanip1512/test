@@ -2,20 +2,20 @@ package com.cannontech.amr.rfn.message.disconnect;
 
 import java.io.Serializable;
 
-public class RfnMeterDisconnectReply implements Serializable {
+public class RfnMeterDisconnectConfirmationReply implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private RfnMeterDisconnectReplyType replyType = RfnMeterDisconnectReplyType.TIMEOUT;
+    private RfnMeterDisconnectConfirmationReplyType replyType = RfnMeterDisconnectConfirmationReplyType.TIMEOUT;
     
     public boolean isSuccess() {
-        return replyType == RfnMeterDisconnectReplyType.SUCCESS;
+        return replyType == RfnMeterDisconnectConfirmationReplyType.SUCCESS;
     }
 
-    public void setReplyType(RfnMeterDisconnectReplyType replyType) {
+    public void setReplyType(RfnMeterDisconnectConfirmationReplyType replyType) {
         this.replyType = replyType;
     }
     
-    public RfnMeterDisconnectReplyType getReplyType() {
+    public RfnMeterDisconnectConfirmationReplyType getReplyType() {
         return replyType;
     }
     
@@ -41,7 +41,7 @@ public class RfnMeterDisconnectReply implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        RfnMeterDisconnectReply other = (RfnMeterDisconnectReply) obj;
+        RfnMeterDisconnectConfirmationReply other = (RfnMeterDisconnectConfirmationReply) obj;
         if (replyType == null) {
             if (other.replyType != null)
                 return false;

@@ -1,81 +1,108 @@
 package com.cannontech.amr.rfn.service;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
-import javax.jms.TemporaryQueue;
 
-import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.SessionCallback;
-import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectReply;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectReplyType;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReply;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReply;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectRequest;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.util.jms.JmsReplyReplyHandler;
+import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 
 public class RfnMeterDisconnectService {
     
     private ConnectionFactory connectionFactory;
-    private int timeout;
     private ConfigurationSource configurationSource;
-    private ExecutorService readRequestThreadPool;
+    private RequestReplyReplyTemplate rrrTemplate;
     
+    /**
+     * Attempts to send a disconnect request for a RFN meter.  Will use a separate thread to make the request.
+     * Will expect two responses. 
+     * 
+     * The first is a status message indicating this is a known meter and a disconnect
+     * will be tried, or a disconnect is not possible for this meter.  This response should come back within seconds.
+     * 
+     *  The second response is the confirmation that the disconnect happened or and error ocurred.  
+     *  This response is only expected if the first response was 'OK'.  
+     *  This response can take anywhere from seconds to minutes to tens of minutes depending
+     *  on network performance.
+     *  
+     *  The master.cfg can contain two parameters to define the timeouts:
+     *  
+     *  RFN_METER_DISCONNECT_REPLY1_TIMEOUT
+     *  RFN_METER_DISCONNECT_REPLY2_TIMEOUT
+     *  
+     *  If not provided they default to 10 seconds and 30 minutes.
+     *  
+     * @param meter The meter to disconnect.
+     * @param callback The callback to use for updating status, errors and disconnect result.
+     */
     public void send(final RfnMeterIdentifier meter, final RfnMeterDisconnectStatusType action, final RfnMeterDisconnectCallback callback) {
-        
-        readRequestThreadPool.execute(new Runnable() {
-            
+        JmsReplyReplyHandler<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply> handler = new JmsReplyReplyHandler<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply>() {
+
             @Override
-            public void run() {
-                JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
-                
-                jmsTemplate.execute(new SessionCallback() {
-                    
-                    @Override
-                    public Object doInJms(Session session) throws JMSException {
-                        try {
-                            
-                            DynamicDestinationResolver resolver = new DynamicDestinationResolver();
-                            MessageProducer producer = session.createProducer(resolver.resolveDestinationName(session, "yukon.rr.obj.amr.rfn.MeterDisconnectRequest", false));
-                            
-                            TemporaryQueue replyQueue = session.createTemporaryQueue();
-                            MessageConsumer replyConsumer = session.createConsumer(replyQueue);
-                            
-                            ObjectMessage requestMessage = session.createObjectMessage(new RfnMeterDisconnectRequest(meter, action));
-                            
-                            requestMessage.setJMSReplyTo(replyQueue);
-                            producer.send(requestMessage);
-                            
-                            ObjectMessage replyMessage = (ObjectMessage)replyConsumer.receive(Duration.standardMinutes(timeout).getMillis());
-                            RfnMeterDisconnectReplyType replyType = RfnMeterDisconnectReplyType.TIMEOUT;
-                            
-                            if(replyMessage != null) {
-                                replyType = ((RfnMeterDisconnectReply) replyMessage.getObject()).getReplyType();
-                            }
-                            
-                            callback.receivedData(replyType);
-                            
-                        } catch (Exception e) {
-                            callback.processingExceptionOccured(e.getMessage());
-                        } finally {
-                            callback.complete();
-                        }
-                        return null;
-                    }
-                }, true);
+            public void complete() {
+                callback.complete();
             }
-        });
+
+            @Override
+            public Class<RfnMeterDisconnectInitialReply> getExpectedType1() {
+                return RfnMeterDisconnectInitialReply.class;
+            }
+
+            @Override
+            public Class<RfnMeterDisconnectConfirmationReply> getExpectedType2() {
+                return RfnMeterDisconnectConfirmationReply.class;
+            }
+
+            @Override
+            public void handleException(Exception e) {
+                callback.processingExceptionOccured(e.getMessage());
+            }
+
+            @Override
+            public boolean handleReply1(RfnMeterDisconnectInitialReply initialReply) {
+                if (!initialReply.isSuccess()) {
+                    /* Request failed */
+                    callback.receivedInitialError(initialReply.getReplyType());
+                    return false;
+                } else {
+                    /* Request successful */
+                    callback.receivedInitialReply(initialReply.getReplyType());
+                    return true;
+                }
+            }
+
+            @Override
+            public void handleReply2(RfnMeterDisconnectConfirmationReply confirmationReplyMessage) {
+                if (!confirmationReplyMessage.isSuccess()) {
+                    /* Confirmation response failed */
+                    callback.receivedConfirmationError(confirmationReplyMessage.getReplyType());
+                } else {
+                    /* Confirmation response successful, process point data */
+                    callback.receivedConfirmationReply(confirmationReplyMessage.getReplyType());
+                }
+           }
+
+            @Override
+            public void handleTimeout1() {
+                callback.receivedInitialError(RfnMeterDisconnectInitialReplyType.TIMEOUT);
+            }
+
+            @Override
+            public void handleTimeout2() {
+                callback.receivedConfirmationError(RfnMeterDisconnectConfirmationReplyType.TIMEOUT);
+            }
+        };
+        
+        rrrTemplate.send(new RfnMeterDisconnectRequest(meter, action), handler);
     }
     
     @Autowired
@@ -90,7 +117,11 @@ public class RfnMeterDisconnectService {
 
     @PostConstruct
     public void initialize() {
-        timeout = configurationSource.getInteger("RFN_METER_DISCONNECT_TIMEOUT_MINUTES", 30);
-        readRequestThreadPool = Executors.newFixedThreadPool(6);
+        rrrTemplate = new RequestReplyReplyTemplate();
+        rrrTemplate.setConfigurationName("RFN_METER_DISCONNECT");
+        rrrTemplate.setConfigurationSource(configurationSource);
+        rrrTemplate.setConnectionFactory(connectionFactory);
+        rrrTemplate.setRequestQueueName("yukon.rr.obj.amr.rfn.MeterDisconnectRequest", false);
     }
+    
 }

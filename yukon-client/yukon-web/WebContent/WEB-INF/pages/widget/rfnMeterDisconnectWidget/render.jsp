@@ -43,7 +43,7 @@
                     <div class="errorMessage">
                         <i:inline key="yukon.web.modules.widgets.rfnMeterDisconnectWidget.sendCommand.error" arguments="${command}"/>
                         <br>
-                        <span>${responseStatus}<c:if test="${not empty errorMsg}">: ${errorMsg}</c:if></span>
+                        <span>${responseStatus}</span>
                     </div>
                 </c:otherwise>
             </c:choose>

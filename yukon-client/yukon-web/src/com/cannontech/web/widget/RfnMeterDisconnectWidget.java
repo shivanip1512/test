@@ -9,7 +9,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectReplyType;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
@@ -108,14 +109,23 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
         RfnMeter meter = rfnMeterDao.getForId(WidgetParameterHelper.getRequiredIntParameter(request, "deviceId"));
         
         WaitableRfnMeterDisconnectCallback waitableCallback = new WaitableRfnMeterDisconnectCallback(new RfnMeterDisconnectCallback() {
+
             @Override
-            public void receivedData(RfnMeterDisconnectReplyType replyType) {
+            public void receivedInitialReply(RfnMeterDisconnectInitialReplyType replyType) {/* Ignore */}
+            
+            @Override
+            public void receivedInitialError(RfnMeterDisconnectInitialReplyType replyType) {
                 model.addAttribute("responseStatus", replyType.name());
             }
             
             @Override
-            public void receivedError(String errorCode) {
-                model.addAttribute("errorMsg", "TODO");
+            public void receivedConfirmationReply(RfnMeterDisconnectConfirmationReplyType replyType) {
+                model.addAttribute("responseStatus", replyType.name());
+            }
+            
+            @Override
+            public void receivedConfirmationError(RfnMeterDisconnectConfirmationReplyType replyType) {
+                model.addAttribute("responseStatus", replyType.name());
             }
             
             @Override

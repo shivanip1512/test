@@ -70,8 +70,8 @@ public class RfnMeterReadService {
      *  
      *  The master.cfg can contain two parameters to define the timeouts:
      *  
-     *  RFN_METER_READ _STATUS_TIMEOUT_SECONDS
-     *  RFN_METER_READ _DATA_TIMEOUT_MINUTES
+     *  RFN_METER_READ_REPLY1_TIMEOUT
+     *  RFN_METER_READ_REPLY2_TIMEOUT
      *  
      *  If not provided they default to 10 seconds and 15 minutes.
      *  
