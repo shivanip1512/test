@@ -24,4 +24,5 @@ public interface MultispeakRole {
     public static final int MSP_BILLING_CYCLE_PARENT_DEVICEGROUP = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE - 2;
     public static final int MSP_LM_MAPPING_SETUP = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE - 3;
     public static final int MSP_METER_LOOKUP_FIELD = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE - 4;
+    public static final int MSP_PAONAME_EXTENSION = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE - 5;
 }

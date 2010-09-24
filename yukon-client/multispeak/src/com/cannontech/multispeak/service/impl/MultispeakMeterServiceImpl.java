@@ -43,6 +43,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
+import com.cannontech.common.exception.InsufficientMultiSpeakDataException;
 import com.cannontech.common.model.Route;
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.pao.PaoType;
@@ -58,6 +59,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.SubstationDao;
 import com.cannontech.core.dao.SubstationToRouteMappingDao;
+import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -129,7 +131,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 	/** A map of Long(userMessageID) to MultispeakEvent values */
 	private static Map<Long,MultispeakEvent> eventsMap = Collections.synchronizedMap(new HashMap<Long,MultispeakEvent>());
 
-	private static final String EXTENSION_POSITION_NUMBER_STRING = "positionNumber";
 	private static final String EXTENSION_DEVICE_TEMPLATE_STRING = "AMRMeterType";
 
 	// Strings to represent MultiSpeak method calls, generally used for logging.
@@ -550,8 +551,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     @Override
     public ErrorObject[] addMeterObject(final MultispeakVendor mspVendor, Meter[] addMeters) throws RemoteException{
         final List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
-        final int paoAlias = multispeakFuncs.getPaoNameAlias();
-
+        
         for (final Meter mspMeter : addMeters) {
             try {
                 transactionTemplate.execute(new TransactionCallbackWithoutResult(){
@@ -561,9 +561,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                         ErrorObject errorObject = isValidMeter(mspMeter, mspVendor, METER_ADD_STRING);
                         if( errorObject == null) {
                             try {
-                                com.cannontech.amr.meter.model.Meter meterToAdd = getMeterByMspMeter(mspMeter, paoAlias, mspVendor);
+                                com.cannontech.amr.meter.model.Meter meterToAdd = getMeterByMspMeter(mspMeter, mspVendor);
                                 // have existing meter to "update"
-                                errorObject = addExistingMeter(mspMeter, meterToAdd, mspVendor, paoAlias);
+                                errorObject = addExistingMeter(mspMeter, meterToAdd, mspVendor);
                             } catch (NotFoundException e) { //and NEW meter
                                 List<ErrorObject> addMeterErrors = addNewMeter(mspMeter, mspVendor);
                                 errorObjects.addAll(addMeterErrors);
@@ -602,7 +602,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * @return
      * @throws NotFoundException
      */
-    private com.cannontech.amr.meter.model.Meter getMeterByMspMeter(Meter mspMeter, int paoAlias, MultispeakVendor mspVendor) throws NotFoundException {
+    private com.cannontech.amr.meter.model.Meter getMeterByMspMeter(Meter mspMeter, MultispeakVendor mspVendor) throws NotFoundException {
         
     	com.cannontech.amr.meter.model.Meter meter = null;
     	MultispeakMeterLookupFieldEnum multispeakMeterLookupFieldEnum= multispeakFuncs.getMeterLookupField();
@@ -612,7 +612,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         } else if( multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.ADDRESS ){ 
     			meter = getMeterByAddress(mspMeter);
     	} else if ( multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.DEVICE_NAME ) {
-    	    meter = getMeterByPaoName(mspMeter, paoAlias, mspVendor);
+    	    meter = getMeterByPaoName(mspMeter, mspVendor);
         } else if ( multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.AUTO_METER_NUMBER_FIRST) {
 	       try { //Lookup by MeterNo
 	           meter = getMeterByMeterNumber(mspMeter);
@@ -620,13 +620,13 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                try { //Lookup by Address
                    meter = getMeterByAddress(mspMeter);
                } catch (NotFoundException e2){ //Doesn't exist by Address
-                   meter = getMeterByPaoName(mspMeter, paoAlias,mspVendor);
+                   meter = getMeterByPaoName(mspMeter, mspVendor);
                    //Not Found Exception thrown in the end if never found
                }
            }
         } else if ( multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.AUTO_DEVICE_NAME_FIRST) {
             try { //Lookup by Device Name
-                meter = getMeterByPaoName(mspMeter, paoAlias,mspVendor);
+                meter = getMeterByPaoName(mspMeter, mspVendor);
             } catch (NotFoundException e) { //Doesn't exist by Device name
                 try { //Lookup by Meter Number
                     meter = getMeterByMeterNumber(mspMeter);
@@ -649,13 +649,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * @param mspVendor
      * @return
      */
-    private com.cannontech.amr.meter.model.Meter getMeterByPaoName(Meter mspMeter, int paoAlias, MultispeakVendor mspVendor) {
-        String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, null, mspVendor);
-        // TODO??? What should be done if we can't find a paoName to lookup by?  throw exception?
-        if (paoName != null) {
-            return meterDao.getForPaoName(paoName);
-        }
-        return null;
+    private com.cannontech.amr.meter.model.Meter getMeterByPaoName(Meter mspMeter, MultispeakVendor mspVendor) {
+        String paoName = getPaoNameFromMspMeter(mspMeter, mspVendor);
+        return meterDao.getForPaoName(paoName);
     }
 
     /**
@@ -725,8 +721,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     @Override
     public ErrorObject[] updateServiceLocation(final MultispeakVendor mspVendor, ServiceLocation[] serviceLocations) {
         final Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
-        final int paoAlias = multispeakFuncs.getPaoNameAlias();
-        final String paoAliasStr = MultispeakVendor.paoNameAliasStrings[paoAlias];
+        final MspPaoNameAliasEnum paoAlias = multispeakFuncs.getPaoNameAlias();
         
         for (final ServiceLocation mspServiceLocation : serviceLocations) {
             try {
@@ -734,32 +729,21 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                     @Override
                     protected void doInTransactionWithoutResult(TransactionStatus status){
                         
-                        if( paoAlias == MultispeakVendor.SERVICE_LOCATION_PAONAME ) {
-                            // With Service Location, all we need to do is update fields on the Service Location object itself that may be in Yukon.
-                            String paoName = mspServiceLocation.getObjectID();
-                            if (StringUtils.isNotBlank(paoName)) {
-                                com.cannontech.amr.meter.model.Meter meter = meterDao.getForPaoName(paoName);
-                                if ( !meter.isDisabled()) {
-                                    //Update billing cycle information
-                                    String billingCycle = mspServiceLocation.getBillingCycle();
-                                    updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
-                                }
-                            }
-                        } else if ( paoAlias == MultispeakVendor.SERVICE_LOCATION_WITH_POSITION_NO_PAONAME) {
-                            //Use the Service Location value to find all meters that have this name.
-                            List<FilterBy> searchFilter = new ArrayList<FilterBy>(1);
-                            FilterBy filterBy = new StandardFilterBy("Device Name", MeterSearchField.PAONAME);
-                            filterBy.setFilterValue(mspServiceLocation.getObjectID());
-                            searchFilter.add(filterBy);
-                            OrderBy orderBy = new OrderBy(MeterSearchField.PAONAME.toString(), true);
-                            SearchResult<com.cannontech.amr.meter.model.Meter> result = meterSearchDao.search(searchFilter, orderBy, 0, 25);
-                            List<com.cannontech.amr.meter.model.Meter> meters = result.getResultList();
-                            
-                            for (com.cannontech.amr.meter.model.Meter meter: meters) {
-                                if ( !meter.isDisabled()) {
-                                    //Update billing cycle information
-                                    String billingCycle = mspServiceLocation.getBillingCycle();
-                                    updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
+                        if (paoAlias == MspPaoNameAliasEnum.SERVICE_LOCATION) {
+
+                            String serviceLocationStr = mspServiceLocation.getObjectID();
+                            List<com.cannontech.amr.meter.model.Meter> meters = searchForMetersByPaoName(serviceLocationStr);
+
+                            if (meters.isEmpty()) {
+                                ErrorObject err = mspObjectDao.getNotFoundErrorObject(serviceLocationStr, "ServiceLocation", "ServiceLocation", SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
+                                errorObjects.add(err);
+                            } else {
+                                for (com.cannontech.amr.meter.model.Meter meter: meters) {
+                                    if ( !meter.isDisabled()) {
+                                        //Update billing cycle information
+                                        String billingCycle = mspServiceLocation.getBillingCycle();
+                                        updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
+                                    }
                                 }
                             }
                         } else {
@@ -772,7 +756,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                                     String meterNumber = mspMeter.getMeterNo();
                                     try {
                                         com.cannontech.amr.meter.model.Meter meter = meterDao.getForMeterNumber(meterNumber);
-                                        changeMeter(mspMeter, meter, mspVendor, paoAlias, SERV_LOC_CHANGED_STRING);
+                                        changeMeter(mspMeter, meter, mspVendor, SERV_LOC_CHANGED_STRING);
                                         
                                         //Update billing cycle information
                                         String billingCycle = mspServiceLocation.getBillingCycle();
@@ -785,7 +769,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                                    
                             } else {
                                 ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectID(),
-                                        paoAliasStr + "ServiceLocation(" + mspServiceLocation.getObjectID()+ ") - No meters returned from vendor for location.",
+                                        paoAlias.getDisplayName() + "ServiceLocation(" + mspServiceLocation.getObjectID()+ ") - No meters returned from vendor for location.",
                                         "ServiceLocation",
                                         SERV_LOC_CHANGED_STRING,
                                         mspVendor.getCompanyName());
@@ -820,7 +804,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     @Override
     public ErrorObject[] changeMeterObject(final MultispeakVendor mspVendor, Meter[] changedMeters) throws RemoteException{
         final List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
-        final int paoAlias = multispeakFuncs.getPaoNameAlias();
 
         for (final Meter mspMeter : changedMeters) {
             try {
@@ -834,7 +817,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                             mspAddress = mspMeter.getNameplate().getTransponderID().trim();
                             try {
                                 com.cannontech.amr.meter.model.Meter meter = meterDao.getForPhysicalAddress(mspAddress);
-                                changeMeter(mspMeter, meter, mspVendor, paoAlias, METER_CHANGED_STRING);
+                                changeMeter(mspMeter, meter, mspVendor, METER_CHANGED_STRING);
                             } 
                             catch (NotFoundException e) {
                                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspMeter.getMeterNo(), "Address: " + mspAddress, "Meter",
@@ -948,8 +931,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         String meterNumber = mspMeter.getMeterNo().trim();
         
         // NAME
-        int paoAlias = multispeakFuncs.getPaoNameAlias();
-        String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, meterNumber, mspVendor);
+        String paoName = getPaoNameFromMspMeter(mspMeter, mspVendor);
         // it is possible that a device with this name already exists, specifically if only looking up by METER_NUMBER.
         // So lets make sure to get one that works for us.
         paoName = getNewPaoName(paoName);
@@ -1051,26 +1033,37 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
 
     /**
-     * Returns the meter position number (sequence number) from Meter object.
-     * If no value is provided in the Meter object, then null is returned. 
+     * Returns the value of the paoName alias extension field from Meter object.
+     * If no value is provided in the Meter object, then null is returned.
+     * NOTE:  meterno - this extension will return mspMeter.meterNo directly. 
      * @param mspMeter
      * @return
      */
-    private String getMeterPosition(Meter mspMeter) {
-        String positionNumber = null;
-        ExtensionsItem[] extensionItems = mspMeter.getExtensionsList();
-        if( extensionItems != null) {
-            for (ExtensionsItem eItem : extensionItems) {
-                String extName = eItem.getExtName();
-                if ( extName.equalsIgnoreCase(EXTENSION_POSITION_NUMBER_STRING)) {
-                    positionNumber = eItem.getExtValue();
+    private String getExtensionValue(Meter mspMeter) {
+        
+        String extensionValue = null;
+        boolean usesExtension = multispeakFuncs.usesPaoNameAliasExtension();
+        
+        if (usesExtension) {
+            String extensionName = multispeakFuncs.getPaoNameAliasExtension();
+            if (extensionName.equalsIgnoreCase("meterno")) {    // specific field
+                extensionValue = mspMeter.getMeterNo();
+            } else {    // use extensions
+                
+                ExtensionsItem[] extensionItems = mspMeter.getExtensionsList();
+                if( extensionItems != null) {
+                    for (ExtensionsItem eItem : extensionItems) {
+                        String extName = eItem.getExtName();
+                        if ( extName.equalsIgnoreCase(extensionName)) {
+                            extensionValue = eItem.getExtValue();
+                        }
+                    }
                 }
             }
-        }
-
-        return positionNumber;
+        } 
+        return extensionValue;
     }
-    
+
     // UPDATE BILLING CYCLE DEVICE GROUP
     @Override
     public boolean updateBillingCyle(String newBilling, String meterNumber, YukonDevice yukonDevice,
@@ -1239,71 +1232,56 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * @param defaultValue
      * @return
      */
-    private String getPaoNameFromMspMeter(Meter mspMeter, int paoNameAlias, String defaultValue, MultispeakVendor mspVendor ) {
-			
-		switch (paoNameAlias) {
-			case MultispeakVendor.ACCOUNT_NUMBER_PAONAME:
-			{
-			   if( mspMeter.getUtilityInfo() == null ||
-					   StringUtils.isBlank(mspMeter.getUtilityInfo().getAccountNumber()))
-                   return null;
-               return mspMeter.getUtilityInfo().getAccountNumber();
-			}	
-			case MultispeakVendor.SERVICE_LOCATION_PAONAME:
-			{
-				if( mspMeter.getUtilityInfo() == null ||
-						StringUtils.isBlank(mspMeter.getUtilityInfo().getServLoc()))
-                   return null;
-               return mspMeter.getUtilityInfo().getServLoc();
-			}	
-			case MultispeakVendor.CUSTOMER_PAONAME:
-			{
-				if( mspMeter.getUtilityInfo() == null ||
-						StringUtils.isBlank(mspMeter.getUtilityInfo().getCustID()))
-                   return null;
-               return mspMeter.getUtilityInfo().getCustID();
-			}
-			case MultispeakVendor.EA_LOCATION_PAONAME:
-			{
-				if( mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getEaLoc() == null ||
-						StringUtils.isBlank(mspMeter.getUtilityInfo().getEaLoc().getName()))
-                   return null;
-               return mspMeter.getUtilityInfo().getEaLoc().getName();
-			}
-            case MultispeakVendor.GRID_LOCATION_PAONAME:
-            {
-                if(StringUtils.isBlank(mspMeter.getFacilityID()) )
-                   return null;
-               return mspMeter.getFacilityID();
+    private String getPaoNameFromMspMeter(Meter mspMeter, MultispeakVendor mspVendor ) {
+
+        String paoName = null;
+        final MspPaoNameAliasEnum paoAlias = multispeakFuncs.getPaoNameAlias();
+        if (paoAlias == MspPaoNameAliasEnum.ACCOUNT_NUMBER) {
+            if( mspMeter.getUtilityInfo() != null &&
+                    StringUtils.isNotBlank(mspMeter.getUtilityInfo().getAccountNumber())) {
+                paoName = mspMeter.getUtilityInfo().getAccountNumber();
             }
-            case MultispeakVendor.DEFAULT_PAONAME:
-            { // lookup by meter number
-				return mspMeter.getMeterNo();
-            }
-            case MultispeakVendor.SERVICE_LOCATION_WITH_POSITION_NO_PAONAME:
-			{
-				if( mspMeter.getUtilityInfo() == null ||
-						StringUtils.isBlank(mspMeter.getUtilityInfo().getServLoc()))
-                   return null;
-				
-				String serviceLocation = mspMeter.getUtilityInfo().getServLoc();
-				String positionNumber = getMeterPosition(mspMeter);
-				return multispeakFuncs.buildServiceLocationWithPosition(serviceLocation, positionNumber);
+        } else if (paoAlias == MspPaoNameAliasEnum.SERVICE_LOCATION) {
+			if( mspMeter.getUtilityInfo() != null &&
+					StringUtils.isNotBlank(mspMeter.getUtilityInfo().getServLoc())) {
+			    paoName = mspMeter.getUtilityInfo().getServLoc();
 			}
-            case MultispeakVendor.POLE_NUMBER_PAONAME:
-            {
-                if (StringUtils.isBlank(mspMeter.getMeterNo())) {
-                    return null;
-                }
+        } else if (paoAlias == MspPaoNameAliasEnum.CUSTOMER_ID) {
+			if( mspMeter.getUtilityInfo() != null &&
+					StringUtils.isNotBlank(mspMeter.getUtilityInfo().getCustID())) {
+			    paoName = mspMeter.getUtilityInfo().getCustID();
+			}
+		} else if (paoAlias == MspPaoNameAliasEnum.EA_LOCATION) {
+			if( mspMeter.getUtilityInfo() != null &&
+			        mspMeter.getUtilityInfo().getEaLoc() != null &&
+					StringUtils.isNotBlank(mspMeter.getUtilityInfo().getEaLoc().getName())) {
+			    paoName = mspMeter.getUtilityInfo().getEaLoc().getName();
+			}
+		} else if (paoAlias == MspPaoNameAliasEnum.GRID_LOCATION) {
+		    if(StringUtils.isNotBlank(mspMeter.getFacilityID()) ) {
+		        paoName = mspMeter.getFacilityID();
+		    }
+        } else if (paoAlias == MspPaoNameAliasEnum.METER_NUMBER) {
+            if(StringUtils.isNotBlank(mspMeter.getMeterNo()) ) {
+                paoName = mspMeter.getMeterNo();
+            }
+        } else if (paoAlias == MspPaoNameAliasEnum.POLE_NUMBER) {
+            if (StringUtils.isNotBlank(mspMeter.getMeterNo())) {
                 ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(mspMeter.getMeterNo(), mspVendor);
-                if( mspServiceLocation.getNetwork()== null || StringUtils.isBlank(mspServiceLocation.getNetwork().getPoleNo())){
-                    return null;
+                if( mspServiceLocation.getNetwork() != null && 
+                        StringUtils.isNotBlank(mspServiceLocation.getNetwork().getPoleNo())){
+                    paoName = mspServiceLocation.getNetwork().getPoleNo();
                 }
-                return mspServiceLocation.getNetwork().getPoleNo();                
-            }			
-			default:
-				return defaultValue;
+            }
+        } 
+        
+        if (paoName == null) {
+            throw new InsufficientMultiSpeakDataException("Message does not contain sufficient data for Yukon Device Name.");
 		}
+
+        String extensionValue = getExtensionValue(mspMeter);
+        return multispeakFuncs.buildAliasWithQuantifier(paoName, extensionValue, mspVendor);
+
 	}
 	
     /**
@@ -1356,6 +1334,22 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 		return substationName;
 	}
 	
+	/**
+	 * Helper method to search devices by PaoName for filterValue.
+	 * @param filterValue
+	 * @return
+	 */
+    private List<com.cannontech.amr.meter.model.Meter> searchForMetersByPaoName(String filterValue) {
+        List<FilterBy> searchFilter = new ArrayList<FilterBy>(1);
+        FilterBy filterBy = new StandardFilterBy("Device Name", MeterSearchField.PAONAME);
+        filterBy.setFilterValue(filterValue);
+        searchFilter.add(filterBy);
+        OrderBy orderBy = new OrderBy(MeterSearchField.PAONAME.toString(), true);
+        SearchResult<com.cannontech.amr.meter.model.Meter> result = meterSearchDao.search(searchFilter, orderBy, 0, 25);
+        List<com.cannontech.amr.meter.model.Meter> meters = result.getResultList();
+       return meters;
+    }
+    
 	/**
      * Returns ErrorObject when substation name is invalid or 
      * the substation does not return any valid SubstationToRouteMappings.
@@ -1477,8 +1471,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      */
     private ErrorObject addExistingMeter(Meter mspMeter, 
             com.cannontech.amr.meter.model.Meter meter, 
-            MultispeakVendor mspVendor,
-            int paoAlias) {
+            MultispeakVendor mspVendor) {
         
     	//Verify the meter to "update" is disabled.
         ErrorObject err = isMeterDisabled(meter, mspVendor);
@@ -1514,7 +1507,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         	}
         }
 
-        final String paoAliasStr = MultispeakVendor.paoNameAliasStrings[paoAlias];
+        final MspPaoNameAliasEnum paoAlias = multispeakFuncs.getPaoNameAlias();
         //Load the CIS serviceLocation.
         ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(meter.getMeterNumber(), mspVendor);
         String billingCycle = mspServiceLocation.getBillingCycle();
@@ -1531,16 +1524,16 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         //Update PaoName
         String currentPaoName = meter.getName();
-        String newPaoName = getPaoNameFromMspMeter(mspMeter, paoAlias, currentPaoName, mspVendor);
+        String newPaoName = getPaoNameFromMspMeter(mspMeter, mspVendor);
         
         if( newPaoName == null) {
-            logString = "PAOName(" + paoAliasStr + ")No Change - MSP " + paoAliasStr + " is empty;";
+            logString = "PAOName(" + paoAlias.getDisplayName() + ")No Change - MSP " + paoAlias.getDisplayName() + " is empty;";
         } else if (currentPaoName.equalsIgnoreCase(newPaoName)) {
-            logString = "PAOName(" + paoAliasStr + ")No Change;";
+            logString = "PAOName(" + paoAlias.getDisplayName() + ")No Change;";
         } else {
             newPaoName = getNewPaoName(newPaoName);
             yukonPaobject.setPAOName(newPaoName);
-            logString = "PAOName(" + paoAliasStr + ")(" + currentPaoName + " to " + newPaoName + ");";
+            logString = "PAOName(" + paoAlias.getDisplayName() + ")(" + currentPaoName + " to " + newPaoName + ");";
         }
         
         //Update MeterNumber
@@ -1594,9 +1587,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private void changeMeter(Meter mspMeter, 
             com.cannontech.amr.meter.model.Meter meter, 
             MultispeakVendor mspVendor,
-            int paoAlias, String logActionStr) {
+            String logActionStr) {
         
-        final String paoAliasStr = MultispeakVendor.paoNameAliasStrings[paoAlias];
+        final MspPaoNameAliasEnum paoAlias = multispeakFuncs.getPaoNameAlias();
         boolean dbChange = false;
         LiteYukonPAObject liteYukonPaobject = paoDao.getLiteYukonPAO(meter.getDeviceId());
         YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
@@ -1604,17 +1597,17 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         String paoNameLog = "";
         String meterNumberLog = "";
         String currentPaoName = meter.getName();
-        String newPaoName = getPaoNameFromMspMeter(mspMeter, paoAlias, currentPaoName, mspVendor);
+        String newPaoName = getPaoNameFromMspMeter(mspMeter, mspVendor);
         
         if( newPaoName == null) {
-            paoNameLog = "Address (" + meter.getAddress() + ") PAOName(" + paoAliasStr + ") No Change - MSP " + paoAliasStr + " is empty.";
+            paoNameLog = "Address (" + meter.getAddress() + ") PAOName(" + paoAlias.getDisplayName() + ") No Change - MSP " + paoAlias.getDisplayName()+ " is empty.";
         } else if (currentPaoName.equalsIgnoreCase(newPaoName)) {
-            paoNameLog = "Address (" + meter.getAddress() + ") PAOName(" + paoAliasStr + ") No change in PaoName.";
+            paoNameLog = "Address (" + meter.getAddress() + ") PAOName(" + paoAlias.getDisplayName()+ ") No change in PaoName.";
         } else {
             newPaoName = getNewPaoName(newPaoName);
             yukonPaobject.setPAOName(newPaoName);
             dbChange = true;
-            paoNameLog = "Address (" + meter.getAddress() + ") PAOName(" + paoAliasStr + ") PaoName Changed(OLD:" + currentPaoName + " NEW:" + newPaoName + ").";
+            paoNameLog = "Address (" + meter.getAddress() + ") PAOName(" + paoAlias.getDisplayName()+ ") PaoName Changed(OLD:" + currentPaoName + " NEW:" + newPaoName + ").";
         }
 
         String currentMeterNumber = meter.getMeterNumber();

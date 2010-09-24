@@ -27,6 +27,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -257,13 +258,22 @@ public class MultispeakFuncs
         return returnStr;
     }
 
+    public boolean usesPaoNameAliasExtension() {
+        String paoNameAliasExtension = getPaoNameAliasExtension();
+        return StringUtils.isNotBlank(paoNameAliasExtension);
+    }
+    
+    public String getPaoNameAliasExtension() {
+        return rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_PAONAME_EXTENSION, null);
+    }
+    
     public MultispeakMeterLookupFieldEnum getMeterLookupField() {
         return rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.MSP_METER_LOOKUP_FIELD, MultispeakMeterLookupFieldEnum.class, null);
     }
     
-    public int getPaoNameAlias() {
-        String value = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.MSP_PAONAME_ALIAS, null);
-        return Integer.valueOf(value).intValue();
+    public MspPaoNameAliasEnum getPaoNameAlias() {
+        MspPaoNameAliasEnum paoNameAlias = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.MSP_PAONAME_ALIAS, MspPaoNameAliasEnum.class, null);
+        return paoNameAlias;
     }
     
     /**
@@ -306,41 +316,43 @@ public class MultispeakFuncs
     }
     
     /**
-     * Helper method to construct a new service location value containing a position location.
-     * Format is "serviceLocation [position]"
-     * Only add the positionNumber for meters that are NOT in the first position (1).
-     * @param serviceLocation
-     * @param positionNumber
+     * Helper method to construct a deviceName alias value value containing an additional quantifier.
+     * Format is "value [quantifer]"
+     * NOTE:  For mspVendor.CompanyName = NISC -> Only add the quantifier for quantifier != 1.
+     * @param value
+     * @param quantifier 
      * @return
      */
-    public String buildServiceLocationWithPosition(String serviceLocation, String positionNumber) {
-    	String serviceLocationWithRegNo = serviceLocation;
-    	
-    	if (StringUtils.isNotBlank(positionNumber)) {
-    	    if (StringUtils.isNumeric(positionNumber) && Integer.valueOf(positionNumber) > 1) {
-    	        serviceLocationWithRegNo += " [" + positionNumber + "]";
-    	    }
-    	}    	
-    	return serviceLocationWithRegNo;
+    public String buildAliasWithQuantifier(String value, String quantifier, MultispeakVendor mspVendor) {
+        boolean isNISC = mspVendor.getCompanyName().equalsIgnoreCase("NISC");
+        String valueWithQuantifier = value;
+        
+        if (StringUtils.isNotBlank(quantifier)) {
+            if (isNISC && StringUtils.equals(quantifier, "1")) {   // NISC vendor specific handling
+                return valueWithQuantifier;
+            }
+            valueWithQuantifier += " [" + quantifier + "]";
+        }       
+        return valueWithQuantifier;
     }
     
     /**
-     * Helper method to parse the service location value from a value containing the position location too.
-     * Format of serviceLocatinoWithRegNo is expected to be "serviceLocation [positionNo]".
-     * After parse, returned value will be "serviceLocation" (the [positionNo] part will be removed).
-     * @param serviceLocationWithRegNo
+     * Helper method to parse the main alias value from a string containing a quantifier too.
+     * Format of value is expected to be "value [quantifier]".
+     * After parse, returned value will be "value" (the [quantifier] part will be removed).
+     * @param value
      * @return
      */
-    public String parseServiceLocationWithPosition(String serviceLocationWithRegNo) {
-    	String serviceLocation = serviceLocationWithRegNo;
-    	
-    	int bracketIndex = serviceLocation.lastIndexOf("[");
-    	if (bracketIndex > 0){	//found an instance of [
-    		//truncate to the underscore index, not inclusive of.   This should remove things like 12345 [3] and make 12345
-    		//must trim to remove end of string whitespace
-    		serviceLocation = serviceLocation.substring(0, bracketIndex).trim();
-    	}
-    	return serviceLocation;
+    public String parseAliasWithQuantifier(String value) {
+        String parsedValue = value;
+        
+        int bracketIndex = parsedValue.lastIndexOf("[");
+        if (bracketIndex > 0){ //found an instance of [
+            //truncate to the underscore index, not inclusive of.   This should remove things like 12345 [3] and make 12345
+            //must trim to remove end of string whitespace
+            parsedValue = parsedValue.substring(0, bracketIndex).trim();
+        }
+        return parsedValue;
     }
     
     @Autowired

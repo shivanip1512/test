@@ -42,7 +42,12 @@
 		 }
 		    document.getElementById("mspEndpoint"+interface).disabled = !selected;
 		}
-		
+        
+		function enableExtension(selected) {
+            
+            document.getElementById("mspPaoNameAliasExtension").disabled = !selected;
+		}
+        
 		function serviceSubmit(service, value)
 		{
 		  document.mspForm.actionService.value=service;
@@ -139,11 +144,17 @@
 						</tags:nameValue>
 						<tags:nameValue name="DeviceName Alias">
 					        <select title="Select the DeviceName Alias field" name="mspPaoNameAlias">
-					        	<c:forEach var="mspPaoNameAliasEntry" items="${mspVendor.paoNameAliasStrings}" varStatus="status">
-					            	<option <c:if test="${status.index == paoNameAlias}">selected</c:if> value='<c:out value="${status.index}"/>'> <c:out value="${mspPaoNameAliasEntry}"/></option>
+					        	<c:forEach var="mspPaoNameAliasEntry" items="${mspVendor.paoNameAliases}" varStatus="status">
+                                    <option <c:if test="${mspPaoNameAliasEntry == paoNameAlias}">selected</c:if> value='<c:out value="${mspPaoNameAliasEntry}"/>'> <c:out value="${mspPaoNameAliasEntry}"/></option>
 					        	</c:forEach>
 					        </select>
 						</tags:nameValue>
+                        <tags:nameValue name="Use Extension">
+                            <input id="mspPaoNameUsesExtension" type="checkbox" <c:if test="${paoNameUsesExtension}">checked</c:if> name='mspPaoNameUsesExtension' value='true' onclick='enableExtension(this.checked);'>
+                            <tags:nameValue name="Extension Name">
+                                <input id="mspPaoNameAliasExtension" title="Enter the name of the Extension to append to DevicName" type="text" <c:if test="${!paoNameUsesExtension}">disabled</c:if> name="mspPaoNameAliasExtension" value='<spring:escapeBody htmlEscape="true">${paoNameAliasExtension}</spring:escapeBody>'>
+                            </tags:nameValue>
+                        </tags:nameValue>
 						<tags:nameValue name="Meter Lookup Field">
 					        <select title="Select the Meter Lookup field" name="mspMeterLookupField">
 					        	<c:forEach var="mspMeterLookupFieldEntry" items="${mspVendor.meterLookupFields}">

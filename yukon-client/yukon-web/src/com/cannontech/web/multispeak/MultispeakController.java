@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -276,7 +277,6 @@ public class MultispeakController {
         if( StringUtils.isBlank(param) || !StringUtils.isNumeric(param)) {
             messages.add(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.invalidRequestMessageTimeout"));
         }
-
         
         param = request.getParameter("mspMaxReturnRecords");
         if( StringUtils.isBlank(param) || !StringUtils.isNumeric(param)) {
@@ -288,6 +288,14 @@ public class MultispeakController {
             messages.add(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.invalidTemplateNameDefault"));
         }
 
+        boolean mspPaoNameUsesExtension = ServletRequestUtils.getBooleanParameter(request, "mspPaoNameUsesExtension", false);   //if not found, then it wasn't checked
+        if (mspPaoNameUsesExtension) {  //if using extensions, then must have an extension name
+            String mspPaoNameAliasExtension = ServletRequestUtils.getStringParameter(request, "mspPaoNameAliasExtension", null);
+            if (StringUtils.isBlank(mspPaoNameAliasExtension)) {
+                messages.add(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.invalidPaoNameAliasExtension"));
+            }               
+        }
+        
         param = request.getParameter("mspURL");
         try {
             new URL(param);
@@ -323,7 +331,7 @@ public class MultispeakController {
     }
     
     /**
-     * Updates the Yukon Grp MultiSpeak role property values (primaryCIS, paoNameAlias, and meterLookupField).
+     * Updates the Yukon Grp MultiSpeak role property values.
      * @param request - the http request
      * @throws Exception
      */
@@ -332,13 +340,25 @@ public class MultispeakController {
         int oldMspPrimaryCIS = multispeakFuncs.getPrimaryCIS();
         int mspPrimaryCIS = ServletRequestUtils.getIntParameter(request, "mspPrimaryCIS", oldMspPrimaryCIS);
         
-        int oldMspPaoNameAlias = multispeakFuncs.getPaoNameAlias();
-        int mspPaoNameAlias = ServletRequestUtils.getIntParameter(request, "mspPaoNameAlias", oldMspPaoNameAlias);
+        String oldMspPaoNameAliasExtension = multispeakFuncs.getPaoNameAliasExtension();
+//        boolean usesExtension = multispeakFuncs.usesPaoNameAliasExtension();
+        boolean mspPaoNameUsesExtension = ServletRequestUtils.getBooleanParameter(request, "mspPaoNameUsesExtension", false);   //if not found, then not checked
+
+        String mspPaoNameAliasExtension = "";
+        if (mspPaoNameUsesExtension) {  // only use the form value if mspPaoNameUsesExtension is checked.
+            mspPaoNameAliasExtension = ServletRequestUtils.getStringParameter(request, "mspPaoNameAliasExtension", oldMspPaoNameAliasExtension);
+        }
         
+        MspPaoNameAliasEnum oldMspPaoNameAlias = multispeakFuncs.getPaoNameAlias();
+        MspPaoNameAliasEnum mspPaoNameAlias = oldMspPaoNameAlias;
+        String param = request.getParameter("mspPaoNameAlias");
+        if (param != null) {
+            mspPaoNameAlias = MspPaoNameAliasEnum.valueOf(param);
+        }
         
         MultispeakMeterLookupFieldEnum oldMspMeterLookupField = multispeakFuncs.getMeterLookupField();
         MultispeakMeterLookupFieldEnum mspMeterLookupField = oldMspMeterLookupField;
-        String param = request.getParameter("mspMeterLookupField");
+        param = request.getParameter("mspMeterLookupField");
         if (param != null) {
             mspMeterLookupField = MultispeakMeterLookupFieldEnum.valueOf(param);
         }
@@ -356,6 +376,13 @@ public class MultispeakController {
                 //reload the search field methods since primaryCIS has changed
                 mspMeterSearchService.loadMspSearchFields(mspPrimaryCIS);
             }
+            if (oldMspPaoNameAliasExtension != mspPaoNameAliasExtension) {
+                // update PaoName Alias Extension field name
+                roleDao.updateGroupRoleProperty(liteYukonGroup, 
+                                                YukonRole.MULTISPEAK.getRoleId(),
+                                                YukonRoleProperty.MSP_PAONAME_EXTENSION.getPropertyId(),
+                                                mspPaoNameAliasExtension);
+            }            
             if (oldMspPaoNameAlias != mspPaoNameAlias) {
                 // update PaoName Alias
                 roleDao.updateGroupRoleProperty(liteYukonGroup, 
@@ -398,7 +425,15 @@ public class MultispeakController {
         //  If these values were just updated, the db change may not have been received/processed yet and 
         //    the values returned from multispeakFuncs may be outdated.
         map.addAttribute("primaryCIS", ServletRequestUtils.getIntParameter(request, "mspPrimaryCIS", multispeakFuncs.getPrimaryCIS()));
-        map.addAttribute("paoNameAlias", ServletRequestUtils.getIntParameter(request, "mspPaoNameAlias", multispeakFuncs.getPaoNameAlias()));
+        
+        String paoNameAlias = request.getParameter("mspPaoNameAlias");
+        map.addAttribute("paoNameAlias", paoNameAlias != null ?
+                                            MspPaoNameAliasEnum.valueOf(paoNameAlias) : multispeakFuncs.getPaoNameAlias());
+        
+        String paoNameAliasExtension = ServletRequestUtils.getStringParameter(request, "mspPaoNameAliasExtension", multispeakFuncs.getPaoNameAliasExtension());
+        map.addAttribute("paoNameAliasExtension", paoNameAliasExtension);
+        map.addAttribute("paoNameUsesExtension", StringUtils.isNotBlank(paoNameAliasExtension));
+        
         String meterLookupField = request.getParameter("mspMeterLookupField");
         map.addAttribute("meterLookupField", meterLookupField != null ? 
                                             MultispeakMeterLookupFieldEnum.valueOf(meterLookupField) : multispeakFuncs.getMeterLookupField());
