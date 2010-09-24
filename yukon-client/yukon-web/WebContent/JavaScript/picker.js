@@ -481,7 +481,7 @@ Picker.prototype = {
 				// not multi-select mode; unselect all others
 				var rows = parentRow.parentNode.childNodes;
 				for (var index = 0; index < rows.length; index++) {
-					rows[index].removeClassName('highlighted');
+					$(rows[index]).removeClassName('highlighted');
 				}
 				this.selectedItems = [hit];
 			} else {
