@@ -120,6 +120,13 @@ WHERE RolePropertyId = -1600
 AND Value = '7';
 /* End YUK-9105 */
 
+/* Start YUK-9094 */
+UPDATE ContactNotification
+SET NotificationCategoryId = 5
+WHERE NotificationCategoryId = 0
+AND ContactNotifId != 0;
+/* End YUK-9094 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
