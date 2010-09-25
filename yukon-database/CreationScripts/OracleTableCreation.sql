@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/16/2010 1:31:41 AM                         */
+/* Created on:     9/25/2010 1:58:59 PM                         */
 /*==============================================================*/
 
 
@@ -8341,6 +8341,7 @@ INSERT INTO YukonGroupRole VALUES(-239,-1,-6,-1509,'(none)');
 /* MultiSpeak */
 INSERT INTO YukonGroupRole VALUES(-270,-1,-7,-1600,'0');
 INSERT INTO YukonGroupRole VALUES(-274,-1,-7,-1604,'(none)');
+INSERT INTO YukonGroupRole VALUES(-275,-1,-7,-1605,'METER_NUMBER');
 
 /* Configuration (Device) */
 INSERT INTO YukonGroupRole VALUES(-280,-1,-8,-1700,'(none)');
@@ -9358,6 +9359,7 @@ INSERT INTO YukonRoleProperty VALUES(-1601,-7,'Primary CIS Vendor','0','Defines 
 INSERT INTO YukonRoleProperty VALUES(-1602,-7,'Msp BillingCycle DeviceGroup','/Meters/Billing/','Defines the Device Group parent group name for the MultiSpeak billingCycle element. Valid values are ''/Meters/Billing/'', ''/Meters/Collection'', ''/Meters/Alternate''');
 INSERT INTO YukonRoleProperty VALUES(-1603,-7,'Msp LM Interface Mapping Setup','false','Controls access to setup the MultiSpeak LM interface mappings.');
 INSERT INTO YukonRoleProperty VALUES(-1604,-7,'Meter Lookup Field','AUTO_METER_NUMBER_FIRST','Defines the field used to lookup a meter by in Yukon. Valid values: AUTO_METER_NUMBER_FIRST, AUTO_DEVICE_NAME_FIRST, METER_NUMBER, DEVICE_NAME, or ADDRESS.'); 
+INSERT INTO YukonRoleProperty VALUES(-1605,-7,'PAOName Extension',' ','The extension name of the field appended to PaoName Alias, only applicable when PaoName Alias Uses Extension is true.');
 
 /* Configuration */
 INSERT INTO YukonRoleProperty VALUES(-1700,-8,'Device Display Template','DEVICE_NAME','Defines the format for displaying devices. Available placeholders: DEVICE_NAME, METER_NUMBER, ID, ADDRESS');

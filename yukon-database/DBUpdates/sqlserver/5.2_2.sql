@@ -65,6 +65,61 @@ SET DefaultValue = '120'
 WHERE RolePropertyId = -10820;
 /* End YUK-8976 */
 
+/* Start YUK-9105 */
+INSERT INTO YukonRoleProperty 
+VALUES(-1605,-7,'PAOName Extension',' ','The extension name of the field appended to PaoName Alias, only applicable when PaoName Alias Uses Extension is true.');
+
+-- Insert a new entry for the PaoName Alias Extension IF the legacy option of Service Location with Position (value= 6) is found.
+INSERT INTO YukonGroupRole (GroupRoleId, GroupID, RoleID, RolePropertyID, Value)
+SELECT (SELECT MAX(GroupRoleId) 
+         FROM YukonGroupRole)+1, -1, -7, -1605, 'positionNumber' 
+FROM YukonGroupRole 
+WHERE RolePropertyId = -1600 
+AND Value = '6';
+
+-- Changing the PaoName Alias role property value from int to enum values. 
+-- Note: Only one of these updates should affect 1 row. The rest should affect 0 rows.
+UPDATE YukonGroupRole 
+SET Value = 'METER_NUMBER' 
+WHERE RolePropertyId = -1600 
+AND Value = '0';
+
+UPDATE YukonGroupRole 
+SET Value = 'ACCOUNT_NUMBER' 
+WHERE RolePropertyId = -1600 
+AND Value = '1';
+
+UPDATE YukonGroupRole 
+SET Value = 'SERVICE_LOCATION' 
+WHERE RolePropertyId = -1600 
+AND Value = '2';
+
+UPDATE YukonGroupRole 
+SET Value = 'CUSTOMER_ID' 
+WHERE RolePropertyId = -1600 
+AND Value = '3';
+
+UPDATE YukonGroupRole 
+SET Value = 'EA_LOCATION' 
+WHERE RolePropertyId = -1600 
+AND Value = '4';
+
+UPDATE YukonGroupRole 
+SET Value = 'GRID_LOCATION' 
+WHERE RolePropertyId = -1600 
+AND Value = '5';
+
+UPDATE YukonGroupRole 
+SET Value = 'SERVICE_LOCATION' 
+WHERE RolePropertyId = -1600
+AND Value = '6';
+
+UPDATE YukonGroupRole 
+SET Value = 'POLE_NUMBER' 
+WHERE RolePropertyId = -1600 
+AND Value = '7';
+/* End YUK-9105 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
