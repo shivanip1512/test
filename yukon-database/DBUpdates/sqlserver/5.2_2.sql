@@ -127,6 +127,45 @@ WHERE NotificationCategoryId = 0
 AND ContactNotifId != 0;
 /* End YUK-9094 */
 
+/* Start YUK-9086 */
+CREATE TABLE StatusPointMonitor (
+   StatusPointMonitorId   NUMERIC              NOT NULL,
+   StatusPointMonitorName VARCHAR(255)         NOT NULL,
+   GroupName              VARCHAR(255)         NOT NULL,
+   Attribute              VARCHAR(255)         NOT NULL,
+   StateGroupId           NUMERIC              NOT NULL,
+   EvaluatorStatus        VARCHAR(255)         NOT NULL,
+   CONSTRAINT PK_StatPointMon PRIMARY KEY (StatusPointMonitorId)
+);
+GO
+
+CREATE UNIQUE INDEX Indx_StatPointMon_MonName_UNQ ON StatusPointMonitor (
+    StatusPointMonitorName ASC
+);
+GO
+
+CREATE TABLE StatusPointMonitorProcessor (
+   StatusPointMonitorProcessorId NUMERIC              NOT NULL,
+   StatusPointMonitorId          NUMERIC              NULL,
+   PrevState                     VARCHAR(255)         NOT NULL,
+   NextState                     VARCHAR(255)         NOT NULL,
+   ActionType                    VARCHAR(255)         NOT NULL,
+   CONSTRAINT PK_StatPointMonProcId PRIMARY KEY (StatusPointMonitorProcessorId)
+);
+GO
+
+ALTER TABLE StatusPointMonitor
+    ADD CONSTRAINT FK_StatPointMon_StateGroup FOREIGN KEY (StateGroupId)
+        REFERENCES StateGroup (StateGroupId);
+
+ALTER TABLE StatusPointMonitorProcessor
+    ADD CONSTRAINT FK_StatPointMonProc_StatPointM FOREIGN KEY (StatusPointMonitorId)
+        REFERENCES StatusPointMonitor (StatusPointMonitorId);
+GO
+
+INSERT INTO YukonRoleProperty VALUES(-20217,-202,'Status Point Monitor','false','Controls access to the Status Point Monitor');
+/* End YUK-9086 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

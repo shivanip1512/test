@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/25/2010 1:58:59 PM                         */
+/* Created on:     9/25/2010 6:01:21 PM                         */
 /*==============================================================*/
 
 
@@ -252,6 +252,8 @@ drop index Indx_SYSLG_Date;
 drop index Indx_SYSLG_PtId;
 
 drop index Indx_PAObjId_InfoKey_UNQ;
+
+drop index Indx_StatPointMon_MonName_UNQ;
 
 drop index Indx_SurvId_DispOrder_UNQ;
 
@@ -918,6 +920,10 @@ drop table Shipment cascade constraints;
 drop table SiteInformation cascade constraints;
 
 drop table StaticPAOInfo cascade constraints;
+
+drop table StatusPointMonitor cascade constraints;
+
+drop table StatusPointMonitorProcessor cascade constraints;
 
 drop table Substation cascade constraints;
 
@@ -7797,6 +7803,38 @@ create unique index Indx_PAObjId_InfoKey_UNQ on StaticPAOInfo (
 );
 
 /*==============================================================*/
+/* Table: StatusPointMonitor                                    */
+/*==============================================================*/
+create table StatusPointMonitor  (
+   StatusPointMonitorId NUMBER                          not null,
+   StatusPointMonitorName VARCHAR2(255)                   not null,
+   GroupName            VARCHAR2(255)                   not null,
+   Attribute            VARCHAR2(255)                   not null,
+   StateGroupId         NUMBER                          not null,
+   EvaluatorStatus      VARCHAR2(255)                   not null,
+   constraint PK_StatPointMon primary key (StatusPointMonitorId)
+);
+
+/*==============================================================*/
+/* Index: Indx_StatPointMon_MonName_UNQ                         */
+/*==============================================================*/
+create unique index Indx_StatPointMon_MonName_UNQ on StatusPointMonitor (
+   StatusPointMonitorName ASC
+);
+
+/*==============================================================*/
+/* Table: StatusPointMonitorProcessor                           */
+/*==============================================================*/
+create table StatusPointMonitorProcessor  (
+   StatusPointMonitorProcessorId NUMBER                          not null,
+   StatusPointMonitorId NUMBER,
+   PrevState            VARCHAR2(255)                   not null,
+   NextState            VARCHAR2(255)                   not null,
+   ActionType           VARCHAR2(255)                   not null,
+   constraint PK_StatPointMonProcId primary key (StatusPointMonitorProcessorId)
+);
+
+/*==============================================================*/
 /* Table: Substation                                            */
 /*==============================================================*/
 create table Substation  (
@@ -9523,6 +9561,7 @@ INSERT INTO YukonRoleProperty VALUES(-20213,-202,'Outage Processing','true','Con
 INSERT INTO YukonRoleProperty VALUES(-20214,-202,'Tamper Flag Processing','false','Controls access to Tamper Flag Processing');
 INSERT INTO YukonRoleProperty VALUES(-20215,-202,'Phase Detection','false','Controls access to Phase Detection.');
 INSERT INTO YukonRoleProperty VALUES(-20216,-202,'Validation Engine','false','Controls access to Validation Processing');
+INSERT INTO YukonRoleProperty VALUES(-20217,-202,'Status Point Monitor','false','Controls access to the Status Point Monitor');
 
 /* Operator Esubstation Drawings Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
@@ -12393,6 +12432,14 @@ alter table StaticPAOInfo
    add constraint FK_StatPAOInfo foreign key (PAObjectId)
       references YukonPAObject (PAObjectID)
       on delete cascade;
+
+alter table StatusPointMonitor
+   add constraint FK_StatPointMon_StateGroup foreign key (StateGroupId)
+      references STATEGROUP (StateGroupId);
+
+alter table StatusPointMonitorProcessor
+   add constraint FK_StatPointMonProc_StatPointM foreign key (StatusPointMonitorId)
+      references StatusPointMonitor (StatusPointMonitorId);
 
 alter table Substation
    add constraint FK_Sub_Rt foreign key (LMRouteID)

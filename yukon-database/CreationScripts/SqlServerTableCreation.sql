@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/25/2010 1:55:47 PM                         */
+/* Created on:     9/25/2010 3:00:53 PM                         */
 /*==============================================================*/
 
 
@@ -1047,6 +1047,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index StaticPAOInfo.Indx_PAObjId_InfoKey_UNQ
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('StatusPointMonitor')
+            and   name  = 'Indx_StatPointMon_MonName_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index StatusPointMonitor.Indx_StatPointMon_MonName_UNQ
 go
 
 if exists (select 1
@@ -3398,6 +3407,20 @@ if exists (select 1
            where  id = object_id('StaticPAOInfo')
             and   type = 'U')
    drop table StaticPAOInfo
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('StatusPointMonitor')
+            and   type = 'U')
+   drop table StatusPointMonitor
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('StatusPointMonitorProcessor')
+            and   type = 'U')
+   drop table StatusPointMonitorProcessor
 go
 
 if exists (select 1
@@ -10882,6 +10905,41 @@ InfoKey ASC
 go
 
 /*==============================================================*/
+/* Table: StatusPointMonitor                                    */
+/*==============================================================*/
+create table StatusPointMonitor (
+   StatusPointMonitorId numeric              not null,
+   StatusPointMonitorName varchar(255)         not null,
+   GroupName            varchar(255)         not null,
+   Attribute            varchar(255)         not null,
+   StateGroupId         numeric              not null,
+   EvaluatorStatus      varchar(255)         not null,
+   constraint PK_StatPointMon primary key (StatusPointMonitorId)
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_StatPointMon_MonName_UNQ                         */
+/*==============================================================*/
+create unique index Indx_StatPointMon_MonName_UNQ on StatusPointMonitor (
+StatusPointMonitorName ASC
+)
+go
+
+/*==============================================================*/
+/* Table: StatusPointMonitorProcessor                           */
+/*==============================================================*/
+create table StatusPointMonitorProcessor (
+   StatusPointMonitorProcessorId numeric              not null,
+   StatusPointMonitorId numeric              null,
+   PrevState            varchar(255)         not null,
+   NextState            varchar(255)         not null,
+   ActionType           varchar(255)         not null,
+   constraint PK_StatPointMonProcId primary key (StatusPointMonitorProcessorId)
+)
+go
+
+/*==============================================================*/
 /* Table: Substation                                            */
 /*==============================================================*/
 create table Substation (
@@ -12647,6 +12705,7 @@ INSERT INTO YukonRoleProperty VALUES(-20213,-202,'Outage Processing','true','Con
 INSERT INTO YukonRoleProperty VALUES(-20214,-202,'Tamper Flag Processing','false','Controls access to Tamper Flag Processing');
 INSERT INTO YukonRoleProperty VALUES(-20215,-202,'Phase Detection','false','Controls access to Phase Detection.');
 INSERT INTO YukonRoleProperty VALUES(-20216,-202,'Validation Engine','false','Controls access to Validation Processing');
+INSERT INTO YukonRoleProperty VALUES(-20217,-202,'Status Point Monitor','false','Controls access to the Status Point Monitor');
 
 /* Operator Esubstation Drawings Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
@@ -16061,6 +16120,16 @@ alter table StaticPAOInfo
    add constraint FK_StatPAOInfo foreign key (PAObjectId)
       references YukonPAObject (PAObjectID)
          on delete cascade
+go
+
+alter table StatusPointMonitor
+   add constraint FK_StatPointMon_StateGroup foreign key (StateGroupId)
+      references STATEGROUP (StateGroupId)
+go
+
+alter table StatusPointMonitorProcessor
+   add constraint FK_StatPointMonProc_StatPointM foreign key (StatusPointMonitorId)
+      references StatusPointMonitor (StatusPointMonitorId)
 go
 
 alter table Substation
