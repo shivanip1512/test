@@ -162,6 +162,53 @@ INSERT INTO YukonRoleProperty VALUES(-20217,-202,'Status Point Monitor','false',
 INSERT INTO YukonRoleProperty VALUES(-1115,-2,'Auto Create Login For Additional Contacts','true','Automatically create a default login for each additional contact created on a STARS account.');
 /* End YUK-9064 */
 
+/* Start YUK-9063 */
+-- temporarily remove primary key so inserts can be made
+ALTER TABLE StaticPAOinfo DROP CONSTRAINT PK_StatPAOInfo
+
+-- move SiteAddress to StaticPaoInfo
+INSERT INTO StaticPAOInfo (StaticPAOInfoId, PAObjectId, InfoKey, Value)
+(SELECT (1000), PAObjectId, 'RDS_TRANSMITTER_SITE_ADDRESS', SiteAddress
+ FROM RDSTransmitter)
+
+-- move encoderAddress to StaticPaoInfo
+INSERT INTO StaticPAOInfo (StaticPAOInfoId, PAObjectId, InfoKey, Value)
+(SELECT (1000), PAObjectId, 'RDS_TRANSMITTER_ENCODER_ADDRESS', EncoderAddress
+ FROM RDSTransmitter)
+
+-- move TransmitSpeed to StaticPaoInfo
+INSERT INTO StaticPAOInfo (StaticPAOInfoId, PAObjectId, InfoKey, Value)
+(SELECT (1000), PAObjectId, 'RDS_TRANSMITTER_TRANSMIT_SPEED', TransmitSpeed
+ FROM RDSTransmitter)
+
+-- move GroupType to StaticPaoInfo
+INSERT INTO StaticPAOInfo (StaticPAOInfoId, PAObjectId, InfoKey, Value)
+(SELECT (1000), PAObjectId, 'RDS_TRANSMITTER_GROUP_TYPE', GroupType
+ FROM RDSTransmitter)
+
+-- update the primary keys to unique values
+DECLARE @incr NUMBER SET @incr = 1 
+UPDATE StaticPAOInfo 
+SET @incr = StaticPaoInfoId = @incr + 1 
+WHERE StaticPAOInfoId >= 1000;
+
+-- add the primary key back
+ALTER TABLE StaticPAOInfo 
+ADD CONSTRAINT PK_StatPAOInfo PRIMARY KEY (StaticPAOInfoId)
+
+-- update existing infoKey values to enums
+UPDATE staticpaoinfo 
+SET InfoKey = 'RDS_TRANSMITTER_IP_ADDRESS' 
+WHERE InfoKey = 'ip address'
+
+UPDATE StaticPAOInfo 
+SET InfoKey = 'RDS_TRANSMITTER_IP_PORT' 
+WHERE InfoKey = 'ip port'
+
+-- Delete RDSTransmitter table
+DROP TABLE RDSTransmitter 
+/* End YUK-9063 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

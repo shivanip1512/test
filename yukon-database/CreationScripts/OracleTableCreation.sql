@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/26/2010 12:34:29 AM                        */
+/* Created on:     9/26/2010 2:35:47 AM                         */
 /*==============================================================*/
 
 
@@ -882,8 +882,6 @@ drop table PortTiming cascade constraints;
 drop table PurchasePlan cascade constraints;
 
 drop table RAWPOINTHISTORY cascade constraints;
-
-drop table RDSTransmitter cascade constraints;
 
 drop table RFNAddress cascade constraints;
 
@@ -7399,18 +7397,6 @@ create index Indx_RwPtHisPtIDTst on RAWPOINTHISTORY (
 );
 
 /*==============================================================*/
-/* Table: RDSTransmitter                                        */
-/*==============================================================*/
-create table RDSTransmitter  (
-   PAObjectId           NUMBER                          not null,
-   SiteAddress          NUMBER                          not null,
-   EncoderAddress       NUMBER                          not null,
-   TransmitSpeed        FLOAT                           not null,
-   GroupType            VARCHAR2(3)                     not null,
-   constraint PK_RDSTran primary key (PAObjectId)
-);
-
-/*==============================================================*/
 /* Table: RFNAddress                                            */
 /*==============================================================*/
 create table RFNAddress  (
@@ -12353,11 +12339,6 @@ alter table PortTiming
 alter table PurchasePlan
    add constraint FK_PRCHSPL_REF_EC foreign key (EnergyCompanyID)
       references EnergyCompany (EnergyCompanyID);
-
-alter table RDSTransmitter
-   add constraint FK_RDSTran_PAO foreign key (PAObjectId)
-      references YukonPAObject (PAObjectID)
-      on delete cascade;
 
 alter table RFNAddress
    add constraint FK_RFNAdd_Device foreign key (DeviceId)
