@@ -21,7 +21,7 @@ public class RfnMeterDisconnectConfirmationReply implements Serializable {
     
     @Override
     public String toString() {
-        return "RfnMeterDisconnectReplyType [replyType=" + replyType + "]";
+        return "RfnMeterDisconnectConfirmationReply [replyType=" + replyType + "]";
     }
 
     @Override

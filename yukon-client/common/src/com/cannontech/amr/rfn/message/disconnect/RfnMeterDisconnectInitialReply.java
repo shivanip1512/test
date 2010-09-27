@@ -22,7 +22,7 @@ public class RfnMeterDisconnectInitialReply implements Serializable {
 
     @Override
     public String toString() {
-        return "RfnMeterReadReply [replyType=" + replyType + "]";
+        return "RfnMeterDisconnectInitialReply [replyType=" + replyType + "]";
     }
 
     @Override
