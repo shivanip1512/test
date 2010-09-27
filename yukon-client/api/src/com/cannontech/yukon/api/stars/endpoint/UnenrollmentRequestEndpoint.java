@@ -56,7 +56,7 @@ public class UnenrollmentRequestEndpoint {
                                                                            enrollmentHelper.getAccountNumber(), 
                                                                            enrollmentHelper.getSerialNumber(), 
                                                                            enrollmentHelper.getProgramName(), 
-                                                                           enrollmentHelper.getProgramName());
+                                                                           enrollmentHelper.getLoadGroupName());
 
             Element resultElement;
             try {

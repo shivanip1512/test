@@ -2,30 +2,33 @@ package com.cannontech.loadcontrol.loadgroup.model;
 
 import java.util.List;
 
-public class LoadGroup {
-    private int loadGroupId;
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoIdentifier;
+
+public class LoadGroup implements DisplayablePao {
+    private PaoIdentifier paoIdentifier;
     private String loadGroupName;
     private List<Integer> programIds;
     
-    public LoadGroup (){}
-    public LoadGroup (int loadGroupId, String loadGroupName, List<Integer> programIds){
-        this.loadGroupId = loadGroupId;
+    public LoadGroup (PaoIdentifier paoIdentifier, String loadGroupName, List<Integer> programIds){
+        this.paoIdentifier = paoIdentifier;
         this.loadGroupName = loadGroupName;
         this.programIds = programIds;
     }
+    @Override
+    public PaoIdentifier getPaoIdentifier() {
+        return paoIdentifier;
+    }
     
-    public int getLoadGroupId() {
-        return loadGroupId;
-    }
-    public void setLoadGroupId(int loadGroupId) {
-        this.loadGroupId = loadGroupId;
-    }
-    public String getLoadGroupName() {
+    @Override
+    public String getName() {
         return loadGroupName;
     }
-    public void setLoadGroupName(String loadGroupName) {
-        this.loadGroupName = loadGroupName;
+    
+    public int getLoadGroupId() {
+        return paoIdentifier.getPaoId();
     }
+
     public List<Integer> getProgramIds() {
         return programIds;
     }

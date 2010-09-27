@@ -15,21 +15,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.AccountEventLogService;
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
-import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.displayable.dao.DisplayableEnrollmentDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentInventory;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentProgram;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentEventLoggingData;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
-import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.util.EventUtils;
@@ -43,12 +38,9 @@ import com.google.common.collect.Sets;
 @Controller
 public class EnrollmentController extends AbstractConsumerController {
     private AccountEventLogService accountEventLogService;
-    private AssignedProgramDao assignedProgramDao;
     private DisplayableEnrollmentDao displayableEnrollmentDao;
     private EnrollmentDao enrollmentDao;
     private EnrollmentHelperService enrollmentHelperService;
-    private LMHardwareBaseDao lmHardwareBaseDao;
-    private LoadGroupDao loadGroupDao;
     private WebSecurityChecker webSecurityChecker;
     
     @RequestMapping(value = "/consumer/enrollment", method = RequestMethod.GET)
@@ -67,11 +59,7 @@ public class EnrollmentController extends AbstractConsumerController {
             int assignedProgramId, HttpSession session,
             YukonUserContext userContext) {
         DisplayableEnrollmentProgram displayableEnrollmentProgram =
-            displayableEnrollmentDao.getProgram(
-                customerAccount.getAccountId(), assignedProgramId);
-        DisplayablePao loadGroup = 
-            loadGroupDao.getLoadGroup(displayableEnrollmentProgram.getLoadGroupId());
-        AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
+            displayableEnrollmentDao.getProgram(customerAccount.getAccountId(), assignedProgramId);
 
         boolean perDeviceEnrollment =
             rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_ENROLLMENT_PER_DEVICE,
@@ -84,18 +72,17 @@ public class EnrollmentController extends AbstractConsumerController {
         List<ProgramEnrollment> updatedEnrollments = Lists.newArrayList();
         for (DisplayableEnrollmentInventory enrollment : displayableEnrollmentProgram.getInventory()) {
             ProgramEnrollment programEnrollment =
-                makeProgramEnrollment(displayableEnrollmentProgram, enrollment,
-                                      true);
+                makeProgramEnrollment(displayableEnrollmentProgram, enrollment, true);
             updatedEnrollments.add(programEnrollment);
 
             // Log Attempt
-            LMHardwareBase hardwareBase = 
-                lmHardwareBaseDao.getById(programEnrollment.getInventoryId());
+            EnrollmentEventLoggingData eventLoggingData = enrollmentHelperService.getEventLoggingData(programEnrollment);
+            
             accountEventLogService.enrollmentAttemptedByConsumer(userContext.getYukonUser(), 
                                                                  customerAccount.getAccountNumber(), 
-                                                                 hardwareBase.getManufacturerSerialNumber(), 
-                                                                 assignedProgram.getProgramName(), 
-                                                                 loadGroup.getName());
+                                                                 eventLoggingData.getManufacturerSerialNumber(), 
+                                                                 eventLoggingData.getProgramName(), 
+                                                                 eventLoggingData.getLoadGroupName());
 
         }
 
@@ -148,25 +135,20 @@ public class EnrollmentController extends AbstractConsumerController {
             displayableEnrollmentDao.getProgram(
                 customerAccount.getAccountId(), assignedProgramId);
 
-        DisplayablePao loadGroup = 
-            loadGroupDao.getLoadGroup(displayableEnrollmentProgram.getLoadGroupId());
-        AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
-
         List<ProgramEnrollment> updatedEnrollments = Lists.newArrayList();
         for (DisplayableEnrollmentInventory enrollment : displayableEnrollmentProgram.getInventory()) {
             ProgramEnrollment programEnrollment =
-                makeProgramEnrollment(displayableEnrollmentProgram, enrollment,
-                                      false);
+                makeProgramEnrollment(displayableEnrollmentProgram, enrollment, false);
             updatedEnrollments.add(programEnrollment);
 
             // Log Attempt
-            LMHardwareBase hardwareBase = 
-                lmHardwareBaseDao.getById(programEnrollment.getInventoryId());
+            EnrollmentEventLoggingData eventLoggingData = enrollmentHelperService.getEventLoggingData(programEnrollment);
+            
             accountEventLogService.unenrollmentAttemptedByConsumer(userContext.getYukonUser(), 
                                                                    customerAccount.getAccountNumber(),
-                                                                   hardwareBase.getManufacturerSerialNumber(), 
-                                                                   assignedProgram.getProgramName(), 
-                                                                   loadGroup.getName());
+                                                                   eventLoggingData.getManufacturerSerialNumber(), 
+                                                                   eventLoggingData.getProgramName(), 
+                                                                   eventLoggingData.getLoadGroupName());
         }
 
         
@@ -230,11 +212,6 @@ public class EnrollmentController extends AbstractConsumerController {
     @Autowired
     public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
         this.accountEventLogService = accountEventLogService;
-    }
-    
-    @Autowired
-    public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
-        this.assignedProgramDao = assignedProgramDao;
     }
     
     @Autowired

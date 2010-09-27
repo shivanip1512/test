@@ -46,4 +46,10 @@ public interface LoadGroupDao {
      */
     public SetMultimap<PaoIdentifier, PaoIdentifier> getMacroGroupToGroupMappings(Collection<PaoIdentifier> groups);
 
+    /**
+     * Method to return a list of LoadGroups for a LoadManagement programId (NOT A STARS program).
+     * @param programId
+     * @return
+     */
+    public List<LoadGroup> getByProgramId(int programId);
 }

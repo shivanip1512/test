@@ -403,7 +403,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 LoadGroupDao loadGroupDao = 
                     YukonSpringHook.getBean("loadGroupDao", LoadGroupDao.class);
                 LoadGroup loadGroup = loadGroupDao.getById(liteApp.getAddressingGroupID());
-                String loadGroupName = loadGroup.getLoadGroupName();
+                String loadGroupName = loadGroup.getName();
 
                 ProgramDao programDao = 
                     YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);

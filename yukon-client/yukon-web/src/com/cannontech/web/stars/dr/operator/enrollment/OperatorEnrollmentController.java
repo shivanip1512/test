@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.dr.operator.enrollment;
 
 import java.util.List;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -15,12 +16,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
+import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.displayable.dao.DisplayableEnrollmentDao;
@@ -134,11 +135,9 @@ public class OperatorEnrollmentController {
 
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
 
-        AssignedProgram assignedProgram =
-            assignedProgramDao.getById(assignedProgramId);
+        AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
         model.addAttribute("assignedProgram", assignedProgram);
-        List<DisplayablePao> loadGroups =
-            loadGroupDao.getForProgram(assignedProgram.getProgramId());
+        List<LoadGroup> loadGroups = loadGroupDao.getByProgramId(assignedProgram.getProgramId());
         model.addAttribute("loadGroups", loadGroups);
 
         Map<Integer, DisplayableEnrollmentInventory> inventoryById = Maps.newHashMap();

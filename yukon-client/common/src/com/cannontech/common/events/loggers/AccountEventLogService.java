@@ -103,13 +103,14 @@ public interface AccountEventLogService {
     
 /* ENROLLMENTS */
     // Enrollment
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.enrollment")
+/*    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.enrollment")
     public void enrollmentAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
                                               @Arg(ArgEnum.accountNumber) String accountNumber, 
                                               @Arg(ArgEnum.deviceName) String deviceName, 
                                               @Arg(ArgEnum.programName) String programName, 
                                               @Arg(ArgEnum.loadGroupName) String loadGroupName);
-
+ This doesn't seem to be used, nor do the entries in events.xml for .un/enrollmentAttempedByOperator */
+    
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.enrollment")
     public void enrollmentAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                               @Arg(ArgEnum.accountNumber) String accountNumber, 

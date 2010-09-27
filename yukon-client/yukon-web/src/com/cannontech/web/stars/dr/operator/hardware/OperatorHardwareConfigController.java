@@ -37,8 +37,9 @@ import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.pao.RouteTypes;
-import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
+import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
@@ -161,14 +162,13 @@ public class OperatorHardwareConfigController {
             }});
         model.addAttribute("enrollments", enrollments);
 
-        Map<Integer, List<DisplayablePao>> loadGroupsByProgramId = Maps.newHashMap();
+        Map<Integer, List<LoadGroup>> loadGroupsByProgramId = Maps.newHashMap();
         model.addAttribute("loadGroupsByProgramId", loadGroupsByProgramId);
         List<ProgramEnrollmentDto> programEnrollments =
             Lists.newArrayListWithCapacity(enrollments.size());
         Set<Integer> assignedProgramSet = Sets.newHashSet();
         for (DisplayableInventoryEnrollment enrollment : enrollments) {
-            List<DisplayablePao> loadGroups =
-                loadGroupDao.getForProgram(enrollment.getProgramId());
+            List<LoadGroup> loadGroups = loadGroupDao.getByProgramId(enrollment.getProgramId());
             loadGroupsByProgramId.put(enrollment.getAssignedProgramId(), loadGroups);
 
             ProgramEnrollmentDto programEnrollment = new ProgramEnrollmentDto();

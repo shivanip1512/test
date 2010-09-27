@@ -22,12 +22,12 @@ import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
 import com.cannontech.dr.loadgroup.filter.MacroLoadGroupForLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.loadcontrol.data.LMGroupBase;
+import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.message.util.Message;
 import com.cannontech.user.YukonUserContext;
@@ -67,7 +67,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
 
     @Override
     public DisplayablePao getLoadGroup(int loadGroupId) {
-        return loadGroupDao.getLoadGroup(loadGroupId);
+        return loadGroupDao.getById(loadGroupId);
     }
     
     @Override

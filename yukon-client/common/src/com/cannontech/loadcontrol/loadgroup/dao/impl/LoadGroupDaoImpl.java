@@ -42,7 +42,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
     /** These strings are to help with the row mapper.  If you use both of these
      *  strings you will have the right table connections and data returned.
      */
-    private final String loadGroupSQLHeader = "SELECT PAO.paobjectId as loadGroupId, PAO.paoName as loadGroupName " + 
+    private final String loadGroupSQLHeader = "SELECT PAO.paobjectId as loadGroupId, PAO.paoName as loadGroupName, PAO.type Type " + 
                                               "FROM YukonPAObject PAO ";
    
     @Override
@@ -211,6 +211,19 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
                 
     }
     
+    @Override
+    public List<LoadGroup> getByProgramId(int programId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(loadGroupSQLHeader);
+        sql.append("WHERE paobjectId IN (");
+        sql.append("SELECT lmGroupDeviceId FROM lmProgramDirectGroup");
+        sql.append("WHERE deviceId").eq(programId).append(")");
+
+        return simpleJdbcTemplate.query(sql.toString(),
+                                          loadGroupDatabaseResultRowMapper(),
+                                          programId);
+    }
+    
     // rowMappers
     private ParameterizedRowMapper<LoadGroup> loadGroupDatabaseResultRowMapper() {
         final ParameterizedRowMapper<LoadGroup> mapper = new ParameterizedRowMapper<LoadGroup>() {
@@ -219,8 +232,11 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
                 
                 int loadGroupId = rs.getInt("loadGroupId"); 
                 String loadGroupName = rs.getString("loadGroupName");
-                
-                return new LoadGroup(loadGroupId, loadGroupName, null);
+                String typeStr = rs.getString("type");
+                int deviceTypeId = PAOGroups.getPAOType("DEVICE", typeStr);
+                PaoType paoType = PaoType.getForId(deviceTypeId);
+                PaoIdentifier paoIdentifier = new PaoIdentifier(loadGroupId, paoType);
+                return new LoadGroup(paoIdentifier, loadGroupName, null);
             }
         };
         return mapper;

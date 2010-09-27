@@ -22,6 +22,7 @@ import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.enrollment.model.EnrolledDevicePrograms;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentEventLoggingData;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
@@ -95,6 +96,11 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
         public void updateProgramEnrollments(
                 List<ProgramEnrollment> programEnrollments, int accountId,
                 YukonUserContext userContext) {
+            throw new UnsupportedOperationException();
+        }
+        
+        @Override
+        public EnrollmentEventLoggingData getEventLoggingData(ProgramEnrollment programEnrollment) {
             throw new UnsupportedOperationException();
         }
     }

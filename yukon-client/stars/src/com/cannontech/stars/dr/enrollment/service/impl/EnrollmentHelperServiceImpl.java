@@ -35,6 +35,7 @@ import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.enrollment.model.EnrolledDevicePrograms;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentEventLoggingData;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -123,62 +124,36 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         applyEnrollments(enrollments, customerAccount, userContext.getYukonUser());
         
         for (ProgramEnrollment programEnrollment : addedEnrollments) {
-            EventLoggingData eventLoggingData = getEventLoggingInformation(programEnrollment);
+            EnrollmentEventLoggingData eventLoggingData = getEventLoggingData(programEnrollment);
 
             accountEventLogService.deviceEnrolled(userContext.getYukonUser(), 
                                                   customerAccount.getAccountNumber(),
-                                                  eventLoggingData.getLmHardwareBase().getManufacturerSerialNumber(),
-                                                  eventLoggingData.getProgram().getProgramName(),
-                                                  eventLoggingData.getLoadGroup().getLoadGroupName());
+                                                  eventLoggingData.getManufacturerSerialNumber(),
+                                                  eventLoggingData.getProgramName(),
+                                                  eventLoggingData.getLoadGroupName());
         }
         for (ProgramEnrollment programEnrollment : removedEnrollments) {
-            EventLoggingData eventLoggingData = getEventLoggingInformation(programEnrollment);
+            EnrollmentEventLoggingData eventLoggingData = getEventLoggingData(programEnrollment);
 
             accountEventLogService.deviceUnenrolled(userContext.getYukonUser(),
                                                     customerAccount.getAccountNumber(),
-                                                    eventLoggingData.getLmHardwareBase().getManufacturerSerialNumber(),
-                                                    eventLoggingData.getProgram().getProgramName(),
-                                                    eventLoggingData.getLoadGroup().getLoadGroupName());
+                                                    eventLoggingData.getManufacturerSerialNumber(),
+                                                    eventLoggingData.getProgramName(),
+                                                    eventLoggingData.getLoadGroupName());
         }
         
     }
 
-    private EventLoggingData getEventLoggingInformation(ProgramEnrollment programEnrollment){
+    public EnrollmentEventLoggingData getEventLoggingData(ProgramEnrollment programEnrollment){
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(programEnrollment.getInventoryId());
 
         LoadGroup loadGroup = null; 
-        if (programEnrollment.getLmGroupId() != 0) {
+        if (programEnrollment.getLmGroupId() != 0) {    //need check for != 0 for when track_hardware_addressing is true, or virtual program
             loadGroup = loadGroupDao.getById(programEnrollment.getLmGroupId());
         }
-        Program program = 
-            programDao.getByProgramId(programEnrollment.getAssignedProgramId());
+        Program program = programDao.getByProgramId(programEnrollment.getAssignedProgramId());
         
-        return new EventLoggingData(lmHardwareBase, loadGroup, program);
-    }
-    
-    private static class EventLoggingData {
-        private LMHardwareBase lmHardwareBase;
-        private LoadGroup loadGroup;
-        private Program program;
-        
-        public EventLoggingData(LMHardwareBase lmHardwareBase, LoadGroup loadGroup, Program program) {
-            super();
-            this.lmHardwareBase = lmHardwareBase;
-            this.loadGroup = loadGroup;
-            this.program = program;
-        }
-
-        public LMHardwareBase getLmHardwareBase() {
-            return lmHardwareBase;
-        }
-
-        public LoadGroup getLoadGroup() {
-            return loadGroup;
-        }
-        
-        public Program getProgram() {
-            return program;
-        }
+        return new EnrollmentEventLoggingData(lmHardwareBase, loadGroup, program);
     }
     
     @Override
