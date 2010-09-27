@@ -196,7 +196,6 @@ struct QUEENT
     USHORT InUse;
     ULONG TimeSent;
     CtiConnect *ReturnNexus;
-    CtiConnect *SaveNexus;
     USHORT OriginalOutMessageSequence;
     USHORT QueueEntrySequence;
     USHORT EventCode;

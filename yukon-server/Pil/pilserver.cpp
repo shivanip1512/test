@@ -1147,7 +1147,16 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
                 while( !temp_retList.empty() )
                 {
-                    retList.push_back(temp_retList.front());
+                    //  smuggle any request messages back out to the scheduler queue
+                    if( temp_retList.front() && temp_retList.front()->isA() == MSG_PCREQUEST )
+                    {
+                        _schedulerQueue.putQueue(temp_retList.front());
+                    }
+                    else
+                    {
+                        retList.push_back(temp_retList.front());
+                    }
+
                     temp_retList.pop_front();
                 }
 

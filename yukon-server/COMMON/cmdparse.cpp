@@ -2222,6 +2222,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     static const boost::regex  re_centron_reading("centron reading [0-9]+( [0-9]+)?");
 
     static const boost::regex  re_loadlimit(CtiString("load limit ") + str_floatnum + CtiString(" ") + str_num);
+    static const boost::regex  re_llp_interest(CtiString("llp interest channel ") + str_num + CtiString(" ") + str_date + CtiString("( ") + str_time + CtiString(")?"));
     static const boost::regex  re_cycle(CtiString("cycle ") + str_num + CtiString(" ") + str_num);
 
     static const boost::regex  re_freeze_day(CtiString("freeze day ") + str_num);
@@ -2320,6 +2321,20 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
 
                 _cmd["disconnect cycle disconnect minutes"] = CtiParseValue(atoi(cmdtok().c_str()));
                 _cmd["disconnect cycle connect minutes"]    = CtiParseValue(atoi(cmdtok().c_str()));
+            }
+        }
+        if(CmdStr.contains(" llp interest"))
+        {
+            if(!(token = CmdStr.match(re_llp_interest)).empty())
+            {
+                CtiTokenizer cmdtok(token);
+                cmdtok();  //  go past "llp"
+                cmdtok();  //  go past "interest"
+                cmdtok();  //  go past "channel"
+
+                _cmd["llp interest channel"] = CtiParseValue(atoi(cmdtok().c_str()));
+                _cmd["llp interest date"] = cmdtok();
+                _cmd["llp interest time"] = cmdtok();  //  this might just be an empty string, which is okay
             }
         }
         if(CmdStr.contains(" group"))

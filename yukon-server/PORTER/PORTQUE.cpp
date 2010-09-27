@@ -919,7 +919,6 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
                     /* Load up the info out of the CCUInfo Structure */
                     ResultMessage.TargetID        = pInfo->QueTable[QueTabEnt].TargetID;
                     ResultMessage.ReturnNexus     = pInfo->QueTable[QueTabEnt].ReturnNexus;
-                    ResultMessage.SaveNexus       = pInfo->QueTable[QueTabEnt].SaveNexus;
                     ResultMessage.Priority        = pInfo->QueTable[QueTabEnt].Priority;
                     ResultMessage.Sequence        = pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence;
                     ResultMessage.MessageFlags    = pInfo->QueTable[QueTabEnt].MessageFlags;
@@ -1567,7 +1566,6 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
                 /* and load the entry */
                 pInfo->QueTable[QueTabEnt].TargetID       = MyOutMessage->TargetID;
                 pInfo->QueTable[QueTabEnt].ReturnNexus    = MyOutMessage->ReturnNexus;
-                pInfo->QueTable[QueTabEnt].SaveNexus      = MyOutMessage->SaveNexus;
                 pInfo->QueTable[QueTabEnt].EventCode      = MyOutMessage->EventCode;
                 pInfo->QueTable[QueTabEnt].Priority       = MyOutMessage->Priority;
                 pInfo->QueTable[QueTabEnt].Address        = MyOutMessage->Buffer.BSt.Address;
@@ -1890,7 +1888,6 @@ INT DeQueue (INMESS *InMessage)
                         ResultMessage.Sequence = pInfo->QueTable[i].OriginalOutMessageSequence;
                         ResultMessage.Priority = pInfo->QueTable[i].Priority;
                         ResultMessage.ReturnNexus = pInfo->QueTable[i].ReturnNexus;
-                        ResultMessage.SaveNexus = pInfo->QueTable[i].SaveNexus;
                         ResultMessage.Return = pInfo->QueTable[i].Request;
                         ResultMessage.MessageFlags = pInfo->QueTable[i].MessageFlags;
                         ResultMessage.EventCode = InMessage->EventCode;
@@ -2011,7 +2008,6 @@ int ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT Q
             InMessage.TargetID      = pInfo->QueTable[QueTabEnt].TargetID;    // This is the DID of the target DLC device ( MCT_XYZ )
             InMessage.Sequence      = pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence;    // Client identifier?
             InMessage.ReturnNexus   = pInfo->QueTable[QueTabEnt].ReturnNexus; // This is who asked for it.
-            InMessage.SaveNexus     = pInfo->QueTable[QueTabEnt].SaveNexus;
             InMessage.Priority      = pInfo->QueTable[QueTabEnt].Priority;
             InMessage.Return        = pInfo->QueTable[QueTabEnt].Request;
             InMessage.MessageFlags  = pInfo->QueTable[QueTabEnt].MessageFlags;

@@ -494,7 +494,6 @@ BOOL OutEchoToIN(const OUTMESS *Out, INMESS *In)
     In->Port                = Out->Port;
     In->Sequence            = Out->Sequence;
     In->ReturnNexus         = Out->ReturnNexus;
-    In->SaveNexus           = Out->SaveNexus;
     In->Priority            = Out->Priority;
     In->MessageFlags        = Out->MessageFlags;
 

@@ -172,17 +172,24 @@ protected:
     struct llp_interest_t
     {
         unsigned long time;
-        unsigned long time_end;
-        unsigned long user_id;
-
-        unsigned offset;
         unsigned channel;
 
-        volatile long in_progress;
+    } _llpInterest;
+
+    struct llp_request_t
+    {
+        unsigned long begin;
+        unsigned long end;
+
+        unsigned channel;
+
+        volatile long candidate_request_id;
+        volatile long request_id;
 
         unsigned retry;
         bool failed;
-    } _llpInterest;
+
+    } _llpRequest;
 
     struct llp_peak_report_interest_t
     {
@@ -191,6 +198,7 @@ protected:
         int period;
         int command;
         long in_progress;
+
     } _llpPeakInterest;
 
     virtual CtiTime getDeviceDawnOfTime() const      { return DawnOfTime_UtcSeconds; }
