@@ -6,6 +6,8 @@ import org.joda.time.Period;
 import org.joda.time.ReadableDuration;
 import org.joda.time.ReadablePeriod;
 
+import com.cannontech.common.util.SimplePeriodFormat;
+
 
 public interface ConfigurationSource {
 
@@ -48,9 +50,77 @@ public interface ConfigurationSource {
      */
     public boolean getBoolean(String key, boolean defaultValue);
     
+    /**
+     * <p>Uses the {@link SimplePeriodFormat#getConfigPeriodFormatterWithFallback(DurationFieldType)} style 
+     * to convert the string in the configuration
+     * file to a period. This format supports simple letter suffixes to indicate the Period.</p>
+     * 
+     * <p>For example, "1d6h30m" would equal 1 day plus 6 hours plus 30 minutes. The following 
+     * letters are supported: </p>
+     * <pre>
+     *   w -- week
+     *   d -- day
+     *   h -- hour
+     *   m -- minute
+     *   s -- seconds
+     * </pre>
+     * <p>Milliseconds are supported as fractional seconds:</p>
+     * <pre>
+     *   .05s = 50 milliseconds
+     * </pre>
+     *   
+     * If the string in the configuration file does not contain a letter (e.g. "2000"), the durationFieldType
+     * is used to interpret the value. This is useful because various config keys have historically
+     * been defined with different units (e.g. one timeout key may be in milliseconds while another
+     * is in minutes). This allows this method to be used to read keys that don't use any of the
+     * above letter formatting.
+     * 
+     * @param key
+     * @param defaultValue Period value to return if the key does not exist
+     * @param durationFieldType field type of unadorned numbers 
+     */
     public Period getPeriod(String key, ReadablePeriod defaultValue, DurationFieldType durationFieldType);
+    
+    /**
+     * <p>Uses the {@link SimplePeriodFormat#getConfigPeriodFormatter()} style to convert the string in the configuration
+     * file to a period. This format supports simple letter suffixes to indicate the Period.</p>
+     * 
+     * <p>For example, "1d6h30m" would equal 1 day plus 6 hours plus 30 minutes. The following 
+     * letters are supported: </p>
+     * <pre>
+     *   w -- week
+     *   d -- day
+     *   h -- hour
+     *   m -- minute
+     *   s -- seconds
+     * </pre>
+     * <p>Milliseconds are supported as fractional seconds:</p>
+     * <pre>
+     *   .05s = 50 milliseconds
+     * </pre>
+     *   
+     * <p>If the string in the configuration file does not contain a letter (e.g. "2000"), an Exception is thrown.</p>
+     * 
+     * @param key
+     * @param defaultValue Period value to return if the key does not exist
+     */
     public Period getPeriod(String key, ReadablePeriod defaultValue);
+    
+    /**
+     * Equivalent to calling {@link #getPeriod(String, ReadablePeriod, DurationFieldType)} and then calling
+     * {@link Period#toStandardDuration()} on the result.
+     * @param key
+     * @param defaultValue Duration value to return if the key does not exist
+     * @param durationFieldType field type of unadorned numbers 
+     */
     public Duration getDuration(String key, ReadableDuration defaultValue, DurationFieldType durationFieldType);
+    
+    /**
+     * Equivalent to calling {@link #getPeriod(String, ReadablePeriod)} and then calling
+     * {@link Period#toStandardDuration()} on the result.
+     * @param key
+     * @param defaultValue Duration value to return if the key does not exist
+     */
     public Duration getDuration(String key, ReadableDuration defaultValue);
     
 }
