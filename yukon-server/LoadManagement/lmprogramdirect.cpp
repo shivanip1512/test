@@ -6068,7 +6068,7 @@ bool CtiLMProgramDirect::isAControlState(int state)
     bool retVal = false;
     if( state == ActiveState || state == ManualActiveState ||
         state == FullyActiveState || state == StoppingState ||
-        state == NonControllingState )
+        state == NonControllingState || state == TimedActiveState )
     {
         retVal = true;
     }
