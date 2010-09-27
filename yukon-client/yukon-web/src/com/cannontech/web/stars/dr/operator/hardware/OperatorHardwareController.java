@@ -545,16 +545,17 @@ public class OperatorHardwareController {
                             FlashScope flashScope, int changeOutId, int oldInventoryId, boolean isMeter) {
 
         // Log change out attempt
-        LMHardwareBase oldInventory = lmHardwareBaseDao.getById(oldInventoryId);
+        HardwareDto oldHardware = hardwareService.getHardwareDto(oldInventoryId, accountInfoFragment.getEnergyCompanyId(), accountInfoFragment.getAccountId());
         if(isMeter) {
-            LiteInventoryBase changeOutInventory = starsInventoryBaseDao.getByDeviceId(changeOutId);
+            LiteYukonPAObject oldLiteYukonPAO = paoDao.getLiteYukonPAO(oldHardware.getDeviceId());
+            LiteYukonPAObject newLiteYukonPAO = paoDao.getLiteYukonPAO(changeOutId);
             hardwareEventLogService.hardwareChangeOutForMeterAttemptedByOperator(userContext.getYukonUser(),
-                                                                                 oldInventory.getManufacturerSerialNumber(),
-                                                                                 changeOutInventory.getDeviceLabel());
+                                                                                 oldLiteYukonPAO.getPaoName(),
+                                                                                 newLiteYukonPAO.getPaoName());
         } else {
             LMHardwareBase changeOutInventory = lmHardwareBaseDao.getById(changeOutId);
             hardwareEventLogService.hardwareChangeOutAttemptedByOperator(userContext.getYukonUser(), 
-                                                                         oldInventory.getManufacturerSerialNumber(), 
+                                                                         oldHardware.getSerialNumber(), 
                                                                          changeOutInventory.getManufacturerSerialNumber());
         }
 

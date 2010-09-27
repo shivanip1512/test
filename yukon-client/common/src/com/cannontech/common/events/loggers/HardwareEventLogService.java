@@ -16,8 +16,8 @@ public interface HardwareEventLogService {
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
     public void hardwareChangeOutForMeterAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                             @Arg(ArgEnum.serialNumber) String oldSerialNumber,
-                                                             @Arg(ArgEnum.meterName) String meterName);
+                                                             @Arg(ArgEnum.meterName) String oldMeterName,
+                                                             @Arg(ArgEnum.meterName) String newMeterName);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
     public void hardwareChangeOutAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
