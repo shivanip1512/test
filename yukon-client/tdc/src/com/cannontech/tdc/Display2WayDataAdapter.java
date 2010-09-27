@@ -29,6 +29,7 @@ import com.cannontech.tdc.alarms.gui.AlarmingRowVector;
 import com.cannontech.tdc.alarms.gui.RowBlinker;
 import com.cannontech.tdc.custom.CustomDisplay;
 import com.cannontech.tdc.data.Display;
+import com.cannontech.tdc.data.IDisplay;
 import com.cannontech.tdc.filter.ITDCFilter;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.utils.DataBaseInteraction;
@@ -1628,7 +1629,7 @@ public synchronized void processSignalReceived( Signal signal, int pageNumber )
 		{
 			rNum = rowNum;
 			PointValues pv = getPointValue(rNum); 
-			//the new row has been added, lets set its signl instance
+			//the new row has been added, lets set its signal instance
 			pv.updateSignal( signal );
 			// update other things that signals can tell us
 			pv.setPointState(TagUtils.getTagString(signal.getTags()));
@@ -1642,6 +1643,11 @@ public synchronized void processSignalReceived( Signal signal, int pageNumber )
 			}
 			if ( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_STATE) ){
 	 			dataRow.setElementAt(TagUtils.getTagString( signal.getTags() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_STATE) ); 
+			}
+			
+			// Signal message time stamps should NOT be used for Custom Displays.
+			if( !getCurrentDisplay().getType().equals(Display.DISPLAY_TYPES[Display.CUSTOM_DISPLAYS_TYPE_INDEX]) ) {
+				setRowTimeStamp(getPointValue(rNum), signal.getTimeStamp(), rNum);
 			}
 		}
 	}
