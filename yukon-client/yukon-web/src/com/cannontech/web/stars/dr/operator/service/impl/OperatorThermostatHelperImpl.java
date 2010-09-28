@@ -12,7 +12,6 @@ import net.sf.jsonOLD.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -22,13 +21,14 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleDisplay;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
+import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriod;
+import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriodStyle;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -238,42 +238,40 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	@Override
 	public List<ThermostatScheduleDisplay> getScheduleDisplays(
 	           YukonUserContext yukonUserContext, String type, ThermostatScheduleMode thermostatScheduleMode,
-	           AccountThermostatSchedule accountThermostatSchedule, boolean isFahrenheit, String i18nKey){
+	           AccountThermostatSchedule accountThermostatSchedule, boolean displayAsFahrenheit, String i18nKey){
 	    
 	    List<ThermostatScheduleDisplay> scheduleDisplays = Lists.newArrayList();
-	    MessageSource messageSource = messageSourceResolver.getMessageSource(yukonUserContext);
-	    SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.valueOf(type);
-
+	    MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
+	    
 	    for(TimeOfWeek timeOfWeek : thermostatScheduleMode.getAssociatedTimeOfWeeks()){
 	        TimeOfWeek timeOfWeekForDisplay = timeOfWeek;
 	        if (thermostatScheduleMode == ThermostatScheduleMode.ALL && timeOfWeek == TimeOfWeek.WEEKDAY) {
 	            timeOfWeekForDisplay = TimeOfWeek.EVERYDAY;
 	        }
 	        YukonMessageSourceResolvable timeOfWeekResolvable = new YukonMessageSourceResolvable(timeOfWeekForDisplay.getDisplayKey());
-	        String timeOfWeekString = messageSource.getMessage(timeOfWeekResolvable, yukonUserContext.getLocale());
+	        String timeOfWeekString = messageSourceAccessor.getMessage(timeOfWeekResolvable);
 	        ThermostatScheduleDisplay scheduleDisplay = new ThermostatScheduleDisplay();
 	        scheduleDisplay.setTimeOfWeekString(timeOfWeekString);
 	        
 	        List<AccountThermostatScheduleEntry> entries = accountThermostatSchedule.getEntriesByTimeOfWeekMultimap().get(timeOfWeek);
-	        for(int index = 0; index < entries.size(); index++){
-	            AccountThermostatScheduleEntry entry = entries.get(index);
-	            if(schedulableThermostatType.getPeriodStyle().containsPeriodEntryIndex(index)){
-	                LocalTime startTime = entry.getStartTimeLocalTime();
-	                String startDateString = dateFormattingService.format(startTime, DateFormatEnum.TIME, yukonUserContext);
-	                
-	                int coolTemp = entry.getCoolTemp();
-	                int heatTemp = entry.getHeatTemp();
-	                String tempUnit = (isFahrenheit) ? CtiUtilities.FAHRENHEIT_CHARACTER : CtiUtilities.CELSIUS_CHARACTER;
-	                coolTemp = (int)CtiUtilities.convertTemperature(coolTemp, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
-	                heatTemp = (int)CtiUtilities.convertTemperature(heatTemp, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
-	                
-	                List<Object> argumentList = new ArrayList<Object>();
-	                argumentList.add(startDateString);
-	                argumentList.add(coolTemp);
-	                argumentList.add(heatTemp);
-	                String timeCoolHeatString = messageSource.getMessage(i18nKey, argumentList.toArray(), yukonUserContext.getLocale());
-	                scheduleDisplay.addToEntryList(timeCoolHeatString);
-	            }
+	        ThermostatSchedulePeriodStyle periodStyle = accountThermostatSchedule.getThermostatType().getPeriodStyle();
+	        
+	        for(ThermostatSchedulePeriod period : periodStyle.getRealPeriods()){
+	            AccountThermostatScheduleEntry entry = entries.get(period.getEntryIndex());
+	            LocalTime startTime = entry.getStartTimeLocalTime();
+                String startDateString = dateFormattingService.format(startTime, DateFormatEnum.TIME, yukonUserContext);
+                int coolTemp = entry.getCoolTemp();
+                int heatTemp = entry.getHeatTemp();
+                String tempUnit = (displayAsFahrenheit) ? CtiUtilities.FAHRENHEIT_CHARACTER : CtiUtilities.CELSIUS_CHARACTER;
+                coolTemp = (int)CtiUtilities.convertTemperature(coolTemp, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
+                heatTemp = (int)CtiUtilities.convertTemperature(heatTemp, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
+                
+                List<Object> argumentList = new ArrayList<Object>();
+                argumentList.add(startDateString);
+                argumentList.add(coolTemp);
+                argumentList.add(heatTemp);
+                String timeCoolHeatString = messageSourceAccessor.getMessage(i18nKey, startDateString, coolTemp, heatTemp);
+                scheduleDisplay.addToEntryList(timeCoolHeatString);
 	        }
 	        scheduleDisplays.add(scheduleDisplay);
 	    }

@@ -13,13 +13,11 @@ public enum ThermostatScheduleMode {
     ALL(Sets.immutableEnumSet(TimeOfWeek.WEEKDAY)),
     WEEKDAY_SAT_SUN(Sets.immutableEnumSet(TimeOfWeek.WEEKDAY, TimeOfWeek.SATURDAY, TimeOfWeek.SUNDAY)),
     WEEKDAY_WEEKEND(Sets.immutableEnumSet(TimeOfWeek.WEEKDAY, TimeOfWeek.WEEKEND));
-    //ANY NEW MODES SHOULD HAVE A CORRESPONDING SECTION IN 
-    //SchedulableThermostatType.getDefaultAccountThermostatSchedule()
-    
+
     private Set<TimeOfWeek> associatedTimeOfWeeks;
     
-    ThermostatScheduleMode(Set<TimeOfWeek> associtaedTimeofWeeks) {
-    	this.associatedTimeOfWeeks = associtaedTimeofWeeks;
+    ThermostatScheduleMode(Set<TimeOfWeek> associatedTimeofWeeks) {
+    	this.associatedTimeOfWeeks = associatedTimeofWeeks;
     }
     
     public Set<TimeOfWeek> getAssociatedTimeOfWeeks() {

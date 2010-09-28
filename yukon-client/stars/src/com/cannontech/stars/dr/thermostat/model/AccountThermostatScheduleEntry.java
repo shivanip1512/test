@@ -51,10 +51,7 @@ public class AccountThermostatScheduleEntry {
 		this.startTime = startTime;
 	}
 	public void setStartTime(LocalTime startTime){
-	    this.startTime =
-	        (startTime.getHourOfDay()/3600) +
-	        (startTime.getMinuteOfHour()/60) +
-	        (startTime.getSecondOfMinute());
+	    this.startTime = startTime.getMillisOfDay() / 1000;
 	}
 	public TimeOfWeek getTimeOfWeek() {
 		return timeOfWeek;

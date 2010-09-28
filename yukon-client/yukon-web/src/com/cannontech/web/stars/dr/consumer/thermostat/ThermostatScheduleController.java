@@ -175,9 +175,10 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
     	ThermostatScheduleMode thermostatScheduleMode = ThermostatScheduleMode.valueOf(scheduleMode);
     	
-    	 // id
+    	// id
         AccountThermostatSchedule ats = new AccountThermostatSchedule();
         ats.setAccountThermostatScheduleId(scheduleId);
+        ats.setThermostatType(SchedulableThermostatType.valueOf(type));
         
         // Create schedule from submitted JSON string
         List<AccountThermostatScheduleEntry> atsEntries = operatorThermostatHelper.getScheduleEntriesForJSON(scheduleString, scheduleId, thermostatScheduleMode, isFahrenheit);

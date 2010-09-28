@@ -511,22 +511,19 @@ public class ThermostatServiceImpl implements ThermostatService {
         ThermostatSchedulePeriodStyle periodStyle = schedulableThermostatType.getPeriodStyle();
         boolean useComma = false;
         
-        for(int index = 0; index < entries.size(); index++){
-            AccountThermostatScheduleEntry atsEntry = entries.get(index);
-            if(periodStyle.containsPeriodEntryIndex(index)){
-                //add a comma to separate entries if there are several
-                if(useComma){ 
-                    logMessage.append(", ");
-                } else {
-                    useComma = true;
-                }
-                String entryDate = timeFormatter.print(atsEntry.getStartTimeLocalTime());
-                int coolEntryTemp = atsEntry.getCoolTemp();
-                int heatEntryTemp = atsEntry.getHeatTemp();
-                ThermostatSchedulePeriod period = periodStyle.getPeriod(index);
-                logMessage.append(period + ": " + entryDate + "," + coolEntryTemp 
-                                  + tempUnit + "," + heatEntryTemp + tempUnit);
+        for(ThermostatSchedulePeriod period : periodStyle.getRealPeriods()){
+            //add a comma to separate entries if there are several
+            if(useComma){ 
+                logMessage.append(", ");
+            } else {
+                useComma = true;
             }
+            AccountThermostatScheduleEntry atsEntry = entries.get(period.getEntryIndex());
+            String entryDate = timeFormatter.print(atsEntry.getStartTimeLocalTime());
+            int coolEntryTemp = atsEntry.getCoolTemp();
+            int heatEntryTemp = atsEntry.getHeatTemp();
+            logMessage.append(period + ": " + entryDate + "," + coolEntryTemp 
+                              + tempUnit + "," + heatEntryTemp + tempUnit);
         }
         
         ActivityLogger.logEvent(userId,

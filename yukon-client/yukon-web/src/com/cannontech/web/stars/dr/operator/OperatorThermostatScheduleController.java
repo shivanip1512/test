@@ -214,13 +214,14 @@ public class OperatorThermostatScheduleController {
     	// id
         AccountThermostatSchedule ats = new AccountThermostatSchedule();
         ats.setAccountThermostatScheduleId(scheduleId);
+        ats.setThermostatType(SchedulableThermostatType.valueOf(type));
         
         // Create schedule from submitted JSON string
         List<AccountThermostatScheduleEntry> atsEntries = operatorThermostatHelper.getScheduleEntriesForJSON(schedules, scheduleId, thermostatScheduleMode, isFahrenheit);
         ats.setScheduleEntries(atsEntries);
 
         // Build up confirmation display object, containing printable representations of the thermostat schedule entries
-        String i18nKey = "yukon.dr.consumer.thermostatScheduleConfirm.scheduleText.timeCoolHeat";
+        String i18nKey = "yukon.dr.operator.thermostatScheduleConfirm.scheduleText.timeCoolHeat";
         List<ThermostatScheduleDisplay> scheduleDisplays = operatorThermostatHelper.getScheduleDisplays(yukonUserContext, type, thermostatScheduleMode, ats, isFahrenheit, i18nKey);
 
     	// Pass all of the parameters through to confirm page

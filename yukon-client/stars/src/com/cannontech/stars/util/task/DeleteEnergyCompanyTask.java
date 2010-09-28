@@ -224,11 +224,9 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
                 YukonSpringHook.getBean("accountThermostatScheduleDao", AccountThermostatScheduleDao.class);
 			List<AccountThermostatSchedule> schedules = accountThermostatScheduleDao.getAllThermostatSchedulesForEC(energyCompany.getEnergyCompanyID());
 
-			if(schedules != null && schedules.size() > 0){
-			    for(AccountThermostatSchedule schedule : schedules){
-			        accountThermostatScheduleDao.deleteById(schedule.getAccountThermostatScheduleId());
-			    }
-			}
+		    for(AccountThermostatSchedule schedule : schedules){
+		        accountThermostatScheduleDao.deleteById(schedule.getAccountThermostatScheduleId());
+		    }
 			
 			// Delete all substations, CANNOT cancel the operation from now on
 			currentAction = "Deleting substations";

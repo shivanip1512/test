@@ -232,18 +232,16 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                                                                         YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE,
                                                                         lmHw.getLmHardwareTypeID());
         HardwareType hwType = HardwareType.valueOf(thermostatDefId);
-
-        try{
+        
+        if(SchedulableThermostatType.isSchedulableThermostatType(hwType)){
             AccountThermostatSchedule schedule = thermostatService.getAccountThermostatScheduleTemplate(lmHw.getAccountID(), SchedulableThermostatType.getByHardwareType(hwType));
             schedule.setAccountId(lmHw.getAccountID());
             schedule.setScheduleName(lmHw.getDeviceLabel());
             accountThermostatScheduleDao.save(schedule);
             accountThermostatScheduleDao.mapThermostatsToSchedule(Collections.singletonList(lmHw.getInventoryID()), schedule.getAccountThermostatScheduleId());
-        } catch(IllegalArgumentException e){
-            //thrown by SchedulableThermostatType.getByHardwareType(hwType)
-            //if hwType is not a SchedulableThermostatType
+        } else {
             log.warn("HardwareType \"" + hwType.toString() + "\"is not a ScheduleableThermostatType." + 
-                      "Unable to initialize schedule.", e);
+                     "Unable to initialize schedule.");
         }
     }
 
