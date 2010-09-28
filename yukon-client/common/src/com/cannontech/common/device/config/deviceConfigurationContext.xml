@@ -708,6 +708,14 @@
 					<property name="text" value="Tamper" />
 					<property name="value" value="35" />
 				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="Current Local Time" />
+					<property name="value" value="36" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="Current Local Date" />
+					<property name="value" value="37" />
+				</bean>
 			</list>
 		</property>
 	</bean>
