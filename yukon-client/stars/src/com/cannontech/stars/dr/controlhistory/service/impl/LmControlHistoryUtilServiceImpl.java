@@ -23,7 +23,7 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
     public Duration calculateCurrentEnrollmentControlPeriod(ControlHistory controlHistory,
                                                             Duration controlHistoryTotal,
                                                             ReadableInstant controlHistoryStopDateTime,
-                                                            List<LMHardwareControlGroup> enrollments) {
+                                                            Iterable<LMHardwareControlGroup> enrollments) {
 
         boolean neverEnrolledDuringThisPeriod = true;
 
@@ -69,7 +69,7 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
     public Duration calculatePreviousEnrollmentControlPeriod(ControlHistory controlHistory,
                                                              Duration controlHistoryTotal,
                                                              ReadableInstant controlHistoryStopDateTime,
-                                                             List<LMHardwareControlGroup> enrollments) {
+                                                             Iterable<LMHardwareControlGroup> enrollments) {
         boolean neverEnrolledDuringThisPeriod = true;
 
         for (LMHardwareControlGroup enrollmentEntry : enrollments) {
@@ -137,7 +137,7 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
     public Duration calculateOptOutControlHistory(ControlHistory controlHistory,
                                                   Duration controlHistoryTotal,
                                                   ReadableInstant controlHistoryStopDateTime,
-                                                  List<LMHardwareControlGroup> optOuts) {
+                                                  Iterable<LMHardwareControlGroup> optOuts) {
         for (LMHardwareControlGroup optOutEntry : optOuts) {
             // Control history event occurred entirely during an opt out. Discard it.
             if (optOutEntry.getOptOutStart().isBefore(controlHistory.getStartInstant()) && 
@@ -193,10 +193,10 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
     }
     
     @Override
-    public List<Interval> controlHistoryEnrollmentIntervals(ControlHistory controlHistory,
-                                                            int accountId,
-                                                            int inventoryId,
-                                                            int loadGroupId){
+    public List<Interval> getControHistoryEnrollmentIntervals(ControlHistory controlHistory,
+                                                              int accountId,
+                                                              int inventoryId,
+                                                              int loadGroupId){
         // Build up a sington list from the control history event.
         Interval controlHistoryInterval = 
             new Interval(controlHistory.getStartInstant(), controlHistory.getStopInstant());
@@ -221,7 +221,7 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
             });
         
         List<Interval> enrollmentControlHistoryList = 
-            TimeUtil.overlaps(controlHistoryIntervalList, enrollmentIntervals);
+            TimeUtil.getOverlap(controlHistoryIntervalList, enrollmentIntervals);
         
         return enrollmentControlHistoryList;
     }

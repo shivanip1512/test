@@ -22,7 +22,7 @@ public interface LmControlHistoryUtilService {
     public Duration calculateCurrentEnrollmentControlPeriod(ControlHistory controlHistory,
                                                             Duration controlHistoryTotal,
                                                             ReadableInstant controlHistoryStopDateTime,
-                                                            List<LMHardwareControlGroup> enrollments);
+                                                            Iterable<LMHardwareControlGroup> enrollments);
 
     /**
      * The method calculates the correct duration for a control history event by 
@@ -33,7 +33,7 @@ public interface LmControlHistoryUtilService {
     public Duration calculatePreviousEnrollmentControlPeriod(ControlHistory controlHistory,
                                                              Duration controlHistoryTotal,
                                                              ReadableInstant controlHistoryStopDateTime,
-                                                             List<LMHardwareControlGroup> enrollments);
+                                                             Iterable<LMHardwareControlGroup> enrollments);
 
     /**
      * The method calculates the correct duration for a control history event by 
@@ -44,7 +44,7 @@ public interface LmControlHistoryUtilService {
     public Duration calculateOptOutControlHistory(ControlHistory controlHistory,
                                                   Duration controlHistoryTotal,
                                                   ReadableInstant controlHistoryStopDateTime,
-                                                  List<LMHardwareControlGroup> optOuts);
+                                                  Iterable<LMHardwareControlGroup> optOuts);
 
     
     /**
@@ -58,9 +58,9 @@ public interface LmControlHistoryUtilService {
      * Resulting Control History     [--] [----] []
      * 
      */
-    List<Interval> controlHistoryEnrollmentIntervals(ControlHistory controlHistory,
-                                                     int accountId,
-                                                     int inventoryId,
-                                                     int loadGroupId);
+    List<Interval> getControHistoryEnrollmentIntervals(ControlHistory controlHistory,
+                                                       int accountId,
+                                                       int inventoryId,
+                                                       int loadGroupId);
 
 }

@@ -45,7 +45,6 @@ import com.google.common.collect.Multimap;
 
 public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao, InitializingBean {
     private static final String removeSql;
-//    private static final String selectAllSql;
     private static final YukonRowMapper<LMHardwareControlGroup> rowMapper;
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
@@ -62,17 +61,14 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     private SqlStatementBuilder selectSql = new SqlStatementBuilder();
     {
         selectSql.append("SELECT ControlEntryId, InventoryId, LMGroupId, AccountId,");
-        selectSql.append("GroupEnrollStart, GroupEnrollStop, OptOutStart, OptOutStop, Type,");
-        selectSql.append("Relay, UserIdFirstAction, UserIdSecondAction, ProgramId");
+        selectSql.append(       "GroupEnrollStart, GroupEnrollStop, OptOutStart, OptOutStop, Type,");
+        selectSql.append(       "Relay, UserIdFirstAction, UserIdSecondAction, ProgramId");
         selectSql.append("FROM " + TABLE_NAME);
     }
     
     static {
         
         removeSql = "DELETE from " + TABLE_NAME + " WHERE ControlEntryId = ?";
-         
-//        selectAllSql = "SELECT ControlEntryId, InventoryId, LMGroupId, AccountId, GroupEnrollStart, GroupEnrollStop, OptOutStart, " +
-//                "OptOutStop, Type, Relay, UserIdFirstAction, UserIdSecondAction, ProgramId FROM " + TABLE_NAME;
     
         selectDistinctGroupIdByAccountId = "SELECT DISTINCT LMGroupId FROM " + TABLE_NAME + " WHERE AccountId = ?";
         
@@ -454,7 +450,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     public List<LMHardwareControlGroup> 
                 getCurrentEnrollmentByProgramIdAndAccountId(int programId, int accountId) {
         SqlStatementBuilder selectCurrentEnrollmentByProgramIdAndAccountId = new SqlStatementBuilder();
-        selectCurrentEnrollmentByProgramIdAndAccountId.appendFragment(selectSql);;
+        selectCurrentEnrollmentByProgramIdAndAccountId.appendFragment(selectSql);
         selectCurrentEnrollmentByProgramIdAndAccountId.append("WHERE ProgramId").eq(programId);
         selectCurrentEnrollmentByProgramIdAndAccountId.append("AND AccountId").eq(accountId);
         selectCurrentEnrollmentByProgramIdAndAccountId.append("AND GroupEnrollStop IS NULL");
