@@ -18,17 +18,21 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jfree.report.ElementAlignment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.analysis.report.ColumnLayoutData;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.LoadableModel;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService.Format;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.input.InputRoot;
@@ -41,6 +45,8 @@ public class SimpleReportServiceImpl implements SimpleReportService {
     
     private DateFormattingService dateFormattingService = null;
     private PointFormattingService pointFormattingService = null;
+    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
+
     // BEAN AWARE
     //private BeanFactory beanFactory; // OR...
     private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
@@ -69,15 +75,22 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         if(data == null) {
             return "";
         }
-        
-        String formattedData = data.toString();
-        
-        if(StringUtils.isBlank(format)) {
-            return formattedData;
+
+        String formattedData = null;
+
+        // MessageSourceResolvable
+        if (data instanceof MessageSourceResolvable) {
+            MessageSourceAccessor messageSourceAccessor = 
+                messageSourceResolver.getMessageSourceAccessor(userContext);
+            formattedData = messageSourceAccessor.getMessage((MessageSourceResolvable) data);
         }
-            
+
+        else if(StringUtils.isBlank(format)) {
+            formattedData = data.toString();
+        }
+
         // Date (known DateFormatEnum)
-        if (data instanceof Date) {
+        else if (data instanceof Date) {
             if (dateFormats.contains(format)) {
                 DateFormatEnum enumValue = DateFormattingService.DateFormatEnum.valueOf(format);
                 formattedData = dateFormattingService.format((Date) data,
@@ -134,14 +147,13 @@ public class SimpleReportServiceImpl implements SimpleReportService {
     /* (non-Javadoc)
      * @see com.cannontech.simplereport.SimpleReportService#getReportModel(com.cannontech.simplereport.YukonReportDefinition, javax.servlet.http.HttpServletRequest)
      */
-    @SuppressWarnings("unchecked")
     public BareReportModel getReportModel(YukonReportDefinition<? extends BareReportModel> reportDefinition, Map<String, String> parameterMap, boolean loadData) throws Exception {
         
         BareReportModel reportModel = reportDefinition.createBean();
         
         // set parameters on model
         InputRoot inputRoot = reportDefinition.getInputs();
-        
+
         InputUtil.applyProperties(inputRoot, reportModel, parameterMap);
         
         // if model instanceof LoadalbleModel, load it
@@ -151,11 +163,10 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         
         return reportModel;
     }
-    
+
     /* (non-Javadoc)
      * @see com.cannontech.simplereport.SimpleReportService#getReportModel(com.cannontech.simplereport.YukonReportDefinition, javax.servlet.http.HttpServletRequest)
      */
-    @SuppressWarnings("unchecked")
     public BareReportModel getStringReportModel(final YukonReportDefinition<? extends BareReportModel> reportDefinition,
             final BareReportModel reportModel,
             final YukonUserContext userContext) {
@@ -342,11 +353,10 @@ public class SimpleReportServiceImpl implements SimpleReportService {
             PointFormattingService pointFormattingService) {
         this.pointFormattingService = pointFormattingService;
     }
-    
 
-//  @Override
-//  public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-//      this.beanFactory = beanFactory;
-//  }
-    
+    @Autowired
+    public void setMessageSourceResolver(
+            YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
+    }
 }

@@ -11,7 +11,6 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,13 +51,13 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         
         SqlStatementBuilder accountEnrollmentSQL = new SqlStatementBuilder();
         accountEnrollmentSQL.append(enrollmentSQLHeader);
-        accountEnrollmentSQL.append("WHERE LMHCG.AccountId = ?");
+        accountEnrollmentSQL.append("WHERE LMHCG.AccountId").eq(accountId);
         accountEnrollmentSQL.append("AND NOT LMHCG.groupEnrollStart IS NULL");
         accountEnrollmentSQL.append("AND LMHCG.groupEnrollStop IS NULL");
 
         List<ProgramEnrollment> programEnrollments = 
-        	yukonJdbcTemplate.query(accountEnrollmentSQL.toString(), 
-                                     enrollmentRowMapper(), accountId);
+        	yukonJdbcTemplate.query(accountEnrollmentSQL, 
+                                     enrollmentRowMapper);
             
         for (ProgramEnrollment programEnrollment : programEnrollments) {
             programEnrollment.setEnroll(true);
@@ -72,7 +71,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         sql.append("SELECT COUNT(*)");
         sql.append("FROM LMHardwareControlGroup");
         sql.append("WHERE AccountId").eq(accountId);
-        sql.append("  AND Type = 1");
+        sql.append("  AND Type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
         sql.append("  AND GroupEnrollStop IS NULL");
         
         int activeEnrollments = yukonJdbcTemplate.queryForInt(sql);
@@ -92,7 +91,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         accountEnrollmentSQL.append("AND lmhcg.groupEnrollStop IS NULL");
 
         List<ProgramEnrollment> programEnrollments = 
-            yukonJdbcTemplate.query(accountEnrollmentSQL, enrollmentRowMapper());
+            yukonJdbcTemplate.query(accountEnrollmentSQL, enrollmentRowMapper);
             
         for (ProgramEnrollment programEnrollment : programEnrollments) {
             programEnrollment.setEnroll(true);
@@ -100,6 +99,26 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         return programEnrollments;
     }
 
+    @Override
+    public List<ProgramEnrollment> getHistoricalEnrollmentsByInventoryId(
+            int inventoryId, Instant when) {
+        SqlStatementBuilder accountEnrollmentSQL = new SqlStatementBuilder();
+        accountEnrollmentSQL.append(enrollmentSQLHeader);
+        accountEnrollmentSQL.append("WHERE lmhcg.inventoryId").eq(inventoryId);
+        accountEnrollmentSQL.append("AND lmhcg.type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
+        accountEnrollmentSQL.append("AND lmhcg.groupEnrollStart").lte(when);
+        accountEnrollmentSQL.append("AND (lmhcg.groupEnrollStop IS NULL");
+        accountEnrollmentSQL.append(    "OR lmhcg.groupEnrollStop").gt(when).append(")");
+
+        List<ProgramEnrollment> programEnrollments = 
+            yukonJdbcTemplate.query(accountEnrollmentSQL, enrollmentRowMapper);
+
+        for (ProgramEnrollment programEnrollment : programEnrollments) {
+            programEnrollment.setEnroll(true);
+        }
+        return programEnrollments;
+    }
+    
     @Override
     @Transactional(readOnly = true)
     public List<ProgramEnrollment> findConflictingEnrollments(int accountId,
@@ -116,7 +135,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         sql.append("AND lmhcg.groupEnrollStop IS NULL");
 
         List<ProgramEnrollment> retVal = null;
-        retVal = yukonJdbcTemplate.query(sql, enrollmentRowMapper());
+        retVal = yukonJdbcTemplate.query(sql, enrollmentRowMapper);
         for (ProgramEnrollment programEnrollment : retVal) {
             programEnrollment.setEnroll(false);
         }
@@ -298,22 +317,19 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 	        || lastAction == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP;
     }
 
-    private static final ParameterizedRowMapper<ProgramEnrollment> enrollmentRowMapper() {
-        final ParameterizedRowMapper<ProgramEnrollment> oldConfigInfoRowMapper = new ParameterizedRowMapper<ProgramEnrollment>() {
-            public ProgramEnrollment mapRow(ResultSet rs, int rowNum) throws SQLException {
-                ProgramEnrollment programEnrollment = new ProgramEnrollment();
-                programEnrollment.setApplianceCategoryId(rs.getInt("applianceCategoryId"));
-                programEnrollment.setAssignedProgramId(rs.getInt("programId"));
-                programEnrollment.setLmGroupId(rs.getInt("lmGroupId"));
-                programEnrollment.setApplianceKW(rs.getFloat("KWCapacity"));
-                programEnrollment.setRelay(rs.getInt("relay"));
-                programEnrollment.setInventoryId(rs.getInt("inventoryId"));
-                return programEnrollment;
-            }
-        };
-        return oldConfigInfoRowMapper;
-    }
-    
+	private final static YukonRowMapper<ProgramEnrollment> enrollmentRowMapper = new YukonRowMapper<ProgramEnrollment>(){
+        @Override
+        public ProgramEnrollment mapRow(YukonResultSet rs) throws SQLException {
+            ProgramEnrollment programEnrollment = new ProgramEnrollment();
+            programEnrollment.setApplianceCategoryId(rs.getInt("applianceCategoryId"));
+            programEnrollment.setAssignedProgramId(rs.getInt("programId"));
+            programEnrollment.setLmGroupId(rs.getInt("lmGroupId"));
+            programEnrollment.setApplianceKW(rs.getFloat("KWCapacity"));
+            programEnrollment.setRelay(rs.getInt("relay"));
+            programEnrollment.setInventoryId(rs.getInt("inventoryId"));
+            return programEnrollment;
+        }};
+
     private class LMHardwareControlGroupRowMapper 
                         implements YukonRowMapper<LMHardwareControlGroup> {
         

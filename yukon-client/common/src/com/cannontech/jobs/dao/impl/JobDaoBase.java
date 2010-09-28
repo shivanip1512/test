@@ -79,11 +79,11 @@ public class JobDaoBase implements InitializingBean {
         insertSql.append("insert into JobProperty");
         insertSql.append("(jobPropertyId, jobId, name, value)");
         insertSql.append("values (?,?,?,?)");
-        for (Map.Entry<String, ?> jobProperty : job.getJobProperties().entrySet()) {
+        for (Map.Entry<String, String> jobProperty : job.getJobProperties().entrySet()) {
             int jobPropertyId = nextValueHelper.getNextValue("JobProperty");
             int jobId = job.getId();
             String name = jobProperty.getKey();
-            Object value = jobProperty.getValue();
+            String value = jobProperty.getValue();
             yukonJdbcTemplate.update(insertSql.toString(), jobPropertyId, jobId, name, value);
         }
     }

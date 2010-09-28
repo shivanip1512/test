@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.analysis.report.ColumnLayoutData;
+import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.UltraLightPao;
@@ -33,10 +35,15 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.simplereport.ColumnInfo;
+import com.cannontech.simplereport.SimpleReportService;
+import com.cannontech.simplereport.YukonReportDefinition;
+import com.cannontech.simplereport.YukonReportDefinitionFactory;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
+import com.cannontech.web.input.InputUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -49,6 +56,8 @@ public class SurveyReportController {
     private EnergyCompanyDao energyCompanyDao;
     private PaoDao paoDao;
     private DatePropertyEditorFactory datePropertyEditorFactory;
+    private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
+    private SimpleReportService simpleReportService;
 
     public static class JsonSafeQuestion {
         private Question question;
@@ -84,15 +93,16 @@ public class SurveyReportController {
 
         @Override
         protected void doValidation(ReportConfig reportConfig, Errors errors) {
-            Date start = reportConfig.getStart();
-            Date end = reportConfig.getEnd();
+            Date start = reportConfig.getStartDate();
+            Date end = reportConfig.getEndDate();
             if (start != null && end != null && start.after(end)) {
                 errors.reject("startTimeNotBeforeStopTime");
             }
             if (question.getQuestionType() == QuestionType.DROP_DOWN) {
-                Integer[] answerIds = reportConfig.getAnswerIds();
-                if ((answerIds == null || answerIds.length == 0)
-                        && !reportConfig.isIncludeOtherAnswers()) {
+                List<Integer> answerIds = reportConfig.getAnswerIds();
+                if ((answerIds == null || answerIds.size() == 0)
+                        && !reportConfig.isIncludeOtherAnswers()
+                        && !reportConfig.isIncludeUnanswered()) {
                     errors.rejectValue("answerIds", "atLeasteOneAnswerRequired");
                 }
             }
@@ -134,6 +144,8 @@ public class SurveyReportController {
         Survey survey = verifyEditable(surveyId, userContext);
         model.addAttribute("survey", survey);
         Question question = surveyDao.getQuestionById(reportConfig.getQuestionId());
+        model.addAttribute("question", question);
+
         ReportConfigValidator validator = new ReportConfigValidator(question);
         validator.validate(reportConfig, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -168,6 +180,30 @@ public class SurveyReportController {
             model.addAttribute("initialPrograms", initialPrograms);
             return config(model, surveyId);
         }
+
+        String definitionName = "summary".equals(reportConfig.getReportType())
+            ?  "surveyResultsSummaryDefinition" : "surveyResultsDetailDefinition";
+        model.addAttribute("definitionName", definitionName);
+
+        YukonReportDefinition<BareReportModel> reportDefinition =
+            reportDefinitionFactory.getReportDefinition(definitionName);
+        Map<String, String> inputMap = InputUtil.extractProperties(reportDefinition.getInputs(), reportConfig);
+        model.addAttribute("inputMap", inputMap);
+
+        BareReportModel reportModel;
+        try {
+            reportModel = simpleReportService.getReportModel(reportDefinition,
+                                                             inputMap, true);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        ColumnLayoutData[] bodyColumns = reportDefinition.getReportLayoutData().getBodyColumns();
+        List<ColumnInfo> columnInfo = simpleReportService.buildColumnInfoListFromColumnLayoutData(bodyColumns);
+        model.addAttribute("columnInfo", columnInfo);
+        List<List<String>> data = simpleReportService.getFormattedData(reportDefinition, reportModel, userContext);
+        model.addAttribute("data", data);
+
         return "surveyReport/report.jsp";
     }
 
@@ -198,8 +234,8 @@ public class SurveyReportController {
             datePropertyEditorFactory.getPropertyEditor(DateOnlyMode.START_OF_DAY, userContext);
         PropertyEditor dayEndDateEditor =
             datePropertyEditorFactory.getPropertyEditor(DateOnlyMode.END_OF_DAY, userContext);
-        binder.registerCustomEditor(Date.class, "start", dayStartDateEditor);
-        binder.registerCustomEditor(Date.class, "end", dayEndDateEditor);
+        binder.registerCustomEditor(Date.class, "startDate", dayStartDateEditor);
+        binder.registerCustomEditor(Date.class, "endDate", dayEndDateEditor);
     }
 
     @Autowired
@@ -221,5 +257,16 @@ public class SurveyReportController {
     public void setDatePropertyEditorFactory(
             DatePropertyEditorFactory datePropertyEditorFactory) {
         this.datePropertyEditorFactory = datePropertyEditorFactory;
+    }
+
+    @Autowired
+    public void setReportDefinitionFactory(
+            YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory) {
+        this.reportDefinitionFactory = reportDefinitionFactory;
+    }
+
+    @Autowired
+    public void setSimpleReportService(SimpleReportService simpleReportService) {
+        this.simpleReportService = simpleReportService;
     }
 }

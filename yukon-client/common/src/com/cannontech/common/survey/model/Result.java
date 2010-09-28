@@ -12,6 +12,9 @@ public class Result {
     private DateTime whenTaken;
     private List<ResultAnswer> resultAnswers;
 
+    public Result() {
+    }
+
     public Result(int surveyId, int accountId, String accountNumber,
             DateTime whenTaken, List<ResultAnswer> resultAnswers) {
         surveyResultId = 0;

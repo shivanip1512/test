@@ -1158,3 +1158,9 @@ div.pointMonitorContainer {
     border: 1px red solid;
     padding: 5px;
 }
+
+.reportHeader {
+    text-align: right;
+    width: 95%;
+    padding-bottom: 5px;
+}

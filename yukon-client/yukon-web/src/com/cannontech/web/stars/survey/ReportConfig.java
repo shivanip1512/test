@@ -4,16 +4,18 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 public class ReportConfig {
     private int surveyId;
     private String reportType;
-    private Date start;
-    private Date end;
+    private Date startDate;
+    private Date endDate;
     private int questionId;
-    private Integer[] answerIds = {};
+    private List<Integer> answerIds = Lists.newArrayList();
     private boolean includeOtherAnswers;
     private boolean includeUnanswered;
-    private Integer[] programIds = {};
+    private List<Integer> programIds = Lists.newArrayList();
     private String accountNumber;
     private String deviceSerialNumber;
 
@@ -33,20 +35,20 @@ public class ReportConfig {
         this.reportType = reportType;
     }
 
-    public Date getStart() {
-        return start;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setStart(Date start) {
-        this.start = start;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
-    public Date getEnd() {
-        return end;
+    public Date getEndDate() {
+        return endDate;
     }
 
-    public void setEnd(Date end) {
-        this.end = end;
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
     public int getQuestionId() {
@@ -57,16 +59,21 @@ public class ReportConfig {
         this.questionId = questionId;
     }
 
-    public Integer[] getAnswerIds() {
+    // Spring can handle creating integer arrays more easily than lists.
+    public Integer[] getAnswerId() {
+        return answerIds.toArray(new Integer[answerIds.size()]);
+    }
+
+    public void setAnswerId(Integer[] answerIds) {
+        this.answerIds = Arrays.asList(answerIds);
+    }
+
+    public List<Integer> getAnswerIds() {
         return answerIds;
     }
 
-    public void setAnswerIds(Integer[] answerIds) {
+    public void setAnswerIds(List<Integer> answerIds) {
         this.answerIds = answerIds;
-    }
-
-    public List<Integer> getAnswerIdList() {
-        return Arrays.asList(answerIds);
     }
 
     public boolean isIncludeOtherAnswers() {
@@ -85,16 +92,20 @@ public class ReportConfig {
         this.includeUnanswered = includeUnanswered;
     }
 
-    public Integer[] getProgramIds() {
+    public Integer[] getProgramId() {
+        return programIds.toArray(new Integer[programIds.size()]);
+    }
+
+    public void setProgramId(Integer[] programId) {
+        this.programIds = Arrays.asList(programId);
+    }
+
+    public List<Integer> getProgramIds() {
         return programIds;
     }
 
-    public void setProgramIds(Integer[] programIds) {
+    public void setProgramIds(List<Integer> programIds) {
         this.programIds = programIds;
-    }
-
-    public List<Integer> getProgramIdList() {
-        return Arrays.asList(programIds);
     }
 
     public String getAccountNumber() {

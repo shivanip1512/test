@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -407,16 +408,19 @@ public class SurveyDaoImpl implements SurveyDao {
             sql.append("INSERT INTO surveyResultAnswer (surveyResultAnswerId,");
             sql.append("surveyResultId, surveyQuestionId,");
             sql.append("surveyQuestionAnswerId, textAnswer)");
+            String textAnswer = answer.getTextAnswer();
+            if (StringUtils.isBlank(textAnswer)) {
+                textAnswer = null;
+            }
             sql.values(surveyResultAnswerId, surveyResultId,
                        answer.getSurveyQuestionId(),
                        answer.getSurveyQuestionAnswerId(),
-                       answer.getTextAnswer());
+                       textAnswer);
             yukonJdbcTemplate.update(sql);
         }
 
         result.setSurveyResultId(surveyResultId);
     }
-
 
     @PostConstruct
     public void init() {

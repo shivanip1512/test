@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
 import com.google.common.collect.Lists;
 
 public abstract class SurveyResultsModelBase<T> extends BareReportModelBase<T> {
     protected YukonJdbcTemplate yukonJdbcTemplate;
     protected SurveyDao surveyDao;
+    protected OptOutSurveyDao optOutSurveyDao;
 
     // inputs
     protected int surveyId;
@@ -116,5 +118,10 @@ public abstract class SurveyResultsModelBase<T> extends BareReportModelBase<T> {
     @Autowired
     public void setSurveyDao(SurveyDao surveyDao) {
         this.surveyDao = surveyDao;
+    }
+
+    @Autowired
+    public void setOptOutSurveyDao(OptOutSurveyDao optOutSurveyDao) {
+        this.optOutSurveyDao = optOutSurveyDao;
     }
 }

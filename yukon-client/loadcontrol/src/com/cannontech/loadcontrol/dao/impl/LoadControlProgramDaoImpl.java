@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -178,35 +180,20 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
 				continue;
 			}
 			
-			// new ProgramControlHistory
-			ProgramControlHistory programControlHistory = new ProgramControlHistory(hist.getProgramId());
-			programControlHistory.setProgramName(hist.getProgramName());
-			programControlHistory.setGearName(hist.getGearName());
-			programControlHistory.setStartDateTime(hist.getEventTime());
-			programControlHistory.setKnownGoodStopDateTime(false);
-			
-			// nextHist
-			LmProgramGearHistory nextHist = null;
-			if (i < rawHistory.size() - 1) {
-				nextHist = rawHistory.get(i + 1);
-			}
-			
-			// in order for the nextHist to be the "Stop" for the current hist it has to be for the same program
-			// if there is no nextHist then it is ongoing control
-			if (nextHist != null && nextHist.getProgramId() == hist.getProgramId()) {
-				
-				// use nextHist EventTime as our stop time
-				programControlHistory.setStopDateTime(nextHist.getEventTime());
-				
-				// This boolean should be set when it is known that the "Start" and "Stop" LMProgramGearHistory records that were found to create this ProgramControlHistory
-				// share the same LMProgramGearHistory.LMProgramHistoryId.
-				// If set to false, there is a good chance it is still valid, but if the duration between startDateTime and stopDateTime is suspiciously
-				// long it may be that the LMProgramGearHistory identified as the "Stop" is not actually related.
-				if (nextHist.getProgramHistoryId() == hist.getProgramHistoryId()) {
-					programControlHistory.setKnownGoodStopDateTime(true);
-				}
-			}
-			
+            // nextHist
+            LmProgramGearHistory nextHist = null;
+            if (i < rawHistory.size() - 1) {
+                nextHist = rawHistory.get(i + 1);
+                // In order for the nextHist to be the "Stop" for the current hist it
+                // has to be for the same program. 
+                if (nextHist.getProgramId() != hist.getProgramId()) {
+                    nextHist = null;
+                }
+            }
+
+            // new ProgramControlHistory
+            ProgramControlHistory programControlHistory = joinGearHistoriesIntoProgramHistory(hist, nextHist);
+
 			// check date range
 			// is good programControlHistory if control was happening at ANY time within (inclusive) the range specified
 			boolean withinDateRange = programControlHistory.getStartDateTime().compareTo(stopDateTime) <= 0
@@ -220,7 +207,80 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
 		
     	return results;
     }
-    
+
+    private ProgramControlHistory joinGearHistoriesIntoProgramHistory(LmProgramGearHistory startHist, LmProgramGearHistory nextHist) {
+        ProgramControlHistory programControlHistory =
+            new ProgramControlHistory(startHist.getProgramHistoryId(), startHist.getProgramId());
+        programControlHistory.setProgramName(startHist.getProgramName());
+        programControlHistory.setGearName(startHist.getGearName());
+        programControlHistory.setStartDateTime(startHist.getEventTime());
+        programControlHistory.setKnownGoodStopDateTime(false);
+
+        // If there is no nextHist then it is ongoing control.
+        if (nextHist != null) {
+            // use nextHist EventTime as our stop time
+            programControlHistory.setStopDateTime(nextHist.getEventTime());
+
+            // This boolean should be set when it is known that the "Start" and
+            // "Stop" LMProgramGearHistory records that were found to create
+            // this ProgramControlHistory share the same
+            // LMProgramGearHistory.LMProgramHistoryId. If set to false, there
+            // is a good chance it is still valid, but if the duration between
+            // startDateTime and stopDateTime is suspiciously long it may be
+            // that the LMProgramGearHistory identified as the "Stop" is not
+            // actually related.
+            if (nextHist.getProgramHistoryId() == startHist.getProgramHistoryId()) {
+                programControlHistory.setKnownGoodStopDateTime(true);
+            }
+        }
+        return programControlHistory;
+    }
+
+    @Override
+    public ProgramControlHistory findHistoryForProgramAtTime(int programId, Instant when) {
+        SqlStatementBuilder baseQuery = new SqlStatementBuilder();
+        baseQuery.append("SELECT ph.programId, ph.programName, gh.lmProgramGearHistoryId,");
+        baseQuery.append(    "gh.lmProgramHistoryId, gh.eventTime, gh.action,");
+        baseQuery.append(    "gh.username, gh.gearName, gh.gearId, gh.reason");
+        baseQuery.append("FROM lmProgramGearHistory gh");
+        baseQuery.append(    "JOIN lmProgramHistory ph ON gh.lmProgramHistoryId = ph.lmProgramHistoryId");
+
+        // First, find the last "start" event before the given time.
+
+        // We're assuming control can't happen for more than about 30 days so
+        // the query will be quicker.  We could probably tighten this even more
+        // but a month is what baseProgramControlHistory above is using so
+        // we'll stick to that for now.
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(baseQuery);
+        sql.append("WHERE gh.eventTime").lte(when);
+        sql.append(    "AND gh.eventTime").gt(when.minus(Duration.standardDays(30)));
+        sql.append(    "AND ph.programId").eq(programId);
+        sql.append(    "AND gh.action").eq("Start");
+        sql.append("ORDER BY gh.eventTime DESC");
+        List<LmProgramGearHistory> startList =
+            yukonJdbcOperations.queryForLimitedResults(sql, new LmProgramGearHistoryMapper(), 1);
+        if (startList.size() < 1) {
+            return null;
+        }
+
+        // now find the first "stop" event after the last start
+        LmProgramGearHistory startHist = startList.get(0);
+        sql = new SqlStatementBuilder();
+        sql.append(baseQuery);
+        sql.append("WHERE gh.eventTime").gt(when);
+        sql.append(    "AND gh.EventTime").lt(when.plus(Duration.standardDays(30)));
+        sql.append(    "AND ph.programId").eq(programId);
+        sql.append("ORDER BY gh.eventTime ASC");
+        List<LmProgramGearHistory> stopList =
+            yukonJdbcOperations.queryForLimitedResults(sql, new LmProgramGearHistoryMapper(), 1);
+
+        LmProgramGearHistory stoptHist = stopList.size() == 0 ? null : stopList.get(0);
+
+        ProgramControlHistory retVal = joinGearHistoriesIntoProgramHistory(startHist, stoptHist);
+        return retVal;
+    }
+
     @Override
     public int getGearNumberForGearName(int programId, String gearName) throws NotFoundException {
     	

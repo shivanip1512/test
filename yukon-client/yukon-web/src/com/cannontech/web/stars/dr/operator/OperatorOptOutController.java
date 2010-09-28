@@ -228,7 +228,7 @@ public class OperatorOptOutController {
         setupOptOutModelMapBasics(accountInfoFragment, model, userContext);
 
         Integer[] inventoryIds = optOutBackingBean.getInventoryIds();
-        if (inventoryIds.length < 1) {
+        if (inventoryIds == null || inventoryIds.length < 1) {
             flashScope.setMessage(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.main.noInventorySelected"),
                                   FlashScopeMessageType.ERROR);
 

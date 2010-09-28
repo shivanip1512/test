@@ -35,8 +35,8 @@ public class IntegerListType extends DefaultValidatedType<List> {
             public void setAsText(String text) throws IllegalArgumentException {
                 String[] split = StringUtils.split(text, ",");
                 List<Integer> result = new ArrayList<Integer>();
-                for (int i = 0; i < split.length; ++i) {
-                    int parseInt = Integer.parseInt(split[i]);
+                for (int index = 0; index < split.length; index++) {
+                    int parseInt = Integer.parseInt(split[index]);
                     result.add(parseInt);
                 }
                 setValue(result);

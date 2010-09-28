@@ -3,7 +3,7 @@ package com.cannontech.loadcontrol.service.data;
 import java.util.Date;
 
 public class ProgramControlHistory {
-
+    private int programHistoryId;
 	private int programId;
 	private String programName;
 	private Date startDateTime;
@@ -11,11 +11,16 @@ public class ProgramControlHistory {
 	private String gearName;
 	private boolean knownGoodStopDateTime;
 	
-	public ProgramControlHistory(int programId) {
+	public ProgramControlHistory(int programHistoryId, int programId) {
+	    this.programHistoryId = programHistoryId;
 		this.programId = programId;
 	}
-	
-	public int getProgramId() {
+
+	public int getProgramHistoryId() {
+        return programHistoryId;
+    }
+
+    public int getProgramId() {
 		return programId;
 	}
 	public String getProgramName() {

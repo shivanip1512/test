@@ -8,7 +8,7 @@ public class LmProgramGearHistory {
 	private int programId;
 	private String programName;
 	
-	private int programGearhistoryId;
+	private int programGearHistoryId;
     private int programHistoryId;
     private Date eventTime;
     private String action;
@@ -30,11 +30,11 @@ public class LmProgramGearHistory {
     	this.programName = programName;
     }
     
-    public int getProgramGearhistoryId() {
-		return programGearhistoryId;
+    public int getProgramGearHistoryId() {
+		return programGearHistoryId;
 	}
-    public void setProgramGearhistoryId(int programGearhistoryId) {
-		this.programGearhistoryId = programGearhistoryId;
+    public void setProgramGearHistoryId(int programGearHistoryId) {
+		this.programGearHistoryId = programGearHistoryId;
 	}
     public int getProgramHistoryId() {
 		return programHistoryId;

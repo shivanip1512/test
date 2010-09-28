@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -23,9 +25,13 @@ import com.cannontech.database.FieldMapper;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
+import com.cannontech.stars.dr.optout.model.OptOutAction;
 import com.cannontech.stars.dr.optout.model.OptOutSurvey;
+import com.cannontech.stars.dr.optout.model.SurveyResult;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
@@ -196,6 +202,74 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
         sql.append("(surveyResultId, optOutEventLogId)");
         sql.values(surveyResultId, optOutEventLogId);
         yukonJdbcTemplate.update(sql);
+    }
+
+    @Override
+    public List<SurveyResult> findSurveyResults(int surveyId,
+            int questionId, Iterable<Integer> answerIds,
+            boolean includeOtherAnswers, boolean includeUnanswered,
+            DateTime begin, DateTime end) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT r.surveyResultId, r.surveyId, r.whenTaken,");
+        sql.append(    "r.accountId, r.accountNumber, ra.surveyResultAnswerId,");
+        sql.append(    "ra.surveyQuestionId, ra.surveyQuestionAnswerId, ");
+        sql.append(    "sqa.answerKey, ra.textAnswer,");
+        sql.append(    "l.inventoryId, l.customerAccountId");
+        sql.append("FROM surveyResult r");
+        sql.append(    "JOIN surveyResultAnswer ra ON r.surveyResultId = ra.surveyResultId");
+        sql.append(    "JOIN optOutSurveyResult oosr ON oosr.surveyResultId = r.surveyResultId");
+        sql.append(    "JOIN optOutEventLog l ON l.optOutEventLogId = oosr.optOutEventLogId");
+        sql.append(    "LEFT JOIN surveyQuestionAnswer sqa ON ra.surveyQuestionAnswerId = sqa.surveyQuestionAnswerId");
+        sql.append("WHERE r.surveyId").eq(surveyId);
+        sql.append(    "AND ra.surveyQuestionId").eq(questionId);
+        sql.append(    "AND l.eventAction").eq(OptOutAction.START_OPT_OUT);
+
+        SqlFragmentCollection answersOr = SqlFragmentCollection.newOrCollection();
+        if (answerIds != null && answerIds.iterator().hasNext()) {
+            SqlStatementBuilder answerIdsSql = new SqlStatementBuilder();
+            answerIdsSql.append("ra.surveyQuestionAnswerId").in(answerIds);
+            answersOr.add(answerIdsSql);
+        }
+        if (includeOtherAnswers) {
+            answersOr.addSimpleFragment("ra.surveyQuestionAnswerId IS NULL AND ra.textAnswer IS NOT NULL");
+        }
+        if (includeUnanswered) {
+            answersOr.addSimpleFragment("ra.surveyQuestionAnswerId IS NULL AND ra.textAnswer IS NULL");
+        }
+        sql.append("AND").append(answersOr);
+        if (begin != null) {
+            sql.append(    "AND r.whenTaken").gte(begin);
+        }
+        if (end != null) {
+            sql.append(    "AND r.whenTaken").lte(end);
+        }
+
+        YukonRowMapper<SurveyResult> rowMapper = new YukonRowMapper<SurveyResult>() {
+            @Override
+            public SurveyResult mapRow(YukonResultSet rs)
+                    throws SQLException {
+                SurveyResult retVal = new SurveyResult();
+                retVal.setSurveyResultId(rs.getInt("surveyResultId"));
+                retVal.setSurveyId(rs.getInt("surveyId"));
+                retVal.setWhenTaken(rs.getInstant("whenTaken"));
+                int accountId = rs.getInt("accountId");
+                retVal.setAccountId(rs.wasNull() ? null : accountId);
+                retVal.setAccountNumber(rs.getString("accountNumber"));
+                int surveyQuestionAnswerId = rs.getInt("surveyQuestionAnswerId");
+                if (rs.wasNull()) {
+                    retVal.setSurveyQuestionAnswerId(null);
+                } else {
+                    retVal.setSurveyQuestionAnswerId(surveyQuestionAnswerId);
+                }
+                retVal.setAnswerKey(rs.getString("answerKey"));
+                retVal.setTextAnswer(rs.getString("textAnswer"));
+                retVal.setInventoryId(rs.getInt("inventoryId"));
+                return retVal;
+            }
+        };
+
+        List<SurveyResult> retVal = yukonJdbcTemplate.query(sql, rowMapper);
+        return retVal;
     }
 
 

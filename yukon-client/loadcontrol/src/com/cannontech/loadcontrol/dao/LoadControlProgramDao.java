@@ -3,6 +3,8 @@ package com.cannontech.loadcontrol.dao;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.Instant;
+
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
@@ -82,7 +84,14 @@ public interface LoadControlProgramDao {
      * @return
      */
     public List<ProgramControlHistory> getProgramControlHistoryByProgramId(int programId, Date startDateTime, Date stopDateTime);
-    
+
+    /**
+     * If the given program was being controlled at the given time, return the
+     * ProgramControlHistory event representing that control. If the program was
+     * not being controlled, null will be returned.
+     */
+    public ProgramControlHistory findHistoryForProgramAtTime(int programId, Instant when);
+
     /**
      * Get the gear number for a given program and gear name.
      * @param gearName

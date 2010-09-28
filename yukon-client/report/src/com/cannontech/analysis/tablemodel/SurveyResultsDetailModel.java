@@ -5,8 +5,8 @@ import java.util.Date;
 public class SurveyResultsDetailModel extends
         SurveyResultsModelBase<SurveyResultsDetailModel.ModelRow> {
     // inputs
-    String accountNumber;
-    String deviceSerialNumber;
+    private String accountNumber;
+    private String deviceSerialNumber;
 
     // member variables
     private static String title = "Survey Results Detail Report";

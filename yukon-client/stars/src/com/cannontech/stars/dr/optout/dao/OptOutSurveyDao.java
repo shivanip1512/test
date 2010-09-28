@@ -1,6 +1,11 @@
 package com.cannontech.stars.dr.optout.dao;
 
+import java.util.List;
+
+import org.joda.time.DateTime;
+
 import com.cannontech.stars.dr.optout.model.OptOutSurvey;
+import com.cannontech.stars.dr.optout.model.SurveyResult;
 import com.google.common.collect.Multimap;
 
 
@@ -18,4 +23,9 @@ public interface OptOutSurveyDao {
     public void deleteOptOutSurvey(int optOutSurveyId);
 
     public void saveResult(int surveyResultId, int optOutEventLogId);
+
+    public List<SurveyResult> findSurveyResults(int surveyId,
+            int questionId, Iterable<Integer> answerIds,
+            boolean includeOtherAnswers, boolean includeUnanswered,
+            DateTime begin, DateTime end);
 }

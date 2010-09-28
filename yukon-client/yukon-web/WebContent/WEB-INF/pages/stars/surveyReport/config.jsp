@@ -71,9 +71,9 @@ function questionChanged() {
 	        listItem.className = 'generated';
 	        var answer = question.answers[index];
 	        var answerId = answer.surveyQuestionAnswerId;
-	        listItem.innerHTML = '<input type="checkbox" name="answerIds"' +
-	            ' onclick="answerCheckboxChanged()" id="answerIds_' +
-	            answerId + '" value="' + answerId + '"><label for="answerIds_' +
+	        listItem.innerHTML = '<input type="checkbox" name="answerId"' +
+	            ' onclick="answerCheckboxChanged()" id="answerId_' +
+	            answerId + '" value="' + answerId + '"><label for="answerId_' +
 	            answerId + '"> ' + answerMessagesById[answerId] + '</label>';
 	        answerList.insertBefore(listItem, includeOtherAnswersItem);
 	    }
@@ -92,6 +92,9 @@ function questionChanged() {
 		$('answersRow').hide();
 	}
 	answerCheckboxChanged();
+    // show all answers by default
+    $('selectAll').checked = true;
+    selectAllChanged();
 }
 
 function programsChosen(programs) {
@@ -119,14 +122,14 @@ function clearPrograms() {
 }
 
 function updateFieldsFromBackingBean() {
-	var initialAnswers = ${cti:jsonString(reportConfig.answerIds)};
+	var initialAnswers = ${cti:jsonString(reportConfig.answerId)};
 	for (var index = 0; index < initialAnswers.length; index++) {
-	    $('answerIds_' + initialAnswers[index]).checked = true;
+	    $('answerId_' + initialAnswers[index]).checked = true;
 	}
 	answerCheckboxChanged();
 
 	var initialPrograms = ${cti:jsonString(initialPrograms)};
-	if (initialPrograms) {
+	if (initialPrograms && initialPrograms.length > 0) {
 	    programsChosen(initialPrograms);
 	}
 }
@@ -143,18 +146,22 @@ function updateFieldsFromBackingBean() {
 <form:form action="${submitUrl}" commandName="reportConfig">
     <form:hidden path="surveyId"/>
 
+    <input type="hidden" id="reportTypeSelect" name="reportType" value="summary"/>
     <tags:nameValueContainer2>
+        <%--
+        detail report isn't defined yet
         <tags:nameValue2 nameKey=".reportType">
 		    <form:select id="reportTypeSelect" path="reportType" onchange="reportTypeChanged()">
 		        <form:option value="summary"><i:inline key=".summary"/></form:option>
 		        <form:option value="detail"><i:inline key=".detail"/></form:option>
 		    </form:select>
         </tags:nameValue2>
+        --%>
         <tags:nameValue2 nameKey=".startDate">
-            <tags:dateInputCalendar fieldName="start" springInput="true"/>
+            <tags:dateInputCalendar fieldName="startDate" springInput="true"/>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".endDate">
-            <tags:dateInputCalendar fieldName="end" springInput="true"/>
+            <tags:dateInputCalendar fieldName="endDate" springInput="true"/>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".question">
             <form:select id="questionSelect" path="questionId" onchange="questionChanged()">
@@ -166,7 +173,7 @@ function updateFieldsFromBackingBean() {
             </form:select>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".answers" rowId="answersRow">
-            <tags:bind path="answerIds">
+            <tags:bind path="answerId">
                 <ul id="answerList">
                     <li id="selectAllItem">
                         <input type="checkbox" name="selectAll" id="selectAll"
@@ -194,7 +201,7 @@ function updateFieldsFromBackingBean() {
                 <i:inline key=".noProgramsSelected"/>
             </div>
             <tags:pickerDialog id="programPicker" type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
-                destinationFieldName="programIds" extraArgs="${energyCompanyId}"
+                destinationFieldName="programId" extraArgs="${energyCompanyId}"
                 endAction="programsChosen" multiSelectMode="true">
                 <i:inline key=".choosePrograms"/></tags:pickerDialog>
             <a id="clearProgramsLink" href="javascript:clearPrograms()" style="display:none"><i:inline key=".clearPrograms"/></a>

@@ -7,9 +7,11 @@ public class SurveyResultsSummaryReportLayoutData implements ReportLayoutData {
 
     public SurveyResultsSummaryReportLayoutData() {
         bodyColumns = new ColumnLayoutData[] {
-                new ColumnLayoutData("Reason", "reason", 500),
+                new ColumnLayoutData("Control Begin", "controlBegin", 100, "DATEHM"),
+                new ColumnLayoutData("Control End", "controlEnd", 100, "DATEHM"),
+                new ColumnLayoutData("Reason", "reason", 400),
                 new ColumnLayoutData("# Devices Overridden",
-                                     "numDevicesOverridden", 100),
+                                     "numDevicesOverridden", 75),
                 new ColumnLayoutData("Load Program", "loadProgram", 100),
                 new ColumnLayoutData("Gear", "gear", 100), };
     }

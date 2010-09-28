@@ -12,7 +12,7 @@ public interface AssignedProgramDao {
     public List<AssignedProgram> getByIds(Collection<Integer> assignedProgramIds);
 
     /**
-     * Get a map of LM program ids to assigned (STARS) program ids for the given
+     * Get a map of assigned (STARS) program ids to LM program ids for the given
      * list of assigned program ids.
      */
     public Map<Integer, Integer> getProgramIdsByAssignedProgramIds(

@@ -1,17 +1,37 @@
 package com.cannontech.analysis.tablemodel;
 
-import org.apache.commons.lang.StringUtils;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.survey.model.Question;
+import com.cannontech.common.survey.model.Survey;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
+import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
+import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.optout.model.SurveyResult;
+import com.cannontech.stars.dr.program.service.ProgramEnrollment;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 
 public class SurveyResultsSummaryModel extends
         SurveyResultsModelBase<SurveyResultsSummaryModel.ModelRow> {
     private LoadControlProgramDao loadControlProgramDao;
+    private EnrollmentDao enrollmentDao;
+    private AssignedProgramDao assignedProgramDao;
 
     // inputs
     // all inputs are covered by base class
@@ -20,51 +40,137 @@ public class SurveyResultsSummaryModel extends
     private static String title = "Survey Results Summary Report";
 
     public static class ModelRow {
-        public String reason;
-        public int numDevicesOverridden;
-        public String loadProgram;
-        public String gear;
+        ModelRow(ProgramControlHistory hist) {
+            controlBegin = hist.getStartDateTime();
+            controlEnd = hist.getStopDateTime();
+            loadProgram = hist.getProgramName();
+            gear = hist.getGearName();
+        }
+        public Date controlBegin = null;
+        public Date controlEnd = null;
+        public Object reason = null;
+        public int numDevicesOverridden = 0;
+        public String loadProgram = null;
+        public String gear = null;
+    }
+
+    private static class ProgramHistorySummary {
+        ProgramControlHistory hist;
+        Map<Integer, ModelRow> dropDownAnswerRows = Maps.newTreeMap();
+        ModelRow unansweredRow = null;
+        Map<String, ModelRow> otherAnswerRows = Maps.newTreeMap();
+
+        ProgramHistorySummary(ProgramControlHistory hist) {
+            this.hist = hist;
+        }
+
+        // The program control history here is used only if a new row needs to be created.
+        ModelRow rowForResult(SurveyResult result, String baseKey) {
+            Integer answerId = result.getSurveyQuestionAnswerId();
+            if (answerId != null) {
+                ModelRow retVal = dropDownAnswerRows.get(answerId);
+                if (retVal == null) {
+                    retVal = new ModelRow(hist);
+                    retVal.reason = new YukonMessageSourceResolvable(baseKey + result.getAnswerKey());
+                    dropDownAnswerRows.put(answerId, retVal);
+                }
+                return retVal;
+            }
+            if (result.getTextAnswer() != null) {
+                ModelRow retVal = otherAnswerRows.get(result.getTextAnswer());
+                if (retVal == null) {
+                    retVal = new ModelRow(hist);
+                    retVal.reason = result.getTextAnswer();
+                    otherAnswerRows.put(result.getTextAnswer(), retVal);
+                }
+                return retVal;
+            }
+            if (unansweredRow == null) {
+                unansweredRow = new ModelRow(hist);
+                unansweredRow.reason = new YukonMessageSourceResolvable("yukon.web.modules.survey.report.unanswered");
+            }
+            return unansweredRow;
+        }
     }
 
     public void doLoadData() {
         if (startDate == null) {
             startDate = new Instant(0).toDate();
         }
-        /*
-        Multimap<Integer, ProgramControlHistory> controlHistory =
-            loadControlProgramDao.getHistoryByProgramIds(programIds, startDate,
-                                                         endDate);
 
-        ModelRow row = new ModelRow();
-        row.reason = "found " + controlHistory.size() + " history events from " +
-            startDate + " to " + endDate + " for question " + questionId;
-        row.numDevicesOverridden = programIds == null ? 0 : programIds.size();
-        row.loadProgram = "answers: " + StringUtils.join(answerIds, ",");
-        row.gear = "other:" + includeOtherAnswers + ", unanswerd:" + includeUnanswered;
-        data.add(row);
-
-
-        for (Integer programId : controlHistory.keySet()) {
-            for (ProgramControlHistory hist : controlHistory.get(programId)) {
-                row = new ModelRow();
-                row.reason = hist.getStartDateTime() + " to " + hist.getStopDateTime();
-                row.numDevicesOverridden = hist.getProgramId();
-                row.loadProgram = hist.getProgramName();
-                row.gear = hist.getGearName();
-                data.add(row);
+        Multimap<SurveyResult, Integer> assignedProgramIdsBySurveyResult = ArrayListMultimap.create();
+        Map<Integer, List<ProgramEnrollment>> enrollmentsBySurveyResultId = Maps.newHashMap();
+        List<SurveyResult> surveyResults =
+            optOutSurveyDao.findSurveyResults(surveyId, questionId, answerIds,
+                                              includeOtherAnswers, includeUnanswered,
+                                              new DateTime(startDate), new DateTime(endDate));
+        for (SurveyResult result : surveyResults) {
+            List<ProgramEnrollment> enrollments =
+                enrollmentDao.getHistoricalEnrollmentsByInventoryId(result.getInventoryId(),
+                                                                    result.getWhenTaken());
+            enrollmentsBySurveyResultId.put(result.getSurveyResultId(), enrollments);
+            for (ProgramEnrollment enrollment : enrollments) {
+                assignedProgramIdsBySurveyResult.put(result, enrollment.getAssignedProgramId());
             }
         }
-        */
-        if (programIds == null) {
-            return;
+
+        Map<Integer, ProgramHistorySummary> resultsByProgramHistoryId = Maps.newHashMap();
+
+        Survey survey = surveyDao.getSurveyById(surveyId);
+        Question question = surveyDao.getQuestionById(questionId);
+        String baseKey = "yukon.web.surveys." + survey.getSurveyKey() + "." + question.getQuestionKey() + ".";
+        Map<Integer, ProgramControlHistory> programControlHistoriesById = Maps.newHashMap();
+        Map<Integer, Integer> programIdsByAssignedProgramId =
+            assignedProgramDao.getProgramIdsByAssignedProgramIds(assignedProgramIdsBySurveyResult.values());
+        Set<Integer> programIdsToUse = null;
+        if (programIds != null && !programIds.isEmpty()) {
+            programIdsToUse = Sets.newHashSet(programIds);
         }
-        for (Integer programId : programIds) {
-            ModelRow row = new ModelRow();
-            row.reason = "program";
-            row.numDevicesOverridden = programId;
-            row.loadProgram = "";
-            row.gear = "";
-            data.add(row);
+        for (SurveyResult result : surveyResults) {
+            List<ProgramEnrollment> enrollments = enrollmentsBySurveyResultId.get(result.getSurveyResultId());
+            for (ProgramEnrollment enrollment : enrollments) {
+                int programId = programIdsByAssignedProgramId.get(enrollment.getAssignedProgramId());
+                if (programIdsToUse == null || programIdsToUse.contains(programId)) {
+                    ProgramControlHistory hist =
+                        loadControlProgramDao.findHistoryForProgramAtTime(programId, result.getWhenTaken());
+                    if (hist == null) {
+                        // The opt out happened during a time for which there was no
+                        // control.  (In the future we may want to count these too.)
+                    } else {
+                        int programHistoryId = hist.getProgramHistoryId();
+                        ProgramHistorySummary histSummary = resultsByProgramHistoryId.get(programHistoryId);
+                        if (histSummary == null) {
+                            histSummary = new ProgramHistorySummary(hist);
+                            resultsByProgramHistoryId.put(programHistoryId, histSummary);
+                        }
+
+                        ModelRow summaryRow = histSummary.rowForResult(result, baseKey);
+                        summaryRow.numDevicesOverridden++;
+
+                        programControlHistoriesById.put(programHistoryId, hist);
+                    }
+                }
+            }
+        }
+
+        List<ProgramHistorySummary> sortedProgramHistorySummaries =
+            Lists.newArrayList(resultsByProgramHistoryId.values());
+        Collections.sort(sortedProgramHistorySummaries, new Comparator<ProgramHistorySummary>() {
+            @Override
+            public int compare(ProgramHistorySummary hist1,
+                    ProgramHistorySummary hist2) {
+                return hist1.hist.getStartDateTime().compareTo(hist2.hist.getStartDateTime());
+            }});
+        for (ProgramHistorySummary histSummary : sortedProgramHistorySummaries) {
+            for (ModelRow row : histSummary.dropDownAnswerRows.values()) {
+                data.add(row);
+            }
+            for (ModelRow row : histSummary.otherAnswerRows.values()) {
+                data.add(row);
+            }
+            if (includeUnanswered && histSummary.unansweredRow != null) {
+                data.add(histSummary.unansweredRow);
+            }
         }
     }
 
@@ -78,8 +184,22 @@ public class SurveyResultsSummaryModel extends
         return title;
     }
 
+    public static void setTitle(String title) {
+        SurveyResultsSummaryModel.title = title;
+    }
+
     @Autowired
     public void setLoadControlProgramDao(LoadControlProgramDao loadControlProgramDao) {
         this.loadControlProgramDao = loadControlProgramDao;
+    }
+
+    @Autowired
+    public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
+        this.enrollmentDao = enrollmentDao;
+    }
+
+    @Autowired
+    public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
+        this.assignedProgramDao = assignedProgramDao;
     }
 }

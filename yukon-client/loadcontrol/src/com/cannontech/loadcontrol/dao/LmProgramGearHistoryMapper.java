@@ -13,7 +13,7 @@ public class LmProgramGearHistoryMapper implements ParameterizedRowMapper<LmProg
     	LmProgramGearHistory hist = new LmProgramGearHistory();
     	hist.setProgramId(rs.getInt("ProgramId"));
     	hist.setProgramName(rs.getString("ProgramName"));
-    	hist.setProgramGearhistoryId(rs.getInt("LMProgramGearHistoryId"));
+    	hist.setProgramGearHistoryId(rs.getInt("LMProgramGearHistoryId"));
     	hist.setProgramHistoryId(rs.getInt("LMProgramHistoryId"));
     	hist.setEventTime(rs.getTimestamp("EventTime"));
     	hist.setAction(rs.getString("Action"));

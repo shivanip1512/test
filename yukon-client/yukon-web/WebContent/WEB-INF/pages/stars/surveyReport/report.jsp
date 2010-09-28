@@ -11,37 +11,64 @@
 
 <cti:includeCss link="/WebConfig/yukon/styles/operator/survey.css"/>
 
-<c:if test="${reportConfig.reportType == 'summary'}">
-	<cti:simpleReportUrlFromNameTag var="reportUrl" viewType="htmlView"
-	    definitionName="surveyResultsSummaryDefinition" htmlOutput="true"
-	    viewJsp="BODY"
-	    startDate="${reportConfig.start}" endDate="${reportConfig.end}"/>
-        <%--
-	<cti:simpleReportUrlFromNameTag var="reportUrl" viewType="htmlView"
-	    definitionName="surveyResultsSummaryDefinition" htmlOutput="true"
-	    viewJsp="BODY" surveyId="${reportConfig.surveyId}"
-	    startDate="${reportConfig.start}" endDate="${reportConfig.end}"
-	    questionId="${reportConfig.questionId}"
-	    answerIds="${reportConfig.answerIdList}"
-	    includeOtherAnswers="${reportConfig.includeOtherAnswers}"
-        includeUnanswered="${reportConfig.includeUnanswered}"
-        programIds="${reportConfig.programIdList}"/>
-        --%>
-</c:if>
-<c:if test="${reportConfig.reportType == 'detail'}">
-	<cti:simpleReportUrlFromNameTag var="reportUrl" viewType="htmlView"
-	    definitionName="surveyResultsDetailDefinition" htmlOutput="true"
-        viewJsp="BODY" surveyId="${reportConfig.surveyId}"
-        startDate="${reportConfig.start}" endDate="${reportConfig.end}"
-        questionId="${reportConfig.questionId}"
-        answerIds="${reportConfig.answerIdList}"
-        includeOtherAnswers="${reportConfig.includeOtherAnswers}"
-        includeUnanswered="${reportConfig.includeUnanswered}"
-        programIds="${reportConfig.programIdList}"
-        accountNumber="${reportConfig.accountNumber}"
-        deviceSerialNumber="${reportConfig.deviceSerialNumber}"/>
-</c:if>
+<tags:nameValueContainer2>
+    <tags:nameValue2 nameKey=".startDate">
+        <c:if test="${empty reportConfig.startDate}">
+            <i:inline key=".noStartDate"/>
+        </c:if>
+        <c:if test="${!empty reportConfig.startDate}">
+            <cti:formatDate type="DATEHM" value="${reportConfig.startDate}"/>
+        </c:if>
+    </tags:nameValue2>
+    <tags:nameValue2 nameKey=".endDate">
+        <c:if test="${empty reportConfig.endDate}">
+            <i:inline key=".noEndDate"/>
+        </c:if>
+        <c:if test="${!empty reportConfig.endDate}">
+            <cti:formatDate type="DATEHM" value="${reportConfig.endDate}"/>
+        </c:if>
+    </tags:nameValue2>
+    <tags:nameValue2 nameKey=".question">
+        <i:inline key="yukon.web.surveys.${survey.surveyKey}.${question.questionKey}"/>
+    </tags:nameValue2>
+</tags:nameValueContainer2>
 
-<jsp:include page="${reportUrl}"/>
+
+<cti:simpleReportUrlFromNameTag var="csvUrlBase" viewType="csvView"
+    definitionName="${definitionName}" htmlOutput="true"/>
+<cti:url var="csvUrl" value="${csvUrlBase}">
+    <c:forEach var="input" items="${inputMap}">
+        <cti:param name="${input.key}" value="${input.value}"/>
+    </c:forEach>
+</cti:url>
+
+<cti:simpleReportUrlFromNameTag var="pdfUrlBase" viewType="pdfView"
+    definitionName="${definitionName}" htmlOutput="true"/>
+<cti:url var="pdfUrl" value="${pdfUrlBase}">
+    <c:forEach var="input" items="${inputMap}">
+        <cti:param name="${input.key}" value="${input.value}"/>
+    </c:forEach>
+</cti:url>
+
+<div class="reportHeader">
+    <strong><i:inline key=".export"/>&nbsp;</strong>
+    <cti:labeledImg key="csvReport" href="${csvUrl}"/> |
+    <cti:labeledImg key="pdfReport" href="${pdfUrl}"/>
+</div>
+
+<table class="resultsTable">
+    <tr>
+        <c:forEach var="ci" items="${columnInfo}">
+            <th style="text-align:${ci.columnAlignment};width:${ci.columnWidthPercentage}%">${ci.columnName}</th>
+        </c:forEach>
+    </tr>
+    <c:forEach var="rowData" items="${data}">
+        <tr class="<tags:alternateRow odd="" even="altRow"/>">
+            <c:forEach var="colData" items="${rowData}" varStatus="colCounter">
+                <td>${colData}</td>
+            </c:forEach>
+        </tr>
+    </c:forEach>
+</table>
 
 </cti:standardPage>
