@@ -270,6 +270,12 @@ ALTER TABLE Zone
 GO
 /* End YUK-9084 */
 
+/* Start YUK-9114 */
+UPDATE YukonPAObject
+SET PAOClass = 'Voltage Regulator'
+WHERE Type = 'Load Tap Changer';
+/* End YUK-9114 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
