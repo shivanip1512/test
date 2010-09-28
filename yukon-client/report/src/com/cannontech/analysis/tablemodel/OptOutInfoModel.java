@@ -16,11 +16,9 @@ import org.joda.time.Interval;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
-import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
 import com.cannontech.stars.dr.controlhistory.service.LmControlHistoryUtilService;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.service.OptOutService;
@@ -41,9 +39,6 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
 
     private double oneHour = Duration.standardHours(1).getMillis();
     
-    
-    private ApplianceAndProgramDao applianceAndProgramDao = 
-        (ApplianceAndProgramDao) YukonSpringHook.getBean("applianceAndProgramDao", ApplianceAndProgramDao.class);
     private CustomerAccountDao customerAccountDao = 
         (CustomerAccountDao) YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
     private LmControlHistoryUtilService lmControlHistoryUtilService =
@@ -146,8 +141,6 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
                 List<Integer> reportableLoadGroupIds = getReportableLoadGroupIdsFromOverrideHistory(overrideHistory);
                 
                 for (Integer loadGroupId : reportableLoadGroupIds) {
-    
-                    
                     
                     // Cache the control history for this group.
                     StarsLMControlHistory allControlEventsForAGroup = starsControlHistoryCache.get(loadGroupId);
@@ -163,10 +156,10 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
 
                     for (ControlHistory controlHistory : allControlEventsForAGroup.getControlHistory()) {
                         List<Interval> enrolledControlHistoryList = 
-                            lmControlHistoryUtilService.controlHistoryEnrollmentIntervals(controlHistory, 
-                                                                                          account.getAccountId(), 
-                                                                                          overrideHistory.getInventoryId(), 
-                                                                                          loadGroupId);
+                            lmControlHistoryUtilService.getControHistoryEnrollmentIntervals(controlHistory, 
+                                                                                            account.getAccountId(), 
+                                                                                            overrideHistory.getInventoryId(), 
+                                                                                            loadGroupId);
                         
                         for (Interval enrollmentControlHistory : enrolledControlHistoryList) {
                             if (enrollmentControlHistory.overlaps(overrideHistory.getInterval())) {
@@ -210,7 +203,7 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
 
     /**
      * This method goes through and removes any program that is not in the override history list.  
-     * This will help us to cut down the amount of control history data we need to generate the report.
+     * This will help us to cut down the amount of control history data we need to generate this report.
      */
     private void removeNonReportableOverrideHistoryEntries(List<Program> userSuppliedReportablePrograms,
                                                            List<OverrideHistory> overrideHistoryList) {
@@ -233,6 +226,10 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
         overrideHistoryList.removeAll(removableOverrideHistory);
     }
 
+    /**
+     * This method takes in a string of accountNumbers and a list of programIds and returns a 
+     * list of customerAccountWithNames.  If account numbers are supplied programIds will be ignored.
+     */
     public List<CustomerAccountWithNames> 
                 getCustomerAccountWithNamesFromAccountNumbers(String accountNumbersStr,
                                                               Set<Integer> programIds,
@@ -251,7 +248,7 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
                                                                            energyCompanyId);
                     accounts.add(customerAccountWithNames);
 
-                // No results from the given accountNumber.  
+                // No results from the given accountNumber. Ignore this supplied account number. 
                 } catch(NotFoundException e) {}
             }
             
@@ -285,7 +282,7 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
             row.totalOverrideHours = overrideDuration.getMillis()/oneHour;
             row.countedTowardOptOutLimit = overrideHistory.isCountedAgainstLimit();
 
-            String programNames = getProgramNames(loadGroupId);
+            String programNames = programDao.getProgramNames(loadGroupId);
             row.enrolledProgram = programNames;
             
             Duration actualControlDuration = 
@@ -307,40 +304,5 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
         }
         
         return overlappingInterval.toDuration();
-    }
-
-    /**
-     * @param loadGroupId
-     * @param row
-     */
-    private String getProgramNames(int loadGroupId) {
-        String programNamesStr = "";
-        
-        List<ProgramLoadGroup> programsByLMGroupId = 
-            applianceAndProgramDao.getProgramsByLMGroupId(loadGroupId);
-        
-        List<String> enrolledProgramNames =
-            Lists.transform(programsByLMGroupId, new Function<ProgramLoadGroup, String>() {
-   
-                @Override
-                public String apply(ProgramLoadGroup programLoadGroup) {
-                    return programLoadGroup.getProgramName();
-                }
-            });
-        
-        if (enrolledProgramNames != null && enrolledProgramNames.size() > 0) {
-            
-            programNamesStr = enrolledProgramNames.get(0);
-            for (int i = 1; i < enrolledProgramNames.size(); i++) {
-                if (enrolledProgramNames.size() - 1 < i) {
-                    programNamesStr += ", ";
-                }
-                
-                String programName = enrolledProgramNames.get(i);
-                programNamesStr += programName;
-            }
-        }
-        
-        return programNamesStr;
     }
 }

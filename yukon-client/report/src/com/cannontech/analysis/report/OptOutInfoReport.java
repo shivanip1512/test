@@ -3,20 +3,14 @@ package com.cannontech.analysis.report;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jfree.report.JFreeReportBoot;
-
-import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.OptOutInfoModel;
 import com.cannontech.spring.YukonSpringHook;
 
 public class OptOutInfoReport extends SingleGroupYukonReportBase {
     
-    OptOutInfoModel optOutInfoModel;
-    
     public OptOutInfoReport(BareReportModel bareModel) {
         super(bareModel);
-        this.optOutInfoModel = (OptOutInfoModel)bareModel;
     }
     
     public OptOutInfoReport() {
@@ -46,23 +40,5 @@ public class OptOutInfoReport extends SingleGroupYukonReportBase {
     protected List<ColumnLayoutData> getBodyColumns() {
         return Arrays.asList(bodyColumns);
     }
-
-    /**
-     * Runs this report and shows a preview dialog.
-     * @param args the arguments (ignored).
-     * @throws Exception if an error occurs (default: print a stack trace)
-     */
-    public static void main(final String[] args) throws Exception {
-        // initialize JFreeReport
-        JFreeReportBoot.getInstance().start();
-        javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
-        YukonSpringHook.setDefaultContext(YukonSpringHook.WEB_BEAN_FACTORY_KEY);
-        
-        OptOutInfoModel model = new OptOutInfoModel();
-        model.setEnergyCompanyId(0);
-        YukonReportBase rmReport = new LMControlDetailReport(model);
-        ReportFuncs.generatePreview(rmReport);
-    }
-
 
 }

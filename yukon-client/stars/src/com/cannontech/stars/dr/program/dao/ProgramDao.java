@@ -57,4 +57,11 @@ public interface ProgramDao {
     
     public List<Integer> getGroupIdsByProgramId(int programId);
     
+    /**
+     * This method returns a string representation of all the programs that are attached to a 
+     * given load group.  This string represented list is delimited by commas. 
+     * 
+     */
+    public String getProgramNames(int loadGroupId);
+    
 }

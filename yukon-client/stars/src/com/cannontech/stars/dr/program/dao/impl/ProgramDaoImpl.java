@@ -21,16 +21,22 @@ import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
+import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.dao.ProgramRowMapper;
 import com.cannontech.stars.dr.program.model.Program;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 public class ProgramDaoImpl implements ProgramDao {
     private static final String selectSql;
     private final ParameterizedRowMapper<Integer> groupIdRowMapper = createGroupIdRowMapper();
     private final ParameterizedRowMapper<Integer> programIdRowMapper = createProgramIdRowMapper();
+
+    private ApplianceAndProgramDao applianceAndProgramDao;
     private YukonJdbcTemplate yukonJdbcTemplate;
 
     private final String selectSQLHeader =
@@ -267,6 +273,38 @@ public class ProgramDaoImpl implements ProgramDao {
         return groupIdList;
     }
     
+    @Override
+    public String getProgramNames(int loadGroupId) {
+        String programNamesStr = "";
+        
+        List<ProgramLoadGroup> programsByLMGroupId = 
+            applianceAndProgramDao.getProgramsByLMGroupId(loadGroupId);
+        
+        List<String> enrolledProgramNames =
+            Lists.transform(programsByLMGroupId, new Function<ProgramLoadGroup, String>() {
+   
+                @Override
+                public String apply(ProgramLoadGroup programLoadGroup) {
+                    return programLoadGroup.getProgramName();
+                }
+            });
+        
+        if (enrolledProgramNames != null && enrolledProgramNames.size() > 0) {
+            
+            programNamesStr = enrolledProgramNames.get(0);
+            for (int i = 1; i < enrolledProgramNames.size(); i++) {
+                if (enrolledProgramNames.size() - 1 < i) {
+                    programNamesStr += ", ";
+                }
+                
+                String programName = enrolledProgramNames.get(i);
+                programNamesStr += programName;
+            }
+        }
+        
+        return programNamesStr;
+    }
+    
     private ParameterizedRowMapper<Integer> createGroupIdRowMapper() {
         final ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
             @Override
@@ -287,6 +325,12 @@ public class ProgramDaoImpl implements ProgramDao {
             }
         };
         return mapper;
+    }
+
+    // DI Setters
+    @Autowired
+    public void setApplianceAndProgramDao(ApplianceAndProgramDao applianceAndProgramDao) {
+        this.applianceAndProgramDao = applianceAndProgramDao;
     }
     
     @Autowired
