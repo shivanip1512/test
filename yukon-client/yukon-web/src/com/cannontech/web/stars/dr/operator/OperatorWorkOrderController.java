@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.dr.operator;
 
-import java.beans.PropertyEditor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -9,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jfree.report.JFreeReport;
 import org.jfree.report.function.FunctionInitializeException;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -32,7 +30,6 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -46,6 +43,7 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
+import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
@@ -112,6 +110,11 @@ public class OperatorWorkOrderController {
         }
         modelMap.addAttribute("workOrderDto", workOrderDto);
 
+        boolean showWorkOrderNumberField = 
+            !rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_ORDER_NUMBER_AUTO_GEN,
+                                                    userContext.getYukonUser());
+        modelMap.addAttribute("showWorkOrderNumberField", showWorkOrderNumberField);
+        
         return "operator/workOrder/viewWorkOrder.jsp";
     }
     
@@ -245,9 +248,7 @@ public class OperatorWorkOrderController {
             binder.setMessageCodesResolver(msgCodesResolver);
         }
         
-        PropertyEditor instantEditor = 
-            datePropertyEditorFactory.getInstantPropertyEditor(DateFormatEnum.DATEHM, userContext);
-        binder.registerCustomEditor(Instant.class, instantEditor);
+        datePropertyEditorFactory.setupInstantPropertyEditor(binder, userContext, BlankMode.CURRENT);
     }
     
     @Autowired

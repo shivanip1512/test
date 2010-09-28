@@ -1227,19 +1227,19 @@
                                     </page>
                                 </pages>
                             </page>
-                            <page name="workOrderList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="workOrder.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
                                 <menu>account|accounts</menu>
                                 <link>/spring/stars/operator/workOrder/workOrderList?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                             <pages>
-                            <page name="viewWorkOrder.EDIT" type="DETAIL">
+                            <page name="workOrder.EDIT" type="DETAIL">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
                                 <menu>account|accounts</menu>
                                 <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>
                                 <labelArgument>${workOrderNumber}</labelArgument>
                             </page>
-                            <page name="viewWorkOrder.CREATE" type="DETAIL">
+                            <page name="workOrder.CREATE" type="DETAIL">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
                                 <menu>account|accounts</menu>
                                 <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>

@@ -81,14 +81,30 @@ public class DatePropertyEditorFactory {
     private class InstantPropertyEditor extends PropertyEditorSupport {
         private DateFormatEnum dateFormat;
         private YukonUserContext userContext;
+        private BlankMode blankMode;
 
-        private InstantPropertyEditor(DateFormatEnum dateFormat,
-                                       YukonUserContext userContext) {
+        private InstantPropertyEditor(DateFormatEnum dateFormat, YukonUserContext userContext,
+                                      BlankMode blankMode) {
             this.dateFormat = dateFormat;
             this.userContext = userContext;
+            this.blankMode = blankMode;
         }
 
         public void setAsText(String dateStr) throws IllegalArgumentException {
+            if (StringUtils.isBlank(dateStr)) {
+                switch (blankMode) {
+                case CURRENT:
+                    setValue(new Instant());
+                    break;
+                case ERROR:
+                    throw new IllegalArgumentException("Could not parse blank time");
+                case NULL:
+                    setValue(null);
+                    break;
+                }
+                return;
+            }
+
             try {
                 Date date = dateFormattingService.flexibleDateParser(dateStr,
                                                                      userContext);
@@ -155,8 +171,8 @@ public class DatePropertyEditorFactory {
         private YukonUserContext userContext;
         private BlankMode blankMode;
         
-        private LocalDatePropertyEditor(DateFormatEnum dateFormat,
-                                         YukonUserContext userContext, BlankMode blankMode) {
+        private LocalDatePropertyEditor(DateFormatEnum dateFormat, YukonUserContext userContext, 
+                                        BlankMode blankMode) {
             this.dateFormat = dateFormat;
             this.userContext = userContext;
             this.blankMode = blankMode;
@@ -214,32 +230,39 @@ public class DatePropertyEditorFactory {
         return new LocalTimePropertyEditor(dateFormat, userContext, blankMode);
     }
     
-        public PropertyEditor getLocalDatePropertyEditor(DateFormatEnum dateFormat,
+    public PropertyEditor getLocalDatePropertyEditor(DateFormatEnum dateFormat,
                                                       YukonUserContext userContext) {
         return new LocalDatePropertyEditor(dateFormat, userContext, BlankMode.NULL);
     }
+
+    public PropertyEditor getInstantPropertyEditor(DateFormatEnum dateFormat, YukonUserContext userContext,
+                                                   BlankMode blankMode) {
+      return new InstantPropertyEditor(dateFormat, userContext, blankMode);
+   }
     
-    public PropertyEditor getLocalDatePropertyEditor(DateFormatEnum dateFormat,
-            YukonUserContext userContext, BlankMode blankMode) {
+    public PropertyEditor getLocalDatePropertyEditor(DateFormatEnum dateFormat, YukonUserContext userContext, 
+                                                     BlankMode blankMode) {
         return new LocalDatePropertyEditor(dateFormat, userContext, blankMode);
     }
     
-    public void setupLocalDatePropertyEditor(DataBinder dataBinder, 
-            YukonUserContext userContext, BlankMode blankMode) {
+    public void setupLocalDatePropertyEditor(DataBinder dataBinder, YukonUserContext userContext, 
+                                             BlankMode blankMode) {
         PropertyEditor propertyEditor = getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext, blankMode);
         dataBinder.registerCustomEditor(LocalDate.class, propertyEditor);
     }
     
-    public void setupLocalTimePropertyEditor(DataBinder dataBinder,
-            YukonUserContext userContext, BlankMode blankMode) {
+    public void setupLocalTimePropertyEditor(DataBinder dataBinder, YukonUserContext userContext, 
+                                             BlankMode blankMode) {
         PropertyEditor propertyEditor = getLocalTimePropertyEditor(DateFormatEnum.TIME, userContext, blankMode);
         dataBinder.registerCustomEditor(LocalTime.class, propertyEditor);
     }
-    
-    public PropertyEditor getInstantPropertyEditor(DateFormatEnum dateFormat,
-                                                    YukonUserContext userContext) {
-       return new InstantPropertyEditor(dateFormat, userContext);
+
+    public void setupInstantPropertyEditor(DataBinder dataBinder, YukonUserContext userContext, 
+                                           BlankMode blankMode) {
+        PropertyEditor propertyEditor = getInstantPropertyEditor(DateFormatEnum.DATEHM, userContext, blankMode);
+        dataBinder.registerCustomEditor(Instant.class, propertyEditor);
     }
+
     @Autowired
     public void setDateFormattingService(DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;

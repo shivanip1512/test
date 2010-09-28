@@ -6,7 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 
-<cti:standardPage module="operator" page="viewWorkOrder.${mode}">
+<cti:standardPage module="operator" page="workOrder.${mode}">
 <tags:setFormEditMode mode="${mode}"/>
 
     <script type="text/javascript">
@@ -60,11 +60,11 @@
                     <tags:nameValueContainer2>
                         
                         <cti:displayForPageEditModes modes="CREATE">
-                            <cti:checkRolesAndProperties value="!OPERATOR_ORDER_NUMBER_AUTO_GEN">
+                            <c:if test="${showWorkOrderNumberField}">
                                 <tags:nameValue2 nameKey=".workOrderNumber">
                                     <tags:input path="workOrderBase.orderNumber"/>
                                 </tags:nameValue2>
-                            </cti:checkRolesAndProperties>
+                            </c:if>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="EDIT">
                             <form:hidden path="workOrderBase.orderNumber"/>

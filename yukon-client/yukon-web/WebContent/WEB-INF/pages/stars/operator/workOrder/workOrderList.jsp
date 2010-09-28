@@ -9,7 +9,7 @@
 <cti:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
 <cti:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
     
-<cti:standardPage module="operator" page="workOrderList">
+<cti:standardPage module="operator" page="workOrder.list">
 <tags:setFormEditMode mode="${mode}"/>
 
     <cti:includeCss link="/WebConfig/yukon/styles/operator/callTracking.css"/>
@@ -22,13 +22,13 @@
     <table class="compactResultsTable callListTable rowHighlighting">
     
         <tr>
-            <th><i:inline key=".header.workOrderNumber"/></th>
+            <th><i:inline key=".workOrderNumber"/></th>
             <th><i:inline key=".header.eventDate"/></th>
-            <th><i:inline key=".header.type"/></th>
-            <th><i:inline key=".header.state"/></th>
-            <th><i:inline key=".header.orderedBy"/></th>
+            <th><i:inline key=".serviceType"/></th>
+            <th><i:inline key=".currentState"/></th>
+            <th><i:inline key=".orderedBy"/></th>
             <th><i:inline key=".header.assigned"/></th>
-            <th class="description"><i:inline key=".header.description"/></th>
+            <th class="description"><i:inline key=".description"/></th>
             
             <%-- delete header --%>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
