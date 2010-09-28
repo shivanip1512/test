@@ -215,6 +215,69 @@ WHERE InfoKey = 'ip port'
 DROP TABLE RDSTransmitter 
 /* End YUK-9063 */
 
+/* Start YUK-9084 */
+CREATE TABLE CapBankToZoneMapping (
+   DeviceId             NUMERIC              NOT NULL,
+   ZoneId               NUMERIC              NOT NULL,
+   CONSTRAINT PK_CapBankZoneMap PRIMARY KEY (DeviceId)
+);
+
+CREATE TABLE PointToZoneMapping (
+   PointId              NUMERIC              NOT NULL,
+   ZoneId               NUMERIC              NOT NULL,
+   CONSTRAINT PK_PointZoneMap PRIMARY KEY (PointId)
+);
+
+CREATE TABLE Zone (
+   ZoneId               NUMERIC              NOT NULL,
+   ZoneName             VARCHAR(255)         NOT NULL,
+   RegulatorId          NUMERIC              NOT NULL,
+   SubstationBusId      NUMERIC              NOT NULL,
+   ParentId             NUMERIC              NULL,
+   CONSTRAINT PK_Zone PRIMARY KEY (ZoneId)
+);
+GO
+
+CREATE UNIQUE INDEX Indx_Zone_RegId_UNQ ON Zone (
+    RegulatorId ASC
+);
+GO
+
+ALTER TABLE CapBankToZoneMapping
+    ADD CONSTRAINT FK_CapBankZoneMap_CapBank FOREIGN KEY (DeviceId)
+        REFERENCES CAPBANK (DEVICEID)
+            ON DELETE CASCADE;
+
+ALTER TABLE CapBankToZoneMapping
+    ADD CONSTRAINT FK_CapBankZoneMap_Zone FOREIGN KEY (ZoneId)
+        REFERENCES Zone (ZoneId)
+            ON DELETE CASCADE;
+
+ALTER TABLE PointToZoneMapping
+    ADD CONSTRAINT FK_PointZoneMap_Point FOREIGN KEY (PointId)
+        REFERENCES POINT (POINTID)
+            ON DELETE CASCADE;
+
+ALTER TABLE PointToZoneMapping
+    ADD CONSTRAINT FK_PointZoneMap_Zone FOREIGN KEY (ZoneId)
+        REFERENCES Zone (ZoneId)
+            ON DELETE CASCADE;
+
+ALTER TABLE Zone
+    ADD CONSTRAINT FK_ZONE_CapContSubBus FOREIGN KEY (SubstationBusId)
+        REFERENCES CAPCONTROLSUBSTATIONBUS (SubstationBusID)
+            ON DELETE CASCADE;
+
+ALTER TABLE Zone
+    ADD CONSTRAINT FK_Zone_PAO FOREIGN KEY (RegulatorId)
+        REFERENCES YukonPAObject (PAObjectID);
+
+ALTER TABLE Zone
+    ADD CONSTRAINT FK_Zone_Zone FOREIGN KEY (ParentId)
+        REFERENCES Zone (ZoneId);
+GO
+/* End YUK-9084 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

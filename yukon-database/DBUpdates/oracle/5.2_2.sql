@@ -209,6 +209,67 @@ WHERE InfoKey = 'ip port'
 DROP TABLE RDSTransmitter 
 /* End YUK-9063 */
 
+/* Start YUK-9084 */
+CREATE TABLE CapBankToZoneMapping  (
+   DeviceId             NUMBER                          NOT NULL,
+   ZoneId               NUMBER                          NOT NULL,
+   CONSTRAINT PK_CapBankZoneMap PRIMARY KEY (DeviceId)
+);
+
+CREATE TABLE PointToZoneMapping  (
+   PointId              NUMBER                          NOT NULL,
+   ZoneId               NUMBER                          NOT NULL,
+   CONSTRAINT PK_PointZoneMap PRIMARY KEY (PointId)
+);
+
+CREATE TABLE Zone  (
+   ZoneId               NUMBER                          NOT NULL,
+   ZoneName             VARCHAR2(255)                   NOT NULL,
+   RegulatorId          NUMBER                          NOT NULL,
+   SubstationBusId      NUMBER                          NOT NULL,
+   ParentId             NUMBER,
+   CONSTRAINT PK_Zone PRIMARY KEY (ZoneId)
+);
+
+CREATE UNIQUE INDEX Indx_Zone_RegId_UNQ ON Zone (
+   RegulatorId ASC
+);
+
+ALTER TABLE CapBankToZoneMapping
+    ADD CONSTRAINT FK_CapBankZoneMap_CapBank FOREIGN KEY (DeviceId)
+        REFERENCES CAPBANK (DEVICEID)
+            ON DELETE CASCADE;
+
+ALTER TABLE CapBankToZoneMapping
+    ADD CONSTRAINT FK_CapBankZoneMap_Zone FOREIGN KEY (ZoneId)
+        REFERENCES Zone (ZoneId)
+            ON DELETE CASCADE;
+
+ALTER TABLE PointToZoneMapping
+    ADD CONSTRAINT FK_PointZoneMap_Point FOREIGN KEY (PointId)
+        REFERENCES POINT (POINTID)
+            ON DELETE CASCADE;
+
+ALTER TABLE PointToZoneMapping
+    ADD CONSTRAINT FK_PointZoneMap_Zone FOREIGN KEY (ZoneId)
+        REFERENCES Zone (ZoneId)
+            ON DELETE CASCADE;
+
+ALTER TABLE Zone
+    ADD CONSTRAINT FK_ZONE_CapContSubBus FOREIGN KEY (SubstationBusId)
+        REFERENCES CAPCONTROLSUBSTATIONBUS (SubstationBusID)
+            ON DELETE CASCADE;
+
+ALTER TABLE Zone
+    ADD CONSTRAINT FK_Zone_PAO FOREIGN KEY (RegulatorId)
+        REFERENCES YukonPAObject (PAObjectID);
+
+ALTER TABLE Zone
+    ADD CONSTRAINT FK_Zone_Zone FOREIGN KEY (ParentId)
+        REFERENCES Zone (ZoneId);
+GO
+/* End YUK-9084 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

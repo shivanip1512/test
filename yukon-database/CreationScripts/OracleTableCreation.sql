@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/26/2010 2:35:47 AM                         */
+/* Created on:     9/28/2010 11:12:06 AM                        */
 /*==============================================================*/
 
 
@@ -275,6 +275,8 @@ drop index Indx_YSL_ListName_ECId_UNQ;
 
 drop index Indx_YkUsIDNm;
 
+drop index Indx_Zone_RegId_UNQ;
+
 drop table AccountSite cascade constraints;
 
 drop table AcctThermostatSchedule cascade constraints;
@@ -406,6 +408,8 @@ drop table CTIDatabase cascade constraints;
 drop table CalcPointBaseline cascade constraints;
 
 drop table CallReportBase cascade constraints;
+
+drop table CapBankToZoneMapping cascade constraints;
 
 drop table CapControlFeeder cascade constraints;
 
@@ -877,6 +881,8 @@ drop table PersistedSystemValue cascade constraints;
 
 drop table PointAlarming cascade constraints;
 
+drop table PointToZoneMapping cascade constraints;
+
 drop table PortTiming cascade constraints;
 
 drop table PurchasePlan cascade constraints;
@@ -994,6 +1000,8 @@ drop table YukonUserGroup cascade constraints;
 drop table YukonUserRole cascade constraints;
 
 drop table YukonWebConfiguration cascade constraints;
+
+drop table Zone cascade constraints;
 
 /*==============================================================*/
 /* Table: AccountSite                                           */
@@ -2143,6 +2151,15 @@ create table CallReportBase  (
    Description          VARCHAR2(300),
    AccountID            NUMBER,
    constraint PK_CALLREPORTBASE primary key (CallID)
+);
+
+/*==============================================================*/
+/* Table: CapBankToZoneMapping                                  */
+/*==============================================================*/
+create table CapBankToZoneMapping  (
+   DeviceId             NUMBER                          not null,
+   ZoneId               NUMBER                          not null,
+   constraint PK_CapBankZoneMap primary key (DeviceId)
 );
 
 /*==============================================================*/
@@ -7336,6 +7353,15 @@ SELECT PointId, '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNN
 FROM Point;
 
 /*==============================================================*/
+/* Table: PointToZoneMapping                                    */
+/*==============================================================*/
+create table PointToZoneMapping  (
+   PointId              NUMBER                          not null,
+   ZoneId               NUMBER                          not null,
+   constraint PK_PointZoneMap primary key (PointId)
+);
+
+/*==============================================================*/
 /* Table: PortTiming                                            */
 /*==============================================================*/
 create table PortTiming  (
@@ -10020,6 +10046,25 @@ INSERT INTO YukonWebConfiguration VALUES (-2,'Winter.gif','Default Winter Settin
 insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 
 /*==============================================================*/
+/* Table: Zone                                                  */
+/*==============================================================*/
+create table Zone  (
+   ZoneId               NUMBER                          not null,
+   ZoneName             VARCHAR2(255)                   not null,
+   RegulatorId          NUMBER                          not null,
+   SubstationBusId      NUMBER                          not null,
+   ParentId             NUMBER,
+   constraint PK_Zone primary key (ZoneId)
+);
+
+/*==============================================================*/
+/* Index: Indx_Zone_RegId_UNQ                                   */
+/*==============================================================*/
+create unique index Indx_Zone_RegId_UNQ on Zone (
+   RegulatorId ASC
+);
+
+/*==============================================================*/
 /* View: CBCConfiguration2_View                                 */
 /*==============================================================*/
 create or replace view CBCConfiguration2_View as
@@ -10950,6 +10995,16 @@ alter table CallReportBase
 alter table CallReportBase
    add constraint FK_CstELs_ClRB foreign key (CallTypeID)
       references YukonListEntry (EntryID);
+
+alter table CapBankToZoneMapping
+   add constraint FK_CapBankZoneMap_CapBank foreign key (DeviceId)
+      references CAPBANK (DEVICEID)
+      on delete cascade;
+
+alter table CapBankToZoneMapping
+   add constraint FK_CapBankZoneMap_Zone foreign key (ZoneId)
+      references Zone (ZoneId)
+      on delete cascade;
 
 alter table CapControlFeeder
    add constraint FK_CAPCONTR_VARPTID foreign key (CurrentVarLoadPointID)
@@ -12332,6 +12387,16 @@ alter table PointAlarming
    add constraint FK_POINTALARMING foreign key (NotificationGroupID)
       references NotificationGroup (NotificationGroupID);
 
+alter table PointToZoneMapping
+   add constraint FK_PointZoneMap_Point foreign key (PointId)
+      references POINT (POINTID)
+      on delete cascade;
+
+alter table PointToZoneMapping
+   add constraint FK_PointZoneMap_Zone foreign key (ZoneId)
+      references Zone (ZoneId)
+      on delete cascade;
+
 alter table PortTiming
    add constraint SYS_C0013163 foreign key (PORTID)
       references CommPort (PORTID);
@@ -12588,4 +12653,17 @@ alter table YukonUserRole
 alter table YukonUserRole
    add constraint FK_YkUsRlr_YkUsr foreign key (UserID)
       references YukonUser (UserID);
+
+alter table Zone
+   add constraint FK_ZONE_CapContSubBus foreign key (SubstationBusId)
+      references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
+      on delete cascade;
+
+alter table Zone
+   add constraint FK_Zone_PAO foreign key (RegulatorId)
+      references YukonPAObject (PAObjectID);
+
+alter table Zone
+   add constraint FK_Zone_Zone foreign key (ParentId)
+      references Zone (ZoneId);
 

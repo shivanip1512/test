@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/26/2010 2:34:32 AM                         */
+/* Created on:     9/28/2010 11:11:13 AM                        */
 /*==============================================================*/
 
 
@@ -1149,6 +1149,15 @@ if exists (select 1
 go
 
 if exists (select 1
+            from  sysindexes
+           where  id    = object_id('Zone')
+            and   name  = 'Indx_Zone_RegId_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index Zone.Indx_Zone_RegId_UNQ
+go
+
+if exists (select 1
             from  sysobjects
            where  id = object_id('AccountSite')
             and   type = 'U')
@@ -1608,6 +1617,13 @@ if exists (select 1
            where  id = object_id('CallReportBase')
             and   type = 'U')
    drop table CallReportBase
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CapBankToZoneMapping')
+            and   type = 'U')
+   drop table CapBankToZoneMapping
 go
 
 if exists (select 1
@@ -3257,6 +3273,13 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('PointToZoneMapping')
+            and   type = 'U')
+   drop table PointToZoneMapping
+go
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('PortTiming')
             and   type = 'U')
    drop table PortTiming
@@ -3666,6 +3689,13 @@ if exists (select 1
            where  id = object_id('YukonWebConfiguration')
             and   type = 'U')
    drop table YukonWebConfiguration
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('Zone')
+            and   type = 'U')
+   drop table Zone
 go
 
 /*==============================================================*/
@@ -4905,6 +4935,16 @@ create table CallReportBase (
    Description          varchar(300)         null,
    AccountID            numeric              null,
    constraint PK_CALLREPORTBASE primary key (CallID)
+)
+go
+
+/*==============================================================*/
+/* Table: CapBankToZoneMapping                                  */
+/*==============================================================*/
+create table CapBankToZoneMapping (
+   DeviceId             numeric              not null,
+   ZoneId               numeric              not null,
+   constraint PK_CapBankZoneMap primary key (DeviceId)
 )
 go
 
@@ -10400,6 +10440,16 @@ SELECT PointId, '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNN
 FROM Point;
 
 /*==============================================================*/
+/* Table: PointToZoneMapping                                    */
+/*==============================================================*/
+create table PointToZoneMapping (
+   PointId              numeric              not null,
+   ZoneId               numeric              not null,
+   constraint PK_PointZoneMap primary key (PointId)
+)
+go
+
+/*==============================================================*/
 /* Table: PortTiming                                            */
 /*==============================================================*/
 create table PortTiming (
@@ -13166,6 +13216,27 @@ INSERT INTO YukonWebConfiguration VALUES (-2,'Winter.gif','Default Winter Settin
 insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 
 /*==============================================================*/
+/* Table: Zone                                                  */
+/*==============================================================*/
+create table Zone (
+   ZoneId               numeric              not null,
+   ZoneName             VARCHAR(255)         not null,
+   RegulatorId          numeric              not null,
+   SubstationBusId      numeric              not null,
+   ParentId             numeric              null,
+   constraint PK_Zone primary key (ZoneId)
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_Zone_RegId_UNQ                                   */
+/*==============================================================*/
+create unique index Indx_Zone_RegId_UNQ on Zone (
+RegulatorId ASC
+)
+go
+
+/*==============================================================*/
 /* View: CBCConfiguration2_View                                 */
 /*==============================================================*/
 go
@@ -14276,6 +14347,18 @@ go
 alter table CallReportBase
    add constraint FK_CstELs_ClRB foreign key (CallTypeID)
       references YukonListEntry (EntryID)
+go
+
+alter table CapBankToZoneMapping
+   add constraint FK_CapBankZoneMap_CapBank foreign key (DeviceId)
+      references CAPBANK (DEVICEID)
+         on delete cascade
+go
+
+alter table CapBankToZoneMapping
+   add constraint FK_CapBankZoneMap_Zone foreign key (ZoneId)
+      references Zone (ZoneId)
+         on delete cascade
 go
 
 alter table CapControlFeeder
@@ -15994,6 +16077,18 @@ alter table PointAlarming
       references NotificationGroup (NotificationGroupID)
 go
 
+alter table PointToZoneMapping
+   add constraint FK_PointZoneMap_Point foreign key (PointId)
+      references POINT (POINTID)
+         on delete cascade
+go
+
+alter table PointToZoneMapping
+   add constraint FK_PointZoneMap_Zone foreign key (ZoneId)
+      references Zone (ZoneId)
+         on delete cascade
+go
+
 alter table PortTiming
    add constraint SYS_C0013163 foreign key (PORTID)
       references CommPort (PORTID)
@@ -16311,5 +16406,21 @@ go
 alter table YukonUserRole
    add constraint FK_YkUsRlr_YkUsr foreign key (UserID)
       references YukonUser (UserID)
+go
+
+alter table Zone
+   add constraint FK_ZONE_CapContSubBus foreign key (SubstationBusId)
+      references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
+         on delete cascade
+go
+
+alter table Zone
+   add constraint FK_Zone_PAO foreign key (RegulatorId)
+      references YukonPAObject (PAObjectID)
+go
+
+alter table Zone
+   add constraint FK_Zone_Zone foreign key (ParentId)
+      references Zone (ZoneId)
 go
 
