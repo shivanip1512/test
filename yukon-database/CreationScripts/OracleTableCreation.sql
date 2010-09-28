@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/28/2010 3:29:30 PM                         */
+/* Created on:     9/28/2010 4:54:10 PM                         */
 /*==============================================================*/
 
 
@@ -9463,7 +9463,7 @@ INSERT INTO YukonRoleProperty VALUES(-10401,-104,'baseline_calctime','4','<descr
 INSERT INTO YukonRoleProperty VALUES(-10402,-104,'daysprevioustocollect','30','<description>');
 
 /* Web Graph Role Properties */
-INSERT INTO YukonRoleProperty VALUES(-10500,-105,'home_directory','c:yukonclientwebgraphs','<description>');
+INSERT INTO YukonRoleProperty VALUES(-10500,-105,'home_directory','c:\yukon\client\webgraphs\','Directory to write generated web graphs to.');
 INSERT INTO YukonRoleProperty VALUES(-10501,-105,'run_interval','900','<description>');
 INSERT INTO YukonRoleProperty VALUES(-10600,-106,'Dynamic Billing File Setup','true','Controls access to create, edit, and delete dynamic billing files.'); 
 

@@ -281,6 +281,13 @@ INSERT INTO YukonRoleProperty VALUES(-20166,-201,'Survey Edit','true','Enables e
 INSERT INTO YukonRoleProperty VALUES(-20167,-201,'Opt Out Survey Edit','true','Enabled editing of opt out surveys.'); 
 /* End YUK-9085 */
 
+/* Start YUK-9090 */
+UPDATE YukonRoleProperty
+SET DefaultValue = 'c:\yukon\client\webgraphs\',
+    Description = 'Directory to write generated web graphs to.'
+WHERE RolePropertyId = -10500;
+/* End YUK-9090 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
