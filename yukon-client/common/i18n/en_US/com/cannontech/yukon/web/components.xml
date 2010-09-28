@@ -17,6 +17,7 @@
     <entry key="yukon.web.components.controlHistorySummary.month">Month</entry>
     <entry key="yukon.web.components.controlHistorySummary.year">Year</entry>
 	<entry key="yukon.web.components.controlHistorySummary.details">details</entry>
+    <entry key="yukon.web.components.controlHistorySummary.deviceRemoved">Device Removed</entry>
 
 	<entry key="yukon.web.components.controlHistorySummary.helpInfoTitle">Control History Summary Help</entry>
 	<entry key="yukon.web.components.controlHistorySummary.helpInfoText.programBasedControlHistory">Program Based</entry>
