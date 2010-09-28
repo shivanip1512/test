@@ -29,7 +29,7 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 
 public class DeviceRDSTerminalPanel extends DataInputPanel implements
         CaretListener, ActionListener {
-    private JPanel rdsTransmitterPanel = null;
+
     private JPanel staticPaoInfoPanel = null;
     private JLabel siteAddressLabel = null;
     private JTextField siteAddress = null;
@@ -68,97 +68,6 @@ public class DeviceRDSTerminalPanel extends DataInputPanel implements
         }
     }
 
-    private JPanel getRdsTransmitterPanel() {
-        if (rdsTransmitterPanel == null) {
-            try {
-                rdsTransmitterPanel = new JPanel();
-                rdsTransmitterPanel.setName("RDS Transmitter Panel");
-                rdsTransmitterPanel.setLayout(new GridBagLayout());
-
-                TitleBorder titleBorder = new TitleBorder();
-                titleBorder.setTitleFont(new Font("Arial", 1, 12));
-                titleBorder.setTitle("RDS Transmitter");
-                rdsTransmitterPanel.setBorder(titleBorder);
-
-                GridBagConstraints constraints = new GridBagConstraints();
-                constraints.gridx = 0;
-                constraints.gridy = 0;
-                constraints.fill = GridBagConstraints.HORIZONTAL;
-                constraints.anchor = GridBagConstraints.WEST;
-                rdsTransmitterPanel.add(getSiteAddressLabel(), constraints);
-
-                constraints = new GridBagConstraints();
-                constraints.gridx = 1;
-                constraints.gridy = 0;
-                constraints.fill = GridBagConstraints.HORIZONTAL;
-                constraints.anchor = GridBagConstraints.WEST;
-                constraints.insets = new Insets(5, 8, 5, 0);
-                constraints.weightx = 1.0;
-                rdsTransmitterPanel.add(getSiteAddress(), constraints);
-
-                constraints = new GridBagConstraints();
-                constraints.gridx = 0;
-                constraints.gridy = 1;
-                constraints.fill = GridBagConstraints.HORIZONTAL;
-                constraints.anchor = GridBagConstraints.WEST;
-                rdsTransmitterPanel.add(getEncoderAddressLabel(), constraints);
-
-                constraints = new GridBagConstraints();
-                constraints.gridx = 1;
-                constraints.gridy = 1;
-                constraints.fill = GridBagConstraints.HORIZONTAL;
-                constraints.anchor = GridBagConstraints.WEST;
-                constraints.insets = new Insets(5, 8, 5, 0);
-                constraints.weightx = 1.0;
-                rdsTransmitterPanel.add(getEncoderAddress(), constraints);
-
-                constraints = new GridBagConstraints();
-                constraints.gridx = 0;
-                constraints.gridy = 2;
-                constraints.fill = GridBagConstraints.HORIZONTAL;
-                constraints.anchor = GridBagConstraints.WEST;
-                rdsTransmitterPanel.add(getTransmitSpeedLabel(), constraints);
-
-                constraints = new GridBagConstraints();
-                constraints.gridx = 1;
-                constraints.gridy = 2;
-                constraints.fill = GridBagConstraints.HORIZONTAL;
-                constraints.anchor = GridBagConstraints.WEST;
-                constraints.insets = new Insets(5, 8, 5, 0);
-                constraints.weightx = 1.0;
-                rdsTransmitterPanel.add(getTransmitSpeed(), constraints);
-
-                constraints = new GridBagConstraints();
-                constraints.gridx = 0;
-                constraints.gridy = 3;
-                constraints.fill = GridBagConstraints.HORIZONTAL;
-                constraints.anchor = GridBagConstraints.WEST;
-                rdsTransmitterPanel.add(getGroupTypeLabel(), constraints);
-
-                constraints = new GridBagConstraints();
-                constraints.gridx = 1;
-                constraints.gridy = 3;
-                constraints.fill = GridBagConstraints.HORIZONTAL;
-                constraints.anchor = GridBagConstraints.WEST;
-                constraints.insets = new Insets(5, 8, 5, 0);
-                constraints.weightx = 1.0;
-                rdsTransmitterPanel.add(getGroupType(), constraints);
-
-                constraints = new GridBagConstraints();
-                constraints.gridx = 0;
-                constraints.gridy = 4;
-                constraints.gridwidth = 2;
-                constraints.anchor = GridBagConstraints.WEST;
-                constraints.insets = new java.awt.Insets(0, 2, 0, 2);
-                rdsTransmitterPanel.add(getErrorMessageLabel(), constraints);
-
-            } catch (Throwable ivjExc) {
-                handleException(ivjExc);
-            }
-        }
-        return rdsTransmitterPanel;
-    }
-
     private JPanel getStaticPaoInfoPanel() {
         if (staticPaoInfoPanel == null) {
             try {
@@ -176,7 +85,7 @@ public class DeviceRDSTerminalPanel extends DataInputPanel implements
                 constraints.gridy = 0;
                 constraints.fill = GridBagConstraints.HORIZONTAL;
                 constraints.anchor = GridBagConstraints.WEST;
-                staticPaoInfoPanel.add(getPaoInfoIpAddressLabel(), constraints);
+                staticPaoInfoPanel.add(getSiteAddressLabel(), constraints);
 
                 constraints = new GridBagConstraints();
                 constraints.gridx = 1;
@@ -185,14 +94,14 @@ public class DeviceRDSTerminalPanel extends DataInputPanel implements
                 constraints.anchor = GridBagConstraints.WEST;
                 constraints.insets = new Insets(5, 8, 5, 0);
                 constraints.weightx = 1.0;
-                staticPaoInfoPanel.add(getPaoInfoIpAddress(), constraints);
+                staticPaoInfoPanel.add(getSiteAddress(), constraints);
 
                 constraints = new GridBagConstraints();
                 constraints.gridx = 0;
                 constraints.gridy = 1;
                 constraints.fill = GridBagConstraints.HORIZONTAL;
                 constraints.anchor = GridBagConstraints.WEST;
-                staticPaoInfoPanel.add(getPaoInfoIpPortLabel(), constraints);
+                staticPaoInfoPanel.add(getEncoderAddressLabel(), constraints);
 
                 constraints = new GridBagConstraints();
                 constraints.gridx = 1;
@@ -201,8 +110,80 @@ public class DeviceRDSTerminalPanel extends DataInputPanel implements
                 constraints.anchor = GridBagConstraints.WEST;
                 constraints.insets = new Insets(5, 8, 5, 0);
                 constraints.weightx = 1.0;
+                staticPaoInfoPanel.add(getEncoderAddress(), constraints);
+
+                constraints = new GridBagConstraints();
+                constraints.gridx = 0;
+                constraints.gridy = 2;
+                constraints.fill = GridBagConstraints.HORIZONTAL;
+                constraints.anchor = GridBagConstraints.WEST;
+                staticPaoInfoPanel.add(getTransmitSpeedLabel(), constraints);
+
+                constraints = new GridBagConstraints();
+                constraints.gridx = 1;
+                constraints.gridy = 2;
+                constraints.fill = GridBagConstraints.HORIZONTAL;
+                constraints.anchor = GridBagConstraints.WEST;
+                constraints.insets = new Insets(5, 8, 5, 0);
+                constraints.weightx = 1.0;
+                staticPaoInfoPanel.add(getTransmitSpeed(), constraints);
+
+                constraints = new GridBagConstraints();
+                constraints.gridx = 0;
+                constraints.gridy = 3;
+                constraints.fill = GridBagConstraints.HORIZONTAL;
+                constraints.anchor = GridBagConstraints.WEST;
+                staticPaoInfoPanel.add(getGroupTypeLabel(), constraints);
+
+                constraints = new GridBagConstraints();
+                constraints.gridx = 1;
+                constraints.gridy = 3;
+                constraints.fill = GridBagConstraints.HORIZONTAL;
+                constraints.anchor = GridBagConstraints.WEST;
+                constraints.insets = new Insets(5, 8, 5, 0);
+                constraints.weightx = 1.0;
+                staticPaoInfoPanel.add(getGroupType(), constraints);
+
+                
+                constraints = new GridBagConstraints();
+                constraints.gridx = 0;
+                constraints.gridy = 4;
+                constraints.fill = GridBagConstraints.HORIZONTAL;
+                constraints.anchor = GridBagConstraints.WEST;
+                staticPaoInfoPanel.add(getPaoInfoIpAddressLabel(), constraints);
+
+                constraints = new GridBagConstraints();
+                constraints.gridx = 1;
+                constraints.gridy = 4;
+                constraints.fill = GridBagConstraints.HORIZONTAL;
+                constraints.anchor = GridBagConstraints.WEST;
+                constraints.insets = new Insets(5, 8, 5, 0);
+                constraints.weightx = 1.0;
+                staticPaoInfoPanel.add(getPaoInfoIpAddress(), constraints);
+
+                constraints = new GridBagConstraints();
+                constraints.gridx = 0;
+                constraints.gridy = 5;
+                constraints.fill = GridBagConstraints.HORIZONTAL;
+                constraints.anchor = GridBagConstraints.WEST;
+                staticPaoInfoPanel.add(getPaoInfoIpPortLabel(), constraints);
+
+                constraints = new GridBagConstraints();
+                constraints.gridx = 1;
+                constraints.gridy = 5;
+                constraints.fill = GridBagConstraints.HORIZONTAL;
+                constraints.anchor = GridBagConstraints.WEST;
+                constraints.insets = new Insets(5, 8, 5, 0);
+                constraints.weightx = 1.0;
                 staticPaoInfoPanel.add(getPaoInfoIpPort(), constraints);
 
+                constraints = new GridBagConstraints();
+                constraints.gridx = 0;
+                constraints.gridy = 6;
+                constraints.gridwidth = 2;
+                constraints.anchor = GridBagConstraints.WEST;
+                constraints.insets = new java.awt.Insets(0, 2, 0, 2);
+                staticPaoInfoPanel.add(getErrorMessageLabel(), constraints);    
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -468,20 +449,11 @@ public class DeviceRDSTerminalPanel extends DataInputPanel implements
             constraints.anchor = GridBagConstraints.WEST;
             constraints.weightx = 1.0;
             constraints.weighty = 1.0;
-            add(getRdsTransmitterPanel(), constraints);
-
-            constraints = new GridBagConstraints();
-            constraints.gridx = 0;
-            constraints.gridy = 1;
-            constraints.fill = GridBagConstraints.BOTH;
-            constraints.anchor = GridBagConstraints.WEST;
-            constraints.weightx = 1.0;
-            constraints.weighty = 1.0;
             add(getStaticPaoInfoPanel(), constraints);
 
             constraints = new GridBagConstraints();
             constraints.gridx = 0;
-            constraints.gridy = 2;
+            constraints.gridy = 1;
             constraints.anchor = GridBagConstraints.WEST;
             constraints.ipady = -5;
             constraints.insets = new java.awt.Insets(10, 22, 10, 2);
