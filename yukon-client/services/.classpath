@@ -29,6 +29,5 @@
 	<classpathentry kind="lib" path="/third-party/org.springframework.integration.jms-1.0.3.RELEASE.jar" sourcepath="Z:/java/Third-Party Sources/spring-integration-1.0.3-src/org.springframework.integration.jms/src/main/java"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/stars"/>
-	<classpathentry kind="lib" path="/third-party/activemq-all-5.3.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

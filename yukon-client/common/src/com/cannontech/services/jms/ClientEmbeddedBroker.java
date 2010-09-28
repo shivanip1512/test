@@ -46,6 +46,7 @@ public class ClientEmbeddedBroker {
             networkConnector.setDuplex(true);
             networkConnector.setNetworkTTL(3);
             broker.setUseJmx(true);
+            broker.setSchedulerSupport(false);// https://issues.apache.org/activemq/browse/AMQ-2935
             broker.start();
         } catch (Exception e) {
             throw new RuntimeException("Unable to start broker", e);

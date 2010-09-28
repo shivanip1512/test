@@ -42,6 +42,7 @@ public class ServerEmbeddedBroker {
             broker.setBrokerName(name);
             broker.addConnector(listenerString);
             broker.setUseJmx(true);
+            broker.setSchedulerSupport(false);
             broker.start();
         } catch (Exception e) {
             throw new RuntimeException("Unable to start broker", e);
