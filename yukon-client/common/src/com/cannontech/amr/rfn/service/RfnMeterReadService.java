@@ -198,6 +198,7 @@ public class RfnMeterReadService {
             pointData.setValue(value);
             pointData.setTime(readingInstant.toDate());
             pointData.setType(point.getPointType());
+            pointData.setTagsPointMustArchive(true); // temporary solution
             
             LogHelper.debug(log, "Generated PointData: %s", pointData);
             
