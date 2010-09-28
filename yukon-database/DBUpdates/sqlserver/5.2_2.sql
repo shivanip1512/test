@@ -284,6 +284,11 @@ SET PAOClass = 'Voltage Regulator'
 WHERE Type = 'Load Tap Changer';
 /* End YUK-9114 */
 
+/* Start YUK-9085 */
+INSERT INTO YukonRoleProperty VALUES(-20166,-201,'Survey Edit','true','Enables editing of surveys.');
+INSERT INTO YukonRoleProperty VALUES(-20167,-201,'Opt Out Survey Edit','true','Enabled editing of opt out surveys.'); 
+/* End YUK-9085 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
