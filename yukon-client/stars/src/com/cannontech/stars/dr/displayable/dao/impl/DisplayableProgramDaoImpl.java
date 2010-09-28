@@ -9,7 +9,6 @@ import java.util.Set;
 import org.joda.time.Duration;
 import org.springframework.stereotype.Repository;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistoryStatus;
@@ -22,8 +21,10 @@ import com.cannontech.stars.dr.displayable.model.DisplayableControlHistory.Displ
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.base.Function;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 
 @Repository
@@ -89,24 +90,21 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
         return displayableProgram;
     }
     
-    private static Comparator<DisplayableControlHistory> DEVICE_LABLE_COMPARATOR = new Comparator<DisplayableControlHistory>() {
-        public int compare(DisplayableControlHistory o1, DisplayableControlHistory o2) {
-            try {
-                InventoryBase inventory1 = o1.getControlHistory().getInventory();
-                InventoryBase inventory2 = o2.getControlHistory().getInventory();
-
-                if (inventory1 == null && inventory2 == null) return 0;
-                if (inventory1 != null && inventory2 == null) return -1;
-                if (inventory1 == null && inventory2 != null) return 1; 
-                
-                return inventory1.getDeviceLabel().compareToIgnoreCase(inventory2.getDeviceLabel());
-            } catch (Exception e) {
-                CTILogger.error("Something went wrong with sorting, ignoring sorting rules", e);
-                return 0;
+    private static Comparator<DisplayableControlHistory> DEVICE_LABLE_COMPARATOR = 
+        Ordering.from(String.CASE_INSENSITIVE_ORDER).onResultOf(new Function<InventoryBase, String>() {
+            @Override
+            public String apply(InventoryBase from) {
+                return from.getDeviceLabel();
             }
+        })
+        .nullsLast()
+        .onResultOf(new Function<DisplayableControlHistory, InventoryBase> () {
+            @Override
+            public InventoryBase apply(DisplayableControlHistory from) {
+                return from.getControlHistory().getInventory();
+            }
+        });
 
-        }
-    };
     
     private List<DisplayableProgram> getForAccount(int accountId, YukonUserContext userContext, ControlPeriod controlPeriod, boolean applyFilters, boolean past) {
         List<Program> programList = Lists.newArrayList();
