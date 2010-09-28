@@ -411,7 +411,7 @@ public static int differenceMinutes(Date from, Date to) {
             && cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
     }
 
-    public static List<Interval> overlaps(List<Interval> intervalListOne, List<Interval> intervalListTwo) {
+    public static List<Interval> getOverlap(List<Interval> intervalListOne, List<Interval> intervalListTwo) {
         List<Interval> resultList = Lists.newArrayList();
         
         for (Interval intervalOne : intervalListOne) {
