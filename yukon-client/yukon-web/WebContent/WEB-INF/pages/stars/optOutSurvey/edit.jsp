@@ -60,9 +60,8 @@ submitForm = function() {
     </tags:nameValueContainer2>
 
     <div class="actionArea">
-        <input type="submit" value="<cti:msg2 key=".ok"/>"/>
-        <input type="button" value="<cti:msg2 key=".cancel"/>"
-            onclick="parent.$('ajaxDialog').hide()"/>
+        <tags:button nameKey="ok" type="submit"/>
+        <tags:button nameKey="cancel" onclick="parent.$('ajaxDialog').hide()"/>
     </div>
 </form:form>
 

@@ -1,5 +1,6 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="modules.survey.list">
 
@@ -12,10 +13,8 @@
     <input type="hidden" name="surveyId" value="${survey.surveyId}"/>
 
     <div class="actionArea">
-        <input type="button" value="<cti:msg2 key=".ok"/>"
-            onclick="submitFormViaAjax('ajaxDialog', 'confirmForm')"/>
-        <input type="button" value="<cti:msg2 key=".cancel"/>"
-            onclick="$('ajaxDialog').hide()"/>
+        <tags:button nameKey="ok" onclick="submitFormViaAjax('ajaxDialog', 'confirmForm')"/>
+        <tags:button nameKey="cancel" onclick="parent.$('ajaxDialog').hide()"/>
     </div>
 </form>
 

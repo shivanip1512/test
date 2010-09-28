@@ -1,5 +1,6 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="modules.survey.list">
 
@@ -8,8 +9,7 @@
 </h1>
 
 <div class="actionArea">
-    <input type="button" value="<cti:msg2 key=".cancel"/>"
-        onclick="$('ajaxDialog').hide()"/>
+    <tags:button nameKey="cancel" onclick="parent.$('ajaxDialog').hide()"/>
 </div>
 
 </cti:msgScope>

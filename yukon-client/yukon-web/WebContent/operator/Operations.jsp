@@ -300,11 +300,11 @@
             	<a href="/spring/multispeak/visualDisplays/loadManagement/home"><cti:msg key="yukon.web.menu.portal.analysis.visualDisplays" /></a>
             </tags:sectionLink>
         </cti:checkProperty>
-        <cti:checkProperty property="ConsumerInfoRole.SURVEY_EDIT">
+        <cti:checkRolesAndProperties value="OPERATOR_SURVEY_EDIT">
             <tags:sectionLink>
                 <a href="/spring/stars/survey/list"><cti:msg key="yukon.web.menu.portal.analysis.surveys" /></a>
             </tags:sectionLink>
-        </cti:checkProperty>
+        </cti:checkRolesAndProperties>
 	</tags:operationSection>
 
 </cti:checkRolesAndProperties>
