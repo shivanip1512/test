@@ -54,7 +54,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         SimpleDevice newYukonDevice = new SimpleDevice();
 
 
-        // CREATE NEW MCT DEVICE
+        // CREATE NEW DEVICE
         DeviceBase templateDevice = getExistingDeviceByTemplate(templateName);
         int templateDeviceId = templateDevice.getPAObjectID();
 

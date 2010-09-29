@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.model.ViewableStrategy;
@@ -29,7 +30,6 @@ import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.PeaksTargetType;
 import com.cannontech.database.db.capcontrol.StrategyPeakSettingsHelper;
 import com.cannontech.database.db.capcontrol.TargetSettingType;
-import com.cannontech.database.db.point.calculation.ControlAlgorithm;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;

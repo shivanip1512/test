@@ -2,7 +2,7 @@ package com.cannontech.database.db.capcontrol;
 
 import java.util.List;
 
-import com.cannontech.database.db.point.calculation.ControlAlgorithm;
+import com.cannontech.capcontrol.ControlAlgorithm;
 import com.google.common.collect.Lists;
 
 public class StrategyPeakSettingsHelper {

@@ -16,12 +16,6 @@ public class CalcComponentTypes
 	public static final String DIVISION_OPERATION = "/";
 	public static final String PUSH_OPERATION = "PUSH";
 	
-	public static final String LABEL_KVAR = ControlAlgorithm.KVAR.getDisplayName();
-	public static final String LABEL_VOLTS = ControlAlgorithm.VOLTS.getDisplayName();
-	public static final String LABEL_MULTI_VOLT = ControlAlgorithm.MULTIVOLT.getDisplayName();
-    public static final String LABEL_MULTI_VOLT_VAR = ControlAlgorithm.MULTIVOLTVAR.getDisplayName();
-    public static final String LABEL_INTEGRATED_VOLT_VAR = ControlAlgorithm.INTEGRATED_VOLT_VAR.getDisplayName();
-	
 	/*** START OF CALC FUNCTIONS  ***/
 	/*
 	 * These calc functions are now added to the YukonListEntry table under ListID = 100
@@ -54,7 +48,7 @@ public class CalcComponentTypes
 	public static final String DEMAND_AVG15_FUNCTION = "DemandAvg15";
 	public static final String DEMAND_AVG30_FUNCTION = "DemandAvg30";
 	public static final String DEMAND_AVG60_FUNCTION = "DemandAvg60";
-	public static final String PFACTOR_KW_KVAR_FUNCTION = ControlAlgorithm.PFACTORKWKVAR.getDisplayName();//"P-Factor kW/kVAr"
+	public static final String PFACTOR_KW_KVAR_FUNCTION = "P-Factor kW/kVAr";
 	public static final String PFACTOR_KW_KQ_FUNCTION = "P-Factor kW/kQ";
 	public static final String PFACTOR_KW_KVA_FUNCTION = "P-Factor kW/kVA";
 	

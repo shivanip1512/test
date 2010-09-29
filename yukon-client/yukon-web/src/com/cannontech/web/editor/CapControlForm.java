@@ -24,6 +24,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.cbc.cache.CapControlCache;
@@ -94,7 +95,6 @@ import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.holiday.HolidaySchedule;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
-import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.database.db.season.SeasonSchedule;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.model.Season;
@@ -1546,7 +1546,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	public boolean isVoltageControl() {
 		if (getCurrentStrategyID() != CtiUtilities.NONE_ZERO_ID) {
 			CapControlStrategy strat = getCbcStrategiesMap().get(new Integer(getCurrentStrategyID()));
-			return strat != null && CalcComponentTypes.LABEL_VOLTS.equals(strat.getControlUnits());
+			return strat != null && ControlAlgorithm.VOLTS.getDisplayName().equals(strat.getControlUnits());
 		} else {
 			return false;
         }
@@ -1744,7 +1744,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	//delegate to this class because generic class doesn't have to know about business rules	
 	public SelectItem[]  getControlMethods () {
     	String algorithm = getCbcStrategiesMap().get( new Integer ( getCurrentStrategyID() )).getControlUnits();
-    	if (algorithm.equalsIgnoreCase(CalcComponentTypes.LABEL_MULTI_VOLT)) {
+    	if (algorithm.equalsIgnoreCase(ControlAlgorithm.MULTIVOLT.getDisplayName())) {
     		controlMethods = new SelectItem [2];
     		controlMethods[0] = new SelectItem(ControlMethod.INDIVIDUAL_FEEDER.getDatabaseRepresentation(), StringUtils.addCharBetweenWords( ' ', ControlMethod.INDIVIDUAL_FEEDER.getDatabaseRepresentation()));
     		controlMethods[1] = new SelectItem(ControlMethod.SUBSTATION_BUS.getDatabaseRepresentation(), StringUtils.addCharBetweenWords( ' ', ControlMethod.SUBSTATION_BUS.getDatabaseRepresentation()));
@@ -1975,7 +1975,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         List<SelectItem> items = Lists.newArrayList(selectionLists.getCbcControlAlgorithim());
         String currentMethod = getStrategy().getControlMethod();
         if(currentMethod.equalsIgnoreCase(ControlMethod.SUBSTATION_BUS.getDatabaseRepresentation())) {
-            items.add(new SelectItem(CalcComponentTypes.LABEL_INTEGRATED_VOLT_VAR, CalcComponentTypes.LABEL_INTEGRATED_VOLT_VAR));
+            items.add(new SelectItem(ControlAlgorithm.INTEGRATED_VOLT_VAR.getDisplayName(), ControlAlgorithm.INTEGRATED_VOLT_VAR.getDisplayName()));
         }
         return items;
     }

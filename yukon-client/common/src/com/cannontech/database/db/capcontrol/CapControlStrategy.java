@@ -5,13 +5,12 @@ import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
+import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.point.calculation.CalcComponentTypes;
-import com.cannontech.database.db.point.calculation.ControlAlgorithm;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -32,7 +31,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 	private Integer minConfirmPercent = new Integer(75);
 	private Integer failurePercent = new Integer(25);
 	private String daysOfWeek = new String("NYYYYYNN");
-	private String controlUnits = CalcComponentTypes.LABEL_KVAR;
+	private String controlUnits = ControlAlgorithm.KVAR.getDisplayName();
 	private Integer controlDelayTime = new Integer(0);
 	private Integer controlSendRetries = new Integer(0);
     private String integrateFlag = "N";
@@ -307,21 +306,21 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
     }
     
     public boolean isKVarAlgorithm () {
-        return getControlUnits().equalsIgnoreCase(CalcComponentTypes.LABEL_KVAR);
+        return getControlUnits().equalsIgnoreCase(ControlAlgorithm.KVAR.getDisplayName());
     }
     
     public boolean isPFAlgorithm () {
-        return getControlUnits().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION);
+        return getControlUnits().equalsIgnoreCase(ControlAlgorithm.PFACTORKWKVAR.getDisplayName());
     }
     
     public boolean isVoltVar () {
-        return getControlUnits().equalsIgnoreCase(CalcComponentTypes.LABEL_MULTI_VOLT_VAR);
+        return getControlUnits().equalsIgnoreCase(ControlAlgorithm.MULTIVOLTVAR.getDisplayName());
     }
     
     public boolean isVoltStrat() {
-        if (getControlUnits().equalsIgnoreCase(CalcComponentTypes.LABEL_MULTI_VOLT))
+        if (getControlUnits().equalsIgnoreCase(ControlAlgorithm.MULTIVOLT.getDisplayName()))
             return true;
-        else if (getControlUnits().equalsIgnoreCase(CalcComponentTypes.LABEL_VOLTS))
+        else if (getControlUnits().equalsIgnoreCase(ControlAlgorithm.VOLTS.getDisplayName()))
             return true;
         else
             return false;
@@ -336,10 +335,14 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
     }
     
     public void controlMethodChanged(String newValue) {
-        if(newValue.equalsIgnoreCase("TimeOfDay")){
+        ControlMethod newMethod = ControlMethod.getForDbString(newValue);
+        ControlAlgorithm currentAlgorithm = ControlAlgorithm.getControlAlgorithm(getControlUnits());
+        if (newMethod.equals(ControlMethod.TIME_OF_DAY)) {
             targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.TIME_OF_DAY);
-        } else {
-            targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.getControlAlgorithm(getControlUnits()));
+        } else if (!newMethod.supportsAlgorithm(currentAlgorithm)) {
+            /* If the current method does not support the current algorithm, default it to KVAR.
+             * Otherwise don't mess with thier settings. */
+            targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.KVAR);
         }
     }
     

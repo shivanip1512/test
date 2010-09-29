@@ -3,9 +3,9 @@ package com.cannontech.yukon.cbc;
 import java.util.Arrays;
 import java.util.Vector;
 
+import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointUnits;
-import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
 /**
  * A feeder object
@@ -42,7 +42,7 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
 	private Integer currentVarPtQuality = null;
 	private Boolean waiveControlFlag = null;
 
-	private String controlUnits = CalcComponentTypes.LABEL_KVAR;
+	private String controlUnits = ControlAlgorithm.KVAR.getDisplayName();
 	private int decimalPlaces = 0;
 	private Boolean peakTimeFlag = Boolean.TRUE;
 
@@ -692,8 +692,7 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 		this.usePhaseData = usePhaseData;
 	}
 	public boolean isPowerFactorControlled() {
-		return (CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION.equalsIgnoreCase(controlUnits) || 
-				CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION.equalsIgnoreCase(controlUnits));
+		return ControlAlgorithm.PFACTORKWKVAR.getDisplayName().equalsIgnoreCase(controlUnits);
 	}
     public Integer getOriginalParentId() {
         return originalParentId;

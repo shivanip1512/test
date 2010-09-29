@@ -18,6 +18,7 @@ import javax.faces.model.SelectItem;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 
+import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.clientutils.CTILogger;
@@ -44,7 +45,6 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.database.db.device.DeviceScanRate;
-import com.cannontech.database.db.point.calculation.ControlAlgorithm;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.util.CBCDBUtil;
 import com.cannontech.web.util.CBCSelectionLists;

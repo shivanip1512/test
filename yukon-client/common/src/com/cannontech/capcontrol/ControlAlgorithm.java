@@ -1,4 +1,4 @@
-package com.cannontech.database.db.point.calculation;
+package com.cannontech.capcontrol;
 
 
 public enum ControlAlgorithm {

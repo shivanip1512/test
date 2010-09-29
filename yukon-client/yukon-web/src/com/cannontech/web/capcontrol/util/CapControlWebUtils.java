@@ -3,13 +3,13 @@ package com.cannontech.web.capcontrol.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.db.point.calculation.ControlAlgorithm;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.capcontrol.models.NavigableArea;
 import com.cannontech.web.capcontrol.models.NavigableCapBank;

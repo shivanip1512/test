@@ -7,6 +7,7 @@ import java.util.TimeZone;
 
 import javax.faces.model.SelectItem;
 
+import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
@@ -24,7 +25,6 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.PointAlarming;
-import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Maps;
 
@@ -162,11 +162,11 @@ public class CBCSelectionLists {
 
 
 	private static final SelectItem[] cbcControlAlgorithim =  {
-		new SelectItem(CalcComponentTypes.LABEL_KVAR, CalcComponentTypes.LABEL_KVAR),
-		new SelectItem(CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION, CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION),
-		new SelectItem(CalcComponentTypes.LABEL_MULTI_VOLT, CalcComponentTypes.LABEL_MULTI_VOLT),
-		new SelectItem(CalcComponentTypes.LABEL_VOLTS, CalcComponentTypes.LABEL_VOLTS),
-        new SelectItem(CalcComponentTypes.LABEL_MULTI_VOLT_VAR, CalcComponentTypes.LABEL_MULTI_VOLT_VAR),
+		new SelectItem(ControlAlgorithm.KVAR.getDisplayName(), ControlAlgorithm.KVAR.getDisplayName()),
+		new SelectItem(ControlAlgorithm.PFACTORKWKVAR.getDisplayName(), ControlAlgorithm.PFACTORKWKVAR.getDisplayName()),
+		new SelectItem(ControlAlgorithm.MULTIVOLT.getDisplayName(), ControlAlgorithm.MULTIVOLT.getDisplayName()),
+		new SelectItem(ControlAlgorithm.VOLTS.getDisplayName(), ControlAlgorithm.VOLTS.getDisplayName()),
+        new SelectItem(ControlAlgorithm.MULTIVOLTVAR.getDisplayName(), ControlAlgorithm.MULTIVOLTVAR.getDisplayName()),
     };
 	
 	private static SelectItem[] capBankOpStates =  {
