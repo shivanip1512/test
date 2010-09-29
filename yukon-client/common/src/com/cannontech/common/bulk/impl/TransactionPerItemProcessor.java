@@ -65,8 +65,10 @@ public class TransactionPerItemProcessor extends RunnableBasedBulkProcessor impl
                             });
 
                         } catch (ObjectMappingException e) {
+                            log.info("mapping exception, row " + rowNumber + ": " + in, e);
                             callback.receivedProcessingException(thisRow, in, e);
                         } catch (ProcessingException e) {
+                            log.info("processing exception, row " + rowNumber + ": " + in, e);
                             callback.receivedProcessingException(thisRow, in, e);
                         }
                     }

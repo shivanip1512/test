@@ -4,8 +4,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.VeeReviewEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -27,6 +30,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
 public class ValidationHelperServiceImpl implements ValidationHelperService {
+    private static final Logger log = YukonLogManager.getLogger(ValidationHelperServiceImpl.class);
+    
     private RawPointHistoryDao rawPointHistoryDao;
     private RphTagDao rphTagDao;
     private RphTagUiDao rphTagUiDao;
@@ -98,12 +103,21 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     @Override
     public void acceptRawPointHistoryRow(int changeId, LiteYukonUser user) {
         
-    	PointValueQualityHolder pointValueQualityHolder = rawPointHistoryDao.getPointValueQualityForChangeId(changeId);
+        // because the RawPointHistory table and the Point table can become unattached,
+        // we must be careful that this changeId is for a point/pao that still exists
+        
+        rphTagDao.insertTag(changeId, RphTag.OK);
+        
+    	PointValueQualityHolder pointValueQualityHolder;
+        try {
+            pointValueQualityHolder = rawPointHistoryDao.getPointValueQualityForChangeId(changeId);
+        } catch (EmptyResultDataAccessException e) {
+            log.info("acceptRawPointHistoryRow processed for a non-existing point, changeId=" + changeId);
+            return;
+        }
 		int pointId = pointValueQualityHolder.getId();
 		PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(pointId);
 		DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(paoPointIdentifier.getPaoIdentifier());
-        
-        rphTagDao.insertTag(changeId, RphTag.OK);
         
         veeReviewEventLogService.acceptPointValue(changeId, 
         										  pointValueQualityHolder.getValue(), 

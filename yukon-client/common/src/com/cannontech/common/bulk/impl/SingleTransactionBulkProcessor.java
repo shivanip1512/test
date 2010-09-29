@@ -66,9 +66,11 @@ public class SingleTransactionBulkProcessor extends RunnableBasedBulkProcessor i
                                 callback.processingSucceeded();
                                 return null;
                             } catch (ObjectMappingException e) {
+                                log.info("mapping exception, row " + rowNumber + ": " + in, e);
                                 callback.receivedProcessingException(rowNumber, in, e);
                                 callback.processingFailed(e);
                             } catch (ProcessingException e) {
+                                log.info("processing exception, row " + rowNumber + ": " + in, e);
                                 callback.receivedProcessingException(rowNumber, in, e);
                                 callback.processingFailed(e);
                             } catch (Exception e) {

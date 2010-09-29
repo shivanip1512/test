@@ -111,8 +111,10 @@ public class ResubmittingBulkProcessor extends BulkProcessorBase {
                         });
 
                     } catch (ObjectMappingException e) {
+                        log.info("mapping exception, row " + thisRow + ": " + in, e);
                         callback.receivedProcessingException(thisRow, in, e);
                     } catch (ProcessingException e) {
+                        log.info("processing exception, row " + thisRow + ": " + in, e);
                         callback.receivedProcessingException(thisRow, in, e);
                     }
 

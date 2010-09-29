@@ -53,8 +53,10 @@ public class OneAtATimeProcessor extends RunnableBasedBulkProcessor implements B
                             callback.processedObject(rowNumber, out);
 
                         } catch (ObjectMappingException e) {
+                            log.info("mapping exception, row " + rowNumber + ": " + in, e);
                             callback.receivedProcessingException(rowNumber, in, e);
                         } catch (ProcessingException e) {
+                            log.info("processing exception, row " + rowNumber + ": " + in, e);
                             callback.receivedProcessingException(rowNumber, in, e);
                         }
                         
