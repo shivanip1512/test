@@ -5,6 +5,8 @@
 <jsp:useBean id="inventoryBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session"/>
 <jsp:setProperty name="inventoryBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
 
+<% if (request.getParameter("page") == null) inventoryBean.resetInventoryList(); %>
+
 <jsp:setProperty name="inventoryBean" property="sortBy" param="SortBy"/>
 <jsp:setProperty name="inventoryBean" property="sortOrder" param="SortOrder"/>
 <jsp:setProperty name="inventoryBean" property="page" param="page"/>
@@ -206,6 +208,7 @@ function applyOrdering(form)
 		                		</tr>
 		              		</table>
 				  			<br>
+                            <%= inventoryBean.getHTML(request) %> 
 	              			<p>&nbsp; </p>
 	              		</c:if>
 	            	</div>

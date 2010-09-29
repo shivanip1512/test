@@ -250,4 +250,8 @@ public class InventoryUtils {
         return groupID;
     }
 
+    public static boolean supportConfiguration(int devTypeID) {
+        int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry( devTypeID ).getYukonDefID();
+        return (devTypeDefID != YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE);
+    }
 }

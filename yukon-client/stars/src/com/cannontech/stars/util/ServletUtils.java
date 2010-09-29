@@ -519,4 +519,8 @@ public class ServletUtils {
         
         return sBuf.toString();
     }
+    
+    public static String hideUnsetNumber(int num, int num_unset) {
+        return (num == num_unset)? "" : String.valueOf(num);
+    }
 }

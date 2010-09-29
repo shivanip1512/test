@@ -61,8 +61,13 @@ public class SearchInventoryController extends StarsInventoryActionController {
             LiteInventoryBase liteInv = null;
             if (invList.size() == 1 && invList.get(0).getEnergyCompanyId() == user.getEnergyCompanyID()) {
             	liteInv = invList.get(0);
-            
-            	String redirect = request.getContextPath() + "/operator/Hardware/InventoryDetail.jsp?InvId=" + liteInv.getInventoryID() + "&src=Search";
+            	String redirect;
+            	if (liteInv.getAccountID() == 0 ) {
+            	    redirect = request.getContextPath() + "/operator/Hardware/InventoryDetail.jsp?InvId=" + liteInv.getInventoryID() + "&src=Search";
+            	} else {
+            	    redirect = request.getContextPath() + "/spring/stars/operator/hardware/hardwareEdit?accountId=" + liteInv.getAccountID() + "&inventoryId=" + liteInv.getInventoryID();
+            	}
+
                 response.sendRedirect(redirect);
                 return;
             }
