@@ -29,7 +29,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.Unmarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +46,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.attribute.lookup.BasicAttributeDefinition;
 import com.cannontech.common.pao.definition.attribute.lookup.MappedAttributeDefinition;
@@ -76,9 +76,9 @@ import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
-import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
@@ -146,11 +146,15 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     //============================================
     @Override
     public AttributeDefinition getAttributeLookup(PaoType paoType,
-            BuiltInAttribute attribute) {
+            BuiltInAttribute attribute) throws IllegalUseOfAttribute {
         Map<Attribute, AttributeDefinition> attributeLookupsForPao = paoAttributeAttrDefinitionMap.get(paoType);
-        Validate.notNull(attributeLookupsForPao, "No AttributeLookups exist for " + paoType);
+        if (attributeLookupsForPao == null) {
+            throw new IllegalUseOfAttribute("No AttributeLookups exist for " + paoType);
+        }
         AttributeDefinition attributeDefinition = attributeLookupsForPao.get(attribute);
-        Validate.notNull(attributeDefinition, "No AttributeLookup exists for " + attribute + " on " + paoType);
+        if (attributeDefinition == null) {
+            throw new IllegalUseOfAttribute("No AttributeLookup exists for " + attribute + " on " + paoType);
+        }
         return attributeDefinition;
     }
     

@@ -53,7 +53,7 @@ public class AttributeServiceImpl implements AttributeService {
         
             return litePoint;
         } catch (NotFoundException nfe) {
-            throw new IllegalUseOfAttribute("Illegal use of attribute: " + attribute.getDescription());
+            throw new IllegalUseOfAttribute("Illegal use of attribute (no point): " + attribute.getDescription());
         }
     }
 
@@ -64,7 +64,7 @@ public class AttributeServiceImpl implements AttributeService {
             PaoPointIdentifier paoPointIdentifier = attributeDefinition.getPointIdentifier(pao);
             return paoPointIdentifier;
         } catch (NotFoundException nfe) {
-            throw new IllegalUseOfAttribute("Illegal use of attribute: " + attribute.getDescription());
+            throw new IllegalUseOfAttribute("Illegal use of attribute (no mapping): " + attribute.getDescription());
         }
     }
     
@@ -103,17 +103,12 @@ public class AttributeServiceImpl implements AttributeService {
         return result;
     }
 
-    public boolean pointExistsForAttribute(YukonPao pao, Attribute attribute) {
+    public boolean pointExistsForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
 
-        BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
-        if (isAttributeSupported(pao, builtInAttribute)) {
-            AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
-            PaoPointIdentifier paoPointIdentifier = attributeDefinition.getPointIdentifier(pao);
+        AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), (BuiltInAttribute) attribute);
+        PaoPointIdentifier paoPointIdentifier = attributeDefinition.getPointIdentifier(pao);
 
-            return pointService.pointExistsForPao(paoPointIdentifier);
-        }
-
-        throw new IllegalArgumentException("Pao: " + pao + " does not support attribute: " + attribute.getKey());
+        return pointService.pointExistsForPao(paoPointIdentifier);
     }
 
     public PaoPointTemplate getPaoPointTemplateForAttribute(YukonPao pao, Attribute attribute) {
@@ -151,7 +146,7 @@ public class AttributeServiceImpl implements AttributeService {
             PaoPointIdentifier pointForAttribute = getPaoPointIdentifierForAttribute(paoIdentifier, attribute);
             boolean result = pointForAttribute.equals(paoPointIdentifier);
             return result;
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalUseOfAttribute e) {
             return false;
         }
     }

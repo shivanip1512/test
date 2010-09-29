@@ -71,7 +71,7 @@ public interface AttributeService {
      * @param attribute - Attribute to determine if point exists
      * @return True if the point exists on the pao
      */
-    public boolean pointExistsForAttribute(YukonPao pao, Attribute attribute);
+    public boolean pointExistsForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
     
     public PaoPointTemplate getPaoPointTemplateForAttribute(YukonPao pao, Attribute attribute);
     

@@ -6,6 +6,7 @@ import com.cannontech.amr.meter.service.MeterService;
 import com.cannontech.common.bulk.field.impl.YukonDeviceDto;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.database.TransactionException;
 
 
@@ -21,8 +22,7 @@ public class DisconnectAddressBulkFieldProcessor extends BulkYukonDeviceFieldPro
             if (value.getDisconnectAddress() != null) {   
                 
                 meterService.addDisconnectAddress(device, value.getDisconnectAddress());
-            }
-            else {
+            } else {
                 
                 try {
                     meterService.removeDisconnectAddress(device);
@@ -32,11 +32,11 @@ public class DisconnectAddressBulkFieldProcessor extends BulkYukonDeviceFieldPro
                 }
             }
             
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new ProcessingException(e.getMessage());
-        }
-        catch (TransactionException e) {
+        } catch (IllegalUseOfAttribute e) {
+            throw new ProcessingException(e.getMessage());
+        } catch (TransactionException e) {
             throw new ProcessingException("Unable to update disconnect address.");
         }
     }

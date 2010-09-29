@@ -2,15 +2,16 @@ package com.cannontech.common.pao.definition.dao;
 
 import java.util.Set;
 
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
-import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.YukonPao;
 import com.google.common.collect.ListMultimap;
 
 /**
@@ -22,7 +23,7 @@ public interface PaoDefinitionDao {
 	//============================================
     public abstract Set<AttributeDefinition> getDefinedAttributes(PaoType paoType);
     
-    public abstract AttributeDefinition getAttributeLookup(PaoType paoType, BuiltInAttribute attribute);
+    public abstract AttributeDefinition getAttributeLookup(PaoType paoType, BuiltInAttribute attribute) throws IllegalUseOfAttribute;
 
     // POINTS
     //============================================
