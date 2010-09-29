@@ -72,6 +72,8 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
 	    if(attributes.isEmpty()) return false;
 	    Multimap<PaoIdentifier, LitePoint> pointsToRead = getPointsToRead(device.getPaoIdentifier(), attributes);
 	    
+	    if (pointsToRead.isEmpty()) return false;
+	    
 	    try {
             getRequiredCommands(pointsToRead);
         } catch (UnreadableException e) {
