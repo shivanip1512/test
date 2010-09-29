@@ -49,6 +49,7 @@ public class StrategyPeakSettingsHelper {
                 
                 settings.add(TargetSettingType.DECISION_WEIGHT.getPeakTargetSetting());
                 settings.add(TargetSettingType.VOLTAGE_REGULATION_MARGIN.getPeakTargetSetting());
+                settings.add(TargetSettingType.MAX_CONSECUTIVE_BANK_OPERATIONS.getPeakTargetSetting());
                 break;
                 
             case TIME_OF_DAY :
