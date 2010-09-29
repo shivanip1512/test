@@ -20,5 +20,12 @@ public interface MeterReadCommandGeneratorService {
      */
     public Multimap<YukonDevice, CommandRequestDevice> getCommandRequests(Iterable<? extends YukonDevice> devices, Set<? extends Attribute> attributes, DeviceRequestType type);
 
+    /**
+     * Returns true if there is a valid command that can be used to read at least one of
+     * the attributes in the set.
+     * 
+     * If no attributes are passed in, this will return false. If no points exist
+     * for any of the attributes, this will return false.
+     */
     public boolean isReadable(YukonDevice device, Set<? extends Attribute> attributes);
 }
