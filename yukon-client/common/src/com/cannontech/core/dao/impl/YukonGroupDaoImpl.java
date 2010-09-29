@@ -22,7 +22,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
 
-@SuppressWarnings("unchecked")
 public class YukonGroupDaoImpl implements YukonGroupDao {
 
     private JdbcOperations jdbcTemplate = null;
@@ -38,6 +37,7 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
     	return getGroupsForUser(user.getUserID());
     }
     
+    @SuppressWarnings("unchecked")
     public List<LiteYukonGroup> getGroupsForUser(int userID) {
 
         String sql = "select yug.userid, yug.groupid, yg.groupname from YukonUserGroup yug, YukonGroup yg where userid = ? " +
