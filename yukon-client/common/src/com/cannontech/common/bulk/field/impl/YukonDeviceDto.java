@@ -12,7 +12,9 @@ public class YukonDeviceDto {
     private Integer substation;
     private String deviceType;
     private Integer disconnectAddress;
-    
+    private String serialNumber;
+    private String manufacturer;
+    private String model;
     
     // SETTER GETTERS
     public Integer getAddress() {
@@ -62,5 +64,23 @@ public class YukonDeviceDto {
     }
     public void setDisconnectAddress(Integer disconnectAddress) {
         this.disconnectAddress = disconnectAddress;
+    }
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+    public String getManufacturer() {
+        return manufacturer;
+    }
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+    public String getModel() {
+        return model;
+    }
+    public void setModel(String model) {
+        this.model = model;
     }
 }

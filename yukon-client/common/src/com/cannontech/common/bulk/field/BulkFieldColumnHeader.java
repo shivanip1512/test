@@ -11,6 +11,9 @@ public enum BulkFieldColumnHeader {
     ENABLE("enable"),
     ROUTE("route"),
     DEVICE_TYPE("deviceType"),
+    RFN_SERIAL_NUMBER("serialNumber"),
+    RFN_MANUFACTURER("manufacturer"),
+    RFN_MODEL("model"),
     ;
     
     private String fieldName;
@@ -21,5 +24,14 @@ public enum BulkFieldColumnHeader {
 
     public String getFieldName() {
         return fieldName;
+    }
+    
+    public static BulkFieldColumnHeader getForFieldName(String fieldName) {
+        for (BulkFieldColumnHeader field : BulkFieldColumnHeader.values()) {
+            if (field.fieldName.equals(fieldName)) {
+                return field;
+            }
+        }
+        throw new IllegalArgumentException("No BulkFieldColumnHeader found for :" + fieldName);
     }
 }

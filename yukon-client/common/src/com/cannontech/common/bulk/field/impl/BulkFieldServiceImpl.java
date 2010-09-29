@@ -18,9 +18,13 @@ import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.field.BulkFieldService;
 import com.cannontech.common.bulk.field.processor.impl.BulkYukonDeviceFieldProcessor;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.bulk.service.impl.UnprocessableHeadersException;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.web.input.InputSource;
+import com.google.common.base.Function;
+import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 
 public class BulkFieldServiceImpl implements BulkFieldService, ApplicationContextAware {
 
@@ -114,7 +118,7 @@ public class BulkFieldServiceImpl implements BulkFieldService, ApplicationContex
     @SuppressWarnings("unchecked")
     public <T> boolean processorExistsForBulkFieldColumnHeaders(List<BulkFieldColumnHeader> bulkFieldColumnHeaders) {
         
-        List<BulkField<?, T>> matchingBulkFields = new ArrayList<BulkField<?, T>>();
+        Set<BulkField<?, T>> matchingBulkFields = Sets.newHashSet();
         Map<String, BulkField<?, T>> allBulkFields = BeanFactoryUtils.beansOfTypeIncludingAncestors(context, BulkField.class);
         
         for (BulkFieldColumnHeader bulkFieldColumnHeader : bulkFieldColumnHeaders) {
@@ -162,27 +166,40 @@ public class BulkFieldServiceImpl implements BulkFieldService, ApplicationContex
         return device;
     }
     
-    public <T> List<BulkYukonDeviceFieldProcessor> findProcessorsForFields(List<BulkField<?, T>> bulkFields) {
+    public <T> List<BulkYukonDeviceFieldProcessor> findProcessorsForFields(Set<BulkField<?, T>> bulkFieldSet) {
         
-        List<BulkYukonDeviceFieldProcessor> processors = new ArrayList<BulkYukonDeviceFieldProcessor>();
-
-        // this guy is kinda dumb, will always be 1-to-1 field-to-processor
-        // will be more complicated if multi-field processors ever exist
-        for (BulkField<?, T> updateableField : bulkFields) {
-            
-            // the fields the processor needs to handle
-            Set<BulkField<?, T>> requiredSet = new HashSet<BulkField<?, T>>(1);
-            requiredSet.add(updateableField);
-            
-            // find that processor
-            for (BulkYukonDeviceFieldProcessor processor : getBulkFieldProcessors()) {
-                if (requiredSet.equals(processor.getUpdatableFields())) {
-                    processors.add(processor);
-                    break;
+        /* This is going to be a "greedy" algorithm, so we'll sort the available
+            processors based on the number of fields it handles (descending). */ 
+        List<BulkYukonDeviceFieldProcessor> allProcessors = getBulkFieldProcessors();
+        Ordering<BulkYukonDeviceFieldProcessor> ordering = 
+            Ordering.natural().reverse().onResultOf(new Function<BulkYukonDeviceFieldProcessor, Integer>() {
+                @Override
+                public Integer apply(BulkYukonDeviceFieldProcessor from) {
+                    return from.getUpdatableFields().size();
                 }
-            } 
+            });
+        allProcessors = ordering.sortedCopy(allProcessors);
+
+        List<BulkYukonDeviceFieldProcessor> result = new ArrayList<BulkYukonDeviceFieldProcessor>();
+        
+        for (BulkYukonDeviceFieldProcessor processor : allProcessors) {
+            if (bulkFieldSet.isEmpty()) break;
+            if (bulkFieldSet.containsAll(processor.getUpdatableFields())) {
+                bulkFieldSet.removeAll(processor.getUpdatableFields());
+                result.add(processor);
+            }
         }
-        return processors;
+        
+        if(!bulkFieldSet.isEmpty()) {
+            Set<BulkFieldColumnHeader> badHeaders = Sets.newHashSet();
+            for(BulkField<?, T> field : bulkFieldSet) {
+                BulkFieldColumnHeader header = BulkFieldColumnHeader.getForFieldName(field.getInputSource().getField());
+                badHeaders.add(header);
+            }
+            throw new UnprocessableHeadersException(badHeaders);
+        }
+        
+        return result;
     }
 
     @Override

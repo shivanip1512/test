@@ -243,6 +243,75 @@
             </set>
         </property>
     </bean>
+    
+    <!-- SERIALNUMBER BULK FIELD -->
+    <bean id="serialNumberBulkField" parent="bulkFieldBase" class="com.cannontech.common.bulk.field.impl.SerialNumberBulkField">
+
+        <property name="massChangable" value="false" />
+        <property name="blankHandlingEnum" value="IGNORE_BLANK" />
+
+        <property name="inputSource">
+            <bean class="com.cannontech.web.input.InputBase">
+                <property name="displayName" value="Serial Number" />
+                <property name="field" value="serialNumber" />
+                <property name="description">
+                    <value>The serialnumber of the meter</value>
+                </property>
+                <property name="type" ref="inputStringType" />
+            </bean>
+        </property>
+
+    </bean>
+    
+    <!-- MANUFACTURER BULK FIELD -->
+    <bean id="manufacturerBulkField" parent="bulkFieldBase" class="com.cannontech.common.bulk.field.impl.ManufacturerBulkField">
+
+        <property name="massChangable" value="false" />
+        <property name="blankHandlingEnum" value="IGNORE_BLANK" />
+
+        <property name="inputSource">
+            <bean class="com.cannontech.web.input.InputBase">
+                <property name="displayName" value="Manufacturer" />
+                <property name="field" value="manufacturer" />
+                <property name="description">
+                    <value>The manufacturer of the meter</value>
+                </property>
+                <property name="type" ref="inputStringType" />
+            </bean>
+        </property>
+
+    </bean>
+    
+    <!-- MODEL BULK FIELD -->
+    <bean id="modelBulkField" parent="bulkFieldBase" class="com.cannontech.common.bulk.field.impl.ModelBulkField">
+
+        <property name="massChangable" value="false" />
+        <property name="blankHandlingEnum" value="IGNORE_BLANK" />
+
+        <property name="inputSource">
+            <bean class="com.cannontech.web.input.InputBase">
+                <property name="displayName" value="Model" />
+                <property name="field" value="model" />
+                <property name="description">
+                    <value>The model of the meter</value>
+                </property>
+                <property name="type" ref="inputStringType" />
+            </bean>
+        </property>
+
+    </bean>
+
+    <bean id="rfnMeterBulkFieldProcessor" parent="bulkFieldProcessorBase"
+        class="com.cannontech.common.bulk.field.processor.impl.RfnMeterBulkFieldProcessor">
+        <property name="rfnMeterDao" ref="rfnMeterDao" />
+        <property name="updateableFields">
+            <set>
+                <ref bean="serialNumberBulkField" />
+                <ref bean="manufacturerBulkField" />
+                <ref bean="modelBulkField" />
+            </set>
+        </property>
+    </bean>
 
     <!-- ROUTE BULK FIELD -->
     <bean id="routeBulkField" parent="bulkFieldBase"
@@ -338,6 +407,9 @@
                 <ref bean="nameBulkField" />
                 <ref bean="routeBulkField" />
                 <ref bean="deviceIdBulkField" />
+                <ref bean="serialNumberBulkField" />
+                <ref bean="manufacturerBulkField" />
+                <ref bean="modelBulkField" />
             </list>
         </property>
     </bean>

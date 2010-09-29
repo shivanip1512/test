@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -57,6 +56,8 @@ import com.cannontech.web.input.Input;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputSource;
 import com.cannontech.web.input.InputUtil;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public abstract class BaseBulkService {
     
@@ -116,11 +117,19 @@ public abstract class BaseBulkService {
 
     protected void checkUpdateBulkFieldColumnHeaders(ParsedBulkFileInfo result, Collection<BulkFieldColumnHeader> updateBulkFieldColumnHeaders) {
         
-        for (BulkFieldColumnHeader bulkFieldColumnHeader : updateBulkFieldColumnHeaders) {
-            if (!bulkFieldService.processorExistsForBulkFieldColumnHeaders(Collections.singletonList(bulkFieldColumnHeader))) {
+//        for (BulkFieldColumnHeader bulkFieldColumnHeader : updateBulkFieldColumnHeaders) {
+//            if (!bulkFieldService.processorExistsForBulkFieldColumnHeaders(Collections.singletonList(bulkFieldColumnHeader))) {
+//                result.addError(new YukonMessageSourceResolvable("yukon.common.device.bulk.columnHeader.error.notUpdateableColumnName", bulkFieldColumnHeader.toString()));
+//            }
+//        }
+        try {
+            bulkFieldService.processorExistsForBulkFieldColumnHeaders(Lists.newArrayList(updateBulkFieldColumnHeaders));
+        } catch (UnprocessableHeadersException e) {
+            for (BulkFieldColumnHeader bulkFieldColumnHeader : e.getBadHeaders()) {
                 result.addError(new YukonMessageSourceResolvable("yukon.common.device.bulk.columnHeader.error.notUpdateableColumnName", bulkFieldColumnHeader.toString()));
             }
         }
+
     }
 
     protected String doStartBulkImport(final ParsedBulkFileInfo parsedBulkImportFileInfo, final BackgroundProcessTypeEnum bulkOperationType, final YukonDeviceResolver resolver) throws IOException {
@@ -251,7 +260,7 @@ public abstract class BaseBulkService {
         
         // narrow list down to just those fields that need to process (i.e. cannot be ignored)
         // based on their blankness, and BlankHandlingEnum value
-        List<BulkField<?, SimpleDevice>> nonIgnorableFields = new ArrayList<BulkField<?,SimpleDevice>>();
+        Set<BulkField<?, SimpleDevice>> nonIgnorableFields = Sets.newHashSet();
         for (BulkField<?, SimpleDevice> updateableField : bulkFields) {
             
             BlankHandlingEnum fieldBlankHandlingEnum = updateableField.getBlankHandlingEnum();

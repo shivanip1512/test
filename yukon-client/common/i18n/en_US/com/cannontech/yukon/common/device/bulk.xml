@@ -659,6 +659,12 @@
     <entry key="yukon.common.device.bulk.columnHeader.import.instruction.METER_NUMBER"></entry>
     <entry key="yukon.common.device.bulk.columnHeader.import.description.ROUTE">Name of route to set.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.import.instruction.ROUTE">Invalid route names will not be set.</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.import.description.RFN_SERIAL_NUMBER">Serial Number of the RFN Meter.</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.import.instruction.RFN_SERIAL_NUMBER"></entry>
+    <entry key="yukon.common.device.bulk.columnHeader.import.description.RFN_MANUFACTURER">Manufacturer of the RFN Meter.</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.import.instruction.RFN_MANUFACTURER"></entry>
+    <entry key="yukon.common.device.bulk.columnHeader.import.description.RFN_MODEL">Model of the RFN Meter.</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.import.instruction.RFN_MODEL"></entry>
     
     <!-- importUpload.jsp: errors -->
     <entry key="yukon.common.device.bulk.columnHeader.import.error.requiredFields"><![CDATA[File must contain all of the required fields.

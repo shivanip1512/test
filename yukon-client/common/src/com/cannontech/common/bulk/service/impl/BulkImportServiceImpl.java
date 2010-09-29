@@ -53,7 +53,7 @@ public class BulkImportServiceImpl extends BaseBulkService implements BulkImport
                 return result;
             }
 
-            // check for all required filds for each method
+            // check for all required fields for each method
             BulkImportMethod chosenMethod = null;
             for (BulkImportMethod method : supportedImportMethods) {
                 Set<BulkFieldColumnHeader> requiredColumns = method.getRequiredColumns();
