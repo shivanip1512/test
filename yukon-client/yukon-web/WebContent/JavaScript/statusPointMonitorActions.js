@@ -1,43 +1,32 @@
 // This Javascript file works with edit.jsp (and is only used by it).
 
-
-function indexOfRow(rowIdNum) {
-
-	for (var index = 0; index < addAction.rowIdNums.length; index++) {
-		if (addAction.rowIdNums[index] == rowIdNum) {
-			return index;
-		}
-	}
-}
-
 function deleteAction(rowIdNum) {
 	var row = $('actionRow' + rowIdNum);
+	
 	row.parentNode.removeChild(row);
 
-    addAction.rowIdNums.splice(indexOfRow(rowIdNum), 1);
-    
-    var inputElement = $$('#actionsTable td input.statusPointMonitorMessageProcessorId');
+    var inputElement = $$('#actionsTable td input.statusPointMonitorProcessorId');
     for (var index = 0; index < inputElement.length; index++) {
-    	inputElement[index].name = 'messageProcessors[' + index + '].statusPointMonitorMessageProcessorId';
+    	inputElement[index].name = 'processors[' + index + '].statusPointMonitorProcessorId';
     }
     
     inputElement = $$('#actionsTable td select.prevStateSelect');
     for (var index = 0; index < inputElement.length; index++) {
-    	inputElement[index].name = 'messageProcessors[' + index + '].prevState';
+    	inputElement[index].name = 'processors[' + index + '].prevState';
     }
     
     inputElement = $$('#actionsTable td select.nextStateSelect');
     for (var index = 0; index < inputElement.length; index++) {
-    	inputElement[index].name = 'messageProcessors[' + index + '].nextState';
+    	inputElement[index].name = 'processors[' + index + '].nextState';
     }
     
     inputElement = $$('#actionsTable td select.actionTypeSelect');
     for (var index = 0; index < inputElement.length; index++) {
-    	inputElement[index].name = 'messageProcessors[' + index + '].actionType';
+    	inputElement[index].name = 'processors[' + index + '].actionType';
     }
 }
 
-function addAction(statusPointMonitorMessageProcessor) {
+function addAction(processor) {
 	var templateHtml = $$('#templateHtml > a');
     var deleteActionIcon = templateHtml[0];
     
@@ -54,48 +43,49 @@ function addAction(statusPointMonitorMessageProcessor) {
 	var cellPrevState = newRow.insertCell(0);
 	var cellNextState = newRow.insertCell(1);
 	var cellActionType = newRow.insertCell(2);
+	var cellDelete = newRow.insertCell(3);
 	
 	var prevSelectNode = states.cloneNode(true);
-	prevSelectNode.name = 'messageProcessors[' + (rowNum-1) + '].prevState';
+	prevSelectNode.name = 'processors[' + (rowNum-1) + '].prevState';
 	prevSelectNode.className = 'prevStateSelect';
 	cellPrevState.appendChild(prevSelectNode);
 	
 	var nextSelectNode = states.cloneNode(true);
-	nextSelectNode.name = 'messageProcessors[' + (rowNum-1) + '].nextState';
+	nextSelectNode.name = 'processors[' + (rowNum-1) + '].nextState';
 	nextSelectNode.className = 'nextStateSelect';
 	cellNextState.appendChild(nextSelectNode);
 	
 	var actionTypeSelectNode = eventTypes.cloneNode(true);
-	actionTypeSelectNode.name = 'messageProcessors[' + (rowNum-1) + '].actionType';
+	actionTypeSelectNode.name = 'processors[' + (rowNum-1) + '].actionType';
 	actionTypeSelectNode.className = 'actionTypeSelect';
 	cellActionType.appendChild(actionTypeSelectNode);
 	
-	if(statusPointMonitorMessageProcessor) {
-		var messageProcessorIdNode = document.createElement("input");
-		messageProcessorIdNode.name = 'messageProcessors[' + (rowNum-1) + '].statusPointMonitorMessageProcessorId';
-		messageProcessorIdNode.type = 'hidden';
-		messageProcessorIdNode.className = 'statusPointMonitorMessageProcessorId';
-		messageProcessorIdNode.value = statusPointMonitorMessageProcessor.statusPointMonitorMessageProcessorId;
-		cellPrevState.appendChild(messageProcessorIdNode);
+	var deleteIconNode = deleteActionIcon.cloneNode(true);
+	deleteIconNode.href = "javascript:deleteAction(" + newRowIdNum + ")";
+	cellDelete.appendChild(deleteIconNode);
+	
+	if(processor) {
+		var processorIdNode = document.createElement("input");
+		processorIdNode.name = 'processors[' + (rowNum-1) + '].statusPointMonitorProcessorId';
+		processorIdNode.type = 'hidden';
+		processorIdNode.className = 'statusPointMonitorProcessorId';
+		processorIdNode.value = processor.statusPointMonitorProcessorId;
+		cellPrevState.appendChild(processorIdNode);
 		
-		prevSelectNode.value = statusPointMonitorMessageProcessor.prevState;
-		nextSelectNode.value = statusPointMonitorMessageProcessor.nextState;
-		actionTypeSelectNode.value = statusPointMonitorMessageProcessor.actionType;
+		prevSelectNode.value = processor.prevState;
+		nextSelectNode.value = processor.nextState;
+		actionTypeSelectNode.value = processor.actionType;
+	} else {
+		//Highlight new row
+		flashYellow(newRow.id);
 	}
-	
-	var cellDelete = newRow.insertCell(3);
-	
-	icon = deleteActionIcon.cloneNode(true);
-	icon.href = "javascript:deleteAction(" + newRowIdNum + ")";
-	cellDelete.appendChild(icon);
 }
 
-function initWithMessageProcessors(statusPointMonitorMessageProcessors) {
+function initWithProcessors(processors) {
 	addAction.nextRowIdNum = 0;
-	addAction.rowIdNums = [];
-	if (statusPointMonitorMessageProcessors) {
-		for (var index = 0; index < statusPointMonitorMessageProcessors.length; index++) {
-			addAction(statusPointMonitorMessageProcessors[index]);
+	if (processors) {
+		for (var index = 0; index < processors.length; index++) {
+			addAction(processors[index]);
 		}
 	}
 }

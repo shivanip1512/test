@@ -63,10 +63,4 @@ public enum BuiltInAttribute implements Attribute {
     public String getKey() {
         return this.name();
     }
-    
-    @Override
-    public Object getDatabaseRepresentation() {
-        return getKey();
-    }
-    
 }

@@ -2,12 +2,12 @@ package com.cannontech.amr.monitors.message;
 
 import java.io.Serializable;
 
-import com.cannontech.amr.statusPointProcessing.model.OutageActionType;
+import com.cannontech.amr.statusPointMonitoring.model.OutageActionType;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 
 /**
- * JMS Queue name: yukon.notif.obj.amr.StatusPointMonitorMessage
+ * JMS Queue name: yukon.notif.obj.amr.OutageJmsMessage
  */
 
 public class OutageJmsMessage implements Serializable {

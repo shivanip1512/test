@@ -14,8 +14,7 @@
 <cti:msg var="monitoringHeaderText" key="yukon.web.modules.amr.statusPointMonitorsWidget.tableHeader.monitoring"/>
 <cti:msg var="enabledHeaderText" key="yukon.web.modules.amr.statusPointMonitorsWidget.tableHeader.enabled"/>
 <cti:msg var="createNewText" key="yukon.web.modules.amr.statusPointMonitorsWidget.createNew"/>
-<cti:msg var="editActionTitleText" key="yukon.web.modules.amr.statusPointMonitorsWidget.actionTitle.edit"/>
-<cti:msg var="statusPointProcessingActionTitleText" key="yukon.web.modules.amr.statusPointMonitorsWidget.actionTitle.statusPointProcessing"/>
+<cti:msg var="statusPointMonitoringActionTitleText" key="yukon.web.modules.amr.statusPointMonitorsWidget.actionTitle.statusPointMonitoring"/>
 <cti:msg var="enableText" key="yukon.common.enable"/> 
 <cti:msg var="disableText" key="yukon.common.disable"/> 
 
@@ -47,25 +46,25 @@
         		</c:if>
         		
         		<tr>
-        			<cti:url var="viewStatusPointProcessingUrl" value="/spring/amr/statusPointProcessing/process/process">
+        			<cti:url var="viewStatusPointMonitoringUrl" value="/spring/amr/statusPointMonitoring/viewPage">
         				<cti:param name="statusPointMonitorId" value="${monitorId}"/>
         			</cti:url>
         				
         			<%-- action icons --%>
         			<td>
-        				<a href="${viewStatusPointProcessingUrl}" title="${statusPointProcessingActionTitleText} (${monitorName})" style="text-decoration:none;">
+        				<a href="${viewStatusPointMonitoringUrl}" title="${statusPointMonitoringActionTitleText} (${monitorName})" style="text-decoration:none;">
         					<img src="${cog}" onmouseover="javascript:this.src='${cogOver}'" onmouseout="javascript:this.src='${cog}'">
         				</a>
         			</td>
         			
         			<%-- monitor name --%>
         			<td class="${tdClass}">
-        				<a href="${viewStatusPointProcessingUrl}" title="${statusPointProcessingActionTitleText} (${monitorName})">${monitorName}</a>
+        				<a href="${viewStatusPointMonitoringUrl}" title="${statusPointMonitoringActionTitleText} (${monitorName})">${monitorName}</a>
         			</td>
                     			
         			<%-- monitoring count --%>
         			<td class="${tdClass}" style="text-align:right;">
-        				<cti:dataUpdaterValue type="STATUS_POINT_PROCESSING" identifier="${monitorId}/MONITORING_COUNT"/>
+        				<cti:dataUpdaterValue type="STATUS_POINT_MONITORING" identifier="${monitorId}/MONITORING_COUNT"/>
         			</td>
         			
         			<%-- enable/disable --%>
@@ -91,7 +90,7 @@
 
 <div style="text-align:right;padding-top:5px;">
     <%-- CREATE NEW STATUS POINT MONITOR FORM --%>
-    <form id="createNewStatusPointMonitorForm_${widgetParameters.widgetId}" action="/spring/amr/statusPointProcessing/create" method="get">
+    <form id="createNewStatusPointMonitorForm_${widgetParameters.widgetId}" action="/spring/amr/statusPointMonitoring/creationPage" method="get">
         <tags:slowInput myFormId="createNewStatusPointMonitorForm_${widgetParameters.widgetId}" labelBusy="${createNewText}" label="${createNewText}"/>
         <input type="hidden" value="0" name="statusPointMonitorId">
     </form>

@@ -1135,7 +1135,8 @@ span.dateRangeInputField {
     white-space: nowrap;
 }
 
-div.pointMonitorContainer {
+div.mediumContainer {
+    margin-top: 15px;
     width: 50%;
 }
 

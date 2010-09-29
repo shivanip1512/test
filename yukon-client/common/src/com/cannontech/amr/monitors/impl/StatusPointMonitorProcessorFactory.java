@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.monitors.message.OutageJmsMessage;
-import com.cannontech.amr.statusPointProcessing.dao.StatusPointMonitorDao;
-import com.cannontech.amr.statusPointProcessing.model.StatusPointMonitor;
-import com.cannontech.amr.statusPointProcessing.model.StatusPointMonitorMessageProcessor;
+import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
+import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitorProcessor;
+import com.cannontech.amr.statusPointMonitoring.dao.StatusPointMonitorDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
@@ -57,53 +57,55 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
                     // non devices can't be in groups
                     return;
                 }
-                SimpleDevice simpleDevice = new SimpleDevice(paoIdentifier);
-                
-                DeviceGroup groupToMonitor = deviceGroupService.resolveGroupName(statusPointMonitor.getGroupName());
-                boolean deviceInGroup = deviceGroupService.isDeviceInGroup(groupToMonitor, simpleDevice);
-                if (!deviceInGroup) {
-                    return;
-                }
                 
                 //check to make sure this point is a status point
                 PointType pointType = richPointData.getPaoPointIdentifier().getPointIdentifier().getPointType(); 
                 if (!pointType.isStatus()) {
                     return;
                 }
+                
+                SimpleDevice simpleDevice = new SimpleDevice(paoIdentifier);
+                DeviceGroup groupToMonitor = deviceGroupService.resolveGroupName(statusPointMonitor.getGroupName());
+                boolean deviceInGroup = deviceGroupService.isDeviceInGroup(groupToMonitor, simpleDevice);
+                if (!deviceInGroup) {
+                    return;
+                }
 
                 // RichPointData matches the attribute we're looking for?
-                if (attributeService.isPointAttribute(richPointData.getPaoPointIdentifier(), statusPointMonitor.getAttribute())) {
-                    PointValueHolder currentValue = richPointData.getPointValue();
+                if (!attributeService.isPointAttribute(richPointData.getPaoPointIdentifier(), statusPointMonitor.getAttribute())) {
+                    return;
+                }
+                
+                LitePoint litePoint = pointDao.getLitePoint(richPointData.getPointValue().getId());
+                
+                // point's StateGroup matches the StateGroup we are monitoring?
+                if (!(litePoint.getStateGroupID() == statusPointMonitor.getStateGroup().getStateGroupID())) {
+                    return;
+                }
+                
+                PointValueHolder nextValue = richPointData.getPointValue();
+                
+                log.debug("Point " + richPointData.getPaoPointIdentifier() + " caught by Status Point Monitor: " + statusPointMonitor + " with value: " + nextValue);
+                
+                for (StatusPointMonitorProcessor statusPointMonitorProcessor : statusPointMonitor.getProcessors()) {
                     
-                    LitePoint litePoint = pointDao.getLitePoint(richPointData.getPointValue().getId());
+                    boolean needPreviousValue = needPreviousValue(statusPointMonitorProcessor);
+                    PointValueHolder previousValue = null;
+                    if (needPreviousValue) {
+                        previousValue = getPreviousValueForPoint(nextValue);
+                    }
                     
-                    // point's StateGroup matches the StateGroup we are monitoring?
-                    if (litePoint.getStateGroupID() == statusPointMonitor.getStateGroup().getStateGroupID()) {
-                        
-                        log.debug("Point " + richPointData.getPaoPointIdentifier() + " caught by Status Point Monitor: " + statusPointMonitor + " with value: " + currentValue);
-                        
-                        for (StatusPointMonitorMessageProcessor statusPointMonitorMessageProcessor : statusPointMonitor.getStatusPointMonitorMessageProcessors()) {
-                            
-                            boolean needPreviousValue = needPreviousValue(statusPointMonitorMessageProcessor);
-                            PointValueHolder previousValue = null;
-                            if (needPreviousValue) {
-                                previousValue = getPreviousValueForPoint(currentValue);
-                                log.debug("Previous value of point:" + previousValue.getId() + " is " + previousValue.getValue());
-                            }
-                            
-                            boolean shouldSendMessage = shouldSendMessage(statusPointMonitorMessageProcessor, currentValue, previousValue);
+                    boolean shouldSendMessage = shouldSendMessage(statusPointMonitorProcessor, nextValue, previousValue);
 
-                            if (shouldSendMessage) {
-                                OutageJmsMessage outageJmsMessage = new OutageJmsMessage();
-                                outageJmsMessage.setSource(statusPointMonitor.getStatusPointMonitorName());
-                                outageJmsMessage.setActionType(statusPointMonitorMessageProcessor.getActionTypeEnum());
-                                outageJmsMessage.setPaoIdentifier(richPointData.getPaoPointIdentifier().getPaoIdentifier());
-                                outageJmsMessage.setPointValueQualityHolder(richPointData.getPointValue());
-                                
-                                log.debug("Outage message pushed to jms queue: " + outageJmsMessage);
-                                jmsTemplate.convertAndSend("yukon.notif.obj.amr.OutageJmsMessage", outageJmsMessage);
-                            }
-                        }
+                    if (shouldSendMessage) {
+                        OutageJmsMessage outageJmsMessage = new OutageJmsMessage();
+                        outageJmsMessage.setSource(statusPointMonitor.getStatusPointMonitorName());
+                        outageJmsMessage.setActionType(statusPointMonitorProcessor.getActionTypeEnum());
+                        outageJmsMessage.setPaoIdentifier(richPointData.getPaoPointIdentifier().getPaoIdentifier());
+                        outageJmsMessage.setPointValueQualityHolder(richPointData.getPointValue());
+                        
+                        log.debug("Outage message pushed to jms queue: " + outageJmsMessage);
+                        jmsTemplate.convertAndSend("yukon.notif.obj.amr.OutageJmsMessage", outageJmsMessage);
                     }
                 }
             }
@@ -112,7 +114,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
         return richPointDataListener;
     }
     
-    public static boolean needPreviousValue(StatusPointMonitorMessageProcessor processor) {
+    public static boolean needPreviousValue(StatusPointMonitorProcessor processor) {
         boolean prevDontCare = processor.getPrevStateType().isDontCare();
         boolean nextDontCare = processor.getNextStateType().isDontCare();
         boolean nextExact = processor.getNextStateType().isExact();
@@ -124,9 +126,8 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
         return true;
     }
     
-    public static boolean shouldSendMessage(StatusPointMonitorMessageProcessor processor, 
-                                             PointValueHolder currentPointValue, PointValueHolder prevPointValue) {
-        log.debug(processor);
+    public static boolean shouldSendMessage(StatusPointMonitorProcessor processor, 
+                                             PointValueHolder nextPointValue, PointValueHolder prevPointValue) {
         boolean shouldSendMessage = false;
         
         //prev states
@@ -135,73 +136,78 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
         boolean prevExact = processor.getPrevStateType().isExact();
         
         //next states
-        boolean currentDontCare = processor.getNextStateType().isDontCare();
-        boolean currentDiff = processor.getNextStateType().isDifference();
-        boolean currentExact = processor.getNextStateType().isExact();
+        boolean nextDontCare = processor.getNextStateType().isDontCare();
+        boolean nextDiff = processor.getNextStateType().isDifference();
         
         try {
-        //Send logic
-        if (prevDontCare) {
-            if (currentDontCare) {
-                shouldSendMessage = true;
-                log.debug("Send logic met: Previous State: " + processor.getPrevState() + " Next State: " + processor.getNextState());
-            } else if (currentDiff) {
-                shouldSendMessage = isDifference(currentPointValue, prevPointValue);
-                log.debug("Send logic met: Previous State: " + processor.getPrevState() + " Next State: " + processor.getNextState());
-            } else if (currentExact){
-                //TODO:need to throw all of this in a try/catch or something
-                shouldSendMessage = isExactMatch(processor.getNextStateInt(), currentPointValue);
-                log.debug("Send logic met: Previous State: " + processor.getPrevState() + " Next State: " + processor.getNextState());
+            //Send logic
+            if (prevDontCare) {
+                if (nextDontCare) {
+                    shouldSendMessage = true;
+                } else if (nextDiff) {
+                    shouldSendMessage = isDifference(nextPointValue, prevPointValue);
+                } else {
+                    //nextState must be exact
+                    shouldSendMessage = isExactMatch(processor.getNextStateInt(), nextPointValue);
+                }
+            } else if (prevDiff) {
+                if (nextDontCare) {
+                    shouldSendMessage = isDifference(nextPointValue, prevPointValue);
+                } else if (nextDiff) {
+                    shouldSendMessage = isDifference(nextPointValue, prevPointValue);
+                } else {
+                    //nextState must be exact
+                    shouldSendMessage = (isDifference(nextPointValue, prevPointValue) && (isExactMatch(processor.getNextStateInt(), nextPointValue)));
+                }
             }
-        } else if (prevDiff) {
-            if (currentDontCare) {
-                shouldSendMessage = isDifference(currentPointValue, prevPointValue);
-                log.debug("Send logic met: Previous State: " + processor.getPrevState() + " Next State: " + processor.getNextState());
-            } else if (currentDiff) {
-                shouldSendMessage = isDifference(currentPointValue, prevPointValue);
-                log.debug("Send logic met: Previous State: " + processor.getPrevState() + " Next State: " + processor.getNextState());
-            } else if (currentExact) {
-                shouldSendMessage = (isDifference(currentPointValue, prevPointValue) && (isExactMatch(processor.getNextStateInt(), currentPointValue)));
-                log.debug("Send logic met: Previous State: " + processor.getPrevState() + " Next State: " + processor.getNextState());
+            else if (prevExact) {
+                if (nextDontCare) {
+                    shouldSendMessage = isExactMatch(processor.getPrevStateInt(), prevPointValue);
+                } else if (nextDiff) {
+                    shouldSendMessage = (isDifference(nextPointValue, prevPointValue) && isExactMatch(processor.getPrevStateInt(), prevPointValue));
+                } else {
+                    //nextState must be exact
+                    shouldSendMessage = (isExactMatch(processor.getPrevStateInt(), prevPointValue) && isExactMatch(processor.getNextStateInt(), nextPointValue));
+                }
             }
+        } catch(NumberFormatException e) {
+            log.error("Caught exception when converting non-int state type to an int", e);
         }
-        else if (prevExact) {
-            if (currentDontCare) {
-                shouldSendMessage = isExactMatch(processor.getPrevStateInt(), prevPointValue);
-                log.debug("Send logic met: Previous State: " + processor.getPrevState() + " Next State: " + processor.getNextState());
-            } else if (currentDiff) {
-                shouldSendMessage = (isDifference(currentPointValue, prevPointValue) && isExactMatch(processor.getPrevStateInt(), prevPointValue));
-                log.debug("Send logic met: Previous State: " + processor.getPrevState() + " Next State: " + processor.getNextState());
-            } else if (currentExact) {
-                shouldSendMessage = (isExactMatch(processor.getPrevStateInt(), prevPointValue) && isExactMatch(processor.getNextStateInt(), currentPointValue));
-                log.debug("Send logic met: Previous State: " + processor.getPrevState() + " Next State: " + processor.getNextState());
-            }
-        }
-        } catch(NumberFormatException ignore) {
-            //Caught this exception when trying to convert a non-int state type to an int. Just ignore this.
+        
+        log.debug(processor);
+        log.debug("Should Send Message: " + shouldSendMessage);
+        log.debug("Next point value: " + nextPointValue.getValue() + " for pointId: " + nextPointValue.getId());
+        
+        if (prevPointValue != null) {
+            log.debug("Previous point value: " + prevPointValue.getValue() + " for pointId: " + prevPointValue.getId());
+        } else {
+            log.debug("Previous point value was not retrieved because it was not needed.");
         }
         
         return shouldSendMessage;
     }
     
-    public static boolean isDifference(PointValueHolder currentPointValue, PointValueHolder prevPointValue) {
+    public static boolean isDifference(PointValueHolder nextPointValue, PointValueHolder prevPointValue) {
         if (prevPointValue == null) {
             return true;
         }
-        return currentPointValue.getValue() != prevPointValue.getValue();
+        return nextPointValue.getValue() != prevPointValue.getValue();
     }
     
     public static boolean isExactMatch(int processorPointValue, PointValueHolder pointValue) {
+        
+        //Safety check for points that don't have a previous value yet in the database
         if (pointValue == null) {
             return false;
         }
-        return processorPointValue == (int)pointValue.getValue();
+        int pointValueAsInt = (int)pointValue.getValue();
+        return processorPointValue == pointValueAsInt;
     }
 
     private PointValueHolder getPreviousValueForPoint(PointValueHolder pointValueQualityHolder) {
-        Date currentTimeStamp = pointValueQualityHolder.getPointDataTimeStamp();
+        Date nextTimeStamp = pointValueQualityHolder.getPointDataTimeStamp();
         int pointId = pointValueQualityHolder.getId();
-        List<PointValueHolder> pointPrevValueList = rawPointHistoryDao.getLimitedPointData(pointId, null, currentTimeStamp, Clusivity.INCLUSIVE_EXCLUSIVE, Order.REVERSE, 1);
+        List<PointValueHolder> pointPrevValueList = rawPointHistoryDao.getLimitedPointData(pointId, null, nextTimeStamp, Clusivity.INCLUSIVE_EXCLUSIVE, Order.REVERSE, 1);
         
         if (pointPrevValueList.size() > 0) { 
             PointValueHolder pointValuePrev = pointPrevValueList.get(0);

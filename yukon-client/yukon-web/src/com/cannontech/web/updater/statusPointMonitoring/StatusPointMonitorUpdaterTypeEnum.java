@@ -1,4 +1,4 @@
-package com.cannontech.web.updater.statusPointProcessing;
+package com.cannontech.web.updater.statusPointMonitoring;
 
 public enum StatusPointMonitorUpdaterTypeEnum {
 

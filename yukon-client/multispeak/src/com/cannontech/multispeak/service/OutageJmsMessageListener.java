@@ -3,9 +3,9 @@ package com.cannontech.multispeak.service;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.monitors.message.OutageJmsMessage;
-import com.cannontech.amr.statusPointProcessing.model.OutageActionType;
+import com.cannontech.amr.statusPointMonitoring.model.OutageActionType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -48,6 +48,7 @@ public class OutageJmsMessageListener implements MessageListener {
     private MultispeakFuncs multispeakFuncs;
     private MspIdentifiablePaoService mspIdentifiablePaoService;
     private PaoDefinitionDao paoDefinitionDao;
+    private AtomicLong atomicLong = new AtomicLong();
     
     @PostConstruct
     public void initialize() {
@@ -61,7 +62,7 @@ public class OutageJmsMessageListener implements MessageListener {
         ImmutableList.Builder<MultispeakVendor> supportsOutage = ImmutableList.builder();
         for (MultispeakVendor mspVendor : allVendors) {
 
-            if (mspVendor.getVendorID() > 0) {
+            if (mspVendor.getVendorID() > 0 && (mspVendor.getMspInterfaceMap().get(MultispeakDefines.OA_Server_STR) != null)) {
                 OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor);
                 
                 if (port != null) {
@@ -124,8 +125,7 @@ public class OutageJmsMessageListener implements MessageListener {
                 
                 OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor);
                 if (port != null) {
-                    Calendar now = Calendar.getInstance();
-                    String transactionId = String.valueOf(now.getTimeInMillis());
+                    String transactionId = String.valueOf(atomicLong.getAndIncrement());
                     ErrorObject[] errObjects = port.ODEventNotification(odEvents, transactionId);
                     if( errObjects != null && errObjects.length > 0) {
                         multispeakFuncs.logErrorObjects(endpointURL, "ODEventNotification", errObjects);
@@ -160,6 +160,11 @@ public class OutageJmsMessageListener implements MessageListener {
         String objectId = mspIdentifiablePaoService.getObjectId(paoIdentifier);
         outageDetectionEvent.setOutageDetectDeviceType(getOutageDetectDeviceType(paoIdentifier));
         outageDetectionEvent.setObjectID(objectId);
+        
+        outageEventLogService.outageEventGenerated(outageDetectionEvent.getOutageEventType().getValue(), 
+                                                   outageDetectionEvent.getEventTime().getTime(), 
+                                                   outageDetectionEvent.getOutageDetectDeviceType().getValue(), 
+                                                   outageDetectionEvent.getObjectID());
         
         return outageDetectionEvent;
     }

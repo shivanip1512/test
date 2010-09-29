@@ -579,7 +579,7 @@
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
-                <constructor-arg value="STATUS_POINT_PROCESSING"/>
+                <constructor-arg value="STATUS_POINT_MONITORING"/>
             </bean>
         </property>
     </bean>
@@ -672,7 +672,7 @@
                 <entry key="TAMPER_FLAG_PROCESSING">
                     <ref local="tamperFlagMonitorBackingService"/>
                 </entry>
-                <entry key="STATUS_POINT_PROCESSING">
+                <entry key="STATUS_POINT_MONITORING">
                     <ref local="statusPointMonitorBackingService"/>
                 </entry>
                 <entry key="VALIDATION_PROCESSING">
@@ -830,9 +830,9 @@
     <bean id="monitoringCountTamperFlagProcessingUpdaterHandler" class="com.cannontech.web.updater.tamperFlagProcessing.handler.MonitoringCountTamperFlagProcessingUpdaterHandler"/>
     
     <!-- status point -->
-    <bean id="statusPointMonitorBackingService" class="com.cannontech.web.updater.statusPointProcessing.StatusPointMonitorBackingService">
+    <bean id="statusPointMonitorBackingService" class="com.cannontech.web.updater.statusPointMonitoring.StatusPointMonitorBackingService">
     </bean>
-    <bean id="monitoringCountStatusPointProcessingUpdaterHandler" class="com.cannontech.web.updater.statusPointProcessing.handler.MonitoringCountStatusPointProcessingUpdaterHandler"/>
+    <bean id="monitoringCountStatusPointProcessingUpdaterHandler" class="com.cannontech.web.updater.statusPointMonitoring.handler.MonitoringCountStatusPointProcessingUpdaterHandler"/>
     
     <!-- validation -->
     <bean id="validationMonitorBackingService" class="com.cannontech.web.updater.validationProcessing.ValidationMonitorBackingService">

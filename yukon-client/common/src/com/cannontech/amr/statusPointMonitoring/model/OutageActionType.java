@@ -1,4 +1,4 @@
-package com.cannontech.amr.statusPointProcessing.model;
+package com.cannontech.amr.statusPointMonitoring.model;
 
 public enum OutageActionType {
     Outage,

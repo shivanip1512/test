@@ -1,18 +1,18 @@
-package com.cannontech.amr.statusPointProcessing.model;
+package com.cannontech.amr.statusPointMonitoring.model;
 
-public class StatusPointMonitorMessageProcessor {
+public class StatusPointMonitorProcessor {
 
-    private Integer statusPointMonitorMessageProcessorId;
+    private Integer statusPointMonitorProcessorId;
     private String prevState;
     private String nextState;
     private OutageActionType actionType;
     
-    public void setStatusPointMonitorMessageProcessorId(Integer statusPointMonitorMessageProcessorId) {
-        this.statusPointMonitorMessageProcessorId = statusPointMonitorMessageProcessorId;
+    public void setStatusPointMonitorProcessorId(Integer statusPointMonitorProcessorId) {
+        this.statusPointMonitorProcessorId = statusPointMonitorProcessorId;
     }
     
-    public Integer getStatusPointMonitorMessageProcessorId() {
-        return statusPointMonitorMessageProcessorId;
+    public Integer getStatusPointMonitorProcessorId() {
+        return statusPointMonitorProcessorId;
     }
     
     public void setPrevState(String prevState) {
@@ -27,12 +27,8 @@ public class StatusPointMonitorMessageProcessor {
         return convertStateToSpecial(prevState);
     }
     
-    public int getPrevStateInt() {
-        try {
-            return convertStateToInt(prevState);
-        } catch (NumberFormatException e) {
-            return -1;
-        }
+    public int getPrevStateInt() throws NumberFormatException {
+        return convertStateToInt(prevState);
     }
     
     public void setNextState(String nextState) {
@@ -47,12 +43,8 @@ public class StatusPointMonitorMessageProcessor {
         return convertStateToSpecial(nextState);
     }
     
-    public int getNextStateInt() {
-        try {
-            return convertStateToInt(nextState);
-        } catch (NumberFormatException e) {
-            return -1;
-        }
+    public int getNextStateInt() throws NumberFormatException {
+        return convertStateToInt(nextState);
     }
     
     public String getActionType() {
@@ -105,7 +97,7 @@ public class StatusPointMonitorMessageProcessor {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        StatusPointMonitorMessageProcessor other = (StatusPointMonitorMessageProcessor) obj;
+        StatusPointMonitorProcessor other = (StatusPointMonitorProcessor) obj;
         if (actionType == null) {
             if (other.actionType != null)
                 return false;
@@ -126,8 +118,8 @@ public class StatusPointMonitorMessageProcessor {
 
     @Override
     public String toString() {
-        return String.format("StatusPointMonitorMessageProcessor [actionType=%s, nextState=%s, prevState=%s, statusPointMonitorMessageProcessorId=%s]",
+        return String.format("StatusPointMonitorProcessor [actionType=%s, nextState=%s, prevState=%s, statusPointMonitorProcessorId=%s]",
                              actionType, nextState, prevState,
-                             statusPointMonitorMessageProcessorId);
+                             statusPointMonitorProcessorId);
     }
 }

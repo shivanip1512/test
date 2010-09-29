@@ -1,36 +1,36 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib tagdir="/WEB-INF/tags/amr" prefix="amr" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
+<%@ taglib tagdir="/WEB-INF/tags/ext" prefix="ext" %>
+<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i" %>
 
-<cti:standardPage module="amr" page="statusPointProcessing">
+<cti:standardPage module="amr" page="statusPointMonitorView">
 
     <cti:standardMenu menuSelection="" />
     
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         <cti:crumbLink url="/spring/meter/start" title="Metering" />
-        <cti:crumbLink>${pageTitle}</cti:crumbLink>
+        <cti:crumbLink><i:inline key=".title" /></cti:crumbLink>
     </cti:breadCrumbs>
     
-    <h2><cti:msg2 key=".title" /></h2>
+    <h2><i:inline key=".title" /></h2>
     <br>
     
-    <c:if test="${not empty param.processError}">
-        <div class="errorRed">${param.processError}</div>
-    </c:if>
+    <cti:flashScopeMessages/>
     
     <%-- MAIN DETAILS --%>
     <tags:formElementContainer nameKey="sectionHeader">
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".name">
-                ${statusPointMonitor.statusPointMonitorName}
+                <spring:escapeBody htmlEscape="true">${statusPointMonitor.statusPointMonitorName}</spring:escapeBody>
             </tags:nameValue2>
                         
             <tags:nameValue2 nameKey=".monitoring">
-                <cti:dataUpdaterValue type="STATUS_POINT_PROCESSING" identifier="${statusPointMonitor.statusPointMonitorId}/MONITORING_COUNT"/>
+                <cti:dataUpdaterValue type="STATUS_POINT_MONITORING" identifier="${statusPointMonitor.statusPointMonitorId}/MONITORING_COUNT"/>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".deviceGroup">
@@ -51,27 +51,22 @@
             
             <%-- enable/disable monitoring --%>
             <tags:nameValue2 nameKey=".statusPointMonitoring">
-                ${statusPointMonitorStatus}
+                <i:inline key="${statusPointMonitor.evaluatorStatus}"/>
             </tags:nameValue2>
             
         </tags:nameValueContainer2>
         
-        <br>
-        
         <c:choose>
-            <c:when test="${fn:length(statusPointMonitor.statusPointMonitorMessageProcessors) == 0}">
-                <cti:msg2 key=".stateActionsTable.noProcessors" />
-            </c:when>
-            <c:otherwise>
-                <tags:boxContainer2 nameKey="stateActionsTable" id="resTable" styleClass="pointMonitorContainer">
+            <c:when test="${not empty statusPointMonitor.processors}">
+                <tags:boxContainer2 nameKey="stateActionsTable" id="resTable" styleClass="mediumContainer">
                     <table class="compactResultsTable">
                         <tr>
-                            <th><cti:msg2 key=".stateActionsTable.prevState"/></th>
-                            <th><cti:msg2 key=".stateActionsTable.nextState"/></th>
-                            <th><cti:msg2 key=".stateActionsTable.action"/></th>
+                            <th><i:inline key=".stateActionsTable.header.prevState"/></th>
+                            <th><i:inline key=".stateActionsTable.header.nextState"/></th>
+                            <th><i:inline key=".stateActionsTable.header.action"/></th>
                         </tr>
                         
-                        <c:forEach items="${statusPointMonitor.statusPointMonitorMessageProcessors}" var="row" varStatus="status">
+                        <c:forEach items="${statusPointMonitor.processors}" var="row" varStatus="status">
                             <tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
                                 <td nowrap="nowrap">${prevStateStrings[status.index]}</td>
                                 <td nowrap="nowrap">${nextStateStrings[status.index]}</td>
@@ -80,15 +75,15 @@
                         </c:forEach>
                     </table>
                 </tags:boxContainer2>
-            </c:otherwise>
+            </c:when>
         </c:choose>
         
-        <br>
-        
-        <form id="editMonitorForm" action="/spring/amr/statusPointProcessing/edit" method="get">
-            <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}">
-        </form>
-        <tags:slowInput2 formId="editMonitorForm" key="edit" />
+        <div class="pageActionArea">        
+            <form id="editMonitorForm" action="/spring/amr/statusPointMonitoring/editPage" method="get">
+                <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}">
+                <tags:slowInput2 formId="editMonitorForm" key="edit"/>
+            </form>
+        </div>
     
     </tags:formElementContainer>
 </cti:standardPage>

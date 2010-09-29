@@ -1,12 +1,16 @@
-package com.cannontech.amr.statusPointProcessing.model;
+package com.cannontech.amr.statusPointMonitoring.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.monitors.PointMonitor;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.util.LazyList;
+import com.cannontech.common.util.SimpleSupplier;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.google.common.collect.ImmutableList;
 
 public class StatusPointMonitor implements PointMonitor, Comparable<StatusPointMonitor> {
 
@@ -16,7 +20,14 @@ public class StatusPointMonitor implements PointMonitor, Comparable<StatusPointM
 	private Attribute attribute;
 	private LiteStateGroup stateGroup;
 	private MonitorEvaluatorStatus evaluatorStatus;
-	private List<StatusPointMonitorMessageProcessor> messageProcessors = ImmutableList.of();
+	private List<StatusPointMonitorProcessor> processors = new LazyList<StatusPointMonitorProcessor>(new ArrayList<StatusPointMonitorProcessor>(), 
+                                                                            new SimpleSupplier<StatusPointMonitorProcessor>(StatusPointMonitorProcessor.class));
+	
+	public StatusPointMonitor() {
+	    setGroupName(SystemGroupEnum.ROOT.getFullPath());
+        setAttribute((Attribute)BuiltInAttribute.FAULT_STATUS);
+        setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
+	}
 	
 	public Integer getStatusPointMonitorId() {
 		return statusPointMonitorId;
@@ -66,23 +77,23 @@ public class StatusPointMonitor implements PointMonitor, Comparable<StatusPointM
 		this.evaluatorStatus = evaluatorStatus;
 	}
 	
-	public void setStatusPointMonitorMessageProcessors(List<StatusPointMonitorMessageProcessor> statusPointMonitorMessageProcessors) {
-        this.messageProcessors = statusPointMonitorMessageProcessors;
+	public void setProcessors(List<StatusPointMonitorProcessor> processors) {
+        this.processors = processors;
     }
 	
-    public List<StatusPointMonitorMessageProcessor> getStatusPointMonitorMessageProcessors() {
-        return messageProcessors;
+    public List<StatusPointMonitorProcessor> getProcessors() {
+        return processors;
     }
     
     @Override
     public String toString() {
-        return String.format("StatusPointMonitor [attribute=%s, evaluatorStatus=%s, groupName=%s, stateGroup=%s, statusPointMonitorId=%s, statusPointMonitorMessageProcessors=%s, statusPointMonitorName=%s]",
+        return String.format("StatusPointMonitor [attribute=%s, evaluatorStatus=%s, groupName=%s, stateGroup=%s, statusPointMonitorId=%s, statusPointMonitorProcessors=%s, statusPointMonitorName=%s]",
                              attribute, evaluatorStatus, groupName, stateGroup,
                              statusPointMonitorId,
-                             messageProcessors,
+                             processors,
                              statusPointMonitorName);
     }
-
+    
     @Override
 	public int compareTo(StatusPointMonitor o) {
 		return this.getStatusPointMonitorName().compareToIgnoreCase(o.getStatusPointMonitorName());

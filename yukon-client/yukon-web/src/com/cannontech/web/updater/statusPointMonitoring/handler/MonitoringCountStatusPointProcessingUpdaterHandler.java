@@ -1,17 +1,16 @@
-package com.cannontech.web.updater.statusPointProcessing.handler;
+package com.cannontech.web.updater.statusPointMonitoring.handler;
 
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.statusPointProcessing.dao.StatusPointMonitorDao;
-import com.cannontech.amr.statusPointProcessing.model.StatusPointMonitor;
+import com.cannontech.amr.statusPointMonitoring.dao.StatusPointMonitorDao;
+import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.StatusPointMonitorNotFoundException;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.updater.statusPointProcessing.StatusPointMonitorUpdaterTypeEnum;
+import com.cannontech.web.updater.statusPointMonitoring.StatusPointMonitorUpdaterTypeEnum;
 
 public class MonitoringCountStatusPointProcessingUpdaterHandler implements StatusPointProcessingUpdaterHandler {
 
@@ -32,10 +31,8 @@ public class MonitoringCountStatusPointProcessingUpdaterHandler implements Statu
 			int deviceCount = deviceGroupService.getDeviceCount(Collections.singletonList(group));
 			countStr = String.valueOf(deviceCount);
 			
-		} catch (StatusPointMonitorNotFoundException e) {
-			// no monitor by that id
 		} catch (NotFoundException e) {
-			// no group. that sucks, but it could totally happen at any time, don't blow up.
+			// no monitor by that id or no device group
 		}
 		
 		return countStr;

@@ -15,10 +15,4 @@ public class UserDefinedAttribute implements Attribute {
     public String getKey() {
         return key;
     }
-    
-    @Override
-    public Object getDatabaseRepresentation() {
-        return getKey();
-    }
-
 }

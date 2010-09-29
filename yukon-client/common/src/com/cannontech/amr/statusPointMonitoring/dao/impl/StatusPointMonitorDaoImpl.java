@@ -1,4 +1,4 @@
-package com.cannontech.amr.statusPointProcessing.dao.impl;
+package com.cannontech.amr.statusPointMonitoring.dao.impl;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -13,16 +13,15 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
-import com.cannontech.amr.statusPointProcessing.dao.StatusPointMonitorDao;
-import com.cannontech.amr.statusPointProcessing.model.StatusPointMonitor;
-import com.cannontech.amr.statusPointProcessing.model.StatusPointMonitorMessageProcessor;
+import com.cannontech.amr.statusPointMonitoring.dao.StatusPointMonitorDao;
+import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
+import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitorProcessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
-import com.cannontech.core.dao.StatusPointMonitorMessageProcessorNotFoundException;
-import com.cannontech.core.dao.StatusPointMonitorNotFoundException;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -55,12 +54,12 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao, Initial
         }
     };
     
-    private final YukonRowMapper<StatusPointMonitorMessageProcessor> statusPointMonitorMessageProcessorRowMapper =
-        new YukonRowMapper<StatusPointMonitorMessageProcessor>() {
+    private final YukonRowMapper<StatusPointMonitorProcessor> processorRowMapper =
+        new YukonRowMapper<StatusPointMonitorProcessor>() {
         @Override
-        public StatusPointMonitorMessageProcessor mapRow(YukonResultSet rs) throws SQLException {
-            StatusPointMonitorMessageProcessor retVal = new StatusPointMonitorMessageProcessor();
-            retVal.setStatusPointMonitorMessageProcessorId(rs.getInt("statusPointMonitorMessageProcessorId"));
+        public StatusPointMonitorProcessor mapRow(YukonResultSet rs) throws SQLException {
+            StatusPointMonitorProcessor retVal = new StatusPointMonitorProcessor();
+            retVal.setStatusPointMonitorProcessorId(rs.getInt("statusPointMonitorProcessorId"));
             retVal.setPrevState(rs.getString("prevState"));
             retVal.setNextState(rs.getString("nextState"));
             retVal.setActionType(rs.getString("actionType"));
@@ -72,11 +71,11 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao, Initial
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<StatusPointMonitor> statusPointMonitorTemplate;
-    private SimpleTableAccessTemplate<StoredStatusPointMonitorMessageProcessor> statusPointMonitorMessageProcessorTemplate;
+    private SimpleTableAccessTemplate<StoredStatusPointMonitorProcessor> statusPointMonitorProcessorTemplate;
     
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public StatusPointMonitor getStatusPointMonitorById(final Integer statusPointMonitorId) throws StatusPointMonitorNotFoundException {
+    public StatusPointMonitor getStatusPointMonitorById(final Integer statusPointMonitorId) throws NotFoundException {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT statusPointMonitorId, StatusPointMonitorName, GroupName, Attribute, StateGroupId, EvaluatorStatus");
@@ -89,11 +88,11 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao, Initial
         try {
             statusPointMonitor = yukonJdbcTemplate.queryForObject(sql, statusPointMonitorRowMapper);
         } catch (EmptyResultDataAccessException e) {
-            throw new StatusPointMonitorNotFoundException();
+            throw new NotFoundException("Status Point Monitor not found.", e);
         }
         
-        List<StatusPointMonitorMessageProcessor> statusPointMonitorMessageProcessors = getStatusPointMonitorMessageProcessorsByStatusPointMonitorId(statusPointMonitorId);
-        statusPointMonitor.setStatusPointMonitorMessageProcessors(statusPointMonitorMessageProcessors);
+        List<StatusPointMonitorProcessor> statusPointMonitorProcessors = getProcessorsByMonitorId(statusPointMonitorId);
+        statusPointMonitor.setProcessors(statusPointMonitorProcessors);
         
         return statusPointMonitor;
     }
@@ -102,30 +101,30 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao, Initial
     @Transactional
     public void save(StatusPointMonitor statusPointMonitor) {
         try {
-            List<StatusPointMonitorMessageProcessor> existingProcessorsList = Lists.newArrayList();
+            List<StatusPointMonitorProcessor> existingProcessorsList = Lists.newArrayList();
             if (statusPointMonitorTemplate.saveWillUpdate(statusPointMonitor)) {
-                // get existing MessageProcessors
-                existingProcessorsList = getStatusPointMonitorMessageProcessorsByStatusPointMonitorId(statusPointMonitor.getStatusPointMonitorId());
+                // get existing Processors
+                existingProcessorsList = getProcessorsByMonitorId(statusPointMonitor.getStatusPointMonitorId());
             }
             statusPointMonitorTemplate.save(statusPointMonitor);
             
-            //delete all message processors
-            for (StatusPointMonitorMessageProcessor messageProcessor : existingProcessorsList) {
-                deleteStatusPointMonitorMessageProcessor(messageProcessor.getStatusPointMonitorMessageProcessorId());
+            //delete all processors
+            for (StatusPointMonitorProcessor processor : existingProcessorsList) {
+                deleteProcessor(processor.getStatusPointMonitorProcessorId());
             }
             
-            List<StatusPointMonitorMessageProcessor> newProcessorsList = statusPointMonitor.getStatusPointMonitorMessageProcessors();
-            Set<StatusPointMonitorMessageProcessor> newProcessors = Sets.newHashSet(newProcessorsList);
+            List<StatusPointMonitorProcessor> newProcessorsList = statusPointMonitor.getProcessors();
+            Set<StatusPointMonitorProcessor> newProcessors = Sets.newHashSet(newProcessorsList);
             
             //re-add them... plus the new ones (with duplicates removed)
-            for (StatusPointMonitorMessageProcessor messageProcessor : newProcessors) {
-                StoredStatusPointMonitorMessageProcessor holder = new StoredStatusPointMonitorMessageProcessor();
-                holder.statusPointMonitorMessageProcessor = messageProcessor;
+            for (StatusPointMonitorProcessor processor : newProcessors) {
+                StoredStatusPointMonitorProcessor holder = new StoredStatusPointMonitorProcessor();
+                holder.statusPointMonitorProcessor = processor;
                 holder.parent = statusPointMonitor;
                 
                 //we can't do a save here, but it will try to do an update, which will fail
                 //--deliberately re-using the ID of the row we just deleted above
-                statusPointMonitorMessageProcessorTemplate.insert(holder);
+                statusPointMonitorProcessorTemplate.insert(holder);
             }
 
         } catch (DataIntegrityViolationException e) {
@@ -145,10 +144,8 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao, Initial
         List<StatusPointMonitor> statusPointMonitorList = yukonJdbcTemplate.query(sql, statusPointMonitorRowMapper); 
         
         for (StatusPointMonitor statusPointMonitor : statusPointMonitorList) {
-            List<StatusPointMonitorMessageProcessor> messageProcessors = getStatusPointMonitorMessageProcessorsByStatusPointMonitorId(statusPointMonitor.getStatusPointMonitorId());
-            if (messageProcessors != null) {
-                statusPointMonitor.setStatusPointMonitorMessageProcessors(messageProcessors);
-            }
+            List<StatusPointMonitorProcessor> processors = getProcessorsByMonitorId(statusPointMonitor.getStatusPointMonitorId());
+            statusPointMonitor.setProcessors(processors);
         }
         
         return statusPointMonitorList;
@@ -156,17 +153,17 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao, Initial
     
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<StatusPointMonitorMessageProcessor> getStatusPointMonitorMessageProcessorsByStatusPointMonitorId(int statusPointMonitorId) throws StatusPointMonitorMessageProcessorNotFoundException {
+    public List<StatusPointMonitorProcessor> getProcessorsByMonitorId(int statusPointMonitorId) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT StatusPointMonitorMessageProcessorId, StatusPointMonitorId, PrevState, NextState, ActionType");
-        sql.append("FROM StatusPointMonitorMessageProcessor");
+        sql.append("SELECT StatusPointMonitorProcessorId, StatusPointMonitorId, PrevState, NextState, ActionType");
+        sql.append("FROM StatusPointMonitorProcessor");
         sql.append("WHERE StatusPointMonitorId").eq(statusPointMonitorId);
-        sql.append("ORDER BY StatusPointMonitorMessageProcessorId");
+        sql.append("ORDER BY StatusPointMonitorProcessorId");
         
-        List<StatusPointMonitorMessageProcessor> messageProcessorList = yukonJdbcTemplate.query(sql, statusPointMonitorMessageProcessorRowMapper); 
+        List<StatusPointMonitorProcessor> processorList = yukonJdbcTemplate.query(sql, processorRowMapper); 
         
-        return messageProcessorList;
+        return processorList;
     }
     
     @Override
@@ -183,11 +180,11 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao, Initial
     }
     
     @Override
-    public boolean deleteStatusPointMonitorMessageProcessor(int statusPointMonitorMessageProcessorId) {
+    public boolean deleteProcessor(int processorId) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM StatusPointMonitorMessageProcessor");
-        sql.append("WHERE StatusPointMonitorMessageProcessorId").eq(statusPointMonitorMessageProcessorId);
+        sql.append("DELETE FROM StatusPointMonitorProcessor");
+        sql.append("WHERE StatusPointMonitorProcessorId").eq(processorId);
         int rowsAffected = yukonJdbcTemplate.update(sql);
         
         return rowsAffected > 0;
@@ -209,21 +206,18 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao, Initial
         }
     };
     
-    private FieldMapper<StoredStatusPointMonitorMessageProcessor> statusPointMonitorMessageProcessorFieldMapper = new FieldMapper<StoredStatusPointMonitorMessageProcessor>() {
-        public void extractValues(MapSqlParameterSource p, StoredStatusPointMonitorMessageProcessor holder) {
+    private FieldMapper<StoredStatusPointMonitorProcessor> statusPointMonitorProcessorFieldMapper = new FieldMapper<StoredStatusPointMonitorProcessor>() {
+        public void extractValues(MapSqlParameterSource p, StoredStatusPointMonitorProcessor holder) {
             p.addValue("StatusPointMonitorId", holder.parent.getStatusPointMonitorId());
-            p.addValue("PrevState", holder.statusPointMonitorMessageProcessor.getPrevState());
-            p.addValue("NextState", holder.statusPointMonitorMessageProcessor.getNextState());
-            p.addValue("ActionType", holder.statusPointMonitorMessageProcessor.getActionType());
+            p.addValue("PrevState", holder.statusPointMonitorProcessor.getPrevState());
+            p.addValue("NextState", holder.statusPointMonitorProcessor.getNextState());
+            p.addValue("ActionType", holder.statusPointMonitorProcessor.getActionType());
         }
-        public Number getPrimaryKey(StoredStatusPointMonitorMessageProcessor holder) {
-            if (holder.statusPointMonitorMessageProcessor == null) {
-                return null;
-            }
-            return holder.statusPointMonitorMessageProcessor.getStatusPointMonitorMessageProcessorId();
+        public Number getPrimaryKey(StoredStatusPointMonitorProcessor holder) {
+            return holder.statusPointMonitorProcessor.getStatusPointMonitorProcessorId();
         }
-        public void setPrimaryKey(StoredStatusPointMonitorMessageProcessor holder, int value) {
-            holder.statusPointMonitorMessageProcessor.setStatusPointMonitorMessageProcessorId(value);
+        public void setPrimaryKey(StoredStatusPointMonitorProcessor holder, int value) {
+            holder.statusPointMonitorProcessor.setStatusPointMonitorProcessorId(value);
         }
     };
     
@@ -233,15 +227,15 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao, Initial
         statusPointMonitorTemplate.withPrimaryKeyField("StatusPointMonitorId");
         statusPointMonitorTemplate.withFieldMapper(statusPointMonitorFieldMapper);
         
-        statusPointMonitorMessageProcessorTemplate = new SimpleTableAccessTemplate<StoredStatusPointMonitorMessageProcessor>(yukonJdbcTemplate, nextValueHelper);
-        statusPointMonitorMessageProcessorTemplate.withTableName("StatusPointMonitorMessageProcessor");
-        statusPointMonitorMessageProcessorTemplate.withPrimaryKeyField("StatusPointMonitorMessageProcessorId");
-        statusPointMonitorMessageProcessorTemplate.withFieldMapper(statusPointMonitorMessageProcessorFieldMapper);
+        statusPointMonitorProcessorTemplate = new SimpleTableAccessTemplate<StoredStatusPointMonitorProcessor>(yukonJdbcTemplate, nextValueHelper);
+        statusPointMonitorProcessorTemplate.withTableName("StatusPointMonitorProcessor");
+        statusPointMonitorProcessorTemplate.withPrimaryKeyField("StatusPointMonitorProcessorId");
+        statusPointMonitorProcessorTemplate.withFieldMapper(statusPointMonitorProcessorFieldMapper);
     }
     
-    private class StoredStatusPointMonitorMessageProcessor {
+    private class StoredStatusPointMonitorProcessor {
         StatusPointMonitor parent;
-        StatusPointMonitorMessageProcessor statusPointMonitorMessageProcessor;
+        StatusPointMonitorProcessor statusPointMonitorProcessor;
     }
     
     @Autowired

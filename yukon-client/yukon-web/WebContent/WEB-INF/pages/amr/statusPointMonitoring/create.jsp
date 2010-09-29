@@ -14,26 +14,22 @@
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         <cti:crumbLink url="/spring/meter/start" title="Metering" />
-        <cti:crumbLink><cti:msg2 key=".title" /></cti:crumbLink>
+        <cti:crumbLink><i:inline key=".title"/></cti:crumbLink>
     </cti:breadCrumbs>
     
-    <h2><cti:msg2 key=".title" /></h2>
+    <h2><i:inline key=".title" /></h2>
     <br>
     
-    <c:set var="statusPointMonitorId" value="${statusPointMonitorDto.statusPointMonitorId}"/>
-    <c:if test="${not empty editError}">
-        <div class="errorRed">${editError}</div>
-    </c:if>
-
-    <%-- MISC FORMS --%>
-    <form id="cancelForm" action="/spring/meter/start" method="get"></form>
+    <c:set var="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}"/>
     
-    <%-- UPDATE FORM --%>
-    <form:form commandName="statusPointMonitorDto" id="basicInfoForm" action="/spring/amr/statusPointProcessing/doCreate" method="post">
+    <cti:flashScopeMessages/>
+
+    <%-- CREATE FORM --%>
+    <form:form commandName="statusPointMonitor" id="basicInfoForm" action="/spring/amr/statusPointMonitoring/create" method="post">
     
         <form:hidden path="statusPointMonitorId"/>
                     
-        <tags:sectionContainer2 nameKey=".setup">
+        <tags:formElementContainer nameKey="setup">
             <tags:nameValueContainer2 style="border-collapse:separate;border-spacing:5px;">
             
                 <%-- name --%>
@@ -44,19 +40,20 @@
                 <%-- state group --%>
                 <tags:nameValue2 nameKey=".selectStateGroup">
                     <select name="stateGroup">
-                        <c:forEach items="${stateGroups}" var="stateGroupVar">
-                            <option value="${stateGroupVar.stateGroupName}">${stateGroupVar.stateGroupName}</option>
+                        <c:forEach items="${stateGroups}" var="stateGroup">
+                            <option value="${stateGroup}">${stateGroup.stateGroupName}</option>
                         </c:forEach>
                     </select>
                 </tags:nameValue2>
                 
             </tags:nameValueContainer2>
-        </tags:sectionContainer2>
+        </tags:formElementContainer>
             
         <%-- create / cancel --%>
-        <br>
-        <tags:slowInput2 formId="basicInfoForm" key="create"/>
-        <tags:slowInput2 formId="cancelForm" key="cancel"/>
+        <div class="pageActionArea">
+            <tags:slowInput2 formId="basicInfoForm" key="create"/>
+            <input type="submit" name="cancel" class="formSubmit" value="<i:inline key=".cancel"/>">
+        </div>
         
     </form:form>
 </cti:standardPage>

@@ -371,5 +371,7 @@
     <entry key="yukon.common.events.system.monitors.statusPointMonitorDeleted">Status Point Monitor Deleted with Id={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by user {6}</entry>
     <entry key="yukon.common.events.system.monitors.statusPointMonitorEnableDisable">Status Point Monitor with Id={7} set to {1} by user {2}</entry>
     
-    <entry key="yukon.common.events.system.outageEvent.mspMessageSentToVendor">Status Point Monitor {1} sent OutageDetectionEvent with EventType={2} ObjectId={3} DeviceType={4} to msp vendor={5}.</entry>
+    <entry key="yukon.common.events.system.outageEvent.mspMessageSentToVendor">Status Point Monitor {1} sent OutageDetectionEvent with eventType={2} objectId={3} deviceType={4} to Multispeak vendor={5}</entry>
+    <entry key="yukon.common.events.system.outageEvent.outageEventGenerated">OutageDetectionEvent generated with eventType={1} eventTime={11} deviceType={2} and objectId = {3}</entry>
+    
 </properties>

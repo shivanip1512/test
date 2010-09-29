@@ -1,11 +1,11 @@
-package com.cannontech.amr.statusPointProcessing.service;
+package com.cannontech.amr.statusPointMonitoring.service;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
-import com.cannontech.core.dao.StatusPointMonitorNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
 
 public interface StatusPointMonitorService {
 
-	public boolean delete(int statusPointMonitorId) throws StatusPointMonitorNotFoundException;
+	public boolean delete(int statusPointMonitorId) throws NotFoundException;
 	
 	/**
 	 * Toggles monitor enabled status. If disabled, make enabled. If disabled, make enabled.
@@ -14,5 +14,5 @@ public interface StatusPointMonitorService {
 	 * @return
 	 * @throws StatusPointMonitorNotFoundException
 	 */
-	public MonitorEvaluatorStatus toggleEnabled(int statusPointMonitorId) throws StatusPointMonitorNotFoundException;
+	public MonitorEvaluatorStatus toggleEnabled(int statusPointMonitorId) throws NotFoundException;
 }

@@ -98,7 +98,7 @@
     <bean id="tamperFlagMonitorService" class="com.cannontech.amr.tamperFlagProcessing.service.impl.TamperFlagMonitorServiceImpl"/>
     
     <!-- StatusPoint monitor Service -->
-    <bean id="statusPointMonitorService" class="com.cannontech.amr.statusPointProcessing.service.impl.StatusPointMonitorServiceImpl"/>
+    <bean id="statusPointMonitorService" class="com.cannontech.amr.statusPointMonitoring.service.impl.StatusPointMonitorServiceImpl"/>
     
     <!-- RFN Meter Read Service -->
     <bean id="rfnMeterReadService" class="com.cannontech.amr.rfn.service.RfnMeterReadService"/>

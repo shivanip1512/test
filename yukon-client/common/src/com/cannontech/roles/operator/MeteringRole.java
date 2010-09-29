@@ -32,6 +32,6 @@ public interface MeteringRole {
     public static final int PHASE_DETECT = OperatorRoleDefs.METERING_PROPERTYID_BASE - 15; // -20215
     /** Access to the Validation Engine setup and processing widget on metering start page */
     public static final int VALIDATION_ENGINE = OperatorRoleDefs.METERING_PROPERTYID_BASE - 16; // -20216
-    /** Access to Status Point Processing */
-    public static final int STATUS_POINT_PROCESSING = OperatorRoleDefs.METERING_PROPERTYID_BASE - 17; // -20217
+    /** Access to Status Point Monitoring */
+    public static final int STATUS_POINT_MONITORING = OperatorRoleDefs.METERING_PROPERTYID_BASE - 17; // -20217
 }

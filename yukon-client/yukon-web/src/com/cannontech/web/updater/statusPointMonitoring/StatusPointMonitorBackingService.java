@@ -1,4 +1,4 @@
-package com.cannontech.web.updater.statusPointProcessing;
+package com.cannontech.web.updater.statusPointMonitoring;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
-import com.cannontech.web.updater.statusPointProcessing.handler.StatusPointProcessingUpdaterHandler;
+import com.cannontech.web.updater.statusPointMonitoring.handler.StatusPointProcessingUpdaterHandler;
 
 public class StatusPointMonitorBackingService implements UpdateBackingService, InitializingBean {
 
