@@ -149,7 +149,7 @@ public class ProgramController extends ProgramControllerBase {
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-        programControllerHelper.initBinder(binder, userContext);
+        programControllerHelper.initBinder(binder, userContext, "programList");
         loadGroupControllerHelper.initBinder(binder, userContext);
     }
 

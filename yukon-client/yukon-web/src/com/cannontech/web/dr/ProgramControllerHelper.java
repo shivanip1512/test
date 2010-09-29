@@ -103,10 +103,10 @@ public class ProgramControllerHelper {
     private ProgramNameField programNameField;
     private FavoritesDao favoritesDao;
 
-    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+    public void initBinder(WebDataBinder binder, YukonUserContext userContext, String page) {
         if (binder.getTarget() != null) {
             MessageCodesResolver msgCodesResolver =
-                new YukonMessageCodeResolver("yukon.web.modules.dr.programList.");
+                new YukonMessageCodeResolver("yukon.web.modules.dr." + page + ".");
             binder.setMessageCodesResolver(msgCodesResolver);
         }
 

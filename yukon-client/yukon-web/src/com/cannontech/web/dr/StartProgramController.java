@@ -15,7 +15,6 @@ import org.joda.time.LocalTime;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -596,12 +595,7 @@ public class StartProgramController extends ProgramControllerBase {
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-        if (binder.getTarget() != null) {
-            DefaultMessageCodesResolver msgCodesResolver = new DefaultMessageCodesResolver();
-            msgCodesResolver.setPrefix("yukon.web.modules.dr.program.startProgram.");
-            binder.setMessageCodesResolver(msgCodesResolver);
-        }
-        programControllerHelper.initBinder(binder, userContext);
+        programControllerHelper.initBinder(binder, userContext, "program.startProgram");
     }
 
     private void addConstraintsInfoToModel(ModelMap model, Boolean fromBack,

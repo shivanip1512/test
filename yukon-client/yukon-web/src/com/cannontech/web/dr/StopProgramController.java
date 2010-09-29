@@ -10,7 +10,6 @@ import org.joda.time.Duration;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.WebDataBinder;
@@ -297,12 +296,7 @@ public class StopProgramController extends ProgramControllerBase {
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-        if (binder.getTarget() != null) {
-            DefaultMessageCodesResolver msgCodesResolver = new DefaultMessageCodesResolver();
-            msgCodesResolver.setPrefix("yukon.web.modules.dr.program.stopProgram.");
-            binder.setMessageCodesResolver(msgCodesResolver);
-        }
-        programControllerHelper.initBinder(binder, userContext);
+        programControllerHelper.initBinder(binder, userContext, "program.stopProgram");
     }
 
     private void assertStopGearAllowed(YukonUserContext userContext) {

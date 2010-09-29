@@ -14,7 +14,6 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
@@ -544,14 +543,7 @@ public class ControlAreaController {
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-    	
-    	if (binder.getTarget() != null) {
-            DefaultMessageCodesResolver msgCodesResolver = new DefaultMessageCodesResolver();
-            msgCodesResolver.setPrefix("yukon.web.modules.dr.controlArea.");
-            binder.setMessageCodesResolver(msgCodesResolver);
-        }
-    	
-        programControllerHelper.initBinder(binder, userContext);
+        programControllerHelper.initBinder(binder, userContext, "controlArea");
     }
 
     @Autowired

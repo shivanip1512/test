@@ -124,6 +124,7 @@
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.thresholdBlank">Threshold cannot be blank.</entry>
 <entry key="yukon.web.modules.dr.controlArea.typeMismatch.threshold">Invalid threshold value.</entry>
 <entry key="yukon.web.modules.dr.controlArea.typeMismatch.minRestoreOffset">Invalid offset value.</entry>
+<entry key="yukon.web.modules.dr.controlArea.typeMismatch.java.util.Date">Invalid date</entry>
 
 <!--  Program Field Values -->
 <entry key="yukon.web.modules.dr.program.value.STATE.ACTIVE">Active</entry>

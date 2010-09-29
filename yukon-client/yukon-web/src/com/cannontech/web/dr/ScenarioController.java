@@ -123,7 +123,7 @@ public class ScenarioController {
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-        programControllerHelper.initBinder(binder, userContext);
+        programControllerHelper.initBinder(binder, userContext, "programList");
     }
 
     @Autowired
