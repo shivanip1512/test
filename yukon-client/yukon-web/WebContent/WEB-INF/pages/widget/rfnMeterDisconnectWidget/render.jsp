@@ -27,7 +27,7 @@
     <c:otherwise>
 
         <tags:nameValueContainer2>
-            <tags:nameValue2 nameKey="yukon.web.modules.widgets.rfnMeterDisconnectWidget.disconnectStatus">${currentState}</tags:nameValue2>
+            <tags:nameValue2 nameKey="yukon.web.modules.widgets.rfnMeterDisconnectWidget.disconnectStatus"><cti:pointValue pointId="${pointId}"/></tags:nameValue2>
         </tags:nameValueContainer2>
         
         <br>
@@ -42,9 +42,12 @@
                 <c:otherwise>
                     <div class="errorMessage">
                         <i:inline key="yukon.web.modules.widgets.rfnMeterDisconnectWidget.sendCommand.error" arguments="${command}"/>
-                        <br>
                         <span>${responseStatus}</span>
                     </div>
+                    <c:if test="${not responseStatus eq 'FAILURE'}">
+                        <br><br>
+                        <i:inline key="yukon.web.modules.widgets.rfnMeterDisconnectWidget.sendCommand.error.lessSevere" arguments="${command}"/>
+                    </c:if>
                 </c:otherwise>
             </c:choose>
         </c:if>

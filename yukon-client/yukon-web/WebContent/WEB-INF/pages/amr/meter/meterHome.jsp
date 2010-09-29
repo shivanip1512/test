@@ -37,7 +37,7 @@
 	
 					<ct:widget bean="meterReadingsWidget" />
                     
-                    <c:if test="${isRFMesh}">
+                    <c:if test="${isRFMesh_JUST_HIDE_FOR_NOW}">
                         <ct:widget bean="rfnMeterInfoWidget" />
                     </c:if>
                     
