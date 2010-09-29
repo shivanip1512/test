@@ -31,7 +31,7 @@ public class StatusPointMonitorServiceImpl implements StatusPointMonitorService 
         
         // update
         statusPointMonitorDao.save(statusPointMonitor);
-		log.debug("Updated statusPointMonitor evaluator status: status=" + newStatus + ", statusPointMonitor=" + statusPointMonitor.toString());
+		log.debug("Updated statusPointMonitor evaluator status: status=" + newStatus + ", statusPointMonitor=" + statusPointMonitor);
 		
 		return newStatus;
 	}
