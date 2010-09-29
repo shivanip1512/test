@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   devicetypes
-*
-* Date:   6/15/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2008/10/28 19:21:40 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEVICETYPES_H__
-#define __DEVICETYPES_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 /* Definitions for Device types */
 #define TYPELMT2                             2
@@ -42,6 +26,10 @@
 #define TYPEMCT360                           75
 #define TYPEMCT370                           80
 #define TYPEMCT410                           85
+#define TYPEMCT420CL                         86
+#define TYPEMCT420CLD                        87
+#define TYPEMCT420FL                         88
+#define TYPEMCT420FLD                        89
 #define TYPEMCT470                           90
 #define TYPEMCT430                           91
 
@@ -176,29 +164,5 @@
 // Port types occupy the range 6000 to 6100.  !!!!!! DO NOT USE !!!!!!
 
 
-
-/*---------------------------------------------------------------------*
- * The defines below are the beginings of a list of system defined
- * device ids which are definately pseudo devices, but become necessary
- * due to the device model we have chosen.. (i.e. all manipulation occurs
- * on a device.)
- *
- * These "devices" manage a request messages to do a configuration on
- * a field device which may not otherwise exist in out database.  A
- * suitable identfier is included in the command to allow the command to
- * be completed.
- *
- * To avoid real devices, all deviceids below are always to be negative
- * values.
- *---------------------------------------------------------------------*/
-
 #define SYS_DID_SYSTEM        0     // A catchall for any op which needs an ID
-//#define SYS_DID_VCONFIG       -50   // A versacom configuration device.. knows what to do with UFOs.
-//#define SYS_DID_MCTCONFIG     -51   // An mct configuration device.. knows what to do with UFOs.
-//#define SYS_DID_FPCONFIG      -52   // A fisher pierce configuration device.. knows what to do with UFOs.
-//#define SYS_DID_SA105CONFIG   -53   // A scientific atlanta configuration device.. knows what to do with UFOs.
-//#define SYS_DID_SA205CONFIG   -53   // A scientific atlanta configuration device.. knows what to do with UFOs.
-//#define SYS_DID_SA306CONFIG   -53   // A scientific atlanta configuration device.. knows what to do with UFOs.
 
-
-#endif // #ifndef __DEVICETYPES_H__

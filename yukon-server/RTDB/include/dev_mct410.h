@@ -18,7 +18,6 @@ private:
     static       CommandSet       initCommandStore();
 
     static const read_key_store_t _readKeyStore;
-    static       read_key_store_t initReadKeyStore();
 
     static const ConfigPartsList  _config_parts;
     static       ConfigPartsList  initConfigParts();
@@ -93,6 +92,8 @@ private:
     void readSspec(const OUTMESS &OutMessage, list<OUTMESS *> &outList) const;
 
 protected:
+
+    static read_key_store_t initReadKeyStore();
 
     virtual bool getOperation( const UINT &cmd,  BSTRUCT &bst ) const;
 
@@ -358,7 +359,7 @@ protected:
     virtual INT executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
     virtual INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
 
-    Mct4xxDevice::ConfigPartsList getPartsList();
+    virtual ConfigPartsList getPartsList();
 
     virtual const read_key_store_t &getReadKeyStore(void) const;
 

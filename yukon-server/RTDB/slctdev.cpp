@@ -73,6 +73,7 @@
 #include "dev_mct310.h"
 #include "dev_mct31X.h"
 #include "dev_mct410.h"
+#include "dev_mct420.h"
 #include "dev_mct470.h"
 #include "dev_mct_lmt2.h"
 #include "dev_mct_broadcast.h"
@@ -199,6 +200,11 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPEMCT370:        NewDevice = CTIDBG_new Mct31xDevice;     break;
 
         case TYPEMCT410:        NewDevice = CTIDBG_new Mct410Device;     break;
+
+        case TYPEMCT420CL:
+        case TYPEMCT420CLD:
+        case TYPEMCT420FL:
+        case TYPEMCT420FLD:     NewDevice = CTIDBG_new Mct420Device;     break;
 
         case TYPEMCT430:
         case TYPEMCT470:        NewDevice = CTIDBG_new Mct470Device;     break;
@@ -450,6 +456,10 @@ DLLEXPORT RWBoolean isCarrierLPDevice(CtiDeviceSPtr &pDevice)
     case TYPEMCT310IL:
     case TYPEMCT318L:
     case TYPEMCT410:
+    case TYPEMCT420CL:
+    case TYPEMCT420CLD:
+    case TYPEMCT420FL:
+    case TYPEMCT420FLD:
     case TYPEMCT430:
     case TYPEMCT470:
         result = TRUE;

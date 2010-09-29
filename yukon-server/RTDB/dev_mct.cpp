@@ -206,6 +206,7 @@ const MctDevice::read_key_store_t &MctDevice::getReadKeyStore(void) const
     return _emptyReadKeyStore;
 }
 
+//  this will need to become virtual and reimplemented by the MCT-420, since all of its reads are "function" reads now - no more memory map reads
 void MctDevice::extractDynamicPaoInfo(const INMESS &InMessage)
 {
     const char &io = InMessage.Return.ProtocolInfo.Emetcon.IO;
@@ -979,6 +980,10 @@ INT MctDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list<
                     switch( getType() )
                     {
                         case TYPEMCT410:
+                        case TYPEMCT420CL:
+                        case TYPEMCT420CLD:
+                        case TYPEMCT420FL:
+                        case TYPEMCT420FLD:
                         {
                             int channel = parse.getiValue("loadprofile_channel", 0);
 
@@ -1281,7 +1286,9 @@ INT MctDevice::executeGetValue( CtiRequestMsg              *pReq,
 
         if( getType() == TYPEMCT318 || getType() == TYPEMCT318L ||
             getType() == TYPEMCT360 || getType() == TYPEMCT370 ||
-            getType() == TYPEMCT410 )
+            getType() == TYPEMCT410 ||
+            getType() == TYPEMCT420CL || getType() == TYPEMCT420CLD ||
+            getType() == TYPEMCT420FL || getType() == TYPEMCT420FLD )
         {
             //  if pulse input 3 isn't defined
             if( !getDevicePointOffsetTypeEqual(3, DemandAccumulatorPointType ) )
@@ -1346,7 +1353,9 @@ INT MctDevice::executeGetValue( CtiRequestMsg              *pReq,
         {
             channels = Mct31xDevice::ChannelCount;
         }
-        else if( getType() == TYPEMCT410 )
+        else if( getType() == TYPEMCT410 ||
+                 getType() == TYPEMCT420CL || getType() == TYPEMCT420CLD ||
+                 getType() == TYPEMCT420FL || getType() == TYPEMCT420FLD )
         {
             channels = Mct410Device::ChannelCount;
         }
@@ -1357,7 +1366,9 @@ INT MctDevice::executeGetValue( CtiRequestMsg              *pReq,
 
         //  "getvalue kwh" is the short-form request for the MCT-410;  "getvalue usage" is the long form.
         //    I don't like this type-specific code in the base class...  but I also don't want to add a virtual function for just this.
-        if( getType() == TYPEMCT410 && parse.getFlags() & CMD_FLAG_GV_KWH )
+        if( (getType() == TYPEMCT410 ||
+             getType() == TYPEMCT420CL || getType() == TYPEMCT420CLD ||
+             getType() == TYPEMCT420FL || getType() == TYPEMCT420FLD) && parse.getFlags() & CMD_FLAG_GV_KWH )
         {
             OutMessage->Buffer.BSt.Length -= 6;
         }
@@ -1761,14 +1772,14 @@ INT MctDevice::executePutStatus(CtiRequestMsg                  *pReq,
         function = EmetconProtocol::PutStatus_Reset;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
-        if( getType() != TYPEMCT410 && getType() != TYPEMCT470 && getType() != TYPEMCT430 )
+        if( getType() != TYPEMCT410 && getType() != TYPEMCT420CL && getType() != TYPEMCT420CLD && getType() != TYPEMCT420FL && getType() != TYPEMCT420FLD && getType() != TYPEMCT470 && getType() != TYPEMCT430 )
         {
             OutMessage->Buffer.BSt.Message[0] = 0;
             OutMessage->Buffer.BSt.Message[1] = 0;
             OutMessage->Buffer.BSt.Message[2] = 0;
         }
     }
-    else if( parse.getFlags() & CMD_FLAG_PS_RESET_ALARMS && getType() == TYPEMCT410 )
+    else if( parse.getFlags() & CMD_FLAG_PS_RESET_ALARMS && (getType() == TYPEMCT410 || getType() == TYPEMCT420CL || getType() == TYPEMCT420CLD || getType() == TYPEMCT420FL || getType() == TYPEMCT420FLD) )
     {
         function = EmetconProtocol::PutStatus_ResetAlarms;
         found = getOperation(function, OutMessage->Buffer.BSt);
@@ -2390,7 +2401,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg                  *pReq,
             function = EmetconProtocol::PutConfig_Intervals;
             found = getOperation(function, OutMessage->Buffer.BSt);
 
-            if( getType() == TYPEMCT410 )
+            if( getType() == TYPEMCT410 || getType() == TYPEMCT420CL || getType() == TYPEMCT420CLD || getType() == TYPEMCT420FL || getType() == TYPEMCT420FLD )
             {
                 OutMessage->Buffer.BSt.Message[0] = getLoadProfile()->getLastIntervalDemandRate() / 60;
                 OutMessage->Buffer.BSt.Message[1] = getLoadProfile()->getLoadProfileDemandRate()  / 60;
@@ -2476,7 +2487,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg                  *pReq,
                     }
                 }
                 else*/
-                if( getType() != TYPEMCT410 )
+                if( getType() != TYPEMCT410 && getType() != TYPEMCT420CL && getType() != TYPEMCT420CLD && getType() != TYPEMCT420FL && getType() != TYPEMCT420FLD )
                 {
                     intervallength *= 4;  //  all else are in multiples of 15 seconds
                 }
@@ -2685,7 +2696,7 @@ INT MctDevice::executeControl(CtiRequestMsg                  *pReq,
         function = EmetconProtocol::Control_Connect;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
-        if( getType() == TYPEMCT410 )
+        if( getType() == TYPEMCT410 || getType() == TYPEMCT420FL )  //  the MCT-420CL does not support the disconnect collar
         {
             //  the 410 requires some dead time to transmit to its disconnect base
             dead_air = true;
@@ -2696,9 +2707,9 @@ INT MctDevice::executeControl(CtiRequestMsg                  *pReq,
         function = EmetconProtocol::Control_Disconnect;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
-        if( getType() == TYPEMCT410 )
+        if( getType() == TYPEMCT410 || getType() == TYPEMCT420FL )  //  the MCT-420CL does not support the disconnect collar
         {
-            //  the 410 requires some dead time to transmit to its disconnect base
+            //  allow some dead time for the meter to transmit to its disconnect base
             dead_air = true;
 
             //  do not allow the disconnect command to be sent to a meter that has no disconnect address
@@ -3206,6 +3217,10 @@ INT MctDevice::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow, li
                 break;
             }
             case TYPEMCT410:
+            //case TYPEMCT420CL:  //  the MCT-420CL does not support the disconnect collar
+            case TYPEMCT420CLD:
+            case TYPEMCT420FL:
+            case TYPEMCT420FLD:
             {
                 switch( DSt.Message[0] & 0x03 )
                 {

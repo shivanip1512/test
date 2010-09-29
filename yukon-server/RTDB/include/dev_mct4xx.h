@@ -229,6 +229,7 @@ protected:
     virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList);
     virtual INT executePutValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList);
 
+    virtual int executePutConfigDisplay            (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList, bool readsOnly = false);
     virtual int executePutConfigLoadProfileChannel (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList, bool readsOnly = false);
     virtual int executePutConfigConfigurationByte  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList, bool readsOnly = false);
     virtual int executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList, bool readsOnly = false);
@@ -275,6 +276,7 @@ protected:
     static const char *PutConfidPart_spid;
     static const char *PutConfigPart_dnp;
     static const char *PutConfigPart_centron;
+    static const char *PutConfigPart_display;
 
 public:
 

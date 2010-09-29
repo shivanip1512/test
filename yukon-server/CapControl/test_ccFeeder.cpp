@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank2");
     //Make sure the fist bank max op stuff was set.
     BOOST_CHECK_EQUAL(capBank1->getMaxDailyOpsHitFlag(),TRUE);
-    BOOST_CHECK_EQUAL(capBank1->getDisableFlag(),TRUE);
+    BOOST_CHECK_EQUAL(capBank1->getDisableFlag(),true);
     capBank1->setMaxDailyOperation(0);
     capBank1->setMaxDailyOpsHitFlag(false);
     capBank1->setMaxOpsDisableFlag(false);
@@ -431,7 +431,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank3");
     //Make sure the fist bank max op stuff was set.
     BOOST_CHECK_EQUAL(capBank4->getMaxDailyOpsHitFlag(),TRUE);
-    BOOST_CHECK_EQUAL(capBank4->getDisableFlag(),TRUE);
+    BOOST_CHECK_EQUAL(capBank4->getDisableFlag(),true);
     capBank4->setMaxDailyOperation(0);
     capBank4->setMaxDailyOpsHitFlag(false);
     capBank4->setCurrentDailyOperations(0);

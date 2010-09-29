@@ -986,7 +986,8 @@ fdrservice.obj:	yukon.h precompiled.h types.h ctidbgmem.h cparms.h \
 		thread_monitor.h smartmap.h readers_writer_lock.h \
 		critical_section.h queue.h thread_register_data.h \
 		connection.h exchange.h message.h collectable.h msg_multi.h \
-		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h
+		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
+		msg_cmd.h
 fdrsimplebase.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctitime.h \
 		dlldefs.h ctidate.h logger.h thread.h mutex.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h numstr.h \

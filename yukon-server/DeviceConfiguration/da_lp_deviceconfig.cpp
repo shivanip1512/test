@@ -52,7 +52,7 @@ bool DeviceConfigurationLoadProfileData::isChannelValid(int channel) const
     return _lpTable->isChannelValid(channel);
 }
 
-void DeviceConfigurationLoadProfileData::setDeviceConfig(CtiConfigDeviceSPtr deviceConfig)
+void DeviceConfigurationLoadProfileData::setDeviceConfig(DeviceConfigSPtr deviceConfig)
 {
     _deviceConfig = deviceConfig;
 }

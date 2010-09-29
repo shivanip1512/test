@@ -1,27 +1,4 @@
-/*************************************************************************
- *
- * mgr_route.h      7/7/99
- *
- *****
- *
- * The class which owns and manages route real time database
- *
- * Originated by:
- *     Corey G. Plender    7/7/99
- *
- *
- * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.35.2.2 $
- * DATE         :  $Date: 2008/11/21 17:55:24 $
- *
- *
- * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
- * All Rights Reserved
- *
- ************************************************************************/
-#ifndef __MGR_DEVICE_H__
-#define __MGR_DEVICE_H__
-
+#pragma once
 
 #include "dlldefs.h"
 #include "rtdb.h"
@@ -35,12 +12,6 @@ namespace Database {
     class DatabaseReaderInterface;
 }
 }
-
-class CtiCommandMsg;
-
-/*
- *  The following functions may be used to create sublists for the points in our database.
- */
 
 class IM_EX_DEVDB CtiDeviceManager
 {
@@ -98,44 +69,6 @@ protected:
     //  these should be made private - anything that child classes should need to do should be handled through a function
     spiterator begin();
     spiterator end();
-
-    //typedef set<long> id_range_t;
-
-    //  This class is used as a lightweight replacement for set<long> - it allows us to pass around single parameters with much less overhead than a set.
-    //    When we move beyond VC6, we can use template member functions to allow for the long and set<long> specializations
-    /*class id_range_t
-    {
-    public:
-
-        typedef long value_type;
-        typedef std::vector<value_type>::const_iterator const_iterator;
-
-/*        id_range_t()
-            : _itr_begin(0),
-              _itr_end  (0)
-            {};
-        id_range_t(value_type val)
-            : _val(val),
-              _itr_begin(&_val),
-              _itr_end  (&_val + 1)
-            {};
-        id_range_t(id_range_t::const_iterator begin, id_range_t::const_iterator end)
-            : _itr_begin(begin),
-              _itr_end  (end)
-            {};
-
-        const_iterator begin() const  {  return _itr_begin;  };
-        const_iterator end()   const  {  return _itr_end;    };
-        bool           empty() const  {  return _itr_begin == _itr_end;  };
-        unsigned       size()  const  {  return _itr_end - _itr_begin;  };  //  optimization for long * - not true in the general iterator case, only true for random access iterator types
-
-    private:
-
-        const_iterator _itr_begin, _itr_end;
-        value_type _val;
-    };*/
-
-    //typedef id_range_t::const_iterator id_itr_t;
 
     void refreshList(const Cti::Database::id_set &paoids, const long deviceType = 0);
 
@@ -199,5 +132,3 @@ public:
 
 };
 
-
-#endif                  // #ifndef __MGR_DEVICE_H__

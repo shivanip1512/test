@@ -144,6 +144,33 @@ const string CtiTableDynamicPaoInfo::_key_mct_llp_interest_channel          = "m
 const string CtiTableDynamicPaoInfo::_key_mct_llp_interest_request_begin    = "mct llp interest request begin";
 const string CtiTableDynamicPaoInfo::_key_mct_llp_interest_request_end      = "mct llp interest request end";
 
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_01 = "mct lcd metric 01";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_02 = "mct lcd metric 02";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_03 = "mct lcd metric 03";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_04 = "mct lcd metric 04";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_05 = "mct lcd metric 05";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_06 = "mct lcd metric 06";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_07 = "mct lcd metric 07";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_08 = "mct lcd metric 08";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_09 = "mct lcd metric 09";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_10 = "mct lcd metric 10";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_11 = "mct lcd metric 11";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_12 = "mct lcd metric 12";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_13 = "mct lcd metric 13";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_14 = "mct lcd metric 14";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_15 = "mct lcd metric 15";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_16 = "mct lcd metric 16";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_17 = "mct lcd metric 17";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_18 = "mct lcd metric 18";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_19 = "mct lcd metric 19";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_20 = "mct lcd metric 20";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_21 = "mct lcd metric 21";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_22 = "mct lcd metric 22";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_23 = "mct lcd metric 23";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_24 = "mct lcd metric 24";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_25 = "mct lcd metric 25";
+const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_26 = "mct lcd metric 26";
+
 const string CtiTableDynamicPaoInfo::_key_lcr_sspec                         = "lcr sspec";
 const string CtiTableDynamicPaoInfo::_key_lcr_sspec_revision                = "lcr sspec revision";
 const string CtiTableDynamicPaoInfo::_key_lcr_sspec_serial                  = "lcr serial address";
@@ -279,6 +306,33 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_MCT_DNP_RealTime1CRC,           &_key_mct_dnp_realtime1_crc));
     retval.insert(make_pair(Key_MCT_DNP_RealTime2CRC,           &_key_mct_dnp_realtime2_crc));
     retval.insert(make_pair(Key_MCT_DNP_BinaryCRC,              &_key_mct_dnp_binary_crc));
+
+    retval.insert(make_pair(Key_MCT_LcdMetric01,                &_key_mct_lcd_metric_01));
+    retval.insert(make_pair(Key_MCT_LcdMetric02,                &_key_mct_lcd_metric_02));
+    retval.insert(make_pair(Key_MCT_LcdMetric03,                &_key_mct_lcd_metric_03));
+    retval.insert(make_pair(Key_MCT_LcdMetric04,                &_key_mct_lcd_metric_04));
+    retval.insert(make_pair(Key_MCT_LcdMetric05,                &_key_mct_lcd_metric_05));
+    retval.insert(make_pair(Key_MCT_LcdMetric06,                &_key_mct_lcd_metric_06));
+    retval.insert(make_pair(Key_MCT_LcdMetric07,                &_key_mct_lcd_metric_07));
+    retval.insert(make_pair(Key_MCT_LcdMetric08,                &_key_mct_lcd_metric_08));
+    retval.insert(make_pair(Key_MCT_LcdMetric09,                &_key_mct_lcd_metric_09));
+    retval.insert(make_pair(Key_MCT_LcdMetric10,                &_key_mct_lcd_metric_10));
+    retval.insert(make_pair(Key_MCT_LcdMetric11,                &_key_mct_lcd_metric_11));
+    retval.insert(make_pair(Key_MCT_LcdMetric12,                &_key_mct_lcd_metric_12));
+    retval.insert(make_pair(Key_MCT_LcdMetric13,                &_key_mct_lcd_metric_13));
+    retval.insert(make_pair(Key_MCT_LcdMetric14,                &_key_mct_lcd_metric_14));
+    retval.insert(make_pair(Key_MCT_LcdMetric15,                &_key_mct_lcd_metric_15));
+    retval.insert(make_pair(Key_MCT_LcdMetric16,                &_key_mct_lcd_metric_16));
+    retval.insert(make_pair(Key_MCT_LcdMetric17,                &_key_mct_lcd_metric_17));
+    retval.insert(make_pair(Key_MCT_LcdMetric18,                &_key_mct_lcd_metric_18));
+    retval.insert(make_pair(Key_MCT_LcdMetric19,                &_key_mct_lcd_metric_19));
+    retval.insert(make_pair(Key_MCT_LcdMetric20,                &_key_mct_lcd_metric_20));
+    retval.insert(make_pair(Key_MCT_LcdMetric21,                &_key_mct_lcd_metric_21));
+    retval.insert(make_pair(Key_MCT_LcdMetric22,                &_key_mct_lcd_metric_22));
+    retval.insert(make_pair(Key_MCT_LcdMetric23,                &_key_mct_lcd_metric_23));
+    retval.insert(make_pair(Key_MCT_LcdMetric24,                &_key_mct_lcd_metric_24));
+    retval.insert(make_pair(Key_MCT_LcdMetric25,                &_key_mct_lcd_metric_25));
+    retval.insert(make_pair(Key_MCT_LcdMetric26,                &_key_mct_lcd_metric_26));
 
     retval.insert(make_pair(Key_FrozenRateAPeakTimestamp,       &_key_frozen_rate_a_peak_timestamp));
     retval.insert(make_pair(Key_FrozenRateBPeakTimestamp,       &_key_frozen_rate_b_peak_timestamp));

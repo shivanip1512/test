@@ -3,9 +3,9 @@
 
 
 ALL:
-            @if not exist obj md obj            
-            @if not exist bin md bin       
-            @build -nologo -f makepch.mak     
+            @if not exist obj md obj
+            @if not exist bin md bin
+            @build -nologo -f makepch.mak
             @build -nologo -f makedll.mak
 
 clean:
@@ -31,6 +31,5 @@ copy:
             @build -nologo -f makepch.mak $@
             @build -nologo -f makedll.mak $@
 
-
-
+deps:
 

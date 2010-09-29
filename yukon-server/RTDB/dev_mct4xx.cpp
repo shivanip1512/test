@@ -40,6 +40,7 @@ const char *Mct4xxDevice::PutConfigPart_precanned_table = "precannedtable";
 const char *Mct4xxDevice::PutConfidPart_spid            = "spid";
 const char *Mct4xxDevice::PutConfigPart_centron         = "centron";
 const char *Mct4xxDevice::PutConfigPart_dnp             = "dnp";
+const char *Mct4xxDevice::PutConfigPart_display         = "display";
 
 const Mct4xxDevice::CommandSet Mct4xxDevice::_commandStore = Mct4xxDevice::initCommandStore();
 
@@ -1849,6 +1850,10 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
     {
         nRet = executePutConfigTimeAdjustTolerance(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
     }
+    else if (installValue == PutConfigPart_display)
+    {
+        nRet = executePutConfigDisplay(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
+    }
     else
     {   //Not sure if this is correct, this could just return NoMethod. This is here
         //just in case anyone wants to use a putconfig install  for anything but configs.
@@ -2087,10 +2092,15 @@ int Mct4xxDevice::executePutConfigLoadProfileChannel (CtiRequestMsg *pReq, CtiCo
     return NoMethod;
 }
 
+int Mct4xxDevice::executePutConfigDisplay (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool readsOnly)
+{
+    return NoMethod;
+}
+
 int Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly)
 {
     int nRet = NORMAL;
-    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+    DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if (deviceConfig)
     {
@@ -2151,7 +2161,7 @@ int Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser
 int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly)
 {
     int nRet = NORMAL;
-    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+    DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if(deviceConfig)
     {
@@ -2213,7 +2223,7 @@ int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &pa
 int Mct4xxDevice::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly)
 {
     int nRet = NORMAL;
-    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+    DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if (deviceConfig)
     {
@@ -2283,7 +2293,7 @@ int Mct4xxDevice::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiComm
 int Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly)
 {
     int nRet = NORMAL;
-    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+    DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if (deviceConfig)
     {

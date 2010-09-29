@@ -42,3 +42,4 @@ $(YUKONOUTPUT)\libapr-1.dll \
 $(YUKONOUTPUT)\libaprutil-1.dll \
 $(YUKONOUTPUT)\libapriconv-1.dll \
 
+deps:

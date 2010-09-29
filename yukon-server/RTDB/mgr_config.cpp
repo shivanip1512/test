@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   mgr_config
-*
-* Date:   8/5/2005
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/mgr_config.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2008/10/22 21:16:42 $
-*
-* Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "mgr_config.h"
@@ -24,8 +11,8 @@ using std::string;
 using namespace Cti;
 using namespace Config;
 
-CtiConfigManager::CtiConfigManager() : 
-    isInitialized(false), 
+CtiConfigManager::CtiConfigManager() :
+    isInitialized(false),
     _devMgr(0)
 {
 }
@@ -62,22 +49,7 @@ void CtiConfigManager::initialize(CtiDeviceManager &mgr)
     }
 }
 
-string CtiConfigManager::getConfigTableName()
-{
-    return "DeviceConfiguration";
-}
-
-string CtiConfigManager::getConfigItemTableName()
-{
-    return "DeviceConfigurationItem";
-}
-
-string CtiConfigManager::getConfigToDeviceMapTableName()
-{
-    return "DeviceConfigurationDeviceMap";
-}
-
-bool CtiConfigManager::insertValueIntoConfig(CtiConfigDeviceSPtr config, const string &value, const string &valueid)
+bool CtiConfigManager::insertValueIntoConfig(DeviceConfigSPtr config, const string &value, const string &valueid)
 {
     if(!config)
     {
@@ -98,19 +70,9 @@ void CtiConfigManager::setDeviceManager(CtiDeviceManager &mgr)
 }
 
 //Config ID that is.
-CtiConfigDeviceSPtr CtiConfigManager::getDeviceConfigFromID(long configID)
+DeviceConfigSPtr CtiConfigManager::getDeviceConfigFromID(long configID)
 {
-    CtiConfigDeviceSPtr tempSPtr;
-    tempSPtr = _deviceConfig.find(configID);
-
-    if(tempSPtr)//This key is in the map
-    {
-        return tempSPtr;
-    }
-    else
-    {
-        return CtiConfigDeviceSPtr();
-    }
+    return _deviceConfig.find(configID);
 }
 
 void CtiConfigManager::processDBUpdate(LONG identifier, string category, string objectType, int updateType)
@@ -159,7 +121,7 @@ void CtiConfigManager::processDBUpdate(LONG identifier, string category, string 
                     CtiDeviceSPtr pDev = _devMgr->getDeviceByID(identifier);
                     if( pDev )
                     {
-                        pDev->changeDeviceConfig(CtiConfigDeviceSPtr());//set to null
+                        pDev->changeDeviceConfig(DeviceConfigSPtr());//set to null
                     }
                     break;
                 }
@@ -207,7 +169,7 @@ void CtiConfigManager::loadData(long configID)
         rdr.execute();
 
         long oldDeviceConfigID = 0;
-        CtiConfigDeviceSPtr config;
+        DeviceConfigSPtr config;
         long deviceConfigID;
         string value,valueName;
 
@@ -254,10 +216,10 @@ void CtiConfigManager::loadConfigs(long configID)
     {
         string sql =  "SELECT DCF.deviceconfigurationid, DCF.name, DCF.type "
                       "FROM DeviceConfiguration DCF";
-                   
+
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection);
-          
+
         if(configID != 0)
         {
             _deviceConfig.remove(configID);//Give us a fresh start
@@ -286,11 +248,11 @@ void CtiConfigManager::loadConfigs(long configID)
             rdr["name"] >> name;
             rdr["type"] >> type;
 
-            CtiConfigDeviceSPtr configDevSPtr = _deviceConfig.find(cfgID);
+            DeviceConfigSPtr configDevSPtr = _deviceConfig.find(cfgID);
 
             if( !configDevSPtr )//This key is not in the map yet
             {
-                CtiConfigDeviceSPtr devPtr(CTIDBG_new CtiConfigDevice(cfgID, name, type));
+                DeviceConfigSPtr devPtr(CTIDBG_new DeviceConfig(cfgID, name, type));
                 ConfigDeviceMap::insert_pair tempPair = _deviceConfig.insert(cfgID,devPtr);
                 configDevSPtr = tempPair.first->second;
             }
@@ -357,7 +319,7 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
 
                 CtiDeviceSPtr pDev = _devMgr->getDeviceByID(devID);
 
-                CtiConfigDeviceSPtr tempSPtr;
+                DeviceConfigSPtr tempSPtr;
 
                 if( (tempSPtr = _deviceConfig.find(cfgID)) && pDev )
                 {
@@ -370,7 +332,7 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
                 CtiDeviceSPtr pDev = _devMgr->getDeviceByID(deviceID);
                 if( pDev )
                 {
-                    pDev->changeDeviceConfig(CtiConfigDeviceSPtr());
+                    pDev->changeDeviceConfig(DeviceConfigSPtr());
                 }
             }
 
@@ -386,7 +348,7 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
 
                 CtiDeviceSPtr pDev = _devMgr->getDeviceByID(devID);
 
-                CtiConfigDeviceSPtr tempSPtr;
+                DeviceConfigSPtr tempSPtr;
 
                 if( (tempSPtr = _deviceConfig.find(cfgID)) && pDev )
                 {

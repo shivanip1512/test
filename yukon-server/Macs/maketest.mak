@@ -107,9 +107,9 @@ deps:
 
 ######################################################################################
 #UPDATE#
-test_scheduletime.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
-		dlldefs.h mc_scheduler.h mc.h logger.h thread.h mutex.h \
-		guard.h utility.h queues.h cticalls.h os2_2w32.h types.h \
+test_scheduletime.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
+		ctitime.h dlldefs.h mc_scheduler.h mc.h logger.h thread.h \
+		mutex.h guard.h utility.h queues.h cticalls.h os2_2w32.h \
 		numstr.h sorted_vector.h CtiPCPtrQueue.h mc_sched.h \
 		row_reader.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
 		tbl_mcsimpsched.h message.h collectable.h rwutil.h \

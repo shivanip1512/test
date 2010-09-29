@@ -19,18 +19,18 @@
 namespace Cti       {
 namespace Config    {
 
-CtiConfigDevice::CtiConfigDevice(long ID, string& name, string& type) :
+DeviceConfig::DeviceConfig(long ID, string& name, string& type) :
 _id(ID), _name(name), _type(type)
 {
 }
 
-CtiConfigDevice::~CtiConfigDevice()
+DeviceConfig::~DeviceConfig()
 {
 }
 
 // Inserts a value into the mapping, this is a protected function and is
 // not meant to be called by devices
-bool CtiConfigDevice::insertValue(string identifier, const string& value)
+bool DeviceConfig::insertValue(string identifier, const string& value)
 {
     CtiToLower(identifier);
     CtiHashKey insertKey = CtiHashKey(identifier);
@@ -42,7 +42,7 @@ bool CtiConfigDevice::insertValue(string identifier, const string& value)
 
 // getValue will look for the key and set value to the value of that key.
 // returns true if successful.
-bool CtiConfigDevice::getValue(std::string key, string& value)
+bool DeviceConfig::getValue(std::string key, string& value)
 {
     bool retVal = false;
     CtiToLower(key);
@@ -62,7 +62,7 @@ bool CtiConfigDevice::getValue(std::string key, string& value)
 
 // getLongValue will look for the key and set value to the long value of that key.
 // returns true if successful.
-bool CtiConfigDevice::getLongValue(std::string key, long& value)
+bool DeviceConfig::getLongValue(std::string key, long& value)
 {
     bool retVal = false;
     CtiToLower(key);
@@ -80,12 +80,12 @@ bool CtiConfigDevice::getLongValue(std::string key, long& value)
             value = strtol(tempStr.data(),NULL,0);
             retVal = true;
         }
-        
+
     }
     return retVal;
 }
 
-string CtiConfigDevice::getValueFromKey(std::string key)
+string DeviceConfig::getValueFromKey(std::string key)
 {
     string retVal;
     CtiToLower(key);
@@ -101,7 +101,7 @@ string CtiConfigDevice::getValueFromKey(std::string key)
     return retVal;
 }
 
-long CtiConfigDevice::getLongValueFromKey(std::string key)
+long DeviceConfig::getLongValueFromKey(std::string key)
 {
     long retVal = std::numeric_limits<long>::min();
     CtiToLower(key);
@@ -121,7 +121,7 @@ long CtiConfigDevice::getLongValueFromKey(std::string key)
     return retVal;
 }
 
-double CtiConfigDevice::getFloatValueFromKey(std::string key)
+double DeviceConfig::getFloatValueFromKey(std::string key)
 {
     double retVal = std::numeric_limits<double>::min();
     CtiToLower(key);
@@ -142,7 +142,7 @@ double CtiConfigDevice::getFloatValueFromKey(std::string key)
 }
 
 // Checks each key in the array to see if it exists. The strings in the array will be changed.
-bool CtiConfigDevice::checkValues(string stringArray[], unsigned int arrayLen)
+bool DeviceConfig::checkValues(string stringArray[], unsigned int arrayLen)
 {
     bool retVal = false;
     if( arrayLen > 0 )

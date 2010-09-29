@@ -567,24 +567,25 @@ INT DlcBaseDevice::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage* >
 
 int DlcBaseDevice::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    //  We need to protect _activeCommands
+    //  We need to protect _activeCommands/trackCommand()
     CtiLockGuard<CtiMutex> lock(getMux());
 
     active_command_map::iterator command_itr = _activeCommands.find(InMessage.Sequence);
 
     if( command_itr == _activeCommands.end() )
     {
-        return NoResultDecodeMethod;
+        return NoError;  //  in order to silently absorb macro route returns that have already been acted upon
     }
 
     if( ! command_itr->second )
     {
         _activeCommands.erase(command_itr);
 
-        return NoResultDecodeMethod;
+        return NoResultDecodeMethod;  //  however, we will squawk about a null command pointer
     }
 
-    DlcCommand &command = *(command_itr->second);
+    DlcCommandSPtr  command_ptr =  command_itr->second;
+    DlcCommand     &command     = *command_ptr;
 
     CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return);
 
@@ -633,6 +634,9 @@ int DlcBaseDevice::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list<
 
             fillOutMessage(*OutMessage, *ptr);
 
+            //  ExecuteRequest already has the CtiDeviceBase::_classMutex at this point, so it's safe to call trackCommand()
+            OutMessage->Sequence = trackCommand(command_ptr);
+
             CtiRequestMsg newReq(getID(),
                                  InMessage.Return.CommandStr,
                                  InMessage.Return.UserID,
@@ -650,11 +654,8 @@ int DlcBaseDevice::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list<
                               list<OUTMESS *>(1, OutMessage),
                               vgList, retList, outList, false);
         }
-        else
-        {
-            //  all done!
-            _activeCommands.erase(command_itr);
-        }
+
+        _activeCommands.erase(command_itr);
 
         retMsgHandler(InMessage.Return.CommandStr, NoError, ReturnMsg, vgList, retList);
 
@@ -672,6 +673,22 @@ int DlcBaseDevice::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list<
 
         return ExecutionComplete;
     }
+}
+
+
+long DlcBaseDevice::trackCommand(const DlcCommandSPtr &command)
+{
+    if( _activeIndex < EmetconProtocol::DLCCmd_LAST )
+    {
+        _activeIndex = EmetconProtocol::DLCCmd_LAST;
+    }
+
+    while( ! _activeCommands.insert(std::make_pair(_activeIndex, command)).second )
+    {
+        _activeIndex++;
+    }
+
+    return _activeIndex++;
 }
 
 
@@ -705,19 +722,10 @@ bool DlcBaseDevice::tryExecuteCommand(OUTMESS &OutMessage, DlcCommandSPtr comman
 
     if( request.get() )
     {
-        //  ExecuteRequest already has the CtiDeviceBase::_classMutex at this point, so we'll count on that protecting _activeCommands
-
-        //  PIL is single-threaded, so this is threadsafe
-        if( _activeCommands.empty() )
-        {
-            _activeIndex = EmetconProtocol::DLCCmd_LAST;
-        }
-
         fillOutMessage(OutMessage, *request);
 
-        OutMessage.Sequence = _activeIndex;
-
-        _activeCommands.insert(std::make_pair(_activeIndex++, command));
+        //  ExecuteRequest already has the CtiDeviceBase::_classMutex at this point, so it's safe to call trackCommand()
+        OutMessage.Sequence = trackCommand(command);
     }
 
     return request.get();

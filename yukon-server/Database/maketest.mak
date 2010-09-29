@@ -321,9 +321,8 @@ tbl_dyn_paoinfo.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
 		sorted_vector.h cticonnect.h netports.h dsm2err.h words.h \
 		sema.h logger.h thread.h CtiPCPtrQueue.h tbl_dyn_paoinfo.h \
-		ctibase.h ctinexus.h dbmemobject.h pointdefs.h \
-		database_connection.h rwutil.h database_reader.h row_reader.h \
-		boost_time.h boostutil.h database_writer.h row_writer.h
+		dbmemobject.h database_connection.h row_reader.h \
+		database_reader.h database_writer.h row_writer.h
 tbl_dyn_ptalarming.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
 		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
@@ -588,11 +587,6 @@ tbl_pt_unit.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		dsm2err.h words.h dbmemobject.h dbaccess.h sema.h resolvers.h \
 		pointtypes.h db_entry_defines.h desolvers.h tbl_unitmeasure.h \
 		logger.h thread.h CtiPCPtrQueue.h
-tbl_rds_transmitter.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		tbl_rds_transmitter.h dbmemobject.h dlldefs.h dllbase.h \
-		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
-		ctitime.h queues.h numstr.h sorted_vector.h cticonnect.h \
-		netports.h dsm2err.h words.h
 tbl_route.obj:	yukon.h precompiled.h types.h ctidbgmem.h tbl_route.h \
 		dllbase.h os2_2w32.h dlldefs.h cticalls.h dsm2.h mutex.h \
 		guard.h utility.h ctitime.h queues.h numstr.h sorted_vector.h \
@@ -663,6 +657,14 @@ tbl_state_grp.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		sema.h tbl_state_grp.h rwutil.h database_connection.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		tbl_state.h logger.h thread.h CtiPCPtrQueue.h
+tbl_static_paoinfo.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
+		dbaccess.h dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
+		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
+		sorted_vector.h cticonnect.h netports.h dsm2err.h words.h \
+		sema.h logger.h thread.h CtiPCPtrQueue.h tbl_static_paoinfo.h \
+		ctibase.h ctinexus.h dbmemobject.h pointdefs.h \
+		database_connection.h rwutil.h database_reader.h row_reader.h \
+		boost_time.h boostutil.h database_writer.h row_writer.h
 tbl_stats.obj:	yukon.h precompiled.h types.h ctidbgmem.h tbl_stats.h \
 		row_reader.h ctitime.h dlldefs.h dllbase.h os2_2w32.h \
 		cticalls.h dsm2.h mutex.h guard.h utility.h queues.h numstr.h \

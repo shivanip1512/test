@@ -687,6 +687,10 @@ bool isMCT(INT type)
         case TYPEMCT360:
         case TYPEMCT370:
         case TYPEMCT410:
+        case TYPEMCT420CL:
+        case TYPEMCT420CLD:
+        case TYPEMCT420FL:
+        case TYPEMCT420FLD:
         case TYPEMCT430:
         case TYPEMCT470:
         {

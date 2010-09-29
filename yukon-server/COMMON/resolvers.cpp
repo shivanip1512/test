@@ -321,6 +321,22 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPEMCT410;
     }
+    else if(rwsTemp == "mct-420cl")
+    {
+        nRet = TYPEMCT420CL;
+    }
+    else if(rwsTemp == "mct-420cld")
+    {
+        nRet = TYPEMCT420CLD;
+    }
+    else if(rwsTemp == "mct-420fl")
+    {
+        nRet = TYPEMCT420FL;
+    }
+    else if(rwsTemp == "mct-420fld")
+    {
+        nRet = TYPEMCT420FLD;
+    }
     else if(rwsTemp == "mct-470")
     {
         nRet = TYPEMCT470;
@@ -1243,6 +1259,10 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPEMCT360:
         case TYPEMCT370:
         case TYPEMCT410:
+        case TYPEMCT420CL:
+        case TYPEMCT420CLD:
+        case TYPEMCT420FL:
+        case TYPEMCT420FLD:
         case TYPEMCT430:
         case TYPEMCT470:
         case TYPELCR3102:

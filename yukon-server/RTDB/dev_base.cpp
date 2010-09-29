@@ -1264,19 +1264,19 @@ inline ULONG CtiDeviceBase::getUniqueIdentifier() const
     return getPortID();
 }
 
-void CtiDeviceBase::setDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config)
+void CtiDeviceBase::setDeviceConfig(Cti::Config::DeviceConfigSPtr config)
 {
     CtiLockGuard<CtiMutex> guard(_configMux);
     _deviceConfig = config;
 }
 
-Cti::Config::CtiConfigDeviceSPtr CtiDeviceBase::getDeviceConfig()
+Cti::Config::DeviceConfigSPtr CtiDeviceBase::getDeviceConfig()
 {
     CtiLockGuard<CtiMutex> guard(_configMux);
     return _deviceConfig;
 }
 
-void CtiDeviceBase::changeDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config)
+void CtiDeviceBase::changeDeviceConfig(Cti::Config::DeviceConfigSPtr config)
 {
     setDeviceConfig(config);
 }

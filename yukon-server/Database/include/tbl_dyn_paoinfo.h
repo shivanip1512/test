@@ -95,6 +95,32 @@ public:
         Key_MCT_DNP_AccumulatorCRC2,
         Key_MCT_DNP_AccumulatorCRC3,
         Key_MCT_DNP_AccumulatorCRC4,
+        Key_MCT_LcdMetric01,
+        Key_MCT_LcdMetric02,
+        Key_MCT_LcdMetric03,
+        Key_MCT_LcdMetric04,
+        Key_MCT_LcdMetric05,
+        Key_MCT_LcdMetric06,
+        Key_MCT_LcdMetric07,
+        Key_MCT_LcdMetric08,
+        Key_MCT_LcdMetric09,
+        Key_MCT_LcdMetric10,
+        Key_MCT_LcdMetric11,
+        Key_MCT_LcdMetric12,
+        Key_MCT_LcdMetric13,
+        Key_MCT_LcdMetric14,
+        Key_MCT_LcdMetric15,
+        Key_MCT_LcdMetric16,
+        Key_MCT_LcdMetric17,
+        Key_MCT_LcdMetric18,
+        Key_MCT_LcdMetric19,
+        Key_MCT_LcdMetric20,
+        Key_MCT_LcdMetric21,
+        Key_MCT_LcdMetric22,
+        Key_MCT_LcdMetric23,
+        Key_MCT_LcdMetric24,
+        Key_MCT_LcdMetric25,
+        Key_MCT_LcdMetric26,
 
         //  run-time info
         Key_MCT_LLPInterest_Time,
@@ -282,6 +308,33 @@ protected:
     static const string _key_mct_dnp_accumulator_crc3;
     static const string _key_mct_dnp_accumulator_crc4;
 
+    static const string _key_mct_lcd_metric_01;
+    static const string _key_mct_lcd_metric_02;
+    static const string _key_mct_lcd_metric_03;
+    static const string _key_mct_lcd_metric_04;
+    static const string _key_mct_lcd_metric_05;
+    static const string _key_mct_lcd_metric_06;
+    static const string _key_mct_lcd_metric_07;
+    static const string _key_mct_lcd_metric_08;
+    static const string _key_mct_lcd_metric_09;
+    static const string _key_mct_lcd_metric_10;
+    static const string _key_mct_lcd_metric_11;
+    static const string _key_mct_lcd_metric_12;
+    static const string _key_mct_lcd_metric_13;
+    static const string _key_mct_lcd_metric_14;
+    static const string _key_mct_lcd_metric_15;
+    static const string _key_mct_lcd_metric_16;
+    static const string _key_mct_lcd_metric_17;
+    static const string _key_mct_lcd_metric_18;
+    static const string _key_mct_lcd_metric_19;
+    static const string _key_mct_lcd_metric_20;
+    static const string _key_mct_lcd_metric_21;
+    static const string _key_mct_lcd_metric_22;
+    static const string _key_mct_lcd_metric_23;
+    static const string _key_mct_lcd_metric_24;
+    static const string _key_mct_lcd_metric_25;
+    static const string _key_mct_lcd_metric_26;
+
     static const string _key_udp_ip;
     static const string _key_udp_port;
     static const string _key_udp_sequence;
@@ -329,7 +382,7 @@ protected:
 
     static const string _key_rpt_sspec;
     static const string _key_rpt_sspec_revision;
-        
+
 
     typedef map<CtiApplication_t, const string *> owner_map_t;
     typedef map<PaoInfoKeys,             const string *> key_map_t;

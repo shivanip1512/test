@@ -45,6 +45,8 @@ private:
 
     long _activeIndex;
 
+    long trackCommand(const DlcCommandSPtr &command);
+
 protected:
 
     CtiTableDeviceCarrier      CarrierSettings;

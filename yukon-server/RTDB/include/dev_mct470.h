@@ -26,7 +26,7 @@ private:
     CtiTime                  _iedTime;
 
     boost::shared_ptr<Cti::DataAccessLoadProfile> deviceConfigLp;
-    boost::shared_ptr<Cti::DataAccessLoadProfile> getDeviceConfigLp(Cti::Config::CtiConfigDeviceSPtr deviceConfig);
+    boost::shared_ptr<Cti::DataAccessLoadProfile> getDeviceConfigLp(Config::DeviceConfigSPtr deviceConfig);
 
     enum ChannelConfiguration
     {
@@ -432,7 +432,7 @@ protected:
     virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
-    Mct4xxDevice::ConfigPartsList getPartsList();
+    virtual Mct4xxDevice::ConfigPartsList getPartsList();
 
     int executePutConfigLoadProfileChannel   (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool readsOnly = false);
     int executePutConfigRelays               (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool readsOnly = false);
@@ -493,9 +493,9 @@ public:
     Mct470Device &operator=( const Mct470Device &aRef );
 
     virtual ULONG calcNextLPScanTime( void );
-    virtual void changeDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config);
+    virtual void changeDeviceConfig(Config::DeviceConfigSPtr config);
 
-    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+    virtual void DecodeDatabaseReader(RowReader &rdr);
 };
 
 }

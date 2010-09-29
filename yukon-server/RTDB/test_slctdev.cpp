@@ -30,6 +30,10 @@ BOOST_AUTO_TEST_CASE(test_is_carrier_lp_device)
         TYPEMCT310IL,
         TYPEMCT318L,
         TYPEMCT410,
+        TYPEMCT420CL,
+        TYPEMCT420CLD,
+        TYPEMCT420FL,
+        TYPEMCT420FLD,
         TYPEMCT430,
         TYPEMCT470 };
 

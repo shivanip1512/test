@@ -1557,7 +1557,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
         const CtiDate date_end   = parseDateValue(parse.getsValue("hourly_read_date_end"));
         const unsigned channel   = parse.getiValue("channel", 1);
 
-        auto_ptr<Mct410Command> hourlyRead(new Mct410HourlyReadCommand(date_begin, date_end, channel));
+        DlcCommandSPtr hourlyRead(new Mct410HourlyReadCommand(date_begin, date_end, channel));
 
         //  this call might be able to move out to ExecuteRequest() at some point - maybe we just return
         //    a DlcCommand object that it can execute out there

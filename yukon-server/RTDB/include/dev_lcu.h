@@ -1,28 +1,6 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_tcu
-*
-* Class:  CtiDeviceTCU
-* Date:   9/5/1999
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_lcu.h-arc  $
-* REVISION     :  $Revision: 1.24.4.1 $
-* DATE         :  $Date: 2008/11/17 23:06:32 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_LCU_H__
-#define __DEV_LCU_H__
+#pragma once
 
-
-#include <windows.h>
 #include <vector>
-using std::vector;
-
-#include <rw/tvordvec.h>
 
 #include "types.h"
 #include "os2_2w32.h"
@@ -109,9 +87,9 @@ private:
 
     string            _lastCommand;
 
-    vector< pair<ULONG, double> >  _honktime;
+    std::vector< pair<time_t, double> >  _honktime;
 
-    vector< pair<LONG, UINT> > _controlledGroupVector; // Vector of groupids, and TrxId for that group.  Used initially for MPC bit mashing 12/31/04 CGP
+    std::vector< pair<LONG, UINT> > _controlledGroupVector; // Vector of groupids, and TrxId for that group.  Used initially for MPC bit mashing 12/31/04 CGP
 
 public:
 
@@ -202,4 +180,3 @@ public:
     virtual void resetForScan(int scantype);
 
 };
-#endif // #ifndef __DEV_LCU_H__

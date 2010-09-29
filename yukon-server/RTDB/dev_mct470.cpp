@@ -686,7 +686,7 @@ void Mct470Device::sendIntervals( OUTMESS *&OutMessage, list< OUTMESS* > &outLis
 boost::shared_ptr<DataAccessLoadProfile> Mct470Device::getLoadProfile()
 {
     boost::shared_ptr<DataAccessLoadProfile> lp;
-    Cti::Config::CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+    Cti::Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if (deviceConfig)
     {
@@ -700,7 +700,7 @@ boost::shared_ptr<DataAccessLoadProfile> Mct470Device::getLoadProfile()
     return lp;
 }
 
-boost::shared_ptr<DataAccessLoadProfile> Mct470Device::getDeviceConfigLp(Cti::Config::CtiConfigDeviceSPtr deviceConfig)
+boost::shared_ptr<DataAccessLoadProfile> Mct470Device::getDeviceConfigLp(Cti::Config::DeviceConfigSPtr deviceConfig)
 {
     if (!deviceConfigLp)
     {
@@ -714,7 +714,7 @@ boost::shared_ptr<DataAccessLoadProfile> Mct470Device::getDeviceConfigLp(Cti::Co
     return deviceConfigLp;
 }
 
-void Mct470Device::changeDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config)
+void Mct470Device::changeDeviceConfig(Cti::Config::DeviceConfigSPtr config)
 {
     //clear it out to be reloaded on the next getter call.
     deviceConfigLp = boost::shared_ptr<DataAccessLoadProfile>();
@@ -1863,7 +1863,7 @@ INT Mct470Device::executeScan(CtiRequestMsg      *pReq,
             OutMessage->Retry     = 2;
             OutMessage->Request.RouteID   = getRouteID();
 
-            CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+            DeviceConfigSPtr deviceConfig = getDeviceConfig();
             //MCTSystemOptionsSPtr options;
 
             CtiString originalString = pReq->CommandString();
@@ -2551,7 +2551,7 @@ int Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &pars
 {
     int nRet = NORMAL;
 
-    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+    DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     long value, tempTime;
     if(deviceConfig)
@@ -2853,7 +2853,7 @@ int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiComm
 {
     int nRet = NORMAL;
     long value;
-    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+    DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if (deviceConfig)
     {
@@ -3056,7 +3056,7 @@ int Mct470Device::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser &p
 {
     int nRet = NORMAL;
     long value;
-    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+    DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if (deviceConfig)
     {
@@ -3129,7 +3129,7 @@ int Mct470Device::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser 
 {
     int nRet = NORMAL;
     long value;
-    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+    DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if( deviceConfig )
     {
@@ -3191,7 +3191,7 @@ int Mct470Device::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser 
 int Mct470Device::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* > &outList, bool readsOnly)
 {
     int nRet = NORMAL;
-    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+    DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if (deviceConfig)
     {

@@ -924,5 +924,8 @@ test_lmprogram.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		executor.h msg_server_req.h lmprogramcurtailment.h \
 		lmcurtailcustomer.h lmcicustomerbase.h
 test_lm_constraintviolations.obj:	yukon.h precompiled.h types.h \
-		ctidbgmem.h ConstraintViolation.h ctitime.h dlldefs.h
+		ctidbgmem.h ConstraintViolation.h ctitime.h dlldefs.h \
+		ctidate.h logger.h thread.h mutex.h guard.h utility.h \
+		queues.h cticalls.h os2_2w32.h numstr.h sorted_vector.h \
+		CtiPCPtrQueue.h
 #ENDUPDATE#
