@@ -84,7 +84,7 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
             yukonJdbcTemplate.queryForObject(sql, optOutSurveyRowMapper);
 
         sql = new SqlStatementBuilder();
-        sql.append("SELECT programId FROM optOutSurveyProgram");
+        sql.append("SELECT deviceId AS programId FROM optOutSurveyProgram");
         sql.append("WHERE optOutSurveyId").eq(optOutSurveyId);
         List<Integer> programIds =
             yukonJdbcTemplate.query(sql, new IntegerRowMapper());
@@ -101,7 +101,7 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
             @Override
             public SqlFragmentSource generate(List<Integer> optOutSurveyIds) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT oos.optOutSurveyId, p.programId");
+                sql.append("SELECT oos.optOutSurveyId, p.deviceId AS programId");
                 sql.append("FROM optOutSurveyProgram p");
                 sql.append("JOIN optOutSurvey oos ON oos.optOutSurveyId = p.optOutSurveyId");
                 sql.append("JOIN survey s ON oos.surveyId = s.surveyId");
@@ -136,14 +136,14 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT programId, surveyId");
+                sql.append("SELECT oosp.deviceId AS programId, oos.surveyId");
                 sql.append("FROM optOutSurvey oos");
                 sql.append("JOIN optOutSurveyProgram oosp");
                 sql.append(    "ON oos.optOutSurveyId = oosp.optOutSurveyId");
                 sql.append("WHERE startDate").lt(now);
                 sql.append("AND (stopDate IS NULL");
                 sql.append(    "OR stopDate").gt(now).append(")");
-                sql.append("AND programId").in(subList);
+                sql.append("AND oosp.deviceId").in(subList);
                 return sql;
             }
         };
@@ -179,7 +179,7 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
         for (int programId : optOutSurvey.getProgramIds()) {
             sql = new SqlStatementBuilder();
             sql.append("INSERT INTO optOutSurveyProgram");
-            sql.append("(optOutSurveyId, programId)");
+            sql.append("(optOutSurveyId, deviceId)");
             sql.values(optOutSurveyId, programId);
             yukonJdbcTemplate.update(sql);
         }
