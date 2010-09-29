@@ -8,15 +8,15 @@ import com.google.common.collect.Sets;
 public enum SchedulableThermostatType {
 
 	RESIDENTIAL_EXPRESSSTAT(HardwareType.EXPRESSSTAT,
-				50, 90,
-				50, 90,
+	            45, 88,
+	            45, 88,
 				Sets.immutableEnumSet(ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_SAT_SUN),
 				ThermostatScheduleMode.WEEKDAY_SAT_SUN,
 				ThermostatSchedulePeriodStyle.FOUR_TIMES
 	),
 	COMMERCIAL_EXPRESSSTAT(HardwareType.COMMERCIAL_EXPRESSSTAT,
-				50, 90,
-				50, 90,
+	            45, 88,
+	            45, 88,
 				Sets.immutableEnumSet(ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_SAT_SUN),
 				ThermostatScheduleMode.WEEKDAY_SAT_SUN,
                 ThermostatSchedulePeriodStyle.TWO_TIMES
@@ -29,15 +29,15 @@ public enum SchedulableThermostatType {
                 ThermostatSchedulePeriodStyle.FOUR_TIMES
 	),
 	HEAT_PUMP_EXPRESSSTAT(HardwareType.EXPRESSSTAT_HEAT_PUMP,
-                50, 90, 
-                50, 90,
+                45, 88, 
+                45, 88,
                 Sets.immutableEnumSet(ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_SAT_SUN),
                 ThermostatScheduleMode.WEEKDAY_SAT_SUN,
                 ThermostatSchedulePeriodStyle.FOUR_TIMES
 	),
     ENERGY_PRO(HardwareType.ENERGYPRO,
-                50, 90, 
-                50, 90,
+                45, 99, 
+                40, 90,
                 Sets.immutableEnumSet(ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_SAT_SUN, ThermostatScheduleMode.WEEKDAY_WEEKEND),
                 ThermostatScheduleMode.WEEKDAY_SAT_SUN,
                 ThermostatSchedulePeriodStyle.FOUR_TIMES
