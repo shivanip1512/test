@@ -2,6 +2,7 @@
 //These are constants required for Windows API broadcast calls
 #define WM_SETTINGCHANGE 0x001A 
 //////////////////////////////////////////////////////////////
+#define SYS32			"C:\\WINDOWS\\System32\\"
 
 //---------------------------------------------------------------------------
 // The Installed event is sent after the feature Notification Server
@@ -36,9 +37,16 @@ end;
 //---------------------------------------------------------------------------- 
 export prototype Tomcat_Installing();
 function Tomcat_Installing()
-string sName, sKey, sEnv;
+string sName, sKey, sEnv, sCMD, sArgs;
 pointer pEnv;
 begin
+	//remove the YukonWebApplicationService, if it exists (i.e. upgrade install)
+	sCMD = SYS32 ^ "sc.exe";
+	sArgs = "delete \"YukonWebApplicationService\"";
+	LaunchApplication(sCMD, "", "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+	//get out of "hidden" app-launch mode
+	LaunchApplication("", "", "", SW_NORMAL, 0, LAAW_OPTION_WAIT);
+	
 	//set the system environment variable JRE_HOME for use by the Tomcat service
 	sName = "JRE_HOME";         
 	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
