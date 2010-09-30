@@ -288,6 +288,18 @@ SET DefaultValue = 'c:\yukon\client\webgraphs\',
 WHERE RolePropertyId = -10500;
 /* End YUK-9090 */
 
+/* Start YUK-9119 */
+INSERT INTO CCStrategyTargetSettings (StrategyId, SettingName, SettingValue, SettingType)
+SELECT StrategyId, 'Max Consecutive CapBank Ops.', '2.0', 'PEAK'
+FROM CapControlStrategy 
+WHERE ControlUnits = 'Integrated Volt/Var';
+
+INSERT INTO CCStrategyTargetSettings (StrategyId, SettingName, SettingValue, SettingType)
+SELECT StrategyId, 'Max Consecutive CapBank Ops.', '2.0', 'OFFPEAK'
+FROM CapControlStrategy
+WHERE ControlUnits = 'Integrated Volt/Var';
+/* End YUK-9119 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
