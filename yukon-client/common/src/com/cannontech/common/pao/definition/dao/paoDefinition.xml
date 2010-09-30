@@ -4193,6 +4193,12 @@
         		<basicLookup point="Load Profile kW" />
         	</attribute>
        	</attributes>
+       	<tags>
+    		<tag name="PORTER_COMMAND_REQUESTS">
+                <value>true</value>
+      		</tag>
+    	</tags>
+      	
     </pao>
     
     <pao id="ALPHA_PPLUS" inherits="ELECTRONIC_METER_BASE">
@@ -4518,7 +4524,7 @@
         <displayName>VECTRON</displayName>
         <changeGroup>electronic</changeGroup>
 	</pao>
-	
+    	
     <!-- RTUs -->
     <pao id="RTU_BASE" abstract="true">
     	<displayGroup>RTU</displayGroup>
