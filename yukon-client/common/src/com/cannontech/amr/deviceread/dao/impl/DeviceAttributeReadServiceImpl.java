@@ -56,7 +56,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                 }
             }
         }
-        return true;
+        return false;
     }
 
     @Override
@@ -82,7 +82,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             Iterable<PaoIdentifier> paoIdentifiers = PaoUtils.asPaoIdentifiers(immutableCollection);
             if (foundStrategy == null) {
                 for (PaoIdentifier pao : paoIdentifiers) {
-                    MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("no strategy", paoType);
+                    MessageSourceResolvable summary = YukonMessageSourceResolvable.createDefaultWithoutCode("no strategy for " + paoType);
                     DeviceAttributeReadError strategyError = new DeviceAttributeReadError(DeviceAttributeReadErrorType.NO_STRATEGY, summary);
                     delegateCallback.receivedError(pao, strategyError );
                 }

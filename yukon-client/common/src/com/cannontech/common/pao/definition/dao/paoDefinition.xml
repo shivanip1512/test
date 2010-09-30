@@ -4367,6 +4367,16 @@
 	</pao>
 	<pao id="FOCUS" inherits="ELECTRONIC_METER_BASE">
         <displayName>FOCUS</displayName>
+        <commands>
+        	<command id="GENERAL_SCAN">
+        		<name>General Scan</name>
+        		<cmd text="scan general"/>
+        		<pointRef name="Total kWh"/>
+        		<pointRef name="Total kVArh"/>
+        		<pointRef name="Peak kW (Rate A kW)"/>
+        		<pointRef name="Last Interval kW"/>
+        	</command>
+        </commands>
 	</pao>
 	<pao id="SIXNET" inherits="ELECTRONIC_METER_BASE" creatable="false">
         <displayName>SIXNET</displayName>
