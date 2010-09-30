@@ -2842,7 +2842,35 @@ INT Mct4xxDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, lis
             timestamp -= interval_len * 6 * block;
             timestamp -= timestamp % (interval_len * 6);
 
-            if( timestamp == _lp_info[channel].collection_point )
+            const unsigned long seconds_since_midnight = TimeNow.seconds() % 86400;
+            const unsigned long expected_table_pointer = (seconds_since_midnight / interval_len) % 96;
+
+            if( (DSt->Message[0] / 6) != (expected_table_pointer / 6) )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - LP error for device \"" << getName() << "\"; ";
+                    dout << "Table Pointer = " << DSt->Message[0] << ", ";
+                    dout << "expected_table_pointer = " << expected_table_pointer;
+                    dout << " in " __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "commandstr = " << InMessage->Return.CommandStr << endl;
+                }
+
+                status = ErrorInvalidTimestamp;
+            }
+            else if( timestamp != _lp_info[channel].collection_point )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint -  LP error for device \"" << getName() << "\"; ";
+                    dout << "calculated timestamp = " << CtiTime(timestamp) << "; ";
+                    dout << "collection_point = " << CtiTime(_lp_info[channel].collection_point) << endl;
+                    dout << "commandstr = " << InMessage->Return.CommandStr << endl;
+                }
+
+                status = ErrorInvalidTimestamp;
+            }
+            else
             {
                 if( !getDevicePointOffsetTypeEqual(PointOffset_LoadProfileOffset + channel + 1, DemandAccumulatorPointType) )
                 {
@@ -2868,14 +2896,6 @@ INT Mct4xxDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, lis
                 setLastLPTime (timestamp + interval_len * 6);
 
                 _lp_info[channel].collection_point = timestamp + interval_len * 6;
-            }
-            else
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - possible LP logic error for device \"" << getName() << "\";  calculated timestamp=" << CtiTime(timestamp) << "; collection_point=" << CtiTime(_lp_info[channel].collection_point) << endl;
-                    dout << "commandstr = " << InMessage->Return.CommandStr << endl;
-                }
             }
         }
         else
