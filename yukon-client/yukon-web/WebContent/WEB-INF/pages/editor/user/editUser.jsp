@@ -26,7 +26,7 @@
   	<div style="width: 600px;">
 	    Use this permission for Cap Control.  Select the objects to DENY access to for the user.
   	</div>
-    <tags:widget bean="userPermissionEditorWidget" pickerType="cbcDevicePicker"
+    <tags:widget bean="userPermissionEditorWidget" pickerType="capControlAreaPicker"
         permission="PAO_VISIBLE" allow="false"/>
 
   </tags:widgetContainer>

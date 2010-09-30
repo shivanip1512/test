@@ -308,10 +308,16 @@
                             <c:when test="${viewableSubBus.ltcId != null && viewableSubBus.ltcId > 0}">
                                 <capTags:ltcTapIndicator paoId="${viewableSubBus.ltcId}" type="LTC"/>
                                 <capTags:ltcModeIndicator paoId="${viewableSubBus.ltcId}" type="LTC"/>
+                                
+                                <cti:url value="/spring/capcontrol/ivvc/bus/detail" var="ivvcBusViewLink">
+    				    			<cti:param name="subBusId" value="${thisSubBusId}"/>
+    				    			<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
+   				    			</cti:url>
+                                
                                 <a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${viewableSubBus.ltcId}" class="tierIconLink">
                                     <img alt="Edit" class="tierImg" src="${editInfoImage}">
                                 </a>
-                                <a id="ltcName_${viewableSubBus.ltcId}" href="javascript:void(0);" ${popupEvent}="getLtcMenu('${viewableSubBus.ltcId}', event);">
+                                <a id="ltcName_${viewableSubBus.ltcId}" href="${ivvcBusViewLink}">
                                 ${viewableSubBus.ltcName}
                                 </a>
                                 <a href="javascript:getLtcPointsList(${viewableSubBus.ltcId})" class="tierIconLink">

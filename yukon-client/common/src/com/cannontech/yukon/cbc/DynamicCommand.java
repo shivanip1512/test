@@ -47,8 +47,6 @@ public class DynamicCommand extends Message {
         this.commandType = commandType;
     }
     
-    
-    //TODO Based on command type. Only allow certain parameters to be inserted without exception.
     public void addParameter(Parameter parameter, int value) {
         intParameters.put(parameter, value);
     }

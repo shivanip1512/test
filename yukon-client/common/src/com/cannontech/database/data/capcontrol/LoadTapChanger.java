@@ -11,6 +11,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.ExtraPaoPointMapping;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
@@ -22,7 +23,7 @@ public class LoadTapChanger extends CapControlYukonPAOBase {
     public LoadTapChanger() {
         super();
         setPAOCategory( PAOGroups.STRING_CAT_CAPCONTROL );
-        setPAOClass( PAOGroups.STRING_CAT_CAPCONTROL );
+        setPAOClass( DeviceClasses.STRING_CLASS_VOLTAGEREGULATOR );
     }
 
     public LoadTapChanger(Integer ltcId) {

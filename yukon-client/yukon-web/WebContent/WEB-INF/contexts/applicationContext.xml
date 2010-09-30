@@ -897,6 +897,8 @@
         <property name="updaterService" ref="dataUpdaterService" />
     </bean>
     
+    <bean id="navigableHierarchyTagPrototype" class="com.cannontech.web.capcontrol.NavigableHierarchyTag"/>
+    
     <bean id="paoDetailUrlTagPrototype" class="com.cannontech.web.taglib.PaoDetailUrlTag">
         <property name="paoDetailUrlHelper" ref="paoDetailUrlHelper"/>
     </bean>
@@ -1206,7 +1208,7 @@
                 <value>DENY|/spring/capcontrol/**|!CBC_SETTINGS</value>            
                 <value>DENY|/capcontrol/**|!CBC_SETTINGS</value>
                 
-                <value>DENY|/spring/support/**|!OPERATOR_ADMINISTRATOR</value>
+                <value>DENY|/spring/support/**|!ADMIN_VIEW_LOGS</value>
                 
                 <value>ALLOW|/**|WEB_CLIENT</value>
                 <value>DENY|/**|*</value>
@@ -1382,10 +1384,22 @@
             <bean class="com.cannontech.common.search.criteria.CBCSubBusCriteria"/>
         </property>
     </bean>
-    <bean name="cbcDevicePicker" parent="abstractPaoPicker"
+    <bean name="capControlAreaPicker" parent="abstractPaoPicker"
         class="com.cannontech.web.picker.v2.PaoPicker">
         <property name="criteria">
-            <bean class="com.cannontech.common.search.criteria.CBCDeviceCriteria"/>
+            <bean class="com.cannontech.common.search.criteria.CapControlAreaCriteria"/>
+        </property>
+    </bean>
+    <bean name="capBankPicker" parent="abstractPaoPicker"
+        class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.CapBankCriteria"/>
+        </property>
+    </bean>
+    <bean name="cbcPicker" parent="abstractPaoPicker"
+        class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.CbcCriteria"/>
         </property>
     </bean>
     <bean name="lmDevicePicker" parent="abstractPaoPicker"
@@ -1604,14 +1618,13 @@
             value="com.cannontech.web.picker.v2.service.PickerFactory" />
     </bean>
 
-    <bean name="customerAccountPicker" class="com.cannontech.web.picker.v2.CustomerAccountPicker"/>
-    <bean name="lmHardwareBasePicker" class="com.cannontech.web.picker.v2.LmHardwareBasePicker"/>
-
     <bean class="com.cannontech.web.layout.impl.HttpExpressionLanguageResolverImpl"/>
     
     <bean id="flashScopeArgumentResolver" class="com.cannontech.web.common.flashScope.FlashScopeArgumentResolver"/>
     
     <bean id="accountInfoFragmentArgumentResolver" class="com.cannontech.web.stars.dr.operator.general.AccountInfoFragmentArgumentResolver"/>
+    
+    <bean id="zoneDtoValidator" class="com.cannontech.web.capcontrol.ivvc.validators.ZoneDtoValidator"/>
     
     <bean id="hardwareService" class="com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareServiceImpl"/>
     <bean id="hardwareDtoValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.HardwareDtoValidator"/>

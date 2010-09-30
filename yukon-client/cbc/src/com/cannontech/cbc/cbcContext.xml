@@ -23,6 +23,7 @@
   <bean id="capbankDao" class="com.cannontech.cbc.dao.impl.CapbankDaoImpl"/>
   <bean id="capbankControllerDao" class="com.cannontech.cbc.dao.impl.CapbankControllerDaoImpl"/>
   <bean id="ltcDao" class="com.cannontech.cbc.dao.impl.LtcDaoImpl"/>
+  <bean id="zoneDao" class="com.cannontech.cbc.dao.impl.ZoneDaoImpl"/>
   
   <bean id="capCommentDao" class="com.cannontech.cbc.dao.impl.CapControlCommentDaoImpl">
     <property name="nextValueHelper" ref="nextValueHelper"/>
@@ -55,5 +56,12 @@
 	<bean id="capControlCreationService"
 	    class="com.cannontech.cbc.service.impl.CapControlCreationServiceImpl">
 	</bean>
+
+    <bean id="zoneService" class="com.cannontech.web.capcontrol.ivvc.service.impl.ZoneServiceImpl">
+    </bean>
+    
+    <bean id="voltageFlatnessGraphService" class="com.cannontech.web.capcontrol.ivvc.service.impl.VoltageFlatnessGraphServiceImpl">
+    </bean>
+    
 
 </beans>

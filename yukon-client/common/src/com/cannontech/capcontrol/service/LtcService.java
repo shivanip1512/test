@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.model.MappableAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
@@ -24,31 +25,44 @@ public class LtcService {
     private PaoDao paoDao;
     private PointDao pointDao;
 
+    public LtcPointMapping getLtcPointMapping(int ltcId, BuiltInAttribute attribute) {
+        YukonPao ltc = paoDao.getYukonPao(ltcId);
+        MappableAttribute mappableAttribute = new MappableAttribute(attribute, null);
+        return generateLtcPointMapping(ltc,mappableAttribute);
+    }
+    
     public List<LtcPointMapping> getLtcPointMappings(int ltcId) {
         List<LtcPointMapping> pointMappings = Lists.newArrayList();
         YukonPao ltc = paoDao.getYukonPao(ltcId);
         Set<MappableAttribute> ltcAttributes = attributeService.getMappableAttributes(PaoType.LOAD_TAP_CHANGER);
         
         for(MappableAttribute mappableAttribute : ltcAttributes) {
-            LtcPointMapping mapping = new LtcPointMapping();
-            mapping.setExtraPaoPointMapping(new ExtraPaoPointMapping());
-            mapping.setAttribute(mappableAttribute.getAttribute());
-            try {
-                LitePoint litePoint = attributeService.getPointForAttribute(ltc, mappableAttribute.getAttribute());
-                String paoName = paoDao.getYukonPAOName(pointDao.getPaoPointIdentifier(litePoint.getPointID()).getPaoIdentifier().getPaoId());
-                mapping.setPaoName(paoName);
-                mapping.setPointName(litePoint.getPointName());
-                mapping.setPointId(litePoint.getPointID());
-            
-            } catch (IllegalUseOfAttribute e ){
-                /* No point defined for this attribute */
-                mapping.setPaoName(CtiUtilities.STRING_NONE);
-                mapping.setPointName(CtiUtilities.STRING_NONE);
-            }
-            mapping.setFilterType(mappableAttribute.getFilterType());
+            LtcPointMapping mapping = generateLtcPointMapping(ltc, mappableAttribute);
             pointMappings.add(mapping);
         }
+        
         return pointMappings;
+    }
+    
+    private LtcPointMapping generateLtcPointMapping(YukonPao ltc, MappableAttribute mappableAttribute) {
+        LtcPointMapping mapping = new LtcPointMapping();
+        mapping.setExtraPaoPointMapping(new ExtraPaoPointMapping());
+        mapping.setAttribute(mappableAttribute.getAttribute());
+        try {
+            LitePoint litePoint = attributeService.getPointForAttribute(ltc, mappableAttribute.getAttribute());
+            String paoName = paoDao.getYukonPAOName(pointDao.getPaoPointIdentifier(litePoint.getPointID()).getPaoIdentifier().getPaoId());
+            mapping.setPaoName(paoName);
+            mapping.setPointName(litePoint.getPointName());
+            mapping.setPointId(litePoint.getPointID());
+        
+        } catch (IllegalUseOfAttribute e ){
+            /* No point defined for this attribute */
+            mapping.setPaoName(CtiUtilities.STRING_NONE);
+            mapping.setPointName(CtiUtilities.STRING_NONE);
+        }
+        mapping.setFilterType(mappableAttribute.getFilterType());
+        
+        return mapping;
     }
     
     @Autowired

@@ -81,6 +81,9 @@
       <sequence name="xmlParameterid">
       	<table name="LMGroupXMLParameter" identitycolumn="LMGroupXMLParameterId" initsequence="true"/>
       </sequence>
+	  <sequence name="ZoneId">
+      	<table name="Zone" identitycolumn="ZoneId" initsequence="true"/>
+      </sequence>
       <sequence name="schedAssignemnt">
       	<table name="PAOScheduleAssignment" identitycolumn="EventID" initsequence="true"/>
       </sequence>
@@ -245,7 +248,7 @@
       </sequence>
       <sequence name="RoleProperties">
         <table name="YukonGroupRole" identitycolumn="GroupRoleId" initsequence="true"/>
-        <table name="YukonUserRole" identitycolumn="UserRoleId" initsequence="true"/>
+        <table name="YukonUserRole" identitycolumn="GroupRoleId" initsequence="true"/>
       </sequence>
   </sequencetable>
 </sequencetables>

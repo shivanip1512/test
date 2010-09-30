@@ -9,6 +9,7 @@ public class ViewableCapBank {
 	private LiteYukonPAObject controlDevice = null;
 	private boolean twoWayCbc = false;
 	private boolean device701x = false;
+	private int voltagePointId = 0;
 	
 	public ViewableCapBank(){
 		
@@ -45,5 +46,12 @@ public class ViewableCapBank {
 	public void setDevice701x(boolean device701x) {
 		this.device701x = device701x;
 	}
-	
+
+    public int getVoltagePointId() {
+        return voltagePointId;
+    }
+
+    public void setVoltagePointId(int voltagePointId) {
+        this.voltagePointId = voltagePointId;
+    }
 }

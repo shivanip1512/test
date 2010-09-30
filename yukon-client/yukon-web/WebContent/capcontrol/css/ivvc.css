@@ -1,0 +1,59 @@
+.tableCell {
+	font-size: 12px;
+}
+
+.altTableCell {
+	font-size: 12px;
+}
+
+.errorIndicator {
+	color:pink;
+}
+
+.selectable:hover {
+	background-color: #CCCCCC;
+	
+}
+
+.selectedZone {
+	background-color: #CCCCCC;
+}
+
+.selectedZoneContainer {
+	background-color: #CCCCCC;
+	border-radius: 1.6em;
+}
+
+.disabledRow {
+	font-style: italic;
+}
+
+.ivvcContainer {
+	width:auto;
+	vertical-align:top;
+}
+
+.ivvcChart {
+	width:100%;
+	vertical-align:top;
+}
+
+div.zoneHierarchy ul {
+	padding-left:1em;
+}
+
+div.zoneHierarchy li {
+	list-style-type:none;
+	margin: 6px 0; 
+}
+div.zoneHierarchy li div {
+	position: relative;
+	border-bottom: 1px #CCCCCC solid;
+}
+
+div.zoneHierarchy li div div {
+	position: absolute;
+	top: 0;
+	right: 50px;
+
+}

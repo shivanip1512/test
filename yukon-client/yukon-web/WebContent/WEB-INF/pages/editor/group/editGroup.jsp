@@ -26,7 +26,7 @@
 	  	<div style="width: 550px;">
 		    Use this permission for Cap Control.  Select the objects to DENY access to for the group.
 	  	</div>
-		<tags:widget bean="groupPermissionEditorWidget" pickerType="cbcDevicePicker"
+		<tags:widget bean="groupPermissionEditorWidget" pickerType="capControlAreaPicker"
 		    permission="PAO_VISIBLE" allow="false"/>
   
     </tags:widgetContainer>

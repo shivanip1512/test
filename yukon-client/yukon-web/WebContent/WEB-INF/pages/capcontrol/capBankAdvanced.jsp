@@ -22,7 +22,7 @@
 			<x:outputText value="Point Assignment" />
 		</x:htmlTag>
         
-		<h:panelGrid id="cbBody" columns="2" styleClass="gridLayout" rowClasses="gridCell" columnClasses="gridCell">
+		<h:panelGrid id="cbBody" columns="2" styleClass="gridLayout" rowClasses="gridCell" columnClasses="gridCell,gridCell">
         
 			<x:panelGroup>
                 <x:div styleClass="scrollerDiv">

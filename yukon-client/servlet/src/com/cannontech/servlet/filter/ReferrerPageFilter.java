@@ -35,10 +35,14 @@ public class ReferrerPageFilter implements Filter {
         // setup ant-style paths
         // all paths should start with a slash because that's just the way it works
         excludedPages = new String[] {
-            "/capcontrol/cbcPointTimestamps.jsp",
-            "/capcontrol/standardPageWrapper.jsp",
-            "/spring/capcontrol/move/bankMove",
-            "/spring/capcontrol/capAddInfo"};
+                "/spring/capcontrol/ivvc/zone/chartSettings",
+                "/spring/capcontrol/ivvc/zone/chartData",
+                "/spring/capcontrol/ivvc/bus/chartSettings",
+                "/spring/capcontrol/ivvc/bus/chartData",
+                "/capcontrol/cbcPointTimestamps.jsp",
+                "/capcontrol/standardPageWrapper.jsp",
+                "/spring/capcontrol/move/bankMove",
+                "/spring/capcontrol/capAddInfo"};
     }
     /**
      * @see javax.servlet.Filter#init(FilterConfig)

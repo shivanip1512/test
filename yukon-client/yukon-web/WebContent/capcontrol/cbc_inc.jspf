@@ -34,7 +34,6 @@
 
 <!-- Included CSS -->
 <cti:includeCss link="/editor/css/greybox/greybox.css"/>     
-<cti:includeCss link="/capcontrol/css/base.css"/>     
 
 <!-- Beans -->
 <jsp:useBean id="ccSession"

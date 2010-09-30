@@ -25,6 +25,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.pao.CapControlType;
+import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -42,7 +43,7 @@ public class LtcDaoImpl implements LtcDao {
         YukonPAObject persistentLtc = new YukonPAObject();
         persistentLtc.setPaObjectID(newId);
         persistentLtc.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
-        persistentLtc.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
+        persistentLtc.setPaoClass(DeviceClasses.STRING_CLASS_VOLTAGEREGULATOR);
         persistentLtc.setPaoName(ltc.getName());
         persistentLtc.setType(CapControlType.LTC.getDisplayValue());
         persistentLtc.setDescription(ltc.getDescription());
