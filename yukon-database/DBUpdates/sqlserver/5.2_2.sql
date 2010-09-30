@@ -314,6 +314,10 @@ INSERT INTO YukonUserRole VALUES(-1200, -100, -800, -80100, '(none)');
 /* @error ignore-end */
 /* End YUK-7073 */
 
+/* Start YUK-9115 */
+INSERT INTO YukonRoleProperty VALUES(-10821, -108, 'CSRF Token Mode','OFF', 'Which mode to use for CSRF protection (OFF, TOKEN, PASSWORD).');
+/* End YUK-9115 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
