@@ -433,6 +433,46 @@ function makeFirstSelectedFilterValueVisible() {
       				return true;
 	            }
 			}
+
+            function setPickerSelectedAccountNumberNamesFunction(spanId) {
+                
+                return function(ids) {
+                    var selectedNames = $A();
+
+                    for (var index = 0; index < ids.length; index++) {
+                        selectedNames.push(ids[index].accountNumber);
+                    }
+                    $(spanId).innerHTML = selectedNames.join(", ");
+                    return true;
+                }
+            }
+
+            function setPickerSelectedSerialNumberNamesFunction(spanId) {
+                
+                return function(ids) {
+                    var selectedNames = $A();
+
+                    for (var index = 0; index < ids.length; index++) {
+                        selectedNames.push(ids[index].manufacturerSerialNumber);
+                    }
+                    $(spanId).innerHTML = selectedNames.join(", ");
+                    return true;
+                }
+            }
+            
+            function setPickerSelectedUserNamesFunction(spanId) {
+                
+                return function(ids) {
+                    var selectedNames = $A();
+
+                    for (var index = 0; index < ids.length; index++) {
+                        selectedNames.push(ids[index].userName);
+                    }
+                    $(spanId).innerHTML = selectedNames.join(", ");
+                    return true;
+                }
+            }
+            
 	    </script>
 
 		<table width='100%' border='0' cellspacing='0' cellpadding='0' align='center'>
@@ -508,7 +548,7 @@ function makeFirstSelectedFilterValueVisible() {
 				                                 	endAction="setPickerSelectedPaoNamesFunction('selectedProgramNamesSpan');">
 				             	
 				             	<img src="/WebConfig/yukon/Icons/add.gif">
-				             	Choose Programs 
+				             	Choose Programs
 	                            </tags:pickerDialog>
 	                    			
 	                    		<%	
@@ -605,8 +645,84 @@ function makeFirstSelectedFilterValueVisible() {
 	                            <span id="selectedScenarioNamesSpan" style="font-weight:bold;font-size:12px;"></span>
                              
                             </span>
-                        </div>      
-                    	<%-- ALL OTHER FILTER OBJECT TYPES --%>   
+                        </div>
+                        
+                        <%-- ACCOUNT NUMBER PICKER --%>
+                        <%} else if( filter.equals(ReportFilter.ACCOUNT_NUMBER)) {%>
+                        <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                            <input type="hidden" id="selectedPickerValues" name="filterValues">
+                            
+                            <span style="font-size:16px;">
+                                    
+                                <tags:pickerDialog  type="customerAccountPicker"
+                                                    extraArgs="<%=String.valueOf(REPORT_BEAN.getEnergyCompanyID())%>"
+                                                    id="customerAccountPicker" 
+                                                    multiSelectMode="true"
+                                                    destinationFieldId="selectedPickerValues"
+                                                    styleClass="simpleLink"
+                                                    endAction="setPickerSelectedAccountNumberNamesFunction('selectedAccountNumberNamesSpan');">
+                                
+                                <img src="/WebConfig/yukon/Icons/add.gif">
+                                Choose Account Numbers 
+                                </tags:pickerDialog>
+                                 
+                                <br>
+                                <span id="selectedAccountNumberNamesSpan" style="font-weight:bold;font-size:12px;"></span>
+                             
+                            </span>
+                        </div> 
+                        
+                        <%-- SERIAL NUMBER PICKER --%>
+                        <%} else if( filter.equals(ReportFilter.SERIAL_NUMBER)) {%>
+                        <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                            <input type="hidden" id="selectedPickerValues" name="filterValues">
+                            
+                            <span style="font-size:16px;">
+                                    
+                                <tags:pickerDialog  type="lmHardwareBasePicker"
+                                                    extraArgs="<%=String.valueOf(REPORT_BEAN.getEnergyCompanyID())%>"
+                                                    id="serialNumberPicker" 
+                                                    multiSelectMode="true"
+                                                    destinationFieldId="selectedPickerValues"
+                                                    styleClass="simpleLink"
+                                                    endAction="setPickerSelectedSerialNumberNamesFunction('selectedSerialNumberNamesSpan');">
+                                
+                                <img src="/WebConfig/yukon/Icons/add.gif">
+                                Choose Serial Numbers
+                                </tags:pickerDialog>
+                                 
+                                <br>
+                                <span id="selectedSerialNumberNamesSpan" style="font-weight:bold;font-size:12px;"></span>
+                             
+                            </span>
+                        </div> 
+                        
+                        <%-- USER PICKER --%>
+                        <%} else if( filter.equals(ReportFilter.USER)) {%>
+                        <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                            <input type="hidden" id="selectedPickerValues" name="filterValues">
+                            
+                            <span style="font-size:16px;">
+                                    
+                                <tags:pickerDialog  type="userPicker"
+                                                    extraArgs="<%=String.valueOf(REPORT_BEAN.getEnergyCompanyID())%>"
+                                                    id="userPicker" 
+                                                    multiSelectMode="true"
+                                                    destinationFieldId="selectedPickerValues"
+                                                    styleClass="simpleLink"
+                                                    endAction="setPickerSelectedUserNamesFunction('selectedUserNamesSpan');">
+                                
+                                <img src="/WebConfig/yukon/Icons/add.gif">
+                                Choose Users 
+                                </tags:pickerDialog>
+                                 
+                                <br>
+                                <span id="selectedUserNamesSpan" style="font-weight:bold;font-size:12px;"></span>
+                             
+                            </span>
+                        </div> 
+                        
+                        <%-- ALL OTHER FILTER OBJECT TYPES --%>   
             			<% }else {%>
             				<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
             				

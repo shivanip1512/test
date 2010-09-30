@@ -61,8 +61,16 @@ public interface OptOutEventDao {
 	 * @param stopDate - End of time period
 	 * @return List of opt out history
 	 */
-	public List<OverrideHistory> getOptOutHistoryForAccount(
-			int accountId, Date startDate, Date stopDate);
+	public List<OverrideHistory> getOptOutHistoryForAccount(int accountId, Date startDate, Date stopDate);
+	
+    /**
+     * Method to get a list of opt out events by the assigning user of the opt out. 
+     * @param issuingUserId
+     * @param startTime
+     * @param stopTime
+     * @return
+     */
+    public List<OverrideHistory> getOptOutHistoryByIssuedUser(int issuingUserId, Date startTime, Date stopTime);
 	
 	/**
 	 * Method to get a list of opt out events by inventory and time period
@@ -192,7 +200,7 @@ public interface OptOutEventDao {
 	 * @return Ids of opted out devices
 	 */
 	public List<Integer> getOptedOutDeviceIdsForAccount(int accountId, Date startTime, Date stopTime);
-	
+
 	/**
 	 * Method to get a list of opt outs that are scheduled to start before now.
 	 * @return List of scheduled opt outs

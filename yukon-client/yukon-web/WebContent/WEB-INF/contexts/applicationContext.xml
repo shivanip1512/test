@@ -1604,6 +1604,9 @@
             value="com.cannontech.web.picker.v2.service.PickerFactory" />
     </bean>
 
+    <bean name="customerAccountPicker" class="com.cannontech.web.picker.v2.CustomerAccountPicker"/>
+    <bean name="lmHardwareBasePicker" class="com.cannontech.web.picker.v2.LmHardwareBasePicker"/>
+
     <bean class="com.cannontech.web.layout.impl.HttpExpressionLanguageResolverImpl"/>
     
     <bean id="flashScopeArgumentResolver" class="com.cannontech.web.common.flashScope.FlashScopeArgumentResolver"/>

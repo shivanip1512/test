@@ -259,11 +259,10 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
         ChunkingMappedSqlTemplate chunkingTemplate = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
         return chunkingTemplate.multimappedQuery(sqlGenerator, optOutEvents, rowMapper, typeMapper);
 	}
-	
+
     @Override
 	@Transactional
-	public List<OverrideHistory> getOptOutHistoryForAccount(int accountId,
-			Date startDate, Date stopDate) {
+	public List<OverrideHistory> getOptOutHistoryForAccount(int accountId, Date startDate, Date stopDate) {
 
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT * ");
@@ -314,6 +313,27 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		return historyList;
 	}
 
+    @Override
+    public List<OverrideHistory> getOptOutHistoryByIssuedUser(int issuingUserId,
+                                                              Date startDate,
+                                                              Date stopDate) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT * ");
+        sql.append("FROM OptOutEvent ");
+        sql.append("WHERE OptOutEventId").in(getEventsByUserId(issuingUserId));
+        sql.append("  AND StartDate").lte(stopDate);
+        sql.append("  AND StopDate").gte(startDate);
+        sql.append("  AND (EventState").eq(OptOutEventState.START_OPT_OUT_SENT);
+        sql.append("       OR EventState").eq(OptOutEventState.CANCEL_SENT).append(")");
+        sql.append("ORDER BY StartDate DESC");
+        
+        List<OverrideHistory> historyList = 
+            yukonJdbcTemplate.query(sql, new OverrideHistoryRowMapper());
+        
+        return historyList;
+    }
+
 	@Override
 	public OptOutEvent getOptOutEventById(int eventId) {
 
@@ -327,7 +347,6 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		return event;
 	}
 	
-
 	@Override
 	public OptOutEvent findLastEvent(int inventoryId, int customerAccountId) {
 		
@@ -695,6 +714,17 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		return userId;
 	}
 
+    @Transactional
+    private SqlStatementBuilder getEventsByUserId(int userId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT OptOutEventId");
+        sql.append("FROM OptOutEventLog ");
+        sql.append("WHERE LogUserId").eq(userId);
+        
+        return sql;
+    }
+	
 	/**
 	 * Helper class to map a result set row into an OptOutEvent
 	 */

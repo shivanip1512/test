@@ -34,13 +34,13 @@ public class LMHardwareBase {
     public void setLMHarewareTypeId(int harewareTypeId) {
         LMHarewareTypeId = harewareTypeId;
     }
-
+    
     public String getManufacturerSerialNumber() {
         return manufacturerSerialNumber;
     }
-
-    public void setManufactoruerSerialNumber(String manufactoruerSerialNumber) {
-        this.manufacturerSerialNumber = manufactoruerSerialNumber;
+    
+    public void setManufacturerSerialNumber(String manufacturerSerialNumber) {
+        this.manufacturerSerialNumber = manufacturerSerialNumber;
     }
 
     public int getRouteId() {

@@ -46,19 +46,7 @@ public abstract class SingleGroupYukonReportBase extends SimpleYukonReportBase {
         
         TextFieldElementFactory groupFieldFactory;
         Class<?> columnClass = getModel().getColumnClass(groupFieldIndex);
-        if (Number.class.isAssignableFrom(columnClass)) {
-            NumberFieldElementFactory numFieldFactory = new NumberFieldElementFactory();
-            numFieldFactory.setHorizontalAlignment(getGroupFieldData().getHorizontalAlignment());
-            numFieldFactory.setFormatString(getGroupFieldData().getFormat());
-            groupFieldFactory = numFieldFactory;
-        } else if (Date.class.isAssignableFrom(columnClass)) {
-            DateFieldElementFactory dateFieldFactory = new DateFieldElementFactory();
-            dateFieldFactory.setVerticalAlignment(ElementAlignment.BOTTOM);
-            dateFieldFactory.setFormatString(getGroupFieldData().getFormat());
-            groupFieldFactory = dateFieldFactory;
-        } else {
-            groupFieldFactory = new TextFieldElementFactory();
-        }
+        groupFieldFactory = objectFieldFactoryMethod(columnClass);
         groupFieldFactory.setDynamicHeight(Boolean.TRUE);
         groupFieldFactory.setHorizontalAlignment(ElementAlignment.LEFT);
         groupFieldFactory.setVerticalAlignment(ElementAlignment.BOTTOM);
@@ -97,5 +85,26 @@ public abstract class SingleGroupYukonReportBase extends SimpleYukonReportBase {
     }
 
     protected abstract ColumnLayoutData getGroupFieldData();
-    
+
+    /**
+     * This method takes a class type and returns a textFieldElementFactory object to 
+     * build a group.
+     */
+    protected TextFieldElementFactory objectFieldFactoryMethod(Class<?> columnClass) {
+        TextFieldElementFactory groupFieldFactory;
+        if (Number.class.isAssignableFrom(columnClass)) {
+            NumberFieldElementFactory numFieldFactory = new NumberFieldElementFactory();
+            numFieldFactory.setHorizontalAlignment(getGroupFieldData().getHorizontalAlignment());
+            numFieldFactory.setFormatString(getGroupFieldData().getFormat());
+            groupFieldFactory = numFieldFactory;
+        } else if (Date.class.isAssignableFrom(columnClass)) {
+            DateFieldElementFactory dateFieldFactory = new DateFieldElementFactory();
+            dateFieldFactory.setVerticalAlignment(ElementAlignment.BOTTOM);
+            dateFieldFactory.setFormatString(getGroupFieldData().getFormat());
+            groupFieldFactory = dateFieldFactory;
+        } else {
+            groupFieldFactory = new TextFieldElementFactory();
+        }
+        return groupFieldFactory;
+    }
 }

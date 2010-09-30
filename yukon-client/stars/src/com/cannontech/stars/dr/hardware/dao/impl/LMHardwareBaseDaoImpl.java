@@ -123,7 +123,7 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
                 hardwareBase.setConfigurationId(rs.getInt("ConfigurationID"));
                 hardwareBase.setInventoryId(rs.getInt("InventoryID"));
                 hardwareBase.setLMHarewareTypeId(rs.getInt("LMHardwareTypeID"));
-                hardwareBase.setManufactoruerSerialNumber(rs.getString("ManufacturerSerialNumber"));
+                hardwareBase.setManufacturerSerialNumber(rs.getString("ManufacturerSerialNumber"));
                 hardwareBase.setRouteId(rs.getInt("RouteID"));
                 return hardwareBase;
             }

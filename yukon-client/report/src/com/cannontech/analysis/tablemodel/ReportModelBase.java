@@ -78,7 +78,11 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
             PORT("Port"),
             PROGRAM("Program"),
             PROGRAM_SINGLE_SELECT("Program", false),
-            STRATEGY("Strategy");
+            STRATEGY("Strategy"),
+            ACCOUNT_NUMBER("Account Number"), 
+            SERIAL_NUMBER("Serial Number"),
+            USER("User"),
+            ;
 
 		private String filterTitle;
 		private boolean multiSelect;

@@ -712,6 +712,10 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return descCompanies;
     }
     
+    /**
+     * This method returns all the energy companies an energy company can access including
+     * itself.
+     */
     public List<Integer> getAllEnergyCompaniesDownward()
     {
         List<Integer> descEnergyCompanies = new ArrayList<Integer>();
