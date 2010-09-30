@@ -160,6 +160,8 @@ private:
     int   _meterHour;
     bool  _timeZoneApplied;
     bool  _lsbDataOrder;
+    bool  _descBlockOrder;
+    bool  _descIntervalOrder;
 
 
 public:
@@ -169,13 +171,15 @@ public:
                         int numberBlockIntervalsSet, bool blockEndReadFlag,
                         bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
                         int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2,
-                        int timeFmt, int meterHour, bool timeZoneApplied, bool lsbDataOrder = true );
+                        int timeFmt, int meterHour, bool timeZoneApplied, bool lsbDataOrder = true,
+                        bool descBlockOrder = false, bool descIntervalOrder = false);
    CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberChansSet,
                         bool closureStatusFlag, bool simpleIntervalStatusFlag,
                         int numberBlockIntervalsSet, bool blockEndReadFlag,
                         bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
                         int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2,
-                        int timeFmt, int meterHour, bool timeZoneApplied, bool lsbDataOrder = true );
+                        int timeFmt, int meterHour, bool timeZoneApplied, bool lsbDataOrder = true,
+                        bool descBlockOrder = false, bool descIntervalOrder = false);
 
    virtual ~CtiAnsiTable64();
 

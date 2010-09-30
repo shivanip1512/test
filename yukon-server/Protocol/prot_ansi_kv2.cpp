@@ -156,7 +156,7 @@ void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, BYTE numBytes,
 
 void CtiProtocolANSI_kv2::setAnsiDeviceType()
 {
-    getApplicationLayer().setAnsiDeviceType(1);
+    getApplicationLayer().setAnsiDeviceType(CtiANSIApplication::kv2);
     return;
 }
 

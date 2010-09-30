@@ -117,6 +117,7 @@ using std::endl;
 //converters
 //these aren't needed anymore
 
+namespace Ansi {
 
 typedef union
 {
@@ -153,14 +154,6 @@ struct WANTS_HEADER
 #define ANSI_OPERATION_READ              10
 #define ANSI_OPERATION_WRITE             11
 
-
-
-/*struct TBL_IDB_BFLD
-{
-   unsigned char   tbl_proc_nbr:11;
-   unsigned char   std_vs_mfg_flag:1;
-   unsigned char   selector:4;
-};*/
 
 struct REQ_DATA_RCD
 {
@@ -304,7 +297,7 @@ struct TIME
 
 #pragma pack( pop )
 
-class IM_EX_PROT CtiProtocolANSI//: public CtiProtocolANSI_base
+class IM_EX_PROT CtiProtocolANSI
 {
    public:
       CtiProtocolANSI();
@@ -323,11 +316,15 @@ class IM_EX_PROT CtiProtocolANSI//: public CtiProtocolANSI_base
       bool generate( CtiXfer &xfer );
       bool decode  ( CtiXfer &xfer, int status );
 
+      bool CtiProtocolANSI::handleWriteOperations();
+      bool CtiProtocolANSI::createWriteOperations();
+
       bool isTransactionComplete( void ) const;
       bool isTransactionFailed( void );
       int recvOutbound( OUTMESS  *OutMessage );
 
-      void convertToTable( );
+      void convertToTable();
+      bool setLoadProfileVariables();
 
       int sendCommResult( INMESS *InMessage );
         void receiveCommResult( INMESS *InMessage );
@@ -346,7 +343,7 @@ class IM_EX_PROT CtiProtocolANSI//: public CtiProtocolANSI_base
     virtual void destroyManufacturerTables( void );
     virtual void convertToManufacturerTable( BYTE *data, BYTE numBytes, short aTableID );
     virtual int calculateLPDataBlockStartIndex(ULONG lastLPTime);
-    virtual void setAnsiDeviceType();
+    virtual void setAnsiDeviceType() = 0;
     virtual bool snapshotData();
     virtual bool batteryLifeData();
     virtual int getGoodBatteryReading();
@@ -460,7 +457,6 @@ class IM_EX_PROT CtiProtocolANSI//: public CtiProtocolANSI_base
       CtiAnsiTable62  *_table62;
       CtiAnsiTable63  *_table63;
       CtiAnsiTable64  *_table64;
-      //  CtiAnsiTable55             *_table55;
 
       CtiAnsiTable25  *_frozenRegTable;
 
@@ -507,6 +503,6 @@ class IM_EX_PROT CtiProtocolANSI//: public CtiProtocolANSI_base
      ANSI_SCAN_OPERATION _scanOperation;  //General Scan, Demand Reset,
      UINT _parseFlags;
 };
-
+}
 
 #endif // #ifndef __PROT_ANSI_H__

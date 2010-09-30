@@ -594,208 +594,16 @@ int CtiDeviceKV2::buildScannerTableRequest (BYTE *aMsg, UINT flags)
 
     string pswdTemp;
     pswdTemp = getIED().getPassword();
-    std::transform(pswdTemp.begin(), pswdTemp.end(), pswdTemp.begin(), toupper);
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << "pswdTemp "<<pswdTemp<< endl;
-    }
-    BYTE *temp;
-    temp = (BYTE *)pswdTemp.c_str();
-    struct CHexMap
-    {
-        char c;
-        int val;
-    };
-
-    CHexMap HexMap[16] = {
-        {'0', 0}, {'1', 1},
-        {'2', 2}, {'3', 3},
-        {'4', 4}, {'5', 5},
-        {'6', 6}, {'7', 7},
-        {'8', 8}, {'9', 9},
-        {'A', 10}, {'B', 11},
-        {'C', 12}, {'D', 13},
-        {'E', 14}, {'F', 15}
-    };
-
-
-    int pwdTemp;
-    int nibble;
     for (int aa = 0; aa < 20; aa++)
         password[aa] = 0;
-    for (int a = 0; a < 10; a++)
-    {
-        nibble = 0;
-        for (int nib = 0; nib < 2; nib++)
-        {
-            pwdTemp = 0;
-            for (int i = 0; i < 16; i++)
-            {
-                if (*temp == HexMap[i].c)
-                {
-                    pwdTemp = HexMap[i].val;
-                }
-            }
-            if (nib == 0)
-            {
-                pwdTemp = pwdTemp << 4;
-            }
 
-            password[a] |= pwdTemp;
-            temp++;
-        }
-    }
+    BYTE *temp;
+    temp = (BYTE *)pswdTemp.c_str();
+    for (int aa = 0; aa < pswdTemp.length(); aa++)
+        password[aa] = *(temp + aa);
 
     // currently defaulted at billing data only
-    if (useScanFlags())
-    {
-        header.lastLoadProfileTime = getLastLPTime().seconds();
-    }
-    else
-    {
-        header.lastLoadProfileTime = 0;
-    }
-    //_lastLPTime = header.lastLoadProfileTime;
-
-    if (useScanFlags())
-    {
-        if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getName() <<" lastLPTime "<<getLastLPTime()<< endl;
-        }
-    }
-
-    // lazyness so I don't have to continually remember to update this
-    header.numTablesRequested = 0;
-    for (int x=0; x < 100; x++)
-    {
-        if (table[x].tableID < 0)
-        {
-            break;
-        }
-        else
-        {
-            header.numTablesRequested++;
-        }
-    }
-    header.command = 5; // ?
-
-    BYTE scanOperation = 0; //0 = general scan
-
-    // put the stuff in the buffer
-    memcpy( aMsg, &header, sizeof (header));
-    memcpy( (aMsg+sizeof(header)), &password, sizeof (password));
-    memcpy ((aMsg+sizeof(header)+sizeof(password)),
-            &table,
-            (header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)));
-    memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS))),
-            &scanOperation, sizeof(BYTE));
-    memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)) +sizeof(BYTE)),
-            &flags, sizeof(UINT));
-
-
-    // keep the list on the scanner side for decode
-    //getKV2Protocol().buildWantedTableList (aMsg);
-
-
-    return NORMAL;
-}
-
-/*************************************************************************************
-* build the list of tables and header requested in the device as each ansi device may need a few
-* different tables
-*************************************************************************************
-*/
-int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
-{
-    WANTS_HEADER   header;
-    //ANSI_SCAN_OPERATION scanOperation = generalScan;
-
-    //here is the password for the KV2 (should be changed to a cparm, I think)
-    BYTE        password[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-    // here are the tables requested for the KV2
-    ANSI_TABLE_WANTS    table[100] = {
-        {  0,     0,      30,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        {  1,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        {  3,     0,      0,      ANSI_TABLE_TYPE_STANDARD,     ANSI_OPERATION_READ},
-        { 11,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 12,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 13,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 15,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 16,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 21,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 22,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 23,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 25,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        //27-28 not supported in KV2
-       // { 27,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-       // { 28,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 31,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 32,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 33,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 52,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        {  -1,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ}
-
-    };
-    string pswdTemp;
-    pswdTemp = getIED().getPassword();
-    std::transform(pswdTemp.begin(), pswdTemp.end(), pswdTemp.begin(), toupper);
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << "pswdTemp "<<pswdTemp<< endl;
-    }
-    BYTE *temp;
-    temp = (BYTE *)pswdTemp.c_str();
-    struct CHexMap
-    {
-        char c;
-        int val;
-    };
-
-    CHexMap HexMap[16] = {
-        {'0', 0}, {'1', 1},
-        {'2', 2}, {'3', 3},
-        {'4', 4}, {'5', 5},
-        {'6', 6}, {'7', 7},
-        {'8', 8}, {'9', 9},
-        {'A', 10}, {'B', 11},
-        {'C', 12}, {'D', 13},
-        {'E', 14}, {'F', 15}
-    };
-
-
-    int pwdTemp;
-    int nibble;
-    for (int aa = 0; aa < 20; aa++)
-        password[aa] = 0;
-    for (int a = 0; a < 10; a++)
-    {
-        nibble = 0;
-        for (int nib = 0; nib < 2; nib++)
-        {
-            pwdTemp = 0;
-            for (int i = 0; i < 16; i++)
-            {
-                if (*temp == HexMap[i].c)
-                {
-                    pwdTemp = HexMap[i].val;
-                }
-            }
-            if (nib == 0)
-            {
-                pwdTemp = pwdTemp << 4;
-            }
-
-            password[a] |= pwdTemp;
-            temp++;
-        }
-    }
-
-        // currently defaulted at billing data only
     header.lastLoadProfileTime = 0;
     //_lastLPTime = header.lastLoadProfileTime;
    /* if( isDebugLudicrous() )
@@ -835,6 +643,91 @@ int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
     memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)) +sizeof(BYTE)),
             &flags, sizeof(UINT));
 
+
+
+    // keep the list on the scanner side for decode
+    //getKV2Protocol().buildWantedTableList (aMsg);
+
+
+    return NORMAL;
+}
+
+/*************************************************************************************
+* build the list of tables and header requested in the device as each ansi device may need a few
+* different tables
+*************************************************************************************
+*/
+int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
+{
+    WANTS_HEADER   header;
+    //ANSI_SCAN_OPERATION scanOperation = generalScan;
+
+    //here is the password for the KV2 (should be changed to a cparm, I think)
+    BYTE        password[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+
+    // here are the tables requested for the KV2
+    ANSI_TABLE_WANTS    table[100] = {
+        {  0,     0,      30,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        {  1,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        {  3,     0,      0,      ANSI_TABLE_TYPE_STANDARD,     ANSI_OPERATION_READ},
+        { 11,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 12,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 13,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 15,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 16,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 21,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 22,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 23,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 25,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 31,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 32,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 33,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 52,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        {  -1,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ}
+
+    };
+    string pswdTemp;
+    pswdTemp = getIED().getPassword();
+
+    for (int aa = 0; aa < 20; aa++)
+        password[aa] = 0;
+
+    BYTE *temp;
+    temp = (BYTE *)pswdTemp.c_str();
+    for (int aa = 0; aa < pswdTemp.length(); aa++)
+        password[aa] = *(temp + aa);
+
+    // currently defaulted at billing data only
+    header.lastLoadProfileTime = 0;
+    header.numTablesRequested = 0;
+    for (int x=0; x < 100; x++)
+    {
+        if (table[x].tableID < 0)
+        {
+            break;
+        }
+        else
+        {
+            header.numTablesRequested++;
+        }
+    }
+    header.command = 5; // ?
+
+    BYTE scanOperation = 1; //1 = general pil scan
+
+
+    // put the stuff in the buffer
+    memcpy( aMsg, &header, sizeof (header));
+
+    memcpy( (aMsg+sizeof(header)), &password, sizeof (password));
+    memcpy ((aMsg+sizeof(header)+sizeof(password)),
+            &table,
+            (header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)));
+
+    memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS))),
+            &scanOperation, sizeof(BYTE));
+    memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)) +sizeof(BYTE)),
+            &flags, sizeof(UINT));
 
 
     // keep the list on the scanner side for decode

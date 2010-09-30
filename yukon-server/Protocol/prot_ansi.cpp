@@ -105,7 +105,7 @@
 #include "ctidate.h"
 
 
-
+using namespace Ansi;
 const CHAR * CtiProtocolANSI::METER_TIME_TOLERANCE = "PORTER_SENTINEL_TIME_TOLERANCE";
 //const CHAR * CtiProtocolANSI::ANSI_DEBUGLEVEL = "ANSI_DEBUGLEVEL";
 //========================================================================================================================================
@@ -586,113 +586,37 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
             if ((_tables[_index].type == ANSI_TABLE_TYPE_STANDARD && isStdTableAvailableInMeter(_tables[_index].tableID)) ||
                 (_tables[_index].type == ANSI_TABLE_TYPE_MANUFACTURER && isMfgTableAvailableInMeter(_tables[_index].tableID - 0x0800)))
             {
-                if (_tables[_index].operation == ANSI_OPERATION_READ)
+                if (_tables[_index].operation != ANSI_OPERATION_READ)
                 {
-                    convertToTable();
-                }
-                else if (_requestingBatteryLifeFlag)
-                {
-                    _tables[_index].tableID = 2050;
-                    _tables[_index].tableOffset = 0;
-                    _tables[_index].type = ANSI_TABLE_TYPE_MANUFACTURER;
-                    _tables[_index].operation = ANSI_OPERATION_READ;
-                    updateBytesExpected ();
-                    getApplicationLayer().initializeTableRequest (_tables[_index].tableID,
-                                                                  _tables[_index].tableOffset,
-                                                                  _tables[_index].bytesExpected,
-                                                                  _tables[_index].type,
-                                                                  _tables[_index].operation);
-                    _requestingBatteryLifeFlag = false;
-                    return true;
-
+                    if (handleWriteOperations())
+                    {
+                        return true;
+                    }
                 }
                 else
-                {
-                    _tables[_index].tableID = 8;
-                    _tables[_index].tableOffset = 0;
-                    _tables[_index].type = ANSI_TABLE_TYPE_STANDARD;
-                    _tables[_index].operation = ANSI_OPERATION_READ;
-                    updateBytesExpected ();
-                    getApplicationLayer().initializeTableRequest (_tables[_index].tableID,
-                                                                  _tables[_index].tableOffset,
-                                                                  _tables[_index].bytesExpected,
-                                                                  _tables[_index].type,
-                                                                  _tables[_index].operation);
+                {    
+                    convertToTable();
+                }
+                 
+                if (createWriteOperations())
+                {    
                     return true;
                 }
 
-                if (_scanOperation == CtiProtocolANSI::demandReset && _tables[_index].tableID == 1) //1 = demand reset
-                {
-                     int i = proc09RemoteReset(1);
-                     if (i)
-                     {
-                         return true;
-                     }
-                }
 
-               if (_tables[_index].tableID == 22)
+               try
                {
-                   if ( snapshotData() ) 
-                   {    
-                       return true;
-                   }
-               }
-               if (_tables[_index].tableID == 28)
-               {
-                   if ( batteryLifeData() )
+                   if (_tables[_index].tableID == 63  && _table63 != NULL)
                    {
-                       _requestingBatteryLifeFlag = true;
-                       return true;
-                   }
-               }
-
-            try
-            {
-               if (_tables[_index].tableID == 63  && _table63 != NULL)
-               {
-                   _lpNbrIntvlsLastBlock = _table63->getNbrValidIntvls(1);
-                   _lpNbrValidBlks = _table63->getNbrValidBlocks(1);
-                   _lpLastBlockIndex = _table63->getLastBlkElmt(1);
-                   _lpNbrIntvlsPerBlock = _table61->getNbrBlkIntsSet(1);
-                   _lpMaxIntervalTime = _table61->getMaxIntTimeSet(1);
-                   _lpNbrBlksSet = _table61->getNbrBlksSet(1);
-
-                   if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
-                   {
-                           CtiLockGuard< CtiLogger > doubt_guard( dout );
-                           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** _lpNbrIntvlsLastBlock  " <<_lpNbrIntvlsLastBlock << endl;
-                           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** _lpLastBlockIndex  " <<_lpLastBlockIndex << endl;
-                   }
-                   _lpBlockSize = getSizeOfLPDataBlock(1);
-                   _lpLastBlockSize =  getSizeOfLastLPDataBlock(1);
-                   getApplicationLayer().setLPBlockSize(_lpBlockSize);
-
-                   if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
-                   {
-                           CtiLockGuard< CtiLogger > doubt_guard( dout );
-                           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** _lpBlockSize  " <<_lpBlockSize << endl;
-                           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** _lpLastBlockSize  " <<_lpLastBlockSize << endl;
-                   }
-
-                   if ((_lpStartBlockIndex = calculateLPDataBlockStartIndex(_header->lastLoadProfileTime)) < 0)
-                   {
-                       return true;
-                   }
-                   else
-                   {
-                       if ( isDataBlockOrderDecreasing() )
-                           _lpNbrFullBlocks = _lpNbrValidBlks - ( _lpNbrIntvlsLastBlock < _lpNbrIntvlsPerBlock ? 1 : 0 );
-                       else
-                           _lpNbrFullBlocks =  _lpLastBlockIndex - _lpStartBlockIndex;
-                       _lpOffset = _lpStartBlockIndex * _lpBlockSize;
-                   }
+                       if ( !setLoadProfileVariables() )
+                           return true;
                    }
                }
                catch( ... )
                {
                    CtiLockGuard<CtiLogger> logger_guard(dout);
                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-
+               
                    _ansiAbortOperation = TRUE;
                    _index = _header->numTablesRequested - 1;
                    getApplicationLayer().terminateSession();
@@ -704,28 +628,28 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
            {
                _index++;
                updateBytesExpected ();
-
+          
                if (!_currentTableNotAvailableFlag)
                {
-
+          
                    // bad way to do this but if we're getting a manufacturers table, add the offset
                    // NOTE: this may be specific to the kv2 !!!!!
                    if (_tables[_index].type == ANSI_TABLE_TYPE_MANUFACTURER)
                    {
                      _tables[_index].tableID += 0x0800;
                    }
-
+          
                    if (getApplicationLayer().getAnsiDeviceType() != CtiANSIApplication::focus && (_tables[_index].tableID == 15 || _tables[_index].tableID == 23 || _tables[_index].tableID == 25))
                    {
                        getApplicationLayer().setLPDataMode( true, _tables[_index].bytesExpected );
                    }
-
+          
                    if (_tables[_index].tableID >= 64 && _tables[_index].tableID <= 67)
                    {
                        getApplicationLayer().setLPDataMode( true, _table61->getLPMemoryLength() );
-
+          
                        _tables[_index].tableOffset = _lpOffset;
-
+          
                    }
                    else
                    {
@@ -741,7 +665,7 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
                {
                    _currentTableNotAvailableFlag = false;
                }
-
+          
            }
            else
            {
@@ -795,12 +719,12 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
                        _table64->printResult(getAnsiDeviceName());
                    if (_table08 != NULL)
                        _table08->printResult(getAnsiDeviceName());
-
-               }
-
-               // done with tables, do the termination etc
-               getApplicationLayer().terminateSession();
-           }
+          
+                }
+                
+                // done with tables, do the termination etc
+                getApplicationLayer().terminateSession();
+            }
         }
 
         return( done ); //just a val
@@ -818,6 +742,112 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
     return false;
 
 }
+
+bool CtiProtocolANSI::handleWriteOperations()
+{
+
+    if (_requestingBatteryLifeFlag)
+    {
+        _tables[_index].tableID = 2050;
+        _tables[_index].tableOffset = 0;
+        _tables[_index].type = ANSI_TABLE_TYPE_MANUFACTURER;
+        _tables[_index].operation = ANSI_OPERATION_READ;
+        updateBytesExpected ();
+        getApplicationLayer().initializeTableRequest (_tables[_index].tableID,
+                                                      _tables[_index].tableOffset,
+                                                      _tables[_index].bytesExpected,
+                                                      _tables[_index].type,
+                                                      _tables[_index].operation);
+        _requestingBatteryLifeFlag = false;
+        return true;
+
+    }
+    else if (_tables[_index].tableID == 2082)
+    {
+        return false;
+    }
+    else
+    {
+        _tables[_index].tableID = 8;
+        _tables[_index].tableOffset = 0;
+        _tables[_index].type = ANSI_TABLE_TYPE_STANDARD;
+        _tables[_index].operation = ANSI_OPERATION_READ;
+        updateBytesExpected ();
+        getApplicationLayer().initializeTableRequest (_tables[_index].tableID,
+                                                      _tables[_index].tableOffset,
+                                                      _tables[_index].bytesExpected,
+                                                      _tables[_index].type,
+                                                      _tables[_index].operation);
+        return true;
+    }
+}
+
+bool CtiProtocolANSI::createWriteOperations()
+{
+
+     if (_scanOperation == CtiProtocolANSI::demandReset && _tables[_index].tableID == 1) //1 = demand reset
+     {
+          if (proc09RemoteReset(1))
+          {
+              return true;
+          }
+     }
+     if (_tables[_index].tableID == 22 && snapshotData())
+     {
+         return true;
+     }
+     if (_tables[_index].tableID == 28 && batteryLifeData())
+     {
+         _requestingBatteryLifeFlag = true;
+         return true;
+     }
+     return false;
+}
+
+bool CtiProtocolANSI::setLoadProfileVariables()
+{
+    bool retVal = true;
+   _lpNbrIntvlsLastBlock = _table63->getNbrValidIntvls(1);
+   _lpNbrValidBlks = _table63->getNbrValidBlocks(1);
+   _lpLastBlockIndex = _table63->getLastBlkElmt(1);
+   _lpNbrIntvlsPerBlock = _table61->getNbrBlkIntsSet(1);
+   _lpMaxIntervalTime = _table61->getMaxIntTimeSet(1);
+   _lpNbrBlksSet = _table61->getNbrBlksSet(1);
+   
+   if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
+   {
+           CtiLockGuard< CtiLogger > doubt_guard( dout );
+           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** _lpNbrIntvlsLastBlock  " <<_lpNbrIntvlsLastBlock << endl;
+           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** _lpLastBlockIndex  " <<_lpLastBlockIndex << endl;
+   }
+   _lpBlockSize = getSizeOfLPDataBlock(1);
+   _lpLastBlockSize =  getSizeOfLastLPDataBlock(1);
+   getApplicationLayer().setLPBlockSize(_lpBlockSize);
+   
+   if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
+   {
+           CtiLockGuard< CtiLogger > doubt_guard( dout );
+           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** _lpBlockSize  " <<_lpBlockSize << endl;
+           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** _lpLastBlockSize  " <<_lpLastBlockSize << endl;
+   }
+   
+   if ((_lpStartBlockIndex = calculateLPDataBlockStartIndex(_header->lastLoadProfileTime)) < 0)
+   {
+       retVal = false;
+   }
+   else
+   {
+       _lpNbrFullBlocks =  _lpLastBlockIndex - _lpStartBlockIndex;
+       _lpOffset = _lpStartBlockIndex * _lpBlockSize;
+       if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
+       {
+           CtiLockGuard< CtiLogger > doubt_guard( dout );
+           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** Nbr of Full Blocks  " <<_lpNbrFullBlocks << endl;
+       }
+   }
+   return retVal;
+}
+ 
 
 //=========================================================================================================================================
 //we've gotten table data back from the device, so we'll paste it into the appropriate table structure
@@ -1412,7 +1442,8 @@ void CtiProtocolANSI::convertToTable(  )
                                                                _table62->getIntervalFmtCde(1), validIntvls,
                                                                _table00->getRawNIFormat1(), _table00->getRawNIFormat2(),
                                                                _table00->getRawTimeFormat(), meterHour, timeZoneApplied,
-                                                               (_table00->getRawDataOrder() == 0)  );
+                                                               (_table00->getRawDataOrder() == 0), _table63->isDataBlockOrderDecreasing(1),
+                                                                _table63->isDataBlockOrderDecreasing(1));
 
                         getApplicationLayer().setLPDataMode( false, 0 );
 
@@ -2861,7 +2892,9 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                         if (_table12 != NULL)
                         {
 
-                           if ((_table12->getRawTimeBase(lpDemandSelect[x]) == 5 ||
+                           if ((_table12->getRawTimeBase(lpDemandSelect[x]) == 3 ||
+                                _table12->getRawTimeBase(lpDemandSelect[x]) == 5 ||
+                                 _table12->getRawTimeBase(lpDemandSelect[x]) == 1 ||
                                  _table12->getRawTimeBase(lpDemandSelect[x]) == 0) &&
                                 _table12->getRawIDCode(lpDemandSelect[x]) == ansiOffset)
                             {
@@ -3868,10 +3901,7 @@ bool CtiProtocolANSI::snapshotData()
 {
     return false;
 }
-void CtiProtocolANSI::setAnsiDeviceType()
-{
-    getApplicationLayer().setAnsiDeviceType(0);
-}
+
 bool CtiProtocolANSI::batteryLifeData()
 {
     return false;

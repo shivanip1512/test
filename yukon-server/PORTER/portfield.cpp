@@ -1410,95 +1410,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                     case TYPE_KV2:
                     case TYPE_ALPHA_A3:
-                    {
-
-                        //extern CtiConnection VanGoghConnection;
-                        BYTE  inBuffer[512];
-                        BYTE  outBuffer[300];
-                        ULONG bytesReceived = 0;
-
-                        CtiDeviceKV2 *kv2dev    = ( CtiDeviceKV2 *)Device.get();
-                        CtiProtocolANSI &ansi   = kv2dev->getKV2Protocol();
-
-
-                        ansi.setAnsiDeviceName(kv2dev->getName());
-                        //allocate some space
-                        trx.setInBuffer( inBuffer );
-                        trx.setOutBuffer( outBuffer );
-                        trx.setInCountActual( &bytesReceived );
-
-                        //unwind the message we made in scanner
-                        if( ansi.recvOutbound( OutMessage ) != 0 )
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " "<< kv2dev->getName() << " loop entered **********************************************" << endl;
-                            }
-
-                            while( !ansi.isTransactionComplete() )
-                            {
-                                //jump in, check for login, build packets, send messages, etc...
-                                ansi.generate( trx );
-                                status = Port->outInMess( trx, Device, traceList );
-                                if( status != NORMAL )
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " "<< kv2dev->getName() << " loop is A-B-N-O-R-M-A-L " << endl;
-                                }
-                                ansi.decode( trx, status );
-
-                                processCommStatus(status, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->Retry > 0, Device);
-
-                                // Prepare for tracing
-                                if( trx.doTrace( status ))
-                                {
-                                    Port->traceXfer( trx, traceList, Device, status );
-                                }
-                                DisplayTraceList( Port, traceList, true );
-                            }
-
-                            if ( ansi.forceProcessDispatchMsg() || !ansi.isTransactionFailed())
-                            {
-                                Sleep(1000);
-                                list< CtiReturnMsg* >  retList;
-                                delete_container(retList);
-                                retList.clear();
-
-                                kv2dev->processDispatchReturnMessage( retList, ansi.getParseFlags() );
-                                while( !retList.empty())
-                                {
-                                    CtiReturnMsg *retMsg = (CtiReturnMsg*)retList.front();retList.pop_front();
-                                    VanGoghConnection.WriteConnQue(retMsg);
-                                }
-                                delete_container(retList);
-                                retList.clear();
-
-                                InMessage->EventCode = NORMAL;
-
-                            }
-                            else
-                            {
-                                Sleep(1000);
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " "<< kv2dev->getName() << "'s ansi TransactionFailed.  ReadFailed. " << endl;
-                                }
-                                InMessage->EventCode = NOTNORMAL;
-                            }
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " "<< kv2dev->getName() << " loop exited  **********************************************" << endl;
-                            }
-                        }
-                        // return value to tell us if we are successful or not
-                        //status = ansi.sendCommResult( InMessage );
-                        status = kv2dev->sendCommResult( InMessage );
-
-                        ansi.reinitialize();
-                        kv2dev = NULL;
-
-                        break;
-                    }
                     case TYPE_SENTINEL:
                     case TYPE_FOCUS:
                     {
@@ -1508,12 +1419,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         BYTE  outBuffer[300];
                         ULONG bytesReceived = 0;
 
-                        CtiDeviceSentinel *sentinelDev = NULL;
-                        if (Device->getType() == TYPE_SENTINEL) sentinelDev = ( CtiDeviceSentinel *)Device.get();
-                        else sentinelDev = ( CtiDeviceFocus *)Device.get();
-                        CtiProtocolANSI &ansi   = sentinelDev->getANSIProtocol();
+                        CtiDeviceAnsi *ansiDev = (CtiDeviceAnsi*)Device.get();
+                        CtiProtocolANSI &ansi   = ansiDev->getANSIProtocol();
 
-                        ansi.setAnsiDeviceName(sentinelDev->getName());
+                        ansi.setAnsiDeviceName(ansiDev->getName());
+                        ansi.setAnsiDeviceType();
+
                         //allocate some space
                         trx.setInBuffer( inBuffer );
                         trx.setOutBuffer( outBuffer );
@@ -1524,7 +1435,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " "<< sentinelDev->getName() <<" loop entered **********************************************" << endl;
+                                dout << CtiTime() << " "<< ansiDev->getName() <<" loop entered **********************************************" << endl;
                             }
 
                             while( !ansi.isTransactionComplete() )
@@ -1536,7 +1447,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 if( status != NORMAL )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " "<< sentinelDev->getName()<<" loop is A-B-N-O-R-M-A-L " << endl;
+                                    dout << CtiTime() << " "<< ansiDev->getName()<<" loop is A-B-N-O-R-M-A-L " << endl;
                                 }
                                 ansi.decode( trx, status );
 
@@ -1556,7 +1467,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 delete_container(retList);
                                 retList.clear();
 
-                                sentinelDev->processDispatchReturnMessage( retList, ansi.getParseFlags() );
+                                ansiDev->processDispatchReturnMessage( retList, ansi.getParseFlags() );
                                 while( !retList.empty())
                                 {
                                     CtiReturnMsg *retMsg = (CtiReturnMsg*)retList.front();retList.pop_front();
@@ -1573,19 +1484,19 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 Sleep(1000);
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " "<< sentinelDev->getName() << "'s ansi TransactionFailed.  ReadFailed. " << endl;
+                                    dout << CtiTime() << " "<< ansiDev->getName() << "'s ansi TransactionFailed.  ReadFailed. " << endl;
                                 }
                                 InMessage->EventCode = NOTNORMAL;
                             }
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " "<< sentinelDev->getName() <<" loop exited  **********************************************" << endl;
+                                dout << CtiTime() << " "<< ansiDev->getName() <<" loop exited  **********************************************" << endl;
                             }
                         }
-                        status = sentinelDev->sendCommResult( InMessage );
+                        status = ansiDev->sendCommResult( InMessage );
 
                         ansi.reinitialize();
-                        sentinelDev = NULL;
+                        ansiDev = NULL;
                         break;
                     }
 

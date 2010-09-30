@@ -32,7 +32,7 @@
 #define GOOD_BATTERY_READING       0x9400000c
 #define DST_CONFIGURED             0x6c000008
 
-
+using namespace Ansi;
 class IM_EX_PROT CtiProtocolANSI_sentinel: public CtiProtocolANSI
 {
     typedef CtiProtocolANSI Inherited;

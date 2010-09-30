@@ -17,7 +17,7 @@
 
 #include "dev_meter.h"
 #include "dlldefs.h"
-#include "dev_sentinel.h"
+#include "dev_ansi.h"
 
 #include "prot_ansi_focus.h"
 #include "prot_ansi_sentinel.h"
@@ -26,16 +26,16 @@
 #include "types.h"
 #include "dllyukon.h"
 
-class IM_EX_DEVDB CtiDeviceFocus : public CtiDeviceSentinel
+class IM_EX_DEVDB CtiDeviceFocus : public CtiDeviceAnsi
 {
 
 public:
 
-    typedef CtiDeviceSentinel Inherited;
+    typedef CtiDeviceAnsi Inherited;
 
    CtiDeviceFocus();
    virtual ~CtiDeviceFocus();
-   virtual CtiProtocolANSI_focus& getANSIProtocol( void );
+   virtual CtiProtocolANSI& getANSIProtocol( void );
 
    int buildScannerTableRequest (BYTE *ptr, UINT flags);
    int buildCommanderTableRequest (BYTE *ptr, UINT flags);

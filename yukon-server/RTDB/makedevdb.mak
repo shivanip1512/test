@@ -137,7 +137,7 @@ rte_versacom.obj \
 rte_xcu.obj \
 slctdev.obj \
 dev_focus.obj \
-
+dev_ansi.obj 
 
 
 DEVDBLIBS=\

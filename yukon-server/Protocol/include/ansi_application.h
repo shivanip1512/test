@@ -73,6 +73,8 @@
 #define ANSI_C12_18        0x00
 #define ANSI_C12_21        0x02
 
+
+
 class IM_EX_PROT CtiANSIApplication
 {
    public:
@@ -80,6 +82,14 @@ class IM_EX_PROT CtiANSIApplication
       CtiANSIApplication();
       ~CtiANSIApplication();
 
+      typedef enum
+      {
+          kv = 0,
+          kv2,
+          sentinel,
+          focus
+      
+      } ANSI_DEVICE_TYPE;
 
       typedef enum
       {
@@ -162,16 +172,6 @@ class IM_EX_PROT CtiANSIApplication
        passThrough,
        waitState
       } ANSI_STATES;
-
-      typedef enum
-      {
-          kv = 0,
-          kv2,
-          sentinel,
-          focus
-
-      } ANSI_DEVICE_TYPE;
-
 
       void init( void );
       void destroyMe( void );

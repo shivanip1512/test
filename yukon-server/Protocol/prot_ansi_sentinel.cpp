@@ -176,7 +176,7 @@ int CtiProtocolANSI_sentinel::calculateLPDataBlockStartIndex(ULONG lastLPTime)
 void CtiProtocolANSI_sentinel::setAnsiDeviceType()
 {
     // 2 = sentinel
-    getApplicationLayer().setAnsiDeviceType(2);
+    getApplicationLayer().setAnsiDeviceType(CtiANSIApplication::sentinel);
     return;
 }
 

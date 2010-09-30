@@ -98,8 +98,10 @@
 #include "logger.h"
 #include "configparms.h"
 #include "ansi_application.h"
+#include "prot_ansi.h"
 
 using namespace std;
+
 
 const CHAR * CtiANSIApplication::ANSI_DEBUGLEVEL = "ANSI_DEBUGLEVEL";
 //=========================================================================================================================================
@@ -380,7 +382,8 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 _requestedState = _currentState;
                 getDatalinkLayer().initializeForNewPacket();
             }
-            else if (_currentTableID != 7 && _currentTableID != 2049)
+            //else if (_currentTableID != 7 && _currentTableID != 2049 && _currentTableID != 2082)
+            else if ( _currentOperation == ANSI_OPERATION_READ )
             {
                 // make this generic
                 BYTE operation;
@@ -421,7 +424,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 _requestedState = _currentState;
                 getDatalinkLayer().initializeForNewPacket();
             }
-            else
+            else // (_currentOperation == ANSI_OPERATION_WRITE)
             {
                 getDatalinkLayer().buildWriteRequest( xfer, _wrDataSize, _currentTableID, full_write, _currentProcBfld, _parmPtr, _wrSeqNbr );
                 if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
@@ -648,7 +651,7 @@ bool CtiANSIApplication::analyzePacket()
              }
              case request:
              {
-                 if ( getAnsiDeviceType() != focus && !getDatalinkLayer().compareToggleBits() )
+                 if ( getAnsiDeviceType() == sentinel && !getDatalinkLayer().compareToggleBits() )
                  {
                      if (getRetries() > 0)
                      {
@@ -752,7 +755,7 @@ bool CtiANSIApplication::analyzePacket()
                          getDatalinkLayer().getPacketBytesReceived()-overHeadByteCount); //header(6),crc(2),length(2),response(1)
                      _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-overHeadByteCount;
                  }
-                 else if (_currentTableID == 7 || _currentTableID == 2049)
+                 else if (_currentOperation == ANSI_OPERATION_WRITE)
                  {
                      setTableComplete (true);
                      _currentState = _requestedState;
@@ -841,7 +844,7 @@ bool CtiANSIApplication::analyzePacket()
             }
             }
     }
-    else if (_currentTableID == 7 || _currentTableID == 2049 )
+    else if (_currentOperation == ANSI_OPERATION_WRITE)
     {
         setTableComplete (true);
 

@@ -66,12 +66,12 @@
 
 #include <windows.h>
 #include "prot_ansi.h"
-//#include "prot_ansi_base.h"
 #include "pointdefs.h"
 #include "ansi_kv2_mtable_000.h"
 #include "ansi_kv2_mtable_070.h"
 #include "ansi_kv2_mtable_110.h"
 
+using namespace Ansi;
 class IM_EX_PROT CtiProtocolANSI_kv2:public CtiProtocolANSI
 {
     typedef CtiProtocolANSI Inherited;

@@ -21,7 +21,7 @@ CtiAnsiTable64::CtiAnsiTable64( int numberBlocksSet, int numberChansSet,
                                 int numberBlockIntervalsSet, bool blockEndReadFlag,
                                 bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
                                 int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, int timeFmt,
-                                int meterHour, bool timeZoneApplied, bool lsbDataOrder ) :
+                                int meterHour, bool timeZoneApplied, bool lsbDataOrder, bool descBlockOrder, bool descIntervalOrder  ) :
     _nbrBlksSet1(numberBlocksSet),
     _nbrChnsSet1(numberChansSet),
     _closureStatusFlag(closureStatusFlag),
@@ -38,7 +38,9 @@ CtiAnsiTable64::CtiAnsiTable64( int numberBlocksSet, int numberChansSet,
     _timeFmt(timeFmt),
     _meterHour(meterHour),
     _timeZoneApplied(timeZoneApplied),
-    _lsbDataOrder(lsbDataOrder)
+    _lsbDataOrder(lsbDataOrder),
+    _descBlockOrder(descBlockOrder),
+    _descIntervalOrder(descIntervalOrder)
 {
     memset( &_lp_data_set1_tbl, 0, sizeof(LP_DATA_SET1_RCD) );
 }
@@ -48,7 +50,7 @@ CtiAnsiTable64::CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberC
                                           int numberBlockIntervalsSet, bool blockEndReadFlag,
                                           bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
                                           int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, int timeFmt, int meterHour,  
-                                          bool timeZoneApplied, bool lsbDataOrder )
+                                          bool timeZoneApplied, bool lsbDataOrder, bool descBlockOrder, bool descIntervalOrder )
 {
     int index, i, j;
     int bytes = 0;
@@ -70,6 +72,8 @@ CtiAnsiTable64::CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberC
     _meterHour = meterHour;
     _timeZoneApplied = timeZoneApplied;
     _lsbDataOrder = lsbDataOrder;
+    _descBlockOrder = descBlockOrder;
+    _descIntervalOrder = descIntervalOrder;
 
     _lp_data_set1_tbl.lp_data_sets1 = new LP_BLK1_DAT_RCD[_nbrBlksSet1];
 
@@ -342,7 +346,9 @@ void CtiAnsiTable64::printResult( const string& deviceName )
 
     for (index = 0; index < _nbrBlksSet1; index++)
     {
-        if (index == (_nbrBlksSet1-1))
+        if ( ( !_descBlockOrder && index == (_nbrBlksSet1-1)) 
+              || (  _descBlockOrder && index == 0 )
+              )
         {
             nbrBlkInts = _nbrValidInts;
         }
@@ -429,14 +435,6 @@ void CtiAnsiTable64::printResult( const string& deviceName )
                 dout << "  **Simple Interval Status: "<<_lp_data_set1_tbl.lp_data_sets1[index].set_simple_int_status<<endl;
             }
         }
-        /*if (index == (_nbrBlksSet1-1))
-        {
-            nbrBlkInts = _nbrValidInts;
-        }
-        else
-        {
-            nbrBlkInts = _nbrBlkIntsSet1;
-        } */
         for (i = 0; i < nbrBlkInts; i++)
         {
             {

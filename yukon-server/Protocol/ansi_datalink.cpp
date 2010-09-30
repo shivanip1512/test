@@ -708,7 +708,7 @@ void CtiANSIDatalink::buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, short 
    data[3] = dataCount.ch[1];
    data[4] = dataCount.ch[0];
 
-   if (aTableID == 2049 && dataSize == 34) //batteryLifeInfo Request
+   if (aTableID == 2049 || aTableID == 2082) //batteryLifeInfo Request
    {
        //BYTEULONG lid;
        for (int i = 0; i < dataSize; i++)

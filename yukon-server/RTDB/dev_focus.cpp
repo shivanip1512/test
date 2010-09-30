@@ -66,7 +66,7 @@ int CtiDeviceFocus::buildScannerTableRequest (BYTE *aMsg, UINT flags)
         { 61,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 62,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 63,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-//        { 64,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 64,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         {  -1,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ}
 
     };
@@ -228,7 +228,7 @@ int CtiDeviceFocus::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
 //
 //=========================================================================================================================================
 
-CtiProtocolANSI_focus& CtiDeviceFocus::getANSIProtocol( void )
+CtiProtocolANSI& CtiDeviceFocus::getANSIProtocol( void )
 {
    return  _stdAnsiProtocol;
 }
