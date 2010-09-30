@@ -345,6 +345,13 @@ ALTER TABLE SurveyResult
             ON DELETE SET NULL;
 /* End YUK-9081 */
 
+/* Start YUK-9090 */
+UPDATE YukonRoleProperty
+SET DefaultValue = 'c:\yukon\client\bin\BillingIn.txt',
+    Description = 'Directory to read billing input file from. Used by ExtendedTOU_Incode, MVRS, WLT_40, and NCDC_Handhed formats.'
+WHERE RolePropertyId = -1501;
+/* End YUK-9090 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

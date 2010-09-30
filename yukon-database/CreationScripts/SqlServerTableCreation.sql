@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/30/2010 2:51:41 PM                         */
+/* Created on:     9/30/2010 5:08:20 PM                         */
 /*==============================================================*/
 
 
@@ -4911,7 +4911,7 @@ create table CTIDatabase (
 )
 go
 
-insert into CTIDatabase values('5.2', 'Matt K', '30-Sep-2010', 'Latest Update', 0 );
+/* __YUKON_VERSION__ */
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */
@@ -12545,7 +12545,7 @@ INSERT INTO YukonRoleProperty VALUES(-1403,-5,'Call Prefix','(none)','Any number
 
 /* Billing Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-1500,-6,'wiz_activate','false','<description>');
-INSERT INTO YukonRoleProperty VALUES(-1501,-6,'input_file','c:yukonclientbinBillingIn.txt','<description>');
+INSERT INTO YukonRoleProperty VALUES(-1501,-6,'input_file','c:\yukon\client\bin\BillingIn.txt','Directory to read billing input file from. Used by ExtendedTOU_Incode, MVRS, WLT_40, and NCDC_Handhed formats.');
 INSERT INTO YukonRoleProperty VALUES(-1503,-6,'Default File Format','CTI-CSV','The Default file formats.  See table BillingFileFormats.format for other valid values.');
 INSERT INTO YukonRoleProperty VALUES(-1504,-6,'Demand Days Previous','30','Integer value for number of days for demand readings to query back from billing end date.');
 INSERT INTO YukonRoleProperty VALUES(-1505,-6,'Energy Days Previous','7','Integer value for number of days for energy readings to query back from billing end date.');
