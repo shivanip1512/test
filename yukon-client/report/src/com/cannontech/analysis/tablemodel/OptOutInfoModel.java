@@ -215,10 +215,16 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
             for (OverrideHistory overrideHistory : overrideHistoryList) {
                 List<Program> programs = overrideHistory.getPrograms();
             
+                boolean inProgramList = false;
                 for (Program program : programs) {
-                    if (!userSuppliedReportablePrograms.contains(program)) {
-                        removableOverrideHistory.add(overrideHistory);
+                    if (userSuppliedReportablePrograms.contains(program)) {
+                        inProgramList = true;
                     }
+                    
+                }
+
+                if (!inProgramList) {
+                    removableOverrideHistory.add(overrideHistory);
                 }
             }
         }
