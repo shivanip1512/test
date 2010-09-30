@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.dr.operator.service.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -188,7 +187,7 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	public String generateDefaultNameForUnnamedSchdule(AccountThermostatSchedule ats, String thermostatLabel, YukonUserContext yukonUserContext) {
 		
 		String scheduleName = ats.getScheduleName();
-		if (StringUtils.isBlank(scheduleName) || scheduleName.equals(CtiUtilities.STRING_NONE)) {
+		if (StringUtils.isBlank(scheduleName)) {
     		
 			String newScheduleName;
     		MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
@@ -254,6 +253,11 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	        scheduleDisplay.setTimeOfWeekString(timeOfWeekString);
 	        
 	        List<AccountThermostatScheduleEntry> entries = accountThermostatSchedule.getEntriesByTimeOfWeekMultimap().get(timeOfWeek);
+	        
+	        if(entries.size()==0){
+                //No entries for this time of week on this schedule.  Copy entries from Weekday
+                entries = accountThermostatSchedule.getEntriesByTimeOfWeekMultimap().get(TimeOfWeek.WEEKDAY);
+            }
 	        ThermostatSchedulePeriodStyle periodStyle = accountThermostatSchedule.getThermostatType().getPeriodStyle();
 	        
 	        for(ThermostatSchedulePeriod period : periodStyle.getRealPeriods()){
@@ -265,11 +269,7 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
                 String tempUnit = (displayAsFahrenheit) ? CtiUtilities.FAHRENHEIT_CHARACTER : CtiUtilities.CELSIUS_CHARACTER;
                 coolTemp = (int)CtiUtilities.convertTemperature(coolTemp, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
                 heatTemp = (int)CtiUtilities.convertTemperature(heatTemp, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
-                
-                List<Object> argumentList = new ArrayList<Object>();
-                argumentList.add(startDateString);
-                argumentList.add(coolTemp);
-                argumentList.add(heatTemp);
+
                 String timeCoolHeatString = messageSourceAccessor.getMessage(i18nKey, startDateString, coolTemp, heatTemp);
                 scheduleDisplay.addToEntryList(timeCoolHeatString);
 	        }
