@@ -30,7 +30,6 @@ import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.EnumPropertyEditor;
-import com.cannontech.web.input.type.InputType;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.google.common.base.Function;
