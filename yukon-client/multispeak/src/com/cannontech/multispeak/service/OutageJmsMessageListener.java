@@ -62,7 +62,7 @@ public class OutageJmsMessageListener implements MessageListener {
         ImmutableList.Builder<MultispeakVendor> supportsOutage = ImmutableList.builder();
         for (MultispeakVendor mspVendor : allVendors) {
 
-            if (mspVendor.getVendorID() > 0 && (mspVendor.getMspInterfaceMap().get(MultispeakDefines.OA_Server_STR) != null)) {
+            if (mspVendor.getMspInterfaceMap().get(MultispeakDefines.OA_Server_STR) != null) {
                 OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor);
                 
                 if (port != null) {
