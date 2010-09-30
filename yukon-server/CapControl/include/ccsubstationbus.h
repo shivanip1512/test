@@ -87,6 +87,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getCurrentVarLoadPointId() const;
     DOUBLE getCurrentVarLoadPointValue() const;
     DOUBLE getRawCurrentVarLoadPointValue() const;
+    DOUBLE getTotalizedVarLoadPointValue() const;
     LONG getCurrentWattLoadPointId() const;
     DOUBLE getCurrentWattLoadPointValue() const;
     DOUBLE getRawCurrentWattLoadPointValue() const;

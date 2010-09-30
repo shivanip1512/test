@@ -507,6 +507,10 @@ CtiMessage* CtiCCSubstationVerificationMsg::replicateMessage() const
 
 RWDEFINE_COLLECTABLE( CtiCCEventLogMsg, CTICCEVENTLOG_ID )
 
+CtiCCEventLogMsg::CtiCCEventLogMsg(const CtiCCEventLogMsg& aRef)
+{
+    operator=(aRef);
+}
 /*---------------------------------------------------------------------------
     Destructor
 ---------------------------------------------------------------------------*/
@@ -617,7 +621,6 @@ CtiCCEventLogMsg& CtiCCEventLogMsg::operator=(const CtiCCEventLogMsg& right)
 
     return *this;
 }
-
 
 CtiMessage* CtiCCEventLogMsg::replicateMessage() const
 {

@@ -547,6 +547,14 @@ DOUBLE CtiCCSubstationBus::getRawCurrentVarLoadPointValue() const
     return _currentvarloadpointvalue;
 }
 
+DOUBLE CtiCCSubstationBus::getTotalizedVarLoadPointValue() const
+{
+    if (getUsePhaseData())
+    {
+        return _phaseAvalue + _phaseBvalue + _phaseCvalue;
+    }
+    return getRawCurrentVarLoadPointValue();
+}
 /*---------------------------------------------------------------------------
     getCurrentWattLoadPointId
 
@@ -602,7 +610,7 @@ DOUBLE CtiCCSubstationBus::getCurrentVoltLoadPointValue() const
     {
         if(!stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) )
         {
-            return _altSubControlValue;
+            return _altSubVoltVal;
         }
     }
     return _currentvoltloadpointvalue;
@@ -4402,19 +4410,23 @@ void CtiCCSubstationBus::createStatusUpdateMessages(CtiMultiMsg_vec& pointChange
         pointChanges.push_back(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent, user));
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
     }
+    
     pointChanges.push_back(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
     ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
     capBank->setLastStatusChangeTime(CtiTime());
 
-    string stateInfo = capBank->getControlStatusQualityString();
-    LONG stationId, areaId, spAreaId;
-    store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-    ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId,
+    if( text.length() > 0 )
+    {
+        string stateInfo = capBank->getControlStatusQualityString();
+        LONG stationId, areaId, spAreaId;
+        store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId,
                                             getPaoId(), feeder->getPaoId(), capBankStateUpdate,
                                             getEventSequence(), capBank->getControlStatus(), text,
                                             user, before, after, change,
                                             capBank->getIpAddress(), capBank->getActionId(), stateInfo,
                                             phaseA, phaseB, phaseC));
+    }
 
 
 }

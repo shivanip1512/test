@@ -1220,14 +1220,6 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                         }
                         else
                         {
-                            if( ccEvents.size() > 0)
-                            {
-                                CtiMultiMsg *ccEventMsg = new CtiMultiMsg();
-                                ccEventMsg->setData(ccEvents);
-                                _ccEventMsgQueue.write(ccEventMsg->replicateMessage());
-                                delete ccEventMsg;
-                                processCCEventMsgs();
-                            }
 
                             //reset VerificationFlag
                             currentSubstationBus->setVerificationFlag(FALSE);
@@ -1300,22 +1292,6 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                 }
                 else
                 {
-                    try
-                    {
-                        if( ccEvents.size() > 0)
-                        {
-                            CtiMultiMsg *ccEventMsg = new CtiMultiMsg();
-                            ccEventMsg->setData(ccEvents);
-                            _ccEventMsgQueue.write(ccEventMsg->replicateMessage());
-                            delete ccEventMsg;
-                            processCCEventMsgs();
-                        }
-                    }
-                    catch(...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
                     try
                     {
                         //reset VerificationFlag
@@ -2456,9 +2432,9 @@ void CtiCapController::adjustAlternateBusModeValues(long pointID, double value, 
             CtiCCSubstationBusPtr altSub = store->findSubBusByPAObjectID(currentBus->getAltDualSubId());
             if (altSub != NULL)
             {
-                currentBus->setAltSubControlValue(altSub->getCurrentVoltLoadPointValue());
+                currentBus->setAltSubControlValue(altSub->getTotalizedVarLoadPointValue());
                 currentBus->setAllAltSubValues(altSub->getCurrentVoltLoadPointValue(),
-                                       altSub->getRawCurrentVarLoadPointValue(),
+                                       altSub->getTotalizedVarLoadPointValue(),
                                        altSub->getRawCurrentWattLoadPointValue());
 
             }
@@ -2480,7 +2456,7 @@ void CtiCapController::adjustAlternateBusModeValues(long pointID, double value, 
             if (primarySub->getPrimaryBusFlag())
             {
                 primarySub->setAllAltSubValues((primarySub->getCurrentVoltLoadPointValue() + currentBus->getCurrentVoltLoadPointValue()) / 2,
-                                       primarySub->getRawCurrentVarLoadPointValue() + currentBus->getRawCurrentVarLoadPointValue(),
+                                       primarySub->getTotalizedVarLoadPointValue() + currentBus->getTotalizedVarLoadPointValue(),
                                        primarySub->getRawCurrentWattLoadPointValue() + currentBus->getRawCurrentWattLoadPointValue());
                 primarySub->setNewPointDataReceivedFlag(TRUE);
 
@@ -2499,7 +2475,7 @@ void CtiCapController::adjustAlternateBusModeValues(long pointID, double value, 
             }
             
             currentBus->setAllAltSubValues(currentBus->getCurrentVoltLoadPointValue(),
-                                             currentBus->getRawCurrentVarLoadPointValue(),
+                                             currentBus->getTotalizedVarLoadPointValue(),
                                              currentBus->getRawCurrentWattLoadPointValue());
 
             primarySub->setBusUpdatedFlag(TRUE);
@@ -2614,7 +2590,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                                 altSub->setPrimaryBusFlag(TRUE);
                                 altSub->setBusUpdatedFlag(TRUE);
                                 altSub->setAllAltSubValues((altSub->getCurrentVoltLoadPointValue() + currentSubstationBus->getCurrentVoltLoadPointValue()) / 2,
-                                                       altSub->getRawCurrentVarLoadPointValue() + currentSubstationBus->getRawCurrentVarLoadPointValue(),
+                                                       altSub->getTotalizedVarLoadPointValue() + currentSubstationBus->getTotalizedVarLoadPointValue(),
                                                        altSub->getRawCurrentWattLoadPointValue() + currentSubstationBus->getRawCurrentWattLoadPointValue());
 
                                 if ((altSub->isControlPoint(pointID) || currentSubstationBus->isControlPoint(pointID) ) && altSub->getStrategy()->getIntegrateFlag())
@@ -3224,16 +3200,8 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - Optional POINT data message received for: " << pointID << " on SUB: " << currentSubstationBus->getPaoName() << endl;
                     }
-
-                    //do nothing
                 }
-                else
-                {
-                    currentSubstationBus->setAltSubControlValue(value);
-                    currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
-                    currentSubstationBus->setBusUpdatedFlag(TRUE);
-
-                }
+                
 
                 // check for alt sub bus id, and update all sub's alt values
                 multimap<long,long>::iterator it;
@@ -3262,7 +3230,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                         {
                              altSub->setAllAltSubValues(currentSubstationBus->getCurrentVoltLoadPointValue(), currentSubstationBus->getCurrentVarLoadPointValue(),
                              currentSubstationBus->getCurrentWattLoadPointValue());
-                             altSub->setAltSubControlValue(currentSubstationBus->getCurrentVoltLoadPointValue());
+                             altSub->setAltSubControlValue(currentSubstationBus->getTotalizedVarLoadPointValue());
                              altSub->setBusUpdatedFlag(TRUE);
                         }
                         currentSubstationBus->figureEstimatedVarLoadPointValue();

@@ -300,6 +300,7 @@ public:
         _feederId(feederId), _eventType(eventType), _seqId(seqId), _value(value), _text(text), _userName(userName),
         _kvarBefore(kvarBefore), _kvarAfter(kvarAfter), _kvarChange(kvarChange), _ipAddress(ipAddress),
         _actionId(actionId), _stateInfo(stateInfo), _aVar(aVar), _bVar(bVar), _cVar(cVar) { }; //provided for polymorphic persitence only
+    CtiCCEventLogMsg (const CtiCCEventLogMsg& aRef);
 
     LONG getLogId() const { return _logId; };
     CtiTime getTimeStamp() const { return _timeStamp; };
