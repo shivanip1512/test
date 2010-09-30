@@ -361,11 +361,16 @@
 	            	<a href="/spring/editor/userGroupSelector">User/Group Editor</a>
 	            </tags:sectionLink>
 			</cti:checkProperty>
-			<cti:checkProperty property="AdministratorRole.ADMIN_VIEW_LOGS"> 
+			<cti:checkRolesAndProperties value="OPERATOR_ADMINISTRATOR"> 
+                    <tags:sectionLink>
+            	        <a href="/spring/support/">Support</a>
+                    </tags:sectionLink>
+			</cti:checkRolesAndProperties>
+			<cti:checkRolesAndProperties value="ADMIN_VIEW_LOGS"> 
                     <tags:sectionLink>
             	        <a href="/spring/support/logging/menu?file=/">View Logs</a>
                     </tags:sectionLink>
-			</cti:checkProperty>
+			</cti:checkRolesAndProperties>
 			<cti:checkProperty property="AdministratorRole.ADMIN_MANAGE_INDEXES"> 
                     <tags:sectionLink>
             	        <a href="/index/manage">Manage Indexes</a>

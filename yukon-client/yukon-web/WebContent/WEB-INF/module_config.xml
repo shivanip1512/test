@@ -207,6 +207,11 @@
             <requireRoleProperty value="ADMIN_LM_USER_ASSIGN" />
           </option>
 
+          <option name="support">
+            <link>/spring/support/</link>
+            <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
+          </option>
+
           <option name="viewLogs">
             <link>/spring/support/logging/menu</link>
             <requireRoleProperty value="ADMIN_VIEW_LOGS" />
@@ -883,6 +888,7 @@
           </options>
         </option>
         <option name="logs">
+          <requireRoleProperty value="ADMIN_VIEW_LOGS" />
           <link>/spring/support/logging/menu?file=/</link>
         </option>
         <option name="database">
@@ -892,6 +898,7 @@
               <link>/spring/support/database/info</link>
             </option>
             <option name="compare">
+              <requireRoleProperty value="ADMIN_VIEW_LOGS" />
               <link>/spring/support/database/validate/home</link>
             </option>
             <option name="migration">
@@ -942,6 +949,7 @@
               <link>/spring/support/threadDump</link>
             </option>
             <option name="setup">
+              <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
               <link>/spring/support/setup/view</link>
             </option>
           </options>
@@ -953,6 +961,7 @@
         <page name="supportLanding" type="LANDING">
             <pages>
                 <page name="logLanding" type="BASIC">
+                    <requireRoleProperty value="ADMIN_EVENT_LOGS" />
                     <link>/spring/support/logging/menu?file=/</link>
                     <pages>
                         <page name="logMenu" type="DETAIL">
@@ -976,9 +985,11 @@
                     </pages>
                 </page>
                 <page name="pointInjection" type="BASIC">
+                     <requireRoleProperty value="DEVELOPMENT_MODE" />
                     <menu>development|pointInjection</menu>
                 </page>
                 <page name="setup" type="BASIC">
+                    <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
                     <menu>other|setup</menu>
                 </page>
             </pages>
