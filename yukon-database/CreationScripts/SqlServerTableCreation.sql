@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
-/* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/30/2010 2:16:14 PM                         */
+/* DBMS name:      Microsoft SQL Server 2005                    */
+/* Created on:     9/30/2010 2:51:41 PM                         */
 /*==============================================================*/
 
 
@@ -4911,7 +4911,7 @@ create table CTIDatabase (
 )
 go
 
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('5.2', 'Matt K', '30-Sep-2010', 'Latest Update', 0 );
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */
@@ -16245,6 +16245,7 @@ go
 alter table SurveyResult
    add constraint FK_SurvRes_CustAcct foreign key (AccountId)
       references CustomerAccount (AccountID)
+         on delete set null
 go
 
 alter table SurveyResult

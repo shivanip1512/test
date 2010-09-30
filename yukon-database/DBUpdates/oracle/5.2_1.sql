@@ -443,7 +443,7 @@ ALTER TABLE SurveyResult
             ON DELETE CASCADE;
 
 ALTER TABLE SurveyResult
-    ADD CONSTRAINT FK_SurvRes_CustAcco FOREIGN KEY (AccountId)
+    ADD CONSTRAINT FK_SurvRes_CustAcct FOREIGN KEY (AccountId)
         REFERENCES CustomerAccount (AccountId);
 
 ALTER TABLE SurveyResultAnswer

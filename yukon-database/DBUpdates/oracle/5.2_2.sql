@@ -334,6 +334,17 @@ ALTER TABLE OptOutSurveyProgram
             ON DELETE CASCADE;
 /* End YUK-9077 */
 
+/* Start YUK-9081 */
+/* @error ignore-begin */
+ALTER TABLE SurveyResult DROP CONSTRAINT FK_SurvRes_CustAcct;
+ALTER TABLE SurveyResult DROP CONSTRAINT FK_SurvRes_CustAcco;
+/* @error ignore-end */
+ALTER TABLE SurveyResult
+    ADD CONSTRAINT FK_SurvRes_CustAcct FOREIGN KEY (AccountId)
+        REFERENCES CustomerAccount (AccountID)
+            ON DELETE SET NULL;
+/* End YUK-9081 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

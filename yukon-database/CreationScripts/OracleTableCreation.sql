@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/30/2010 2:13:57 PM                         */
+/* Created on:     9/30/2010 2:49:21 PM                         */
 /*==============================================================*/
 
 
@@ -2128,7 +2128,7 @@ create table CTIDatabase  (
    constraint PK_CTIDATABASE primary key (Version, Build)
 );
 
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('5.2', 'Matt K', '30-Sep-2010', 'Latest Update', 0 );
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */
@@ -12524,7 +12524,8 @@ alter table SurveyQuestionAnswer
 
 alter table SurveyResult
    add constraint FK_SurvRes_CustAcct foreign key (AccountId)
-      references CustomerAccount (AccountID);
+      references CustomerAccount (AccountID)
+      on delete set null;
 
 alter table SurveyResult
    add constraint FK_SurvRes_Surv foreign key (SurveyId)
