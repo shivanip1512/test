@@ -88,19 +88,10 @@ public class SetupController {
     private MappedPropertiesHelper<DescriptiveRoleProperty> getHelper(YukonRole yukonRole) {
         Map<YukonRoleProperty, DescriptiveRoleProperty> descriptiveRoleProperties = rolePropertyEditorDao.getDescriptiveRoleProperties(yukonRole);
         
-        Function<DescriptiveRoleProperty, InputType<?>> function1 = new Function<DescriptiveRoleProperty, InputType<?>>() {
-            public InputType<?> apply(DescriptiveRoleProperty from) {
-                return from.getYukonRoleProperty().getType();
-            }
-        };
-        Function<DescriptiveRoleProperty, String> function2 = new Function<DescriptiveRoleProperty, String>() {
-            public String apply(DescriptiveRoleProperty from) {
-                return from.getYukonRoleProperty().name();
-            }
-        };
         MappedPropertiesHelper<DescriptiveRoleProperty> mappedPropertiesHelper1 = new MappedPropertiesHelper<DescriptiveRoleProperty>("values");
-        for (DescriptiveRoleProperty t : descriptiveRoleProperties.values()) {
-            mappedPropertiesHelper1.add(function2.apply(t), t, function1.apply(t));
+        for (DescriptiveRoleProperty descriptiveRoleProperty : descriptiveRoleProperties.values()) {
+            YukonRoleProperty yukonRoleProperty = descriptiveRoleProperty.getYukonRoleProperty();
+            mappedPropertiesHelper1.add(yukonRoleProperty.name(), descriptiveRoleProperty, yukonRoleProperty.getType());
         }
         MappedPropertiesHelper<DescriptiveRoleProperty> mappedPropertiesHelper = mappedPropertiesHelper1;
         return mappedPropertiesHelper;
