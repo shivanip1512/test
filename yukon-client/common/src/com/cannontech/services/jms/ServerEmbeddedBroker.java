@@ -42,7 +42,7 @@ public class ServerEmbeddedBroker {
             broker.setBrokerName(name);
             broker.addConnector(listenerString);
             broker.setUseJmx(true);
-            broker.setSchedulerSupport(false);
+            broker.setSchedulerSupport(false); // https://issues.apache.org/activemq/browse/AMQ-2935
             broker.start();
         } catch (Exception e) {
             throw new RuntimeException("Unable to start broker", e);
