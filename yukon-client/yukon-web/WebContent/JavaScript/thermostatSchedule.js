@@ -278,8 +278,10 @@ function validateTemp(input, idx, mode) {
     if(isNaN(currentTemp)){
     	var existingTempInputFields = (mode == coolMode) ? tempCFields : tempHFields;
         currentTemp = $F(existingTempInputFields[idx]);
+    } else {
+    	currentTemp = getFahrenheitTemp(currentTemp, currentTempUnit);
     }
-        
+    
     if(currentTemp < lowerLimit) {
     	currentTemp = lowerLimit;
     } else if(currentTemp > upperLimit) {
