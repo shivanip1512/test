@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/30/2010 12:15:24 PM                        */
+/* Created on:     9/30/2010 2:16:14 PM                         */
 /*==============================================================*/
 
 
@@ -9932,8 +9932,8 @@ go
 /*==============================================================*/
 create table OptOutSurveyProgram (
    OptOutSurveyId       numeric              not null,
-   ProgramId            numeric              not null,
-   constraint PK_OptOutSurvProg primary key (OptOutSurveyId, ProgramId)
+   DeviceId             numeric              not null,
+   constraint PK_OptOutSurvProg primary key (OptOutSurveyId, DeviceId)
 )
 go
 
@@ -15893,8 +15893,8 @@ alter table OptOutSurvey
 go
 
 alter table OptOutSurveyProgram
-   add constraint FK_OptOutSurvProg_LMProgWebPub foreign key (ProgramId)
-      references LMProgramWebPublishing (ProgramID)
+   add constraint FK_OptOutSurvProg_LMProg foreign key (DeviceId)
+      references LMPROGRAM (DeviceID)
          on delete cascade
 go
 

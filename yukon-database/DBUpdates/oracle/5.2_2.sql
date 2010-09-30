@@ -311,6 +311,29 @@ INSERT INTO YukonUserRole VALUES(-1200, -100, -800, -80100, '(none)');
 INSERT INTO YukonRoleProperty VALUES(-10821, -108, 'CSRF Token Mode','OFF', 'Which mode to use for CSRF protection (OFF, TOKEN, PASSWORD).');
 /* End YUK-9115 */
 
+/* Start YUK-9077 */
+ALTER TABLE OptOutSurveyProgram RENAME COLUMN ProgramId TO AssignedProgramId;
+ALTER TABLE OptOutSurveyProgram ADD DeviceId NUMBER NOT NULL;
+
+UPDATE OptOutSurveyProgram
+SET DeviceId = (SELECT DeviceId
+                 FROM LMProgramWebPublishing LMPWP
+                 WHERE AssignedProgramId = LMPWP.ProgramId);
+
+ALTER TABLE OptOutSurveyProgram DROP PRIMARY KEY;
+
+DELETE FROM OptOutSurveyProgram WHERE DeviceId = 0;
+ALTER TABLE OptOutSurveyProgram
+    ADD CONSTRAINT PK_OptOutSurvProg PRIMARY KEY (OptOutSurveyId, DeviceId);
+
+ALTER TABLE OptOutSurveyProgram DROP COLUMN AssignedProgramId;
+
+ALTER TABLE OptOutSurveyProgram
+    ADD CONSTRAINT FK_OptOutSurvProg_LMProg FOREIGN KEY (DeviceId)
+        REFERENCES LMProgram (DeviceId)
+            ON DELETE CASCADE;
+/* End YUK-9077 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

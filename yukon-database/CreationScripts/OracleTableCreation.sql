@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/30/2010 12:16:35 PM                        */
+/* Created on:     9/30/2010 2:13:57 PM                         */
 /*==============================================================*/
 
 
@@ -6886,8 +6886,8 @@ create table OptOutSurvey  (
 /*==============================================================*/
 create table OptOutSurveyProgram  (
    OptOutSurveyId       NUMBER                          not null,
-   ProgramId            NUMBER                          not null,
-   constraint PK_OptOutSurvProg primary key (OptOutSurveyId, ProgramId)
+   DeviceId             NUMBER                          not null,
+   constraint PK_OptOutSurvProg primary key (OptOutSurveyId, DeviceId)
 );
 
 /*==============================================================*/
@@ -12239,8 +12239,8 @@ alter table OptOutSurvey
       on delete cascade;
 
 alter table OptOutSurveyProgram
-   add constraint FK_OptOutSurvProg_LMProgWebPub foreign key (ProgramId)
-      references LMProgramWebPublishing (ProgramID)
+   add constraint FK_OptOutSurvProg_LMProg foreign key (DeviceId)
+      references LMPROGRAM (DeviceID)
       on delete cascade;
 
 alter table OptOutSurveyProgram
