@@ -10,7 +10,7 @@ class IM_EX_DEVDB Mct420LcdConfigurationCommand : public Mct420Command
 {
     typedef std::vector<unsigned char> metric_vector_t;
 
-    typedef request_ptr (Mct420LcdConfigurationCommand::*state_t)();
+    typedef boost::function<request_ptr (Mct420LcdConfigurationCommand *)> state_t;
 
     state_t _executionState;
 
