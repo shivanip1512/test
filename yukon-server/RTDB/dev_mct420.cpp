@@ -78,7 +78,7 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
 
     if( ! readsOnly )
     {
-        PaoInfoKeys lcd_metric_keys[26] = {
+        static const PaoInfoKeys lcd_metric_keys[26] = {
 
             CtiTableDynamicPaoInfo::Key_MCT_LcdMetric01,
             CtiTableDynamicPaoInfo::Key_MCT_LcdMetric02,
