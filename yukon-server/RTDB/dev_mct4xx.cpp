@@ -2845,12 +2845,13 @@ INT Mct4xxDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, lis
             const unsigned long seconds_since_midnight = TimeNow.seconds() % 86400;
             const unsigned long expected_table_pointer = (seconds_since_midnight / interval_len) % 96;
 
+            //  make sure we're getting the same block we're expecting
             if( (DSt->Message[0] / 6) != (expected_table_pointer / 6) )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - LP error for device \"" << getName() << "\"; ";
-                    dout << "Table Pointer = " << DSt->Message[0] << ", ";
+                    dout << "Table Pointer = " << (unsigned)DSt->Message[0] << ", ";
                     dout << "expected_table_pointer = " << expected_table_pointer;
                     dout << " in " __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "commandstr = " << InMessage->Return.CommandStr << endl;
