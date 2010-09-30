@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/30/2010 12:04:19 PM                        */
+/* Created on:     9/30/2010 12:16:35 PM                        */
 /*==============================================================*/
 
 
@@ -7839,7 +7839,7 @@ create unique index Indx_StatPointMon_MonName_UNQ on StatusPointMonitor (
 /*==============================================================*/
 create table StatusPointMonitorProcessor  (
    StatusPointMonitorProcessorId NUMBER                          not null,
-   StatusPointMonitorId NUMBER,
+   StatusPointMonitorId NUMBER                          not null,
    PrevState            VARCHAR2(255)                   not null,
    NextState            VARCHAR2(255)                   not null,
    ActionType           VARCHAR2(255)                   not null,
@@ -12491,7 +12491,8 @@ alter table StatusPointMonitor
 
 alter table StatusPointMonitorProcessor
    add constraint FK_StatPointMonProc_StatPointM foreign key (StatusPointMonitorId)
-      references StatusPointMonitor (StatusPointMonitorId);
+      references StatusPointMonitor (StatusPointMonitorId)
+      on delete cascade;
 
 alter table Substation
    add constraint FK_Sub_Rt foreign key (LMRouteID)

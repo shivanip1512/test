@@ -146,7 +146,7 @@ GO
 
 CREATE TABLE StatusPointMonitorProcessor (
    StatusPointMonitorProcessorId NUMERIC              NOT NULL,
-   StatusPointMonitorId          NUMERIC              NULL,
+   StatusPointMonitorId          NUMERIC              NOT NULL,
    PrevState                     VARCHAR(255)         NOT NULL,
    NextState                     VARCHAR(255)         NOT NULL,
    ActionType                    VARCHAR(255)         NOT NULL,
@@ -160,7 +160,8 @@ ALTER TABLE StatusPointMonitor
 
 ALTER TABLE StatusPointMonitorProcessor
     ADD CONSTRAINT FK_StatPointMonProc_StatPointM FOREIGN KEY (StatusPointMonitorId)
-        REFERENCES StatusPointMonitor (StatusPointMonitorId);
+        REFERENCES StatusPointMonitor (StatusPointMonitorId)
+            ON DELETE CASCADE;
 GO
 
 INSERT INTO YukonRoleProperty VALUES(-20217,-202,'Status Point Monitor','false','Controls access to the Status Point Monitor');

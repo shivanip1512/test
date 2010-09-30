@@ -140,7 +140,7 @@ CREATE UNIQUE INDEX Indx_StatPointMon_MonName_UNQ ON StatusPointMonitor (
 
 CREATE TABLE StatusPointMonitorProcessor  (
    StatusPointMonitorProcessorId NUMBER                          NOT NULL,
-   StatusPointMonitorId          NUMBER,
+   StatusPointMonitorId          NUMBER                          NOT NULL,
    PrevState                     VARCHAR2(255)                   NOT NULL,
    NextState                     VARCHAR2(255)                   NOT NULL,
    ActionType                    VARCHAR2(255)                   NOT NULL,
@@ -153,7 +153,8 @@ ALTER TABLE StatusPointMonitor
 
 ALTER TABLE StatusPointMonitorProcessor
     ADD CONSTRAINT FK_StatPointMonProc_StatPointM FOREIGN KEY (StatusPointMonitorId)
-        REFERENCES StatusPointMonitor (StatusPointMonitorId);
+        REFERENCES StatusPointMonitor (StatusPointMonitorId)
+            ON DELETE CASCADE;
 
 INSERT INTO YukonRoleProperty VALUES(-20217,-202,'Status Point Monitor','false','Controls access to the Status Point Monitor');
 /* End YUK-9086 */

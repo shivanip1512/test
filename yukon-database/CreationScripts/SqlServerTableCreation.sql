@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/30/2010 12:05:36 PM                        */
+/* Created on:     9/30/2010 12:15:24 PM                        */
 /*==============================================================*/
 
 
@@ -10961,7 +10961,7 @@ go
 /*==============================================================*/
 create table StatusPointMonitorProcessor (
    StatusPointMonitorProcessorId numeric              not null,
-   StatusPointMonitorId numeric              null,
+   StatusPointMonitorId numeric              not null,
    PrevState            varchar(255)         not null,
    NextState            varchar(255)         not null,
    ActionType           varchar(255)         not null,
@@ -16205,6 +16205,7 @@ go
 alter table StatusPointMonitorProcessor
    add constraint FK_StatPointMonProc_StatPointM foreign key (StatusPointMonitorId)
       references StatusPointMonitor (StatusPointMonitorId)
+         on delete cascade
 go
 
 alter table Substation
