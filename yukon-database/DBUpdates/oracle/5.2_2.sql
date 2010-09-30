@@ -300,6 +300,12 @@ FROM CapControlStrategy
 WHERE ControlUnits = 'Integrated Volt/Var';
 /* End YUK-9119 */
 
+/* Start YUK-7073 */
+/* @error ignore-begin */
+INSERT INTO YukonUserRole VALUES(-1200, -100, -800, -80100, '(none)'); 
+/* @error ignore-end */
+/* End YUK-7073 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
