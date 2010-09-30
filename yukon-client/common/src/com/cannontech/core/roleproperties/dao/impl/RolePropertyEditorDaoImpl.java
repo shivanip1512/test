@@ -167,7 +167,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         DBChangeMsg dbChangeMsg = new DBChangeMsg(collection.getLiteYukonGroup().getGroupID(),
                         DBChangeMsg.CHANGE_YUKON_USER_DB,
                         DBChangeMsg.CAT_YUKON_USER_GROUP,
-                        DBChangeMsg.CAT_YUKON_USER,
+                        "",
                         DBChangeMsg.CHANGE_TYPE_UPDATE);
         dbPersistentDao.processDBChange(dbChangeMsg);
     }
