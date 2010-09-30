@@ -211,3 +211,13 @@ void IVVCState::setCommsLost(const bool flag)
     _commsLost = flag;
 }
 
+void IVVCState::setConsecutiveCapBankOps(const unsigned ops)
+{
+    _consecutiveCapBankOps = ops;
+}
+
+const unsigned IVVCState::getConsecutiveCapBankOps() const
+{
+    return _consecutiveCapBankOps;
+}
+

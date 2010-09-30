@@ -1,0 +1,132 @@
+
+#include "yukon.h"
+
+#include "ZoneManager.h"
+#include "ZoneLoader.h"
+
+
+namespace Cti           {
+namespace CapControl    {
+
+const ZoneManager::SharedPtr ZoneManager::_defaultZone( new Zone( -1, -1, -1, -1, "(none)" ) );
+
+
+ZoneManager::ZoneManager( std::auto_ptr<ZoneLoader> loader )
+    : _loader( loader )
+{
+
+}
+
+
+void ZoneManager::reload(const long Id)
+{
+    ZoneMap results = _loader->load(Id);
+
+    // update the mapping with the results of the loading
+    {
+        WriterGuard guard(_lock);
+
+        for ( ZoneMap::const_iterator b = results.begin(), e = results.end(); b != e; ++b )
+        {
+            _zones[ b->first ] = results[ b->first ];
+        }
+    }
+}
+
+
+void ZoneManager::reloadAll()
+{
+    reload(-1);
+}
+
+
+void ZoneManager::unload(const long Id)
+{
+    WriterGuard guard(_lock);
+
+    _zones.erase(Id);
+}
+
+
+void ZoneManager::unloadAll()
+{
+    WriterGuard guard(_lock);
+
+    _zones.clear();
+}
+
+
+ZoneManager::SharedPtr ZoneManager::getZone(const long Id) const
+{
+    ReaderGuard guard(_lock);
+
+    ZoneMap::const_iterator iter = _zones.find(Id);
+
+    return iter != _zones.end()
+                    ? iter->second
+                    : _defaultZone;
+}
+
+
+Zone::IdSet ZoneManager::getZoneIdsBySubbus(const long subbusId) const
+{
+    Zone::IdSet  subset;
+
+    for each ( const ZoneManager::ZoneMap::value_type & zone in _zones )
+    {
+        if ( zone.second->getSubbusId() == subbusId )
+        {
+            subset.insert( zone.first );
+        }
+    }
+
+    return subset;
+}
+
+
+long ZoneManager::getRootZoneIdForSubbus(const long subbusId) const
+{
+    for each ( const ZoneManager::ZoneMap::value_type & zone in _zones )
+    {
+        if ( ( zone.second->getSubbusId() == subbusId ) &&
+             ( zone.second->getId() == zone.second->getParentId() ) )
+        {
+            return zone.first;
+        }
+    }
+
+    return -1;
+}
+
+
+Zone::IdSet ZoneManager::getAllChildrenOfZone(const long parentId) const
+{
+    Zone::IdSet  subset;
+
+    getAllChildrenOfZone(parentId, subset);
+
+    return subset;
+}
+
+
+/** 
+ * Recursive helper function 
+ */
+void ZoneManager::getAllChildrenOfZone(const long parentId, Zone::IdSet & results) const
+{
+    Zone::IdSet children = getZone(parentId)->getChildIds();    // returns empty set if zone doesn't exist
+
+    if ( ! children.empty() )
+    {
+        results.insert( children.begin(), children.end() );
+
+        for each ( const Zone::IdSet::value_type & ID in children )
+        {
+            getAllChildrenOfZone(  ID, results );
+        }
+    }
+}
+
+}   // namespace Cti
+}   // namespace CapControl
+

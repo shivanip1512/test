@@ -21,8 +21,12 @@
 
 #include "StrategyManager.h"
 #include "StrategyLoader.h"
+#include "ZoneManager.h"
+#include "ZoneLoader.h"
 #include "AttributeService.h"
 #include "DatabaseDaoFactory.h"
+
+using namespace Cti::CapControl;
 
 using std::multimap;
 typedef std::set<RWCollectable*> CtiMultiMsg_set;
@@ -589,6 +593,8 @@ private:
 
     StrategyManager _strategyManager;
 
+    Cti::CapControl::ZoneManager    _zoneManager;
+
     multimap< long, long > _substation_specialarea_map;
     map< long, long > _substation_area_map;
     map< long, long > _subbus_substation_map;
@@ -613,4 +619,12 @@ private:
     boost::shared_ptr<Cti::CapControl::DaoFactory> _daoFactory;
 
     mutable RWRecursiveLock<RWMutexLock> _storeMutex;
+
+public:
+
+    Cti::CapControl::ZoneManager & getZoneManager();
+    bool reloadZoneFromDatabase(const long zoneId);
+
+
+
 };

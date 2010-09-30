@@ -22,8 +22,15 @@ class IVVCState
             IVVC_CONTROLLED_LOOP,
             IVVC_VERIFY_CONTROL_LOOP,
             IVVC_POSTSCAN_LOOP,
-            IVVC_COMMS_LOST
+            IVVC_COMMS_LOST,
+            IVVC_OPERATE_TAP
         };
+
+//        typedef std::map<Zone::IdSet::value_type, int>  TapOperationZoneMap;
+        typedef std::map<long, int>  TapOperationZoneMap;
+
+        TapOperationZoneMap     _tapOps;
+        CtiTime                 _tapOpDelay;
 
         IVVCState();
 
@@ -78,6 +85,9 @@ class IVVCState
         void setCommsLost(const bool flag);
         bool isCommsLost() const;
 
+        void setConsecutiveCapBankOps(const unsigned ops);
+        const unsigned getConsecutiveCapBankOps() const;
+
         void setReportedControllers(const std::set<long>& reportedControllers);
         const std::set<long>& getReportedControllers();
 
@@ -119,6 +129,8 @@ class IVVCState
         bool _showLtcAutoModeMsg;
         bool _showNoLtcAttachedMsg;
         bool _commsLost;
+
+        unsigned _consecutiveCapBankOps;
 
         unsigned long _commsRetryCount;
         std::set<long> _reportedControllers;

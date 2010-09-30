@@ -49,6 +49,8 @@ double  _IVVC_NONWINDOW_MULTIPLIER;
 double  _IVVC_BANKS_REPORTING_RATIO;
 double  _IVVC_DEFAULT_DELTA;
 BOOL    _LIMIT_ONE_WAY_COMMANDS;
+bool    _IVVC_STATIC_DELTA_VOLTAGES;
+bool    _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS;
 
 void refreshGlobalCParms()
 {
@@ -647,5 +649,18 @@ void refreshGlobalCParms()
         dout << CtiTime() << " - CAP_CONTROL_LIMIT_ONE_WAY_COMMANDS: " << _LIMIT_ONE_WAY_COMMANDS << endl;
     }
 
+    _IVVC_STATIC_DELTA_VOLTAGES = gConfigParms.isTrue("CAP_CONTROL_IVVC_STATIC_DELTA_VOLTAGES");
+    if ( _CC_DEBUG & CC_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CAP_CONTROL_IVVC_STATIC_DELTA_VOLTAGES: " << _IVVC_STATIC_DELTA_VOLTAGES << endl;
+    }
+
+    _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS = gConfigParms.isTrue("CAP_CONTROL_IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS");
+    if ( _CC_DEBUG & CC_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CAP_CONTROL_IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS: " << _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS << endl;
+    }
 }
 

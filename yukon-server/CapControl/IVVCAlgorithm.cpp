@@ -28,6 +28,9 @@ extern ULONG _IVVC_KEEPALIVE;
 extern ULONG _IVVC_COMMS_RETRY_COUNT;
 extern double _IVVC_NONWINDOW_MULTIPLIER;
 extern double _IVVC_BANKS_REPORTING_RATIO;
+extern bool _IVVC_STATIC_DELTA_VOLTAGES;
+extern bool _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS;
+
 
 IVVCAlgorithm::IVVCAlgorithm(const PointDataRequestFactoryPtr& factory)
     : _requestFactory(factory)
@@ -43,25 +46,45 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 {
     CtiTime timeNow;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    LoadTapChangerPtr ltcPtr = store->findLtcById(subbus->getLtcId());
 
-    if ((subbus->getLtcId() == 0) || !ltcPtr)
+    long subbusId = subbus->getPaoId();
+
+    // Make sure all zones on the subbus have a regulator attached.
     {
-        if ( state->isShowNoLtcAttachedMsg() )           // show message?
+        bool haveZoneWithNoRegulator = false;
+        ZoneManager & zoneManager = store->getZoneManager();
+        Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus(subbusId);
+
+        for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
         {
-            state->setShowNoLtcAttachedMsg(false); // toggle flag to only show message once.
-            state->setState(IVVCState::IVVC_WAIT); // reset algorithm
+            ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
+            long                    regulatorID = zone->getRegulatorId();
+            LoadTapChangerPtr       ltcPtr = store->findLtcById(regulatorID);
 
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Configuration Error. No Ltc attached to subbus: " << subbus->getPaoName() << endl;
+            if ((regulatorID <= 0) || !ltcPtr)
+            {
+                haveZoneWithNoRegulator = true;
+                if ( state->isShowNoLtcAttachedMsg() )           // show message?
+                {
+                    state->setShowNoLtcAttachedMsg(false); // toggle flag to only show message once.
+                    state->setState(IVVCState::IVVC_WAIT); // reset algorithm
+
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Configuration Error. No LTC attached to zone: " << zone->getName() << endl;
+                }
+            }
+            else
+            {
+                //This would be better if we had some method of executing a function at a scheduled time.
+                //Have the Ltc update its flags
+                ltcPtr->updateFlags();
+            }
         }
-
-        return;
+        if (haveZoneWithNoRegulator)
+        {
+            return;
+        }
     }
-
-    //This would be better if we had some method of executing a function at a scheduled time.
-    //Have the Ltc update its flags
-    ltcPtr->updateFlags();
 
     //Show this message again next time it happens
     state->setShowNoLtcAttachedMsg(true);
@@ -115,7 +138,22 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         case IVVCState::IVVC_DISABLED:
         {
             bool remainDisabled = false;
-            bool remoteMode = isLtcInRemoteMode(subbus->getLtcId());
+            bool remoteMode = true;
+
+            // Make sure all regulators are in Remote mode
+            {
+                ZoneManager & zoneManager = store->getZoneManager();
+                Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus(subbusId);
+
+                for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
+                {
+                    long regulatorID = zoneManager.getZone(ID)->getRegulatorId();
+
+                    bool result = isLtcInRemoteMode(regulatorID);
+
+                    remoteMode &= result;
+                }
+            }
 
             if (!remoteMode)
             {
@@ -124,7 +162,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     state->setShowLtcAutoModeMsg(false);
 
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName() << ". LTC with ID: " << subbus->getLtcId() << " is in Auto mode." << endl;
+                    dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName()
+                         << ". One or more LTCs are in Auto mode." << endl;
                 }
                 remainDisabled = true;
             }
@@ -157,7 +196,20 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 return;
             }
 
-            bool remoteMode = isLtcInRemoteMode(subbus->getLtcId());
+            bool remoteMode = true;
+
+            // Make sure all regulators are in Remote mode
+            {
+                ZoneManager & zoneManager = store->getZoneManager();
+                Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus(subbusId);
+
+                for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
+                {
+                    long regulatorID = zoneManager.getZone(ID)->getRegulatorId();
+
+                    remoteMode &= isLtcInRemoteMode(regulatorID);
+                }
+            }
 
             if (!remoteMode)// If we are in 'Auto' mode we don't want to run the algorithm.
             {
@@ -425,7 +477,10 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                 std::set<long> reportedControllers = state->getReportedControllers();
 
-                subbus->updatePointResponseDeltas(reportedControllers);
+                if ( ! _IVVC_STATIC_DELTA_VOLTAGES )    // if we're not using static deltas - update them
+                {
+                    subbus->updatePointResponseDeltas(reportedControllers);
+                }
 
                 state->setState(IVVCState::IVVC_WAIT);
             }
@@ -446,18 +501,29 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         {
             //Switch to LTC to automode.
             //save state so we know to re-enable remote when we start up again.
-            bool remoteMode = isLtcInRemoteMode(subbus->getLtcId());
-
-            if (remoteMode)
             {
+                ZoneManager & zoneManager = store->getZoneManager();
+                Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus(subbusId);
+
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " IVVC Algorithm: Comms lost, sending remote control disable. " << endl;
                 }
-                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_REMOTE_CONTROL_DISABLE,subbus->getLtcId()))->execute();
+                for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
+                {
+                    long regulatorID = zoneManager.getZone(ID)->getRegulatorId();
 
+                    if (regulatorID > 0)
+                    {
+                        if ( isLtcInRemoteMode(regulatorID) )
+                        {
+                            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_REMOTE_CONTROL_DISABLE,regulatorID))->execute();
+                        }
+                    }
+                }
             }
+
             state->setState(IVVCState::IVVC_WAIT);
             state->setCommsLost(true);
 
@@ -531,6 +597,73 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 }
 
                 sendEvents(dispatchConnection, ccEvents);
+            }
+            break;
+        }
+
+        case IVVCState::IVVC_OPERATE_TAP:
+        {
+            // This state just sends TAP up/down messages
+
+            // 5 second delay between consecutive tap ops on same regulator
+            if ( ( state->_tapOpDelay + 5 ) < timeNow )
+            {
+                state->_tapOpDelay = timeNow;
+
+                for each ( const IVVCState::TapOperationZoneMap::value_type & operation in state->_tapOps )
+                {
+                    long zoneID     = operation.first;
+                    int  tapOpCount = operation.second;
+
+                    if ( tapOpCount == 0 )
+                    {
+                        state->_tapOps.erase(zoneID);
+                    }
+                    else if ( tapOpCount < 0 )
+                    {
+                        ZoneManager & zoneManager = store->getZoneManager();
+                        long regulatorId = zoneManager.getZone(zoneID)->getRegulatorId();
+
+                        if ( regulatorId > 0 )
+                        {
+                            CtiCCExecutorFactory::createExecutor( 
+                                new CtiCCCommand( CtiCCCommand::LTC_TAP_POSITION_LOWER, regulatorId ) )->execute();
+
+                            if (_CC_DEBUG & CC_DEBUG_IVVC)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                                dout << CtiTime() << " IVVC Algorithm: Lowering Tap on LTC with ID# " << regulatorId << endl;
+                            }
+                        }
+                        state->_tapOps[zoneID]++;
+                    }
+                    else    // tapOpCount > 0
+                    {
+                        ZoneManager & zoneManager = store->getZoneManager();
+                        long regulatorId = zoneManager.getZone(zoneID)->getRegulatorId();
+
+                        if ( regulatorId > 0 )
+                        {
+                            CtiCCExecutorFactory::createExecutor( 
+                                new CtiCCCommand( CtiCCCommand::LTC_TAP_POSITION_RAISE, regulatorId ) )->execute();
+
+                            if (_CC_DEBUG & CC_DEBUG_IVVC)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                                dout << CtiTime() << " IVVC Algorithm: Raising Tap on LTC with ID# " << regulatorId << endl;
+                            }
+                        }
+                        state->_tapOps[zoneID]--;
+                    }
+                }
+
+                if ( state->_tapOps.empty() )       // are we done yet?
+                {
+                    state->setLastTapOpTime( timeNow );
+                    state->setState(IVVCState::IVVC_WAIT);
+                }
             }
             break;
         }
@@ -642,25 +775,35 @@ void IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
     AttributeService attributeService;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    //The ltc.
-    LitePoint point = attributeService.getPointByPaoAndAttribute(subbus->getLtcId(),PointAttribute::LtcVoltage);
-    if (point.getPointType() == InvalidPointType)
+    // All LTCs attatched to the zones on the subbus
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " LTC Voltage point not found for LTC id: " << subbus->getLtcId() << endl;
-    }
-    else
-    {
-        PointRequest pr(point.getPointId(),LtcRequestType);
+        ZoneManager & zoneManager = store->getZoneManager();
+        Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
 
-        if (sendScan == true)
+        for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
         {
-            pr.requestLatestValue = false;
-            CtiCCCommand* ltcScan = new CtiCCCommand(CtiCCCommand::LTC_SCAN_INTEGRITY,subbus->getLtcId());
-            CtiCCExecutorFactory::createExecutor(ltcScan)->execute();
-        }
+            ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
 
-        pointRequests.insert(pr);
+            LitePoint point = attributeService.getPointByPaoAndAttribute(zone->getRegulatorId(), PointAttribute::LtcVoltage);
+            if (point.getPointType() == InvalidPointType)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " LTC Voltage point not found for LTC id: " << zone->getRegulatorId() << endl;
+            }
+            else
+            {
+                PointRequest pr(point.getPointId(),LtcRequestType);
+
+                if (sendScan == true)
+                {
+                    pr.requestLatestValue = false;
+                    CtiCCCommand* ltcScan = new CtiCCCommand(CtiCCCommand::LTC_SCAN_INTEGRITY,zone->getRegulatorId());
+                    CtiCCExecutorFactory::createExecutor(ltcScan)->execute();
+                }
+
+                pointRequests.insert(pr);
+            }
+        }
     }
 
     //SubBus voltage point.
@@ -709,21 +852,26 @@ void IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
     for each (CtiCCCapBankPtr bank in banks)
     {
         int cbcId = bank->getControlDeviceId();
-        int voltId = bank->getTwoWayPoints()->getVoltageId();
 
-        PointRequest pr(voltId,CbcRequestType);
+        for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
+        {
+            PointRequest pr(point->getPointId(), CbcRequestType);
 
-        //TODO: Check disabled (failed?) on bank and feeder (and sub?)
+            //TODO: Check disabled (failed?) on bank and feeder (and sub?)
+            if (sendScan == true)
+            {
+                pr.requestLatestValue = false;
+            }
+
+            if (point->getPointId() > 0)
+            {
+                pointRequests.insert(pr);
+            }
+        }
         if (sendScan == true)
         {
-            pr.requestLatestValue = false;
             CtiCCCommand* cbcScan = new CtiCCCommand(CtiCCCommand::SCAN_2WAY_DEVICE,cbcId);
             CtiCCExecutorFactory::createExecutor(cbcScan)->execute();
-        }
-
-        if (voltId > 0)
-        {
-            pointRequests.insert(pr);
         }
     }
 }
@@ -865,15 +1013,28 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
 
 void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
 {
-    const long ltcId = subbus->getLtcId();
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
+    // All LTCs attatched to the zones on the subbus
+    {
+        ZoneManager & zoneManager = store->getZoneManager();
+        Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
+
+        for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
+        {
+            long regulatorID = zoneManager.getZone(ID)->getRegulatorId();
+            if (regulatorID > 0)
+            {
+                CtiMessage *keepAlive = new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, regulatorID);
+                CtiCCExecutorFactory::createExecutor(keepAlive)->execute();
+            }
+        }
+    }
     if( _CC_DEBUG & CC_DEBUG_IVVC )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - LTC Keep Alive messages sent." << endl;
     }
-    CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, ltcId))->execute();
-
 }
 
 void IVVCAlgorithm::sendPointChanges(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges)
@@ -948,12 +1109,6 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
     }//At this point we have removed the var and watt points. Only volt points remain.
 
     double PFBus = subbus->calculatePowerFactor(varValue, wattValue);
-
-    //calculate potential tap operation
-    int tapOp = calculateVte(pointValues,
-                             strategy->getLowerVoltLimit(isPeakTime),
-                             strategy->getLowerVoltLimit(isPeakTime) + strategy->getVoltageRegulationMargin(isPeakTime),
-                             strategy->getUpperVoltLimit(isPeakTime));
 
     //calculate current flatness of the bus
     double Vf = calculateVf(pointValues);
@@ -1123,8 +1278,11 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
     }
 
     if ( ( operatePaoId != -1 ) &&
-         ( currentBusWeight - strategy->getDecisionWeight(isPeakTime) ) > state->_estimated[operatePaoId].busWeight )
+         ( currentBusWeight - strategy->getDecisionWeight(isPeakTime) ) > state->_estimated[operatePaoId].busWeight &&
+           state->getConsecutiveCapBankOps() < strategy->getMaxConsecutiveCapBankOps(isPeakTime) )
     {
+        state->setConsecutiveCapBankOps( 1 + state->getConsecutiveCapBankOps() );
+
         CtiTime now;
         state->setTimeStamp(now);
 
@@ -1161,75 +1319,192 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
     }
     else
     {
+        state->setConsecutiveCapBankOps( 0 );
+
         state->_estimated.clear();     // done with this data
 
-        // TAP operation - use precalculated value from above
-
-        CtiTime now;
-
-        if ( tapOp != 0 )
-        {
-            if ( ( now.seconds() - state->getLastTapOpTime().seconds() ) > (_IVVC_MIN_TAP_PERIOD_MINUTES * 60) )
-            {
-                state->setLastTapOpTime(now);
-
-                if ( isLtcInRemoteMode(subbus->getLtcId()) )    // only move the tap if we are in 'remote' mode
-                {
-                    if ( tapOp == -1 )
-                    {
-                        if (_CC_DEBUG & CC_DEBUG_IVVC)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                            dout << CtiTime() << " IVVC Algorithm: Lowering Tap" << endl;
-                        }
-
-                        //  send command to lower tap
-                        CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_TAP_POSITION_LOWER,subbus->getLtcId()))->execute();
-                    }
-                    else
-                    {
-                        if (_CC_DEBUG & CC_DEBUG_IVVC)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                            dout << CtiTime() << " IVVC Algorithm: Raising Tap" << endl;
-                        }
-
-                        //  send command to raise tap
-                        CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_TAP_POSITION_RAISE,subbus->getLtcId()))->execute();
-                    }
-                }
-                else
-                {
-                    if (_CC_DEBUG & CC_DEBUG_IVVC)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " IVVC Algorithm: Not Operating LTC due to remote mode." << endl;
-                    }
-                }
-            }
-            else
-            {
-                if (_CC_DEBUG & CC_DEBUG_IVVC)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " IVVC Algorithm: Not Operating LTC due to No Op period." << endl;
-                }
-            }
-        }
-        else
-        {
-                if (_CC_DEBUG & CC_DEBUG_IVVC)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " IVVC Algorithm: No LTC Operation needed." << endl;
-                }
-        }
-        state->setState(IVVCState::IVVC_WAIT);
+        tapOperation(state, subbus, strategy, pointValues);    
     }
 
     return true;
+}
+
+
+/*
+   TAP operation stuff...
+*/
+void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy,
+                                 const PointValueMap & pointValues)
+{
+    state->setState(IVVCState::IVVC_WAIT);
+
+    CtiTime now;
+
+    if ( ( now.seconds() - state->getLastTapOpTime().seconds() ) > (_IVVC_MIN_TAP_PERIOD_MINUTES * 60) )
+    {
+        bool isPeakTime = subbus->getPeakTimeFlag();    // Is it peak time according to the bus.
+
+        // get all zones on the subbus...
+
+        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+        long subbusId = subbus->getPaoId();
+
+        ZoneManager & zoneManager = store->getZoneManager();
+
+        long rootZoneId = zoneManager.getRootZoneIdForSubbus(subbusId);
+
+        Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus(subbusId);
+
+        state->_tapOps.clear();
+
+        for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
+        {
+            PointValueMap zonePointValues;
+
+            CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+            ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
+
+            // Get our zones LTC
+            {
+                AttributeService    attributeService;
+
+                LitePoint   point = attributeService.getPointByPaoAndAttribute(zone->getRegulatorId(), PointAttribute::LtcVoltage);
+
+                if (point.getPointType() == InvalidPointType)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " LTC Voltage point not found for LTC id: " << zone->getRegulatorId() << endl;
+                }
+                else
+                {
+                    PointValueMap::const_iterator iter = pointValues.find( point.getPointId() );    // lookup
+                    if ( iter != pointValues.end() )    // found
+                    {
+                        zonePointValues.insert( *iter );
+                    }
+                }
+            }
+            // end LTC...
+
+            // this guy is a helper for the individual bandwidths...
+            std::map<long, CtiCCMonitorPointPtr>    _monitorMap;
+
+            // get our zones CapBanks
+            {
+                Zone::IdSet capBankIds = zone->getBankIds();
+
+                for each ( const Zone::IdSet::value_type & capBankId in capBankIds )
+                {
+                    CtiCCCapBankPtr bank = store->getCapBankByPaoId( capBankId );
+                    if ( bank )
+                    {
+                        for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
+                        {
+                            PointValueMap::const_iterator iter = pointValues.find( point->getPointId() );   // lookup
+                            if ( iter != pointValues.end() )    // found
+                            {
+                                zonePointValues.insert( *iter );
+
+                                _monitorMap.insert( std::make_pair( point->getPointId(), point ) );
+                            }
+                        }
+                    }
+                }
+            }
+            // end CapBanks...
+
+            // Other zone voltage points
+            {
+                Zone::IdSet pointIds = zone->getPointIds();
+
+                for each ( const Zone::IdSet::value_type & pointId in pointIds )
+                {
+
+                    // TO DO: finish this!!!
+
+
+                }
+            }
+            // end other points...
+
+            if ( ! _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS )
+            {
+                state->_tapOps[ID] = calculateVte(zonePointValues,
+                                          strategy->getLowerVoltLimit(isPeakTime),
+                                          strategy->getLowerVoltLimit(isPeakTime) + strategy->getVoltageRegulationMargin(isPeakTime),
+                                          strategy->getUpperVoltLimit(isPeakTime));
+            }
+            else
+            {
+                state->_tapOps[ID] = calculateVteIndividualTarget(zonePointValues, strategy, _monitorMap, isPeakTime);
+            }
+        }
+
+        tapOpZoneNormalization( rootZoneId, zoneManager, state->_tapOps );
+
+        // remove Tap Operations of 0 from the operations map
+        for each ( const IVVCState::TapOperationZoneMap::value_type & operation in state->_tapOps )
+        {
+            long zoneID     = operation.first;
+            int  tapOpCount = operation.second;
+
+            if ( tapOpCount == 0 )
+            {
+                state->_tapOps.erase(zoneID);
+            }
+        }
+
+        // if there are non-zero ops in the map set state to IVVC_OPERATE_TAP
+        if ( state->_tapOps.size() != 0 )
+        {
+            state->setState( IVVCState::IVVC_OPERATE_TAP );
+        }
+        else
+        {
+            state->setState(IVVCState::IVVC_WAIT);
+
+            if (_CC_DEBUG & CC_DEBUG_IVVC)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " IVVC Algorithm: No Tap Operations needed." << endl;
+            }
+        }
+
+        bool isAnyTapInLocalMode = false;
+
+        for each ( const IVVCState::TapOperationZoneMap::value_type & operation in state->_tapOps )
+        {
+            long zoneID = operation.first;
+
+            // only move the tap if all LTCs are in 'remote' mode
+
+            if ( ! isLtcInRemoteMode( zoneManager.getZone(zoneID)->getRegulatorId() ) )
+            {
+                isAnyTapInLocalMode = true;
+            }
+        }
+
+        if ( isAnyTapInLocalMode )
+        {
+            state->setState(IVVCState::IVVC_WAIT);
+
+            if (_CC_DEBUG & CC_DEBUG_IVVC)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " IVVC Algorithm: Not Operating due to one or more LTCs not in remote mode." << endl;
+            }
+        }
+    }
+    else
+    {
+        if (_CC_DEBUG & CC_DEBUG_IVVC)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " IVVC Algorithm: Not Operating LTC due to No Op period." << endl;
+        }
+    }
 }
 
 
@@ -1260,5 +1535,60 @@ double IVVCAlgorithm::calculateTargetPFVars(const double targetPF, const double 
    // If we have a leading power factor our VARs are negative.  Lagging VARs are positive.
 
    return (targetPF < 0.0) ? -vars : vars;
+}
+
+
+void IVVCAlgorithm::tapOpZoneNormalization(const long parentID, const ZoneManager & zoneManager, IVVCState::TapOperationZoneMap &tapOp )
+{
+    Zone::IdSet allChildren = zoneManager.getAllChildrenOfZone(parentID);
+
+    for each ( const Zone::IdSet::value_type & ID in allChildren )
+    {
+        tapOp[ID] -= tapOp[parentID];
+    }
+
+    Zone::IdSet immediateChildren = zoneManager.getZone(parentID)->getChildIds();
+
+    for each ( const Zone::IdSet::value_type & ID in immediateChildren )
+    {
+        tapOpZoneNormalization( ID, zoneManager, tapOp );   // recursion!!!
+    }
+}
+
+
+int IVVCAlgorithm::calculateVteIndividualTarget(const PointValueMap &voltages, IVVCStrategy* strategy,
+                                                const std::map<long, CtiCCMonitorPointPtr> & _monitorMap,
+                                                const bool isPeakTime)
+{
+    bool lowerTap = false;
+    bool raiseTap = false;
+    bool marginTap = true;
+
+    if ( voltages.empty() )
+    {
+        return 0;
+    }
+
+    for ( PointValueMap::const_iterator b = voltages.begin(), e = voltages.end(); b != e; ++b )
+    {
+        double Vmax = strategy->getUpperVoltLimit(isPeakTime);
+        double Vmin = strategy->getLowerVoltLimit(isPeakTime);
+        double Vrm  = strategy->getLowerVoltLimit(isPeakTime) + strategy->getVoltageRegulationMargin(isPeakTime);
+
+        std::map<long, CtiCCMonitorPointPtr>::const_iterator iter = _monitorMap.find( b->first );
+
+        if ( iter != _monitorMap.end() )    // this is a capbank monitor point - use its bandwidth instead
+        {
+            Vmax = iter->second->getUpperBandwidth();
+            Vmin = iter->second->getLowerBandwidth();
+            Vrm  = iter->second->getLowerBandwidth() + strategy->getVoltageRegulationMargin(isPeakTime);
+        }
+
+        if ( b->second.value > Vmax ) { lowerTap = true; }
+        if ( b->second.value < Vmin ) { raiseTap = true; }
+        if ( b->second.value <= Vrm ) { marginTap = false; }
+    }
+
+    return (( lowerTap || marginTap ) ? -1 : raiseTap ? 1 : 0);
 }
 

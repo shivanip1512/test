@@ -28,7 +28,9 @@ IVVCStrategy::IVVCStrategy(const PointDataRequestFactoryPtr& factory)
     _offpeakDecisionWeight(1.0),
     _peakVoltageRegulationMargin(1.0),
     _offpeakVoltageRegulationMargin(1.0),
-    _ivvcAlgorithm(factory)
+    _ivvcAlgorithm(factory),
+    _peakMaxConsecutiveCapBankOps(2),
+    _offpeakMaxConsecutiveCapBankOps(2)
 {
 }
 
@@ -155,6 +157,23 @@ void IVVCStrategy::restoreParameters( const std::string &name, const std::string
             _offpeakVoltageRegulationMargin = newValue;
         }
     }
+    else if (name == "Max Consecutive CapBank Ops.")
+    {
+        if (type == "PEAK")
+        {
+            _peakMaxConsecutiveCapBankOps = static_cast<unsigned>(newValue);
+        }
+        else
+        {
+            _offpeakMaxConsecutiveCapBankOps = static_cast<unsigned>(newValue);
+        }
+    }
+}
+
+
+const unsigned IVVCStrategy::getMaxConsecutiveCapBankOps(const bool isPeak) const
+{
+    return isPeak ? _peakMaxConsecutiveCapBankOps : _offpeakMaxConsecutiveCapBankOps;
 }
 
 

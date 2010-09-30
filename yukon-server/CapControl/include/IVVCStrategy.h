@@ -47,6 +47,8 @@ public:
     const double getDecisionWeight(const bool isPeak) const;
     const double getVoltageRegulationMargin(const bool isPeak) const;
 
+    const unsigned getMaxConsecutiveCapBankOps(const bool isPeak) const;
+
     virtual void registerControllable(const long paoid);
     virtual void unregisterControllable(const long paoid);
 
@@ -84,6 +86,8 @@ private:
     double _offpeakDecisionWeight;
     double _peakVoltageRegulationMargin;
     double _offpeakVoltageRegulationMargin;
+    unsigned _peakMaxConsecutiveCapBankOps;
+    unsigned _offpeakMaxConsecutiveCapBankOps;
 
     typedef std::map<long, std::pair<unsigned, IVVCStatePtr> >   PaoToStateMap;     // PaoID -> { reference count, state }
 

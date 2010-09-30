@@ -28,9 +28,17 @@
 
 #include "StrategyManager.h"
 #include "IVVCStrategy.h"
+#include "ZoneManager.h"
+//#include "ZoneLoader.h"
+//#include "Zone.h"
+
 
 using boost::unit_test_framework::test_suite;
 using namespace std;
+
+using Cti::CapControl::Zone;
+using Cti::CapControl::ZoneLoader;
+using Cti::CapControl::ZoneManager;
 
 extern ULONG _MAX_KVAR;
 extern ULONG _SEND_TRIES;
@@ -96,6 +104,96 @@ private:
         {
             newStrategy->setStrategyId(ID);
             strategies[ID] = newStrategy;
+        }
+    }
+};
+
+
+class ZoneUnitTestLoader : public ZoneLoader
+{
+
+public:
+
+    // default construction and destruction is OK
+
+    virtual ZoneManager::ZoneMap load(const long Id)
+    {
+        ZoneManager::ZoneMap zones;
+
+        if (Id < 0)
+        {
+            long Ids[] = { 101, 103, 104, 106, 107, 108, 109 };
+
+            for (int i = 0; i < sizeof(Ids)/ sizeof(*Ids); i++)
+            {
+                loadSingle(Ids[i], zones);
+            }
+        }
+        else
+        {
+            loadSingle(Id, zones);
+        }
+
+        return zones;
+    }
+
+private:
+
+    void loadSingle(const long Id, ZoneManager::ZoneMap &zones)
+    {
+        bool doInsertion = true;
+        ZoneManager::SharedPtr newZone;
+
+        switch (Id)
+        {
+            case 101:
+            {
+                newZone = ZoneManager::SharedPtr( new Zone( Id, 101, 11, 35, "The Root Zone" ) );
+                newZone->addChildId(103);
+                newZone->addChildId(107);
+                break;
+            }
+            case 103:
+            {
+                newZone = ZoneManager::SharedPtr( new Zone( Id, 101, 22, 35, "The Left Zone" ) );
+                newZone->addChildId(104);
+                newZone->addChildId(109);
+                break;
+            }
+            case 104:
+            {
+                newZone = ZoneManager::SharedPtr( new Zone( Id, 103, 44, 35, "The Left Right Zone" ) );
+                break;
+            }
+            case 106:
+            {
+                newZone = ZoneManager::SharedPtr( new Zone( Id, 107, 66, 35, "The Right Left Zone" ) );
+                break;
+            }
+            case 107:
+            {
+                newZone = ZoneManager::SharedPtr( new Zone( Id, 101, 33, 35, "The Right Zone" ) );
+                newZone->addChildId(106);
+                newZone->addChildId(108);
+                break;
+            }
+            case 108:
+            {
+                newZone = ZoneManager::SharedPtr( new Zone( Id, 107, 77, 35, "The Right Right Zone" ) );
+                break;
+            }
+            case 109:
+            {
+                newZone = ZoneManager::SharedPtr( new Zone( Id, 103, 55, 35, "The Left Left Zone" ) );
+                break;
+            }
+
+            default:  doInsertion = false;
+        }
+
+        if (doInsertion)
+        {
+            zones[Id] = newZone;
         }
     }
 };
@@ -464,3 +562,126 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm)
     store->deleteInstance();
 
 }
+
+
+BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_zone_subsets_by_subbus)
+{
+    ZoneManager zoneManager( std::auto_ptr<ZoneUnitTestLoader>( new ZoneUnitTestLoader ) );
+
+    zoneManager.reloadAll();
+
+    Zone::IdSet results;
+
+    results.insert(101);
+    results.insert(103);
+    results.insert(104);
+    results.insert(106);
+    results.insert(107);
+    results.insert(108);
+    results.insert(109);
+
+    Zone::IdSet subset = zoneManager.getZoneIdsBySubbus(35);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( results.begin(), results.end(), subset.begin(), subset.end() );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_all_children_of_zone)
+{
+    ZoneManager zoneManager( std::auto_ptr<ZoneUnitTestLoader>( new ZoneUnitTestLoader ) );
+
+    zoneManager.reloadAll();
+
+    // Get all children of ID 101
+
+    Zone::IdSet results101;
+
+    results101.insert(103);
+    results101.insert(104);
+    results101.insert(106);
+    results101.insert(107);
+    results101.insert(108);
+    results101.insert(109);
+
+    Zone::IdSet subset101 = zoneManager.getAllChildrenOfZone(101);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( results101.begin(), results101.end(), subset101.begin(), subset101.end() );
+
+    // Get all children of ID 103
+
+    Zone::IdSet results103;
+
+    results103.insert(104);
+    results103.insert(109);
+
+    Zone::IdSet subset103 = zoneManager.getAllChildrenOfZone(103);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( results103.begin(), results103.end(), subset103.begin(), subset103.end() );
+
+    // Get all children of ID 107
+
+    Zone::IdSet results107;
+
+    results107.insert(106);
+    results107.insert(108);
+
+    Zone::IdSet subset107 = zoneManager.getAllChildrenOfZone(107);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( results107.begin(), results107.end(), subset107.begin(), subset107.end() );
+
+    // Get all children of ID 104, 106, 108 and 109
+
+    Zone::IdSet emptySet;
+
+    Zone::IdSet subset104 = zoneManager.getAllChildrenOfZone(104);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( emptySet.begin(), emptySet.end(), subset104.begin(), subset104.end() );
+
+    Zone::IdSet subset106 = zoneManager.getAllChildrenOfZone(106);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( emptySet.begin(), emptySet.end(), subset106.begin(), subset106.end() );
+
+    Zone::IdSet subset108 = zoneManager.getAllChildrenOfZone(108);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( emptySet.begin(), emptySet.end(), subset108.begin(), subset108.end() );
+
+    Zone::IdSet subset109 = zoneManager.getAllChildrenOfZone(109);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( emptySet.begin(), emptySet.end(), subset109.begin(), subset109.end() );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_zone_normalization)
+{
+    struct test_IVVCAlgorithm : public IVVCAlgorithm
+    {
+        test_IVVCAlgorithm() : IVVCAlgorithm( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ) {  }
+
+        using IVVCAlgorithm::tapOpZoneNormalization;
+    };
+
+    test_IVVCAlgorithm              algorithm;
+    IVVCState::TapOperationZoneMap  tapOps;
+
+    ZoneManager zoneManager( std::auto_ptr<ZoneUnitTestLoader>( new ZoneUnitTestLoader ) );
+    zoneManager.reloadAll();
+
+    tapOps.insert( std::make_pair(101,  1) );   // these are initialized from calls to IVVCAlgorithm::calculateVte
+    tapOps.insert( std::make_pair(103,  0) );
+    tapOps.insert( std::make_pair(104,  1) );
+    tapOps.insert( std::make_pair(106, -1) );
+    tapOps.insert( std::make_pair(107, -1) );
+    tapOps.insert( std::make_pair(108,  1) );
+    tapOps.insert( std::make_pair(109,  0) );
+
+    algorithm.tapOpZoneNormalization( zoneManager.getRootZoneIdForSubbus(35), zoneManager, tapOps );
+
+    BOOST_CHECK_EQUAL(  1 , tapOps[101] );
+    BOOST_CHECK_EQUAL( -1 , tapOps[103] );
+    BOOST_CHECK_EQUAL(  1 , tapOps[104] );
+    BOOST_CHECK_EQUAL(  0 , tapOps[106] );
+    BOOST_CHECK_EQUAL( -2 , tapOps[107] );
+    BOOST_CHECK_EQUAL(  2 , tapOps[108] );
+    BOOST_CHECK_EQUAL(  0 , tapOps[109] );
+}
+

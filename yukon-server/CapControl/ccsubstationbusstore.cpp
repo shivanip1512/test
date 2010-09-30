@@ -66,7 +66,8 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE),
                                                     _lastdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
                                                     _wassubbusdeletedflag(FALSE),
                                                     _lastindividualdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
-                                                    _strategyManager( std::auto_ptr<StrategyDBLoader>( new StrategyDBLoader ) )
+                                                    _strategyManager( std::auto_ptr<StrategyDBLoader>( new StrategyDBLoader ) ),
+                                                    _zoneManager( std::auto_ptr<ZoneDBLoader>( new ZoneDBLoader ) )
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     _ccSubstationBuses = new CtiCCSubstationBus_vec;
@@ -1357,6 +1358,14 @@ void CtiCCSubstationBusStore::reset()
 
             /** Loading LTCs **/
             reloadLtcFromDatabase(0);
+
+            /*************************************************************
+            ******  Loading Zones                              ******
+            **************************************************************/
+            if ( ! reloadZoneFromDatabase( -1 ) )
+            {
+                return;
+            }
 
             /************************************************************
              ********    Loading Cap Banks States                ********
@@ -5495,7 +5504,10 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
         static const string sqlNoID =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
                                           "YP.description, YP.disableflag "
                                        "FROM yukonpaobject YP "
-                                       "WHERE YP.type = 'Load Tap Changer'";
+                                       "WHERE YP.paoclass = 'VOLTAGEREGULATOR' ";
+
+        // For now 'Load Tap Changer' and 'Gang Operated Regulator' are exactly the same thing
+        //   "AND (YP.type = 'Load Tap Changer' OR YP.type = 'Gang Operated Regulator')";
 
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection);
@@ -11371,6 +11383,37 @@ bool CtiCCSubstationBusStore::isAnyBankOpen(int paoId, CapControlType type)
 void CtiCCSubstationBusStore::executeAllStrategies() const
 {
     _strategyManager.executeAll();
+}
+
+
+Cti::CapControl::ZoneManager & CtiCCSubstationBusStore::getZoneManager()
+{
+    return _zoneManager;
+}
+
+
+bool CtiCCSubstationBusStore::reloadZoneFromDatabase(const long zoneId)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+
+    try
+    {
+        if (zoneId == -1)
+        {
+            _zoneManager.reloadAll();
+        }
+        else
+        {
+            _zoneManager.reload(zoneId);
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+
+    return true;
 }
 
 
