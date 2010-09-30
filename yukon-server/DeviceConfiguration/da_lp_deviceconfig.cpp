@@ -3,6 +3,8 @@
 #include "da_lp_deviceconfig.h"
 #include "config_data_mct.h"
 
+#include "boostutil.h"
+
 using namespace Cti;
 using namespace Cti::Config;
 
