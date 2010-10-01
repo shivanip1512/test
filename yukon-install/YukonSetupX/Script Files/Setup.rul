@@ -284,7 +284,7 @@ end;
 function OnUpdateUIBefore()
 number nResult;
 BOOL bOptYes, bOptNo, bOpt;
-string sMasterConfig, sOldVersion, sMsg1, sMsg2;
+string sMasterConfig, sOldVersion, sMsg1, sMsg2, sCMD, sArgs;
 begin
 	//set the string shown on the installer windows' title bars
 	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
@@ -357,6 +357,14 @@ begin
 	//This will be read in on the other side of the file transfer
 	//to re-populate the settings lost in the upgrade
 	SaveServiceSettings();
+	
+	//remove the YukonWebApplicationService, if it exists (i.e. upgrade install)
+	//so the new service installs correctly
+	sCMD = SYS32 ^ "sc.exe";
+	sArgs = "delete \"YukonWebApplicationService\"";
+	LaunchApplication(sCMD, "", "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+	//get out of "hidden" app-launch mode
+	LaunchApplication("", "", "", SW_NORMAL, 0, LAAW_OPTION_WAIT);
 	
 	//set installer to update all features that are currently installed
 	FeatureReinstall();
