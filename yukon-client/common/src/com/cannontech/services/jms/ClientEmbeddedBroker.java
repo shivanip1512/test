@@ -5,9 +5,13 @@ import javax.jms.ConnectionFactory;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.network.NetworkConnector;
+import org.apache.log4j.Logger;
 import org.springframework.jms.connection.CachingConnectionFactory;
 
+import com.cannontech.clientutils.YukonLogManager;
+
 public class ClientEmbeddedBroker {
+	private Logger log = YukonLogManager.getLogger(ClientEmbeddedBroker.class);
 
     private final String name;
     private final String connectionString;
@@ -49,6 +53,7 @@ public class ClientEmbeddedBroker {
             broker.setSchedulerSupport(false);// https://issues.apache.org/activemq/browse/AMQ-2935
             broker.start();
         } catch (Exception e) {
+        	log.warn("Caught exception starting client broker: " + e.toString());
             throw new RuntimeException("Unable to start broker", e);
         }
     }
