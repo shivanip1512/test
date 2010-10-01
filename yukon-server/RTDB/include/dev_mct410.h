@@ -73,7 +73,7 @@ private:
         SspecRev_Disconnect_Cycle   =   12,  //  rev  1.2
         SspecRev_Disconnect_ConfigReadEnhanced = 20,  //  rev 2.0
         SspecRev_DailyRead          =   21,  //  rev  2.1
-        SspecRev_HourlyKwh          =   32,
+        SspecRev_HourlyKwh          =   33,
 
         SspecRev_BetaLo =    9,  //  rev  0.9
         SspecRev_BetaHi =  200,  //  rev 20.0
