@@ -6,19 +6,14 @@ import com.cannontech.cbc.model.Zone;
 
 public interface ZoneDao {
     
+    
     /**
-     * Adds the zone to the database.
-     * A new Id will be generated and whatever the Zone has set will be over written.
+     * Updates or inserts existing zone with the information in zone.
+     * If the zone id is 0 it will insert, otherwise update.
      * 
      * @param zone
      */
-    public void add(Zone zone);
-    
-    /**
-     * Updates existing zone with the information in zone.
-     * @param zone
-     */
-    public void update(Zone zone);
+    public void save(Zone zone);
     
     /**
      * Removes the Zone with zoneId from the database.
