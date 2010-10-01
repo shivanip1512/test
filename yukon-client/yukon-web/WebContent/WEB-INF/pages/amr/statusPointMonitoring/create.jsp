@@ -56,4 +56,9 @@
         </div>
         
     </form:form>
+    <script type="text/javascript">
+	    Event.observe(window, 'load', function() {
+	        $$('#basicInfoForm input')[1].focus();
+	    });
+    </script>
 </cti:standardPage>
