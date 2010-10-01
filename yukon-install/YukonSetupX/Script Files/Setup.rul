@@ -362,7 +362,7 @@ begin
 	//so the new service installs correctly
 	sCMD = SYS32 ^ "sc.exe";
 	sArgs = "delete \"YukonWebApplicationService\"";
-	LaunchApplication(sCMD, "", "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+	LaunchApplication(sCMD, sArgs, "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
 	//get out of "hidden" app-launch mode
 	LaunchApplication("", "", "", SW_NORMAL, 0, LAAW_OPTION_WAIT);
 	
