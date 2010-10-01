@@ -8,7 +8,7 @@ import com.cannontech.analysis.tablemodel.StrategyAssignmentModel;
 import com.cannontech.simplereport.reportlayoutdata.StrategyAssignmentReportLayoutData;
 import com.cannontech.spring.YukonSpringHook;
 
-public class StrategyAssignmentReport extends SingleGroupYukonReportBase {
+public class StrategyAssignmentReport extends GroupYukonReportBase {
     
     private static final ColumnLayoutData[] bodyColumns = new StrategyAssignmentReportLayoutData().getBodyColumns();
 

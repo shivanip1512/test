@@ -6,7 +6,7 @@ import java.util.List;
 import com.cannontech.analysis.function.AggregateFooterFieldFactory;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 
-public class ProgramAndGearControlReport extends SingleGroupYukonReportBase {
+public class ProgramAndGearControlReport extends GroupYukonReportBase {
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
         new ColumnLayoutData("Start Date", "startDate", 120),
         new ColumnLayoutData("Gear Name", "gearName", 120),

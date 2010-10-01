@@ -11,7 +11,7 @@ import com.cannontech.analysis.tablemodel.OptOutLimitModel;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Lists;
 
-public class OptOutLimitReport extends MultiGroupYukonReportBase {
+public class OptOutLimitReport extends GroupYukonReportBase {
     
     public OptOutLimitReport(BareReportModel bareModel) {
         super(bareModel);
@@ -24,14 +24,15 @@ public class OptOutLimitReport extends MultiGroupYukonReportBase {
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
         new ColumnLayoutData("Alternate Tracking Number", "alternateTrackingNumber", 130),
         new ColumnLayoutData("Enrolled Program", "enrolledProgram", 220),
-        new ColumnLayoutData("Number of Overrides Used", "numberOfOverridesUsed", 120),
-        new ColumnLayoutData("Issuing User", "issuingUser", 80),
-        new ColumnLayoutData("Opted Out Start Date", "optOutStart", 100),
-        new ColumnLayoutData("Opted Out Stop Date", "optOutStop", 100),
+        new ColumnLayoutData("Overrides Used", "numberOfOverridesUsed", 120),
+        new ColumnLayoutData("Username", "issuingUser", 80),
+        new ColumnLayoutData("Start Date", "optOutStart", 100),
+        new ColumnLayoutData("Stop Date", "optOutStop", 100),
     };
     
-    private static final ColumnLayoutData groupWrapperColumns[] = new ColumnLayoutData[] {
+    private static final ColumnLayoutData groupColumns[] = new ColumnLayoutData[] {
         new ColumnLayoutData("Account: ", "accountNumberAndName", 300),
+        new ColumnLayoutData("Serial Number: ", "serialNumber", 200)
     };
     
     private static final AggregateFooterFieldFactory footerColumns[] = new AggregateFooterFieldFactory[] {
@@ -45,14 +46,9 @@ public class OptOutLimitReport extends MultiGroupYukonReportBase {
     }
     
     @Override
-    protected ColumnLayoutData getGroupFieldData() {
-        return new ColumnLayoutData("Serial Number: ", "serialNumber", 200);
-    }
-    
-    @Override
-    protected List<ColumnLayoutData> getGroupWrapperFieldData() {
-        List<ColumnLayoutData> groupWrapperGroups = Lists.newArrayList(groupWrapperColumns);
-        return groupWrapperGroups;
+    protected List<ColumnLayoutData> getMultiGroupFieldData() {
+        List<ColumnLayoutData> groupFieldData = Lists.newArrayList(groupColumns);
+        return groupFieldData;
     }
     
     @Override

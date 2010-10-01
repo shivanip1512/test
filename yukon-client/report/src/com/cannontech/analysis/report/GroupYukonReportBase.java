@@ -2,11 +2,13 @@ package com.cannontech.analysis.report;
 
 import java.awt.geom.Point2D;
 import java.util.Date;
+import java.util.List;
 
 import org.jfree.report.ElementAlignment;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
 import org.jfree.report.GroupHeader;
+import org.jfree.report.GroupList;
 import org.jfree.report.elementfactory.DateFieldElementFactory;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.NumberFieldElementFactory;
@@ -16,6 +18,7 @@ import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.BareReportModel;
+import com.google.common.collect.Lists;
 
 /**
  * This class is meant to be used as a base class for reports that are generated from
@@ -24,57 +27,82 @@ import com.cannontech.analysis.tablemodel.BareReportModel;
  * Overriding classes only need to indicate which column to group over, which columns 
  * are in the body, their order, and their widths.
  */
-public abstract class SingleGroupYukonReportBase extends SimpleYukonReportBase {
+public abstract class GroupYukonReportBase extends SimpleYukonReportBase {
 
-    public SingleGroupYukonReportBase(BareReportModel bareModel) {
+    public GroupYukonReportBase(BareReportModel bareModel) {
         super(bareModel);
     }
 
-    protected Group createSingleGroup() {
+    protected GroupList createGroups() {
+        GroupList list = new GroupList();
+        for (ColumnLayoutData columnLayoutData : getMultiGroupFieldData()) {
+            list.add(createSingleGroup(columnLayoutData));
+        }
+        return list;
+    }
+
+    protected Group createSingleGroup(ColumnLayoutData columnLayoutData) {
         final Group singleGroup = new Group();
-        int groupFieldIndex = columIndexLookup.get(getGroupFieldData().getFieldName());
-        singleGroup.setName(getSingleGroupName());
-        singleGroup.addField(getGroupFieldData().getFieldName());
+        int groupFieldIndex = columIndexLookup.get(columnLayoutData.getFieldName());
+        singleGroup.setName(getSingleGroupName(columnLayoutData));
+        
+        // Add all previous columnLayoutData fields up until the one that is being processed.
+        List<ColumnLayoutData> groupFieldData = getMultiGroupFieldData();
+        for (int i = 0; !groupFieldData.get(i).equals(columnLayoutData); i++) {
+            singleGroup.addField(groupFieldData.get(i).getFieldName());
+        }
+        singleGroup.addField(columnLayoutData.getFieldName());
         GroupHeader header = new GroupHeader();
         		
         header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, ReportFactory.GROUP_HEADER_STYLE_DIMENSION);
         header.getStyle().setFontDefinitionProperty(ReportFactory.GROUP_HEADER_BAND_FONT);
         header.setRepeat(true);
 
-        LabelElementFactory groupLabelFactory = ReportFactory.createGroupLabelElementDefault(getGroupFieldData().getColumnName(), 0, 1, 129);
+        LabelElementFactory groupLabelFactory = ReportFactory.createGroupLabelElementDefault(columnLayoutData.getColumnName(), 0, 1, 129);
         header.addElement(groupLabelFactory.createElement());
         
         TextFieldElementFactory groupFieldFactory;
         Class<?> columnClass = getModel().getColumnClass(groupFieldIndex);
-        groupFieldFactory = objectFieldFactoryMethod(columnClass);
+        groupFieldFactory = objectFieldFactoryMethod(columnLayoutData, columnClass);
         groupFieldFactory.setDynamicHeight(Boolean.TRUE);
         groupFieldFactory.setHorizontalAlignment(ElementAlignment.LEFT);
         groupFieldFactory.setVerticalAlignment(ElementAlignment.BOTTOM);
         groupFieldFactory.setNullString("  ---  ");
         groupFieldFactory.setBold(Boolean.TRUE);
-        groupFieldFactory.setName(getGroupFieldData().getFieldName() + ReportFactory.NAME_GROUP_ELEMENT);
-        groupFieldFactory.setFieldname(getGroupFieldData().getFieldName());
+        groupFieldFactory.setName(columnLayoutData.getFieldName() + ReportFactory.NAME_GROUP_ELEMENT);
+        groupFieldFactory.setFieldname(columnLayoutData.getFieldName());
         
         groupFieldFactory.setAbsolutePosition(new Point2D.Float(130, 1));
         groupFieldFactory.setMinimumSize(new FloatDimension( 300, 18));
         header.addElement(groupFieldFactory.createElement());
         
         header.addElement(ReportFactory.createBasicLine("rmGroupLine", 0.5f, 18));
+
+        // Only add the detail band column headers on the inner most group
+        ColumnLayoutData innerMostGroup = groupFieldData.get(groupFieldData.size()-1);
+        boolean innerGroup = columnLayoutData.equals(innerMostGroup);
+        if (innerGroup){
+            createGroupLabels(header);
+        }
         
-        createGroupLabels(header);
         singleGroup.setHeader(header);
-        
-        GroupFooter footer = ReportFactory.createGroupFooterDefault();
-        createFooterFields(footer);
-        footer.addElement(ReportFactory.createBasicLine("footerGroupLine", 0.5f, 0));
-        singleGroup.setFooter(footer);
+
+        // Only add the footer data on the outer most group        
+        ColumnLayoutData outerMostGroup = groupFieldData.get(0);
+        boolean outerGroup = columnLayoutData.equals(outerMostGroup);
+        if (outerGroup) {
+            GroupFooter footer = ReportFactory.createGroupFooterDefault();
+            createFooterFields(footer);
+            footer.addElement(ReportFactory.createBasicLine("footerGroupLine", 0.5f, 0));
+            singleGroup.setFooter(footer);
+        }
         
         return singleGroup;
     }
     
     @Override
-    protected String getSingleGroupName() {
-        return getGroupFieldData().getFieldName() + ReportFactory.NAME_GROUP;
+    protected String getSingleGroupName(ColumnLayoutData columnLayoutData) {
+        return columnLayoutData.getFieldName() + ReportFactory.NAME_GROUP;
     }
     
     @Override
@@ -84,23 +112,36 @@ public abstract class SingleGroupYukonReportBase extends SimpleYukonReportBase {
         labelFactory.setAbsolutePosition(new Point2D.Float((float)pos.getX(), 18f) ); 
     }
 
-    protected abstract ColumnLayoutData getGroupFieldData();
+    protected List<ColumnLayoutData> getMultiGroupFieldData() {
+        List<ColumnLayoutData> groupFieldData = 
+            Lists.newArrayList(getGroupFieldData());
+        return groupFieldData;
+    }
+
+    /**
+     * This method is here for the sole purpose of supporting older reports.
+     * @Deprecated - use getMultiGroupFieldData
+     * @return
+     */
+    protected ColumnLayoutData getGroupFieldData() {
+        return null;
+    }
 
     /**
      * This method takes a class type and returns a textFieldElementFactory object to 
      * build a group.
      */
-    protected TextFieldElementFactory objectFieldFactoryMethod(Class<?> columnClass) {
+    protected TextFieldElementFactory objectFieldFactoryMethod(ColumnLayoutData columnLayoutData, Class<?> columnClass) {
         TextFieldElementFactory groupFieldFactory;
         if (Number.class.isAssignableFrom(columnClass)) {
             NumberFieldElementFactory numFieldFactory = new NumberFieldElementFactory();
-            numFieldFactory.setHorizontalAlignment(getGroupFieldData().getHorizontalAlignment());
-            numFieldFactory.setFormatString(getGroupFieldData().getFormat());
+            numFieldFactory.setHorizontalAlignment(columnLayoutData.getHorizontalAlignment());
+            numFieldFactory.setFormatString(columnLayoutData.getFormat());
             groupFieldFactory = numFieldFactory;
         } else if (Date.class.isAssignableFrom(columnClass)) {
             DateFieldElementFactory dateFieldFactory = new DateFieldElementFactory();
             dateFieldFactory.setVerticalAlignment(ElementAlignment.BOTTOM);
-            dateFieldFactory.setFormatString(getGroupFieldData().getFormat());
+            dateFieldFactory.setFormatString(columnLayoutData.getFormat());
             groupFieldFactory = dateFieldFactory;
         } else {
             groupFieldFactory = new TextFieldElementFactory();
