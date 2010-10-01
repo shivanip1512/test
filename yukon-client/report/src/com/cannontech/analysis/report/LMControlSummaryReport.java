@@ -14,7 +14,7 @@ import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.LMControlSummaryModel;
 import com.cannontech.spring.YukonSpringHook;
 
-public class LMControlSummaryReport extends GroupYukonReportBase {
+public class LMControlSummaryReport extends SingleGroupYukonReportBase {
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
         new ColumnLayoutData("", "total", 50),
         new ColumnLayoutData("Number of Participants", "enrolledCustomers", 120),

@@ -8,7 +8,7 @@ import com.cannontech.analysis.tablemodel.CapControlDisabledDevicesModel;
 import com.cannontech.simplereport.reportlayoutdata.CapControlDisabledDevicesReportLayoutData;
 import com.cannontech.spring.YukonSpringHook;
 
-public class CapControlDisabledDevicesReport extends GroupYukonReportBase {
+public class CapControlDisabledDevicesReport extends SingleGroupYukonReportBase {
     
     private static final ColumnLayoutData[] bodyColumns = new CapControlDisabledDevicesReportLayoutData().getBodyColumns();
 

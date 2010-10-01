@@ -112,20 +112,7 @@ public abstract class GroupYukonReportBase extends SimpleYukonReportBase {
         labelFactory.setAbsolutePosition(new Point2D.Float((float)pos.getX(), 18f) ); 
     }
 
-    protected List<ColumnLayoutData> getMultiGroupFieldData() {
-        List<ColumnLayoutData> groupFieldData = 
-            Lists.newArrayList(getGroupFieldData());
-        return groupFieldData;
-    }
-
-    /**
-     * This method is here for the sole purpose of supporting older reports.
-     * @Deprecated - use getMultiGroupFieldData
-     * @return
-     */
-    protected ColumnLayoutData getGroupFieldData() {
-        return null;
-    }
+    protected abstract List<ColumnLayoutData> getMultiGroupFieldData();
 
     /**
      * This method takes a class type and returns a textFieldElementFactory object to 

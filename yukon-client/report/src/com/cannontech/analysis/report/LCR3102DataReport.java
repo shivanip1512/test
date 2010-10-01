@@ -6,7 +6,7 @@ import java.util.List;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.simplereport.reportlayoutdata.LCR3102DataReportLayoutData;
 
-public class LCR3102DataReport extends GroupYukonReportBase {
+public class LCR3102DataReport extends SingleGroupYukonReportBase {
     
     private static final ColumnLayoutData[] bodyColumns = new LCR3102DataReportLayoutData().getBodyColumns();
 

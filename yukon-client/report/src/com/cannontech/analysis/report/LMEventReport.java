@@ -8,7 +8,7 @@ import com.cannontech.analysis.function.LabelFooterFieldFactory;
 import com.cannontech.analysis.function.SumFooterFieldFactory;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 
-public class LMEventReport extends GroupYukonReportBase {
+public class LMEventReport extends SingleGroupYukonReportBase {
     
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
         new ColumnLayoutData("Load Program", "programName", 50),

@@ -7,7 +7,7 @@ import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.OptOutInfoModel;
 import com.cannontech.spring.YukonSpringHook;
 
-public class OptOutInfoReport extends GroupYukonReportBase {
+public class OptOutInfoReport extends SingleGroupYukonReportBase {
     
     public OptOutInfoReport(BareReportModel bareModel) {
         super(bareModel);

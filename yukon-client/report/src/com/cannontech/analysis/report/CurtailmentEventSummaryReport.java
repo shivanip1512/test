@@ -14,7 +14,7 @@ import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.CurtailmentEventSummaryModel;
 import com.cannontech.spring.YukonSpringHook;
 
-public class CurtailmentEventSummaryReport extends GroupYukonReportBase {
+public class CurtailmentEventSummaryReport extends SingleGroupYukonReportBase {
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
         new ColumnLayoutData("Event #", "eventNumber", 50),
         new ColumnLayoutData("State", "state", 80),
