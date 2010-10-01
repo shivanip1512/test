@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.yukon.cbc.SerializableObject;
+import com.cannontech.yukon.cbc.SerializableByIdentifier;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.VirtualOutputStream;
 
@@ -31,7 +31,7 @@ public class CollectionInserter
         }
     }
     
-    public static <K extends SerializableObject> void insertIntegerMap(Map<K,Integer> map, VirtualOutputStream vstr, CollectableStreamer polystr) throws IOException {
+    public static <K extends SerializableByIdentifier> void insertIntegerMap(Map<K,Integer> map, VirtualOutputStream vstr, CollectableStreamer polystr) throws IOException {
         vstr.insertUnsignedInt(map.size());
         
         for (Map.Entry<K,Integer> entry : map.entrySet()) {
@@ -40,7 +40,7 @@ public class CollectionInserter
         }
     }
     
-    public static <K extends SerializableObject> void insertDoubleMap(Map<K,Double> map, VirtualOutputStream vstr, CollectableStreamer polystr) throws IOException {
+    public static <K extends SerializableByIdentifier> void insertDoubleMap(Map<K,Double> map, VirtualOutputStream vstr, CollectableStreamer polystr) throws IOException {
         vstr.insertUnsignedInt(map.size());
         
         for (Map.Entry<K,Double> entry : map.entrySet()) {

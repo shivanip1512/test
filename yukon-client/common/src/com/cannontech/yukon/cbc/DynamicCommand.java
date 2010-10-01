@@ -7,7 +7,7 @@ import com.google.common.collect.Maps;
 
 public class DynamicCommand extends Message {
 	
-    public enum Parameter implements SerializableObject {
+    public enum Parameter implements SerializableByIdentifier {
         DEVICE_ID(0),
         POINT_ID(1),
         POINT_RESPONSE_DELTA(2);
@@ -23,7 +23,7 @@ public class DynamicCommand extends Message {
         }
     }
     
-    public enum CommandType implements SerializableObject {
+    public enum CommandType implements SerializableByIdentifier {
         UNDEFINED(0),
         DELTA(1);
         

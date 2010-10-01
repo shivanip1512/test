@@ -1,5 +1,5 @@
 package com.cannontech.yukon.cbc;
 
-public interface SerializableObject {
+public interface SerializableByIdentifier {
 	public int getSerializeId();
 }
