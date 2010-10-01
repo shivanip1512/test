@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/30/2010 5:08:20 PM                         */
+/* Created on:     10/1/2010 10:42:02 AM                        */
 /*==============================================================*/
 
 
@@ -12701,8 +12701,8 @@ INSERT INTO YukonRoleProperty VALUES(-20162,-201,'Rotation Digit Length','(none)
 INSERT INTO YukonRoleProperty VALUES(-20163,-201,'Allow Account Editing','true','Can be used to disable the ability to edit and delete customer account information.');
 INSERT INTO YukonRoleProperty VALUES(-20164,-201,'Enroll Multiple Programs per Category','false','Enables you to enroll in multiple programs within an appliance category.');
 INSERT INTO YukonRoleProperty VALUES(-20165,-201,'Account Search','true','Enables you to use account searching.');
-INSERT INTO YukonRoleProperty VALUES(-20166,-201,'Survey Edit','true','Enables editing of surveys.');
-INSERT INTO YukonRoleProperty VALUES(-20167,-201,'Opt Out Survey Edit','true','Enabled editing of opt out surveys.'); 
+INSERT INTO YukonRoleProperty VALUES(-20166,-201,'Survey Edit','false','Enables editing of surveys.');
+INSERT INTO YukonRoleProperty VALUES(-20167,-201,'Opt Out Survey Edit','false','Enables editing of opt out surveys.'); 
 
 /* Operator Administrator Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20000,-200,'Config Energy Company','false','Controls whether to allow configuring the energy company');
