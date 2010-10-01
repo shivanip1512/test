@@ -281,7 +281,7 @@ GO
 
 /* Start YUK-9114 */
 UPDATE YukonPAObject
-SET PAOClass = 'Voltage Regulator'
+SET PAOClass = 'VOLTAGEREGULATOR'
 WHERE Type = 'Load Tap Changer';
 /* End YUK-9114 */
 
