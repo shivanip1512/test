@@ -325,6 +325,30 @@ function setTempUnits(newUnit){
     convertFieldTemp('tempHin4', currentTempUnit, newUnit);
     handleUpdateHeatTemp(4);
     
+    // Convert values for time periods not currently shown
+    var timePeriods;
+    if(currentScheduleMode == "WEEKDAY_SAT_SUN"){
+    	timePeriods = ["WEEKDAY", "SATURDAY", "SUNDAY"];
+    } else if(currentScheduleMode == "WEEKDAY_WEEKEND"){
+    	timePeriods = ["WEEKDAY", "WEEKEND"];
+    } else {
+    	timePeriods = ["WEEKDAY"];
+    }
+    
+    for(var i = 0; i < timePeriods.size(); i++){
+    	var timePeriod = timePeriods[i];
+    	if(timePeriod != currentTimePeriod){ 	//current time period has been dealt with above
+	    	var timeTemps = schedules['season'][timePeriod];
+	    	for(var j = 0; j < 4; j++){
+	    		timeTemps[j].coolTemp = getFahrenheitTemp(timeTemps[j].coolTemp, currentTempUnit);
+		    	timeTemps[j].coolTemp = getConvertedTemp(timeTemps[j].coolTemp, newUnit);
+		    	timeTemps[j].heatTemp = getFahrenheitTemp(timeTemps[j].heatTemp, currentTempUnit);
+		    	timeTemps[j].heatTemp = getConvertedTemp(timeTemps[j].heatTemp, newUnit);
+	    	}
+    	}
+    }
+    
+    //update UI to display correct temp unit
     if('C' == newUnit) {
         $('celsiusLink').hide();
         $('celsiusSpan').show();
@@ -337,7 +361,7 @@ function setTempUnits(newUnit){
         $('fahrenheitSpan').show();
         $('fahrenheitLink').hide();
     }
-
+    
 }
 
 function convertFieldTemp(fieldId, currentUnit, newUnit){

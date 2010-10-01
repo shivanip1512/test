@@ -155,7 +155,7 @@
 				    <cti:theme var="thermO" key="yukon.web.modules.operator.thermostatSchedule.thermO" default="/WebConfig/yukon/ThermImages/OcTherm.gif" url="true"/>
 				    <cti:theme var="thermU" key="yukon.web.modules.operator.thermostatSchedule.thermU" default="/WebConfig/yukon/ThermImages/UnOcTherm.gif" url="true"/>
 				    
-				    <c:set var="twoBars" value="${schedule.thermostatType == 'COMMERCIAL_EXPRESSSTAT'}" />
+				    <c:set var="twoBars" value="${schedule.thermostatType.periodStyle == 'TWO_TIMES'}" />
 				    
 				    <c:set var="timeOfWeek" value="WEEKDAY" />
 				    
