@@ -17,7 +17,7 @@ Mct420LcdConfigurationCommand::Mct420LcdConfigurationCommand(const metric_vector
 DlcCommand::request_ptr Mct420LcdConfigurationCommand::execute(CtiTime now)
 {
     //  now that ExecuteRequest() is wrapped in a try/catch, we could move this check to the constructor
-    if( _display_metrics.size() > 26 )
+    if( _display_metrics.size() > TotalDisplayMetricSlots )
     {
         throw CommandException(BADPARAM, "Invalid number of display metrics (" + CtiNumStr(_display_metrics.size()) + ")");
     }
@@ -45,13 +45,13 @@ DlcCommand::request_ptr Mct420LcdConfigurationCommand::doCommand()
 
 DlcCommand::request_ptr Mct420LcdConfigurationCommand::write1()
 {
-    const metric_vector_t::iterator dm_end = _display_metrics.begin() + std::min<unsigned>(_display_metrics.size(), 13);
+    const metric_vector_t::iterator dm_end = _display_metrics.begin() + std::min<unsigned>(_display_metrics.size(), DisplayMetricSlotsPerWrite);
 
     metric_vector_t metrics(_display_metrics.begin(), dm_end);
 
     _display_metrics.erase(_display_metrics.begin(), dm_end);
 
-    if( metrics.size() < 13 )
+    if( metrics.size() < DisplayMetricSlotsPerWrite )
     {
         _executionState = &Mct420LcdConfigurationCommand::read1;
     }
@@ -74,14 +74,14 @@ DlcCommand::request_ptr Mct420LcdConfigurationCommand::read1()
 {
     _executionState = &Mct420LcdConfigurationCommand::read2;
 
-    return request_ptr(new read_request_t(Read_LcdConfiguration1, 13));
+    return request_ptr(new read_request_t(Read_LcdConfiguration1, DisplayMetricSlotsPerRead));
 }
 
 DlcCommand::request_ptr Mct420LcdConfigurationCommand::read2()
 {
     _executionState = &Mct420LcdConfigurationCommand::done;
 
-    return request_ptr(new read_request_t(Read_LcdConfiguration2, 13));
+    return request_ptr(new read_request_t(Read_LcdConfiguration2, DisplayMetricSlotsPerRead));
 }
 
 DlcCommand::request_ptr Mct420LcdConfigurationCommand::done()

@@ -12,6 +12,15 @@ class IM_EX_DEVDB Mct420LcdConfigurationCommand : public Mct420Command
 
     typedef boost::function<request_ptr (Mct420LcdConfigurationCommand *)> state_t;
 
+    enum
+    {
+        //  1 byte per metric
+        DisplayMetricSlotsPerRead  = 13,
+        DisplayMetricSlotsPerWrite = 13,
+        //  2 writes of 13 bytes/metrics each
+        TotalDisplayMetricSlots = DisplayMetricSlotsPerWrite * 2
+    };
+
     state_t _executionState;
 
     //  const parameters that define this request
@@ -31,6 +40,7 @@ public:
 
     enum
     {
+        //  public for Mct420Device::initReadKeyStore()
         Read_LcdConfiguration1  = 0x1f6,
         Read_LcdConfiguration2  = 0x1f7,
 
