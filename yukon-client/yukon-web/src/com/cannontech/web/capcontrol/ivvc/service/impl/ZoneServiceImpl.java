@@ -38,7 +38,7 @@ public class ZoneServiceImpl implements ZoneService {
         zone.setRegulatorId(regulatorId);
         zone.setSubstationBusId(substationBusId);
         
-        zoneDao.add(zone);
+        zoneDao.save(zone);
         zoneDao.updateCapBankAssignments(zone.getId(), zoneDto.getBankIds());
         zoneDao.updatePointAssignments(zone.getId(), zoneDto.getPointIds());
                 
@@ -68,7 +68,7 @@ public class ZoneServiceImpl implements ZoneService {
         zone.setSubstationBusId(substationBusId);
         
         
-        zoneDao.update(zone);
+        zoneDao.save(zone);
         zoneDao.updateCapBankAssignments(zone.getId(), zoneDto.getBankIds());
         zoneDao.updatePointAssignments(zone.getId(), zoneDto.getPointIds());
         

@@ -1208,7 +1208,7 @@
                 <value>DENY|/spring/capcontrol/**|!CBC_SETTINGS</value>            
                 <value>DENY|/capcontrol/**|!CBC_SETTINGS</value>
                 
-                <value>DENY|/spring/support/**|!ADMIN_VIEW_LOGS</value>
+                <value>DENY|/spring/support/**|!OPERATOR_ADMINISTRATOR</value>
                 
                 <value>ALLOW|/**|WEB_CLIENT</value>
                 <value>DENY|/**|*</value>
@@ -1617,6 +1617,9 @@
         <property name="serviceLocatorInterface"
             value="com.cannontech.web.picker.v2.service.PickerFactory" />
     </bean>
+
+	<bean name="customerAccountPicker" class="com.cannontech.web.picker.v2.CustomerAccountPicker"/>
+	<bean name="lmHardwareBasePicker" class="com.cannontech.web.picker.v2.LmHardwareBasePicker"/>
 
     <bean class="com.cannontech.web.layout.impl.HttpExpressionLanguageResolverImpl"/>
     

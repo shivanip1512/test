@@ -23,7 +23,7 @@
     </cti:url>
     
     <script type="text/javascript">
-    	function showZoneCreator(url) {
+    	function showZoneWizard(url) {
 			openSimpleDialog('tierContentPopup', url, 'Zone Wizard', null, null, 'get');
 		}
 
@@ -36,10 +36,6 @@
 
 			span.addClassName('selectedZone');
 
-		}
-		
-    	function showZoneEditor(url) {
-			openSimpleDialog('tierContentPopup', url, 'Zone Wizard', null, null, 'get');
 		}
  	</script>
  	   
@@ -122,7 +118,7 @@
 						<div class="selectable">
 							<a href="${zoneDetailUrl}">${zone.name}</a>
 							<div>
-								<a href="javascript:showZoneEditor('${zoneEditorUrl}');"><cti:img key="edit"/></a> 
+								<a href="javascript:showZoneWizard('${zoneEditorUrl}');"><cti:img key="edit"/></a> 
 								<a href="${zoneDeleteUrl}"><cti:img key="delete"/></a>
 							</div>
 						</div>
@@ -130,7 +126,7 @@
 
 
 				<br>
-				<cti:imageButton key="add" onclick="javascript:showZoneCreator('${zoneCreatorUrl}');"/>
+				<cti:imageButton key="add" onclick="javascript:showZoneWizard('${zoneCreatorUrl}');"/>
 			</tags:boxContainer>
 			
 	<br>

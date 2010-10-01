@@ -2,7 +2,7 @@ package com.cannontech.cbc.model;
 
 public class Zone {
 
-    private int id;
+    private int id = 0;
     private String name;
     private int regulatorId;
     private int substationBusId;

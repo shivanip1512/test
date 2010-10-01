@@ -13,6 +13,7 @@ import com.cannontech.cbc.dao.ZoneDao;
 import com.cannontech.cbc.model.Zone;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -73,15 +74,10 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         
         return zones;
     }
-
+    
     @Override
-    public void add(Zone zone) {
-        template.insert(zone);
-    }
-
-    @Override
-    public void update(Zone zone) {
-        template.update(zone);
+    public void save(Zone zone) {
+        template.save(zone);
     }
     
     @Override
@@ -104,14 +100,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sqlBuilder.eq(zoneId);
         
 
-        return yukonJdbcTemplate.query(sqlBuilder, 
-            new ParameterizedRowMapper<Integer>() {
-                public Integer mapRow(ResultSet rs, int num) throws SQLException{
-                    Integer i = new Integer ( rs.getInt("DeviceId") );
-                    return i;
-                }
-            }
-        );
+        return yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
     }
 
     @Override
@@ -122,14 +111,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sqlBuilder.append("WHERE ZoneId").eq(zoneId);
         
 
-        return yukonJdbcTemplate.query(sqlBuilder, 
-            new ParameterizedRowMapper<Integer>() {
-                public Integer mapRow(ResultSet rs, int num) throws SQLException{
-                    Integer i = new Integer ( rs.getInt("PointId") );
-                    return i;
-                }
-            }
-        );
+        return yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
     }
 
     @Override
@@ -187,7 +169,8 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         template = new SimpleTableAccessTemplate<Zone>(yukonJdbcTemplate, nextValueHelper);
         template.withTableName("Zone");
         template.withPrimaryKeyField("ZoneId");
-        template.withFieldMapper(zoneFieldMapper); 
+        template.withFieldMapper(zoneFieldMapper);
+        template.withPrimaryKeyValidOver(0);
     }
     
     @Autowired

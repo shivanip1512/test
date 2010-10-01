@@ -19,10 +19,6 @@ public class ZoneHierarchy implements NavigableHierarchy<Zone> {
         this.zone = zone;
     }
     
-    public List<ZoneHierarchy> getChildZones() {
-        return childZones;
-    }
-    
     public void setChildZones(List<ZoneHierarchy> childZones) {
         this.childZones = childZones;
     }

@@ -10,20 +10,6 @@
 	color:pink;
 }
 
-.selectable:hover {
-	background-color: #CCCCCC;
-	
-}
-
-.selectedZone {
-	background-color: #CCCCCC;
-}
-
-.selectedZoneContainer {
-	background-color: #CCCCCC;
-	border-radius: 1.6em;
-}
-
 .disabledRow {
 	font-style: italic;
 }
@@ -49,11 +35,12 @@ div.zoneHierarchy li {
 div.zoneHierarchy li div {
 	position: relative;
 	border-bottom: 1px #CCCCCC solid;
+	padding-bottom: 2px;
 }
 
 div.zoneHierarchy li div div {
 	position: absolute;
 	top: 0;
 	right: 50px;
-
+	border: none;
 }
