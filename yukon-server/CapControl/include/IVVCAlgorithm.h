@@ -45,11 +45,13 @@ class IVVCAlgorithm
 
         virtual void sendKeepAlive(CtiCCSubstationBusPtr subbus);
 
-        virtual bool isLtcInRemoteMode(const long ltcId);
+        virtual bool isLtcInRemoteMode(const long ltcId) const;
 
         virtual bool busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection);
 
         int calculateVteIndividualTarget(const PointValueMap &voltages, IVVCStrategy* strategy, const std::map<long, CtiCCMonitorPointPtr> & _monitorMap, const bool isPeakTime);
+
+        bool allRegulatorsInRemoteMode(const long subbusId) const;
 
         PointDataRequestFactoryPtr _requestFactory;
 };

@@ -138,24 +138,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         case IVVCState::IVVC_DISABLED:
         {
             bool remainDisabled = false;
-            bool remoteMode = true;
 
-            // Make sure all regulators are in Remote mode
-            {
-                ZoneManager & zoneManager = store->getZoneManager();
-                Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus(subbusId);
-
-                for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
-                {
-                    long regulatorID = zoneManager.getZone(ID)->getRegulatorId();
-
-                    bool result = isLtcInRemoteMode(regulatorID);
-
-                    remoteMode &= result;
-                }
-            }
-
-            if (!remoteMode)
+            if ( ! allRegulatorsInRemoteMode(subbusId) )
             {
                 if (state->isShowLtcAutoModeMsg())// show message?
                 {
@@ -196,22 +180,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 return;
             }
 
-            bool remoteMode = true;
-
-            // Make sure all regulators are in Remote mode
-            {
-                ZoneManager & zoneManager = store->getZoneManager();
-                Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus(subbusId);
-
-                for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
-                {
-                    long regulatorID = zoneManager.getZone(ID)->getRegulatorId();
-
-                    remoteMode &= isLtcInRemoteMode(regulatorID);
-                }
-            }
-
-            if (!remoteMode)// If we are in 'Auto' mode we don't want to run the algorithm.
+            // If we are in 'Auto' mode we don't want to run the algorithm.
+            if ( ! allRegulatorsInRemoteMode(subbusId) )
             {
                 state->setState(IVVCState::IVVC_DISABLED);
                 return;
@@ -1064,7 +1034,7 @@ void IVVCAlgorithm::sendPointChangesAndEvents(DispatchConnectionPtr dispatchConn
 }
 
 
-bool IVVCAlgorithm::isLtcInRemoteMode(const long ltcId)
+bool IVVCAlgorithm::isLtcInRemoteMode(const long ltcId) const
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -1366,7 +1336,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
 
             ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
 
-            // Get our zones LTC
+            // Get the regulator for ththis zone
             {
                 AttributeService    attributeService;
 
@@ -1386,12 +1356,11 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
                     }
                 }
             }
-            // end LTC...
 
             // this guy is a helper for the individual bandwidths...
             std::map<long, CtiCCMonitorPointPtr>    _monitorMap;
 
-            // get our zones CapBanks
+            // get our CapBanks for this zone
             {
                 Zone::IdSet capBankIds = zone->getBankIds();
 
@@ -1413,9 +1382,8 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
                     }
                 }
             }
-            // end CapBanks...
 
-            // Other zone voltage points
+            // Other voltage points in this zone
             {
                 Zone::IdSet pointIds = zone->getPointIds();
 
@@ -1427,7 +1395,6 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
 
                 }
             }
-            // end other points...
 
             if ( ! _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS )
             {
@@ -1456,10 +1423,23 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
             }
         }
 
-        // if there are non-zero ops in the map set state to IVVC_OPERATE_TAP
+        // if there are non-zero ops in the map set state to IVVC_OPERATE_TAP as long as all regulators are in 'remote' mode.
         if ( state->_tapOps.size() != 0 )
         {
-            state->setState( IVVCState::IVVC_OPERATE_TAP );
+            if ( allRegulatorsInRemoteMode(subbusId) )
+            {
+                state->setState( IVVCState::IVVC_OPERATE_TAP );
+            }
+            else
+            {
+                state->setState(IVVCState::IVVC_WAIT);
+
+                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " IVVC Algorithm: Not Operating due to one or more LTCs not in remote mode." << endl;
+                }
+            }
         }
         else
         {
@@ -1469,31 +1449,6 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " IVVC Algorithm: No Tap Operations needed." << endl;
-            }
-        }
-
-        bool isAnyTapInLocalMode = false;
-
-        for each ( const IVVCState::TapOperationZoneMap::value_type & operation in state->_tapOps )
-        {
-            long zoneID = operation.first;
-
-            // only move the tap if all LTCs are in 'remote' mode
-
-            if ( ! isLtcInRemoteMode( zoneManager.getZone(zoneID)->getRegulatorId() ) )
-            {
-                isAnyTapInLocalMode = true;
-            }
-        }
-
-        if ( isAnyTapInLocalMode )
-        {
-            state->setState(IVVCState::IVVC_WAIT);
-
-            if (_CC_DEBUG & CC_DEBUG_IVVC)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " IVVC Algorithm: Not Operating due to one or more LTCs not in remote mode." << endl;
             }
         }
     }
@@ -1590,5 +1545,28 @@ int IVVCAlgorithm::calculateVteIndividualTarget(const PointValueMap &voltages, I
     }
 
     return (( lowerTap || marginTap ) ? -1 : raiseTap ? 1 : 0);
+}
+
+
+bool IVVCAlgorithm::allRegulatorsInRemoteMode(const long subbusId) const
+{
+    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+    ZoneManager & zoneManager       = store->getZoneManager();
+
+    Zone::IdSet subbusZoneIds   = zoneManager.getZoneIdsBySubbus(subbusId);
+
+    bool remoteMode = true;
+
+    for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
+    {
+        long regulatorID = zoneManager.getZone(ID)->getRegulatorId();
+
+        if (regulatorID > 0)
+        {
+            remoteMode &= isLtcInRemoteMode(regulatorID);
+        }
+    }
+
+    return remoteMode;
 }
 
