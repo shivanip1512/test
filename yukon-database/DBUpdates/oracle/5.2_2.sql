@@ -207,7 +207,7 @@ SET InfoKey = 'RDS_TRANSMITTER_IP_PORT'
 WHERE InfoKey = 'ip port'
 
 -- Delete RDSTransmitter table
-DROP TABLE RDSTransmitter 
+DROP TABLE RDSTransmitter; 
 /* End YUK-9063 */
 
 /* Start YUK-9084 */
