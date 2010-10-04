@@ -353,3 +353,4 @@ WHERE RolePropertyId = -1501;
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.2', 'Matt K', '03-OCT-2010', 'Latest Update', 2);
