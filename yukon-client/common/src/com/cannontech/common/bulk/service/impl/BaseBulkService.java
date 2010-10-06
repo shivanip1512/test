@@ -117,11 +117,6 @@ public abstract class BaseBulkService {
 
     protected void checkUpdateBulkFieldColumnHeaders(ParsedBulkFileInfo result, Collection<BulkFieldColumnHeader> updateBulkFieldColumnHeaders) {
         
-//        for (BulkFieldColumnHeader bulkFieldColumnHeader : updateBulkFieldColumnHeaders) {
-//            if (!bulkFieldService.processorExistsForBulkFieldColumnHeaders(Collections.singletonList(bulkFieldColumnHeader))) {
-//                result.addError(new YukonMessageSourceResolvable("yukon.common.device.bulk.columnHeader.error.notUpdateableColumnName", bulkFieldColumnHeader.toString()));
-//            }
-//        }
         try {
             bulkFieldService.processorExistsForBulkFieldColumnHeaders(Lists.newArrayList(updateBulkFieldColumnHeaders));
         } catch (UnprocessableHeadersException e) {
