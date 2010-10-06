@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
@@ -24,27 +24,24 @@ import com.google.common.collect.Maps;
 
 public class YukonGroupDaoImpl implements YukonGroupDao {
 
-    private JdbcOperations jdbcTemplate = null;
-    private YukonJdbcTemplate yukonJdbcTemplate = null;
+    private YukonJdbcTemplate yukonJdbcTemplate;
 
-    public void setJdbcOps(JdbcOperations jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.yukonJdbcTemplate = new YukonJdbcTemplate(jdbcTemplate);
-    }
-
+    @Override
     public List<LiteYukonGroup> getGroupsForUser(LiteYukonUser user) {
-
     	return getGroupsForUser(user.getUserID());
     }
     
-    @SuppressWarnings("unchecked")
+    @Override
     public List<LiteYukonGroup> getGroupsForUser(int userID) {
 
-        String sql = "select yug.userid, yug.groupid, yg.groupname from YukonUserGroup yug, YukonGroup yg where userid = ? " +
-                " and yug.groupid = yg.groupid";
-        List<LiteYukonGroup> groupList = jdbcTemplate.query(sql,
-                                                            new Object[] { userID },
-                                                            new LiteYukonGroupMapper());
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT yug.userid, yug.groupid, yg.groupname ");
+        sql.append("FROM YukonUserGroup yug, YukonGroup yg");
+        sql.append("WHERE userid").eq(userID);
+        sql.append(  "AND yug.groupid = yg.groupid");
+        
+        List<LiteYukonGroup> groupList = yukonJdbcTemplate.query(sql, new LiteYukonGroupMapper());
+        
         return groupList;
     }
 
@@ -67,24 +64,25 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
 
     private ParameterizedRowMapper<Map.Entry<Integer, LiteYukonGroup>> mapEntryRowMapper =
         new ParameterizedRowMapper<Map.Entry<Integer, LiteYukonGroup>>() {
-            public Map.Entry<Integer, LiteYukonGroup> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                int groupId = rs.getInt("groupId");
-                String groupName = rs.getString("groupName");
+        public Map.Entry<Integer, LiteYukonGroup> mapRow(ResultSet rs, int rowNum) throws SQLException {
+            int groupId = rs.getInt("groupId");
+            String groupName = rs.getString("groupName");
 
-                LiteYukonGroup group = new LiteYukonGroup();
-                group.setGroupID(groupId);
-                if (groupName != null)
-                    group.setGroupName(groupName);
-                return Maps.immutableEntry(groupId, group);
-            }
-        };
+            LiteYukonGroup group = new LiteYukonGroup();
+            group.setGroupID(groupId);
+            if (groupName != null)
+                group.setGroupName(groupName);
+            return Maps.immutableEntry(groupId, group);
+        }
+    };
 
-    public LiteYukonGroup getLiteYukonGroup( int groupID )
-    {
-        String sql = "select groupid, groupname from YukonGroup where groupid = ? ";
-        List<LiteYukonGroup> groupList = jdbcTemplate.query(sql,
-                                                    new Object[] { groupID },
-                                                    new LiteYukonGroupMapper());
+    @Override
+    public LiteYukonGroup getLiteYukonGroup( int groupID ) {
+        SqlStatementBuilder sql = new SqlStatementBuilder(); 
+        sql.append("SELECT groupid, groupname FROM YukonGroup WHERE groupid").eq(groupID);
+        
+        List<LiteYukonGroup> groupList = yukonJdbcTemplate.query(sql, new LiteYukonGroupMapper());
+        
         return groupList.get(0);
     }
 
@@ -137,4 +135,8 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         return null;
     }
     
+    @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
 }

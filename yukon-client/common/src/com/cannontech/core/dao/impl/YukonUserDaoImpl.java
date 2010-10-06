@@ -15,13 +15,10 @@ import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authorization.dao.PaoPermissionDao;
-import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.MappingRowCallbackHandler;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -52,7 +49,6 @@ public class YukonUserDaoImpl implements YukonUserDao {
     private NextValueHelper nextValueHelper;
     private PaoPermissionDao<LiteYukonUser> userPaoPermissionDao = null;
     private DBPersistentDao dbPersistantDao;
-    private ContactDao contactDao;
     
     public static final int numberOfRandomChars = 5;
     
@@ -294,12 +290,6 @@ public class YukonUserDaoImpl implements YukonUserDao {
         sendUserDbChangeMsg(user.getUserID(), DBChangeMsg.CHANGE_TYPE_ADD);
     }
     
-    @Override
-    public LiteYukonUser getYukonUserByAccountId(int accountId) {
-        LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
-        return getLiteYukonUser(primaryContact.getLoginID());
-    }
-
     /**
      * @param userId
      */
@@ -321,11 +311,6 @@ public class YukonUserDaoImpl implements YukonUserDao {
         return mapper;
     }
     
-    @Autowired
-    public void setContactDao(ContactDao contactDao) {
-        this.contactDao = contactDao;
-    }
-
     @Autowired
     public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
         this.yukonJdbcOperations = yukonJdbcOperations;
@@ -358,13 +343,8 @@ public class YukonUserDaoImpl implements YukonUserDao {
         login.getYukonUser().setAuthType(AuthType.NONE);
         login.getYukonGroups().addElement(((YukonGroup)LiteFactory.convertLiteToDBPers(group)).getYukonGroup());
         login.getYukonUser().setLoginStatus(LoginStatusEnum.ENABLED);
-        try {
-            login = Transaction.createTransaction(Transaction.INSERT, login).execute();
-        } catch (TransactionException e) {
-            throw new RuntimeException("Couldn't create user login for the contact, please retry.", e);
-        }
         
-        sendUserDbChangeMsg(login.getUserID(), DBChangeMsg.CHANGE_TYPE_ADD);
+        dbPersistantDao.performDBChange(login, DBChangeMsg.CHANGE_TYPE_ADD);
         
         return new LiteYukonUser(login.getUserID(), login.getYukonUser().getUsername(), login.getYukonUser().getLoginStatus(), login.getYukonUser().getAuthType());
     }

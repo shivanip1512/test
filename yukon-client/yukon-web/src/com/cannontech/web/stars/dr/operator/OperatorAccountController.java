@@ -421,7 +421,7 @@ public class OperatorAccountController {
 		
 	    LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
 	    List<LiteYukonGroup> ecResidentialGroups = Lists.newArrayList(energyCompany.getResidentialCustomerGroups());
-	    LiteYukonUser residentialUser = yukonUserDao.getYukonUserByAccountId(accountInfo.getAccountId());
+	    LiteYukonUser residentialUser = customerAccountDao.getYukonUserByAccountId(accountInfo.getAccountId());
 
 	    /* AccountDto */
 		AccountDto accountDto = accountService.getAccountDto(accountId, energyCompany.getEnergyCompanyID(), userContext);
@@ -486,7 +486,7 @@ public class OperatorAccountController {
 	    
 	    final String loginMode = ServletRequestUtils.getStringParameter(request, "loginMode");
         modelMap.addAttribute("loginMode", loginMode);
-        final LiteYukonUser residentialUser = yukonUserDao.getYukonUserByAccountId(accountInfoFragment.getAccountId());
+        final LiteYukonUser residentialUser = customerAccountDao.getYukonUserByAccountId(accountInfoFragment.getAccountId());
         String originalLoginGroup = yukonGroupDao.getResidentialGroupNameForUser(residentialUser.getUserID(), ecResidentialGroups);
         
         /* 
@@ -583,7 +583,7 @@ public class OperatorAccountController {
 
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         
-        LiteYukonUser custYukonUser = yukonUserDao.getYukonUserByAccountId(accountInfoFragment.getAccountId());
+        LiteYukonUser custYukonUser = customerAccountDao.getYukonUserByAccountId(accountInfoFragment.getAccountId());
 
         LoginModeEnum loginModeEnum = LoginModeEnum.valueOf(loginMode);
         if (LoginModeEnum.EDIT.equals(loginModeEnum)) {

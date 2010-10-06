@@ -62,4 +62,11 @@ public interface CustomerAccountDao {
      * @return
      */
     public List<CustomerAccount> getAccountByAdditionalContactUser(LiteYukonUser user);
+
+    /**
+     * Returns the LiteYukonUser of the account.
+     * @param accountId
+     * @return LiteYukonUser user
+     */
+    public LiteYukonUser getYukonUserByAccountId(int accountId);
 }

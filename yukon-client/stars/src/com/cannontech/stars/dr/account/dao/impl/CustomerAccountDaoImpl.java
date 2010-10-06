@@ -15,10 +15,13 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -39,6 +42,8 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private StarsDatabaseCache starsDatabaseCache;
+    private YukonUserDao yukonUserDao;
+    private ContactDao contactDao;
     
     private SqlStatementBuilder selectSql = new SqlStatementBuilder();
     {
@@ -70,6 +75,12 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         rowMapper = CustomerAccountDaoImpl.createRowMapper();
         
         specialAccountInfoRowMapper = CustomerAccountDaoImpl.createCustomerAccountWithNamesRowMapper();
+    }
+    
+    @Override
+    public LiteYukonUser getYukonUserByAccountId(int accountId) {
+        LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
+        return yukonUserDao.getLiteYukonUser(primaryContact.getLoginID());
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
@@ -370,4 +381,14 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         this.starsDatabaseCache = starsDatabaseCache;
     }
 
+    @Autowired
+    public void setContactDao(ContactDao contactDao) {
+        this.contactDao = contactDao;
+    }
+    
+    @Autowired
+    public void setYukonUserDao(YukonUserDao yukonUserDao) {
+        this.yukonUserDao = yukonUserDao;
+    }
+    
 }

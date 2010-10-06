@@ -102,11 +102,6 @@ public interface YukonUserDao {
     public void addUserToGroup(LiteYukonUser user, LiteYukonGroup... yukonGroups);
 
     /**
-     * Gets the login that is attached to the account
-     */
-    public LiteYukonUser getYukonUserByAccountId(int accountId);
-
-    /**
      * Creates a login for an additional contact on a stars account. This login will user the first and last name in
      * the generation of the username. The login's auth type will be set to NONE but the login will be enable.  It 
      * will have no password.
