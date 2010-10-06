@@ -1,55 +1,39 @@
-/*-----------------------------------------------------------------------------
-    Filename:  ccexecutor.h
-
-    Programmer:  Josh Wolberg
-
-    Description:    Header file for the various Cap Control executor classes.
-
-    Initial Date:  8/30/2001
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
-
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
+#pragma once
 
-#ifndef CCEXECUTOR_H
-#define CCEXECUTOR_H
+#include "ccmessage.h"
+#include "msg_signal.h"
+#include "AttributeService.h"
+#include "ccutil.h"
 
 #include <rw/thr/countptr.h>
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/barrier.h>
 
-#include "ccmessage.h"
-#include "msg_signal.h"
-#include "ctdpcptrq.h"
-#include "AttributeService.h"
-
-#include "ccutil.h"
-
 class CtiCCExecutor
 {
-public:
-    virtual ~CtiCCExecutor() {};
+    public:
+        virtual ~CtiCCExecutor() {};
 
-    virtual void execute() {};
+        virtual void execute() {};
 
-protected:
-    CtiCCExecutor() {};
-    void moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedCapBankId, LONG newFeederId, float capSwitchingOrder, float closeOrder, float tripOrder);
-    void moveFeeder(BOOL permanentFlag, LONG oldSubBusId, LONG movedFeederId, LONG newSubBusId, float fdrSwitchingOrder);
+    protected:
+        CtiCCExecutor() {};
+        void moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedCapBankId, LONG newFeederId, float capSwitchingOrder, float closeOrder, float tripOrder);
+        void moveFeeder(BOOL permanentFlag, LONG oldSubBusId, LONG movedFeederId, LONG newSubBusId, float fdrSwitchingOrder);
 };
 
 class CtiCCClientMsgExecutor : public CtiCCExecutor
 {
-public:
-    CtiCCClientMsgExecutor(CtiMessage* ccMsg) : _ccMsg(ccMsg){};
-    virtual ~CtiCCClientMsgExecutor(){delete _ccMsg;};
+    public:
+        CtiCCClientMsgExecutor(CtiMessage* ccMsg) : _ccMsg(ccMsg){};
+        virtual ~CtiCCClientMsgExecutor(){delete _ccMsg;};
 
-    virtual void execute();
+        virtual void execute();
 
-private:
+    private:
 
-    CtiMessage* _ccMsg;
+        CtiMessage* _ccMsg;
 };
 
 class CtiCCCommandExecutor : public CtiCCExecutor
@@ -151,105 +135,103 @@ class CtiCCCommandExecutor : public CtiCCExecutor
 
 class CtiCCCapBankMoveExecutor : public CtiCCExecutor
 {
-public:
-    CtiCCCapBankMoveExecutor(CtiCCCapBankMoveMsg* capMoveMsg) : _capMoveMsg(capMoveMsg) {};
-    virtual ~CtiCCCapBankMoveExecutor() { delete _capMoveMsg;};
+    public:
+        CtiCCCapBankMoveExecutor(CtiCCCapBankMoveMsg* capMoveMsg) : _capMoveMsg(capMoveMsg) {};
+        virtual ~CtiCCCapBankMoveExecutor() { delete _capMoveMsg;};
 
-    virtual void execute();
+        virtual void execute();
 
-private:
+    private:
 
-    CtiCCCapBankMoveMsg* _capMoveMsg;
+        CtiCCCapBankMoveMsg* _capMoveMsg;
 };
 
 
 class CtiCCFeederMoveExecutor : public CtiCCExecutor
 {
-public:
-    CtiCCFeederMoveExecutor(CtiCCObjectMoveMsg* fdrMoveMsg) : _fdrMoveMsg(fdrMoveMsg) {};
-    virtual ~CtiCCFeederMoveExecutor() { delete _fdrMoveMsg;};
+    public:
+        CtiCCFeederMoveExecutor(CtiCCObjectMoveMsg* fdrMoveMsg) : _fdrMoveMsg(fdrMoveMsg) {};
+        virtual ~CtiCCFeederMoveExecutor() { delete _fdrMoveMsg;};
 
-    virtual void execute();
+        virtual void execute();
 
-private:
+    private:
 
-    CtiCCObjectMoveMsg* _fdrMoveMsg;
+        CtiCCObjectMoveMsg* _fdrMoveMsg;
 };
 
 class CtiCCSubstationVerificationExecutor : public CtiCCExecutor
 {
-public:
-    CtiCCSubstationVerificationExecutor(CtiCCSubstationVerificationMsg* subVerificationMsg) : _subVerificationMsg(subVerificationMsg) {};
-    virtual ~CtiCCSubstationVerificationExecutor() { delete _subVerificationMsg;};
+    public:
+        CtiCCSubstationVerificationExecutor(CtiCCSubstationVerificationMsg* subVerificationMsg) : _subVerificationMsg(subVerificationMsg) {};
+        virtual ~CtiCCSubstationVerificationExecutor() { delete _subVerificationMsg;};
 
-    virtual void execute();
+        virtual void execute();
 
-private:
+    private:
 
-    void EnableSubstationBusVerification();
-    void DisableSubstationBusVerification(bool forceStopImmediately = false);
+        void EnableSubstationBusVerification();
+        void DisableSubstationBusVerification(bool forceStopImmediately = false);
 
-    CtiCCSubstationVerificationMsg* _subVerificationMsg;
+        CtiCCSubstationVerificationMsg* _subVerificationMsg;
 };
 
 class CtiCCPointDataMsgExecutor : public CtiCCExecutor
 {
-public:
-    CtiCCPointDataMsgExecutor(CtiPointDataMsg* pointMsg) : _pointDataMsg(pointMsg) {};
-    virtual ~CtiCCPointDataMsgExecutor() { delete _pointDataMsg;};
+    public:
+        CtiCCPointDataMsgExecutor(CtiPointDataMsg* pointMsg) : _pointDataMsg(pointMsg) {};
+        virtual ~CtiCCPointDataMsgExecutor() { delete _pointDataMsg;};
 
-    virtual void execute();
+        virtual void execute();
 
-private:
-    CtiPointDataMsg* _pointDataMsg;
+    private:
+        CtiPointDataMsg* _pointDataMsg;
 };
 
 class CtiCCForwardMsgToDispatchExecutor : public CtiCCExecutor
 {
-public:
-    CtiCCForwardMsgToDispatchExecutor(CtiMessage* ctiMsg) : _ctiMessage(ctiMsg) {};
-    virtual ~CtiCCForwardMsgToDispatchExecutor() { delete _ctiMessage;};
+    public:
+        CtiCCForwardMsgToDispatchExecutor(CtiMessage* ctiMsg) : _ctiMessage(ctiMsg) {};
+        virtual ~CtiCCForwardMsgToDispatchExecutor() { delete _ctiMessage;};
 
-    virtual void execute();
+        virtual void execute();
 
-private:
-    CtiMessage* _ctiMessage;
+    private:
+        CtiMessage* _ctiMessage;
 };
 
 class CtiCCMultiMsgExecutor : public CtiCCExecutor
 {
-public:
-    CtiCCMultiMsgExecutor(CtiMultiMsg* multiMsg) : _multiMsg(multiMsg) {};
-    virtual ~CtiCCMultiMsgExecutor() { delete _multiMsg;};
+    public:
+        CtiCCMultiMsgExecutor(CtiMultiMsg* multiMsg) : _multiMsg(multiMsg) {};
+        virtual ~CtiCCMultiMsgExecutor() { delete _multiMsg;};
 
-    virtual void execute();
+        virtual void execute();
 
-private:
-    CtiMultiMsg* _multiMsg;
+    private:
+        CtiMultiMsg* _multiMsg;
 };
 
 class CtiCCShutdownExecutor : public CtiCCExecutor
 {
-public:
-    CtiCCShutdownExecutor() {};
-    virtual ~CtiCCShutdownExecutor() {};
+    public:
+        CtiCCShutdownExecutor() {};
+        virtual ~CtiCCShutdownExecutor() {};
 
-    virtual void execute();
+        virtual void execute();
 };
 
 class NoOpExecutor : public CtiCCExecutor
 {
-public:
-    NoOpExecutor() {};
-    virtual ~NoOpExecutor() {};
+    public:
+        NoOpExecutor() {};
+        virtual ~NoOpExecutor() {};
 
-    virtual void execute(){};
+        virtual void execute(){};
 };
 
 class CtiCCExecutorFactory
 {
-public:
-    static std::auto_ptr<CtiCCExecutor> createExecutor(const CtiMessage* message);
-
+    public:
+        static std::auto_ptr<CtiCCExecutor> createExecutor(const CtiMessage* message);
 };
-#endif

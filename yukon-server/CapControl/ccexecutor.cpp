@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------
-    Filename:  ccexecutor.cpp
-
-    Programmer:  Josh Wolberg
-
-    Description:    Defines Cap Control executor classes.
-
-    Initial Date:  8/30/2001
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
 #include "yukon.h"
-
-#include <list>
-using std::list;
-
-#include <rw/collstr.h>
 
 #include "AttributeService.h"
 #include "LitePoint.h"
@@ -29,6 +13,8 @@ using std::list;
 #include "logger.h"
 #include "utility.h"
 #include "ccutil.h"
+
+#include <list>
 
 using namespace std;
 using Cti::CapControl::DynamicCommandExecutor;

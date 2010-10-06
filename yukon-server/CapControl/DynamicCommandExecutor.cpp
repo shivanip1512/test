@@ -47,7 +47,6 @@ void DynamicCommandExecutor::execute()
 
 bool DynamicCommandExecutor::executePointResponseDeltaUpdate()
 {
-    //Update Point Response in Memory
     if ( ! validatePointResponseDeltaUpdate())
     {
         if (_CC_DEBUG & CC_DEBUG_EXTENDED)

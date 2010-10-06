@@ -1,6 +1,5 @@
 #pragma once
 
-#include <rw/collstr.h>
 #include <rw/collect.h>
 #include <rw/vstream.h>
 
