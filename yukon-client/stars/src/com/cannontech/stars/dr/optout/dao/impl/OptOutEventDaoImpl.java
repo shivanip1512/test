@@ -714,7 +714,6 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		return userId;
 	}
 
-    @Transactional
     private SqlStatementBuilder getEventsByUserId(int userId) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();

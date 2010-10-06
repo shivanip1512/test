@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -50,13 +51,16 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         selectSql.appendFragment(new CustomerAccountRowMapper().getBaseQuery());
     }
     
-    private SqlStatementBuilder selectAccountContactInfoSql = new SqlStatementBuilder(); 
+    private final SqlFragmentSource selectAccountContactInfoSql; 
     {
-        selectAccountContactInfoSql.append("SELECT CA.AccountId, CA.AccountNumber, CUST.AltTrackNum,");
-        selectAccountContactInfoSql.append(       "CONT.ContLastName, CONT.ContFirstName");
-        selectAccountContactInfoSql.append("FROM CustomerAccount CA");
-        selectAccountContactInfoSql.append("JOIN Customer CUST ON CUST.CustomerId = CA.CustomerId");
-        selectAccountContactInfoSql.append("JOIN Contact CONT ON CONT.ContactId = CUST.PrimaryContactId");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT CA.AccountId, CA.AccountNumber, CUST.AltTrackNum,");
+        sql.append(       "CONT.ContLastName, CONT.ContFirstName");
+        sql.append("FROM CustomerAccount CA");
+        sql.append("JOIN Customer CUST ON CUST.CustomerId = CA.CustomerId");
+        sql.append("JOIN Contact CONT ON CONT.ContactId = CUST.PrimaryContactId");
+        
+        selectAccountContactInfoSql = sql;
     }
     
     static {

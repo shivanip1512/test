@@ -56,25 +56,24 @@ public class OptOutLimitController extends ReportControllerBase {
         super.setRequestParameters(request);
 
         int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
-        if (filterModelType == ReportFilter.ACCOUNT_NUMBER.ordinal()) {
+        ReportFilter filter = ReportFilter.values()[filterModelType];
+        
+        if (filter == ReportFilter.ACCOUNT_NUMBER) {
             
             String filterValuesStr = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_VALUES, "");
             Set<Integer> accountIdsSet = Sets.newHashSet(StringUtils.parseIntStringForList(filterValuesStr));
             optOutLimitModel.setAccountIds(accountIdsSet);
-        }
-        if (filterModelType == ReportFilter.SERIAL_NUMBER.ordinal()) {
+        } else if (filter == ReportFilter.SERIAL_NUMBER) {
             
             String filterValuesStr = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_VALUES, "");
             Set<Integer> inventoryIdsSet = Sets.newHashSet(StringUtils.parseIntStringForList(filterValuesStr));
             optOutLimitModel.setInventoryIds(inventoryIdsSet);
-        }
-        if (filterModelType == ReportFilter.PROGRAM.ordinal()) {
+        } else if (filter == ReportFilter.PROGRAM) {
             
             String filterValuesStr = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_VALUES, "");
             Set<Integer> programIdsSet = Sets.newHashSet(StringUtils.parseIntStringForList(filterValuesStr));
             optOutLimitModel.setProgramIds(programIdsSet);
-        }
-        if (filterModelType == ReportFilter.USER.ordinal()) {
+        } else if (filter == ReportFilter.USER) {
             
             String filterValuesStr = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_VALUES, "");
             Set<Integer> userIdsSet = Sets.newHashSet(StringUtils.parseIntStringForList(filterValuesStr));

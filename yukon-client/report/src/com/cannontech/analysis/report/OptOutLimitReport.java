@@ -7,8 +7,6 @@ import com.cannontech.analysis.function.AggregateFooterFieldFactory;
 import com.cannontech.analysis.function.LabelFooterFieldFactory;
 import com.cannontech.analysis.function.SumFooterFieldFactory;
 import com.cannontech.analysis.tablemodel.BareReportModel;
-import com.cannontech.analysis.tablemodel.OptOutLimitModel;
-import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Lists;
 
 public class OptOutLimitReport extends GroupYukonReportBase {
@@ -17,10 +15,6 @@ public class OptOutLimitReport extends GroupYukonReportBase {
         super(bareModel);
     }
     
-    public OptOutLimitReport() {
-        this(YukonSpringHook.getBean("optOutLimitModel", OptOutLimitModel.class));
-    }
-
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
         new ColumnLayoutData("Alternate Tracking Number", "alternateTrackingNumber", 130),
         new ColumnLayoutData("Enrolled Program", "enrolledProgram", 220),
