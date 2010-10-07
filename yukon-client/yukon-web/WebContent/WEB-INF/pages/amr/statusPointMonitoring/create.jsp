@@ -52,7 +52,7 @@
         <%-- create / cancel --%>
         <div class="pageActionArea">
             <tags:slowInput2 formId="basicInfoForm" key="create"/>
-            <input type="submit" name="cancel" class="formSubmit" value="<i:inline key=".cancel"/>">
+            <input type="submit" name="cancel" class="formSubmit" value="<cti:msg2 key=".cancel"/>">
         </div>
         
     </form:form>
