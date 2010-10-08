@@ -248,7 +248,7 @@
       </sequence>
       <sequence name="RoleProperties">
         <table name="YukonGroupRole" identitycolumn="GroupRoleId" initsequence="true"/>
-        <table name="YukonUserRole" identitycolumn="GroupRoleId" initsequence="true"/>
+        <table name="YukonUserRole" identitycolumn="UserRoleId" initsequence="true"/>
       </sequence>
   </sequencetable>
 </sequencetables>
