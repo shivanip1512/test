@@ -15,6 +15,7 @@ enum CapControlType
     Strategy,
     Schedule,
     SpecialArea,
+    Zone,
     Ltc = TYPELTC
 };
 

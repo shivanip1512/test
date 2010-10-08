@@ -9591,11 +9591,17 @@ void CtiCCSubstationBusStore::checkDBReloadList()
 
                         break;
                     }
-                case Strategy:
+                    case Strategy:
                     {
                         handleStrategyDBChange(reloadTemp.objectId, reloadTemp.action,  msgBitMask, msgSubsBitMask,
                                                  modifiedSubsSet,  modifiedStationsSet, capMessages );
 
+                        break;
+                    }
+                    case CapControlType::Zone:
+                    {
+                        forceFullReload = true;
+                        _reloadList.clear();
                         break;
                     }
                     default:
@@ -9611,7 +9617,6 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                     sendBusInfo = TRUE;
                     _reloadList.pop_front();
                 }
-
             }
 
             if (sendBusInfo)

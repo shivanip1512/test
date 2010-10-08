@@ -787,7 +787,7 @@ void CtiCapController::controlLoop()
                                 // Any time the state changes or every (StandardMonitorTime / 2) seconds, update the point
                                 previous = next;
                                 NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2 );
-                        
+
                                 getDispatchConnection()->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
                             }
                         }
@@ -997,7 +997,7 @@ void CtiCapController::controlLoop()
         dout << CtiTime() << " - Control Loop thread terminated unexpectedly." << endl;
     }
 }
-void CtiCapController::doThreadMonitorCheck(CtiTime &rwnow, CtiTime &announceTime, CtiTime &tickleTime, 
+void CtiCapController::doThreadMonitorCheck(CtiTime &rwnow, CtiTime &announceTime, CtiTime &tickleTime,
                                             string threadName)
 {
 
@@ -2300,6 +2300,17 @@ void CtiCapController::parseMessage(RWCollectable *message)
 
                         CtiCCSubstationBusStore::getInstance()->insertDBReloadList(reloadInfo);
                     }
+                    else if (dbChange->getDatabase() == ChangeIvvcZone)
+                    {
+                        if( _CC_DEBUG & CC_DEBUG_IVVC )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " IVVC - Zone Change received. Reloading All Zones." << endl;
+                        }
+
+                        CC_DBRELOAD_INFO reloadInfo = {dbChange->getId(), dbChange->getTypeOfChange(), CapControlType::Zone};
+                        CtiCCSubstationBusStore::getInstance()->insertDBReloadList(reloadInfo);
+                    }
                 }
                 break;
             case MSG_POINTDATA:
@@ -2463,17 +2474,17 @@ void CtiCapController::adjustAlternateBusModeValues(long pointID, double value, 
                 if (currentBus->isControlPoint(pointID) && primarySub->getStrategy()->getIntegrateFlag())
                 {
                     if (currentBus->getCurrentVarLoadPointId() == pointID)
-                    {    
+                    {
                         primarySub->updateIntegrationVPoint(CtiTime());
                     }
                     if (currentBus->getCurrentWattLoadPointId() == pointID)
-                    {    
+                    {
                         primarySub->updateIntegrationWPoint(CtiTime());
                     }
                 }
                 primarySub->figureEstimatedVarLoadPointValue();
             }
-            
+
             currentBus->setAllAltSubValues(currentBus->getCurrentVoltLoadPointValue(),
                                              currentBus->getTotalizedVarLoadPointValue(),
                                              currentBus->getRawCurrentWattLoadPointValue());
@@ -3201,7 +3212,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                         dout << CtiTime() << " - Optional POINT data message received for: " << pointID << " on SUB: " << currentSubstationBus->getPaoName() << endl;
                     }
                 }
-                
+
 
                 // check for alt sub bus id, and update all sub's alt values
                 multimap<long,long>::iterator it;

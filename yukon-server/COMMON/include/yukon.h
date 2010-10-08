@@ -430,28 +430,31 @@ enum CtiDBChanged_t
     ChangeStateGroupDb,
     ChangeNotificationGroupDb,             // NotificationGroup and/or NotificationDestination changed
     ChangeNotificationRecipientDb,         // NotificationRecipient changed
-    ChangeAlarmCategoryDb,                 // AlarmCategory changed
+    ChangeAlarmCategoryDb,                 // AlarmCategory changed 5
     ChangeCustomerContactDb,
     ChangeGraphDb,
     ChangeHolidayScheduleDb,
     ChangeEnergyCompanyDb,
-    ChangeYukonUserDb,
+    ChangeYukonUserDb, //10
     ChangeCustomerDb,
     ChangeCustomerAccountDb,
     ChangeYukonImageDb,
     ChangeBaselineDb,
-    ChangeConfigDb,
+    ChangeConfigDb, //15
     ChangeTagDb,
     ChangeCICustomerDb,
     ChangeLMConstraintDb,
     Number19IsntCurrentlyUsed,
-    ChangeSeasonScheduleDb,
+    ChangeSeasonScheduleDb, //20
     ChangeTdcDb,
     ChangeDeviceTypeCommandDb,
     ChangeCommandDb,
     ChangeTOUScheduleDb,
-    ChangeCBCStrategyDb,
-    ChangePAOScheduleDB
+    ChangeCBCStrategyDb, //25
+    ChangePAOScheduleDB, //26
+    //There is a gap here from the java code.
+    ChangeCbcAdditionalInfo = 31,
+    ChangeIvvcZone = 35
 };
 
 
