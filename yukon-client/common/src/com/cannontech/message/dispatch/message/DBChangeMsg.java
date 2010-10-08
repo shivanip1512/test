@@ -61,6 +61,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
     public static final int CHANGE_APPLIANCE_CATEGORY_DB = 32; 
     public static final int CHANGE_WEB_CONFIG_DB = 33;
     public static final int CHANGE_STARS_PUBLISHED_PROGRAM_DB = 34;
+    public static final int CHANGE_IVVC_ZONE = 35;
 
     /*Possible values for the Categories field
      *NOTE: If you are using the CHANGE_PAO_DB database field you will

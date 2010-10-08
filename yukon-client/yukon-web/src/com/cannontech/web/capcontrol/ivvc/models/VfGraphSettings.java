@@ -4,8 +4,8 @@ import java.util.List;
 
 public class VfGraphSettings {
     
-    int width;
-    List<VfLineSettings> lines;
+    private int width;
+    private List<VfLineSettings> lines;
     
     public List<VfLineSettings> getLines() {
         return lines;

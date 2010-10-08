@@ -153,7 +153,7 @@ public class LtcDaoImpl implements LtcDao {
         sql.append("SELECT COUNT(*)");
         sql.append("FROM YukonPAObject");
         sql.append("  WHERE Category").eq(PaoCategory.CAPCONTROL);
-        sql.append("    AND PAOClass").eq(PaoClass.CAPCONTROL);
+        sql.append("    AND PAOClass").eq(DeviceClasses.STRING_CLASS_VOLTAGEREGULATOR);
         sql.append("    AND type").eq(PaoType.LOAD_TAP_CHANGER);
         sql.append("    AND PAObjectID not in (SELECT ltcId FROM CCSubstationBusToLTC)");
         
@@ -164,7 +164,7 @@ public class LtcDaoImpl implements LtcDao {
         sql.append("SELECT PAObjectID, PAOName, Type, Description");
         sql.append("FROM YukonPAObject");
         sql.append("  WHERE Category").eq(PaoCategory.CAPCONTROL);
-        sql.append("    AND PAOClass").eq(PaoClass.CAPCONTROL);
+        sql.append("    AND PAOClass").eq(DeviceClasses.STRING_CLASS_VOLTAGEREGULATOR);
         sql.append("    AND type").eq(PaoType.LOAD_TAP_CHANGER);
         sql.append("    AND PAObjectID not in (SELECT ltcId FROM CCSubstationBusToLTC)");
         sql.append("ORDER BY PAOName");

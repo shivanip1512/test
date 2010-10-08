@@ -16,13 +16,13 @@ import com.google.common.collect.Lists;
 public class NavigableHierarchyTag extends YukonTagSupport {
 
     private NavigableHierarchy<?> hierarchy;
-    private String ulClass = null;
+    private String styleClass = null;
     private String var;
     
     @Override
     public void doTag() throws JspException, IOException {
         JspWriter out = getJspContext().getOut();
-        out.print("<div class=\"" + ulClass + "\">");
+        out.print("<div class=\"" + styleClass + "\">");
         
         Object root = hierarchy.getNode();
         
@@ -62,8 +62,8 @@ public class NavigableHierarchyTag extends YukonTagSupport {
         this.hierarchy = hierarchy;
     }
 
-    public void setUlClass(String ulClass) {
-        this.ulClass = ulClass;
+    public void setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
     }
     
     public void setVar(String var) {

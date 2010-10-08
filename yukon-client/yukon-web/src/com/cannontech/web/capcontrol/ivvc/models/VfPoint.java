@@ -2,8 +2,8 @@ package com.cannontech.web.capcontrol.ivvc.models;
 
 public class VfPoint {
     
-    double x;
-    double y;
+    private double x;
+    private double y;
     
     public VfPoint() {
         

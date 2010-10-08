@@ -8,4 +8,9 @@
     <entry key="yukon.web.modules.capcontrol.resetOpCount.hoverUrl">/WebConfig/yukon/Icons/arrow_undo_over.gif</entry>
     <entry key="yukon.web.modules.capcontrol.resetOpCount.hoverText"></entry>
     <entry key="yukon.web.modules.capcontrol.resetOpCount.label">Reset All Op Counters</entry>
+    
+    <entry key="yukon.web.modules.capcontrol.attributes.voltage">Voltage</entry>
+    <entry key="yukon.web.modules.capcontrol.attributes.tapPosition">Tap Position</entry>
+    <entry key="yukon.web.modules.capcontrol.attributes.controlMode">Local/Remote Mode</entry>
+    
 </properties>

@@ -3,7 +3,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
-
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <script type="text/javascript">
 
@@ -86,15 +86,6 @@
 
 <tags:setFormEditMode mode="${mode}"/>
 
-<cti:msg2 var="pickerLinkText" key=".label.picker"/>
-<cti:msg2 var="voltageDeviceTitle" key=".title.assignedVoltageDevice"/>
-<cti:msg2 var="voltagePointTitle" key=".title.assignedVoltagePoint"/>
-<cti:msg2 var="tableRemove" key=".table.remove"/>
-<cti:msg2 var="bankTableName" key=".table.bank.name"/>
-<cti:msg2 var="bankTableDevice" key=".table.bank.device"/>
-<cti:msg2 var="pointTableName" key=".table.point.name"/>
-<cti:msg2 var="pointTableDevice" key=".table.point.device"/>
-
 <cti:displayForPageEditModes modes="EDIT">
 	<cti:url var="action"  value="/spring/capcontrol/ivvc/wizard/updateZone"/>
 </cti:displayForPageEditModes>
@@ -113,7 +104,9 @@
 		<%-- Regulator Selection --%>
 		<tags:nameValue2 nameKey=".label.regulator">
 			<form:hidden path="regulatorId" id="selectedRegulatorId"/>
-			<span id="selectedRegulatorName">${regulatorName}</span>
+			<span id="selectedRegulatorName">
+				<spring:escapeBody htmlEscape="true">${regulatorName}</spring:escapeBody>
+			</span>
 			<tags:pickerDialog 	id="ltcPicker" 
 				type="ltcPicker" 
 				destinationFieldId="selectedRegulatorId"
@@ -128,7 +121,9 @@
 		<%-- Substation Bus Selection --%>
 		<tags:nameValue2 nameKey=".label.substationBus">
 			<form:hidden path="substationBusId" id="selectedBusId"/>
-			<span id="selectedBusName" class="disabledRow">${subBusName}</span>
+			<span id="selectedBusName" class="disabledRow">
+				<spring:escapeBody htmlEscape="true">${subBusName}</spring:escapeBody>
+			</span>
 		</tags:nameValue2>
 		
 		<%-- Parent Zone Selection --%>
@@ -144,36 +139,44 @@
 		<cti:displayForPageEditModes modes="EDIT,VIEW">
 			<tags:nameValue2 nameKey=".label.parentZone">
 				<form:hidden path="parentZoneId" id="parentZoneId"/>
-				<span id="parentZoneName" class="disabledRow">${parentZoneName}</span>
+				<span id="parentZoneName" class="disabledRow">
+					<spring:escapeBody htmlEscape="true">${parentZoneName}</spring:escapeBody>
+				</span>
 			</tags:nameValue2>
 		</cti:displayForPageEditModes>
 	</tags:nameValueContainer2>
 	
 	<cti:dataGrid tableStyle="width:100%;" cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;width:30%">
-
+		<cti:msg2 var="pickerText" key=".label.picker"/>
 		<table style="display:none">
 			<tr id="defaultRow">
 				<td colspan="3" style="text-align: center"><img src="/WebConfig/yukon/Icons/indicator_arrows.gif"></td>
 			</tr>
 		</table>
-
 		<cti:dataGridCell>
-			<tags:boxContainer title="${voltageDeviceTitle}" hideEnabled="false" showInitially="true">
+			<tags:boxContainer2 nameKey="assignedVoltageDevice" hideEnabled="false" showInitially="true">
 				<div style="overflow: auto;max-height: 150px;">
 					<table id="bankTable" class="compactResultsTable">
 						<thead>
 							<tr>
-								<th>${bankTableName}</th>
-								<th>${bankTableDevice}</th>
-								<th>${tableRemove}</th>
+								<th><i:inline key=".table.bank.name"/></th>
+								<th><i:inline key=".table.bank.device"/></th>
+								<th><i:inline key=".table.remove"/></th>
 							</tr>
 						</thead>
 						<tbody id="bankTableBody">
 							<c:forEach var="row" items="${assignedBanks}">
 								<tr id="${row.type}_${row.id}">
-									<td><input type="hidden" value="${row.id}" name="${row.type}Ids"/>${row.name}</td>
-									<td>${row.device}</td>
-									<td><cti:img key="delete" href="javascript:removeTableRow('${row.type}_${row.id}')"/></td>
+									<td>
+										<input type="hidden" value="${row.id}" name="${row.type}Ids"/>
+										<spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
+									</td>
+									<td>
+										<spring:escapeBody htmlEscape="true">${row.device}</spring:escapeBody>
+									</td>
+									<td>
+										<cti:img key="delete" href="javascript:removeTableRow('${row.type}_${row.id}')"/>
+									</td>
 								</tr>
 							</c:forEach>
 						</tbody>
@@ -184,27 +187,34 @@
 					type="capBankPicker"
 					multiSelectMode="true"
 					endAction="addBankHandler"
-					linkType="button">${pickerLinkText}</tags:pickerDialog>
-			</tags:boxContainer>
+					linkType="button">${pickerText}</tags:pickerDialog>
+			</tags:boxContainer2>
 		</cti:dataGridCell>
 		<br>
 		<cti:dataGridCell>	
-			<tags:boxContainer title="${voltagePointTitle}" hideEnabled="false" showInitially="true">
+			<tags:boxContainer2 nameKey="assignedVoltagePoint" hideEnabled="false" showInitially="true">
 				<div style="overflow: auto;max-height: 150px;">
 					<table id="pointTable" class="compactResultsTable">
 						<thead>
 							<tr>
-								<th>${pointTableName}</th>
-								<th>${pointTableDevice}</th>
-								<th>${tableRemove}</th>
+								<th><i:inline key=".table.point.name"/></th>
+								<th><i:inline key=".table.point.device"/></th>
+								<th><i:inline key=".table.remove"/></th>
 							</tr>
 						</thead>
 						<tbody id="pointTableBody">
 							<c:forEach var="row" items="${assignedPoints}">
 								<tr id="${row.type}_${row.id}">
-									<td><input type="hidden" value="${row.id}" name="${row.type}Ids"/>${row.name}</td>
-									<td>${row.device}</td>
-									<td><cti:img key="delete" href="javascript:removeTableRow('${row.type}_${row.id}')"/></td>
+									<td>
+										<input type="hidden" value="${row.id}" name="${row.type}Ids"/>
+										<spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
+									</td>
+									<td>
+										<spring:escapeBody htmlEscape="true">${row.device}</spring:escapeBody>
+									</td>
+									<td>
+										<cti:img key="delete" href="javascript:removeTableRow('${row.type}_${row.id}')"/>
+									</td>
 								</tr>
 							</c:forEach>
 						</tbody>
@@ -215,8 +225,8 @@
 					type="voltPointPicker"
 					multiSelectMode="true"
 					endAction="addPointHandler"
-					linkType="button" >${pickerLinkText}</tags:pickerDialog>
-			</tags:boxContainer>
+					linkType="button">${pickerText}</tags:pickerDialog>
+			</tags:boxContainer2>
 		</cti:dataGridCell>
 	</cti:dataGrid>
 	

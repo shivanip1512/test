@@ -3,6 +3,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:msgScope paths="modules.capcontrol.ivvc.busView">
 
@@ -72,13 +73,13 @@
 	<cti:dataGrid tableStyle="width:100%;" cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;width:30%">
 	
 		<cti:dataGridCell>
-			<tags:boxContainer title="Strategy Details : ${strategyName}" hideEnabled="true" showInitially="true">
+			<tags:boxContainer2 nameKey="strategyDetails" arguments="${strategyName}" argumentSeparator=":" hideEnabled="true" showInitially="true">
 				<table class="compactResultsTable" >
 					<tr>
-						<th>Setting</th>
-						<th>Peak</th>
-						<th>OffPeak</th>
-						<th>Units</th>
+						<th><i:inline key=".strategyDetails.table.setting" /></th>
+						<th><i:inline key=".strategyDetails.table.peak"/></th>
+						<th><i:inline key=".strategyDetails.table.offPeak"/></th>
+						<th><i:inline key=".strategyDetails.table.units"/></th>
 					</tr>
 					<c:forEach var="setting" items="${strategySettings}">
 						<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
@@ -97,51 +98,47 @@
 						</tr>
 					</c:forEach>
 				</table>
-			</tags:boxContainer>
+			</tags:boxContainer2>
 			
-	<br>
-	
-			<tags:boxContainer title="Zone List" hideEnabled="true" showInitially="true">
-					<cti:navigableHierarchy hierarchy="${zones}" 
-						ulClass="zoneHierarchy"
-						var="zone">
-						<cti:url var="zoneDetailUrl" value="/spring/capcontrol/ivvc/zone/detail">
-					    	<cti:param name="zoneId" value="${zone.id}"/>
-					    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
-					    </cti:url>
-					    <cti:url var="zoneEditorUrl" value="/spring/capcontrol/ivvc/wizard/zoneEditor">
-    						<cti:param name="zoneId" value="${zone.id}"/>
-					    </cti:url>
-						<cti:url var="zoneDeleteUrl" value="/spring/capcontrol/ivvc/wizard/deleteZone">
-    						<cti:param name="zoneId" value="${zone.id}"/>
-					    </cti:url> 
-						<div class="selectable">
-							<a href="${zoneDetailUrl}">${zone.name}</a>
-							<div>
-								<a href="javascript:showZoneWizard('${zoneEditorUrl}');"><cti:img key="edit"/></a> 
-								<a href="${zoneDeleteUrl}"><cti:img key="delete"/></a>
-							</div>
+			<br>
+
+			<tags:boxContainer2 nameKey="zoneList" hideEnabled="true" showInitially="true">
+				<cti:navigableHierarchy hierarchy="${zones}" 
+					styleClass="zoneHierarchy"
+					var="zone">
+					<cti:url var="zoneDetailUrl" value="/spring/capcontrol/ivvc/zone/detail">
+				    	<cti:param name="zoneId" value="${zone.id}"/>
+				    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
+				    </cti:url>
+				    <cti:url var="zoneEditorUrl" value="/spring/capcontrol/ivvc/wizard/zoneEditor">
+   						<cti:param name="zoneId" value="${zone.id}"/>
+				    </cti:url>
+					<cti:url var="zoneDeleteUrl" value="/spring/capcontrol/ivvc/wizard/deleteZone">
+   						<cti:param name="zoneId" value="${zone.id}"/>
+				    </cti:url> 
+					<div class="selectable">
+						<a href="${zoneDetailUrl}">${zone.name}</a>
+						<div>
+							<a href="javascript:showZoneWizard('${zoneEditorUrl}');"><cti:img key="edit"/></a> 
+							<a href="${zoneDeleteUrl}"><cti:img key="delete"/></a>
 						</div>
-					</cti:navigableHierarchy>
-
-
+					</div>
+				</cti:navigableHierarchy>
 				<br>
 				<cti:imageButton key="add" onclick="javascript:showZoneWizard('${zoneCreatorUrl}');"/>
-			</tags:boxContainer>
-			
-	<br>
-	
-			<tags:boxContainer title="Substation Bus Detail" hideEnabled="true" showInitially="true">
+			</tags:boxContainer2>
+			<br>
+			<tags:boxContainer2 nameKey="busDetail" hideEnabled="true" showInitially="true">
 				<tags:alternateRowReset/>	
 				<table class="compactResultsTable">
 					<thead>
 						<tr>
-							<th>Point</th>
-							<th>Value</th>
+							<th><i:inline key=".busDetail.table.point"/></th>
+							<th><i:inline key=".busDetail.table.value"/></th>
 						</tr>
 					</thead>
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-						<td> Voltage: </td>
+						<td><i:inline key=".busDetail.table.volts"/>: </td>
 						<td>
 						    <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="VOLTS" styleClass="tierImg"/>
 						    <cti:classUpdater type="SUBBUS" identifier="${subBusId}/VOLT_QUALITY">
@@ -150,7 +147,7 @@
 						</td>
 					</tr>
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-						<td> kVar: </td>
+						<td><i:inline key=".busDetail.table.kvar"/>: </td>
 						<td>
 							<cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KVAR_LOAD" styleClass="tierImg"/>
 							<cti:classUpdater type="SUBBUS" identifier="${subBusId}/KVAR_LOAD_QUALITY">
@@ -159,7 +156,7 @@
 						</td>
 					</tr>
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-						<td> kW: </td>
+						<td><i:inline key=".busDetail.table.kw"/>: </td>
 						<td>
 							<cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KW" styleClass="tierImg"/>
                         	<cti:classUpdater type="SUBBUS" identifier="${subBusId}/WATT_QUALITY">
@@ -168,11 +165,10 @@
                         </td>
 					</tr>
 				</table>
-			</tags:boxContainer>
-
+			</tags:boxContainer2>
 		</cti:dataGridCell>
 		<cti:dataGridCell>
-			<tags:boxContainer title="Voltage Profile" hideEnabled="true" showInitially="true">
+			<tags:boxContainer2 nameKey="voltageProfile" hideEnabled="true" showInitially="true">
 				<!--Chart -->
 		        <c:set var="amChartsProduct" value="amxy"/>
 		        <c:url var="amDataFile" scope="page" value="/spring/capcontrol/ivvc/bus/chartData">
@@ -215,7 +211,7 @@
 		           so.useExpressInstall('${expressInstallSrc}');
 		           so.write("${uniqueId}");
 		        </script>
-			</tags:boxContainer>
+			</tags:boxContainer2>
 		</cti:dataGridCell>
 	</cti:dataGrid>
 	

@@ -4,8 +4,8 @@ import java.util.List;
 
 public class VfLineData {
     
-    int id;
-    List<VfPoint> points;
+    private int id;
+    private List<VfPoint> points;
     
     public int getId() {
         return id;

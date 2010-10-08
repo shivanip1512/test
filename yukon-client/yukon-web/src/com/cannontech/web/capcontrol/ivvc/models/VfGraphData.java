@@ -4,7 +4,7 @@ import java.util.List;
 
 public class VfGraphData {
     
-    List<VfLineData> lines;
+    private List<VfLineData> lines;
     
     public List<VfLineData> getLines() {
         return lines;

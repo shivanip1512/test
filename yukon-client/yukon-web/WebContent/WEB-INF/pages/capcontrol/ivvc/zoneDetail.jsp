@@ -3,6 +3,9 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+
+<cti:msgScope paths="modules.capcontrol.ivvc.zoneDetail">
 
 <cti:standardPage title="${title}" module="capcontrol">
 	<cti:includeScript link="/JavaScript/itemPicker.js" />
@@ -29,12 +32,7 @@
                 $('delta').value = newDelta.escapeHTML();
                 $('bankId').value = id.split('_')[0]; 
                	$('pointId').value = id.split('_')[1];
-               	
-                //$('deltaForm').action = '${baseUrl}' + 'deltaUpdate';
                 $('deltaForm').submit();
-                //submitFormViaAjax('voltageDeltaDiv', 'deltaForm', null, null);
-
-
             }
 	    }
 
@@ -113,18 +111,19 @@
     
 	<cti:dataGrid tableStyle="width:100%;" cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;width:30%">
 	
-		<cti:dataGridCell>
-			<tags:boxContainer title="Zone Details" hideEnabled="true" showInitially="true">
+		<cti:dataGridCell>			
+			
+			<tags:boxContainer2 nameKey="details" hideEnabled="true" showInitially="true">
 				<tags:alternateRowReset/>			
 				<table class="compactResultsTable">
 					<tr>
 						<th></th>
-						<th>Name</th>
-						<th>Actions</th>
+						<th><i:inline key=".details.table.name"/></th>
+						<th><i:inline key=".details.table.actions"/></th>
 					</tr>
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-						<td><B>Zone</B></td>
-						<td>${zoneName}</td>
+						<td><B><i:inline key=".details.table.zone"/></B></td>
+						<td><spring:escapeBody htmlEscape="true">${zoneName}</spring:escapeBody></td>
 						<td>
 							<a title="Edit" href="javascript:showZoneEditor('${zoneEditorUrl}');" class="tierIconLink">
                             	<img alt="Edit" class="tierImg" src="${editInfoImage}">
@@ -133,8 +132,8 @@
 					</tr>
 				
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-						<td><B>Regulator</B></td>
-						<td>${ltcName}</td>
+						<td><B><i:inline key=".details.table.regulator"/></B></td>
+						<td><spring:escapeBody htmlEscape="true">${ltcName}</spring:escapeBody></td>
 						<td>
 							<a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${ltcId}" class="tierIconLink">
                             	<img alt="Edit" class="tierImg" src="${editInfoImage}">
@@ -145,9 +144,9 @@
 				<br>
 				<tags:alternateRowReset/>	
 				
-				<tags:sectionContainer title="Points">
-					<tags:nameValueContainer>
-						<tags:nameValue name="${voltageMapping.attribute.description}" nameColumnWidth="30%">
+				<tags:sectionContainer2 nameKey="details.points">
+					<tags:nameValueContainer2>
+						<tags:nameValue2 nameKey="modules.capcontrol.attributes.voltage">
 							<c:choose>
 	                            <c:when test="${voltageMapping.pointId > 0}">
 	                                <cti:pointValue pointId="${voltageMapping.pointId}" format="VALUE"/>
@@ -156,8 +155,8 @@
 	                                ---
 	                            </c:otherwise>
 	                        </c:choose>
-						</tags:nameValue>
-						<tags:nameValue name="${tapPositionMapping.attribute.description}" nameColumnWidth="30%">
+						</tags:nameValue2>
+						<tags:nameValue2 nameKey="modules.capcontrol.attributes.tapPosition">
 							<c:choose>
 	                            <c:when test="${tapPositionMapping.pointId > 0}">
 	                                <cti:pointValue pointId="${tapPositionMapping.pointId}" format="VALUE"/>
@@ -166,8 +165,8 @@
 	                                ---
 	                            </c:otherwise>
 	                        </c:choose>
-						</tags:nameValue>
-						<tags:nameValue name="${localAutoMapping.attribute.description}" nameColumnWidth="30%">
+						</tags:nameValue2>
+						<tags:nameValue2 nameKey="modules.capcontrol.attributes.controlMode">
 							<c:choose>
 	                            <c:when test="${localAutoMapping.pointId > 0}">
 	                                <cti:pointValue pointId="${localAutoMapping.pointId}" format="VALUE"/>
@@ -176,27 +175,23 @@
 	                                ---
 	                            </c:otherwise>
 	                        </c:choose>
-							
-						</tags:nameValue>
-						
-					</tags:nameValueContainer>
-				</tags:sectionContainer>
-				
-				
-			</tags:boxContainer>
+						</tags:nameValue2>
+					</tags:nameValueContainer2>
+				</tags:sectionContainer2>
+			</tags:boxContainer2>
 			<br>
-			<tags:boxContainer title="LTC / Regulator Attributes" hideEnabled="true" showInitially="true">
+			<tags:boxContainer2 nameKey="attributes" hideEnabled="true" showInitially="true">
 				<tags:alternateRowReset/>
 		        <table class="compactResultsTable">
 		            <tr style="text-align: left;">
-		                <th>Attribute</th>
-		                <th>Value</th>
-		                <th>Timestamp</th>
+		                <th><i:inline key=".attributes.name"/></th>
+		                <th><i:inline key=".attributes.value"/></th>
+		                <th><i:inline key=".attributes.timestamp"/></th>
 		            </tr>
 		            
 		            <c:forEach var="point" items="${ltcPointMappings}">
 		                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-		                    <td>${point.attribute.description}</td>
+		                    <td><spring:escapeBody htmlEscape="true">${point.attribute.description}</spring:escapeBody></td>
 		                    <td>
 		                        <c:choose>
 		                            <c:when test="${point.pointId > 0}">
@@ -221,21 +216,21 @@
 		            </c:forEach>
 		            
 		        </table>
-			</tags:boxContainer>
+			</tags:boxContainer2>
 			<br>
-			<tags:boxContainer title="Cap Banks" hideEnabled="true" showInitially="true">
+			<tags:boxContainer2 nameKey="capBanks" hideEnabled="true" showInitially="true">
 				<tags:alternateRowReset/>
 				<table class="compactResultsTable ">
 					<tr>
-						<th>CBC Name</th>
-						<th>Cap Bank Name</th>
-						<th>Bank State</th>
-						<th>Voltage</th>
+						<th><i:inline key=".capBanks.cbcName"/></th>
+						<th><i:inline key=".capBanks.bankName"/></th>
+						<th><i:inline key=".capBanks.bankState"/></th>
+						<th><i:inline key=".capBanks.bankVoltage"/></th>
 					</tr>
 		            <c:forEach var="capBank" items="${capBankList}">
 		                <tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-		                    <td>${capBank.controlDevice.paoName}</td>
-		                    <td>${capBank.capBankDevice.ccName}</td>
+		                    <td><spring:escapeBody htmlEscape="true">${capBank.controlDevice.paoName}</spring:escapeBody></td>
+		                    <td><spring:escapeBody htmlEscape="true">${capBank.capBankDevice.ccName}</spring:escapeBody></td>
 		                    <td>
 		                    	<cti:capBankStateColor paoId="${capBank.capBankDevice.ccId}" type="CAPBANK" format="CB_STATUS_COLOR">
     					       		<cti:capControlValue paoId="${capBank.capBankDevice.ccId}" type="CAPBANK" format="CB_STATUS"/>
@@ -255,11 +250,11 @@
 		            </c:forEach>
 					
 				</table>
-			</tags:boxContainer>			
+			</tags:boxContainer2>			
 		</cti:dataGridCell>
 		
 		<cti:dataGridCell>
-			<tags:boxContainer title="Voltage Profile" hideEnabled="true" showInitially="true">
+			<tags:boxContainer2 nameKey="voltageProfile" hideEnabled="true" showInitially="true">
 				<!--Chart -->
 		        <c:set var="amChartsProduct" value="amxy"/>
 		        <c:url var="amDataFile" scope="page" value="/spring/capcontrol/ivvc/zone/chartData">
@@ -298,13 +293,16 @@
 		        <c:set var="swfWidth" value="100%"/>
 		        
 		        <script type="text/javascript">
-		           var so = new SWFObject("${amSrc}", "dataGraph", "${swfWidth}", "500", "8", "#FFFFFF");
+		           var so = new SWFObject("${amSrc}", "dataGraph", "${swfWidth}", "350", "8", "#FFFFFF");
 		           so.useExpressInstall('${expressInstallSrc}');
 		           so.write("${uniqueId}");
 		        </script>
-			</tags:boxContainer>
+			</tags:boxContainer2>
+			
 			<br>
-			<tags:pagedBox title="Voltage Deltas" searchResult="${searchResult}" 
+
+			<cti:msg2 var="deltasTitle" key=".deltas.title"/>
+			<tags:pagedBox title="${deltasTitle}" searchResult="${searchResult}" 
 						   baseUrl="${baseUrl}" showAllUrl="${baseUrl}">
 				<c:choose>
 					<c:when test="${searchResult.hitCount == 0}">
@@ -312,44 +310,48 @@
 					</c:when>
 					<c:otherwise>
 						<tags:alternateRowReset/>					
+						
 						<form id="deltaForm" action="/spring/capcontrol/ivvc/zone/deltaUpdate">
 						    <input type="hidden" name="bankId" id="bankId">
 				            <input type="hidden" name="pointId" id="pointId">
 				            <input type="hidden" name="delta" id="delta">
 				            <input type="hidden" name="zoneId" id="zoneId" value="${zoneId}">
-				        </form>
-						<table id="deltaTable" class="compactResultsTable" >
-							<tr>
-								<th>Bank Name</th>
-								<th>Cbc Name</th>
-								<th>Affected Device Name</th>
-								<th>Point Name</th>
-								<th>Pre Op Value</th>
-								<th>Delta</th>
-							</tr>
-							<c:forEach var="pointDelta" items="${pointDeltas}">
-								<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-									<td style="width:15%"><spring:escapeBody htmlEscape="true">${pointDelta.bankName}</spring:escapeBody></td>
-									<td style="width:15%"><spring:escapeBody htmlEscape="true">${pointDelta.cbcName}</spring:escapeBody></td>
-									<td style="width:15%"><spring:escapeBody htmlEscape="true">${pointDelta.affectedDeviceName}</spring:escapeBody></td>
-									<td style="width:18%"><spring:escapeBody htmlEscape="true">${pointDelta.affectedPointName}</spring:escapeBody></td>
-									<td style="width:13%"><spring:escapeBody htmlEscape="true">${pointDelta.preOpValue}</spring:escapeBody></td>
-									<td class="editable" style="width:100%">
-										<div id="viewDelta_${pointDelta.bankId}_${pointDelta.pointId}" title="Click to edit."
-										     onclick="editDelta('${pointDelta.bankId}_${pointDelta.pointId}')">
-											<spring:escapeBody htmlEscape="true">${pointDelta.delta}</spring:escapeBody>
-										</div>
-										<div id="editDelta_${pointDelta.bankId}_${pointDelta.pointId}" style="display:none">
-											<input type="text" style="margin-right: 5px;width:30px;" name="editDeltaInput"
-												   onKeyPress="return saveOrCancel(event, '${pointDelta.bankId}_${pointDelta.pointId}')"  
-				                                   value="<spring:escapeBody htmlEscape="true">${pointDelta.delta}</spring:escapeBody>">
-				                            <a href="javascript:saveDelta('${pointDelta.bankId}_${pointDelta.pointId}')">Save</a>
-				                            <a href="javascript:cancelEdit('${pointDelta.bankId}_${pointDelta.pointId}')">Cancel</a>
-										</div>
-									</td>
+
+							<table id="deltaTable" class="compactResultsTable" >
+								<tr>
+									<th><i:inline key=".deltas.bankName"/></th>
+									<th><i:inline key=".deltas.cbcName"/></th>
+									<th><i:inline key=".deltas.deviceName"/></th>
+									<th><i:inline key=".deltas.pointName"/></th>
+									<th><i:inline key=".deltas.preOp"/></th>
+									<th><i:inline key=".deltas.static"/></th>
+									<th><i:inline key=".deltas.delta"/></th>
 								</tr>
-							</c:forEach>
-						</table>
+								<c:forEach var="pointDelta" items="${pointDeltas}">
+									<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+										<td style="width:13%"><spring:escapeBody htmlEscape="true">${pointDelta.bankName}</spring:escapeBody></td>
+										<td style="width:13%"><spring:escapeBody htmlEscape="true">${pointDelta.cbcName}</spring:escapeBody></td>
+										<td style="width:13%"><spring:escapeBody htmlEscape="true">${pointDelta.affectedDeviceName}</spring:escapeBody></td>
+										<td style="width:15%"><spring:escapeBody htmlEscape="true">${pointDelta.affectedPointName}</spring:escapeBody></td>
+										<td style="width:10%"><spring:escapeBody htmlEscape="true">${pointDelta.preOpValue}</spring:escapeBody></td>
+										<td style="width:8%"><input type="checkbox" id="static"></td>
+										<td class="editable" style="width:100%">
+											<div id="viewDelta_${pointDelta.bankId}_${pointDelta.pointId}" title="Click to edit."
+											     onclick="editDelta('${pointDelta.bankId}_${pointDelta.pointId}')">
+												<spring:escapeBody htmlEscape="true">${pointDelta.delta}</spring:escapeBody>
+											</div>
+											<div id="editDelta_${pointDelta.bankId}_${pointDelta.pointId}" style="display:none">
+												<input type="text" style="margin-right: 5px;width:30px;" name="editDeltaInput"
+													   onKeyPress="return saveOrCancel(event, '${pointDelta.bankId}_${pointDelta.pointId}')"  
+					                                   value="<spring:escapeBody htmlEscape="true">${pointDelta.delta}</spring:escapeBody>">
+					                            <a href="javascript:saveDelta('${pointDelta.bankId}_${pointDelta.pointId}')">Save</a>
+					                            <a href="javascript:cancelEdit('${pointDelta.bankId}_${pointDelta.pointId}')">Cancel</a>
+											</div>
+										</td>
+									</tr>
+								</c:forEach>
+							</table>
+						</form>
 					</c:otherwise>
 				</c:choose>
 			</tags:pagedBox>			
@@ -358,9 +360,6 @@
 	
 	</cti:dataGrid>
 
-	<br>
-
-	<div style="width:100%" id="voltageDeltaDiv">
-		
-	</div>
 </cti:standardPage>
+
+</cti:msgScope>

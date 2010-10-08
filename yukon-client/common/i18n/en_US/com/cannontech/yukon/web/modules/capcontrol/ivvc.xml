@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.title">Zone Details</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.points.title">Points</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.zone">Zone</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.regulator">Regulator</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.actions">Actions</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.name">Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.attributes.title">Voltage Regulator Attributes</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.attributes.name">Attribute Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.attributes.value">Value</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.attributes.timestamp">Timestamp</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.title">Cap Banks</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.cbcName">Controller Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.bankName">Bank Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.bankState">Bank State</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.bankVoltage">Voltage</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.voltageProfile.title">Voltage Profile</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.title">Voltage Deltas</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.bankName">Bank Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.cbcName">CBC Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.deviceName">Affected Device Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.pointName">Point Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.preOp">Pre Op Value</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.delta">Delta</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.static">Static</entry>
+	
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.edit.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.gif</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.edit.hoverText">Click to Edit</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.delete.hoverText">Click to Delete</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.strategyDetails.title">Strategy Details: {0}</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.strategyDetails.table.setting">Setting</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.strategyDetails.table.peak">Peak</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.strategyDetails.table.offPeak">Off Peak</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.strategyDetails.table.units">Units</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.zoneList.title">Zone List</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.title">Substation Bus Detail</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.table.point">Point</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.table.value">Value</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.table.volts">Voltage</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.table.kvar">kVar</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.table.kw">kW</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.voltageProfile.title">Voltage Profile</entry>
+	
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.title">Blah</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.assignedVoltageDevice.title">Assigned Cap Bank Devices</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.assignedVoltagePoint.title">Assigned Voltage Points</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.title.createTitle">Create New Zone</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.title.editTitle">Edit Zone</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.name">Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.substationBus">Substation Bus</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.regulator">Regulator</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.parentZone">Parent Zone</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.picker">Select</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.remove">Remove</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.bank.name">Cap Bank Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.bank.device">CBC Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.name">Point Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.device">Device</entry>	
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.picker.imageUrl">/WebConfig/yukon/Icons/folder_edit.gif</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.picker.hoverUrl">/WebConfig/yukon/Icons/folder_edit_over.gif</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.picker.hoverText">Hover text here</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.delete.hoverText">Click to remove</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.zoneName">A zone name is required.</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.substationBus">A Substation Bus is required.</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.regulator">A Voltage Regulator is required.</entry>
+	
+</properties>

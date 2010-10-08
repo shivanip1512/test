@@ -263,7 +263,7 @@
                         <a id="kwVolts_${thisSubBusId}">
                         	<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KW" styleClass="updatingSpan"/>
                         	<cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/WATT_QUALITY"><img src="/WebConfig/yukon/Icons/bullet_red.gif"></cti:classUpdater>
-                        	/
+                        	<span style="vertical-align:top"> / </span>
                         	<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="VOLTS" styleClass="updatingSpan"/>
                         	<cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/VOLT_QUALITY"><img src="/WebConfig/yukon/Icons/bullet_red.gif"></cti:classUpdater>
                         </a>

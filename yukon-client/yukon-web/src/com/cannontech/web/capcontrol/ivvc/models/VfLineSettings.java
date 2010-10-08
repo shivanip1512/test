@@ -2,10 +2,10 @@ package com.cannontech.web.capcontrol.ivvc.models;
 
 public class VfLineSettings {
     
-    int id;
-    String color;
-    int fillAlpha = 0;
-    boolean minMax = true;
+    private int id;
+    private String color;
+    private int fillAlpha = 0;
+    private boolean minMax = true;
     
     public VfLineSettings(int id, String color, int fillAlpha, boolean minMax) {
         this.id = id;

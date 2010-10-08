@@ -683,20 +683,10 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
-      <name>ulClass</name>
+      <name>styleClass</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
-	<attribute>
-      <name>rowClass</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-    </attribute>
-	<attribute>
-      <name>onClick</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-    </attribute>    
 	<attribute>
       <name>var</name>
       <required>true</required>

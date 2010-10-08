@@ -8,6 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.cbc.dao.ZoneDao;
 import com.cannontech.cbc.model.Zone;
 import com.cannontech.cbc.model.ZoneHierarchy;
+import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.web.capcontrol.ivvc.models.ZoneDto;
 import com.cannontech.web.capcontrol.ivvc.service.ZoneService;
 import com.google.common.collect.ArrayListMultimap;
@@ -17,6 +20,7 @@ import com.google.common.collect.Multimap;
 public class ZoneServiceImpl implements ZoneService {
 
     private ZoneDao zoneDao;
+    private DBPersistentDao dbPersistantDao;
     
     @Override
     @Transactional
@@ -41,7 +45,9 @@ public class ZoneServiceImpl implements ZoneService {
         zoneDao.save(zone);
         zoneDao.updateCapBankAssignments(zone.getId(), zoneDto.getBankIds());
         zoneDao.updatePointAssignments(zone.getId(), zoneDto.getPointIds());
-                
+
+        sendZoneChangeDbMessage(zone.getId(),DBChangeMsg.CHANGE_TYPE_ADD);
+        
         return true;
     }
     
@@ -72,13 +78,16 @@ public class ZoneServiceImpl implements ZoneService {
         zoneDao.updateCapBankAssignments(zone.getId(), zoneDto.getBankIds());
         zoneDao.updatePointAssignments(zone.getId(), zoneDto.getPointIds());
         
+        sendZoneChangeDbMessage(zone.getId(),DBChangeMsg.CHANGE_TYPE_UPDATE);
+        
         return true;
     }
     
     @Override
     @Transactional
     public boolean deleteZone(int zoneId) {
-        zoneDao.delete(zoneId);        
+        zoneDao.delete(zoneId);      
+        sendZoneChangeDbMessage(zoneId,DBChangeMsg.CHANGE_TYPE_DELETE);
         return true;
     }
     
@@ -141,8 +150,24 @@ public class ZoneServiceImpl implements ZoneService {
     public List<Integer> getPointIdsForZoneId(int zoneId) {        
         return zoneDao.getPointIdsByZone(zoneId);
     }
+    
+    private void sendZoneChangeDbMessage(int zoneId, int typeOfChange) {
+        DBChangeMsg msg = new DBChangeMsg(zoneId,
+                                          DBChangeMsg.CHANGE_IVVC_ZONE,
+                                          PAOGroups.STRING_CAT_CAPCONTROL,
+                                          "Zone",
+                                          typeOfChange);
+        
+        dbPersistantDao.processDBChange(msg);
+    }
+    
     @Autowired
     public void setZoneDao(ZoneDao zoneDao) {
         this.zoneDao = zoneDao;
+    }
+    
+    @Autowired
+    public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
+        this.dbPersistantDao = dbPersistantDao;
     }
 }
