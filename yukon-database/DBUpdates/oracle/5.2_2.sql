@@ -310,7 +310,7 @@ INSERT INTO YukonRoleProperty VALUES(-10821, -108, 'CSRF Token Mode','OFF', 'Whi
 
 /* Start YUK-9077 */
 ALTER TABLE OptOutSurveyProgram RENAME COLUMN ProgramId TO AssignedProgramId;
-ALTER TABLE OptOutSurveyProgram ADD DeviceId NUMBER NOT NULL;
+ALTER TABLE OptOutSurveyProgram ADD DeviceId NUMBER;
 
 UPDATE OptOutSurveyProgram
 SET DeviceId = (SELECT DeviceId
@@ -324,6 +324,7 @@ ALTER TABLE OptOutSurveyProgram
     ADD CONSTRAINT PK_OptOutSurvProg PRIMARY KEY (OptOutSurveyId, DeviceId);
 
 ALTER TABLE OptOutSurveyProgram DROP COLUMN AssignedProgramId;
+ALTER TABLE OptOutSurveyProgram MODIFY DeviceId NOT NULL;
 
 ALTER TABLE OptOutSurveyProgram
     ADD CONSTRAINT FK_OptOutSurvProg_LMProg FOREIGN KEY (DeviceId)
