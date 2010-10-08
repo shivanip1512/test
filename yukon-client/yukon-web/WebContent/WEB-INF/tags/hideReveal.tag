@@ -3,6 +3,7 @@
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="showInitially" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="escapeTitle" required="false" type="java.lang.Boolean" %>
+<%@ attribute name="slide" required="false" type="java.lang.Boolean" %>
 
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
@@ -32,12 +33,14 @@
 </span>
 </div>
 <div id="${thisId}_content" class="content triangleContainer_content">
+<div>
 <jsp:doBody/>
+</div>
 </div>
 
 </div>
 
 <script type="text/javascript">
-hideRevealSectionSetup('${thisId}_plusImg', '${thisId}_minusImg', '${thisId}_control', '${thisId}_content', ${pageScope.showInitially ? true : false}, '${cti:jsSafe(title)}');
+hideRevealSectionSetup('${thisId}_plusImg', '${thisId}_minusImg', '${thisId}_control', '${thisId}_content', ${pageScope.showInitially ? true : false}, '${cti:jsSafe(title)}', ${pageScope.slide ? true : false});
 </script>
 	

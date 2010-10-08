@@ -11,7 +11,7 @@
         
 <cti:standardPage title="Capbank Locations" module="capcontrol">
 
-<script type="text/javascript" src="/capcontrol/js/cbc_funcs.js"></script>
+<script type="text/javascript" src="/capcontrol/js/capcontrolGeneral.js"></script>
 
 <cti:standardMenu/>
 

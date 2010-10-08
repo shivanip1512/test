@@ -15,7 +15,7 @@
 	<cti:includeScript link="/JavaScript/picker.js" />
 	<cti:includeCss link="/WebConfig/yukon/styles/itemPicker.css" />
 	
-	<%@include file="/capcontrol/cbc_inc.jspf"%>
+	<%@include file="/capcontrol/capcontrolHeader.jspf"%>
     <cti:includeCss link="/capcontrol/css/ivvc.css"/>
     
     <cti:url var="zoneCreatorUrl" value="/spring/capcontrol/ivvc/wizard/zoneCreation">

@@ -22,13 +22,13 @@
 <cti:includeScript link="/JavaScript/paoPicker.js"/>
 <cti:includeScript link="/JavaScript/tableCreation.js"/>
 <cti:includeScript link="/JavaScript/scrollDiv.js"/>
-<cti:includeScript link="/capcontrol/js/cbc_funcs.js"/>
+<cti:includeScript link="/capcontrol/js/capcontrolGeneral.js"/>
 <cti:includeScript link="/JavaScript/GreyBox/AmiJS.js"/>
 <cti:includeScript link="/JavaScript/GreyBox/greybox.js"/>
 
 <cti:includeCss link="/WebConfig/yukon/styles/itemPicker.css"/>
 <cti:includeCss link="/editor/css/greybox/greybox.css"/>
-<cti:includeCss link="/editor/css/base.css"/>
+<cti:includeCss link="/editor/css/CapcontrolEditorStyles.css"/>
 
 <%
     /* Entry point file for all operations that edit a PAObject */

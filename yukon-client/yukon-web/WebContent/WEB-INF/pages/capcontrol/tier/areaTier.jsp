@@ -2,10 +2,11 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
-
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
 <cti:standardPage title="${title}" module="capcontrol">
-	<%@include file="/capcontrol/cbc_inc.jspf"%>
+<cti:msgScope paths="capcontrol, yukon.web.modules.capcontrol">
+	<%@include file="/capcontrol/capcontrolHeader.jspf"%>
     
 	<script type="text/javascript" language="JavaScript">
 		// handles analysis links (which are not functional for a substation area - show error alert)
@@ -39,31 +40,36 @@
 	<c:if test="${!isSpecialArea}">
         <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
 			<cti:checkRolesAndProperties value="CBC_DATABASE_EDIT" >
-				<div id="systemCommandLink" align="right"></div>
-				<div align="right">
-					<a href="javascript:void(0);" id="systemResetOpCountsLink" onclick="sendResetOpCountCommand()">Reset All Op Counters</a>
-				</div>
+                <div align="right">
+                    <tags:boxContainer hideEnabled="false" title="System Actions" styleClass="systemCommands">
+        				<div align="left" id="systemCommandLink"></div>
+        				<div align="left">
+                            <cti:labeledImg key="resetOpCount" href="javascript:sendResetOpCountCommand()" id="systemResetOpCountsLink"/>
+        				</div>
+                    </tags:boxContainer>
+                </div>
 				<br>
 			</cti:checkRolesAndProperties>
 		</cti:checkRolesAndProperties>
 	</c:if>
 	
 	<c:choose>
-	    <c:when test="${hasEditingRole}">
-	        <c:set var="editInfoImage" value="/WebConfig/yukon/Icons/pencil.gif"/>
-	    </c:when>
-	    <c:otherwise>
-	        <c:set var="editInfoImage" value="/WebConfig/yukon/Icons/information.gif"/>
-	    </c:otherwise>
+        <c:when test="${hasEditingRole}">
+            <c:set var="editKey" value="edit"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="editKey" value="info"/>
+        </c:otherwise>
     </c:choose>
-	
-	<tags:abstractContainer type="box" hideEnabled="false" title="${title}" id="last_titled_container">
+    
+	<tags:boxContainer hideEnabled="false" title="${title}">
 		<table id="areaTable" class="tierTable">
+        
 			<thead>
     			<tr>
                     <th>Area Name</th>
                     <th>State</th>
-                    <th>Setup</th>
+                    <th>Substations</th>
                     <th>Available<br> kVARS</th>
                     <th>Unavailable <br>kVARS</th>
                     <th>Closed <br>kVARS</th>
@@ -71,58 +77,69 @@
                     <th>PFactor/Est.</th>
             	</tr>
         	</thead>
+            
         	<tbody>
         		<c:forEach var="viewableArea" items="${ccAreas}">
-        			<c:set var="thisAreaId" value="${viewableArea.area.ccId}"/>
-        			<tr class="<tags:alternateRow odd="" even="altRow"/>">
-	        			<td>
-							<input type="image" id="showAreas${thisAreaId}" src="/capcontrol/images/nav-plus.gif"
+        			
+                    <!-- Setup Variables -->
+                    <c:set var="thisAreaId" value="${viewableArea.area.ccId}"/>
+                    
+                    <c:choose>
+                        <c:when test="${isSpecialArea}"> 
+                            <c:set var="menuEvent" value="getSpecialAreaMenu('${thisAreaId}', event)"/> 
+                        </c:when>
+                        <c:otherwise> 
+                            <c:set var="menuEvent" value="getAreaMenu('${thisAreaId}', event)"/> 
+                        </c:otherwise>
+                    </c:choose>
+                    
+                    <cti:url var="editUrl" value="/editor/cbcBase.jsf">
+                        <cti:param name="itemid" value="${thisAreaId}"/>
+                        <cti:param name="type" value="2"/>
+                    </cti:url>
+                    
+                    <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
+                        <cti:param name="value" value="${thisAreaId}"/>
+                    </cti:url>
+                    
+                    <cti:url var="substationUrl" value="/spring/capcontrol/tier/substations">
+                        <cti:param name="areaId" value="${thisAreaId}"/>
+                        <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
+                    </cti:url>
+                    
+        			<tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
+	        			
+                        <td>
+							<input type="image" id="showAreas${thisAreaId}" src="/capcontrol/images/nav-plus.gif" <c:if test="${empty viewableArea.subStations}">style="visibility: hidden;"</c:if> 
 								 onclick="showRowElems( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;" class="tierImg">
-		                        <a class="tierIconLink" href="/editor/cbcBase.jsf?type=2&amp;itemid=${thisAreaId}">
-		                            <img class="tierImg" src="${editInfoImage}" alt="Edit">
-		                        </a>
-		                        <c:if test="${hasEditingRole}">
-			                        <a class="tierIconLink" href="/editor/deleteBasePAO.jsf?value=${thisAreaId}">
-			                            <img class="tierImg" src="/WebConfig/yukon/Icons/delete.gif" alt="Delete">
-			                        </a>
-                                </c:if>
-	        				<a href="/spring/capcontrol/tier/substations?areaId=${thisAreaId}&amp;isSpecialArea=${isSpecialArea}">
-	        					${viewableArea.area.ccName}
+                            <cti:img key="${editKey}" href="${editUrl}" styleClass="tierIconLink"/>
+	                        <c:if test="${hasEditingRole}">
+                                <cti:img key="remove" href="${deleteUrl}" styleClass="tierIconLink"/>
+                            </c:if>
+	        				<a href="${substationUrl}">
+	        					<spring:escapeBody htmlEscape="true">${viewableArea.area.ccName}</spring:escapeBody>
 	        				</a>
 	        			</td>
-	        			<td>
+	        			
+                        <td>
                             <capTags:warningImg paoId="${thisAreaId}" type="${updaterType}"/>
-                            
-                            <a id="area_state_${thisAreaId}"
-		                       name="area_state"
-		                       class=""
-		                       href="javascript:void(0);"
-		                       <c:if test="${hasAreaControl}">
-									<c:choose>
-										<c:when test="${isSpecialArea}"> 
-											onclick="getSpecialAreaMenu('${thisAreaId}', event);" 
-										</c:when>
-										<c:otherwise> 
-											onclick="getAreaMenu('${thisAreaId}', event);" 
-										</c:otherwise>
-									</c:choose>
-								</c:if>>
+                            <a id="area_state_${thisAreaId}" href="javascript:void(0);" <c:if test="${hasAreaControl}">onclick="${menuEvent}"</c:if>>
 								<cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="STATE" />
 							</a>
-							
                             <cti:dataUpdaterCallback function="updateStateColorGenerator('area_state_${thisAreaId}')" initialize="true" value="${updaterType}/${thisAreaId}/STATE"/>
-	        			
 	        			</td>
+                        
 	        			<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="SETUP" /> Substation(s)</td>
 						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_AVAILABLE" /></td>
 						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_UNAVAILABLE" /></td>
 						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_CLOSED" /></td>
 						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_TRIPPED" /></td>
 						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="PFACTOR" /></td>
+                        
 					</tr>
 					
 					<tr>
-						<td colspan="2" class="tableCellSnapShot">
+						<td colspan="8" class="tableCellSnapShot">
 						<table id="allAreas${thisAreaId}">
 							<c:forEach var="station" items="${viewableArea.subStations}">
 								<tr style="display: none;">
@@ -133,7 +150,6 @@
 							</c:forEach>
 	  					</table>
 		  				</td>
-						<td colspan="6" class="tableCellSnapShot"></td>
 		  			</tr>
 					
         		</c:forEach>
@@ -141,7 +157,7 @@
         	
         </table>
 
-	</tags:abstractContainer>
+	</tags:boxContainer>
 	
 	<script type="text/javascript" language="JavaScript">
 		//register the event handler for the system command
@@ -156,5 +172,6 @@
 		        });
 		    });
 		}
-	</script>  
+	</script>
+</cti:msgScope>
 </cti:standardPage>

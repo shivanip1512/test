@@ -672,7 +672,7 @@
     <search bean="capControlSearchProducer" />
     
     <skin name="STANDARD" />
-    <css file="/capcontrol/css/base.css" />
+    <css file="/capcontrol/css/CapcontrolGeneralStyles.css" />
     <css file="/WebConfig/yukon/styles/capcontrollogos.css" />
   </module>
 
@@ -682,7 +682,7 @@
       control pages.
     -->
     <skin name="INNER" />
-    <css file="css/base.css" /> <!-- normally this should be an absolute path -->
+    <css file="css/CapcontrolGeneralStyles.css" /> <!-- normally this should be an absolute path -->
   </module>
 
   <module name="commercialcurtailment">

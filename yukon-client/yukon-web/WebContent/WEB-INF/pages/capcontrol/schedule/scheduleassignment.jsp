@@ -25,7 +25,7 @@
 	</cti:breadCrumbs>
 	
 	<%@include file="scheduleAssignmentFilterPopup.jsp" %>
-	<%@include file="/capcontrol/cbc_inc.jspf" %>
+	<%@include file="/capcontrol/capcontrolHeader.jspf" %>
 	
 	<cti:url var="baseUrl" value="/spring/capcontrol/schedule/scheduleAssignments" />
 	<cti:url var="startMultiUrl" value="/spring/capcontrol/schedule/startMultiple" />

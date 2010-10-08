@@ -10,7 +10,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <f:view>
 	<cti:standardPage title="CapControl Wizard" module="capcontrol">
-	    <cti:includeCss link="/editor/css/base.css"/>
+	    <cti:includeCss link="/editor/css/CapcontrolEditorStyles.css"/>
 	
 		<%
 		    //This is needed because this was handled in the CBCSerlvet before entering faces pages.
@@ -20,7 +20,7 @@
 		    deleteForm.initItem();
 		%>
 	
-	    <cti:includeScript link="/capcontrol/js/cbc_funcs.js"/>
+	    <cti:includeScript link="/capcontrol/js/capcontrolGeneral.js"/>
 		<f:verbatim>
 			<script type="text/JavaScript">
 			    addLockButtonForButtonGroup("buttons");

@@ -3,7 +3,7 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <cti:standardPage title="Results" module="capcontrol">
-    <%@include file="/capcontrol/cbc_inc.jspf"%>
+    <%@include file="/capcontrol/capcontrolHeader.jspf"%>
 
     <script>
 	    function dateFilter(selectID, values) {

@@ -3,7 +3,7 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <cti:standardPage title="Search Results" module="capcontrol">
-    <%@include file="/capcontrol/cbc_inc.jspf"%>
+    <%@include file="/capcontrol/capcontrolHeader.jspf"%>
     
     <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
     

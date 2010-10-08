@@ -56,7 +56,7 @@
 	
 	<br/><br/>
 
-    <tags:hideReveal title="Edit Filters" showInitially="true">
+    <tags:hideReveal title="Edit Filters" showInitially="true" slide="true">
     <form id="filterForm" action="/spring/meter/search">
         <input type="hidden" name="Filter" value="true" />
         <input type="hidden" name="startIndex" value="${results.startIndex}" />

@@ -16,8 +16,8 @@
 </cti:isPropertyFalse>
 
 <!-- Included JavaScript -->
-<cti:includeScript link="/JavaScript/cc_command_menu.js"/>
-<cti:includeScript link="/capcontrol/js/cbc_funcs.js"/>
+<cti:includeScript link="/capcontrol/js/capcontrolCommand.js"/>
+<cti:includeScript link="/capcontrol/js/capcontrolGeneral.js"/>
 <cti:includeScript link="/JavaScript/cconelinepopup.js"/>
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
 <cti:includeScript link="/JavaScript/scriptaculous/scriptaculous.js"/>
@@ -53,7 +53,7 @@
 <tags:simpleDialog id="tierContentPopup" onClose="closeTierContentPopup()" title=""/>
 
 <!-- Popup for tooltips -->
-<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;-webkit-box-shadow: #999 3px 3px 3px;-moz-box-shadow: #999 3px 3px 3px;box-shadow: #999 3px 3px 3px;"></div>
 
 <!-- Popup for menus -->
 <tags:simplePopup id="tierMenuPopup" onClose="closeTierPopup()" title="" styleClass="thinBorder">

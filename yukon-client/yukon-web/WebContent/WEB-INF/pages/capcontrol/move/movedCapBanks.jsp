@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage title="Temp Move Report" module="capcontrol">
-    <%@include file="/capcontrol/cbc_inc.jspf"%>
+    <%@include file="/capcontrol/capcontrolHeader.jspf"%>
 
 	<script type="text/javascript">
 	    Event.observe(window, 'load', function() { getMoveBackMenu(); });

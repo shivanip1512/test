@@ -4,7 +4,7 @@
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 
 <cti:standardPage title="CapBank Moved" module="blank">
-<%@include file="cbc_inc.jspf"%>
+<%@include file="capcontrolHeader.jspf"%>
 
 <%
     CapControlCache capControlCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);

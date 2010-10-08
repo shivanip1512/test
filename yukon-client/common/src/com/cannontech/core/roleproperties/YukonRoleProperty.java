@@ -84,7 +84,6 @@ public enum YukonRoleProperty {
     LOG_IN_URL(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.LOG_IN_URL, stringType()),
     NAV_CONNECTOR_BOTTOM(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.NAV_CONNECTOR_BOTTOM, stringType()),
     NAV_CONNECTOR_MIDDLE(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.NAV_CONNECTOR_MIDDLE, stringType()),
-    POPUP_APPEAR_STYLE(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.POPUP_APPEAR_STYLE, stringType()),
     INBOUND_VOICE_HOME_URL(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.INBOUND_VOICE_HOME_URL, stringType()),
     JAVA_WEB_START_LAUNCHER_ENABLED(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.JAVA_WEB_START_LAUNCHER_ENABLED, booleanType()),
     SUPPRESS_ERROR_PAGE_DETAILS(WEB_CLIENT, com.cannontech.roles.application.WebClientRole.SUPPRESS_ERROR_PAGE_DETAILS, booleanType()),

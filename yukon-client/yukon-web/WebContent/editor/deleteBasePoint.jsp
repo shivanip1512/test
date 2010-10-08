@@ -10,7 +10,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <f:view>
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
-<cti:includeCss link="/editor/css/base.css"/>
+<cti:includeCss link="/editor/css/CapcontrolEditorStyles.css"/>
 <%
 //This is needed because this was handled in the CBCSerlvet before entering faces pages.
 //Since the servlet bypass, this static method will need to be called entering any faces page.

@@ -103,6 +103,7 @@ Generated at <cti:formatDate type="FULL" value="${currentTime}"/>
     </div>
 
 </tags:simplePopup>
+<tags:updatedWarning/>
 <tags:dataUpdateEnabler/>
 <cti:dataUpdaterCallback function="alert_handleCountUpdate" initialize="true" count="ALERT/COUNT" lastId="ALERT/LASTID"/>
 

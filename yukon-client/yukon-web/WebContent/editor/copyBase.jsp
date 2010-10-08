@@ -11,8 +11,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <f:view>
     <cti:standardPage title="CapControl Copy Object" module="capcontrol">
-	    <cti:includeScript link="/capcontrol/js/cbc_funcs.js"/>
-	    <cti:includeCss link="/editor/css/base.css"/>
+	    <cti:includeScript link="/capcontrol/js/capcontrolGeneral.js"/>
+	    <cti:includeCss link="/editor/css/CapcontrolEditorStyles.css"/>
 		<%
 		    //****
 		    // Entry point file for all operations that edit a PAObject

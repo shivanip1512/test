@@ -94,11 +94,6 @@ public class TierController {
 		//2 fail points. Area does not exist. and No Access. 
 		//add redirect here if they fail
 		
-		String popupEvent = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.POPUP_APPEAR_STYLE, user);
-		if (popupEvent == null) {
-			popupEvent = "onmouseover";
-		}
-		
 		boolean hasSubstationControl = CBCWebUtils.hasSubstationControlRights(session);
 	    
 		StreamableCapObject area = cache.getArea(areaId);
@@ -116,7 +111,6 @@ public class TierController {
 	    mav.addAttribute("areaId", areaId);
 	    mav.addAttribute("areaName", area.getCcName());
 	    mav.addAttribute("isSpecialArea", isSpecialArea);
-	    mav.addAttribute("popupEvent", popupEvent);
 	    mav.addAttribute("hasSubstationControl", hasSubstationControl);
 	    mav.addAttribute("containerTitle", containerTitle);
 	    mav.addAttribute("mainTitle", mainTitle);
@@ -183,12 +177,6 @@ public class TierController {
 		
 		boolean showFlip = rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_FLIP_COMMAND, user);
 		mav.addAttribute("showFlip", showFlip);
-		
-		String popupEvent = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.POPUP_APPEAR_STYLE, user);
-		if (popupEvent == null) { 
-			popupEvent = "onmouseover";
-		}		
-		mav.addAttribute("popupEvent", popupEvent);
 		
 		boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
 		mav.addAttribute("hasEditingRole", hasEditingRole);

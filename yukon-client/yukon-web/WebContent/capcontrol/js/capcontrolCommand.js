@@ -162,7 +162,7 @@ for (var i=0; i < hiddens.length; i++) {
 
 function handleSystemCommand() {
 	var message ='';
-	systemIsOn = $('systemCommandLink').getElementsByTagName ('a')[0].id == 'systemOn';
+	systemIsOn = $('systemCommandLink').getElementsByTagName ('span')[0].id == 'systemOn';
 	if (systemIsOn)
 		message = 'You are turning the system off. Please confirm...';	
 	else
@@ -218,7 +218,7 @@ function submitChangeOpStateMenu() {
     if (!(operationalStateChange)) {
         alert("No change was made.");
         return false;   
-    }    
+    }
         
     params = {};
     params['paoId'] = $('paoId').value;
@@ -252,5 +252,5 @@ function submitChangeOpStateMenu() {
     });
     
     cClick();
+    
 }
-

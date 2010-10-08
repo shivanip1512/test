@@ -332,3 +332,6 @@ Event.observe(window, 'load', function() {
     });
 });
 
+function hideUpdateWarning() {
+    $('updatedWarning').hide();
+}

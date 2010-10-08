@@ -56,6 +56,22 @@ div.thinBorder {
   border: 1px solid #666 !important;
 }
 
+div.thinBorder {
+  -webkit-box-shadow: #BBB 1px 1px 1px;
+  -moz-box-shadow: #BBB 1px 1px 1px;
+  box-shadow: #BBB 1px 1px 1px;
+}
+
+div.simplePopup {
+  -webkit-box-shadow: #BBB 3px 3px 3px;
+  -moz-box-shadow: #BBB 3px 3px 3px;
+  box-shadow: #BBB 3px 3px 3px;
+}
+
+div.boxedLink {
+    padding: 1px;
+}
+
 div.menuItems {
     color:#000000;
     font-family:Arial,Helvetica,sans-serif;
@@ -123,31 +139,6 @@ div.groupEditorPopup {
   font-size: 1.2em;
   text-align: left;
 }
-
-div.ccPFPopup {
-  padding: 3px;
-  position: absolute;
-  border: 1px solid #000000;
-  width: 85px;
-  height: 12px;
-  background-color: #eee;
-  left: 25%;
-  right: 25%;
-  top: 30%;
-}
-
-div.ccVarLoadPopup {
-  padding: 3px;
-  position: absolute;
-  border: 1px solid #000000;
-  width: 160px;
-  height: 12px;
-  background-color: #eee;
-  left: 25%;
-  right: 25%;
-  top: 30%;
-}
-
 
 div.internalSectionHeader {
 	padding-top: 5px; 

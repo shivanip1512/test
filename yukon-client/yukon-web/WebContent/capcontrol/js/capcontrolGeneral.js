@@ -1,12 +1,8 @@
-var menuPopUpWidth = 165;
 
 function checkPageExpire() {
-    var inputElements = $$('input');
-    var paoIds = inputElements.findAll(function(it) {
-        return it.id.startsWith('paoId_')
-    }).pluck('value').toJSON();
-
+    var paoIds = $$("input[id^='paoId_']").pluck('value').toJSON();
     var url = '/spring/capcontrol/pageExpire';
+    
     new Ajax.Request(url, {
         'method': 'POST',
         'parameters' : {'paoIds': paoIds},
@@ -14,9 +10,7 @@ function checkPageExpire() {
             var html = transport.responseText;
             var expired = eval(html);
             if (expired) {
-                if (confirm('This page has been updated.  Would you like to load the changes?')) {
-                    window.location.reload();
-                }    
+                $('updatedWarning').show();    
                 return;    
             }
             setTimeout(checkPageExpire, 15000);
@@ -226,12 +220,12 @@ function showMenuPopup(html, up, left, x, y) {
 		}
 	}
 	if(left == true){
-		x = x - menuPopUpWidth;
+		x = x - 165;
 	}
 	popupDiv.setStyle({
 		top: y + "px",
 		left: x + "px",
-		width: menuPopUpWidth + "px"
+		width: 165 + "px"
 	});
 }
 
@@ -526,10 +520,9 @@ function showDynamicPopup(elem) {
 // Uses the overlib library for display purposes.
 // Leaves the closing of the popup to the caller.
 // -------------------------------------------
-function showDynamicPopup(elem, spanWidth) {
-    var spans = elem.getElementsByTagName('span');
-    var msg = spans[0].innerHTML;
-    overlib( msg, WIDTH, spanWidth, CSSCLASS, TEXTFONTCLASS, 'flyover' );
+function showDynamicPopup(elem, popupWidth) {
+    var msg = elem.innerHTML;
+    overlib( msg, WIDTH, popupWidth, CSSCLASS, TEXTFONTCLASS, 'flyover' );
 }
 
 // -------------------------------------------
@@ -547,10 +540,9 @@ function showDynamicPopupAbove(elem) {
 // Uses the overlib library for display purposes.
 // Leaves the closing of the popup to the caller.
 // -------------------------------------------
-function showDynamicPopupAbove(elem, spanWidth) {
-    var spans = elem.getElementsByTagName('span');
-    var msg = spans[0].innerHTML;
-    overlib( msg, WIDTH, spanWidth, CSSCLASS, TEXTFONTCLASS, 'flyover', ABOVE );
+function showDynamicPopupAbove(elem, popupWidth) {
+    var msg = elem.innerHTML;
+    overlib( msg, WIDTH, popupWidth, CSSCLASS, TEXTFONTCLASS, 'flyover', ABOVE );
 }
 
 // -------------------------------------------
@@ -655,12 +647,12 @@ function lock_buttons(el_id){
 }
 
 function lockButtonsPerSubmit (groupId) {
-var button_group = document.getElementById(groupId);
-var buttons = button_group.getElementsByTagName("input");
+    var button_group = document.getElementById(groupId);
+    var buttons = button_group.getElementsByTagName("input");
 
-for (var i=0; i<buttons.length; i++) {
-    var button_el =  buttons.item(i);
-    button_el.disabled = true;
+    for (var i=0; i<buttons.length; i++) {
+        var button_el =  buttons.item(i);
+        button_el.disabled = true;
     }
 }
 
@@ -674,118 +666,100 @@ function pause(numberMillis) {
     }
 }
 
-function applySubBusFilter(select){
-	var rows = $$('#subBusTable tr.altTableCell', '#subBusTable tr.tableCell');
-    var subBusNames = new Array();
-    if(select.options[select.selectedIndex].text == 'All SubBuses'){
-    	selectedSubBus = 'All SubBuses';
-    	for (var i=0; i < rows.length; i++) {
-            var row = rows[i];
-        	row.setStyle({'display' : ''});
-        	var cells = row.getElementsByTagName('td');
-            var firstCell = cells[0];
-            var firstSpan = firstCell.getElementsByTagName('span')[0];
-            var subBusName = new String (firstSpan.innerHTML);
-            
-            subBusNames.push(trim(subBusName));
-   		}
-   		$('feederFilter').selectedIndex = 0;
-   		applyFeederFilter(subBusNames);
-    }else{
-        for (var i=0; i < rows.length; i++) {
-            var row = rows[i];
-            var cells = row.getElementsByTagName('td');
-            var firstCell = cells[0];
-            var firstSpan = firstCell.getElementsByTagName('span')[0];
-            var subBusName = new String (firstSpan.innerHTML);
-            
-            var selectedSubBus = new String (select.options[select.selectedIndex].text);
-            //displayed name always contains a white space at the end
-            if (trim(subBusName) == trim (selectedSubBus)){
-                row.setStyle({'display' : ''});
-                subBusNames.push(trim(subBusName));
-            }else{
-            	row.style.display = 'none';
-            }
-        }
-        applyFeederFilter(subBusNames);
-    }
-}
-
-function applyFeederSelectFilter(select){
-	var rows = $$('#fdrTable tr.altTableCell', '#fdrTable tr.tableCell');
-    var feederNames = new Array();
-    var selectedFeeder = new String (select.options[select.selectedIndex].text);
+function applySubBusFilter(select) {
+	
+    var rows = $$("tr[id^='tr_sub_']"); /* tr's whose id begins with 'tr_sub_' */
+    var subBusIds = new Array();
     
-    if(selectedFeeder == 'All Feeders'){
-    	for (var i=0; i < rows.length; i++) {
-            var row = rows[i];
-        	row.setStyle({'display' : ''});
-        	var cells = row.getElementsByTagName('td');
-            var fdr = cells[0];
-            var spans = fdr.getElementsByTagName('span');
-            var fdrName = new String (spans[1].innerHTML);
-            feederNames.push(trim(fdrName));
-   		}
-   		applyCapBankFilter(feederNames);
-    }else{
-        for (var i=0; i < rows.length; i++) {
-            var row = rows[i];
-            var cells = row.getElementsByTagName('td');
-            var fdr = cells[0];
-            var spans = fdr.getElementsByTagName('span');
-            var fdrName = new String (spans[1].innerHTML);
-            if (trim(fdrName) == trim (selectedFeeder)){
-                row.setStyle({'display' : ''});
-                feederNames.push(trim(fdrName));
-            }else{
-            	row.style.display = 'none';
-            }
-        }
-        applyCapBankFilter(feederNames);
-    }
-}
-
-function applyFeederFilter(subBusNames){
-	var rows = $$('#fdrTable tr.altTableCell', '#fdrTable tr.tableCell');
-    var feederNames = new Array();
-    for (var i=0; i < rows.length; i++) {
-        var row = rows[i];
-        var cells = row.getElementsByTagName('td');
-        var firstCell = cells[0];
-        var firstSpan = firstCell.getElementsByTagName('span')[0];
+    if(select.options[select.selectedIndex].text == 'All SubBuses'){
         
-        var subBusName = new String (firstSpan.innerHTML);
-        var index = subBusNames.indexOf(trim(subBusName));
-
-		if(index > -1){
-			row.setStyle({'display' : ''});
-			var fdr = cells[0];
-			var spans = fdr.getElementsByTagName('span');
-			var fdrName = spans[1].innerHTML;
-			feederNames.push(trim(fdrName));
-		}else{
-			row.setStyle({'display' : 'none'});
-		}
+        rows.each(function (row) {
+            row.show();
+            subBusIds.push(row.id.split('_')[2]);
+        });
+        
+        $('feederFilter').selectedIndex = 0;
+   		applyFeederFilter(subBusIds);
+   		
+    } else {
+        var selectedSubBusId = select.options[select.selectedIndex].value;
+        rows.each(function (row) {
+            var subBusId =  row.id.split('_')[2];
+            
+            if (subBusId == selectedSubBusId){
+                row.show();
+                subBusIds.push(subBusId);
+            } else {
+            	row.hide();
+            }
+            
+        });
+        
+        applyFeederFilter(subBusIds);
     }
-    applyCapBankFilter(feederNames);
 }
 
-function applyCapBankFilter(feederNames){
-    var rows = $$('#capBankTable tr.altTableCell', '#capBankTable tr.tableCell');
-	for (var i=0; i < rows.length; i++) {
-        var row = rows[i];
-        var cells = row.getElementsByTagName('td');
-        var firstCell = cells[0];
-        var feederSpan = firstCell.getElementsByTagName('span')[0].firstChild;
-        var fdrName = new String (feederSpan.innerHTML);
-		var index = feederNames.indexOf(trim(fdrName));
-		if(index > -1){
-			row.setStyle({'display' : ''});
-		}else{
-			row.setStyle({'display' : 'none'});
+function applyFeederSelectFilter(select) {
+	var rows = $$("tr[id^='tr_feeder_']"); /* tr's whose id begins with 'tr_feeder_' */
+    var feederIds = new Array();
+    
+    if(select.options[select.selectedIndex].text == 'All Feeders'){
+        rows.each(function (row) {
+        	row.show();
+            feederIds.push(row.id.split('_')[2]);
+        });
+        
+        applyCapBankFilter(feederIds);
+   		
+    } else {
+        var selectedFeederId = select.options[select.selectedIndex].value;
+        rows.each(function (row) {
+            var feederId =  row.id.split('_')[2];
+            
+            if (feederId == selectedFeederId){
+                row.show();
+                feederIds.push(feederId);
+            } else {
+            	row.hide();
+            }
+        });
+        applyCapBankFilter(feederIds);
+    }
+}
+
+function applyFeederFilter(subBusIds) {
+    var rows = $$("tr[id^='tr_feeder_']"); /* tr's whose id begins with 'tr_feeder_' */
+    var feederIds = new Array();
+    
+    rows.each(function(row) {
+        var parentId = row.id.split('_')[4];
+        
+		if (subBusIds.indexOf(parentId) != -1) {
+			row.show();
+			feederIds.push(row.id.split('_')[2]);
+		} else {
+		    row.hide();
 		}
-	}
+		
+    });
+    applyCapBankFilter(feederIds);
+}
+
+function applyCapBankFilter(feederIds) {
+    
+    var rows = $$("tr[id^='tr_cap_']"); /* tr's whose id begins with 'tr_cap_' */
+    
+    rows.each(function(row) {
+        var parentId = row.id.split('_')[4];
+        
+        if (feederIds.indexOf(parentId) != -1) {
+            row.show();
+        } else {
+            row.hide();
+        }
+        
+    });
+    
 }
 
 /**
@@ -796,12 +770,13 @@ function trim (s) {
 }
 
 function isValidOpcount (number){
-var ret = parseInt(number)
-if (Number.NaN != ret) {
-    if ((ret >=0) && (ret < 100000))
-        return true;
+    var ret = parseInt(number)
+    if (Number.NaN != ret) {
+        if ((ret >=0) && (ret < 100000)) {
+            return true;
         }
-return false;
+    }
+    return false;
 }
 
 function mouseX(evt) {

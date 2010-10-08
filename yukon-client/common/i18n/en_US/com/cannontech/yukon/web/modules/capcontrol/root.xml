@@ -4,4 +4,8 @@
 
     <entry key="yukon.web.modules.capcontrol.moduleName">Cap Control</entry>
     
+    <entry key="yukon.web.modules.capcontrol.resetOpCount.imageUrl">/WebConfig/yukon/Icons/arrow_undo.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.resetOpCount.hoverUrl">/WebConfig/yukon/Icons/arrow_undo_over.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.resetOpCount.hoverText"></entry>
+    <entry key="yukon.web.modules.capcontrol.resetOpCount.label">Reset All Op Counters</entry>
 </properties>

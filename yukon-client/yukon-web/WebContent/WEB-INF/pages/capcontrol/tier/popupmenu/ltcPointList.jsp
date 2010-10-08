@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <cti:standardPage title="LTC Points and TS" module="capcontrol_internal">
-<cti:includeCss link="/capcontrol/css/base.css"/>     
+<cti:includeCss link="/capcontrol/css/CapcontrolGeneralStyles.css"/>     
     <input id="ltcName" type="hidden" value="${ltcName}"/>
     <c:if test="${oneline}">
         <center><span style="font-weight: bold; font-size: 16;">${ltcName}</span></center>

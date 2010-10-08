@@ -1,14 +1,22 @@
-function hideRevealSectionSetup(showElement, hideElement, clickableElement, section, showInitially, persistId) {
-  var doShow = function() {
-    $(section).show();
+function hideRevealSectionSetup(showElement, hideElement, clickableElement, section, showInitially, persistId, slide) {
+  var doShow = function(doSlide) {
+    if (doSlide) {
+        Effect.SlideDown(section, { duration : .4 } );
+    } else {
+        $(section).show();  
+    }
     $(showElement).hide();
     $(hideElement).show();
     if (persistId != '') {
       YukonClientPersistance.persistState('hideReveal', persistId, 'show');
     }
   };
-  var doHide = function() {
-    $(section).hide();
+  var doHide = function(doSlide) {
+      if (doSlide) {
+          Effect.SlideUp(section, { duration : .4 } );
+      } else {
+          $(section).hide();
+      }
     $(hideElement).hide();
     $(showElement).show();
     if (persistId != '') {
@@ -23,21 +31,21 @@ function hideRevealSectionSetup(showElement, hideElement, clickableElement, sect
   
   if (lastState) {
     if (lastState == 'show') {
-      doShow();
+        doShow(false);
     } else {
-      doHide();
+        doHide(false);
     }
   } else if (showInitially) {
-    doShow();
+      doShow(false);
   } else {
-    doHide();
+      doHide(false);
   }
 
   $(clickableElement).observe('click', function(event) {
     if ($(section).visible()) {
-      doHide();
+      doHide(slide);
     } else {
-      doShow();
+      doShow(slide);
     }
   });
 }

@@ -3,10 +3,10 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
 <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/YukonGeneralStyles.css" >
-<link rel="stylesheet" type="text/css" href="/capcontrol/css/base.css" >
+<link rel="stylesheet" type="text/css" href="/capcontrol/css/CapcontrolGeneralStyles.css" >
 
 <script type="text/javascript" src="/JavaScript/prototype.js" ></script>
-<script type="text/javascript" src="/capcontrol/js/cbc_funcs.js" ></script>
+<script type="text/javascript" src="/capcontrol/js/capcontrolGeneral.js" ></script>
 
 <cti:url var="executeURL" value="/spring/capcontrol/commandexecutor?action=executeCommandTier"/>
 <cti:url var="controlOrderPage" value="/spring/capcontrol/move/feederBankInfo"/>
@@ -78,7 +78,7 @@ Event.observe(window, 'load', updateFeederBankInfo, false);
             <tr>
                <td class="boldLabel" colspan="5">Move for: ${path}</td>
             </tr>
-            <tr height="5px"/>
+            <tr height="5px"></tr>
             <tr class="boldLabel">
                 <td>
                     <input id="submitOne" type="button" value="Temp Move" 

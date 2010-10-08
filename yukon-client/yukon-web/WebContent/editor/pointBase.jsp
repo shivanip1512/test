@@ -10,7 +10,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <f:view>
 <cti:standardPage title="Editor" module="capcontrol">
-    <cti:includeCss link="/editor/css/base.css"/>
+    <cti:includeCss link="/editor/css/CapcontrolEditorStyles.css"/>
 <%
     //****
     // Entry point file for all operations that edit a point
