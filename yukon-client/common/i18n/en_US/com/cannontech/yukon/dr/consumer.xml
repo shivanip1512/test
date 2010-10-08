@@ -490,5 +490,6 @@ Scheduled Reenable Time: {reenableDate}
     <entry key="yukon.dr.consumer.optout.state.CANCEL_SENT">Canceled</entry>
     <entry key="yukon.dr.consumer.optout.state.SCHEDULED">Scheduled</entry>
     <entry key="yukon.dr.consumer.optout.state.SCHEDULE_CANCELLED">Scheduled Canceled</entry>
+    <entry key="yukon.dr.consumer.optout.state.RESET_SENT">Reset</entry>
     
 </properties>    

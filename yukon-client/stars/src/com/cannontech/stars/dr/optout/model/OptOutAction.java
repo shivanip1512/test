@@ -7,7 +7,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
  */
 public enum OptOutAction implements DisplayableEnum {
 
-	START_OPT_OUT, CANCEL, SCHEDULE, CANCEL_SCHEDULE, REPEAT_START_OPT_OUT;
+	START_OPT_OUT, CANCEL, SCHEDULE, CANCEL_SCHEDULE, REPEAT_START_OPT_OUT, RESET;
 
     private final static String keyPrefix = "yukon.dr.program.optOutAction.";
 

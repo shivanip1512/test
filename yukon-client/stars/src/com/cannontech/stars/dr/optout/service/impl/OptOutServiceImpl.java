@@ -625,6 +625,18 @@ public class OptOutServiceImpl implements OptOutService {
         accountEventLogService.optOutLimitReset(user,
                                                 customerAccount.getAccountNumber(),
                                                 lmHardwareBase.getManufacturerSerialNumber());
+        // Create and save opt out event for this inventory
+        Instant now = new Instant();
+        OptOutEvent event = new OptOutEvent();
+        event.setEventCounts(OptOutCounts.DONT_COUNT);
+        event.setCustomerAccountId(accountId);
+        event.setInventoryId(inventoryId);
+        event.setScheduledDate(now);
+        event.setStartDate(now);
+        event.setStopDate(now);
+        event.setState(OptOutEventState.RESET_SENT);
+        
+        optOutEventDao.save(event, OptOutAction.RESET, user);
 
 	}
 	

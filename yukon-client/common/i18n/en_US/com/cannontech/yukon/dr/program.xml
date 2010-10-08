@@ -28,4 +28,5 @@
     <entry key="yukon.dr.program.optOutAction.SCHEDULE">Schedule</entry>
     <entry key="yukon.dr.program.optOutAction.CANCEL_SCHEDULE">Cancel Schedule</entry>
     <entry key="yukon.dr.program.optOutAction.REPEAT_START_OPT_OUT">Resend</entry>
+    <entry key="yukon.dr.program.optOutAction.RESET">Reset</entry>
 </properties>
