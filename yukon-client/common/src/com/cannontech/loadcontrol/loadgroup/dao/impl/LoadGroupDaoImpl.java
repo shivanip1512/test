@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +24,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.macro.MacroTypes;
@@ -37,7 +37,7 @@ import com.google.common.collect.SetMultimap;
 
 public class LoadGroupDaoImpl implements LoadGroupDao {
     
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     
     /** These strings are to help with the row mapper.  If you use both of these
      *  strings you will have the right table connections and data returned.
@@ -57,16 +57,12 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
          */
         final SqlStatementBuilder loadGroupQuery = new SqlStatementBuilder();
         loadGroupQuery.append(loadGroupSQLHeader);
-        loadGroupQuery.append("WHERE PAO.paobjectId = ?");
-        loadGroupQuery.append("AND PAO.paoClass = ?");
-        loadGroupQuery.append("AND PAO.category = ?");
+        loadGroupQuery.append("WHERE PAO.paobjectId").eq(loadGroupId);
+        loadGroupQuery.append("AND PAO.paoClass").eq(DeviceClasses.STRING_CLASS_GROUP);
+        loadGroupQuery.append("AND PAO.category").eq(PAOGroups.STRING_CAT_DEVICE);
         
         try {
-            loadGroup = simpleJdbcTemplate.queryForObject(loadGroupQuery.toString(),
-                                                          loadGroupDatabaseResultRowMapper(),
-                                                          loadGroupId,
-                                                          DeviceClasses.STRING_CLASS_GROUP,
-                                                          PAOGroups.STRING_CAT_DEVICE);
+            loadGroup = yukonJdbcTemplate.queryForObject(loadGroupQuery, loadGroupDatabaseResultRowMapper());
         } catch (EmptyResultDataAccessException ex) {
             throw new NotFoundException("The load group id supplied does not exist.");
         }
@@ -89,14 +85,12 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
          */
         final SqlStatementBuilder loadGroupQuery = new SqlStatementBuilder();
         loadGroupQuery.append(loadGroupSQLHeader);
-        loadGroupQuery.append("WHERE PAO.paoClass = 'GROUP'");
-        loadGroupQuery.append("AND PAO.category = 'DEVICE'");
-        loadGroupQuery.append("AND PAO.paoName = ?");
+        loadGroupQuery.append("WHERE PAO.paoClass").eq(DeviceClasses.STRING_CLASS_GROUP);
+        loadGroupQuery.append("AND PAO.category").eq(PAOGroups.STRING_CAT_DEVICE);
+        loadGroupQuery.append("AND PAO.paoName").eq(loadGroupName);
         
         try {
-            loadGroup = simpleJdbcTemplate.queryForObject(loadGroupQuery.toString(),
-                                                          loadGroupDatabaseResultRowMapper(),
-                                                          loadGroupName);
+            loadGroup = yukonJdbcTemplate.queryForObject(loadGroupQuery, loadGroupDatabaseResultRowMapper());
         } catch (EmptyResultDataAccessException ex) {
             throw new NotFoundException("The load group name supplied does not exist.");
 
@@ -121,13 +115,11 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         final SqlStatementBuilder loadGroupInUseQuery = new SqlStatementBuilder();
         loadGroupInUseQuery.append("SELECT COUNT(*) ");
         loadGroupInUseQuery.append("FROM LMHardwareControlGroup LMHCG");
-        loadGroupInUseQuery.append("WHERE LMHCG.LMGroupId = ?");
-        loadGroupInUseQuery.append("AND LMHCG.Type = ?");
+        loadGroupInUseQuery.append("WHERE LMHCG.LMGroupId").eq(loadGroupId);
+        loadGroupInUseQuery.append("AND LMHCG.Type").eq(1);
         loadGroupInUseQuery.append("AND LMHCG.GroupEnrollStop IS NULL");
         
-        int enrollmentCount = simpleJdbcTemplate.queryForInt(loadGroupInUseQuery.toString(),
-                                                             loadGroupId,
-                                                             1);
+        int enrollmentCount = yukonJdbcTemplate.queryForInt(loadGroupInUseQuery);
                                                              
         if(enrollmentCount > 0)
             isUsed = true;
@@ -141,9 +133,9 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         sql.append(loadGroupSQLHeader);
         sql.append("JOIN LMProgramDirectGroup LMPDG ON LMPDG.LMGroupDeviceId = PAO.PAObjectId");
         sql.append("JOIN LMProgramWebPublishing LMPWP ON LMPDG.DeviceId = LMPWP.DeviceId");
-        sql.append("WHERE LMPWP.ProgramId = ?");
+        sql.append("WHERE LMPWP.ProgramId").eq(programId);
         
-        List<LoadGroup> loadGroupList = simpleJdbcTemplate.query(sql.getSql(), loadGroupDatabaseResultRowMapper(), programId);
+        List<LoadGroup> loadGroupList = yukonJdbcTemplate.query(sql, loadGroupDatabaseResultRowMapper());
         return loadGroupList;
     }
     
@@ -156,12 +148,10 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         final SqlStatementBuilder loadGroupProgramIdsQuery = new SqlStatementBuilder();
         loadGroupProgramIdsQuery.append("SELECT LMPWP.programId");
         loadGroupProgramIdsQuery.append("FROM LMProgramDirectGroup LMPDG, LMProgramWebPublishing LMPWP"); 
-        loadGroupProgramIdsQuery.append("WHERE LMPDG.LMGroupDeviceId = ?");
+        loadGroupProgramIdsQuery.append("WHERE LMPDG.LMGroupDeviceId").eq(loadGroup.getLoadGroupId());
         loadGroupProgramIdsQuery.append("AND LMPDG.deviceId = LMPWP.deviceId");
     
-        return simpleJdbcTemplate.query(loadGroupProgramIdsQuery.toString(),
-                                        new IntegerRowMapper(),
-                                        loadGroup.getLoadGroupId());
+        return yukonJdbcTemplate.query(loadGroupProgramIdsQuery, new IntegerRowMapper());
     }
     
     public List<PaoIdentifier> getParentMacroGroups(PaoIdentifier group) {
@@ -173,7 +163,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         sql.append("WHERE gm.MacroType").eq(MacroTypes.GROUP);
         sql.append("    AND gm.ChildID").eq(group.getPaoIdentifier().getPaoId());
         
-        return simpleJdbcTemplate.query(sql.getSql(), new YukonPaoRowMapper(), sql.getArguments());
+        return yukonJdbcTemplate.query(sql, new YukonPaoRowMapper());
     }
     
     @Override
@@ -203,7 +193,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         };
         Function<PaoIdentifier, Integer> typeMapper = PaoUtils.getPaoIdFunction();
 
-        ChunkingMappedSqlTemplate sqlTemplate = new ChunkingMappedSqlTemplate(simpleJdbcTemplate);
+        ChunkingMappedSqlTemplate sqlTemplate = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
         return sqlTemplate.reverseMultimappedQuery(sqlGenerator, 
                                                    Lists.newArrayList(groups), 
                                                    rowMapper, 
@@ -219,9 +209,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         sql.append("SELECT lmGroupDeviceId FROM lmProgramDirectGroup");
         sql.append("WHERE deviceId").eq(programId).append(")");
 
-        return simpleJdbcTemplate.query(sql.toString(),
-                                          loadGroupDatabaseResultRowMapper(),
-                                          programId);
+        return yukonJdbcTemplate.query(sql, loadGroupDatabaseResultRowMapper());
     }
     
     // rowMappers
@@ -243,8 +231,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
     }
     
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
-    
 }

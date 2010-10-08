@@ -17,12 +17,6 @@ public class EnrollmentEventLoggingData {
 
     }
 
-//    public EnrollmentEventLoggingData(LMHardwareBase lmHardwareBase, String loadGroupName, String programName) {
-//        this.lmHardwareBase = lmHardwareBase;
-//        this.loadGroupName = loadGroupName;
-//        this.programName = programName;
-//    }
-    
     public EnrollmentEventLoggingData(LMHardwareBase lmHardwareBase, LoadGroup loadGroup, String programName) {
         this.lmHardwareBase = lmHardwareBase;
         setLoadGroupName(loadGroup);
