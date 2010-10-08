@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/1/2010 10:40:53 AM                        */
+/* Created on:     10/8/2010 2:22:36 PM                         */
 /*==============================================================*/
 
 
@@ -10032,7 +10032,7 @@ INSERT INTO YukonUserRole VALUES(-1112, -100, -2, -1112, '(none)');
 INSERT INTO YukonUserRole VALUES(-1114, -100, -2, -1114, '(none)'); 
 
 /* Adding the IVR role to DefaultCTI */
-INSERT INTO YukonUserRole VALUES(-1200, -100, -800, -80100, '(none)'); 
+INSERT INTO YukonUserRole VALUES(-1200, -100, -801, -80100, '(none)'); 
 
 /*==============================================================*/
 /* Table: YukonWebConfiguration                                 */

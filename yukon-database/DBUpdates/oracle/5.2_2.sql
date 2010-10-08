@@ -300,7 +300,7 @@ WHERE ControlUnits = 'Integrated Volt/Var';
 
 /* Start YUK-7073 */
 /* @error ignore-begin */
-INSERT INTO YukonUserRole VALUES(-1200, -100, -800, -80100, '(none)'); 
+INSERT INTO YukonUserRole VALUES(-1200, -100, -801, -80100, '(none)'); 
 /* @error ignore-end */
 /* End YUK-7073 */
 
