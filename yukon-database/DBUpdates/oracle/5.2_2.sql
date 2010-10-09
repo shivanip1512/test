@@ -147,6 +147,11 @@ CREATE TABLE StatusPointMonitorProcessor  (
    CONSTRAINT PK_StatPointMonProcId PRIMARY KEY (StatusPointMonitorProcessorId)
 );
 
+/* @error ignore-begin */
+ALTER TABLE STATEGROUP
+   ADD CONSTRAINT SYS_C0013128 PRIMARY KEY (STATEGROUPID);
+/* @error ignore-end */
+   
 ALTER TABLE StatusPointMonitor
     ADD CONSTRAINT FK_StatPointMon_StateGroup FOREIGN KEY (StateGroupId)
         REFERENCES StateGroup (StateGroupId);
