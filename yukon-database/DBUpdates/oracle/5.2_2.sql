@@ -320,11 +320,12 @@ SET DeviceId = (SELECT DeviceId
 ALTER TABLE OptOutSurveyProgram DROP PRIMARY KEY;
 
 DELETE FROM OptOutSurveyProgram WHERE DeviceId = 0;
+ALTER TABLE OptOutSurveyProgram MODIFY DeviceId NOT NULL;
+
 ALTER TABLE OptOutSurveyProgram
     ADD CONSTRAINT PK_OptOutSurvProg PRIMARY KEY (OptOutSurveyId, DeviceId);
 
 ALTER TABLE OptOutSurveyProgram DROP COLUMN AssignedProgramId;
-ALTER TABLE OptOutSurveyProgram MODIFY DeviceId NOT NULL;
 
 ALTER TABLE OptOutSurveyProgram
     ADD CONSTRAINT FK_OptOutSurvProg_LMProg FOREIGN KEY (DeviceId)
