@@ -20,6 +20,7 @@ import com.cannontech.core.roleproperties.RolePropertyValue;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyEditorDao;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -42,6 +43,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
     private ImmutableMap<YukonRoleProperty, DescriptiveRoleProperty> descriptiveRoleProperties;
     private NextValueHelper nextValueHelper;
     private DBPersistentDao dbPersistentDao;
+    private static boolean WRITE_NULL_FOR_DEFAULTS = false; // set to true when db editor support is no longer needed
     
     @PostConstruct
     public void initialize() {
@@ -178,11 +180,12 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         DescriptiveRoleProperty descriptiveRoleProperty = descriptiveRoleProperties.get(yukonRoleProperty);
         Object defaultValue = descriptiveRoleProperty.getDefaultValue();
         Object valueToStore = rolePropertyValue.getValue();
-        if (defaultValue.equals(valueToStore)) {
+        if (WRITE_NULL_FOR_DEFAULTS && defaultValue.equals(valueToStore)) {
             valueToStore = null;
         }
         
         String dbTextValue = InputTypeFactory.convertPropertyValue(valueToStore, descriptiveRoleProperty.getYukonRoleProperty().getType());
+        dbTextValue = SqlUtils.convertStringToDbValue(dbTextValue);
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("update YukonGroupRole");
