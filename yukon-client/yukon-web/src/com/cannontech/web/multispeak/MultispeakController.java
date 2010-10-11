@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,6 +39,7 @@ import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.ServletRequestEnumUtils;
 
 @RequestMapping("/setup/*")
 @Controller
@@ -349,18 +351,10 @@ public class MultispeakController {
         }
         
         MspPaoNameAliasEnum oldMspPaoNameAlias = multispeakFuncs.getPaoNameAlias();
-        MspPaoNameAliasEnum mspPaoNameAlias = oldMspPaoNameAlias;
-        String param = request.getParameter("mspPaoNameAlias");
-        if (param != null) {
-            mspPaoNameAlias = MspPaoNameAliasEnum.valueOf(param);
-        }
+        MspPaoNameAliasEnum mspPaoNameAlias = ServletRequestEnumUtils.getEnumParameter(request, MspPaoNameAliasEnum.class, "mspPaoNameAlias", oldMspPaoNameAlias);
         
         MultispeakMeterLookupFieldEnum oldMspMeterLookupField = multispeakFuncs.getMeterLookupField();
-        MultispeakMeterLookupFieldEnum mspMeterLookupField = oldMspMeterLookupField;
-        param = request.getParameter("mspMeterLookupField");
-        if (param != null) {
-            mspMeterLookupField = MultispeakMeterLookupFieldEnum.valueOf(param);
-        }
+        MultispeakMeterLookupFieldEnum mspMeterLookupField = ServletRequestEnumUtils.getEnumParameter(request, MultispeakMeterLookupFieldEnum.class, "mspMeterLookupField", oldMspMeterLookupField);
         
         try {
             LiteYukonGroup liteYukonGroup = roleDao.getGroup( YukonGroupRoleDefs.GRP_YUKON );
@@ -409,7 +403,7 @@ public class MultispeakController {
      * @param mspVendor - the mspVendor to add
      * @return
      */
-    private void addSystemModelAndViewObjects(HttpServletRequest request, ModelMap map, MultispeakVendor mspVendor) {
+    private void addSystemModelAndViewObjects(HttpServletRequest request, ModelMap map, MultispeakVendor mspVendor) throws ServletRequestBindingException {
         
         map.addAttribute("mspVendorId", mspVendor.getVendorID());
         map.addAttribute("mspVendor", mspVendor);
@@ -425,17 +419,15 @@ public class MultispeakController {
         //    the values returned from multispeakFuncs may be outdated.
         map.addAttribute("primaryCIS", ServletRequestUtils.getIntParameter(request, "mspPrimaryCIS", multispeakFuncs.getPrimaryCIS()));
         
-        String paoNameAlias = request.getParameter("mspPaoNameAlias");
-        map.addAttribute("paoNameAlias", paoNameAlias != null ?
-                                            MspPaoNameAliasEnum.valueOf(paoNameAlias) : multispeakFuncs.getPaoNameAlias());
+        MspPaoNameAliasEnum mspPaoNameAlias = ServletRequestEnumUtils.getEnumParameter(request, MspPaoNameAliasEnum.class, "mspPaoNameAlias", multispeakFuncs.getPaoNameAlias());
+        map.addAttribute("paoNameAlias", mspPaoNameAlias);
         
         String paoNameAliasExtension = ServletRequestUtils.getStringParameter(request, "mspPaoNameAliasExtension", multispeakFuncs.getPaoNameAliasExtension());
         map.addAttribute("paoNameAliasExtension", paoNameAliasExtension);
         map.addAttribute("paoNameUsesExtension", StringUtils.isNotBlank(paoNameAliasExtension));
-        
-        String meterLookupField = request.getParameter("mspMeterLookupField");
-        map.addAttribute("meterLookupField", meterLookupField != null ? 
-                                            MultispeakMeterLookupFieldEnum.valueOf(meterLookupField) : multispeakFuncs.getMeterLookupField());
+
+        MultispeakMeterLookupFieldEnum mspMeterLookupField = ServletRequestEnumUtils.getEnumParameter(request, MultispeakMeterLookupFieldEnum.class, "mspMeterLookupField", multispeakFuncs.getMeterLookupField());
+        map.addAttribute("meterLookupField", mspMeterLookupField);
 
         String resultMsg = ServletRequestUtils.getStringParameter(request, MultispeakDefines.MSP_RESULT_MSG, null);
         if (resultMsg != null) {
