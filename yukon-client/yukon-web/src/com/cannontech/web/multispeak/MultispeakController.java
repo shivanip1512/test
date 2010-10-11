@@ -341,7 +341,6 @@ public class MultispeakController {
         int mspPrimaryCIS = ServletRequestUtils.getIntParameter(request, "mspPrimaryCIS", oldMspPrimaryCIS);
         
         String oldMspPaoNameAliasExtension = multispeakFuncs.getPaoNameAliasExtension();
-//        boolean usesExtension = multispeakFuncs.usesPaoNameAliasExtension();
         boolean mspPaoNameUsesExtension = ServletRequestUtils.getBooleanParameter(request, "mspPaoNameUsesExtension", false);   //if not found, then not checked
 
         String mspPaoNameAliasExtension = "";
