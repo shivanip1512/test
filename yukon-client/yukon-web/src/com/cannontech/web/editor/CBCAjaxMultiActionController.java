@@ -53,13 +53,13 @@ public class CBCAjaxMultiActionController extends MultiActionController {
             buf.append("onmouseover=\"javascript:document.getElementById('systemStatusImg').src='/WebConfig/yukon/Icons/disable_over.gif'\" ");
             buf.append("onmouseout=\"javascript:document.getElementById('systemStatusImg').src='/WebConfig/yukon/Icons/disable.gif'\">");
             buf.append("<a href=\"javascript:handleSystemCommand()\"><img id=\"systemStatusImg\" class=\"logoImage\" src=\"/WebConfig/yukon/Icons/disable.gif\"/>");
-            buf.append(" <span>Disable System</span></a></span>");
+            buf.append(" <span class=\"clickableText\">Disable System</span></a></span>");
         } else {
             buf.append("id='systemOff' ");
             buf.append("onmouseover=\"javascript:document.getElementById('systemStatusImg').src='/WebConfig/yukon/Icons/enable_over.gif'\" ");
             buf.append("onmouseout=\"javascript:document.getElementById('systemStatusImg').src='/WebConfig/yukon/Icons/enable.gif'\">");
             buf.append("<a href=\"javascript:handleSystemCommand()\"><img id=\"systemStatusImg\" class=\"logoImage\" src=\"/WebConfig/yukon/Icons/enable.gif\"/>");
-            buf.append(" <span>Enable System</span></a></span>");
+            buf.append(" <span class=\"clickableText\">Enable System</span></a></span>");
         }
         
         return buf;

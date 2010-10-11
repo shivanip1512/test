@@ -5,7 +5,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
 <cti:standardPage title="${mainTitle}" module="capcontrol">
-<cti:msgScope paths="capcontrol">
+<cti:msgScope paths="capcontrol, yukon.web.modules.capcontrol">
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
     
     <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
@@ -52,16 +52,17 @@
             <thead>
                 <tr>
                     <th>Sub Name</th>
+                    <th>Actions</th>
                     <th>State</th>
                     <th>Available<br>kVARS</th>
                     <th>Unavailable<br>kVARS</th>
                     <th>Closed<br>kVARS</th>
                     <th>Tripped<br>kVARS</th>
                     <th>PFactor / Est.</th>
-        	  </tr>
-          </thead>
+                </tr>
+            </thead>
     
-    		<c:forEach var="subStation" items="${subStations}">
+            <c:forEach var="subStation" items="${subStations}">
             
                 <!-- Setup Variables -->
                 <c:set var="substationId" value="${subStation.ccId}"/>
@@ -87,10 +88,6 @@
                 
     				<td>
                         <input type="hidden" id="paoId_${substationId}" value="${substationId}">
-                        <cti:img key="${editKey}" href="${editUrl}" styleClass="tierIconLink"/>
-                        <c:if test="${hasEditingRole}">
-                            <cti:img key="remove" href="${deleteUrl}" styleClass="tierIconLink"/>
-                        </c:if>
     				    <a href="${feederLink}" id="anc_${substationId}">
                             <spring:escapeBody>${subStation.ccName}</spring:escapeBody>
                         </a>
@@ -98,6 +95,13 @@
                             <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="SA_ENABLED" />
                         </span>
     				</td>
+                    
+                    <td>
+                        <cti:img key="${editKey}" href="${editUrl}" styleClass="tierIconLink"/>
+                        <c:if test="${hasEditingRole}">
+                            <cti:img key="remove" href="${deleteUrl}" styleClass="tierIconLink"/>
+                        </c:if>
+                    </td>
                     
     				<td>
                         <capTags:warningImg paoId="${substationId}" type="SUBSTATION"/>

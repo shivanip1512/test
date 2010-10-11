@@ -68,6 +68,7 @@
 			<thead>
     			<tr>
                     <th>Area Name</th>
+                    <th>Actions</th>
                     <th>State</th>
                     <th>Substations</th>
                     <th>Available<br> kVARS</th>
@@ -112,14 +113,17 @@
                         <td>
 							<input type="image" id="showAreas${thisAreaId}" src="/capcontrol/images/nav-plus.gif" <c:if test="${empty viewableArea.subStations}">style="visibility: hidden;"</c:if> 
 								 onclick="showRowElems( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;" class="tierImg">
-                            <cti:img key="${editKey}" href="${editUrl}" styleClass="tierIconLink"/>
-	                        <c:if test="${hasEditingRole}">
-                                <cti:img key="remove" href="${deleteUrl}" styleClass="tierIconLink"/>
-                            </c:if>
 	        				<a href="${substationUrl}">
 	        					<spring:escapeBody htmlEscape="true">${viewableArea.area.ccName}</spring:escapeBody>
 	        				</a>
 	        			</td>
+                        
+                        <td>
+                            <cti:img key="${editKey}" href="${editUrl}" styleClass="tierIconLink"/>
+	                        <c:if test="${hasEditingRole}">
+                                <cti:img key="remove" href="${deleteUrl}" styleClass="tierIconLink"/>
+                            </c:if>
+                        </td>
 	        			
                         <td>
                             <capTags:warningImg paoId="${thisAreaId}" type="${updaterType}"/>
@@ -139,7 +143,7 @@
 					</tr>
 					
 					<tr>
-						<td colspan="8" class="tableCellSnapShot">
+						<td colspan="9" class="tableCellSnapShot">
 						<table id="allAreas${thisAreaId}">
 							<c:forEach var="station" items="${viewableArea.subStations}">
 								<tr style="display: none;">

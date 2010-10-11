@@ -7,5 +7,5 @@
 
 <a href="javascript:void(0);" onclick="$('${popupId}').toggle();" style="text-decoration:none;color:#06C;">
 	<img src="${filter}" class="logoImage" onmouseover="javascript:this.src='${filterOver}'" onmouseout="javascript:this.src='${filter}'">
-	Filter
+	<span class="clickableText">Filter</span>
 </a>

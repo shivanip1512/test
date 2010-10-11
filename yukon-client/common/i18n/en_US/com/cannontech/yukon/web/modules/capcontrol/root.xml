@@ -4,13 +4,24 @@
 
     <entry key="yukon.web.modules.capcontrol.moduleName">Cap Control</entry>
     
-    <entry key="yukon.web.modules.capcontrol.resetOpCount.imageUrl">/WebConfig/yukon/Icons/arrow_undo.gif</entry>
-    <entry key="yukon.web.modules.capcontrol.resetOpCount.hoverUrl">/WebConfig/yukon/Icons/arrow_undo_over.gif</entry>
-    <entry key="yukon.web.modules.capcontrol.resetOpCount.hoverText"></entry>
-    <entry key="yukon.web.modules.capcontrol.resetOpCount.label">Reset All Op Counters</entry>
-    
     <entry key="yukon.web.modules.capcontrol.attributes.voltage">Voltage</entry>
     <entry key="yukon.web.modules.capcontrol.attributes.tapPosition">Tap Position</entry>
     <entry key="yukon.web.modules.capcontrol.attributes.controlMode">Local/Remote Mode</entry>
     
+    <entry key="yukon.web.modules.capcontrol.resetOpCount.imageUrl">/WebConfig/yukon/Icons/arrow_undo.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.resetOpCount.hoverUrl">/WebConfig/yukon/Icons/arrow_undo_over.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.resetOpCount.hoverText"></entry>
+    <entry key="yukon.web.modules.capcontrol.resetOpCount.label">Reset All Op Counters</entry>
+    <entry key="yukon.web.modules.capcontrol.oneline.imageUrl">/WebConfig/yukon/Icons/oneline.png</entry>
+    <entry key="yukon.web.modules.capcontrol.oneline.hoverUrl">/WebConfig/yukon/Icons/oneline_over.png</entry>
+    <entry key="yukon.web.modules.capcontrol.oneline.hoverText">Click to view One-Line</entry>
+    <entry key="yukon.web.modules.capcontrol.location.imageUrl">/WebConfig/yukon/Icons/interstate.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.location.hoverUrl">/WebConfig/yukon/Icons/interstate_over.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.location.hoverText">Driving Directions</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.imageUrl">/WebConfig/yukon/Icons/ivvc.png</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.hoverUrl">/WebConfig/yukon/Icons/ivvc_over.png</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.hoverText">Click for IVVC View</entry>
+    <entry key="yukon.web.modules.capcontrol.filter.hoverUrl">/WebConfig/yukon/Icons/filter.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.filter.hoverText"></entry>
+    <entry key="yukon.web.modules.capcontrol.filter.label">Filter:</entry>
 </properties>

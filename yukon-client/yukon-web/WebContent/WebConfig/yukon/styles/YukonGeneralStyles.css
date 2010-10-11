@@ -562,7 +562,7 @@ div.boxContainerFooter .footer{
 }
 
 div.boxContainer .boxContainer_titleBar .boxContainer_title,
-div.pagedBox .title, div.pagedBox .footer {
+div.pagedBox .title, div.pagedBox .footer, div.boxContainerFooter .footer {
 	color: #0066CC;
 	line-height: 1.5em;
 	font-weight: bold;
@@ -901,6 +901,10 @@ table.actionArea td.leftActions {
 a.simpleLink, span.simpleLink a {
     text-decoration: none;
     color: black;
+}
+
+span.clickableText:hover {
+	text-decoration: underline;
 }
 
 span.footerLink span {

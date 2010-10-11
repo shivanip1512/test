@@ -35,6 +35,7 @@ table.tierTable {
 
 table.tierTable td {
 	padding: 2px 1px 1px;
+	padding-right: 8px;
 	vertical-align: top;
 	white-space: nowrap;
 }

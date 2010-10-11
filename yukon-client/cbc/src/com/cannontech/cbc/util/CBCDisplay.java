@@ -534,11 +534,11 @@ public class CBCDisplay {
             }
             
             if (subBus.getDualBusEnabled() && subBus.getSwitchOverStatus().booleanValue()) {
-                state += " -ALT BUS";
+                state += "-ALT BUS";
             }
 
             if (subBus.getPrimaryBusFlag().booleanValue()) {
-                state += " -PRIMARY BUS";
+                state += "-PRIMARY BUS";
             }
             
             if (subBus.getOvUvDisabledFlag().booleanValue()) {

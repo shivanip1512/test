@@ -81,7 +81,11 @@ public class LabeledImageTag extends ImageTag {
             }
             out.write("> ");
             
-            out.write("<span>");
+            out.write("<span ");
+            if (StringUtils.isNotBlank(href)) {
+                out.write("class=\"clickableText\"");
+            }
+            out.write(">");
             out.write(labelText);
             out.write("</span>");
             
