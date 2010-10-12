@@ -2001,7 +2001,12 @@ std::vector<Cti::CapControl::PointResponse> CtiCCCapBank::getPointResponses()
 
 void CtiCCCapBank::addPointResponse(Cti::CapControl::PointResponse pointResponse)
 {
-    _pointResponseManager.addPointResponse(pointResponse);
+    bool inserted = _pointResponseManager.addPointResponse(pointResponse);
+    if ( ! inserted)
+    {
+        _pointResponseManager.handlePointResponseDeltaChange(pointResponse.getPointId(),pointResponse.getDelta());
+        _pointResponseManager.updatePointResponsePreOpValue(pointResponse.getPointId(),pointResponse.getPreOpValue());
+    }
 }
 
 PointResponseManager& CtiCCCapBank::getPointResponseManager()

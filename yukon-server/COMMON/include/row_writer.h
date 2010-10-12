@@ -22,7 +22,7 @@ private:
 public:
 
     ~RowWriter(){};
-    virtual bool execute() = 0;
+    virtual bool execute(bool displayErrors = true) = 0;
 
     enum SpecialValues
     {

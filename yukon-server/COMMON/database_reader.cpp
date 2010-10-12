@@ -53,7 +53,7 @@ bool DatabaseReader::isValid()
     return _isValid;
 }
 
-bool DatabaseReader::execute()
+bool DatabaseReader::execute(bool displayErrors)
 {
     _executeCalled = true;
     try
@@ -64,6 +64,7 @@ bool DatabaseReader::execute()
     catch(SAException &x)
     {
         _isValid = false;
+        if(displayErrors)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** ERROR **** DB EXCEPTION " << (string)x.ErrText() << " Class "
@@ -90,7 +91,7 @@ bool DatabaseReader::operator()()
         {
             _currentIndex = 1;
             return _command.FetchNext();
-        } 
+        }
         catch(SAException &x)
         {
             _isValid = false;
@@ -297,6 +298,6 @@ std::string DatabaseReader::asString()
             sqlString += _command.ParamByIndex(i).asString();
         }
     }
-    
+
     return sqlString;
 }

@@ -25,16 +25,16 @@ public:
 
     DatabaseReader(Cti::Database::DatabaseConnection &conn, const std::string &command = "");
     ~DatabaseReader();
-    
+
     bool setCommandText(const std::string &command);
     bool isValid();
-    bool execute();
+    bool execute(bool displayErrors = true);
 
     // Checks if the current index is null.
     // For example: rdr["test"].isNull();
     bool isNull();
     bool operator()();
-    
+
     RowReader &operator[](const std::string &columnName);
     RowReader &operator[](int columnNumber); // 0 based
 

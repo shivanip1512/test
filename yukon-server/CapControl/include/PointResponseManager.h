@@ -15,6 +15,13 @@ class PointResponseManager
     public:
         PointResponseManager();
 
+        /**
+         * Adds PointResponse to
+         *
+         * @param pointResponse
+         *
+         * @return bool
+         */
         bool addPointResponse(PointResponse pointResponse);
 
         /**

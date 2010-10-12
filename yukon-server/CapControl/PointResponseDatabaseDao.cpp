@@ -78,6 +78,8 @@ bool PointResponseDatabaseDao::update(PointResponse pointResponse)
               << pointResponse.getBankId()
               << pointResponse.getPointId();
 
+
+
     bool success = executeDbCommand(dbUpdater,(_CC_DEBUG & CC_DEBUG_DATABASE));
 
     return success;
@@ -102,13 +104,12 @@ bool PointResponseDatabaseDao::insert(PointResponse pointResponse)
 
 bool PointResponseDatabaseDao::save(PointResponse pointResponse)
 {
-    //Attempt to update first, if that fails. Insert it.
-
-    bool ret = update(pointResponse);
+    //Attempt to insert first, if that fails. update it.
+    bool ret = insert(pointResponse);
 
     if (ret == false)
     {
-        ret = insert(pointResponse);
+        ret = update(pointResponse);
     }
 
     return ret;

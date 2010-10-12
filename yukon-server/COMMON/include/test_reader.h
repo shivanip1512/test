@@ -41,20 +41,20 @@ public:
         _columnNames = columnNames;
         _values = values;
     }
-    
+
     ~TestReader() { }
-   
+
     bool setCommandText(const std::string &command) { return true; }
     bool isValid() { return true; }
-    bool execute() { return true; }
+    bool execute(bool displayErrors = true) { return true; }
 
-    bool isNull() 
+    bool isNull()
     {
         if( _currentRow < _values.size() && _currentColumn < _columnNames.size() )
         {
             if( _values[_currentRow][_currentColumn] == getNullString() )
                 return true;
-            else 
+            else
                 return false;
         }
         else
@@ -69,7 +69,7 @@ public:
         _currentRow ++;
         return _currentRow < _values.size();
     }
-    
+
     RowReader &operator[](const std::string &columnName)
     {
         bool found = false;

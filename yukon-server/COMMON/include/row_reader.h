@@ -21,15 +21,15 @@ private:
 public:
 
     ~RowReader(){};
-    
+
     virtual bool isValid() = 0;
-    virtual bool execute() = 0;
+    virtual bool execute(bool displayErrors = true) = 0;
 
     // Checks if the current index is null.
     // For example: rdr["test"].isNull();
     virtual bool isNull() = 0;
     virtual bool operator()() = 0;
-    
+
     virtual bool setCommandText(const std::string &command) = 0;
     virtual RowReader &operator[](const std::string &columnName) = 0;
     virtual RowReader &operator[](int columnNumber) = 0;

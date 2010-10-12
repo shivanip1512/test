@@ -21,9 +21,9 @@ public:
 
     DatabaseWriter(Cti::Database::DatabaseConnection &conn, const std::string &command = "");
     ~DatabaseWriter();
-    
+
     RowWriter &setCommandText(const std::string &command);
-    bool execute();
+    bool execute(bool displayErrors = true);
 
     RowWriter &operator<<(const SpecialValues operand);
     RowWriter &operator<<(const bool operand);

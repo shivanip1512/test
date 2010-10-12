@@ -28,7 +28,7 @@ RowWriter &DatabaseWriter::setCommandText(const std::string &command)
     return *this;
 }
 
-bool DatabaseWriter::execute()
+bool DatabaseWriter::execute(bool displayErrors)
 {
     bool retVal = true;
     try
@@ -38,6 +38,7 @@ bool DatabaseWriter::execute()
     catch(SAException &x)
     {
         retVal = false;
+        if (displayErrors)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** ERROR **** DB EXCEPTION " << (string)x.ErrText() << " Class "

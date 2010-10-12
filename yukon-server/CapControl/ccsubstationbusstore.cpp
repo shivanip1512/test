@@ -47,7 +47,7 @@ extern ULONG _OP_STATS_REFRESH_RATE;
 extern string _MAXOPS_ALARM_CAT;
 extern LONG _MAXOPS_ALARM_CATID;
 extern BOOL _OP_STATS_DYNAMIC_UPDATE;
-
+extern double _IVVC_DEFAULT_DELTA;
 
 using namespace std;
 using namespace Cti::CapControl;
@@ -7763,17 +7763,62 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, ma
                     monPointId = currentPointId;
                 }
 
-                CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(currentMonPoint->getBankId())->second;
-                if (currentCCCapBank != NULL)
+                CtiCCCapBankPtr currentBankPtr = paobject_capbank_map->find(currentMonPoint->getBankId())->second;
+                if (currentBankPtr != NULL)
                 {
-                    currentCCCapBank->getMonitorPoint().push_back(currentMonPoint);
-                    pointid_capbank_map->insert(make_pair(currentMonPoint->getPointId(),currentCCCapBank));
+                    //This is to store and track the monitor point
+                    currentBankPtr->getMonitorPoint().push_back(currentMonPoint);
+                    pointid_capbank_map->insert(make_pair(currentMonPoint->getPointId(),currentBankPtr));
+
+                    //The following is to setup the defaults for dynamic tables.
+                    CtiCCFeederPtr feederPtr = paobject_feeder_map->find(currentBankPtr->getParentId())->second;
+                    if(feederPtr == NULL)
+                    {
+                        break;
+                    }
+
+                    list<CtiCCCapBankPtr> monitorBanks;
+                    if(!stringCompareIgnoreCase(feederPtr->getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod))
+                    {
+                        //Get all banks on SubBus all Feeders.
+                        CtiCCSubstationBusPtr subBusPtr = paobject_subbus_map->find(feederPtr->getParentId())->second;
+                        if (subBusPtr == NULL)
+                        {
+                            break;
+                        }
+
+                        CtiFeeder_vec& feeders = subBusPtr->getCCFeeders();
+
+                        for each (CtiCCFeeder* feeder in feeders)
+                        {
+                            CtiCCCapBank_SVector& banks = feeder->getCCCapBanks();
+                            for each (CtiCCCapBankPtr bank in banks)
+                            {
+                                monitorBanks.push_back(bank);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //Get only this feeders banks
+                        CtiCCCapBank_SVector& banks = feederPtr->getCCCapBanks();
+                        for each (CtiCCCapBankPtr bank in banks)
+                        {
+                            monitorBanks.push_back(bank);
+                        }
+                    }
+
+                    for each(CtiCCCapBankPtr bankPtr in monitorBanks)
+                    {
+                        //Set default point delta
+                        PointResponse defaultPointResponse(currentMonPoint->getPointId(),bankPtr->getPaoId(),0,_IVVC_DEFAULT_DELTA);
+                        bankPtr->addPointResponse(defaultPointResponse);
+                    }
                 }
             }
         }
 
         {
-            //LOADING OF MONITOR POINTS.
             static const string sqlNoID = "SELECT MBH.bankid, MBH.pointid, MBH.value, MBH.datetime, MBH.scaninprogress "
                                           "FROM dynamicccmonitorbankhistory MBH";
 
@@ -7849,7 +7894,6 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, ma
                     dout << CtiTime() << " currentPointResponse bankId: " << bank->getPaoId() << " pointId: " << pointResponse.getPointId() << endl;
                 }
             }
-            //Look for missing point responses for default values?
         }
     }
     catch(...)
