@@ -55,9 +55,9 @@ public class ImageButtonTag extends YukonTagSupport {
             id = UniqueIdentifierTag.generateIdentifier(getJspContext(), "labeledImage");
         }
         
-        String style = "formSubmit";
+        String classes = "formSubmit";
         if (StringUtils.isNotBlank(styleClass)) {
-            style += " " + styleClass;
+            classes += " " + styleClass;
         }
         
         try {
@@ -108,7 +108,7 @@ public class ImageButtonTag extends YukonTagSupport {
 
             /* Class */
             out.write(" class=\"");
-            out.write(style);
+            out.write(classes);
             out.write("\"");
             
             /* Title */
