@@ -322,6 +322,7 @@ SET DeviceId = (SELECT DeviceId
                  FROM LMProgramWebPublishing LMPWP
                  WHERE AssignedProgramId = LMPWP.ProgramId);
 
+ALTER TABLE OptOutSurveyProgram DROP CONSTRAINT FK_OptOutSurvProg_LMProgWebPub;
 ALTER TABLE OptOutSurveyProgram DROP PRIMARY KEY;
 
 DELETE FROM OptOutSurveyProgram WHERE DeviceId = 0;
