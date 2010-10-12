@@ -7,7 +7,7 @@ import com.google.common.collect.Lists;
 public class ZoneDto {
     
     private String name;
-    private int zoneId = 0;
+    private int zoneId = -1;
     private int parentZoneId = -1;
     private int substationBusId = -1;
     private int regulatorId = -1;

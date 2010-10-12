@@ -22,7 +22,7 @@ public class DynamicDataDaoImpl implements DynamicDataDao {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         
         sqlBuilder.append("SELECT DMPR.BankId, DMPR.PointId, PAO.PAOName AS BankName,");
-        sqlBuilder.append(       "PAO.PAOName AS CbcName, PAO2.PAOName AS AffectedDeviceName,");
+        sqlBuilder.append(       "PAOC.PAOName AS CbcName, PAO2.PAOName AS AffectedDeviceName,");
         sqlBuilder.append(       "P.PointName AS AffectedPointName, DMPR.PreOpValue, DMPR.Delta");
         sqlBuilder.append("FROM DynamicCCMonitorPointResponse DMPR");
         sqlBuilder.append("JOIN Point P ON P.PointId = DMPR.PointId");

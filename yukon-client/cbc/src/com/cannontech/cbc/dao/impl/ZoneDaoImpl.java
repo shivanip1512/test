@@ -170,7 +170,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         template.withTableName("Zone");
         template.withPrimaryKeyField("ZoneId");
         template.withFieldMapper(zoneFieldMapper);
-        template.withPrimaryKeyValidOver(0);
+        template.withPrimaryKeyValidOver(-1);
     }
     
     @Autowired
