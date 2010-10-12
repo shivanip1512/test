@@ -4410,7 +4410,7 @@ void CtiCCSubstationBus::createStatusUpdateMessages(CtiMultiMsg_vec& pointChange
         pointChanges.push_back(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent, user));
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
     }
-    
+
     pointChanges.push_back(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
     ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
     capBank->setLastStatusChangeTime(CtiTime());
@@ -9625,7 +9625,6 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
             << _primaryBusFlag
             << tempAltSubId
             << tempDualBusEnabled
-            << _ltcId
             << getStrategyId()
             << _ccfeeders;
 }
