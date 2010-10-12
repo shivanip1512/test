@@ -60,10 +60,8 @@
             
             var targets = new Array()
             validElems.each(function (elem) {
+                targets.push(elem.getAttribute('value'));
             });
-            for (var i = 0; i < validElems.length; i++) {
-                targets.push(validElems[i].getAttribute('value'))
-            }
             
             url += '&targets=' + targets.join(',');
             
