@@ -7,11 +7,12 @@
 
 <cti:uniqueIdentifier  prefix="addPao" var="addPao"/>
 <cti:uniqueIdentifier var="addPaoSpanId" prefix="addPaoSpan_"/>
-<c:set var="notAuthorizedText" value="User is not authorized to perform this action" />
 <c:set value="Confirm Sub" var="confirmCommand" />
 <c:set value="Send Time Syncs" var="sendTimeSyncsCommand" />
 
 <cti:standardPage title="Schedule Assignment" module="capcontrol">
+<cti:msgScope paths="capcontrol, yukon.web.modules.capcontrol.scheduleAssignments">
+
 	<cti:includeScript link="/JavaScript/itemPicker.js" />
 	<cti:includeScript link="/JavaScript/tableCreation.js" />
 	<cti:includeScript link="/JavaScript/paoPicker.js" />
@@ -137,45 +138,30 @@
 								<div style="padding: 1px">
 									<c:choose>
 										<c:when test="${hasActionRoles == true}">
-											<a href="javascript:void(0)" class="simpleLink" onclick="startMultiScheduleAssignmentPopup('${param.schedule}', '${param.command}');">
-												<img src="/WebConfig/yukon/Icons/control_play_blue.gif" class="tierImg" title="Run multiple commands"/>
-												Run Multiple Schedule Assignment Commands
-											</a>
+                                            <cti:labeledImg key="play" href="javascript:startMultiScheduleAssignmentPopup('${param.schedule}', '${param.command}');"/>
 										</c:when>
 										<c:otherwise>
-											<img src="/WebConfig/yukon/Icons/control_play_blue_disabled.gif" class="tierImg" 
-											title="${notAuthorizedText}">
-											Run Multiple Schedule Assignment Commands
+                                            <cti:labeledImg key="playDisabled"/>
 										</c:otherwise>
 									</c:choose>
 								</div>
 								<div style="padding: 1px">
 									<c:choose>
 										<c:when test="${hasActionRoles == true}">
-											<a href="javascript:void(0);" class="simpleLink" onclick="stopMultiScheduleAssignmentPopup('${param.schedule}', '${param.command}');">
-												<img src="/WebConfig/yukon/Icons/control_stop_blue.gif" class="tierImg" title="Stop multiple commands"/> 
-												Stop Multiple Schedule Assignment Commands
-											</a>
+                                            <cti:labeledImg key="stop" href="javascript:stopMultiScheduleAssignmentPopup('${param.schedule}', '${param.command}');"/>
 										</c:when>
 										<c:otherwise>
-											<img src="/WebConfig/yukon/Icons/control_stop_blue_disabled.gif" class="tierImg" 
-											title="${notAuthorizedText}">
-											Stop Multiple Schedule Assignment Commands
+                                            <cti:labeledImg key="stopDisabled"/>
 										</c:otherwise>
 									</c:choose>
 								</div>
 								<div style="padding: 1px">
 									<c:choose>
 										<c:when test="${hasEditingRole == true}">
-											<a href="javascript:void(0);" class="simpleLink" onclick="newScheduleAssignmentPopup('${param.schedule}', '${param.command}');">
-												<img src="/WebConfig/yukon/Icons/add.gif" class="tierImg" title="Create a new schedule assignment"/> 
-												New Schedule Assignment
-											</a>
+                                            <cti:labeledImg key="add" href="javascript:newScheduleAssignmentPopup('${param.schedule}', '${param.command}');"/>
 										</c:when>
 										<c:otherwise>
-											<img src="/WebConfig/yukon/Icons/add_disabled_gray.gif" class="tierImg" 
-											title="${notAuthorizedText}">
-											New Schedule Assignment
+											<cti:labeledImg key="addDisabled"/>
 										</c:otherwise>
 									</c:choose>
 								</div>
@@ -267,5 +253,5 @@
 	
 	</div>
 	</td></tr></table>
-	
+</cti:msgScope>
 </cti:standardPage>
