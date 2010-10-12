@@ -45,7 +45,7 @@
                 
                 <cti:msg var="backToUploadButton" key="yukon.common.device.bulk.importResults.backToUpload"/>
                 <br>
-                <input type="submit" value="${backToUploadButton}">
+                <input type="submit" value="${backToUploadButton}" class="formSubmit">
                 
                 <%-- PASS ALONGS --%>
                 <input type="hidden" name="ignoreInvalidCols" value="${ignoreInvalidCols}">

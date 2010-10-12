@@ -235,7 +235,12 @@ public abstract class BaseBulkService {
                 
                 // get list of processors that should get run
                 // takes into account those fields that don't need updating
-                List<BulkYukonDeviceFieldProcessor> bulkFieldProcessors = findYukonDeviceFieldProcessors(updateableDevice, bulkFields);
+                List<BulkYukonDeviceFieldProcessor> bulkFieldProcessors;
+                try {
+                    bulkFieldProcessors = findYukonDeviceFieldProcessors(updateableDevice, bulkFields);
+                } catch (UnprocessableHeadersException e) {
+                    throw new ProcessingException("Unable to find processor for field(s).", e);
+                }
                 
                 // run processors
                 for (BulkYukonDeviceFieldProcessor bulkFieldProcessor : bulkFieldProcessors) {

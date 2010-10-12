@@ -248,7 +248,7 @@
     <bean id="serialNumberBulkField" parent="bulkFieldBase" class="com.cannontech.common.bulk.field.impl.SerialNumberBulkField">
 
         <property name="massChangable" value="false" />
-        <property name="blankHandlingEnum" value="IGNORE_BLANK" />
+        <property name="blankHandlingEnum" value="ALWAYS_PROCESS" />
 
         <property name="inputSource">
             <bean class="com.cannontech.web.input.InputBase">
@@ -267,7 +267,7 @@
     <bean id="manufacturerBulkField" parent="bulkFieldBase" class="com.cannontech.common.bulk.field.impl.ManufacturerBulkField">
 
         <property name="massChangable" value="false" />
-        <property name="blankHandlingEnum" value="IGNORE_BLANK" />
+        <property name="blankHandlingEnum" value="ALWAYS_PROCESS" />
 
         <property name="inputSource">
             <bean class="com.cannontech.web.input.InputBase">
@@ -286,7 +286,7 @@
     <bean id="modelBulkField" parent="bulkFieldBase" class="com.cannontech.common.bulk.field.impl.ModelBulkField">
 
         <property name="massChangable" value="false" />
-        <property name="blankHandlingEnum" value="IGNORE_BLANK" />
+        <property name="blankHandlingEnum" value="ALWAYS_PROCESS" />
 
         <property name="inputSource">
             <bean class="com.cannontech.web.input.InputBase">
