@@ -198,7 +198,7 @@
                         <c:if test="${!hideOneLine}">
                             <cti:img key="oneline" href="${oneLineLink}" styleClass="tierIconLink"/>
                         </c:if>
-                        <c:if test="${viewableSubBus.ltcId != null && viewableSubBus.ltcId > 0}">
+                        <c:if test="${viewableSubBus.ivvcControlled}">
                             <cti:img key="ivvc" href="${ivvcLink}" styleClass="tierIconLink"/>
                         </c:if>
                     </td>

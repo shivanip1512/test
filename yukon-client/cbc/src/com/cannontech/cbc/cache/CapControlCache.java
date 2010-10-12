@@ -29,7 +29,6 @@ public interface CapControlCache {
     public CCArea getCBCArea(int id);
     
     public Ltc getLtc(int id);
-    public SubBus getSubBusByLtcId(int ltcId);
     
     public CCSpecialArea getCBCSpecialArea(int id);
     

@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
+import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.capcontrol.models.NavigableArea;
 import com.cannontech.web.capcontrol.models.NavigableCapBank;
@@ -66,12 +68,16 @@ public class CapControlWebUtils {
                 LitePoint point = pointDao.getLitePoint(subBus.getCurrentWattLoadPointID());
                 viewable.setWattPoint(point);
             }
-            if(subBus.getLtcId() > 0){
-                viewable.setLtcId(subBus.getLtcId());
-                PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
-                viewable.setLtcName(paoDao.getYukonPAOName(subBus.getLtcId()));
-            }
 
+            if(subBus.getStrategyId() > 0) {
+                //Check to see if we are an IVVC enabled
+                StrategyDao strategyDao = YukonSpringHook.getBean("strategyDao", StrategyDao.class);
+                CapControlStrategy strategy = strategyDao.getForId(subBus.getStrategyId());
+                if(ControlAlgorithm.getControlAlgorithm(strategy.getControlUnits()) == ControlAlgorithm.INTEGRATED_VOLT_VAR) {
+                    viewable.setIvvcControlled(true);
+                }
+            }
+            
             viewableList.add(viewable);
         }
         

@@ -2,13 +2,11 @@ package com.cannontech.database.db.capcontrol;
 
 import java.sql.SQLException;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
@@ -33,7 +31,6 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     private String controlFlag = "N";
     private Integer voltReductionPointId = 0;
     private Integer disableBusPointId = 0;
-	private Integer ltcId = 0;
 	
 	public static final String SETTER_COLUMNS[] = { 
 		"CurrentVarLoadPointID", "CurrentWattLoadPointID", "MapLocationID", 
@@ -71,7 +68,6 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
             getDisableBusPointId()};
     
     	add( TABLE_NAME, addValues );
-    	handleLtcAssignment(getLtcId());
     }
     
     /**
@@ -142,15 +138,6 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
             setControlFlag((String) results[11]);
             setVoltReductionPointId((Integer) results[12]);
             setDisableBusPointId((Integer) results[13]);
-
-            SqlStatementBuilder sql = new SqlStatementBuilder("select ltcId from CCSubstationBusToLTC where substationBusId = ").appendArgument(substationBusID);
-            JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-            try {
-                setLtcId(yukonTemplate.queryForInt(sql.getSql(), sql.getArguments()));
-            } catch (EmptyResultDataAccessException e) {
-                setLtcId(-1);
-            }
-            
     	}
     	else {
     		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -207,20 +194,6 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     	Object constraintValues[] = { getSubstationBusID()};
     
     	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
-    	handleLtcAssignment(ltcId);
-    }
-    
-    private void handleLtcAssignment(int ltcId) throws SQLException{
-        if(ltcId > 0) {
-            delete("CCSubstationBusToLTC", "substationBusId", substationBusID);
-            SqlStatementBuilder sql = new SqlStatementBuilder("insert into CCSubstationBusToLTC values (");
-            sql.appendArgument(substationBusID).append(", ").appendArgument(ltcId).append(")");
-            
-            JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-            yukonTemplate.update(sql.getSql(), sql.getArguments());
-        } else {
-            delete("CCSubstationBusToLTC", "substationBusId", substationBusID);
-        }
     }
     
     /**
@@ -454,13 +427,4 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
 		}
 		return intVect.toArray();
 	}
-
-    public void setLtcId(Integer ltcId) {
-        this.ltcId = ltcId;
-    }
-
-    public Integer getLtcId() {
-        return ltcId;
-    }
-
 }

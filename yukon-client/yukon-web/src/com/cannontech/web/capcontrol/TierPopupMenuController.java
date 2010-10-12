@@ -170,11 +170,10 @@ public class TierPopupMenuController extends MultiActionController {
         return mav;
     }
     
+    @Deprecated
     public ModelAndView ltcMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
         final int id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        
-        final SubBus subBus = capControlCache.getSubBusByLtcId(id);
         
         mav.addObject("paoId", id);
         
@@ -186,11 +185,6 @@ public class TierPopupMenuController extends MultiActionController {
         list.add(CommandHolder.LTC_SCAN_INTEGRITY);
         list.add(CommandHolder.LTC_REMOTE_ENABLE);
         list.add(CommandHolder.LTC_REMOTE_DISABLE);
-        
-        if (subBus.getCcDisableFlag() == false) {
-            list.add(CommandHolder.LTC_TAP_POSITION_RAISE);
-            list.add(CommandHolder.LTC_TAP_POSITION_LOWER);
-        }
         
         mav.addObject("list", list);
         

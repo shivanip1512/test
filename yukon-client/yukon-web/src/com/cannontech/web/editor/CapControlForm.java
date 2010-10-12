@@ -31,7 +31,6 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CapbankControllerDao;
 import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.cbc.dao.FeederDao;
-import com.cannontech.cbc.dao.LtcDao;
 import com.cannontech.cbc.dao.SubstationBusDao;
 import com.cannontech.cbc.exceptions.CBCExceptionMessages;
 import com.cannontech.cbc.exceptions.FormWarningException;
@@ -99,7 +98,6 @@ import com.cannontech.database.db.season.SeasonSchedule;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.model.Season;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.editor.data.CBCSpecialAreaData;
 import com.cannontech.web.editor.model.CBCSpecialAreaDataModel;
@@ -433,15 +431,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		else if (getDbPersistent() instanceof CapControlSubBus) {
 			((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus().setCurrentVoltLoadPointID(new Integer(val));
         }
-	}
-	
-	public void ltcPaoClick(ActionEvent ae) {
-	    String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("paoId");
-        if (val == null) {
-            return;
-        }
-        CapControlSubstationBus bus = ((CapControlSubBus)getDbPersistent()).getCapControlSubstationBus();
-	    bus.setLtcId(Integer.valueOf(val));
 	}
 	
 	public static void setupFacesNavigation() {
@@ -1947,19 +1936,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     public boolean isTimeOfDay() {
         boolean timeOfDay = getStrategy().isTimeOfDay();
         return timeOfDay;
-    }
-    
-    public String getLtcName(){
-        String name = "(none)";
-        if(getDbPersistent() instanceof CapControlSubBus) {
-            CapControlSubstationBus bus = ((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus();
-            if(bus.getLtcId() <= 0){
-                return name;
-            }
-            LtcDao ltcDao = YukonSpringHook.getBean(LtcDao.class);
-            name = ltcDao.getLtcName(bus.getSubstationBusID());
-        }
-        return name;
     }
     
     public void resetTabIndex() {

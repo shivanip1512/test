@@ -16,8 +16,6 @@ public class ViewableSubBus {
 	private int alternateStationId;
 	private int alternateAreaId;
 	private List<ViewableFeeder> feeders = null;
-	private Integer ltcId;
-	private String ltcName = null;
 	private boolean ivvcControlled = false;
 	
 	public SubBus getSubBus() {
@@ -74,22 +72,6 @@ public class ViewableSubBus {
 
     public void setAlternateAreaId(int alternateAreaId) {
         this.alternateAreaId = alternateAreaId;
-    }
-
-    public Integer getLtcId() {
-        return ltcId;
-    }
-
-    public void setLtcId(int ltcId) {
-        this.ltcId = ltcId;
-    }
-
-    public String getLtcName() {
-        return ltcName;
-    }
-
-    public void setLtcName(String ltcName) {
-        this.ltcName = ltcName;
     }
 
     public boolean isIvvcControlled() {

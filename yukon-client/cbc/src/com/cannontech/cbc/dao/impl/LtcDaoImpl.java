@@ -6,20 +6,15 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.cbc.dao.LtcDao;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.LoadTapChanger;
 import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoClass;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -64,74 +59,6 @@ public class LtcDaoImpl implements LtcDao {
         return false;
     }
     
-    @Override
-    public void unassignBus(int id) {
-        String sql = "delete from CCSubstationBusToLTC where SubstationBusId = ?";
-        yukonJdbcTemplate.update(sql, id);
-    }
-    
-    @Override
-    public void unassignLtc(int id) {
-        String sql = "delete from CCSubstationBusToLTC where ltcId = ?";
-        yukonJdbcTemplate.update(sql, id);
-    }
-    
-    @Override
-    public String getLtcName(int subBusId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder("select paoName from YukonPAObject pao");
-        sql.append("join CCSubstationBusToLTC ltc on ltc.ltcId = pao.PAObjectID");
-        sql.append("where ltc.substationBusId = ").appendArgument(subBusId);
-        try {
-            String name = yukonJdbcTemplate.queryForObject(sql.getSql(), String.class, sql.getArguments());
-            return name;
-        } catch (EmptyResultDataAccessException e){
-            return CtiUtilities.STRING_NONE;
-        }
-    }
-    
-    @Override
-    public void assign(int substationBusID, int ltcId) {
-        if(getLtcIdForSub(substationBusID) > 0) {
-            SqlStatementBuilder sql = new SqlStatementBuilder("update CCSubstationBusToLTC set ltcId = ").appendArgument(ltcId);
-            sql.append("where substationbusId = ").appendArgument(substationBusID);
-            yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
-        } else {
-            SqlStatementBuilder sql = new SqlStatementBuilder("insert into CCSubstationBusToLTC values(");
-            sql.appendArgument(substationBusID).append(",").appendArgument(ltcId).append(")");
-            yukonJdbcTemplate.update(sql.getSql());
-        }
-    }
-    
-    @Override
-    public int getLtcIdForSub(int subBusId) {
-        try {
-            String sql = "select ltcId from CCSubstationBusToLTC where substationBusId = ?";
-            return yukonJdbcTemplate.queryForInt(sql, subBusId);
-        } catch (EmptyResultDataAccessException e) {
-            return 0;
-        }
-    }
-    
-    @Override
-    public List<Integer> getUnassignedLtcIds() {
-        SqlStatementBuilder sql = new SqlStatementBuilder("SELECT PAObjectID FROM YukonPAObject");
-        sql.append("where Category = ").appendArgument(PaoCategory.CAPCONTROL);
-        sql.append("and PAOClass = ").appendArgument(PaoClass.CAPCONTROL);
-        sql.append("and type = ").appendArgument(PaoType.LOAD_TAP_CHANGER);
-        sql.append("and PAObjectID not in (SELECT ltcId FROM CCSubstationBusToLTC) ORDER BY PAOName");
-    
-        ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
-            public Integer mapRow(ResultSet rs, int num) throws SQLException{
-                Integer i = new Integer ( rs.getInt("PAObjectID") );
-                return i;
-            }
-        };
-        
-        List<Integer> ltcIds = yukonJdbcTemplate.query(sql.getSql(), mapper, sql.getArguments());
-        
-        return ltcIds;
-    }
-    
     @SuppressWarnings("unchecked")
     @Override
     public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
@@ -155,7 +82,9 @@ public class LtcDaoImpl implements LtcDao {
         sql.append("  WHERE Category").eq(PaoCategory.CAPCONTROL);
         sql.append("    AND PAOClass").eq(DeviceClasses.STRING_CLASS_VOLTAGEREGULATOR);
         sql.append("    AND type").eq(PaoType.LOAD_TAP_CHANGER);
-        sql.append("    AND PAObjectID not in (SELECT ltcId FROM CCSubstationBusToLTC)");
+        //TODO !!!!
+        //Change to use Zones
+        //sql.append("    AND PAObjectID not in (SELECT ltcId FROM CCSubstationBusToLTC)");
         
         int orphanCount = yukonJdbcTemplate.queryForInt(sql);
         
@@ -166,7 +95,9 @@ public class LtcDaoImpl implements LtcDao {
         sql.append("  WHERE Category").eq(PaoCategory.CAPCONTROL);
         sql.append("    AND PAOClass").eq(DeviceClasses.STRING_CLASS_VOLTAGEREGULATOR);
         sql.append("    AND type").eq(PaoType.LOAD_TAP_CHANGER);
-        sql.append("    AND PAObjectID not in (SELECT ltcId FROM CCSubstationBusToLTC)");
+        //TODO !!!!
+        //Change to use Zones
+        //sql.append("    AND PAObjectID not in (SELECT ltcId FROM CCSubstationBusToLTC)");
         sql.append("ORDER BY PAOName");
         
         PagingResultSetExtractor orphanExtractor = new PagingResultSetExtractor(start, count, rowMapper);
@@ -179,14 +110,6 @@ public class LtcDaoImpl implements LtcDao {
         searchResult.setBounds(start, count, orphanCount);
         
         return searchResult;
-    }
-    
-    @Override
-    public PaoIdentifier getLtcPaoIdentifierForSubBus(int busId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder("select ypo.PaobjectId, ypo.type from CCSubstationBusToLTC ltc");
-        sql.append("join YukonPaobject ypo on ypo.PaobjectId = ltc.LtcId");
-        sql.append("where ltc.SubstationBusId = ").append(busId);
-        return yukonJdbcTemplate.queryForObject(sql, new YukonPaoRowMapper());
     }
     
     @Autowired

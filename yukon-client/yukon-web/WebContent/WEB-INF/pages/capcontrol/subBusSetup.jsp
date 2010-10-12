@@ -332,33 +332,6 @@
                         <f:param name="ptId" value="0"/>
                     </x:commandLink>
                 </x:htmlTag>
-                
-                <x:htmlTag value="br"/>
-                <x:htmlTag value="fieldset" styleClass="fieldSet">
-                    <x:htmlTag value="legend"><x:outputText value="Load Tap Changer"/></x:htmlTag>
-                    <x:div id="subLtcDiv" forceId="true">
-                        <x:inputHidden id="ltc_pao" forceId="true" 
-                            value="#{capControlForm.PAOBase.capControlSubstationBus.ltcId }" />      
-                        <x:outputLabel for="subLtcDevice" value="Selected LTC: " styleClass="medStaticLabel"/>
-                        <x:outputText id="subLtcDevice" forceId="true" value="#{capControlForm.ltcName}"/> 
-
-                        <x:htmlTag value="br"/> 
-                    
-                        <h:outputLink  value="javascript:subLtcPaoPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
-                            <h:outputText value="Select LTC..."/>
-                        </h:outputLink>
-                        
-                        <x:htmlTag value="br"/>
-                        <x:htmlTag value="br"/>  
-    
-                        <x:commandLink id="ltcPao_setNone" title="Do not use an LTC on this sub." 
-                            rendered="#{capControlForm.editingAuthorized}"
-                            styleClass="medStaticLabel"
-                            value="No LTC" actionListener="#{capControlForm.ltcPaoClick}">
-                            <f:param name="paoId" value="0"/>
-                        </x:commandLink>
-                    </x:div>
-                </x:htmlTag>
             </h:column>
         </x:panelGrid>
 	</f:subview>
