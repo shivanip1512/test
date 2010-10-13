@@ -112,7 +112,7 @@
 				<cti:displayForPageEditModes modes="EDIT">
 					<tr style="background-color:#EEE;">
 						<td colspan="3">
-							 <cti:imageButton key="addNotification" type="submit" name="newNotification"/>
+							 <cti:button key="addNotification" type="submit" name="newNotification"/>
 						</td>
 					</tr>
 				</cti:displayForPageEditModes>

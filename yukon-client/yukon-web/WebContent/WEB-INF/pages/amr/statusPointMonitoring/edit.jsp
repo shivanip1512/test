@@ -122,7 +122,7 @@
             </div>
             <br>
             <span style="float:right;">
-                <cti:imageButton key="addAction" onclick="addAction()"/>
+                <cti:button key="addAction" onclick="addAction()"/>
             </span>
         </tags:boxContainer2>
 		

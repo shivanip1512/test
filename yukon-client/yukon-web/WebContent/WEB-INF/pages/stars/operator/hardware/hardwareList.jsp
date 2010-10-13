@@ -360,7 +360,7 @@
                             </c:when>
                             <c:otherwise>
                                 <br>
-                                <cti:imageButton key="add" type="button" onclick="showInvCheckingPopup('switch');"/>
+                                <cti:button key="add" type="button" onclick="showInvCheckingPopup('switch');"/>
                             </c:otherwise>
                         </c:choose>
                     </td>
@@ -446,7 +446,7 @@
                                     </cti:checkRolesAndProperties>
                                 </c:when>
                                 <c:otherwise>
-                                    <cti:imageButton key="add" type="button" onclick="showInvCheckingPopup('thermostat');"/>
+                                    <cti:button key="add" type="button" onclick="showInvCheckingPopup('thermostat');"/>
                                 </c:otherwise>
                             </c:choose>
                         </form>
@@ -544,13 +544,13 @@
                         <td>
                             <c:choose>
                                 <c:when test="${starsMeters}">
-                                    <cti:imageButton key="add" type="submit"/>
+                                    <cti:button key="add" type="submit"/>
                                 </c:when>
                         
                                 <c:otherwise>
                                     <tags:pickerDialog extraArgs="${energyCompanyId}" id="meterPicker" type="availableMctPicker" destinationFieldId="meterId" immediateSelectMode="true"
                                         endAction="addMeter" linkType="none" />
-                                        <cti:imageButton key="add" type="button" onclick="javascript:meterPicker.show();"/>
+                                        <cti:button key="add" type="button" onclick="javascript:meterPicker.show();"/>
                                 </c:otherwise>
                             </c:choose>
                         </td>

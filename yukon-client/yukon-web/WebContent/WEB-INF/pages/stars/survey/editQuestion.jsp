@@ -123,9 +123,9 @@ questionTypeChanged = function() {
 
     <div class="actionArea">
         <cti:displayForPageEditModes modes="EDIT">
-            <tags:button nameKey="ok" type="submit"/>
+            <cti:button key="ok" type="submit"/>
         </cti:displayForPageEditModes>
-        <tags:button nameKey="cancel" onclick="parent.$('ajaxDialog').hide()"/>
+        <cti:button key="cancel" onclick="parent.$('ajaxDialog').hide()"/>
     </div>
 </form:form>
 

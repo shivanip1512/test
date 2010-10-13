@@ -13,8 +13,8 @@
     <input type="hidden" name="surveyQuestionId" value="${question.surveyQuestionId}"/>
 
     <div class="actionArea">
-        <tags:button nameKey="ok" onclick="submitFormViaAjax('ajaxDialog', 'confirmForm')"/>
-        <tags:button nameKey="cancel" onclick="parent.$('ajaxDialog').hide()"/>
+        <cti:button key="ok" onclick="submitFormViaAjax('ajaxDialog', 'confirmForm')"/>
+        <cti:button key="cancel" onclick="parent.$('ajaxDialog').hide()"/>
     </div>
 </form>
 

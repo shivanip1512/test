@@ -44,7 +44,7 @@
     </tags:boxContainer2>
 
     <div class="actionArea">
-        <tags:button nameKey="ok" onclick="parent.$('ajaxDialog').hide()"/>
+        <cti:button key="ok" onclick="parent.$('ajaxDialog').hide()"/>
     </div>
 
 </cti:msgScope>

@@ -1116,6 +1116,14 @@ input.formSubmit,
     padding-right: 10px;
 }
 
+button.formSubmit {
+    padding-bottom: 1px;
+}
+
+button.formSubmit span {
+    vertical-align: middle;
+}
+
 #logOutput { 
 	font-family: Courier, Courier, monospace; 
 	font-size: 12px;

@@ -130,7 +130,7 @@
 		<%-- ADD RULE --%>
 		<tr style="background-color:#EEE;">
 			<td colspan="3">
-                <cti:imageButton key="addAnotherDeviceGroup" type="submit" name="addRow"/>
+                <cti:button key="addAnotherDeviceGroup" type="submit" name="addRow"/>
 			</td>
 		</tr>
 	

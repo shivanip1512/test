@@ -9,7 +9,7 @@
 </h1>
 
 <div class="actionArea">
-    <tags:button nameKey="cancel" onclick="parent.$('ajaxDialog').hide()"/>
+    <cti:button key="cancel" onclick="parent.$('ajaxDialog').hide()"/>
 </div>
 
 </cti:msgScope>

@@ -1583,23 +1583,23 @@
             </description>
         </attribute>
     </tag>
-    
+
     <tag>
-        <name>imageButton</name>
-        <tag-class>com.cannontech.web.i18n.ImageButtonTag</tag-class>
+        <name>button</name>
+        <tag-class>com.cannontech.web.i18n.ButtonTag</tag-class>
         <body-content>empty</body-content>
         <description>
-            Outputs localized button with image and label.
+            Outputs localized button with optional image and label.
         </description>
         <attribute>
             <name>key</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                Base i18n key, with ".imageUrl", specifies the main image,
-                with ".label" for required label key, with ".hoverUrl" for
-                optional hover image and with ".hoverText" for optional hover
-                text 
+                Base i18n key.  Use with ".label" for label, with ".imageUrl"
+                for main image, with ".hoverUrl" for optional hover image and
+                with ".hoverText" for optional hover text.  At least one of
+                .label and .imageUrl is required.
             </description>
         </attribute>
         <attribute>
@@ -1623,7 +1623,7 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                button class, button class will always contian 'formSumbit'
+                button class, button class will always contain 'formSumbit'
             </description>
         </attribute>
         <attribute>

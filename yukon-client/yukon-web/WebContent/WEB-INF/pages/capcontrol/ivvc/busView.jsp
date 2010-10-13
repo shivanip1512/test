@@ -125,7 +125,7 @@
 					</div>
 				</cti:navigableHierarchy>
 				<br>
-				<cti:imageButton key="add" onclick="javascript:showZoneWizard('${zoneCreatorUrl}');"/>
+				<cti:button key="add" onclick="javascript:showZoneWizard('${zoneCreatorUrl}');"/>
 			</tags:boxContainer2>
 			<br>
 			<tags:boxContainer2 nameKey="busDetail" hideEnabled="true" showInitially="true">
