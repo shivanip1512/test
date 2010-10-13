@@ -269,6 +269,7 @@ function tempChange(idx, mode) {
 
 function validateTemp(input, idx, mode) {
     
+	var fTemp;
     var currentTemp = $F(input);
     var currentTempUnit = tempUnit;
     
@@ -277,19 +278,19 @@ function validateTemp(input, idx, mode) {
     
     if(isNaN(currentTemp)){
     	var existingTempInputFields = (mode == coolMode) ? tempCFields : tempHFields;
-        currentTemp = $F(existingTempInputFields[idx]);
+        fTemp = $F(existingTempInputFields[idx]);
     } else {
-    	currentTemp = getFahrenheitTemp(currentTemp, currentTempUnit);
+    	fTemp = getFahrenheitTemp(currentTemp, currentTempUnit);
     }
     
-    if(currentTemp < lowerLimit) {
-    	currentTemp = lowerLimit;
-    } else if(currentTemp > upperLimit) {
-    	currentTemp = upperLimit;
+    if(fTemp < lowerLimit) {
+    	fTemp = lowerLimit;
+    } else if(fTemp > upperLimit) {
+    	fTemp = upperLimit;
     }
     
     // Convert current temp to celsius if needed
-    var finalTemp = getConvertedTemp(currentTemp, currentTempUnit);
+    var finalTemp = getConvertedTemp(fTemp, currentTempUnit);
     
     $(input).value = finalTemp;
 }
