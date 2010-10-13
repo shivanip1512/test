@@ -48,7 +48,6 @@ RWDEFINE_COLLECTABLE( CtiCCSubstationBus, CTICCSUBSTATIONBUS_ID )
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus::CtiCCSubstationBus()
     : Controllable(0),
-      _ltcId(0),
       _parentId(0),
       _currentvarloadpointid(0),
       _currentvarloadpointvalue(0),
@@ -141,7 +140,6 @@ CtiCCSubstationBus::CtiCCSubstationBus()
 
 CtiCCSubstationBus::CtiCCSubstationBus(StrategyManager * strategyManager)
     : Controllable(strategyManager),
-      _ltcId(0),
       _parentId(0),
       _currentvarloadpointid(0),
       _currentvarloadpointvalue(0),
@@ -1559,16 +1557,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setDecimalPlaces(LONG places)
 {
     _decimalplaces = places;
     return *this;
-}
-
-long CtiCCSubstationBus::getLtcId()
-{
-    return _ltcId;
-}
-
-void CtiCCSubstationBus::setLtcId(long ltcId)
-{
-    _ltcId = ltcId;
 }
 
 LONG CtiCCSubstationBus::getNextTODStartTime()
@@ -9779,8 +9767,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         regressionB = right.regressionB;
         regressionC = right.regressionC;
 
-        _ltcId = right._ltcId;
-
         _insertDynamicDataFlag = right._insertDynamicDataFlag;
         _dirty = right._dirty;
     }
@@ -9944,8 +9930,6 @@ void CtiCCSubstationBus::restore(Cti::RowReader& rdr)
     setLastVoltPointTime(gInvalidCtiTime);
 
     setParentName("none");
-
-    setLtcId(0);
 }
 
 void CtiCCSubstationBus::setDynamicData(Cti::RowReader& rdr)

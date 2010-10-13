@@ -5597,62 +5597,6 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
             _pointDataHandler.addPoint(point.getPointId(),ltcId);
         }
     }
-
-    //Assign to subs
-    {
-        static const string sqlNoID =  "SELECT LTC.substationbusid, LTC.ltcId "
-                                       "FROM CCSubstationBusToLTC LTC";
-
-        Cti::Database::DatabaseConnection connection;
-        Cti::Database::DatabaseReader rdr(connection);
-
-        if( ltcId > 0 )
-        {
-            static const string sqlID = string(sqlNoID + " WHERE LTC.ltcId = ?");
-            rdr.setCommandText(sqlID);
-            rdr << ltcId;
-        }
-        else
-        {
-            rdr.setCommandText(sqlNoID);
-        }
-
-        rdr.execute();
-
-        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-        {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << loggedSQLstring << endl;
-            }
-        }
-
-        CtiCCSubstationBusPtr currentBus = NULL;
-
-        while(rdr())
-        {
-            int ltcId;
-            int subbusId;
-
-            rdr["substationbusid"] >> subbusId;
-            rdr["ltcId"] >> ltcId;
-
-            currentBus = findSubBusByPAObjectID(subbusId);
-            if (currentBus != NULL)
-            {
-                currentBus->setLtcId(ltcId);
-                _ltc_subbus_map[ltcId] = subbusId;
-            }
-            else
-            {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - ERROR: SubStation Bus with id: " << subbusId << " not found. Ltc with id: " << ltcId << " is assigned to it."  << endl;
-                }
-            }
-        }
-    }
 }
 
 /*---------------------------------------------------------------------------
@@ -5793,59 +5737,6 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                     //cCSubstationBuses->push_back(currentCCSubstationBus);
             }
 
-            {
-                static const string sqlNoID = "SELECT LTC.substationbusid, LTC.ltcId "
-                                              "FROM CCSubstationBusToLTC LTC";
-
-                Cti::Database::DatabaseConnection connection;
-                Cti::Database::DatabaseReader dbRdr(connection);
-
-                if( subBusId > 0 )
-                {
-                    static const string sqlID = string(sqlNoID + " WHERE LTC.substationbusid = ?");
-                    dbRdr.setCommandText(sqlID);
-                    dbRdr << subBusId;
-                }
-                else
-                {
-                    dbRdr.setCommandText(sqlNoID);
-                }
-
-                dbRdr.execute();
-
-                if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                {
-                    string loggedSQLstring = dbRdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
-                }
-
-                CtiCCSubstationBusPtr currentBus = NULL;
-
-                while(dbRdr())
-                {
-                    int ltcId;
-                    int busId;
-
-                    dbRdr["substationbusid"] >> busId;
-                    dbRdr["ltcId"] >> ltcId;
-
-                    currentBus = findSubBusByPAObjectID(busId);
-                    if (currentBus != NULL)
-                    {
-                        currentBus->setLtcId(ltcId);
-                    }
-                    else
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - ERROR: SubStation Bus with id: " << busId << " not found. Ltc with id: " << ltcId << " is assigned to it."  << endl;
-                        }
-                    }
-                }
-            }
             {
                 static const string sqlNoID = "SELECT SBL.substationid, SBL.substationbusid, SBL.displayorder "
                                               "FROM ccsubstationsubbuslist SBL";
@@ -8570,7 +8461,7 @@ void CtiCCSubstationBusStore::deleteLtcById(long ltcId)
         CtiCCSubstationBusPtr busPtr = findSubBusByPAObjectID(itr->second);
         if (busPtr != NULL)
         {
-            busPtr->setLtcId(0);
+//            busPtr->setLtcId(0);
         }
         _ltc_subbus_map.erase(ltcId);
     }
