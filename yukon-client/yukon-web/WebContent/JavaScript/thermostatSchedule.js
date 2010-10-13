@@ -341,10 +341,10 @@ function setTempUnits(newUnit){
     	if(timePeriod != currentTimePeriod){ 	//current time period has been dealt with above
 	    	var timeTemps = schedules['season'][timePeriod];
 	    	for(var j = 0; j < 4; j++){
-	    		timeTemps[j].coolTemp = getFahrenheitTemp(timeTemps[j].coolTemp, currentTempUnit);
-		    	timeTemps[j].coolTemp = getConvertedTemp(timeTemps[j].coolTemp, newUnit);
-		    	timeTemps[j].heatTemp = getFahrenheitTemp(timeTemps[j].heatTemp, currentTempUnit);
-		    	timeTemps[j].heatTemp = getConvertedTemp(timeTemps[j].heatTemp, newUnit);
+	    		var coolTempF = getFahrenheitTemp(timeTemps[j].coolTemp, currentTempUnit);
+	    		timeTemps[j].coolTemp = getConvertedTemp(coolTempF, newUnit);
+	    		var heatTempF = getFahrenheitTemp(timeTemps[j].heatTemp, currentTempUnit);
+	    		timeTemps[j].heatTemp = getConvertedTemp(heatTempF, newUnit);
 	    	}
     	}
     }
