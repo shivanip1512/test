@@ -25,9 +25,9 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -50,10 +50,12 @@ import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigType;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardwareConfig.service.HardwareConfigService;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.action.HardwareAction;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -88,6 +90,7 @@ public class OperatorHardwareConfigController {
     private DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao;
     private InventoryDao inventoryDao;
     private LoadGroupDao loadGroupDao;
+    private StaticLoadGroupMappingDao staticLoadGroupMappingDao;
     private AssignedProgramDao assignedProgramDao;
     private RolePropertyDao rolePropertyDao;
     private EnrollmentDao enrollmentDao;
@@ -162,13 +165,31 @@ public class OperatorHardwareConfigController {
             }});
         model.addAttribute("enrollments", enrollments);
 
+        String batchedSwitchCommandToggle =
+            rolePropertyDao.getPropertyStringValue(YukonRoleProperty.BATCHED_SWITCH_COMMAND_TOGGLE,
+                                                   userContext.getYukonUser());
+        boolean useStaticLoadGroups =
+            StarsUtils.BATCH_SWITCH_COMMAND_MANUAL.equals(batchedSwitchCommandToggle)
+                && VersionTools.staticLoadGroupMappingExists();
+
         Map<Integer, List<LoadGroup>> loadGroupsByProgramId = Maps.newHashMap();
         model.addAttribute("loadGroupsByProgramId", loadGroupsByProgramId);
         List<ProgramEnrollmentDto> programEnrollments =
             Lists.newArrayListWithCapacity(enrollments.size());
-        Set<Integer> assignedProgramSet = Sets.newHashSet();
+        Map<Integer, AssignedProgram> assignedPrograms = Maps.newHashMap();
         for (DisplayableInventoryEnrollment enrollment : enrollments) {
-            List<LoadGroup> loadGroups = loadGroupDao.getByProgramId(enrollment.getProgramId());
+            AssignedProgram assignedProgram =
+                assignedProgramDao.getById(enrollment.getAssignedProgramId());
+            assignedPrograms.put(assignedProgram.getAssignedProgramId(), assignedProgram);
+            List<LoadGroup> loadGroups = null;
+            if (useStaticLoadGroups) {
+                List<Integer> loadGroupIds =
+                    staticLoadGroupMappingDao.getLoadGroupIdsForApplianceCategory(assignedProgram.getApplianceCategoryId());
+                loadGroups = loadGroupDao.getByIds(loadGroupIds);
+            } else {
+                loadGroups = loadGroupDao.getByProgramId(enrollment.getProgramId());
+            }
+
             loadGroupsByProgramId.put(enrollment.getAssignedProgramId(), loadGroups);
 
             ProgramEnrollmentDto programEnrollment = new ProgramEnrollmentDto();
@@ -176,23 +197,16 @@ public class OperatorHardwareConfigController {
             programEnrollment.setLoadGroupId(enrollment.getLoadGroupId());
             programEnrollment.setRelay(enrollment.getRelay());
             programEnrollments.add(programEnrollment);
-
-            assignedProgramSet.add(enrollment.getAssignedProgramId());
         }
-        List<AssignedProgram> assignedProgramsList =
-            assignedProgramDao.getByIds(assignedProgramSet);
+        model.addAttribute("assignedPrograms", assignedPrograms);
         if (initConfig) {
             configuration.setProgramEnrollments(programEnrollments);
         }
 
         Set<Integer> applianceCategoryIds = Sets.newHashSet();
-        Map<Integer, AssignedProgram> assignedPrograms = Maps.newHashMap();
-        for (AssignedProgram assignedProgram : assignedProgramsList) {
+        for (AssignedProgram assignedProgram : assignedPrograms.values()) {
             applianceCategoryIds.add(assignedProgram.getApplianceCategoryId());
-            assignedPrograms.put(assignedProgram.getAssignedProgramId(),
-                                 assignedProgram);
         }
-        model.addAttribute("assignedPrograms", assignedPrograms);
 
         Map<Integer, ApplianceCategory> applianceCategories =
             applianceCategoryDao.getByApplianceCategoryIds(applianceCategoryIds);
@@ -460,6 +474,12 @@ public class OperatorHardwareConfigController {
     @Autowired
     public void setLoadGroupDao(LoadGroupDao loadGroupDao) {
         this.loadGroupDao = loadGroupDao;
+    }
+
+    @Autowired
+    public void setStaticLoadGroupMappingDao(
+            StaticLoadGroupMappingDao staticLoadGroupMappingDao) {
+        this.staticLoadGroupMappingDao = staticLoadGroupMappingDao;
     }
 
     @Autowired

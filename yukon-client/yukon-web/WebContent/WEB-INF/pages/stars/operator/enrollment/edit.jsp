@@ -48,10 +48,10 @@ updateOKButton = function() {
     <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".group">
-                <c:if test="${fn:length(loadGroups) == 0}">
+                <c:if test="${empty loadGroups}">
                     <i:inline key=".groupNotApplicable"/>
                 </c:if>
-                <c:if test="${fn:length(loadGroups) > 0}">
+                <c:if test="${!empty loadGroups}">
                     <c:set var="selectedLoadGroupId" value="${programEnrollment.loadGroupId}"/>
                     <form:select path="loadGroupId" items="${loadGroups}"
                         itemLabel="name" itemValue="paoIdentifier.paoId"/>

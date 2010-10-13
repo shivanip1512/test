@@ -1,7 +1,6 @@
 package com.cannontech.web.stars.dr.operator.enrollment;
 
 import java.util.List;
-
 import java.util.Map;
 import java.util.Set;
 
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -30,7 +30,9 @@ import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.Displayab
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
+import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -50,6 +52,7 @@ public class OperatorEnrollmentController {
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private PaoDao paoDao;
     private LoadGroupDao loadGroupDao;
+    private StaticLoadGroupMappingDao staticLoadGroupMappingDao;
     private AssignedProgramDao assignedProgramDao;
     private EnrollmentDao enrollmentDao;
     private EnrollmentHelperService enrollmentHelperService;
@@ -137,7 +140,23 @@ public class OperatorEnrollmentController {
 
         AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
         model.addAttribute("assignedProgram", assignedProgram);
-        List<LoadGroup> loadGroups = loadGroupDao.getByProgramId(assignedProgram.getProgramId());
+        List<LoadGroup> loadGroups = null;
+        boolean trackHardwareAddressing =
+            rolePropertyDao.checkProperty(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING,
+                                          userContext.getYukonUser());
+        String batchedSwitchCommandToggle =
+            rolePropertyDao.getPropertyStringValue(YukonRoleProperty.BATCHED_SWITCH_COMMAND_TOGGLE,
+                                                   userContext.getYukonUser());
+        boolean useStaticLoadGroups =
+            StarsUtils.BATCH_SWITCH_COMMAND_MANUAL.equals(batchedSwitchCommandToggle)
+                && VersionTools.staticLoadGroupMappingExists();
+        if (useStaticLoadGroups) {
+            List<Integer> loadGroupIds =
+                staticLoadGroupMappingDao.getLoadGroupIdsForApplianceCategory(assignedProgram.getApplianceCategoryId());
+            loadGroups = loadGroupDao.getByIds(loadGroupIds);
+        } else if (!trackHardwareAddressing) {
+            loadGroups = loadGroupDao.getByProgramId(assignedProgram.getProgramId());
+        }
         model.addAttribute("loadGroups", loadGroups);
 
         Map<Integer, DisplayableEnrollmentInventory> inventoryById = Maps.newHashMap();
@@ -305,7 +324,13 @@ public class OperatorEnrollmentController {
     public void setLoadGroupDao(LoadGroupDao loadGroupDao) {
         this.loadGroupDao = loadGroupDao;
     }
-    
+
+    @Autowired
+    public void setStaticLoadGroupMappingDao(
+            StaticLoadGroupMappingDao staticLoadGroupMappingDao) {
+        this.staticLoadGroupMappingDao = staticLoadGroupMappingDao;
+    }
+
     @Autowired
     public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
         this.assignedProgramDao = assignedProgramDao;

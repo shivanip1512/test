@@ -12,6 +12,8 @@ public interface LoadGroupDao {
 
     public LoadGroup getById(int loadGroupId);
 
+    public List<LoadGroup> getByIds(Iterable<Integer> loadGroupIds);
+
     public LoadGroup getByLoadGroupName(String loadGroupName);
     
     /**

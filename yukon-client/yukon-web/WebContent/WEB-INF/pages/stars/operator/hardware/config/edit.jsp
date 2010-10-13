@@ -41,9 +41,8 @@
                 <c:set var="programId" value="${enrollment.assignedProgramId}"/>
                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
                     <td>
-                        <spring:escapeBody htmlEscape="true">
-                            ${enrollment.programName.programName}
-                        </spring:escapeBody>
+                        <c:set var="assignedProgram" value="${assignedPrograms[enrollment.assignedProgramId]}"/>
+                        <dr:assignedProgramName assignedProgram="${assignedPrograms[enrollment.assignedProgramId]}"/>
                     </td>
                     <td>
                         <spring:escapeBody htmlEscape="true">

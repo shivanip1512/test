@@ -6,9 +6,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
-import com.cannontech.stars.core.dao.StarsApplianceDao;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.StarsStaticLoadGroupMapping;
 
@@ -16,7 +17,7 @@ public class StaticLoadGroupMappingDaoImpl implements StaticLoadGroupMappingDao 
 
     private static final String selectLoadGroupSql;
     private static final StarsStaticLoadGroupRowMapper loadGroupRowMapper = new StarsStaticLoadGroupRowMapper();
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
 
     static {
         selectLoadGroupSql = "SELECT distinct LoadGroupID, ApplianceCategoryID, ZipCode, ConsumptionTypeID, " 
@@ -35,7 +36,7 @@ public class StaticLoadGroupMappingDaoImpl implements StaticLoadGroupMappingDao 
                 criteria.getApplianceCategoryID(), criteria.getZipCode() + "%",
                 criteria.getConsumptionTypeID(), criteria.getSwitchTypeID() };
 
-        List<StarsStaticLoadGroupMapping> loadGroups = simpleJdbcTemplate.query(selectLoadGroupSql,
+        List<StarsStaticLoadGroupMapping> loadGroups = yukonJdbcTemplate.query(selectLoadGroupSql,
                                                                                 loadGroupRowMapper,
                                                                                 loadGroupParams);
         if (loadGroups.size() > 0) {
@@ -43,6 +44,15 @@ public class StaticLoadGroupMappingDaoImpl implements StaticLoadGroupMappingDao 
         }
 
         return loadGroup;
+    }
+
+    @Override
+    public List<Integer> getLoadGroupIdsForApplianceCategory(
+            int applianceCategoryId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT loadGroupId FROM staticLoadGroupMapping");
+        sql.append("WHERE applianceCategoryId").eq(applianceCategoryId);
+        return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
     }
 
     public static class StarsStaticLoadGroupRowMapper implements
@@ -61,7 +71,7 @@ public class StaticLoadGroupMappingDaoImpl implements StaticLoadGroupMappingDao 
     }
     
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setSimpleJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 }

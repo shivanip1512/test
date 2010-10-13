@@ -35,6 +35,7 @@
     <entry key="yukon.web.modules.operator.hardwareConfig.enableCommandSent">Enable command sent.</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.enableCommandFailed">Enable command failed with error "{0}".</entry>
 
+    <entry key="yukon.web.modules.operator.hardwareConfig.virtualProgramName">Virtual Program {0}</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.groupNotApplicable">Not Applicable</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.config">Config</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.config.description">Send device configuration out to the field device immediately.</entry>

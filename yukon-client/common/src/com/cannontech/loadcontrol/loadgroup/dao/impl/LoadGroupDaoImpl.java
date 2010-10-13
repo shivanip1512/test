@@ -18,6 +18,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -72,7 +73,25 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
 
     }
 
-    
+    @Override
+    public List<LoadGroup> getByIds(Iterable<Integer> loadGroupIds) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append(loadGroupSQLHeader);
+                sql.append("WHERE PAO.paobjectId").in(subList);
+                sql.append("AND PAO.paoClass").eq(DeviceClasses.STRING_CLASS_GROUP);
+                sql.append("AND PAO.category").eq(PAOGroups.STRING_CAT_DEVICE);
+                return sql;
+            }};
+        List<LoadGroup> loadGroups =
+            template.query(sqlGenerator, loadGroupIds,
+                           loadGroupDatabaseResultRowMapper());
+        return loadGroups;
+    }
+
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public LoadGroup getByLoadGroupName(String loadGroupName){
