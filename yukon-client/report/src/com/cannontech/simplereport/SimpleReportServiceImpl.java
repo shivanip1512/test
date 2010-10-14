@@ -20,19 +20,17 @@ import org.apache.commons.lang.StringUtils;
 import org.jfree.report.ElementAlignment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.analysis.report.ColumnLayoutData;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.LoadableModel;
-import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService.Format;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.input.InputRoot;
@@ -45,7 +43,7 @@ public class SimpleReportServiceImpl implements SimpleReportService {
     
     private DateFormattingService dateFormattingService = null;
     private PointFormattingService pointFormattingService = null;
-    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
+    private ObjectFormattingService objectFormattingService = null;
 
     // BEAN AWARE
     //private BeanFactory beanFactory; // OR...
@@ -72,21 +70,14 @@ public class SimpleReportServiceImpl implements SimpleReportService {
     
     public String formatData(String format, Object data, YukonUserContext userContext, PointFormattingService cachedPointFormatter) {
         
-        if(data == null) {
+        if (data == null) {
             return "";
         }
 
         String formattedData = null;
 
-        // MessageSourceResolvable
-        if (data instanceof MessageSourceResolvable) {
-            MessageSourceAccessor messageSourceAccessor = 
-                messageSourceResolver.getMessageSourceAccessor(userContext);
-            formattedData = messageSourceAccessor.getMessage((MessageSourceResolvable) data);
-        }
-
-        else if(StringUtils.isBlank(format)) {
-            formattedData = data.toString();
+        if (StringUtils.isBlank(format)) {
+            formattedData = objectFormattingService.formatObjectAsString(data, userContext);
         }
 
         // Date (known DateFormatEnum)
@@ -104,24 +95,28 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         }
 
         // Number
-        else if(data instanceof Number) {
+        else if (data instanceof Number) {
             DecimalFormat formatter = new DecimalFormat(format);
             formattedData = formatter.format(data);
         }
 
         // String
-        else if(data instanceof String) {
+        else if (data instanceof String) {
             formattedData = String.format(format, data);
         }
 
         // PointValueHolder
-        else if(data instanceof PointValueHolder) {
+        else if (data instanceof PointValueHolder) {
             try {
                 Format formatEnum = PointFormattingService.Format.valueOf(format);
                 formattedData = cachedPointFormatter.getValueString((PointValueHolder)data, formatEnum, userContext);
             } catch (IllegalArgumentException e) {
                 formattedData = cachedPointFormatter.getValueString((PointValueHolder)data, format, userContext);
             }
+        }
+
+        else {
+            formattedData = objectFormattingService.formatObjectAsString(data, userContext);
         }
 
         return formattedData;
@@ -355,8 +350,8 @@ public class SimpleReportServiceImpl implements SimpleReportService {
     }
 
     @Autowired
-    public void setMessageSourceResolver(
-            YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
+    public void setObjectFormattingService(
+            ObjectFormattingService objectFormattingService) {
+        this.objectFormattingService = objectFormattingService;
     }
 }

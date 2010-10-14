@@ -8,9 +8,11 @@ import java.util.List;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.NoSuchMessageException;
 
@@ -122,7 +124,7 @@ public class OptOutControllerHelper {
     private List<Result> translateSurveyResults(int accountId,
             String accountNumber, OptOutBackingBean optOutBackingBean) {
         List<Result> retVal = Lists.newArrayList();
-        DateTime now = new DateTime();
+        ReadableInstant now = new Instant();
 
         for (SurveyResult surveyResult : optOutBackingBean.getSurveyResults()) {
             List<ResultAnswer> resultAnswers = Lists.newArrayList();

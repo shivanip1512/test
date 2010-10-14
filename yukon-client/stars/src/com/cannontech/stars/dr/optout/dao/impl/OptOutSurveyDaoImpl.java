@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
-import org.joda.time.DateTime;
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -208,7 +208,7 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
     public List<SurveyResult> findSurveyResults(int surveyId,
             int questionId, Iterable<Integer> answerIds,
             boolean includeOtherAnswers, boolean includeUnanswered,
-            DateTime begin, DateTime end) {
+            ReadableInstant begin, ReadableInstant end) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT r.surveyResultId, r.surveyId, r.whenTaken,");
         sql.append(    "r.accountId, r.accountNumber, ra.surveyResultAnswerId,");

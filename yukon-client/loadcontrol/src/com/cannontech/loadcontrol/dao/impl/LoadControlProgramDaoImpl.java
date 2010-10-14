@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.Duration;
-import org.joda.time.Instant;
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -237,14 +237,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
     }
 
     @Override
-    public ProgramControlHistory findHistoryForProgramAtTime(int programId, Instant when) {
-        SqlStatementBuilder baseQuery = new SqlStatementBuilder();
-        baseQuery.append("SELECT ph.programId, ph.programName, gh.lmProgramGearHistoryId,");
-        baseQuery.append(    "gh.lmProgramHistoryId, gh.eventTime, gh.action,");
-        baseQuery.append(    "gh.username, gh.gearName, gh.gearId, gh.reason");
-        baseQuery.append("FROM lmProgramGearHistory gh");
-        baseQuery.append(    "JOIN lmProgramHistory ph ON gh.lmProgramHistoryId = ph.lmProgramHistoryId");
-
+    public ProgramControlHistory findHistoryForProgramAtTime(int programId, ReadableInstant when) {
         // First, find the last "start" event before the given time.
 
         // We're assuming control can't happen for more than about 30 days so
@@ -252,32 +245,47 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         // but a month is what baseProgramControlHistory above is using so
         // we'll stick to that for now.
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(baseQuery);
-        sql.append("WHERE gh.eventTime").lte(when);
-        sql.append(    "AND gh.eventTime").gt(when.minus(Duration.standardDays(30)));
-        sql.append(    "AND ph.programId").eq(programId);
-        sql.append(    "AND gh.action").eq("Start");
-        sql.append("ORDER BY gh.eventTime DESC");
-        List<LmProgramGearHistory> startList =
-            yukonJdbcOperations.queryForLimitedResults(sql, new LmProgramGearHistoryMapper(), 1);
-        if (startList.size() < 1) {
+        sql.append("SELECT *");
+        sql.append("FROM (SELECT ph.programId, ph.programName, gh.lmProgramGearHistoryId,");
+        sql.append(           "gh.lmProgramHistoryId, gh.eventTime, gh.action,");
+        sql.append(           "gh.username, gh.gearName, gh.gearId, gh.reason,");
+        sql.append(           "row_number() OVER (ORDER BY gh.eventTime DESC) AS rowNumber");
+        sql.append(      "FROM lmProgramGearHistory gh");
+        sql.append(          "JOIN lmProgramHistory ph ON gh.lmProgramHistoryId = ph.lmProgramHistoryId");
+        sql.append(      "WHERE gh.eventTime").lte(when);
+        sql.append(          "AND gh.eventTime").gt(when.toInstant().minus(Duration.standardDays(30)));
+        sql.append(          "AND ph.programId").eq(programId);
+        sql.append(          "AND gh.action").eq("Start");
+        sql.append(      ") f");
+        sql.append("WHERE rowNumber = 1");
+        LmProgramGearHistory startHist;
+        try {
+            startHist = yukonJdbcOperations.queryForObject(sql, new LmProgramGearHistoryMapper());
+        } catch (EmptyResultDataAccessException erdae) {
             return null;
         }
 
         // now find the first "stop" event after the last start
-        LmProgramGearHistory startHist = startList.get(0);
         sql = new SqlStatementBuilder();
-        sql.append(baseQuery);
-        sql.append("WHERE gh.eventTime").gt(when);
-        sql.append(    "AND gh.EventTime").lt(when.plus(Duration.standardDays(30)));
-        sql.append(    "AND ph.programId").eq(programId);
-        sql.append("ORDER BY gh.eventTime ASC");
-        List<LmProgramGearHistory> stopList =
-            yukonJdbcOperations.queryForLimitedResults(sql, new LmProgramGearHistoryMapper(), 1);
+        sql.append("SELECT *");
+        sql.append("FROM (SELECT ph.programId, ph.programName, gh.lmProgramGearHistoryId,");
+        sql.append(           "gh.lmProgramHistoryId, gh.eventTime, gh.action,");
+        sql.append(           "gh.username, gh.gearName, gh.gearId, gh.reason,");
+        sql.append(           "row_number() OVER (ORDER BY gh.eventTime ASC) AS rowNumber");
+        sql.append(      "FROM lmProgramGearHistory gh");
+        sql.append(          "JOIN lmProgramHistory ph ON gh.lmProgramHistoryId = ph.lmProgramHistoryId");
+        sql.append(      "WHERE gh.eventTime").gt(when);
+        sql.append(          "AND gh.EventTime").lt(when.toInstant().plus(Duration.standardDays(30)));
+        sql.append(          "AND ph.programId").eq(programId);
+        sql.append(      ") f");
+        sql.append("WHERE rowNumber = 1");
+        LmProgramGearHistory stopHist = null;
+        try {
+            stopHist = yukonJdbcOperations.queryForObject(sql, new LmProgramGearHistoryMapper());
+        } catch (EmptyResultDataAccessException erdae) {
+        }
 
-        LmProgramGearHistory stoptHist = stopList.size() == 0 ? null : stopList.get(0);
-
-        ProgramControlHistory retVal = joinGearHistoriesIntoProgramHistory(startHist, stoptHist);
+        ProgramControlHistory retVal = joinGearHistoriesIntoProgramHistory(startHist, stopHist);
         return retVal;
     }
 

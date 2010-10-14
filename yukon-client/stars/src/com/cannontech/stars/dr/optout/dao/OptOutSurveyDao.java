@@ -2,7 +2,7 @@ package com.cannontech.stars.dr.optout.dao;
 
 import java.util.List;
 
-import org.joda.time.DateTime;
+import org.joda.time.ReadableInstant;
 
 import com.cannontech.stars.dr.optout.model.OptOutSurvey;
 import com.cannontech.stars.dr.optout.model.SurveyResult;
@@ -27,5 +27,5 @@ public interface OptOutSurveyDao {
     public List<SurveyResult> findSurveyResults(int surveyId,
             int questionId, Iterable<Integer> answerIds,
             boolean includeOtherAnswers, boolean includeUnanswered,
-            DateTime begin, DateTime end);
+            ReadableInstant begin, ReadableInstant end);
 }

@@ -139,7 +139,7 @@ public class SurveyReportController {
     public String report(ModelMap model,
             @ModelAttribute ReportConfig reportConfig,
             BindingResult bindingResult, FlashScope flashScope,
-            YukonUserContext userContext) {
+            YukonUserContext userContext) throws Exception {
         int surveyId = reportConfig.getSurveyId();
         Survey survey = verifyEditable(surveyId, userContext);
         model.addAttribute("survey", survey);
@@ -190,13 +190,8 @@ public class SurveyReportController {
         Map<String, String> inputMap = InputUtil.extractProperties(reportDefinition.getInputs(), reportConfig);
         model.addAttribute("inputMap", inputMap);
 
-        BareReportModel reportModel;
-        try {
-            reportModel = simpleReportService.getReportModel(reportDefinition,
-                                                             inputMap, true);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        BareReportModel reportModel =
+            simpleReportService.getReportModel(reportDefinition, inputMap, true);
 
         ColumnLayoutData[] bodyColumns = reportDefinition.getReportLayoutData().getBodyColumns();
         List<ColumnInfo> columnInfo = simpleReportService.buildColumnInfoListFromColumnLayoutData(bodyColumns);

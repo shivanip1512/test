@@ -396,7 +396,7 @@ public class SurveyDaoImpl implements SurveyDao {
         sql.append("INSERT INTO surveyResult (surveyResultId,");
         sql.append("surveyId, accountId, accountNumber, whenTaken)");
         sql.values(surveyResultId, result.getSurveyId(), result.getAccountId(),
-                   result.getAccountNumber(), result.getWhenTaken().toDate());
+                   result.getAccountNumber(), result.getWhenTaken());
         yukonJdbcTemplate.update(sql);
 
         for (ResultAnswer answer : result.getResultAnswers()) {
