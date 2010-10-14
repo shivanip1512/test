@@ -73,6 +73,11 @@ public class YukonResultSet {
         return rs.getInt(columnLabel);
     }
 
+    public Integer getNullableInt(String columnLabel) throws SQLException {
+        int retVal = rs.getInt(columnLabel);
+        return rs.wasNull() ? null : retVal;
+    }
+
     public long getLong(String columnLabel) throws SQLException {
         return rs.getLong(columnLabel);
     }

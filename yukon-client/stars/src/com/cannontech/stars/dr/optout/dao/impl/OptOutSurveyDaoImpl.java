@@ -252,8 +252,7 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
                 retVal.setSurveyResultId(rs.getInt("surveyResultId"));
                 retVal.setSurveyId(rs.getInt("surveyId"));
                 retVal.setWhenTaken(rs.getInstant("whenTaken"));
-                int accountId = rs.getInt("accountId");
-                retVal.setAccountId(rs.wasNull() ? null : accountId);
+                retVal.setAccountId(rs.getNullableInt("accountId"));
                 retVal.setAccountNumber(rs.getString("accountNumber"));
                 int surveyQuestionAnswerId = rs.getInt("surveyQuestionAnswerId");
                 if (rs.wasNull()) {
