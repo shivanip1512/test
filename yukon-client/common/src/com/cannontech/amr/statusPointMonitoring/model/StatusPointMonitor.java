@@ -25,7 +25,7 @@ public class StatusPointMonitor implements PointMonitor, Comparable<StatusPointM
 	
 	public StatusPointMonitor() {
 	    setGroupName(SystemGroupEnum.ROOT.getFullPath());
-        setAttribute((Attribute)BuiltInAttribute.FAULT_STATUS);
+        setAttribute(BuiltInAttribute.FAULT_STATUS);
         setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
 	}
 	

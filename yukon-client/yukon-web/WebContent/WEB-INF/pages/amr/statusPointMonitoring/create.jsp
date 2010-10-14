@@ -9,7 +9,7 @@
 
 <cti:standardPage module="amr" page="statusPointMonitorCreator">
 
-    <cti:standardMenu menuSelection="" />
+    <cti:standardMenu menuSelection="meters" />
     
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
@@ -22,8 +22,6 @@
     
     <c:set var="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}"/>
     
-    <cti:flashScopeMessages/>
-
     <%-- CREATE FORM --%>
     <form:form commandName="statusPointMonitor" id="basicInfoForm" action="/spring/amr/statusPointMonitoring/create" method="post">
     

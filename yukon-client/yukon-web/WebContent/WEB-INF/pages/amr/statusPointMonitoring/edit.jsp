@@ -9,7 +9,7 @@
 
 <cti:standardPage module="amr" page="statusPointMonitorEditor">
 
-    <cti:standardMenu menuSelection="" />
+    <cti:standardMenu menuSelection="meters" />
     
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />

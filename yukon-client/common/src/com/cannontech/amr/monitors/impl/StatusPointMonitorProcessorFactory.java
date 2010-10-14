@@ -10,9 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.monitors.message.OutageJmsMessage;
+import com.cannontech.amr.statusPointMonitoring.dao.StatusPointMonitorDao;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitorProcessor;
-import com.cannontech.amr.statusPointMonitoring.dao.StatusPointMonitorDao;
+import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
@@ -85,7 +86,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
                 
                 PointValueHolder nextValue = richPointData.getPointValue();
                 
-                log.debug("Point " + richPointData.getPaoPointIdentifier() + " caught by Status Point Monitor: " + statusPointMonitor + " with value: " + nextValue);
+                LogHelper.debug(log, "Point %s caught by Status Point Monitor: %s with value: %s", richPointData.getPaoPointIdentifier(), statusPointMonitor, nextValue);
                 
                 for (StatusPointMonitorProcessor statusPointMonitorProcessor : statusPointMonitor.getProcessors()) {
                     
