@@ -113,7 +113,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(bus.getName());
-		pao.setType(CapControlType.SUBBUS.getDisplayValue());
+		pao.setType(CapControlType.SUBBUS.getDbValue());
 		pao.setDescription(bus.getDescription());
 		pao.setDisableFlag(bus.getDisabled() ? 'Y' : 'N');
 		
@@ -183,7 +183,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(bus.getName());
-		pao.setType(CapControlType.SUBBUS.getDisplayValue());
+		pao.setType(CapControlType.SUBBUS.getDbValue());
 		pao.setDescription(bus.getDescription());
 		pao.setPaObjectID(bus.getId());
 		pao.setDisableFlag(bus.getDisabled() ? 'Y' : 'N');

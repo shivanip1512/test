@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
-import com.cannontech.capcontrol.service.LtcService;
+import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DaoFactory;
@@ -17,18 +17,18 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Lists;
 
-public class LoadTapChanger extends CapControlYukonPAOBase {
-    private List<LtcPointMapping> pointMappings;
+public class VoltageRegulator extends CapControlYukonPAOBase {
+    private List<VoltageRegulatorPointMapping> pointMappings;
 
-    public LoadTapChanger() {
+    public VoltageRegulator() {
         super();
         setPAOCategory( PAOGroups.STRING_CAT_CAPCONTROL );
         setPAOClass( DeviceClasses.STRING_CLASS_VOLTAGEREGULATOR );
     }
 
-    public LoadTapChanger(Integer ltcId) {
+    public VoltageRegulator(Integer regulatorId) {
         this();
-        setCapControlPAOID( ltcId );
+        setCapControlPAOID( regulatorId );
     }
         
     @Override
@@ -43,7 +43,6 @@ public class LoadTapChanger extends CapControlYukonPAOBase {
 
     @Override
     public void delete() throws SQLException {
-        delete("CCSubstationBusToLTC", "LtcId", getCapControlPAOID() );
         delete("ExtraPaoPointAssignment", "PaobjectId", getCapControlPAOID() );
         super.delete();
     }
@@ -68,10 +67,13 @@ public class LoadTapChanger extends CapControlYukonPAOBase {
         super.update();
         ExtraPaoPointAssignmentDao eppad = YukonSpringHook.getBean("extraPaoPointAssignmentDao", ExtraPaoPointAssignmentDao.class);
         List<ExtraPaoPointMapping> eppMappings = Lists.newArrayList();
-        for(LtcPointMapping mapping : pointMappings) {
+        for(VoltageRegulatorPointMapping mapping : pointMappings) {
             eppMappings.add(mapping.getExtraPaoPointMapping());
         }
-        eppad.saveAssignments(new PaoIdentifier(getCapControlPAOID(), PaoType.LOAD_TAP_CHANGER) , eppMappings);
+        
+        PaoType paoType = PaoType.getForDbString(getPAOType());
+        
+        eppad.saveAssignments(new PaoIdentifier(getCapControlPAOID(), paoType) , eppMappings);
         pointMappings = null;
     }
 
@@ -80,13 +82,13 @@ public class LoadTapChanger extends CapControlYukonPAOBase {
         return null;
     }
     
-    public List<LtcPointMapping> getLtcPointMappings(){
+    public List<VoltageRegulatorPointMapping> getPointMappings(){
         if(pointMappings == null){
-            LtcService ltcService = YukonSpringHook.getBean("ltcService", LtcService.class);
-            pointMappings = ltcService.getLtcPointMappings(getCapControlPAOID());
+            VoltageRegulatorService voltageRegulatorService = YukonSpringHook.getBean("voltageRegulatorService", VoltageRegulatorService.class);
+            pointMappings = voltageRegulatorService.getPointMappings(getCapControlPAOID());
             Collections.sort(pointMappings);
             int index = 0;
-            for(LtcPointMapping mapping : pointMappings) {
+            for(VoltageRegulatorPointMapping mapping : pointMappings) {
                 mapping.setIndex(index);
                 index++;
             }

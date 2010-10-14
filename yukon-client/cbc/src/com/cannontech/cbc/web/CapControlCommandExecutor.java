@@ -2,6 +2,7 @@ package com.cannontech.cbc.web;
 
 import java.util.Date;
 import java.util.List;
+
 import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.point.PointQuality;
@@ -13,13 +14,13 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.yukon.cbc.CCVerifySubBus;
+import com.cannontech.yukon.cbc.CCVerifySubStation;
+import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.CapControlCommand;
 import com.cannontech.yukon.cbc.DynamicCommand;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.cbc.TempMoveCapBank;
-import com.cannontech.yukon.cbc.CCVerifySubBus;
-import com.cannontech.yukon.cbc.CCVerifySubStation;
-import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.DynamicCommand.CommandType;
 import com.cannontech.yukon.cbc.DynamicCommand.Parameter;
 
@@ -101,11 +102,6 @@ public class CapControlCommandExecutor
                 executeCBCCommand(paoId, optParams);
                 break;
             }
-            case LTC: {
-                rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
-                executeLtcCommand(cmdId,paoId);
-                break;
-            }
             default : throw new UnsupportedOperationException("Unsupported ControlType: " + controlType +
                                                               "cannot execute command: " + cmdId +
                                                               " for pao: " + paoId );
@@ -169,11 +165,7 @@ public class CapControlCommandExecutor
 				cmdId );			
 		}
 	}
-    
-    private void executeLtcCommand(int cmdId, int paoId) {
-        executeCommand(paoId,cmdId);
-    }
-    
+	    
     private void executeVerifySubstation(int paoId, int cmdId) {
         int action = 0;
         if (cmdId == CapControlCommand.CMD_DISABLE_VERIFY)

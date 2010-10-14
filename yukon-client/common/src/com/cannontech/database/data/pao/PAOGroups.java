@@ -66,8 +66,12 @@ public final static int getCapControlType(String typeString)
         return CAP_CONTROL_SPECIAL_AREA;
     else if (typeString.equalsIgnoreCase(STRING_CAPCONTROL_SUBSTATION))
         return CAP_CONTROL_SUBSTATION;
-    else if (typeString.equalsIgnoreCase(STRING_CAPCONTROL_LTC))
+    else if (typeString.equalsIgnoreCase(VoltageRegulatorType.LOAD_TAP_CHANGER.getDbValue()))
         return CAP_CONTROL_LTC;
+    else if (typeString.equalsIgnoreCase(VoltageRegulatorType.GANG_OPERATED.getDbValue()))
+        return GANG_OPERATED_REGULATOR;
+    else if (typeString.equalsIgnoreCase(VoltageRegulatorType.PHASE_OPERATED.getDbValue()))
+        return PHASE_OPERATED_REGULATOR;
     else
 		return INVALID;
 }
@@ -434,6 +438,10 @@ public final static String getPAOTypeString(int type)
             return STRING_CAPCONTROL_SPECIAL_AREA;
 		case CAP_CONTROL_LTC:
             return STRING_CAPCONTROL_LTC;
+		case GANG_OPERATED_REGULATOR:
+            return STRING_GANG_OPERATED_REGULATOR;
+		case PHASE_OPERATED_REGULATOR:
+            return STRING_PHASE_OPERATED_REGULATOR;
 
 		//ports
 		case LOCAL_DIRECT:

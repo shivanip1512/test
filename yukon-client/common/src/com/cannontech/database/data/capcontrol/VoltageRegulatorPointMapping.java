@@ -4,7 +4,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.search.FilterType;
 import com.cannontech.core.dao.ExtraPaoPointMapping;
 
-public class LtcPointMapping implements Comparable<LtcPointMapping>{
+public class VoltageRegulatorPointMapping implements Comparable<VoltageRegulatorPointMapping>{
 
     private ExtraPaoPointMapping extraPaoPointMapping;
     private String paoName; /* This is the name of the pao that the point is actually attached to, not the pao it's being mapped to. */
@@ -85,7 +85,7 @@ public class LtcPointMapping implements Comparable<LtcPointMapping>{
     }
 
     @Override
-    public int compareTo(LtcPointMapping o) {
+    public int compareTo(VoltageRegulatorPointMapping o) {
         return getAttribute().getDescription().compareTo(o.getAttribute().getDescription());
     }
 }

@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -16,7 +15,6 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import com.cannontech.capcontrol.CBCPointGroup;
 import com.cannontech.capcontrol.LiteCapBankAdditional;
 import com.cannontech.capcontrol.OrphanCBC;
-import com.cannontech.capcontrol.service.LtcService;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.SqlStatementBuilder;

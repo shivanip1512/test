@@ -5,25 +5,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.updater.capcontrol.LtcUpdaterTypeEnum;
-import com.cannontech.yukon.cbc.Ltc;
+import com.cannontech.web.updater.capcontrol.VoltageRegulatorUpdaterTypeEnum;
+import com.cannontech.yukon.cbc.VoltageRegulatorFlags;
 
-public class LtcTapHandler implements LtcUpdaterHandler {
+public class VoltageRegulatorTapHandler implements VoltageRegulatorUpdaterHandler {
 
     private CapControlCache capControlCache;
     
     @Override
-    public LtcUpdaterTypeEnum getUpdaterType() {
-        return LtcUpdaterTypeEnum.TAP;
+    public VoltageRegulatorUpdaterTypeEnum getUpdaterType() {
+        return VoltageRegulatorUpdaterTypeEnum.TAP;
     }
 
     @Override
     public String handle(int id, YukonUserContext userContext) {
         try {
-            Ltc ltc = capControlCache.getLtc(id);
-            if (ltc.isLowerTap()) {
+            VoltageRegulatorFlags regulator = capControlCache.getVoltageRegulator(id);
+            if (regulator.isLowerTap()) {
                 return "LowerTap";
-            } else if (ltc.isRaiseTap()) {
+            } else if (regulator.isRaiseTap()) {
                 return "RaiseTap";
             } else {
                 return "none";

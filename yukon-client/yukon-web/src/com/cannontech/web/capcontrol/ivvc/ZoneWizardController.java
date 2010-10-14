@@ -26,7 +26,7 @@ import com.cannontech.web.capcontrol.ivvc.validators.ZoneDtoValidator;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.util.CapControlWebUtils;
 import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.Ltc;
+import com.cannontech.yukon.cbc.VoltageRegulatorFlags;
 import com.cannontech.yukon.cbc.SubBus;
 import com.google.common.collect.Lists;
 
@@ -86,7 +86,7 @@ public class ZoneWizardController {
         int substationBusId = zone.getSubstationBusId();
         
         SubBus subBus = cache.getSubBus(substationBusId);
-        Ltc ltc = cache.getLtc(zone.getRegulatorId());
+        VoltageRegulatorFlags regulator = cache.getVoltageRegulator(zone.getRegulatorId());
         
         List<Zone> zones = zoneService.getZonesBySubBusId(substationBusId);
         model.addAttribute("zones",zones);
@@ -118,7 +118,7 @@ public class ZoneWizardController {
         model.addAttribute("assignedPoints", pointAssignments);
         
         model.addAttribute("zoneDto", zoneDto);
-        model.addAttribute("regulatorName", ltc.getCcName());
+        model.addAttribute("regulatorName", regulator.getCcName());
         model.addAttribute("subBusName", subBus.getCcName());
 
 

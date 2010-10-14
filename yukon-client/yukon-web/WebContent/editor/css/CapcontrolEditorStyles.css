@@ -372,23 +372,23 @@ label {
 
 .pointPickerRows {}
 
-.ltcPointCell {
+.regulatorPointCell {
 	padding-left: 10px;
 	padding-right: 10px;
 	padding-top: 10px;
 }
 
-.ltcColumnHeader {
+.regulatorColumnHeader {
 	font-weight: bold;
 	border-bottom: 1px solid #cccccc;
 }
 
-.ltcPointTable {
+.regulatorPointTable {
 	border-collapse: collapse;
 	width: 100%;
 }
 
-div.ltcPointDiv {
+div.regulatorPointDiv {
 	width: 50%;
 	padding-left: 10px;
 	padding-bottom: 10px;

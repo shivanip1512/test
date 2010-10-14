@@ -6,11 +6,13 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.DatabaseRepresentationSource;
+import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.pao.RouteTypes;
+import com.cannontech.database.data.pao.VoltageRegulatorType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
@@ -154,12 +156,14 @@ public enum PaoType implements DatabaseRepresentationSource {
     LOCAL_DIALBACK(PortTypes.LOCAL_DIALBACK, "Local Dialback", PaoCategory.PORT, PaoClass.PORT),
     DIALOUT_POOL(PortTypes.DIALOUT_POOL, "Dialout Pool", PaoCategory.PORT, PaoClass.PORT),
 
-    CAP_CONTROL_SUBBUS(CapControlTypes.CAP_CONTROL_SUBBUS, "CCSUBBUS", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
-    CAP_CONTROL_FEEDER(CapControlTypes.CAP_CONTROL_FEEDER, "CCFEEDER", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
-    CAP_CONTROL_AREA(CapControlTypes.CAP_CONTROL_AREA, "CCAREA", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
-    CAP_CONTROL_SPECIAL_AREA(CapControlTypes.CAP_CONTROL_SPECIAL_AREA, "CCSPECIALAREA", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
-    CAP_CONTROL_SUBSTATION(CapControlTypes.CAP_CONTROL_SUBSTATION, "CCSUBSTATION", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
-    LOAD_TAP_CHANGER(CapControlTypes.CAP_CONTROL_LTC, "Load Tap Changer", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
+    CAP_CONTROL_SUBBUS(CapControlTypes.CAP_CONTROL_SUBBUS, CapControlType.SUBBUS.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
+    CAP_CONTROL_FEEDER(CapControlTypes.CAP_CONTROL_FEEDER, CapControlType.FEEDER.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
+    CAP_CONTROL_AREA(CapControlTypes.CAP_CONTROL_AREA, CapControlType.AREA.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
+    CAP_CONTROL_SPECIAL_AREA(CapControlTypes.CAP_CONTROL_SPECIAL_AREA, CapControlType.SPECIAL_AREA.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
+    CAP_CONTROL_SUBSTATION(CapControlTypes.CAP_CONTROL_SUBSTATION, CapControlType.SUBSTATION.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
+    LOAD_TAP_CHANGER(CapControlTypes.CAP_CONTROL_LTC, VoltageRegulatorType.LOAD_TAP_CHANGER.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.VOLTAGEREGULATOR),
+    GANG_OPERATED(CapControlTypes.GANG_OPERATED_REGULATOR, VoltageRegulatorType.GANG_OPERATED.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.VOLTAGEREGULATOR),
+    PHASE_OPERATED(CapControlTypes.PHASE_OPERATED_REGULATOR, VoltageRegulatorType.PHASE_OPERATED.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.VOLTAGEREGULATOR),
     RFN_AX(DeviceTypes.RFN_AX, "RFN-AX", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN_AL(DeviceTypes.RFN_AL, "RFN-AL", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN_AXSD(DeviceTypes.RFN_AXSD, "RFN-AXSD", PaoCategory.DEVICE, PaoClass.RFMESH),

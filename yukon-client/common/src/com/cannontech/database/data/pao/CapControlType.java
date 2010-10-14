@@ -3,20 +3,21 @@ package com.cannontech.database.data.pao;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
 public enum CapControlType implements DatabaseRepresentationSource {
-    AREA("CCAREA"),
-    SPECIAL_AREA("CCSPECIALAREA"),
-    SUBSTATION("CCSUBSTATION"),
-    SUBBUS("CCSUBBUS"),
-    FEEDER("CCFEEDER"),
-    CAPBANK("CAP BANK"),
-    CBC("CBC"),
-    SCHEDULE("SCHEDULE"),
-    STRATEGY("STRATEGY"),
-    LTC("Load Tap Changer");
+    AREA("CCAREA", "Area"),
+    SPECIAL_AREA("CCSPECIALAREA", "Special Area"),
+    SUBSTATION("CCSUBSTATION", "Substation"),
+    SUBBUS("CCSUBBUS", "Substation Bus"),
+    FEEDER("CCFEEDER", "Feeder"),
+    CAPBANK("CAP BANK", "Cap Bank"),
+    CBC("CBC", "CBC"),
+    SCHEDULE("SCHEDULE", "Schedule"),
+    STRATEGY("STRATEGY", "Strategy");
 
+    private final String dbValue;
 	private final String displayValue;
 	
-	private CapControlType(String displayValue) {
+	private CapControlType(String dbValue, String displayValue) {
+		this.dbValue = dbValue;
 		this.displayValue = displayValue;
 	}
 	
@@ -26,15 +27,19 @@ public enum CapControlType implements DatabaseRepresentationSource {
 	
 	static public CapControlType getCapControlType(String type) {
 		for (CapControlType value : CapControlType.values()) {
-			if (type.equals(value.displayValue)) {
+			if (type.equals(value.dbValue)) {
 				return value;
 			}
 		}
 		throw new IllegalArgumentException();
 	}
-
-    @Override
-    public Object getDatabaseRepresentation() {
-        return getDisplayValue();
-    }
+	
+	public String getDbValue() {
+		return dbValue;
+	}
+	
+	@Override
+	public Object getDatabaseRepresentation() {
+		return dbValue;
+	}
 }

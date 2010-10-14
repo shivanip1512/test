@@ -10,7 +10,7 @@ public class CapBankCriteria extends YukonObjectCriteriaHelper {
         super();
         
         //create all the rules for this criteria
-        addCriteria("type", (String)CapControlType.CAPBANK.getDisplayValue(), BooleanClause.Occur.MUST);
+        addCriteria("type", CapControlType.CAPBANK.getDbValue(), BooleanClause.Occur.MUST);
     }
 
 }

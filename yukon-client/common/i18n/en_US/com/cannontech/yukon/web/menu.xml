@@ -130,7 +130,7 @@
 <entry key="yukon.web.menu.config.capcontrol.create.cbc">CBC</entry>
 <entry key="yukon.web.menu.config.capcontrol.create.schedule">Schedule</entry>
 <entry key="yukon.web.menu.config.capcontrol.create.strategy">Strategy</entry>
-<entry key="yukon.web.menu.config.capcontrol.create.loadtapchanger">LTC</entry>
+<entry key="yukon.web.menu.config.capcontrol.create.voltageregulator">Regulator</entry>
 <entry key="yukon.web.menu.config.capcontrol.analysis">Analysis</entry>
 <entry key="yukon.web.menu.config.capcontrol.analysis.todaykvarperwatt">Today kVAR/Watt</entry>
 <entry key="yukon.web.menu.config.capcontrol.analysis.todaypf">Today PF</entry>
@@ -150,7 +150,7 @@
 <entry key="yukon.web.menu.config.capcontrol.orphans.orphanedfeeders">Orphaned Feeders</entry>
 <entry key="yukon.web.menu.config.capcontrol.orphans.orphanedcapbanks">Orphaned Capbanks</entry>
 <entry key="yukon.web.menu.config.capcontrol.orphans.orphanedcbcs">Orphaned CBCs</entry>
-<entry key="yukon.web.menu.config.capcontrol.orphans.orphanedltcs">Orphaned LTCs</entry>
+<entry key="yukon.web.menu.config.capcontrol.orphans.orphanedregulators">Orphaned Regulators</entry>
 
 <!-- Commercial Curtailment Module -->
 <entry key="yukon.web.menu.config.commercialcurtailment.ccurt_events">Events</entry>

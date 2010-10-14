@@ -107,8 +107,8 @@
 			<span id="selectedRegulatorName">
 				<spring:escapeBody htmlEscape="true">${regulatorName}</spring:escapeBody>
 			</span>
-			<tags:pickerDialog 	id="ltcPicker" 
-				type="ltcPicker" 
+			<tags:pickerDialog 	id="voltageRegulatorPicker" 
+				type="voltageRegulatorPicker" 
 				destinationFieldId="selectedRegulatorId"
 				extraDestinationFields="paoName:selectedRegulatorName;" 
 				multiSelectMode="false"
@@ -230,12 +230,14 @@
 		</cti:dataGridCell>
 	</cti:dataGrid>
 	
-	<cti:displayForPageEditModes modes="EDIT">
-		<input type="submit" value="Update">
-	</cti:displayForPageEditModes>
-	<cti:displayForPageEditModes modes="CREATE">
-		<input type="submit" value="Create">
-	</cti:displayForPageEditModes>
+	<div class="pageActionArea">
+		<cti:displayForPageEditModes modes="EDIT">
+			<input type="submit" value="Update">
+		</cti:displayForPageEditModes>
+		<cti:displayForPageEditModes modes="CREATE">
+			<input type="submit" value="Create">
+		</cti:displayForPageEditModes>
+	</div>
 
     
 </form:form>

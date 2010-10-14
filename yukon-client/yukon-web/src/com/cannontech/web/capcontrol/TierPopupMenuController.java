@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.capcontrol.CapBankOperationalState;
-import com.cannontech.capcontrol.service.LtcService;
+import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.service.CapControlCommentService;
@@ -22,7 +22,7 @@ import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.data.capcontrol.LtcPointMapping;
+import com.cannontech.database.data.capcontrol.VoltageRegulatorPointMapping;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -44,7 +44,7 @@ public class TierPopupMenuController extends MultiActionController {
     private PaoDao paoDao;
     private RolePropertyDao rolePropertyDao;
     private CapControlCommentService capControlCommentService;
-    private LtcService ltcService;
+    private VoltageRegulatorService voltageRegulatorService;
     private static final CapBankOperationalState[] allowedOperationStates;
     
     static {
@@ -188,7 +188,7 @@ public class TierPopupMenuController extends MultiActionController {
         
         mav.addObject("list", list);
         
-        mav.addObject("controlType", CapControlType.LTC);
+//        mav.addObject("controlType", CapControlType.LTC);
         
         mav.addObject("hideRecentCommands", true);
         mav.addObject("hideComments",true);
@@ -197,16 +197,16 @@ public class TierPopupMenuController extends MultiActionController {
         return mav;
     }
     
-    public ModelAndView ltcPointList(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView regulatorPointList(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
-        final int ltcId = ServletRequestUtils.getRequiredIntParameter(request, "ltcId");
+        final int regulatorId = ServletRequestUtils.getRequiredIntParameter(request, "regulatorId");
         
-        String ltcName = paoDao.getYukonPAOName(ltcId);
-        List<LtcPointMapping> pointMappings = ltcService.getLtcPointMappings(ltcId);
+        String regulatorName = paoDao.getYukonPAOName(regulatorId);
+        List<VoltageRegulatorPointMapping> pointMappings = voltageRegulatorService.getPointMappings(regulatorId);
         Collections.sort(pointMappings);
         mav.addObject("mappings", pointMappings);
-        mav.addObject("ltcName", ltcName);
-        mav.setViewName("tier/popupmenu/ltcPointList.jsp");
+        mav.addObject("regulatorName", regulatorName);
+        mav.setViewName("tier/popupmenu/regulatorPointList.jsp");
         return mav;
     }
     
@@ -525,8 +525,8 @@ public class TierPopupMenuController extends MultiActionController {
     }
     
     @Autowired
-    public void setLtcService(LtcService ltcService) {
-        this.ltcService = ltcService;
+    public void setVoltageRegulatorService(VoltageRegulatorService voltageRegulatorService) {
+        this.voltageRegulatorService = voltageRegulatorService;
     }
     
     @Autowired

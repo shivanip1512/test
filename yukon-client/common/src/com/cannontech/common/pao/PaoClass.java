@@ -23,6 +23,7 @@ public enum PaoClass implements DatabaseRepresentationSource {
     PORT(PAOGroups.CLASS_PORT, PAOGroups.STRING_CAT_PORT),
     CUSTOMER(PAOGroups.CLASS_CUSTOMER, PAOGroups.STRING_CAT_CUSTOMER),
     CAPCONTROL(PAOGroups.CLASS_CAPCONTROL, PAOGroups.STRING_CAT_CAPCONTROL),
+    VOLTAGEREGULATOR(DeviceClasses.VOLTAGEREGULATOR, DeviceClasses.STRING_CLASS_VOLTAGEREGULATOR),
     // Schedule doesn't seem have a constant already defined anywhere.
     SCHEDULE(0, "SCHEDULE"),
     RFMESH(DeviceClasses.RFMESH, "RFMESH");

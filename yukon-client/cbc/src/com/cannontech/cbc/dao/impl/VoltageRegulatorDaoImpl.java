@@ -8,47 +8,45 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
-import com.cannontech.cbc.dao.LtcDao;
+import com.cannontech.cbc.dao.VoltageRegulatorDao;
 import com.cannontech.cbc.model.LiteCapControlObject;
-import com.cannontech.cbc.model.LoadTapChanger;
+import com.cannontech.cbc.model.VoltageRegulator;
 import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class LtcDaoImpl implements LtcDao {
+public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
     
     private YukonJdbcTemplate yukonJdbcTemplate;
 
     private NextValueHelper nextValueHelper;
 
     @Override
-    public int add(LoadTapChanger ltc) {
+    public int add(VoltageRegulator regulator) {
         int newId = nextValueHelper.getNextValue("YukonPaObject");
         
         YukonPAObject persistentLtc = new YukonPAObject();
         persistentLtc.setPaObjectID(newId);
         persistentLtc.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
         persistentLtc.setPaoClass(DeviceClasses.STRING_CLASS_VOLTAGEREGULATOR);
-        persistentLtc.setPaoName(ltc.getName());
-        persistentLtc.setType(CapControlType.LTC.getDisplayValue());
-        persistentLtc.setDescription(ltc.getDescription());
-        persistentLtc.setDisableFlag(ltc.getDisabled()?'Y':'N');
+        persistentLtc.setPaoName(regulator.getName());
+        persistentLtc.setType(regulator.getType().getDbValue());
+        persistentLtc.setDescription(regulator.getDescription());
+        persistentLtc.setDisableFlag(regulator.getDisabled()?'Y':'N');
         
         try {
             Transaction.createTransaction(com.cannontech.database.Transaction.INSERT, persistentLtc).execute();
-            ltc.setId(persistentLtc.getPaObjectID());
+            regulator.setId(persistentLtc.getPaObjectID());
         } catch (TransactionException e) {
-            throw new DataIntegrityViolationException("Insert of LTC, " + ltc.getName() + ", failed.", e);
+            throw new DataIntegrityViolationException("Insert of LTC, " + regulator.getName() + ", failed.", e);
         }
         
         return newId;
@@ -81,7 +79,6 @@ public class LtcDaoImpl implements LtcDao {
         sql.append("FROM YukonPAObject");
         sql.append("  WHERE Category").eq(PaoCategory.CAPCONTROL);
         sql.append("    AND PAOClass").eq(DeviceClasses.STRING_CLASS_VOLTAGEREGULATOR);
-        sql.append("    AND type").eq(PaoType.LOAD_TAP_CHANGER);
         //TODO !!!!
         //Change to use Zones
         //sql.append("    AND PAObjectID not in (SELECT ltcId FROM CCSubstationBusToLTC)");
@@ -94,7 +91,6 @@ public class LtcDaoImpl implements LtcDao {
         sql.append("FROM YukonPAObject");
         sql.append("  WHERE Category").eq(PaoCategory.CAPCONTROL);
         sql.append("    AND PAOClass").eq(DeviceClasses.STRING_CLASS_VOLTAGEREGULATOR);
-        sql.append("    AND type").eq(PaoType.LOAD_TAP_CHANGER);
         //TODO !!!!
         //Change to use Zones
         //sql.append("    AND PAObjectID not in (SELECT ltcId FROM CCSubstationBusToLTC)");

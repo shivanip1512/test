@@ -48,15 +48,15 @@ function getCapBankMenu(id, event) {
     getMenuFromURLAbove(url, event); 
 }
 
-function getLtcMenu(id, event) {
-    var url = '/spring/capcontrol/tier/popupmenu?menu=ltcMenu&id=' + id;
+function getRegulatorMenu(id, event) {
+    var url = '/spring/capcontrol/tier/popupmenu?menu=regulatorMenu&id=' + id;
     getMenuFromUrlLeft(url, event); 
 }
 
-function getLtcPointsList(id) {
-	var url = '/spring/capcontrol/tier/popupmenu?menu=ltcPointList&ltcId=' + id;
-	var ltcNameAnchor = $('ltcName_' + id);
-	var title = ltcNameAnchor.innerHTML.strip();
+function getRegulatorPointsList(id) {
+	var url = '/spring/capcontrol/tier/popupmenu?menu=regulatorPointList&regulatorId=' + id;
+	var regulatorNameAnchor = $('regulatorName_' + id);
+	var title = regulatorNameAnchor.innerHTML.strip();
 	openSimpleDialog('tierContentPopup', url, title, null, null, 'get');
 }
 
@@ -324,7 +324,7 @@ function updateCapBankWarningImage(id) {
     }
 }
 
-function updateLtcModeIndicator(id){
+function updateRegulatorModeIndicator(id){
 	return function(data) {
         var yellowLocalSpan = $(id + '_local_warning');
         var greenLocalSpan = $(id + '_local_normal');
@@ -344,7 +344,7 @@ function updateLtcModeIndicator(id){
 	}
 }
 
-function updateLtcTapIndicator(id){
+function updateRegulatorTapIndicator(id){
 	return function(data) {
         var lowerTapSpan = $(id + '_lower');
         var raiseTapSpan = $(id + '_raise');

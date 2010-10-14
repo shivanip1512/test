@@ -90,7 +90,7 @@ public class SubstationDaoImpl implements SubstationDao {
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(substation.getName());
-		pao.setType(CapControlType.SUBSTATION.getDisplayValue());
+		pao.setType(CapControlType.SUBSTATION.getDbValue());
 		pao.setDescription(substation.getDescription());
 		pao.setDisableFlag(substation.getDisabled() ? 'Y' : 'N');
 		
@@ -133,7 +133,7 @@ public class SubstationDaoImpl implements SubstationDao {
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(substation.getName());
-		pao.setType(CapControlType.SUBSTATION.getDisplayValue());
+		pao.setType(CapControlType.SUBSTATION.getDbValue());
 		pao.setDescription(substation.getDescription());
 		pao.setDisableFlag(substation.getDisabled() ? 'Y' : 'N');
 		pao.setPaObjectID(substation.getId());

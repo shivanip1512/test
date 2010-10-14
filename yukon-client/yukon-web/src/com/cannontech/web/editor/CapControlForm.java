@@ -68,7 +68,7 @@ import com.cannontech.database.data.capcontrol.CapControlSpecialArea;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.capcontrol.CapControlSubstation;
 import com.cannontech.database.data.capcontrol.ICapBankController;
-import com.cannontech.database.data.capcontrol.LoadTapChanger;
+import com.cannontech.database.data.capcontrol.VoltageRegulator;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.TwoWayDevice;
@@ -630,7 +630,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		getVisibleTabs().put("CBCSchedule", Boolean.FALSE);
         getVisibleTabs().put("CBAddInfo", Boolean.FALSE);
         getVisibleTabs().put("CBCStrategy", Boolean.FALSE);
-        getVisibleTabs().put("LTC", Boolean.FALSE);
+        getVisibleTabs().put("Regulator", Boolean.FALSE);
 
         switch (paoType) {
 
@@ -712,9 +712,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 break;
             
             case CapControlTypes.CAP_CONTROL_LTC:
-                setEditorTitle("Load Tap Changer");
+            case CapControlTypes.GANG_OPERATED_REGULATOR:
+            case CapControlTypes.PHASE_OPERATED_REGULATOR:
+                setEditorTitle("Regulator");
                 setPaoDescLabel("Description");
-                getVisibleTabs().put("LTC", Boolean.TRUE);
+                getVisibleTabs().put("Regulator", Boolean.TRUE);
                 break;
     
     		case PointTypes.ANALOG_POINT:
@@ -732,8 +734,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         return getDbPersistent();
      }
 	
-	public LoadTapChanger getLtcBase(){
-	    return (LoadTapChanger) getDbPersistent();
+	public VoltageRegulator getRegulatorBase(){
+	    return (VoltageRegulator) getDbPersistent();
 	}
 
     public void clearfaces() {

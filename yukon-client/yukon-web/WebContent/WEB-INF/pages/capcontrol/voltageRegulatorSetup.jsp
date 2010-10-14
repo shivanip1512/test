@@ -9,21 +9,21 @@
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
 <cti:includeScript link="/JavaScript/tableCreation.js"/>
 
-<f:subview id="ltcView" rendered="#{capControlForm.visibleTabs['LTC']}">
+<f:subview id="regulatorView" rendered="#{capControlForm.visibleTabs['Regulator']}">
     <x:htmlTag value="fieldset" styleClass="fieldSet">
-        <x:htmlTag value="legend"><x:outputText value="LTC Points"/></x:htmlTag>
-        <x:div styleClass="ltcPointDiv">
+        <x:htmlTag value="legend"><x:outputText value="Regulator Points"/></x:htmlTag>
+        <x:div styleClass="regulatorPointDiv">
 		<f:verbatim>
 			<script type="text/javascript">
 				var picker = [];
 				var rowNumber = 0;
 			</script>
 		</f:verbatim>
-        <x:dataTable rowIndexVar="rowIndex" var="mapping" value="#{capControlForm.ltcBase.ltcPointMappings}"
-            styleClass="ltcPointTable" 
+        <x:dataTable rowIndexVar="rowIndex" var="mapping" value="#{capControlForm.regulatorBase.pointMappings}"
+            styleClass="regulatorPointTable" 
             rowClasses="pointPickerRows"
-            headerClass="ltcColumnHeader ltcPointCell" 
-            columnClasses="ltcPointCell"
+            headerClass="regulatorColumnHeader regulatorPointCell" 
+            columnClasses="regulatorPointCell"
             >
                 
                 <h:column>

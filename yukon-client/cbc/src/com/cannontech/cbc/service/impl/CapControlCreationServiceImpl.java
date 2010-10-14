@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.cbc.dao.AreaDao;
 import com.cannontech.cbc.dao.CapbankControllerDao;
-import com.cannontech.cbc.dao.LtcDao;
+import com.cannontech.cbc.dao.VoltageRegulatorDao;
 import com.cannontech.cbc.dao.SubstationBusDao;
 import com.cannontech.cbc.dao.SubstationDao;
 import com.cannontech.cbc.dao.FeederDao;
@@ -16,7 +16,7 @@ import com.cannontech.cbc.model.Capbank;
 import com.cannontech.cbc.model.CapbankAdditional;
 import com.cannontech.cbc.model.CapbankController;
 import com.cannontech.cbc.model.Feeder;
-import com.cannontech.cbc.model.LoadTapChanger;
+import com.cannontech.cbc.model.VoltageRegulator;
 import com.cannontech.cbc.model.SpecialArea;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.cbc.model.SubstationBus;
@@ -28,6 +28,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.VoltageRegulatorType;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.common.pao.PaoType;
@@ -44,7 +45,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	private DBPersistentDao dbPersistantDao;
     private PaoScheduleDao paoScheduleDao;
     private StrategyDao strategyDao;
-    private LtcDao ltcDao;
+    private VoltageRegulatorDao voltageRegulatorDao;
 	
 	@Override
 	public int create(int type, String name, boolean disabled, int portId) {
@@ -107,12 +108,11 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
             case CapControlTypes.CAP_CONTROL_STRATEGY :
                 id = createStrategy(name);
                 break;
+                
             case CapControlTypes.CAP_CONTROL_LTC:
-                LoadTapChanger ltc = new LoadTapChanger();
-                ltc.setName(name);
-                ltc.setDisabled(disabled);
-                createLTC(ltc);
-                id = ltc.getId();
+            case CapControlTypes.GANG_OPERATED_REGULATOR:
+            case CapControlTypes.PHASE_OPERATED_REGULATOR:
+                id = createRegulator(name, disabled, type);
                 break;
                 
             default : // must be a cbc
@@ -145,15 +145,32 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
         return id;
     }
 	
-	private int createLTC(LoadTapChanger ltc) {
-	    int newLtcId = ltcDao.add(ltc);
-
-        String type = PaoType.LOAD_TAP_CHANGER.getDbString();
-        sendDeviceDBChangeMessage(newLtcId, DBChangeMsg.CHANGE_TYPE_ADD, type);
+	private int createRegulator(String name, boolean disabled, int type) {
+		
+		VoltageRegulator regulator = new VoltageRegulator();
+        regulator.setName(name);
+        regulator.setDisabled(disabled);
         
-        return newLtcId;
-    }
+        switch (type) {
+        	case CapControlTypes.CAP_CONTROL_LTC:
+        		regulator.setType(VoltageRegulatorType.LOAD_TAP_CHANGER);
+        		break;
+        	case CapControlTypes.GANG_OPERATED_REGULATOR:
+        		regulator.setType(VoltageRegulatorType.GANG_OPERATED);
+        		break;
+        	case CapControlTypes.PHASE_OPERATED_REGULATOR:
+        		regulator.setType(VoltageRegulatorType.PHASE_OPERATED);
+        		break;
+        	//default can't be reached b/c of how createRegulator is called above
+        }
+        
+	    int newRegId = voltageRegulatorDao.add(regulator);
 
+        sendDeviceDBChangeMessage(newRegId, DBChangeMsg.CHANGE_TYPE_ADD, regulator.getType().getDbValue());
+        
+        return newRegId;
+    }
+	
     @Override
 	public void createArea(Area area) {
 		areaDao.add(area);
@@ -340,7 +357,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		
 		if (ret) {
 		    sendDeviceDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_UPDATE, deviceType.getDbString());
-		    sendCapcontrolDBChangeMessage(capbankId, DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.CAPBANK.getDisplayValue());
+		    sendCapcontrolDBChangeMessage(capbankId, DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.CAPBANK.getDbValue());
 		}
 		
 		return ret; 
@@ -396,7 +413,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	}
 	
 	private void sendCapcontrolDBChangeMessage(int paoId, int changeType, CapControlType type) {
-		sendCapcontrolDBChangeMessage(paoId,changeType,type.getDisplayValue());
+		sendCapcontrolDBChangeMessage(paoId,changeType,type.getDbValue());
 	}
 	
 	@Autowired
@@ -443,7 +460,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     }
 	
 	@Autowired
-	public void setLtcDao(LtcDao ltcDao){
-	    this.ltcDao = ltcDao;
+	public void setVoltageRegulatorDaoDao(VoltageRegulatorDao voltageRegulatorDao){
+	    this.voltageRegulatorDao = voltageRegulatorDao;
 	}
 }

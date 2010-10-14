@@ -16,15 +16,17 @@ import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.dao.CapbankControllerDao;
 import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.cbc.dao.FeederDao;
-import com.cannontech.cbc.dao.LtcDao;
 import com.cannontech.cbc.dao.SubstationBusDao;
 import com.cannontech.cbc.dao.SubstationDao;
+import com.cannontech.cbc.dao.VoltageRegulatorDao;
+import com.cannontech.cbc.exceptions.MissingSearchType;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.cbc.web.CCSessionInfo;
 import com.cannontech.cbc.web.ParentStringPrinter;
 import com.cannontech.cbc.web.ParentStringPrinterFactory;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
@@ -33,7 +35,9 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.VoltageRegulatorType;
 import com.cannontech.database.db.capcontrol.CCEventLog;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
@@ -61,10 +65,17 @@ public class ResultsController {
     private PaoDao paoDao;
     private ParentStringPrinterFactory printerFactory;
     private DateFormattingService dateFormattingService;
-    private LtcDao ltcDao; 
+    private VoltageRegulatorDao voltageRegulatorDao; 
+    
+    private enum SearchType {
+    	REGULATOR,
+    	CBC,
+    	CAPCONTROL,
+    	;
+    }
 
     @RequestMapping
-    public ModelAndView searchResults(HttpServletRequest request, LiteYukonUser user, Integer itemsPerPage, Integer page) {
+    public ModelAndView searchResults(HttpServletRequest request, LiteYukonUser user, Integer itemsPerPage, Integer page) throws MissingSearchType {
         
         if(page == null){
             page = 1;
@@ -92,30 +103,37 @@ public class ResultsController {
         int hitCount = 0;
         List<LiteWrapper> items = Lists.newArrayList();
         SearchResult<LiteCapControlObject> ccObjects = null;
+        SearchType searchType = null;
 
         if( CBCWebUtils.TYPE_ORPH_SUBSTATIONS.equals(srchCriteria) ) {
+        	searchType = SearchType.CAPCONTROL;
             ccObjects = substationDao.getOrphans(startIndex, itemsPerPage);
             label = "Orphaned Substations";
         }
         else if( CBCWebUtils.TYPE_ORPH_SUBS.equals(srchCriteria) ) {
+        	searchType = SearchType.CAPCONTROL;
             ccObjects = substationBusDao.getOrphans(startIndex, itemsPerPage);
             label = "Orphaned Substation Buses";
         }
         else if( CBCWebUtils.TYPE_ORPH_FEEDERS.equals(srchCriteria) ) {
+        	searchType = SearchType.CAPCONTROL;
             ccObjects = feederDao.getOrphans(startIndex, itemsPerPage);
             label = "Orphaned Feeders";
         }
         else if( CBCWebUtils.TYPE_ORPH_BANKS.equals(srchCriteria) ) {
+        	searchType = SearchType.CAPCONTROL;
             ccObjects = capbankDao.getOrphans(startIndex, itemsPerPage);
             label = "Orphaned CapBanks";
         }
         else if( CBCWebUtils.TYPE_ORPH_CBCS.equals(srchCriteria) ) {
+        	searchType = SearchType.CBC;
             ccObjects = cbcDao.getOrphans(startIndex, itemsPerPage);
             label = "Orphaned CBCs";
         }
-        else if( CBCWebUtils.TYPE_ORPH_LTCS.equals(srchCriteria) ) {
-            ccObjects = ltcDao.getOrphans(startIndex, itemsPerPage);
-            label = "Orphaned LTCs";
+        else if( CBCWebUtils.TYPE_ORPH_REGULATORS.equals(srchCriteria) ) {
+        	searchType = SearchType.REGULATOR;
+            ccObjects = voltageRegulatorDao.getOrphans(startIndex, itemsPerPage);
+            label = "Orphaned Regulators";
         }
         else {   
         	orphan = false;
@@ -143,7 +161,10 @@ public class ResultsController {
                 row.setParentString(parentString);
                 row.setParentId(item.getParentID());
                 row.setItemDescription(item.getDescription());
-                row.setItemType(item.getItemType());
+                
+                String displayableType = getDisplayableType(searchType, item.getItemType());
+                row.setItemType(displayableType);
+                
                 rows.add(row);
             }
         } else {
@@ -164,10 +185,12 @@ public class ResultsController {
                 	parentString = psp.printPAO(item.getId());
                 }
                 row.setParentString(parentString);
-                
                 row.setParentId(item.getParentId());
                 row.setItemDescription(item.getDescription());
-                row.setItemType(item.getType());
+                
+                String displayableType = getDisplayableType(searchType, item.getType());
+                row.setItemType(displayableType);
+                
                 rows.add(row);
             }
         }
@@ -191,7 +214,26 @@ public class ResultsController {
         
         return mav;
     }
-
+    
+    private String getDisplayableType(SearchType searchType, String dbType) throws MissingSearchType {
+    	
+    	if (searchType == SearchType.REGULATOR) {
+    		VoltageRegulatorType regType = VoltageRegulatorType.getForDbString(dbType);
+			String returnValue = regType.getDisplayValue();
+			return returnValue;
+    	} else if (searchType == SearchType.CAPCONTROL) {
+    		CapControlType ccType = CapControlType.getCapControlType(dbType);
+    		String returnValue = ccType.getDisplayValue();
+			return returnValue;
+    	} else if (searchType == SearchType.CBC) {
+    		PaoType cbcType = PaoType.getForDbString(dbType);
+    		String returnValue = cbcType.getDbString();
+			return returnValue;
+		} else {
+			throw new MissingSearchType("No search type set.");
+		}
+    }
+    
     @RequestMapping
     public ModelAndView recentControls(HttpServletRequest request, LiteYukonUser user) {
         final ModelAndView mav = new ModelAndView();
@@ -263,8 +305,8 @@ public class ResultsController {
     }
     
     @Autowired
-    public void setLtcDao(LtcDao ltcDao){
-        this.ltcDao = ltcDao;
+    public void setVoltageRegulatorDao(VoltageRegulatorDao voltageRegulatorDao){
+        this.voltageRegulatorDao = voltageRegulatorDao;
     }
     
     @Autowired

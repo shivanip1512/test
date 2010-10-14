@@ -101,7 +101,7 @@ public class FeederDaoImpl implements FeederDao {
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(feeder.getName());
-		pao.setType(CapControlType.FEEDER.getDisplayValue());
+		pao.setType(CapControlType.FEEDER.getDbValue());
 		pao.setDescription(feeder.getDescription());
 		pao.setDisableFlag(feeder.getDisabled()?'Y':'N');
 		try {
@@ -173,7 +173,7 @@ public class FeederDaoImpl implements FeederDao {
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(feeder.getName());
-		pao.setType(CapControlType.FEEDER.getDisplayValue());
+		pao.setType(CapControlType.FEEDER.getDbValue());
 		pao.setDescription(feeder.getDescription());
 		pao.setPaObjectID(feeder.getId());
 		pao.setDisableFlag(feeder.getDisabled()?'Y':'N');

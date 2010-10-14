@@ -10,12 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
-import com.cannontech.web.updater.capcontrol.handler.LtcUpdaterHandler;
+import com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorUpdaterHandler;
 
-public class LtcBackingService implements UpdateBackingService, InitializingBean {
+public class VoltageRegulatorBackingService implements UpdateBackingService, InitializingBean {
     
-    private List<LtcUpdaterHandler> handlers;
-    private Map<LtcUpdaterTypeEnum, LtcUpdaterHandler> handlersMap;
+    private List<VoltageRegulatorUpdaterHandler> handlers;
+    private Map<VoltageRegulatorUpdaterTypeEnum, VoltageRegulatorUpdaterHandler> handlersMap;
     
     @Override
     public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext) {
@@ -24,8 +24,8 @@ public class LtcBackingService implements UpdateBackingService, InitializingBean
         int id = Integer.parseInt(idParts[0]);
         String updaterTypeStr = idParts[1];
         
-        LtcUpdaterTypeEnum updaterType = LtcUpdaterTypeEnum.valueOf(updaterTypeStr);
-        LtcUpdaterHandler handler = handlersMap.get(updaterType);
+        VoltageRegulatorUpdaterTypeEnum updaterType = VoltageRegulatorUpdaterTypeEnum.valueOf(updaterTypeStr);
+        VoltageRegulatorUpdaterHandler handler = handlersMap.get(updaterType);
         return handler.handle(id, userContext);
     }
     
@@ -37,14 +37,14 @@ public class LtcBackingService implements UpdateBackingService, InitializingBean
     @Override
     public void afterPropertiesSet() throws Exception {
         
-        this.handlersMap = new HashMap<LtcUpdaterTypeEnum, LtcUpdaterHandler>();
-        for (LtcUpdaterHandler handler : this.handlers) {
+        this.handlersMap = new HashMap<VoltageRegulatorUpdaterTypeEnum, VoltageRegulatorUpdaterHandler>();
+        for (VoltageRegulatorUpdaterHandler handler : this.handlers) {
             this.handlersMap.put(handler.getUpdaterType(), handler);
         }
     }
     
     @Autowired
-    public void setHandlers(List<LtcUpdaterHandler> handlers) {
+    public void setHandlers(List<VoltageRegulatorUpdaterHandler> handlers) {
         this.handlers = handlers;
     }
 

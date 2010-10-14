@@ -22,6 +22,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.VoltageRegulatorType;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.PointAlarming;
@@ -286,6 +287,13 @@ public class CBCSelectionLists {
 		new SelectItem( PointTypes.getType(PointTypes.CONTROLTYPE_SBO_LATCH), PointTypes.getType(PointTypes.CONTROLTYPE_SBO_LATCH) ),
 		new SelectItem( PointTypes.getType(PointTypes.CONTROLTYPE_SBO_PULSE), PointTypes.getType(PointTypes.CONTROLTYPE_SBO_PULSE) )
 	};
+	
+	private static final SelectItem[] wizardVoltageRegulatorTypes =  {
+		//value, label
+		new SelectItem(new Integer(PAOGroups.CAP_CONTROL_LTC), VoltageRegulatorType.LOAD_TAP_CHANGER.getDisplayValue() ),
+		new SelectItem(new Integer(PAOGroups.GANG_OPERATED_REGULATOR), VoltageRegulatorType.GANG_OPERATED.getDisplayValue() ),
+		new SelectItem(new Integer(PAOGroups.PHASE_OPERATED_REGULATOR), VoltageRegulatorType.PHASE_OPERATED.getDisplayValue() )
+	};
     
 	/**
 	 * Returns all possible Comm Channels
@@ -349,6 +357,13 @@ public class CBCSelectionLists {
 	 */
 	public SelectItem[] getCBCTypes() {
 		return wizardCBCTypes;
+	}
+	
+	/**
+	 * Returns possible selection choices for GUI
+	 */
+	public SelectItem[] getVoltageRegulatorTypes() {
+		return wizardVoltageRegulatorTypes;
 	}
 
 	/**

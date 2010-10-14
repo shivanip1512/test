@@ -5,19 +5,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.updater.capcontrol.LtcUpdaterTypeEnum;
-import com.cannontech.yukon.cbc.Ltc;
+import com.cannontech.web.updater.capcontrol.VoltageRegulatorUpdaterTypeEnum;
+import com.cannontech.yukon.cbc.VoltageRegulatorFlags;
 
-public class LtcModeUpdaterHandler implements LtcUpdaterHandler {
+public class VoltageRegulatorModeUpdaterHandler implements VoltageRegulatorUpdaterHandler {
 
     private CapControlCache capControlCache;
     
     @Override
     public String handle(int id, YukonUserContext userContext) {
         try {
-            Ltc ltc = capControlCache.getLtc(id);
-            if (ltc.isAutoRemote()) {
-                if (ltc.isAutoRemoteManual()) {
+            VoltageRegulatorFlags regulator = capControlCache.getVoltageRegulator(id);
+            if (regulator.isAutoRemote()) {
+                if (regulator.isAutoRemoteManual()) {
                     return "NormalLocal";
                 }
                 else {
@@ -36,8 +36,8 @@ public class LtcModeUpdaterHandler implements LtcUpdaterHandler {
     }
     
     @Override
-    public LtcUpdaterTypeEnum getUpdaterType() {
-        return LtcUpdaterTypeEnum.MODE;
+    public VoltageRegulatorUpdaterTypeEnum getUpdaterType() {
+        return VoltageRegulatorUpdaterTypeEnum.MODE;
     }
 
     @Autowired

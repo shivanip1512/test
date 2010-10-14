@@ -1,6 +1,6 @@
 package com.cannontech.web.updater.capcontrol;
 
-public enum LtcUpdaterTypeEnum {
+public enum VoltageRegulatorUpdaterTypeEnum {
     MODE,
     TAP
 }

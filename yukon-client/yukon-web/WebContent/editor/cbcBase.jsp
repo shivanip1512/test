@@ -170,8 +170,8 @@
     						<jsp:include page="/WEB-INF/pages/capcontrol/strategyEditor.jsp"/>
                         </x:panelTab>
                         
-                        <x:panelTab id="tabLTC" label="Setup" rendered="#{capControlForm.visibleTabs['LTC']}">
-                            <jsp:include page="/WEB-INF/pages/capcontrol/ltcSetup.jsp"/>
+                        <x:panelTab id="tabRegulator" label="Setup" rendered="#{capControlForm.visibleTabs['Regulator']}">
+                            <jsp:include page="/WEB-INF/pages/capcontrol/voltageRegulatorSetup.jsp"/>
                         </x:panelTab>
                     </x:panelTabbedPane>
     

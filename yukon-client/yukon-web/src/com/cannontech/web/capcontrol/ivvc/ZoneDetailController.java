@@ -13,7 +13,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.capcontrol.model.CapBankPointDelta;
-import com.cannontech.capcontrol.service.LtcService;
+import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.model.Zone;
@@ -24,7 +24,7 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.DynamicDataDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.data.capcontrol.LtcPointMapping;
+import com.cannontech.database.data.capcontrol.VoltageRegulatorPointMapping;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraphData;
@@ -34,7 +34,7 @@ import com.cannontech.web.capcontrol.ivvc.service.ZoneService;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.util.CapControlWebUtils;
 import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.Ltc;
+import com.cannontech.yukon.cbc.VoltageRegulatorFlags;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubStation;
 import com.google.common.collect.Lists;
@@ -48,7 +48,7 @@ public class ZoneDetailController {
     private RolePropertyDao rolePropertyDao;
     private ZoneService zoneService;
     private DynamicDataDao dynamicDataDao;
-    private LtcService ltcService;
+    private VoltageRegulatorService voltageRegulatorService;
     private AttributeService attributeService;
     private VoltageFlatnessGraphService voltageFlatnessGraphService;
     
@@ -65,14 +65,14 @@ public class ZoneDetailController {
         
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         Zone zone = zoneService.getZoneById(zoneId);
-        Ltc ltc = cache.getLtc(zone.getRegulatorId());
+        VoltageRegulatorFlags regulatorFlag = cache.getVoltageRegulator(zone.getRegulatorId());
         
-        setupDetails(model,ltc);
+        setupDetails(model,regulatorFlag);
         setupIvvcEvents(model);
         setupCapBanks(model,cache,zone);
         setupBreadCrumbs(model, cache, zone, isSpecialArea);
         setupDeltas(model,request,cache,zone);
-        setupLtcPointList(model,ltc.getCcId());
+        setupRegulatorPointList(model,regulatorFlag.getCcId());
         
         model.addAttribute("subBusId", zone.getSubstationBusId());
         
@@ -113,13 +113,13 @@ public class ZoneDetailController {
         return "ivvc/flatnessGraphSettings.jsp";
     }
     
-    private void setupDetails(ModelMap model, Ltc ltc) {
-        model.addAttribute("ltcId",ltc.getCcId());
-        model.addAttribute("ltcName",ltc.getCcName());
+    private void setupDetails(ModelMap model, VoltageRegulatorFlags regulator) {
+        model.addAttribute("regulatorId",regulator.getCcId());
+        model.addAttribute("regulatorName",regulator.getCcName());
         
-        LtcPointMapping voltage = ltcService.getLtcPointMapping(ltc.getCcId(), BuiltInAttribute.VOLTAGE);
-        LtcPointMapping tapPosition = ltcService.getLtcPointMapping(ltc.getCcId(), BuiltInAttribute.TAP_POSITION);
-        LtcPointMapping localAuto = ltcService.getLtcPointMapping(ltc.getCcId(), BuiltInAttribute.AUTO_REMOTE_CONTROL);
+        VoltageRegulatorPointMapping voltage = voltageRegulatorService.getPointMapping(regulator.getCcId(), BuiltInAttribute.VOLTAGE);
+        VoltageRegulatorPointMapping tapPosition = voltageRegulatorService.getPointMapping(regulator.getCcId(), BuiltInAttribute.TAP_POSITION);
+        VoltageRegulatorPointMapping localAuto = voltageRegulatorService.getPointMapping(regulator.getCcId(), BuiltInAttribute.AUTO_REMOTE_CONTROL);
         
         model.addAttribute("voltageMapping", voltage);
         model.addAttribute("tapPositionMapping", tapPosition);
@@ -150,10 +150,10 @@ public class ZoneDetailController {
         model.addAttribute("capBankList", viewableCapBankList);
     }
     
-    private void setupLtcPointList(ModelMap model, int regulatorId) {
-        List<LtcPointMapping> pointMappings = ltcService.getLtcPointMappings(regulatorId);
+    private void setupRegulatorPointList(ModelMap model, int regulatorId) {
+        List<VoltageRegulatorPointMapping> pointMappings = voltageRegulatorService.getPointMappings(regulatorId);
         Collections.sort(pointMappings);
-        model.addAttribute("ltcPointMappings", pointMappings);
+        model.addAttribute("regulatorPointMappings", pointMappings);
     }
     
     private void setupDeltas(ModelMap model, HttpServletRequest request, CapControlCache cache, Zone zone) {
@@ -233,8 +233,8 @@ public class ZoneDetailController {
     }
     
     @Autowired
-    public void setLtcService(LtcService ltcService) {
-        this.ltcService = ltcService;
+    public void setVoltageRegulatorService(VoltageRegulatorService voltageRegulatorService) {
+        this.voltageRegulatorService = voltageRegulatorService;
     }
 
     @Autowired

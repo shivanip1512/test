@@ -133,9 +133,9 @@
 				
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 						<td><B><i:inline key=".details.table.regulator"/></B></td>
-						<td><spring:escapeBody htmlEscape="true">${ltcName}</spring:escapeBody></td>
+						<td><spring:escapeBody htmlEscape="true">${regulatorName}</spring:escapeBody></td>
 						<td>
-							<a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${ltcId}" class="tierIconLink">
+							<a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorId}" class="tierIconLink">
                             	<img alt="Edit" class="tierImg" src="${editInfoImage}">
                             </a>
                         </td>
@@ -189,7 +189,7 @@
 		                <th><i:inline key=".attributes.timestamp"/></th>
 		            </tr>
 		            
-		            <c:forEach var="point" items="${ltcPointMappings}">
+		            <c:forEach var="point" items="${regulatorPointMappings}">
 		                <tr class="<tags:alternateRow odd="" even="altRow"/>">
 		                    <td><spring:escapeBody htmlEscape="true">${point.attribute.description}</spring:escapeBody></td>
 		                    <td>

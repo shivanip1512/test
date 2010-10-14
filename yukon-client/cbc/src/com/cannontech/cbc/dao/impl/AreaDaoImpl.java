@@ -79,7 +79,7 @@ public class AreaDaoImpl implements AreaDao {
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(area.getName());
-		pao.setType(CapControlType.AREA.getDisplayValue());
+		pao.setType(CapControlType.AREA.getDbValue());
 		pao.setDescription(area.getDescription());
 		pao.setDisableFlag(area.getDisabled() ? 'Y' : 'N');
 		try {
@@ -102,7 +102,7 @@ public class AreaDaoImpl implements AreaDao {
         pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
         pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
         pao.setPaoName(specialArea.getName());
-        pao.setType(CapControlType.SPECIAL_AREA.getDisplayValue());
+        pao.setType(CapControlType.SPECIAL_AREA.getDbValue());
         pao.setDescription(specialArea.getDescription());
         pao.setDisableFlag(specialArea.getDisabled() ? 'Y' : 'N');
         try {
@@ -131,7 +131,7 @@ public class AreaDaoImpl implements AreaDao {
 		pao.setCategory(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoClass(PAOGroups.STRING_CAT_CAPCONTROL);
 		pao.setPaoName(area.getName());
-		pao.setType(CapControlType.AREA.getDisplayValue());
+		pao.setType(CapControlType.AREA.getDbValue());
 		pao.setDescription(area.getDescription());
 		pao.setPaObjectID(area.getId());
 				

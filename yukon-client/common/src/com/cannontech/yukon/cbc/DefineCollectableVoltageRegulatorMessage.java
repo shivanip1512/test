@@ -9,17 +9,17 @@ import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.VirtualInputStream;
 import com.roguewave.vsj.VirtualOutputStream;
 
-public class DefineCollectableLtcMessage extends DefineCollectableCBCMessage {
+public class DefineCollectableVoltageRegulatorMessage extends DefineCollectableCBCMessage {
 
     //Id for RogueWave. Must match C++
-    public static final int CTILTC_MESSAGE_ID = 528;
+    public static final int CTI_VOLTAGE_REGULATOR_MESSAGE_ID = 528;
 
-    public DefineCollectableLtcMessage() {
+    public DefineCollectableVoltageRegulatorMessage() {
         super();
     }
 
     public Object create(com.roguewave.vsj.VirtualInputStream vstr) {
-        return new LtcMessage();
+        return new VoltageRegulatorFlagMessage();
     }
 
     public com.roguewave.tools.v2_0.Comparator getComparator() {
@@ -34,20 +34,20 @@ public class DefineCollectableLtcMessage extends DefineCollectableCBCMessage {
     }
 
     public int getCxxClassId() {
-        return CTILTC_MESSAGE_ID;
+        return CTI_VOLTAGE_REGULATOR_MESSAGE_ID;
     }
 
     public Class getJavaClass() {
-        return LtcMessage.class;
+        return VoltageRegulatorFlagMessage.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr, CollectableStreamer polystr)
     throws java.io.IOException {
 
         super.restoreGuts(obj, vstr, polystr);
-        Vector<Ltc> ltcs = CollectionExtracter.extractVector(vstr, polystr);
+        Vector<VoltageRegulatorFlags> voltageRegulators = CollectionExtracter.extractVector(vstr, polystr);
         
-        ((LtcMessage) obj).setLtcs(ltcs);
+        ((VoltageRegulatorFlagMessage) obj).setVoltageRegulators(voltageRegulators);
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr, CollectableStreamer polystr) {

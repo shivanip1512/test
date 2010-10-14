@@ -5404,4 +5404,76 @@
             </attribute>
         </attributes>
     </pao>
+    
+    <pao id="GANG_OPERATED">
+        <displayName>Gang Operated</displayName>
+        <attributes>
+            <attribute name="AUTO_REMOTE_CONTROL">
+                <mappedLookup>
+                    <typeFilter type="STATUSPOINT"/>
+                </mappedLookup>
+            </attribute>
+            <attribute name="TAP_UP">
+                <mappedLookup>
+                    <typeFilter type="STATUSPOINT"/>
+                </mappedLookup>
+            </attribute>
+            <attribute name="TAP_DOWN">
+                <mappedLookup>
+                    <typeFilter type="STATUSPOINT"/>
+                </mappedLookup>
+            </attribute>
+            <attribute name="TAP_POSITION">
+                <mappedLookup>
+                    <typeFilter type="ANALOGPOINT"/>
+                </mappedLookup>
+            </attribute>
+            <attribute name="VOLTAGE">
+                <mappedLookup>
+                    <typeFilter type="ANALOGPOINT"/>
+                </mappedLookup>
+            </attribute>
+            <attribute name="KEEP_ALIVE">
+                <mappedLookup>
+                    <typeFilter type="ANALOGPOINT"/>
+                </mappedLookup>
+            </attribute>
+        </attributes>
+    </pao>
+    
+    <pao id="PHASE_OPERATED">
+        <displayName>Phase Operated</displayName>
+        <attributes>
+            <attribute name="AUTO_REMOTE_CONTROL">
+                <mappedLookup>
+                    <typeFilter type="STATUSPOINT"/>
+                </mappedLookup>
+            </attribute>
+            <attribute name="TAP_UP">
+                <mappedLookup>
+                    <typeFilter type="STATUSPOINT"/>
+                </mappedLookup>
+            </attribute>
+            <attribute name="TAP_DOWN">
+                <mappedLookup>
+                    <typeFilter type="STATUSPOINT"/>
+                </mappedLookup>
+            </attribute>
+            <attribute name="TAP_POSITION">
+                <mappedLookup>
+                    <typeFilter type="ANALOGPOINT"/>
+                </mappedLookup>
+            </attribute>
+            <attribute name="VOLTAGE">
+                <mappedLookup>
+                    <typeFilter type="ANALOGPOINT"/>
+                </mappedLookup>
+            </attribute>
+            <attribute name="KEEP_ALIVE">
+                <mappedLookup>
+                    <typeFilter type="ANALOGPOINT"/>
+                </mappedLookup>
+            </attribute>
+        </attributes>
+    </pao>
 </paoDefinitions>

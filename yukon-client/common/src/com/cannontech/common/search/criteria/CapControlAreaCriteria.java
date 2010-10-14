@@ -10,8 +10,8 @@ public class CapControlAreaCriteria extends YukonObjectCriteriaHelper {
         super();
         
         //create all the rules for this criteria
-        addCriteria("type", (String)CapControlType.AREA.getDisplayValue(), BooleanClause.Occur.SHOULD);
-        addCriteria("type", (String)CapControlType.SPECIAL_AREA.getDisplayValue(), BooleanClause.Occur.SHOULD);
+        addCriteria("type", CapControlType.AREA.getDbValue(), BooleanClause.Occur.SHOULD);
+        addCriteria("type", CapControlType.SPECIAL_AREA.getDbValue(), BooleanClause.Occur.SHOULD);
     }
 
 }

@@ -31,7 +31,7 @@ public class CapControlClientConnection extends ClientConnection
 		new DefineCollectableCBCArea(),
         new DefineCollectableCCSpecialSubAreas(),
         new DefineCollectableSpecialCBCArea(),
-        new DefineCollectableLtc(),
+        new DefineCollectableVoltageRegulator(),
 		
         //Collectable Mappings
 		com.roguewave.vsj.streamer.CollectableMappings.OrderedVector,
@@ -50,7 +50,7 @@ public class CapControlClientConnection extends ClientConnection
 		new DefineCollectableSubStation(),
 		new DefineCollectableCBCSubStations(),
 		new DefineCollectableCapControlServerResponse(),
-		new DefineCollectableLtcMessage(),
+		new DefineCollectableVoltageRegulatorMessage(),
 		new DefineCollectableDynamicCommand()
 	};
 	

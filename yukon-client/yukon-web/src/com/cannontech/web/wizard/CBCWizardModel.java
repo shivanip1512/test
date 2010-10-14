@@ -151,8 +151,17 @@ public class CBCWizardModel implements CapControlCreationModel{
 		return createNested;
 	}
 	
-	public boolean isLTC(){
-	    return getWizPaoType() == CapControlTypes.CAP_CONTROL_LTC;
+	public boolean isRegulator(){
+		int wizPaoType = getWizPaoType();
+		
+		if (wizPaoType == CapControlTypes.CAP_CONTROL_LTC) {
+			return true;
+		} else if (wizPaoType == CapControlTypes.GANG_OPERATED_REGULATOR) {
+			return true;
+		} else if (wizPaoType == CapControlTypes.PHASE_OPERATED_REGULATOR) {
+			return true;
+		}
+	    return false;
 	}
 
 	/* (non-Javadoc)

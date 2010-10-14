@@ -1,13 +1,13 @@
 package com.cannontech.yukon.cbc;
 
-public class Ltc extends StreamableCapObject {
+public class VoltageRegulatorFlags extends StreamableCapObject {
     
     private boolean lowerTap;
     private boolean raiseTap;
     private boolean autoRemote;
     private boolean autoRemoteManual;
     
-    public Ltc() {
+    public VoltageRegulatorFlags() {
         
     }
 
@@ -43,11 +43,11 @@ public class Ltc extends StreamableCapObject {
         this.autoRemoteManual = autoRemoteManual;
     }
     
-    @Override
+	@Override
     public boolean equals(Object obj) {
-        if (obj instanceof Ltc) {
-            Ltc ltc = (Ltc) obj;
-            return ltc.getCcId().equals(getCcId());
+        if (obj instanceof VoltageRegulatorFlags) {
+            VoltageRegulatorFlags regulator = (VoltageRegulatorFlags) obj;
+            return regulator.getCcId().equals(getCcId());
         }
         return false;
     }

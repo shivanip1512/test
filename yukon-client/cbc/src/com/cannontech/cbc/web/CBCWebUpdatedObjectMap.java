@@ -9,7 +9,7 @@ import com.cannontech.yukon.cbc.CCArea;
 import com.cannontech.yukon.cbc.CCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.Ltc;
+import com.cannontech.yukon.cbc.VoltageRegulatorFlags;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.cbc.SubStation;
 
@@ -63,8 +63,8 @@ public class CBCWebUpdatedObjectMap extends WebUpdatedPAObjectMap<Integer>{
         updateMap(capBankDevice.getCcId());
     }
     
-    public void handleCBCChangeEvent(Ltc ltc) {
-        updateMap(ltc.getCcId());
+    public void handleCBCChangeEvent(VoltageRegulatorFlags regulator) {
+        updateMap(regulator.getCcId());
     }
 
 }

@@ -2,11 +2,11 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<cti:standardPage title="LTC Points and TS" module="capcontrol_internal">
+<cti:standardPage title="Regulator Points and TS" module="capcontrol_internal">
 <cti:includeCss link="/capcontrol/css/CapcontrolGeneralStyles.css"/>     
-    <input id="ltcName" type="hidden" value="${ltcName}"/>
+    <input id="regulatorName" type="hidden" value="${regulatorName}"/>
     <c:if test="${oneline}">
-        <center><span style="font-weight: bold; font-size: 16;">${ltcName}</span></center>
+        <center><span style="font-weight: bold; font-size: 16;">${regulatorName}</span></center>
     </c:if>
     
     <div style="overflow: auto;">

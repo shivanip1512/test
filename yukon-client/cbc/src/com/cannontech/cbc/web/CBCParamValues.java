@@ -22,6 +22,6 @@ interface CBCParamValues
     public static final String TYPE_ORPH_FEEDERS = "__cti_oFeeders__";
 	public static final String TYPE_ORPH_BANKS = "__cti_oBanks__";
 	public static final String TYPE_ORPH_CBCS = "__cti_oCBCs__";
-	public static final String TYPE_ORPH_LTCS = "__cti_oLTCs__";
+	public static final String TYPE_ORPH_REGULATORS = "__cti_oRegulators__";
 
 }
