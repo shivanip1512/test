@@ -174,22 +174,22 @@
                         <x:outputText value=""/>
                         
                         <h:panelGroup>
-                            <x:selectBooleanCheckbox id="scanable1" value="#{point.initScan}" rendered="#{!capBankEditor.integratedVoltVarControlled}" disabled="#{!capControlForm.editingAuthorized}" onclick="submit();" />
-                            <x:outputText value="Initiate scan on unsolicited" styleClass="padCheckBoxLabel" rendered="#{!capBankEditor.integratedVoltVarControlled}"/>
+                            <x:selectBooleanCheckbox id="scanable1" value="#{point.initScan}" disabled="#{!capControlForm.editingAuthorized}" onclick="submit();" />
+                            <x:outputText value="Initiate scan on unsolicited" styleClass="padCheckBoxLabel" />
                         </h:panelGroup>
                         <x:outputText value=""/>
                         <x:outputText value=""/>
                         
                         <h:panelGroup>
-        					<x:selectBooleanCheckbox id="inheritFdr1" value="#{point.overrideFdrLimits}" onclick="submit();" rendered="#{!capBankEditor.integratedVoltVarControlled}" disabled="#{!capControlForm.editingAuthorized}"/>
-        					<x:outputText value="Override feeder limits" styleClass="padCheckBoxLabel" rendered="#{!capBankEditor.integratedVoltVarControlled}"/>
+        					<x:selectBooleanCheckbox id="inheritFdr1" value="#{point.overrideFdrLimits}" onclick="submit();" disabled="#{!capControlForm.editingAuthorized}"/>
+        					<x:outputText value="Override feeder limits" styleClass="padCheckBoxLabel" />
                         </h:panelGroup>
-                        <x:outputText value="Upper Bandwidth: " rendered="#{!capBankEditor.integratedVoltVarControlled}"/>
-    					<x:inputText value="#{point.upperBandwidth}" rendered="#{!capBankEditor.integratedVoltVarControlled}" disabled="#{!point.overrideFdrLimits}" />
+                        <x:outputText value="Upper Bandwidth: " />
+    					<x:inputText value="#{point.upperBandwidth}" disabled="#{!point.overrideFdrLimits}" />
     					
                         <x:outputText value=""/>
-                        <x:outputText value="Lower Bandwidth: " rendered="#{!capBankEditor.integratedVoltVarControlled}"/>
-                        <x:inputText value="#{point.lowerBandwidth}" rendered="#{!capBankEditor.integratedVoltVarControlled}" disabled="#{!point.overrideFdrLimits}" />
+                        <x:outputText value="Lower Bandwidth: " />
+                        <x:inputText value="#{point.lowerBandwidth}" disabled="#{!point.overrideFdrLimits}" />
     					
                     </h:panelGrid>
                     
