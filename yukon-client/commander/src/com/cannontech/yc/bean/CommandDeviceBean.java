@@ -1205,7 +1205,7 @@ public class CommandDeviceBean implements DBChangeListener
 			sql.append(" (SELECT DeviceId, RouteId, SerialAddress AS Serial FROM LMGroupVersacom "); 
 			sql.append(" UNION SELECT LMGroupId as DeviceId, RouteId, SerialNumber FROM LMGroupExpressCom "); 
 			sql.append(" UNION SELECT DeviceId, RouteId, NULL FROM LMGroupEmetcon ");
-			sql.append(" UNION SELECT OwnerId as DeviceId, -1, NULL FROM  GenericMacro ) as LMGroups ");
+			sql.append(" UNION SELECT OwnerId as DeviceId, -1, NULL FROM  GenericMacro ) LMGroups ");
 			sql.append(" ON lmg.DeviceId = LMGroups.DeviceId ");
 			sql.append(" JOIN YukonPaobject pao on lmg.DeviceId = pao.PaobjectId");
 
