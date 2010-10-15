@@ -26,6 +26,9 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.YukonRowMapperAdapter;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.macro.MacroTypes;
@@ -63,7 +66,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         loadGroupQuery.append("AND PAO.category").eq(PAOGroups.STRING_CAT_DEVICE);
         
         try {
-            loadGroup = yukonJdbcTemplate.queryForObject(loadGroupQuery, loadGroupDatabaseResultRowMapper());
+            loadGroup = yukonJdbcTemplate.queryForObject(loadGroupQuery, loadGroupRowMapper);
         } catch (EmptyResultDataAccessException ex) {
             throw new NotFoundException("The load group id supplied does not exist.");
         }
@@ -88,7 +91,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
             }};
         List<LoadGroup> loadGroups =
             template.query(sqlGenerator, loadGroupIds,
-                           loadGroupDatabaseResultRowMapper());
+                           new YukonRowMapperAdapter<LoadGroup>(loadGroupRowMapper));
         return loadGroups;
     }
 
@@ -109,7 +112,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         loadGroupQuery.append("AND PAO.paoName").eq(loadGroupName);
         
         try {
-            loadGroup = yukonJdbcTemplate.queryForObject(loadGroupQuery, loadGroupDatabaseResultRowMapper());
+            loadGroup = yukonJdbcTemplate.queryForObject(loadGroupQuery, loadGroupRowMapper);
         } catch (EmptyResultDataAccessException ex) {
             throw new NotFoundException("The load group name supplied does not exist.");
 
@@ -154,7 +157,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         sql.append("JOIN LMProgramWebPublishing LMPWP ON LMPDG.DeviceId = LMPWP.DeviceId");
         sql.append("WHERE LMPWP.ProgramId").eq(programId);
         
-        List<LoadGroup> loadGroupList = yukonJdbcTemplate.query(sql, loadGroupDatabaseResultRowMapper());
+        List<LoadGroup> loadGroupList = yukonJdbcTemplate.query(sql, loadGroupRowMapper);
         return loadGroupList;
     }
     
@@ -228,26 +231,22 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         sql.append("SELECT lmGroupDeviceId FROM lmProgramDirectGroup");
         sql.append("WHERE deviceId").eq(programId).append(")");
 
-        return yukonJdbcTemplate.query(sql, loadGroupDatabaseResultRowMapper());
+        return yukonJdbcTemplate.query(sql, loadGroupRowMapper);
     }
     
     // rowMappers
-    private ParameterizedRowMapper<LoadGroup> loadGroupDatabaseResultRowMapper() {
-        final ParameterizedRowMapper<LoadGroup> mapper = new ParameterizedRowMapper<LoadGroup>() {
-            @Override
-            public LoadGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
-                
-                int loadGroupId = rs.getInt("loadGroupId"); 
-                String loadGroupName = rs.getString("loadGroupName");
-                String typeStr = rs.getString("type");
-                int deviceTypeId = PAOGroups.getPAOType("DEVICE", typeStr);
-                PaoType paoType = PaoType.getForId(deviceTypeId);
-                PaoIdentifier paoIdentifier = new PaoIdentifier(loadGroupId, paoType);
-                return new LoadGroup(paoIdentifier, loadGroupName, null);
-            }
-        };
-        return mapper;
-    }
+    private final YukonRowMapper<LoadGroup> loadGroupRowMapper =
+        new YukonRowMapper<LoadGroup>() {
+        @Override
+        public LoadGroup mapRow(YukonResultSet rs) throws SQLException {
+            
+            int loadGroupId = rs.getInt("loadGroupId"); 
+            String loadGroupName = rs.getString("loadGroupName");
+            PaoType paoType = rs.getEnum("type", PaoType.class);
+            PaoIdentifier paoIdentifier = new PaoIdentifier(loadGroupId, paoType);
+            return new LoadGroup(paoIdentifier, loadGroupName, null);
+        }
+    };
     
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
