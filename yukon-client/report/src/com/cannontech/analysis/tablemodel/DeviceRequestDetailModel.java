@@ -97,7 +97,7 @@ public class DeviceRequestDetailModel extends BareDatedReportModelBase<DeviceReq
             sql.append("  join DeviceRoutes dr on dr.DEVICEID = dpsh.PAObjectID");
             sql.append("join YukonPAObject route on route.PAObjectID = dr.ROUTEID");
             sql.append("WHERE dpsh.PAObjectID IN (").appendArgumentList(subList).append(")");
-            sql.append("  and DateOffset > ").appendArgument(getStartDateOffset()).append("and DateOffset <= ").appendArgument(getStopDateOffset());
+            sql.append("  and DateOffset").gte(getStartDateOffset()).append("and DateOffset").lte(getStopDateOffset());
             sql.append("group by ypo.PAOName,ypo.type, route.PAOName");
         } else {
             sql.append("select ypo.paoname deviceName, ypo.type type, route.paoname route, requests, attempts, completions");
