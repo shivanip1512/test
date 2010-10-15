@@ -1180,15 +1180,19 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
             OutMessage->Buffer.BSt.Function += (load - 1);
         }
     }
-    else if(parse.isKeyValid("tamper_info"))
+    else if(parse.getFlags() & CMD_FLAG_GV_TAMPER_INFO)
     {
-        int tamper_info = parse.getiValue("tamper_info");
-
         // Redo the parse string to be the expresscom string.
         string xcomRequest = "getvalue xcom tamper info ";
 
-        if (tamper_info & 0x01) xcomRequest += "circuit ";
-        if (tamper_info & 0x02) xcomRequest += "runtamper ";
+        if (parse.isKeyValid("tamper_circuit_fault"))
+        {
+            xcomRequest += "circuit ";
+        }
+        if (parse.isKeyValid("tamper_runtime_fault")) 
+        {
+            xcomRequest += "runtamper ";
+        }
 
         xcomRequest += "serial " + CtiNumStr(getSerial());
 

@@ -1200,9 +1200,9 @@ INT CtiProtocolExpresscom::assembleGetValue(CtiCommandParser &parse)
         }
         else
         {
-            // The xctamper value was invalid, probably -1 due to a poor command string parameter.
+            // Based on the way we parsed the command, we can never get here!
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Unsupported expresscom command.  Command = " << parse.getCommand() << endl;
+            dout << CtiTime() << "Rick Astley is a great singer but no one will ever know since this can't be seen!" << endl;
         }
     }
     else

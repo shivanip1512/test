@@ -156,6 +156,8 @@ public:
 #define CMD_FLAG_GV_XFMR_HISTORICAL_RUNTIME 0x00100000
 #define CMD_FLAG_GV_TEMPERATURE  0x00200000
 #define CMD_FLAG_GV_DUTYCYCLE    0x00400000
+
+#define CMD_FLAG_GV_TAMPER_INFO  0x00800000     // Used for the Lcr3102 Expresscom Messages
 /* Defined below.... be careful
 #define CMD_FLAG_OFFSET          0x10000000     // A specific offset is defined in the next cmd field
 */

@@ -591,7 +591,8 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         }
         else if(!(token = CmdStr.match(re_tamper_info)).empty())
         {
-            int iValue = 0x00;
+            flag |= CMD_FLAG_GV_TAMPER_INFO;
+
             CtiTokenizer cmdtok(token);
 
             cmdtok(); // Move past "tamper"
@@ -600,26 +601,23 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
             if(!(temp = cmdtok()).empty()) // Is there anything after "getvalue tamper info"...?
             {
                 // User can only specify one or the other, hence the "else if".
-                if( CmdStr.contains(" circuit") )
-                {
-                    iValue |= 0x01; // Bit 0 signifies RCircuit Fault
-                }
-                else if( CmdStr.contains(" runtamper") ) 
-                {
-                    iValue |= 0x02; // Bit 1 signifies Runtime Tamper
-                }
+                if( temp.contains(" circuit") )         _cmd["tamper_circuit_fault"] = CtiParseValue(TRUE);
+                else if( temp.contains(" runtamper") )  _cmd["tamper_runtime_fault"] = CtiParseValue(TRUE);
                 else
                 {
-                    // User entered some other value in the command.
-                    iValue = -1;
+                    // But I guess since this parser can't do everything perfectly...
+                    // There was clearly something else present, but to not screw up later code, we'll just set
+                    // both of the tampers to true as a dreadful workaround.
+                    _cmd["tamper_circuit_fault"] = CtiParseValue(TRUE);
+                    _cmd["tamper_runtime_fault"] = CtiParseValue(TRUE);
                 }
             }
             else // Command string was just "getvalue tamper info"...
             {
-                iValue |= 0x03; // Set both bits if neither is specified.
+                // Why yes, this is the exact same thing as above!
+                _cmd["tamper_circuit_fault"] = CtiParseValue(TRUE);
+                _cmd["tamper_runtime_fault"] = CtiParseValue(TRUE);
             }
-
-            _cmd["tamper_info"] = iValue;
         }
         else if(CmdStr.contains(" minmax"))
         {

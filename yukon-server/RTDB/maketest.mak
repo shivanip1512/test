@@ -147,13 +147,34 @@ cmd_dlc.obj:	yukon.h precompiled.h types.h ctidbgmem.h cmd_dlc.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
 		configval.h prot_base.h xfer.h prot_emetcon.h
 cmd_lcr3102_tamperread.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		dev_lcr3102.cpp dev_lcr3102.h dev_carrier.h dev_dlcbase.h \
-		dev_single.h dsm2.h mutex.h dlldefs.h guard.h utility.h \
-		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
-		sorted_vector.h cticonnect.h netports.h dsm2err.h words.h \
-		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
-		dev_exclusion.h boostutil.h tbl_paoexclusion.h row_reader.h \
-		rwutil.h database_connection.h dbaccess.h dllbase.h sema.h \
+		cmd_lcr3102_tamperRead.h cmd_lcr3102_ThreePart.h \
+		cmd_lcr3102.h cmd_dlc.h cmd_base.h dev_single.h dsm2.h \
+		mutex.h dlldefs.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h numstr.h sorted_vector.h cticonnect.h \
+		netports.h dsm2err.h words.h dev_base.h cmdparse.h \
+		ctitokenizer.h parsevalue.h dev_exclusion.h boostutil.h \
+		tbl_paoexclusion.h row_reader.h rwutil.h \
+		database_connection.h dbaccess.h dllbase.h sema.h \
+		database_reader.h boost_time.h config_device.h logger.h \
+		thread.h CtiPCPtrQueue.h hashkey.h hash_functions.h \
+		rte_base.h dbmemobject.h ctibase.h ctinexus.h message.h \
+		collectable.h tbl_pao_lite.h tbl_rtcomm.h resolvers.h \
+		pointtypes.h db_entry_defines.h desolvers.h msg_signal.h \
+		tbl_base.h tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
+		tbl_static_paoinfo.h pointdefs.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h \
+		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
+		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h prot_base.h xfer.h prot_emetcon.h
+cmd_lcr3102_threepart.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
+		dev_lcr3102.h dev_carrier.h dev_dlcbase.h dev_single.h dsm2.h \
+		mutex.h dlldefs.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h numstr.h sorted_vector.h cticonnect.h \
+		netports.h dsm2err.h words.h dev_base.h cmdparse.h \
+		ctitokenizer.h parsevalue.h dev_exclusion.h boostutil.h \
+		tbl_paoexclusion.h row_reader.h rwutil.h \
+		database_connection.h dbaccess.h dllbase.h sema.h \
 		database_reader.h boost_time.h config_device.h logger.h \
 		thread.h CtiPCPtrQueue.h hashkey.h hash_functions.h \
 		rte_base.h dbmemobject.h ctibase.h ctinexus.h message.h \
@@ -167,7 +188,9 @@ cmd_lcr3102_tamperread.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
 		configval.h prot_base.h xfer.h tbl_route.h tbl_carrier.h \
 		prot_emetcon.h cmd_dlc.h cmd_base.h tbl_metergrp.h vcomdefs.h \
-		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h
+		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h \
+		dev_lcr3102_commands.h cmd_lcr3102_tamperRead.h \
+		cmd_lcr3102_ThreePart.h cmd_lcr3102.h
 cmd_mct410_hourlyread.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		cmd_mct410_hourlyRead.h cmd_mct410.h cmd_dlc.h cmd_base.h \
 		dev_single.h dsm2.h mutex.h dlldefs.h guard.h utility.h \
@@ -1234,7 +1257,9 @@ dev_lcr3102.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
 		configval.h prot_base.h xfer.h tbl_route.h tbl_carrier.h \
 		prot_emetcon.h cmd_dlc.h cmd_base.h tbl_metergrp.h vcomdefs.h \
-		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h
+		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h \
+		dev_lcr3102_commands.h cmd_lcr3102_tamperRead.h \
+		cmd_lcr3102_ThreePart.h cmd_lcr3102.h
 dev_lcu.obj:	yukon.h precompiled.h types.h ctidbgmem.h cparms.h \
 		dlldefs.h rwutil.h database_connection.h dbaccess.h dllbase.h \
 		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
@@ -2899,33 +2924,35 @@ slctdev.obj:	yukon.h precompiled.h types.h ctidbgmem.h dev_710.h \
 		dev_grp_sadigital.h dev_grp_versacom.h tbl_dv_versacom.h \
 		dev_grp_xml.h amq_connection.h activemqcpp.h dev_davis.h \
 		dev_system.h dev_aplus.h dev_alpha.h dev_a1.h dev_lgs4.h \
-		dev_lcr3102.h dev_dr87.h dev_dct501.h dev_mct24x.h \
-		dev_mct2xx.h dev_mct.h dev_mct210.h dev_mct22X.h dev_mct310.h \
-		dev_mct31X.h dev_mct410.h dev_mct4xx.h config_data_mct.h \
-		ctidate.h dev_mct410_commands.h cmd_mct410_hourlyRead.h \
-		cmd_mct410.h dev_mct420.h dev_mct470.h dev_mct_lmt2.h \
-		dev_mct_broadcast.h dev_kv2.h prot_ansi_kv2.h prot_ansi.h \
-		ansi_application.h ansi_datalink.h ansi_billing_table.h \
-		std_ansi_tbl_base.h std_ansi_tbl_00.h std_ansi_tbl_01.h \
-		std_ansi_tbl_08.h std_ansi_tbl_10.h std_ansi_tbl_11.h \
-		std_ansi_tbl_12.h std_ansi_tbl_13.h std_ansi_tbl_14.h \
-		std_ansi_tbl_15.h std_ansi_tbl_16.h std_ansi_tbl_21.h \
-		std_ansi_tbl_22.h std_ansi_tbl_23.h std_ansi_tbl_25.h \
-		std_ansi_tbl_27.h std_ansi_tbl_28.h std_ansi_tbl_31.h \
-		std_ansi_tbl_32.h std_ansi_tbl_33.h std_ansi_tbl_51.h \
-		std_ansi_tbl_52.h std_ansi_tbl_61.h std_ansi_tbl_62.h \
-		std_ansi_tbl_63.h std_ansi_tbl_64.h ansi_kv2_mtable_000.h \
-		ansi_kv2_mtable_070.h ansi_kv2_mtable_110.h dllyukon.h \
-		dev_sentinel.h dev_ansi.h prot_ansi_sentinel.h dev_focus.h \
-		prot_ansi_focus.h dev_mark_v.h prot_transdata.h \
-		transdata_application.h transdata_tracker.h \
-		transdata_datalink.h prot_ymodem.h transdata_data.h msg_cmd.h \
-		dev_rds.h dev_repeater800.h dev_repeater.h dev_repeater850.h \
-		dev_rtc.h tbl_dv_rtc.h dev_sixnet.h prot_sixnet.h rte_macro.h \
-		tbl_rtmacro.h rte_ccu.h rte_xcu.h smartmap.h \
-		readers_writer_lock.h tbl_rtcarrier.h tbl_rtrepeater.h \
-		rte_versacom.h tbl_rtversacom.h master.h rte_expresscom.h \
-		dev_fmu.h dev_xml.h rtdb.h slctdev.h
+		dev_lcr3102.h dev_lcr3102_commands.h cmd_lcr3102_tamperRead.h \
+		cmd_lcr3102_ThreePart.h cmd_lcr3102.h dev_dr87.h dev_dct501.h \
+		dev_mct24x.h dev_mct2xx.h dev_mct.h dev_mct210.h dev_mct22X.h \
+		dev_mct310.h dev_mct31X.h dev_mct410.h dev_mct4xx.h \
+		config_data_mct.h ctidate.h dev_mct410_commands.h \
+		cmd_mct410_hourlyRead.h cmd_mct410.h dev_mct420.h \
+		dev_mct470.h dev_mct_lmt2.h dev_mct_broadcast.h dev_kv2.h \
+		prot_ansi_kv2.h prot_ansi.h ansi_application.h \
+		ansi_datalink.h ansi_billing_table.h std_ansi_tbl_base.h \
+		std_ansi_tbl_00.h std_ansi_tbl_01.h std_ansi_tbl_08.h \
+		std_ansi_tbl_10.h std_ansi_tbl_11.h std_ansi_tbl_12.h \
+		std_ansi_tbl_13.h std_ansi_tbl_14.h std_ansi_tbl_15.h \
+		std_ansi_tbl_16.h std_ansi_tbl_21.h std_ansi_tbl_22.h \
+		std_ansi_tbl_23.h std_ansi_tbl_25.h std_ansi_tbl_27.h \
+		std_ansi_tbl_28.h std_ansi_tbl_31.h std_ansi_tbl_32.h \
+		std_ansi_tbl_33.h std_ansi_tbl_51.h std_ansi_tbl_52.h \
+		std_ansi_tbl_61.h std_ansi_tbl_62.h std_ansi_tbl_63.h \
+		std_ansi_tbl_64.h ansi_kv2_mtable_000.h ansi_kv2_mtable_070.h \
+		ansi_kv2_mtable_110.h dllyukon.h dev_sentinel.h dev_ansi.h \
+		prot_ansi_sentinel.h dev_focus.h prot_ansi_focus.h \
+		dev_mark_v.h prot_transdata.h transdata_application.h \
+		transdata_tracker.h transdata_datalink.h prot_ymodem.h \
+		transdata_data.h msg_cmd.h dev_rds.h dev_repeater800.h \
+		dev_repeater.h dev_repeater850.h dev_rtc.h tbl_dv_rtc.h \
+		dev_sixnet.h prot_sixnet.h rte_macro.h tbl_rtmacro.h \
+		rte_ccu.h rte_xcu.h smartmap.h readers_writer_lock.h \
+		tbl_rtcarrier.h tbl_rtrepeater.h rte_versacom.h \
+		tbl_rtversacom.h master.h rte_expresscom.h dev_fmu.h \
+		dev_xml.h rtdb.h slctdev.h
 slctpnt.obj:	yukon.h precompiled.h types.h ctidbgmem.h rtdb.h \
 		dlldefs.h hashkey.h hash_functions.h utility.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h numstr.h sorted_vector.h \
@@ -2959,6 +2986,27 @@ test_cmd_dlc.obj:	cmd_mct410_hourlyread.h cmd_mct410.h cmd_dlc.h \
 		cmd_base.h dev_single.h dsm2.h mutex.h dlldefs.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
 		numstr.h sorted_vector.h cticonnect.h yukon.h precompiled.h \
+		ctidbgmem.h netports.h dsm2err.h words.h dev_base.h \
+		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
+		boostutil.h tbl_paoexclusion.h row_reader.h rwutil.h \
+		database_connection.h dbaccess.h dllbase.h sema.h \
+		database_reader.h boost_time.h config_device.h logger.h \
+		thread.h CtiPCPtrQueue.h hashkey.h hash_functions.h \
+		rte_base.h dbmemobject.h ctibase.h ctinexus.h message.h \
+		collectable.h tbl_pao_lite.h tbl_rtcomm.h resolvers.h \
+		pointtypes.h db_entry_defines.h desolvers.h msg_signal.h \
+		tbl_base.h tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
+		tbl_static_paoinfo.h pointdefs.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h \
+		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
+		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h prot_base.h xfer.h prot_emetcon.h ctidate.h
+test_cmd_lcr3102_tamperread.obj:	cmd_lcr3102_tamperRead.h \
+		cmd_lcr3102_ThreePart.h cmd_lcr3102.h cmd_dlc.h cmd_base.h \
+		dev_single.h dsm2.h mutex.h dlldefs.h guard.h utility.h \
+		ctitime.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
+		sorted_vector.h cticonnect.h yukon.h precompiled.h \
 		ctidbgmem.h netports.h dsm2err.h words.h dev_base.h \
 		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
 		boostutil.h tbl_paoexclusion.h row_reader.h rwutil.h \
@@ -3217,7 +3265,9 @@ test_lcr3102.obj:	dev_lcr3102.h dev_carrier.h dev_dlcbase.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
 		configval.h prot_base.h xfer.h tbl_route.h tbl_carrier.h \
 		prot_emetcon.h cmd_dlc.h cmd_base.h tbl_metergrp.h vcomdefs.h \
-		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h
+		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h \
+		dev_lcr3102_commands.h cmd_lcr3102_tamperRead.h \
+		cmd_lcr3102_ThreePart.h cmd_lcr3102.h
 test_mgr_point.obj:	mgr_point.h dlldefs.h smartmap.h boostutil.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
 		numstr.h sorted_vector.h dllbase.h dsm2.h mutex.h guard.h \
