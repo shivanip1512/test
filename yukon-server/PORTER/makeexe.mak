@@ -462,13 +462,13 @@ portfield.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		dev_dlcbase.h tbl_route.h tbl_carrier.h prot_emetcon.h \
 		cmd_dlc.h cmd_base.h tbl_loadprofile.h da_load_profile.h \
 		tbl_dv_mctiedport.h pt_numeric.h tbl_pt_unit.h \
-		tbl_unitmeasure.h dev_sentinel.h prot_ansi_sentinel.h \
-		dev_focus.h prot_ansi_focus.h dev_mark_v.h prot_transdata.h \
-		transdata_application.h transdata_tracker.h \
-		transdata_datalink.h prot_ymodem.h ctidate.h transdata_data.h \
-		msg_cmd.h msg_trace.h pilserver.h server_b.h con_mgr.h \
-		mgr_point.h mgr_route.h repeaterrole.h mgr_config.h \
-		port_udp.h port_serial.h tbl_port_settings.h \
+		tbl_unitmeasure.h dev_sentinel.h dev_ansi.h \
+		prot_ansi_sentinel.h dev_focus.h prot_ansi_focus.h \
+		dev_mark_v.h prot_transdata.h transdata_application.h \
+		transdata_tracker.h transdata_datalink.h prot_ymodem.h \
+		ctidate.h transdata_data.h msg_cmd.h msg_trace.h pilserver.h \
+		server_b.h con_mgr.h mgr_point.h mgr_route.h repeaterrole.h \
+		mgr_config.h port_udp.h port_serial.h tbl_port_settings.h \
 		tbl_port_timing.h tbl_port_tcpip.h prot_711.h portfield.h
 portfill.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		dlldefs.h cticalls.h cparms.h rwutil.h database_connection.h \

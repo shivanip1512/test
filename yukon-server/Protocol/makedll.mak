@@ -247,7 +247,16 @@ ansi_application.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		cticonnect.h netports.h dsm2err.h words.h sema.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		configkey.h configval.h ansi_application.h ansi_datalink.h \
-		xfer.h
+		xfer.h prot_ansi.h ansi_billing_table.h std_ansi_tbl_base.h \
+		std_ansi_tbl_00.h std_ansi_tbl_01.h std_ansi_tbl_08.h \
+		std_ansi_tbl_10.h std_ansi_tbl_11.h std_ansi_tbl_12.h \
+		std_ansi_tbl_13.h std_ansi_tbl_14.h std_ansi_tbl_15.h \
+		std_ansi_tbl_16.h std_ansi_tbl_21.h std_ansi_tbl_22.h \
+		std_ansi_tbl_23.h std_ansi_tbl_25.h std_ansi_tbl_27.h \
+		std_ansi_tbl_28.h std_ansi_tbl_31.h std_ansi_tbl_32.h \
+		std_ansi_tbl_33.h std_ansi_tbl_51.h std_ansi_tbl_52.h \
+		std_ansi_tbl_61.h std_ansi_tbl_62.h std_ansi_tbl_63.h \
+		std_ansi_tbl_64.h
 ansi_billing_table.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		ansi_billing_table.h dlldefs.h dsm2.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \

@@ -454,6 +454,9 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     static const boost::regex   re_xfmr_historical  (CtiString("historical(( transformer| table) ") + str_num + CtiString(")?"));
     static const boost::regex   re_duty_cycle       (CtiString("duty cycle( ct ") + str_num + CtiString(")?"));
 
+    // Expresscom 3-part commands
+    static const boost::regex   re_tamper_info      (CtiString("tamper info( circuit| runtamper)?"));
+
     CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
@@ -585,6 +588,38 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         else if(!(token = CmdStr.match(re_demand)).empty())      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_GV_DEMAND;
+        }
+        else if(!(token = CmdStr.match(re_tamper_info)).empty())
+        {
+            int iValue = 0x00;
+            CtiTokenizer cmdtok(token);
+
+            cmdtok(); // Move past "tamper"
+            cmdtok(); // Move past "info"
+
+            if(!(temp = cmdtok()).empty()) // Is there anything after "getvalue tamper info"...?
+            {
+                // User can only specify one or the other, hence the "else if".
+                if( CmdStr.contains(" circuit") )
+                {
+                    iValue |= 0x01; // Bit 0 signifies RCircuit Fault
+                }
+                else if( CmdStr.contains(" runtamper") ) 
+                {
+                    iValue |= 0x02; // Bit 1 signifies Runtime Tamper
+                }
+                else
+                {
+                    // User entered some other value in the command.
+                    iValue = -1;
+                }
+            }
+            else // Command string was just "getvalue tamper info"...
+            {
+                iValue |= 0x03; // Set both bits if neither is specified.
+            }
+
+            _cmd["tamper_info"] = iValue;
         }
         else if(CmdStr.contains(" minmax"))
         {
@@ -894,6 +929,8 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     }
 
     setFlags(flag);
+
+    doParseGetValueExpresscom(CmdStr);
 }
 
 
@@ -1475,31 +1512,31 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
 
         switch( type )
         {
-        case ProtocolVersacomType:
+            case ProtocolVersacomType:
             {
                 doParsePutStatusVersacom(CmdStr);
                 break;
             }
-        case ProtocolExpresscomType:
+            case ProtocolExpresscomType:
             {
                 doParsePutStatusExpresscom(CmdStr);
                 break;
             }
-        case ProtocolFisherPierceType:
+            case ProtocolFisherPierceType:
             {
                 doParsePutStatusFisherP(CmdStr);
                 break;
             }
-        case ProtocolEmetconType:
+            case ProtocolEmetconType:
             {
                 doParsePutStatusEmetcon(CmdStr);
                 break;
             }
-        case ProtocolSADigitalType:
-        case ProtocolGolayType:
-        case ProtocolSA105Type:
-        case ProtocolSA205Type:
-        case ProtocolSA305Type:
+            case ProtocolSADigitalType:
+            case ProtocolGolayType:
+            case ProtocolSA105Type:
+            case ProtocolSA205Type:
+            case ProtocolSA305Type:
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1507,7 +1544,7 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
                 }
                 break;
             }
-        default:
+            default:
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -4391,6 +4428,30 @@ CtiCommandParser& CtiCommandParser::setValue(const string &key, string val)
     _wasExternallyModified = true;
     _cmd[key.c_str()] = CtiParseValue(val.c_str());
     return *this;
+}
+
+void CtiCommandParser::doParseGetValueExpresscom(const string &_CmdStr)
+{
+    CtiString CmdStr(_CmdStr);
+
+    int iValue = 0x00;
+
+    CtiString   str;
+    CtiString   temp;
+    CtiString   token;
+
+    static const boost::regex   re_tamper_info("xcom tamper info( circuit)?( runtamper)?");
+
+    CtiTokenizer   tok(CmdStr);
+    token = tok(); // Get the first one into the hopper....
+
+    if(!(temp = CmdStr.match(re_tamper_info)).empty())
+    {
+        if(temp.contains("circuit"))   iValue |= 0x01;
+        if(temp.contains("runtamper")) iValue |= 0x02;
+
+        _cmd["xctamper"] = CtiParseValue( iValue );
+    }
 }
 
 void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)

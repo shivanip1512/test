@@ -249,6 +249,22 @@ INT CtiProtocolExpresscom::timeSync(const CtiTime &local, bool fullsync)
     return status;
 }
 
+INT CtiProtocolExpresscom::tamperInformation(bool rcircuit, bool runtime)
+{
+    INT status = NoError;
+
+    BYTE tamperValue = 0x00;
+
+    tamperValue |= rcircuit ? 0x01 : 0x00;
+    tamperValue |= runtime  ? 0x02 : 0x00;
+
+    _message.push_back( mtTamper );
+    _message.push_back( tamperValue );
+
+    incrementMessageCount();
+    return status;
+}
+
 INT CtiProtocolExpresscom::signalTest(BYTE test)
 {
     INT status = NoError;
@@ -1076,22 +1092,27 @@ INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse)
 
     switch(parse.getCommand())
     {
-    case ControlRequest:
+        case GetValueRequest:
+        {
+            assembleGetValue(parse);
+            break;
+        }
+        case ControlRequest:
         {
             assembleControl(parse);
             break;
         }
-    case PutConfigRequest:
+        case PutConfigRequest:
         {
             status = assemblePutConfig(parse);
             break;
         }
-    case PutStatusRequest:
+        case PutStatusRequest:
         {
             assemblePutStatus(parse);
             break;
         }
-    default:
+        default:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1161,6 +1182,36 @@ BYTE CtiProtocolExpresscom::getStartByte() const
 BYTE CtiProtocolExpresscom::getStopByte() const
 {
     return(_useProtocolCRC ? 'v' : 't');
+}
+
+INT CtiProtocolExpresscom::assembleGetValue(CtiCommandParser &parse)
+{
+    INT  status = NORMAL;
+
+    if(parse.isKeyValid("xctamper"))
+    {
+        int tamper_flags = parse.getiValue("xctamper");
+        if(tamper_flags >= 0)
+        {
+            bool rcircuit = tamper_flags & 0x01;
+            bool runtime  = tamper_flags & 0x02;
+    
+            status = tamperInformation(rcircuit, runtime);
+        }
+        else
+        {
+            // The xctamper value was invalid, probably -1 due to a poor command string parameter.
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Unsupported expresscom command.  Command = " << parse.getCommand() << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Unsupported expresscom command.  Command = " << parse.getCommand() << endl;
+    }
+
+    return status;
 }
 
 INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse)
@@ -1308,6 +1359,10 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse)
                                         parse.getiValue("xcreturn", 0),
                                         parse.isKeyValid("xcsleep"),
                                         parse.getiValue("xcsleep", 0));
+
+    }
+    else if(parse.isKeyValid("xctamper"))
+    {
 
     }
     else

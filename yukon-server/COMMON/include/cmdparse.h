@@ -41,11 +41,12 @@ private:
     void    doParsePutConfig(const string &CmdStr);
     void    doParseScan     (const string &CmdStr);
 
-    void    doParsePutConfigVersacom(const string &CmdStr);
-    void    doParsePutConfigEmetcon (const string &CmdStr);
-    void    doParsePutStatusVersacom(const string &CmdStr);
-    void    doParsePutStatusFisherP (const string &CmdStr);
-    void    doParsePutStatusEmetcon (const string &CmdStr);
+    void    doParseGetValueExpresscom(const string &CmdStr);
+    void    doParsePutConfigVersacom (const string &CmdStr);
+    void    doParsePutConfigEmetcon  (const string &CmdStr);
+    void    doParsePutStatusVersacom (const string &CmdStr);
+    void    doParsePutStatusFisherP  (const string &CmdStr);
+    void    doParsePutStatusEmetcon  (const string &CmdStr);
     void    resolveProtocolType(const string &CmdStr);
     void    doParseExpresscomAddressing(const string &CmdStr);
 
@@ -226,9 +227,6 @@ public:
 #define CMD_FLAG_OFFSET          0x10000000     // A specific offset is defined in the next cmd field
 */
 #define CMD_FLAG_CTL_ALIASMASK   0x000FFFF0
-
-
-
 
 // Globally inviolable flag settings.
 #define CMD_FLAG_OFFSET          0x10000000     // A specific offset is defined in the next cmd field

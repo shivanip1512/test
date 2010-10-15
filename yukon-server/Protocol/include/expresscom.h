@@ -115,7 +115,8 @@ public:
         mtCompareRSSI                    = 0x18,
         mtThermostatSetpointBump         = 0x1b,
         mtData                           = 0x1d,
-        mtCapcontrol                     = 0x20
+        mtCapcontrol                     = 0x20,
+        mtTamper                         = 0x8b
 
     } CtiExpresscomMessageType_t;
 
@@ -171,6 +172,7 @@ private:
     void addressMessage();
     void terminateMessage();
     void resolveAddressLevel();
+    INT assembleGetValue(CtiCommandParser &parse);
     INT assembleControl(CtiCommandParser &parse);
     INT assemblePutConfig(CtiCommandParser &parse);
     INT assemblePutStatus(CtiCommandParser &parse);
@@ -180,6 +182,8 @@ private:
 
     INT sync();
     INT timeSync(const CtiTime &gmt, bool fullsync = true);
+
+    INT tamperInformation(bool rcircuit, bool runtime);
 
     INT signalTest(BYTE test);
     INT timedLoadControl(UINT loadMask, UINT shedtime_seconds, BYTE randin = 0, BYTE randout = 0, USHORT delay = 0 );                 // This is a shed!

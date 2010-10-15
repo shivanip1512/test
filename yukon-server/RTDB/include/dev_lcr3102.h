@@ -2,6 +2,8 @@
 
 #include "dev_carrier.h"
 
+#include "dev_lcr3102_commands.h"
+
 namespace Cti {
 namespace Devices {
 
@@ -72,6 +74,8 @@ protected:
         PointOffset_DutyCycleBase    = 19,  //      AND HERE
         PointOffset_XfmrHistorical   = 23,
 
+        PointOffset_TamperInfo       = 30,
+
         PointOffset_CommStatus       = 2000
     };
 
@@ -126,6 +130,8 @@ public:
     Lcr3102Device& operator=( const Lcr3102Device &aRef );
 
     virtual LONG getAddress() const;
+    
+    LONG getSerial() const;
 
 };
 

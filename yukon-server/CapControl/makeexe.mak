@@ -221,8 +221,8 @@ capcontroller.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		StrategyLoader.h ZoneManager.h Zone.h ZoneLoader.h \
 		AttributeService.h PointAttribute.h DatabaseDaoFactory.h \
 		PointResponseDao.h PointResponseDatabaseDao.h \
-		database_writer.h row_writer.h ccexecutor.h ctdpcptrq.h \
-		ctibase.h ctinexus.h resolvers.h db_entry_defines.h \
+		database_writer.h row_writer.h ccexecutor.h ctibase.h \
+		ctinexus.h ctdpcptrq.h resolvers.h db_entry_defines.h \
 		mgr_paosched.h pao_schedule.h pao_event.h dbmemobject.h \
 		thread_monitor.h smartmap.h thread_register_data.h \
 		ccclientconn.h ccclientlistener.h
@@ -260,7 +260,7 @@ capcontrolpointdatahandler.obj:	yukon.h precompiled.h types.h \
 		ZoneLoader.h AttributeService.h PointAttribute.h \
 		DatabaseDaoFactory.h PointResponseDao.h \
 		PointResponseDatabaseDao.h database_writer.h row_writer.h \
-		ccexecutor.h msg_signal.h ctdpcptrq.h ctibase.h ctinexus.h
+		ccexecutor.h msg_signal.h ctibase.h ctinexus.h ctdpcptrq.h
 ccarea.obj:	yukon.h precompiled.h types.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h \
 		guard.h utility.h ctitime.h queues.h numstr.h sorted_vector.h \
@@ -288,7 +288,7 @@ ccarea.obj:	yukon.h precompiled.h types.h ctidbgmem.h dbaccess.h \
 		ZoneManager.h Zone.h ZoneLoader.h AttributeService.h \
 		PointAttribute.h DatabaseDaoFactory.h PointResponseDao.h \
 		PointResponseDatabaseDao.h database_writer.h row_writer.h \
-		ccexecutor.h ctdpcptrq.h ctibase.h ctinexus.h resolvers.h \
+		ccexecutor.h ctibase.h ctinexus.h ctdpcptrq.h resolvers.h \
 		db_entry_defines.h
 cccapbank.obj:	yukon.h precompiled.h types.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h \
@@ -391,9 +391,9 @@ ccexecutor.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		ControlStrategy.h regression.h Controllable.h \
 		ccsubstationbus.h TimeOfDayStrategy.h ccarea.h ccsparea.h \
 		ccstate.h LoadTapChanger.h PointValueHolder.h UpdatablePao.h \
-		msg_signal.h ctdpcptrq.h ccutil.h devicetypes.h \
-		ccclientlistener.h ccclientconn.h ccsubstationbusstore.h \
-		ccid.h ccstatsobject.h CapControlPointDataHandler.h \
+		msg_signal.h ccutil.h devicetypes.h ccclientlistener.h \
+		ccclientconn.h ctdpcptrq.h ccsubstationbusstore.h ccid.h \
+		ccstatsobject.h CapControlPointDataHandler.h \
 		PointDataHandler.h PointDataListener.h MessageListener.h \
 		StrategyLoader.h ZoneManager.h Zone.h ZoneLoader.h \
 		DatabaseDaoFactory.h PointResponseDao.h \
@@ -427,7 +427,7 @@ ccfeeder.obj:	yukon.h precompiled.h types.h ctidbgmem.h dbaccess.h \
 		ZoneManager.h Zone.h ZoneLoader.h AttributeService.h \
 		PointAttribute.h DatabaseDaoFactory.h PointResponseDao.h \
 		PointResponseDatabaseDao.h database_writer.h row_writer.h \
-		ccexecutor.h ctdpcptrq.h ctibase.h ctinexus.h mgr_holiday.h \
+		ccexecutor.h ctibase.h ctinexus.h ctdpcptrq.h mgr_holiday.h \
 		resolvers.h db_entry_defines.h msg_lmcontrolhistory.h \
 		tbl_pt_alarm.h dbmemobject.h desolvers.h
 ccmain.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
@@ -456,8 +456,8 @@ ccmain.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		PointResponseDao.h PointResponseDatabaseDao.h \
 		database_writer.h row_writer.h capcontroller.h \
 		DispatchConnection.h CapControlDispatchConnection.h \
-		configparms.h ccexecutor.h msg_signal.h ctdpcptrq.h ctibase.h \
-		ctinexus.h ccservice.h ccclientlistener.h ccclientconn.h \
+		configparms.h ccexecutor.h msg_signal.h ctibase.h ctinexus.h \
+		ctdpcptrq.h ccservice.h ccclientlistener.h ccclientconn.h \
 		cservice.h precomp.h Monitor.h CServiceConfig.h rtdb.h \
 		hashkey.h hash_functions.h
 ccmessage.obj:	yukon.h precompiled.h types.h ctidbgmem.h ccmessage.h \
@@ -582,7 +582,7 @@ ccsparea.obj:	yukon.h precompiled.h types.h ctidbgmem.h dbaccess.h \
 		ZoneManager.h Zone.h ZoneLoader.h AttributeService.h \
 		PointAttribute.h DatabaseDaoFactory.h PointResponseDao.h \
 		PointResponseDatabaseDao.h database_writer.h row_writer.h \
-		ccexecutor.h ctdpcptrq.h ctibase.h ctinexus.h resolvers.h \
+		ccexecutor.h ctibase.h ctinexus.h ctdpcptrq.h resolvers.h \
 		db_entry_defines.h
 ccstate.obj:	yukon.h precompiled.h types.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h \
@@ -627,8 +627,8 @@ ccsubstation.obj:	yukon.h precompiled.h types.h ctidbgmem.h dbaccess.h \
 		StrategyLoader.h ZoneManager.h Zone.h ZoneLoader.h \
 		AttributeService.h PointAttribute.h DatabaseDaoFactory.h \
 		PointResponseDao.h PointResponseDatabaseDao.h \
-		database_writer.h row_writer.h ccexecutor.h ctdpcptrq.h \
-		ctibase.h ctinexus.h resolvers.h db_entry_defines.h
+		database_writer.h row_writer.h ccexecutor.h ctibase.h \
+		ctinexus.h ctdpcptrq.h resolvers.h db_entry_defines.h
 ccsubstationbus.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
 		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
@@ -656,7 +656,7 @@ ccsubstationbus.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		ZoneManager.h Zone.h ZoneLoader.h AttributeService.h \
 		PointAttribute.h DatabaseDaoFactory.h PointResponseDao.h \
 		PointResponseDatabaseDao.h database_writer.h row_writer.h \
-		ccexecutor.h ctdpcptrq.h ctibase.h ctinexus.h resolvers.h \
+		ccexecutor.h ctibase.h ctinexus.h ctdpcptrq.h resolvers.h \
 		db_entry_defines.h mgr_holiday.h mgr_paosched.h \
 		pao_schedule.h pao_event.h dbmemobject.h tbl_pt_alarm.h \
 		desolvers.h IVVCStrategy.h IVVCAlgorithm.h IVVCState.h \
@@ -749,7 +749,7 @@ dynamiccommandexecutor.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		ControlStrategy.h regression.h Controllable.h \
 		ccsubstationbus.h TimeOfDayStrategy.h ccarea.h ccsparea.h \
 		ccstate.h LoadTapChanger.h LitePoint.h PointValueHolder.h \
-		UpdatablePao.h msg_signal.h ctdpcptrq.h AttributeService.h \
+		UpdatablePao.h msg_signal.h AttributeService.h \
 		PointAttribute.h ccutil.h devicetypes.h ccid.h \
 		ccsubstationbusstore.h ccstatsobject.h \
 		CapControlPointDataHandler.h PointDataHandler.h \
@@ -785,7 +785,7 @@ ivvcalgorithm.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		ZoneLoader.h AttributeService.h PointAttribute.h \
 		DatabaseDaoFactory.h PointResponseDao.h \
 		PointResponseDatabaseDao.h database_writer.h row_writer.h \
-		ccexecutor.h msg_signal.h ctdpcptrq.h ctibase.h ctinexus.h
+		ccexecutor.h msg_signal.h ctibase.h ctinexus.h ctdpcptrq.h
 ivvcstate.obj:	yukon.h precompiled.h types.h ctidbgmem.h IVVCState.h \
 		ctitime.h dlldefs.h cccapbank.h msg_cmd.h message.h \
 		collectable.h rwutil.h database_connection.h dbaccess.h \
@@ -900,7 +900,7 @@ pao_event.obj:	yukon.h precompiled.h types.h ctidbgmem.h dbaccess.h \
 		ZoneManager.h Zone.h ZoneLoader.h AttributeService.h \
 		PointAttribute.h DatabaseDaoFactory.h PointResponseDao.h \
 		PointResponseDatabaseDao.h database_writer.h row_writer.h \
-		ccexecutor.h msg_signal.h ctdpcptrq.h ctibase.h ctinexus.h \
+		ccexecutor.h msg_signal.h ctibase.h ctinexus.h ctdpcptrq.h \
 		pao_schedule.h pao_event.h dbmemobject.h
 pao_schedule.obj:	yukon.h precompiled.h types.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h \
@@ -928,7 +928,7 @@ pao_schedule.obj:	yukon.h precompiled.h types.h ctidbgmem.h dbaccess.h \
 		ZoneManager.h Zone.h ZoneLoader.h AttributeService.h \
 		PointAttribute.h DatabaseDaoFactory.h PointResponseDao.h \
 		PointResponseDatabaseDao.h database_writer.h row_writer.h \
-		ccexecutor.h msg_signal.h ctdpcptrq.h ctibase.h ctinexus.h \
+		ccexecutor.h msg_signal.h ctibase.h ctinexus.h ctdpcptrq.h \
 		pao_schedule.h pao_event.h dbmemobject.h
 pfactorkwkqstrategy.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		PFactorKWKQStrategy.h ControlStrategy.h
@@ -1016,9 +1016,9 @@ test_ccexecuter.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		AttributeService.h PointAttribute.h DatabaseDaoFactory.h \
 		PointResponseDao.h PointResponseDatabaseDao.h \
 		database_writer.h row_writer.h ccexecutor.h msg_signal.h \
-		ctdpcptrq.h ccUnitTestUtil.h capcontroller.h \
-		DispatchConnection.h CapControlDispatchConnection.h \
-		configparms.h ctibase.h ctinexus.h PointDataRequest.h \
+		ccUnitTestUtil.h capcontroller.h DispatchConnection.h \
+		CapControlDispatchConnection.h configparms.h ctibase.h \
+		ctinexus.h ctdpcptrq.h PointDataRequest.h \
 		PointDataRequestFactory.h
 test_ccfeeder.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctitime.h \
 		dlldefs.h ccfeeder.h dbaccess.h dllbase.h os2_2w32.h \
@@ -1047,7 +1047,7 @@ test_ccfeeder.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctitime.h \
 		database_writer.h row_writer.h ccUnitTestUtil.h \
 		capcontroller.h DispatchConnection.h \
 		CapControlDispatchConnection.h configparms.h ccexecutor.h \
-		msg_signal.h ctdpcptrq.h ctibase.h ctinexus.h \
+		msg_signal.h ctibase.h ctinexus.h ctdpcptrq.h \
 		PointDataRequest.h PointDataRequestFactory.h \
 		PFactorKWKVarStrategy.h
 test_ccsubstationbus.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
@@ -1076,7 +1076,7 @@ test_ccsubstationbus.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		ZoneManager.h Zone.h ZoneLoader.h AttributeService.h \
 		PointAttribute.h DatabaseDaoFactory.h PointResponseDao.h \
 		PointResponseDatabaseDao.h database_writer.h row_writer.h \
-		ccexecutor.h msg_signal.h ctdpcptrq.h ctibase.h ctinexus.h \
+		ccexecutor.h msg_signal.h ctibase.h ctinexus.h ctdpcptrq.h \
 		mgr_paosched.h pao_schedule.h pao_event.h dbmemobject.h \
 		ccUnitTestUtil.h PointDataRequest.h PointDataRequestFactory.h \
 		PFactorKWKVarStrategy.h
@@ -1107,7 +1107,7 @@ test_ivvcalgorithm.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		ZoneManager.h Zone.h ZoneLoader.h AttributeService.h \
 		PointAttribute.h DatabaseDaoFactory.h PointResponseDao.h \
 		PointResponseDatabaseDao.h database_writer.h row_writer.h \
-		ccexecutor.h msg_signal.h ctdpcptrq.h ctibase.h ctinexus.h \
+		ccexecutor.h msg_signal.h ctibase.h ctinexus.h ctdpcptrq.h \
 		mgr_paosched.h pao_schedule.h pao_event.h dbmemobject.h \
 		ccUnitTestUtil.h PointDataRequest.h PointDataRequestFactory.h \
 		IVVCStrategy.h IVVCAlgorithm.h IVVCState.h
@@ -1137,8 +1137,8 @@ test_likedaycontrol.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		PointResponseDao.h PointResponseDatabaseDao.h \
 		database_writer.h row_writer.h capcontroller.h \
 		DispatchConnection.h CapControlDispatchConnection.h \
-		configparms.h ccexecutor.h msg_signal.h ctdpcptrq.h ctibase.h \
-		ctinexus.h PointDataRequest.h PointDataRequestFactory.h \
+		configparms.h ccexecutor.h msg_signal.h ctibase.h ctinexus.h \
+		ctdpcptrq.h PointDataRequest.h PointDataRequestFactory.h \
 		KVarStrategy.h PFactorKWKVarStrategy.h VoltStrategy.h
 test_pointholder.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		PointValueHolder.h pointtypes.h ctitime.h dlldefs.h \

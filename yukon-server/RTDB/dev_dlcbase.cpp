@@ -777,7 +777,10 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
             pOut->TargetID  = getID();
 
             //  all B word DLC commands return a "result" - even if it's just notification that a one-way command was submitted (such as a control, write, etc)
-            pOut->EventCode = BWORD | WAIT | RESULT;
+            if( parse.getiValue("type") != ProtocolExpresscomType )
+            {
+                pOut->EventCode = BWORD | WAIT | RESULT;
+            }
 
             if( pOut->Sequence == EmetconProtocol::PutConfig_TSync )
             {

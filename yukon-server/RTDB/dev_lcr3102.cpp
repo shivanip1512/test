@@ -3,6 +3,7 @@
 #include "dev_lcr3102.h"
 
 using Cti::Protocols::EmetconProtocol;
+using namespace Cti::Devices::Commands;
 
 namespace Cti {
 namespace Devices {
@@ -122,7 +123,16 @@ INT Lcr3102Device::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         }
         default:
         {
-            // some error reporting goes here...
+            status = Inherited::ResultDecode( InMessage, TimeNow, vgList, retList, outList);
+
+            if(status != NORMAL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
+            }
+
+            break;
         }
     }
 
@@ -1170,6 +1180,28 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
             OutMessage->Buffer.BSt.Function += (load - 1);
         }
     }
+    else if(parse.isKeyValid("tamper_info"))
+    {
+        int tamper_info = parse.getiValue("tamper_info");
+
+        // Redo the parse string to be the expresscom string.
+        string xcomRequest = "getvalue xcom tamper info ";
+
+        if (tamper_info & 0x01) xcomRequest += "circuit ";
+        if (tamper_info & 0x02) xcomRequest += "runtamper ";
+
+        xcomRequest += "serial " + CtiNumStr(getSerial());
+
+        parse = CtiCommandParser(xcomRequest);
+        parse.setValue("xc_serial", getSerial());
+
+        // Execute the command?
+        DlcCommandSPtr tamperRead(new Lcr3102TamperReadCommand());
+
+        found = tryExecuteCommand(*OutMessage, tamperRead);
+
+        function = OutMessage->Sequence;
+    }
     else if(parse.getFlags() & CMD_FLAG_GV_RUNTIME || parse.getFlags() & CMD_FLAG_GV_SHEDTIME)
     {
         if(parse.getFlags() & CMD_FLAG_GV_RUNTIME)
@@ -1560,6 +1592,11 @@ CtiDeviceSingle::point_info Lcr3102Device::getSixBitValueFromBuffer(unsigned cha
 LONG Lcr3102Device::getAddress() const
 {
     return Inherited::getAddress() & 0x003FFFFF;
+}
+
+LONG Lcr3102Device::getSerial() const
+{
+    return Inherited::getAddress(); // Necessary for the expresscom commands! Need the whole address, not just 22 bits!
 }
 
 

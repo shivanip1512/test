@@ -126,7 +126,7 @@ da_lp_deviceconfig.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		sorted_vector.h CtiPCPtrQueue.h dllbase.h dsm2.h cticonnect.h \
 		netports.h dsm2err.h words.h hashkey.h hash_functions.h \
-		config_data_mct.h
+		config_data_mct.h boostutil.h
 id_dcdll.obj:	yukon.h precompiled.h types.h ctidbgmem.h id_dcdll.h \
 		utility.h ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h \
 		numstr.h sorted_vector.h
