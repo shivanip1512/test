@@ -292,7 +292,6 @@ public class CBCSelectionLists {
 		//value, label
 		new SelectItem(new Integer(PAOGroups.CAP_CONTROL_LTC), VoltageRegulatorType.LOAD_TAP_CHANGER.getDisplayValue() ),
 		new SelectItem(new Integer(PAOGroups.GANG_OPERATED_REGULATOR), VoltageRegulatorType.GANG_OPERATED.getDisplayValue() ),
-		new SelectItem(new Integer(PAOGroups.PHASE_OPERATED_REGULATOR), VoltageRegulatorType.PHASE_OPERATED.getDisplayValue() )
 	};
     
 	/**

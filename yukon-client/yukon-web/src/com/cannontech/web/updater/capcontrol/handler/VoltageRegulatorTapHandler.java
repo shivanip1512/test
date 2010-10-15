@@ -20,10 +20,10 @@ public class VoltageRegulatorTapHandler implements VoltageRegulatorUpdaterHandle
     @Override
     public String handle(int id, YukonUserContext userContext) {
         try {
-            VoltageRegulatorFlags regulator = capControlCache.getVoltageRegulator(id);
-            if (regulator.isLowerTap()) {
+            VoltageRegulatorFlags regulatorFlags = capControlCache.getVoltageRegulatorFlags(id);
+            if (regulatorFlags.isLowerTap()) {
                 return "LowerTap";
-            } else if (regulator.isRaiseTap()) {
+            } else if (regulatorFlags.isRaiseTap()) {
                 return "RaiseTap";
             } else {
                 return "none";

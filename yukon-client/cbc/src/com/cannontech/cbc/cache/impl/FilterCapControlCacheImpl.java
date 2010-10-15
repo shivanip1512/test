@@ -84,9 +84,9 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 		return null;
 	}
 
-    public VoltageRegulatorFlags getVoltageRegulator(int id) {
-        VoltageRegulatorFlags regulator = cache.getVoltageRegulator(id);
-        return regulator;
+    public VoltageRegulatorFlags getVoltageRegulatorFlags(int id) {
+        VoltageRegulatorFlags regulatorFlags = cache.getVoltageRegulatorFlags(id);
+        return regulatorFlags;
     }
     
 	public CCSpecialArea getCBCSpecialArea(int id) {

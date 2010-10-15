@@ -71,6 +71,7 @@ public class ResultsController {
     	REGULATOR,
     	CBC,
     	CAPCONTROL,
+    	GENERAL,
     	;
     }
 
@@ -136,6 +137,7 @@ public class ResultsController {
             label = "Orphaned Regulators";
         }
         else {   
+        	searchType = SearchType.GENERAL;
         	orphan = false;
             LiteBaseResults lbr = new LiteBaseResults();
             lbr.searchLiteObjects( srchCriteria );
@@ -229,6 +231,8 @@ public class ResultsController {
     		PaoType cbcType = PaoType.getForDbString(dbType);
     		String returnValue = cbcType.getDbString();
 			return returnValue;
+		} else if (searchType == SearchType.GENERAL) {
+			return dbType;
 		} else {
 			throw new MissingSearchType("No search type set.");
 		}

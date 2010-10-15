@@ -859,10 +859,10 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         return area;
     }
     
-    public synchronized VoltageRegulatorFlags getVoltageRegulator(int id) throws NotFoundException {
-        VoltageRegulatorFlags regulator = voltageRegulatorMap.get(id);
-        checkObjectFound(regulator, id, VoltageRegulatorFlags.class);
-        return regulator;
+    public synchronized VoltageRegulatorFlags getVoltageRegulatorFlags(int id) throws NotFoundException {
+        VoltageRegulatorFlags regulatorFlags = voltageRegulatorMap.get(id);
+        checkObjectFound(regulatorFlags, id, VoltageRegulatorFlags.class);
+        return regulatorFlags;
     }
     
     public synchronized CCSpecialArea getCBCSpecialArea(int id) throws NotFoundException {

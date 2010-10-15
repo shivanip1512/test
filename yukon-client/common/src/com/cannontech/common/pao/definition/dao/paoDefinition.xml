@@ -5369,111 +5369,48 @@
         </points>
     </pao>
     
-    <pao id="LOAD_TAP_CHANGER">
+    <pao id="VOLTAGE_REGULATOR" abstract="true">
+    	<attributes>
+            <attribute name="AUTO_REMOTE_CONTROL">
+                <mappedLookup>
+                    <typeFilter type="STATUSPOINT"/>
+                </mappedLookup>
+            </attribute>
+            <attribute name="TAP_UP">
+                <mappedLookup>
+                    <typeFilter type="STATUSPOINT"/>
+                </mappedLookup>
+            </attribute>
+            <attribute name="TAP_DOWN">
+                <mappedLookup>
+                    <typeFilter type="STATUSPOINT"/>
+                </mappedLookup>
+            </attribute>
+            <attribute name="TAP_POSITION">
+                <mappedLookup>
+                    <typeFilter type="ANALOGPOINT"/>
+                </mappedLookup>
+            </attribute>
+            <attribute name="VOLTAGE">
+                <mappedLookup>
+                    <typeFilter type="ANALOGPOINT"/>
+                </mappedLookup>
+            </attribute>
+            <attribute name="KEEP_ALIVE">
+                <mappedLookup>
+                    <typeFilter type="ANALOGPOINT"/>
+                </mappedLookup>
+            </attribute>
+        </attributes>
+    </pao>
+    
+    <pao id="LOAD_TAP_CHANGER" inherits="VOLTAGE_REGULATOR">
         <displayName>Load Tap Changer</displayName>
-        <attributes>
-            <attribute name="AUTO_REMOTE_CONTROL">
-                <mappedLookup>
-                    <typeFilter type="STATUSPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="TAP_UP">
-                <mappedLookup>
-                    <typeFilter type="STATUSPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="TAP_DOWN">
-                <mappedLookup>
-                    <typeFilter type="STATUSPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="TAP_POSITION">
-                <mappedLookup>
-                    <typeFilter type="ANALOGPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="VOLTAGE">
-                <mappedLookup>
-                    <typeFilter type="ANALOGPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="KEEP_ALIVE">
-                <mappedLookup>
-                    <typeFilter type="ANALOGPOINT"/>
-                </mappedLookup>
-            </attribute>
-        </attributes>
     </pao>
-    
-    <pao id="GANG_OPERATED">
+    <pao id="GANG_OPERATED" inherits="VOLTAGE_REGULATOR">
         <displayName>Gang Operated</displayName>
-        <attributes>
-            <attribute name="AUTO_REMOTE_CONTROL">
-                <mappedLookup>
-                    <typeFilter type="STATUSPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="TAP_UP">
-                <mappedLookup>
-                    <typeFilter type="STATUSPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="TAP_DOWN">
-                <mappedLookup>
-                    <typeFilter type="STATUSPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="TAP_POSITION">
-                <mappedLookup>
-                    <typeFilter type="ANALOGPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="VOLTAGE">
-                <mappedLookup>
-                    <typeFilter type="ANALOGPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="KEEP_ALIVE">
-                <mappedLookup>
-                    <typeFilter type="ANALOGPOINT"/>
-                </mappedLookup>
-            </attribute>
-        </attributes>
     </pao>
-    
-    <pao id="PHASE_OPERATED">
+    <pao id="PHASE_OPERATED" inherits="VOLTAGE_REGULATOR">
         <displayName>Phase Operated</displayName>
-        <attributes>
-            <attribute name="AUTO_REMOTE_CONTROL">
-                <mappedLookup>
-                    <typeFilter type="STATUSPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="TAP_UP">
-                <mappedLookup>
-                    <typeFilter type="STATUSPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="TAP_DOWN">
-                <mappedLookup>
-                    <typeFilter type="STATUSPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="TAP_POSITION">
-                <mappedLookup>
-                    <typeFilter type="ANALOGPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="VOLTAGE">
-                <mappedLookup>
-                    <typeFilter type="ANALOGPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="KEEP_ALIVE">
-                <mappedLookup>
-                    <typeFilter type="ANALOGPOINT"/>
-                </mappedLookup>
-            </attribute>
-        </attributes>
     </pao>
 </paoDefinitions>

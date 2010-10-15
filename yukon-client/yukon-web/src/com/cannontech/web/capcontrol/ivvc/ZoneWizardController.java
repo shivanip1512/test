@@ -86,7 +86,7 @@ public class ZoneWizardController {
         int substationBusId = zone.getSubstationBusId();
         
         SubBus subBus = cache.getSubBus(substationBusId);
-        VoltageRegulatorFlags regulator = cache.getVoltageRegulator(zone.getRegulatorId());
+        VoltageRegulatorFlags regulatorFlags = cache.getVoltageRegulatorFlags(zone.getRegulatorId());
         
         List<Zone> zones = zoneService.getZonesBySubBusId(substationBusId);
         model.addAttribute("zones",zones);
@@ -118,7 +118,7 @@ public class ZoneWizardController {
         model.addAttribute("assignedPoints", pointAssignments);
         
         model.addAttribute("zoneDto", zoneDto);
-        model.addAttribute("regulatorName", regulator.getCcName());
+        model.addAttribute("regulatorName", regulatorFlags.getCcName());
         model.addAttribute("subBusName", subBus.getCcName());
 
 

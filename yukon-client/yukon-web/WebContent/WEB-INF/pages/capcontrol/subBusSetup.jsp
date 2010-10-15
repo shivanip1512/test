@@ -12,7 +12,6 @@
         var sub_Var_PhaseC_PointPicker = new PointPicker('var_phase_c_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:sub_Var_PhaseC_Point;deviceName:sub_Var_PhaseC_Device','sub_Var_PhaseC_PointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
 		var subWattPointPicker = new PointPicker('watt_point','com.cannontech.common.search.criteria.CCWattCriteria','pointName:subWattPoint;deviceName:subWattDevice','subWattPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
 		var subVoltPointPicker = new PointPicker('volt_point','com.cannontech.common.search.criteria.CCVoltCriteria','pointName:subVoltPoint;deviceName:subVoltDevice','subVoltPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
-		var subVoltageRegulatorPaoPicker = new PaoPicker('voltage_regulator_pao','com.cannontech.common.search.criteria.VoltageRegulatorTypeCriteria','paoName:subVoltageRegulatorDevice','subVoltageRegulatorPaoPicker','',Prototype.emptyFunction);
     </script>
 </f:verbatim>
 

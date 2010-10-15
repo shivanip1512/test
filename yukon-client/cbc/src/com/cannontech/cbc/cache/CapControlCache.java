@@ -28,7 +28,7 @@ public interface CapControlCache {
     
     public CCArea getCBCArea(int id);
     
-    public VoltageRegulatorFlags getVoltageRegulator(int id);
+    public VoltageRegulatorFlags getVoltageRegulatorFlags(int id);
     
     public CCSpecialArea getCBCSpecialArea(int id);
     

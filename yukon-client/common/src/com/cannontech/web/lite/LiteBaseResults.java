@@ -3,12 +3,12 @@ package com.cannontech.web.lite;
 import java.util.Collections;
 import java.util.List;
 
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
@@ -30,19 +30,26 @@ public class LiteBaseResults {
 
 		if (getCriteria() != null && getCriteria().length() > 0) {
 
-            final List<LiteYukonPAObject> paoList = DaoFactory.getPaoDao().searchByName(getCriteria(), PAOGroups.STRING_CAT_CAPCONTROL);
-            final List<LitePoint> pointList = DaoFactory.getPointDao().searchByName(getCriteria(), PAOGroups.STRING_CAT_CAPCONTROL);
+			//Objects and points of Class CAPCONTROL
+            final List<LiteYukonPAObject> paoListCC = DaoFactory.getPaoDao().searchByName(getCriteria(), PaoClass.CAPCONTROL.getDbString());
+            final List<LitePoint> pointListCC = DaoFactory.getPointDao().searchByName(getCriteria(), PaoClass.CAPCONTROL.getDbString());
+            
+            //Objects of Class VOLTAGEREGULATOR
+            //We aren't searching for VOLTAGEREGULATOR points since there are none... there are only attributes
+            final List<LiteYukonPAObject> paoListVR = DaoFactory.getPaoDao().searchByName(getCriteria(), PaoClass.VOLTAGEREGULATOR.getDbString());
             
             final Function<LiteBase, LiteWrapper> toLiteWrapper = new Function<LiteBase, LiteWrapper>() {
                 public LiteWrapper apply(LiteBase liteBase) {
                     return new LiteWrapper(liteBase);
                 }};
             
-            List<LiteWrapper> foundPaoWrappers = Lists.transform(paoList, toLiteWrapper);
-            List<LiteWrapper> foundPointWrappers = Lists.transform(pointList, toLiteWrapper);
+            List<LiteWrapper> foundCCPaoWrappers = Lists.transform(paoListCC, toLiteWrapper);
+            List<LiteWrapper> foundCCPointWrappers = Lists.transform(pointListCC, toLiteWrapper);
+            List<LiteWrapper> foundVRPaoWrappers = Lists.transform(paoListVR, toLiteWrapper);
             
-            foundItems.addAll(foundPaoWrappers);
-            foundItems.addAll(foundPointWrappers);
+            foundItems.addAll(foundCCPaoWrappers);
+            foundItems.addAll(foundCCPointWrappers);
+            foundItems.addAll(foundVRPaoWrappers);
             
             Collections.sort(foundItems, LiteComparators.liteNameComparator);
 		}

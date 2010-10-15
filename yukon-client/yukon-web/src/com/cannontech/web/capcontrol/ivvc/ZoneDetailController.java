@@ -65,14 +65,14 @@ public class ZoneDetailController {
         
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         Zone zone = zoneService.getZoneById(zoneId);
-        VoltageRegulatorFlags regulatorFlag = cache.getVoltageRegulator(zone.getRegulatorId());
+        VoltageRegulatorFlags regulatorFlags = cache.getVoltageRegulatorFlags(zone.getRegulatorId());
         
-        setupDetails(model,regulatorFlag);
+        setupDetails(model,regulatorFlags);
         setupIvvcEvents(model);
         setupCapBanks(model,cache,zone);
         setupBreadCrumbs(model, cache, zone, isSpecialArea);
         setupDeltas(model,request,cache,zone);
-        setupRegulatorPointList(model,regulatorFlag.getCcId());
+        setupRegulatorPointList(model,regulatorFlags.getCcId());
         
         model.addAttribute("subBusId", zone.getSubstationBusId());
         
@@ -113,13 +113,13 @@ public class ZoneDetailController {
         return "ivvc/flatnessGraphSettings.jsp";
     }
     
-    private void setupDetails(ModelMap model, VoltageRegulatorFlags regulator) {
-        model.addAttribute("regulatorId",regulator.getCcId());
-        model.addAttribute("regulatorName",regulator.getCcName());
+    private void setupDetails(ModelMap model, VoltageRegulatorFlags regulatorFlags) {
+        model.addAttribute("regulatorId",regulatorFlags.getCcId());
+        model.addAttribute("regulatorName",regulatorFlags.getCcName());
         
-        VoltageRegulatorPointMapping voltage = voltageRegulatorService.getPointMapping(regulator.getCcId(), BuiltInAttribute.VOLTAGE);
-        VoltageRegulatorPointMapping tapPosition = voltageRegulatorService.getPointMapping(regulator.getCcId(), BuiltInAttribute.TAP_POSITION);
-        VoltageRegulatorPointMapping localAuto = voltageRegulatorService.getPointMapping(regulator.getCcId(), BuiltInAttribute.AUTO_REMOTE_CONTROL);
+        VoltageRegulatorPointMapping voltage = voltageRegulatorService.getPointMapping(regulatorFlags.getCcId(), BuiltInAttribute.VOLTAGE);
+        VoltageRegulatorPointMapping tapPosition = voltageRegulatorService.getPointMapping(regulatorFlags.getCcId(), BuiltInAttribute.TAP_POSITION);
+        VoltageRegulatorPointMapping localAuto = voltageRegulatorService.getPointMapping(regulatorFlags.getCcId(), BuiltInAttribute.AUTO_REMOTE_CONTROL);
         
         model.addAttribute("voltageMapping", voltage);
         model.addAttribute("tapPositionMapping", tapPosition);

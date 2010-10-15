@@ -15,9 +15,9 @@ public class VoltageRegulatorModeUpdaterHandler implements VoltageRegulatorUpdat
     @Override
     public String handle(int id, YukonUserContext userContext) {
         try {
-            VoltageRegulatorFlags regulator = capControlCache.getVoltageRegulator(id);
-            if (regulator.isAutoRemote()) {
-                if (regulator.isAutoRemoteManual()) {
+            VoltageRegulatorFlags regulatorFlags = capControlCache.getVoltageRegulatorFlags(id);
+            if (regulatorFlags.isAutoRemote()) {
+                if (regulatorFlags.isAutoRemoteManual()) {
                     return "NormalLocal";
                 }
                 else {
