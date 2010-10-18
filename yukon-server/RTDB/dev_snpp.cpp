@@ -595,20 +595,20 @@ INT CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
 
 string CtiDeviceSnppPagingTerminal::getLoginName()
 {
-    if(!_table.getSenderID().empty() &&
-       _table.getSenderID().find("none") == string::npos && _table.getSenderID() != " ")
+    if(!getTap().getSenderID().empty() &&
+       getTap().getSenderID().find("none") == string::npos && getTap().getSenderID() != " ")
     {
-        return _table.getSenderID();
+        return getTap().getSenderID();
     }
     return string();
 }
 
 string CtiDeviceSnppPagingTerminal::getLoginPass()
 {
-    if(!_table.getSecurityCode().empty() &&
-       _table.getSecurityCode().find("none") == string::npos && _table.getSecurityCode() != " ")
+    if(!getTap().getSecurityCode().empty() &&
+       getTap().getSecurityCode().find("none") == string::npos && getTap().getSecurityCode() != " ")
     {
-        return _table.getSecurityCode();
+        return getTap().getSecurityCode();
     }
     return string();
 }
@@ -650,10 +650,10 @@ string CtiDeviceSnppPagingTerminal::getPagePass()
 
 string CtiDeviceSnppPagingTerminal::getPageNumber()
 {
-    if(!_table.getPagerNumber().empty() &&
-        _table.getPagerNumber().find("none") == string::npos && _table.getPagerNumber() != " ")
+    if(!getTap().getPagerNumber().empty() &&
+        getTap().getPagerNumber().find("none") == string::npos && getTap().getPagerNumber() != " ")
     {
-        return _table.getPagerNumber();
+        return getTap().getPagerNumber();
     }
     return string();
 }
@@ -683,34 +683,6 @@ void CtiDeviceSnppPagingTerminal::resetStates()
     _currentState = StateHandshakeInitialize;
     _previousState = StateHandshakeInitialize;
     _command = Normal;
-}
-
-//Database Functions
-string CtiDeviceSnppPagingTerminal::getSQLCoreStatement() const
-{
-    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
-                                     "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.portid, "
-                                     "DUS.phonenumber, DUS.minconnecttime, DUS.maxconnecttime, DUS.linesettings, "
-                                     "DUS.baudrate, DTPS.pagernumber, DTPS.sender, DTPS.securitycode, DTPS.postpath "
-                                  "FROM Device DV, DeviceDirectCommSettings CS, YukonPAObject YP LEFT OUTER JOIN "
-                                     "DeviceTapPagingSettings DTPS ON YP.paobjectid = DTPS.deviceid LEFT OUTER JOIN "
-                                    "DEVICEDIALUPSETTINGS DUS ON YP.paobjectid = DUS.deviceid "
-                                   "WHERE YP.paobjectid = DV.deviceid AND YP.paobjectid = CS.deviceid";
-
-    return sqlCore;
-}
-
-void CtiDeviceSnppPagingTerminal::DecodeDatabaseReader(Cti::RowReader &rdr)
-{
-    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
-
-    if( getDebugLevel() & DEBUGLEVEL_DATABASE )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    _table.DecodeDatabaseReader(rdr);
 }
 
 int CtiDeviceSnppPagingTerminal::sendCommResult(INMESS *InMessage)

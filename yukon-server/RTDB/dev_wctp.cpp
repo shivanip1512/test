@@ -855,12 +855,12 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage* > &
 
             replaceChars(getPageBuffer(), msgPayload + sendCnt);
 
-            CHAR* xmlMsg = buildXMLMessage(getWctp().getPagerNumber().c_str(),
-                                           getWctp().getSenderID().c_str(),      // "yukonserver@cannontech.com",
+            CHAR* xmlMsg = buildXMLMessage(getTap().getPagerNumber().c_str(),
+                                           getTap().getSenderID().c_str(),      // "yukonserver@cannontech.com",
                                            msgPayload,
                                            timeStamp,
                                            prefix,
-                                           getWctp().getSecurityCode().c_str());
+                                           getTap().getSecurityCode().c_str());
 
             CHAR* out = getOutBuffer();
             out[0] = 0;
@@ -870,9 +870,9 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage* > &
             {
                 strcat(out, getPassword().c_str());                 // The path information is stored in password for now
             }
-            else if(!getWctp().getPOSTPath().empty())
+            else if(!getTap().getPOSTPath().empty())
             {
-                strcat(out, getWctp().getPOSTPath().c_str());       // The path information
+                strcat(out, getTap().getPOSTPath().c_str());       // The path information
             }
             else
             {
@@ -1333,7 +1333,6 @@ CtiDeviceWctpTerminal& CtiDeviceWctpTerminal::operator=(const CtiDeviceWctpTermi
     {
         Inherited::operator=(aRef);
 
-        _wctp = aRef.getWctp();
         _pageCount = aRef.getPageCount();
         _pagePrefix = aRef.getPagePrefix();
 
@@ -1361,29 +1360,6 @@ CtiDeviceWctpTerminal& CtiDeviceWctpTerminal::operator=(const CtiDeviceWctpTermi
     }
     return *this;
 }
-
-CtiTableDeviceTapPaging    CtiDeviceWctpTerminal::getWctp() const       { return _wctp;}
-CtiTableDeviceTapPaging&   CtiDeviceWctpTerminal::getWctp()             { return _wctp;}
-
-CtiDeviceWctpTerminal& CtiDeviceWctpTerminal::setWctp(const CtiTableDeviceTapPaging& aWctp)
-{
-    _wctp = aWctp;
-    return *this;
-}
-
-void CtiDeviceWctpTerminal::DecodeDatabaseReader(Cti::RowReader &rdr)
-{
-    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
-
-    if( getDebugLevel() & DEBUGLEVEL_DATABASE )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    _wctp.DecodeDatabaseReader(rdr);
-}
-
 
 
 // ---------------------------------------------------------------------------

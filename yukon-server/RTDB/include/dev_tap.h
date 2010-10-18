@@ -22,17 +22,17 @@
 
 #include <rw\thr\mutex.h>
 
-#include "tbl_dv_tappaging.h"
+#include "dev_paging_tap_base.h"
 #include "dev_ied.h"
 #include "dlldefs.h"
 #include "xfer.h"
 
 
-class IM_EX_DEVDB CtiDeviceTapPagingTerminal  : public CtiDeviceIED
+class IM_EX_DEVDB CtiDeviceTapPagingTerminal  : public DeviceTapPagingTerminalBase
 {
 private:
 
-    typedef CtiDeviceIED Inherited;
+    typedef DeviceTapPagingTerminalBase Inherited;
 
    UINT                          _idByteCount;  // How many bytes should a guy wait for after the CR (def. to 10)
 
@@ -44,8 +44,6 @@ private:
    bool     _allowPrefix;
 
 protected:
-
-   CtiTableDeviceTapPaging       _tap;
 
    queue< CtiVerificationBase * >  _verification_objects;
    UINT                          _pageCount;    // Used to count the number of pages sent out (0-n)
@@ -83,17 +81,10 @@ public:
 
   // CtiDeviceTapPagingTerminal& setPageBuffer(const CHAR* copyBuffer, const INT len);
 
-   CtiTableDeviceTapPaging    getTap() const;//       { return _tap; }
-   CtiTableDeviceTapPaging&   getTap();//             { return _tap; }
-
-   CtiDeviceTapPagingTerminal& setTap(const CtiTableDeviceTapPaging& aTap);
    CtiDeviceTapPagingTerminal& setSendFiller(bool yesno);
    bool getSendFiller() const;
 
-   virtual string getSQLCoreStatement() const;
-
    virtual ULONG getUniqueIdentifier() const;
-   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,

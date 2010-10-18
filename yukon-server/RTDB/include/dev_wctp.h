@@ -20,7 +20,7 @@
 #include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/sax2/SAX2XMLReader.hpp>
 
-#include "tbl_dv_tappaging.h"
+#include "dev_paging_tap_base.h"
 #include "dev_ied.h"
 #include "dlldefs.h"
 #include "xfer.h"
@@ -29,11 +29,11 @@
 
 class SAXWctpHandler;
 
-class IM_EX_DEVDB CtiDeviceWctpTerminal  : public CtiDeviceIED
+class IM_EX_DEVDB CtiDeviceWctpTerminal  : public DeviceTapPagingTerminalBase
 {
 private:
 
-    typedef CtiDeviceIED Inherited;
+    typedef DeviceTapPagingTerminalBase Inherited;
 
     CHAR            *readLinePtr;
 
@@ -53,8 +53,6 @@ private:
     bool     _allowPrefix;
 
 protected:
-
-   CtiTableDeviceTapPaging      _wctp;          // Use the same class as a TapPagingTerminal for now
 
    queue< CtiVerificationBase * >  _verification_objects;
    UINT                         _pageCount;    // Used to count the number of pages sent out (0-n)
@@ -99,13 +97,6 @@ public:
    CHAR* getInBuffer();
    CHAR* getXMLBuffer();
    void  destroyBuffers();
-
-   CtiTableDeviceTapPaging    getWctp() const;//       { return _wctp; }
-   CtiTableDeviceTapPaging&   getWctp();//             { return _wctp; }
-
-   CtiDeviceWctpTerminal& setWctp(const CtiTableDeviceTapPaging& aWctp);
-
-   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                               CtiCommandParser               &parse,

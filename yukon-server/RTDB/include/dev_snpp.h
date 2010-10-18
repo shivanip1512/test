@@ -22,21 +22,20 @@
 
 #include <rw\thr\mutex.h>
 
-#include "tbl_dv_tappaging.h"
+#include "dev_paging_tap_base.h"
 #include "dev_ied.h"
 #include "dlldefs.h"
 #include "xfer.h"
 
-class IM_EX_DEVDB CtiDeviceSnppPagingTerminal  : public CtiDeviceRemote
+class IM_EX_DEVDB CtiDeviceSnppPagingTerminal  : public DeviceTapPagingTerminalBase
 {
 private:
 
-    typedef CtiDeviceRemote Inherited;
+    typedef DeviceTapPagingTerminalBase Inherited;
 
 protected:
 
    queue< CtiVerificationBase * >  _verification_objects;
-   CtiTableDeviceTapPaging       _table;
 
    BYTE                          _outBuffer[505];
    BYTE                          _inBuffer[100];
@@ -55,8 +54,6 @@ public:
 
    int recvCommRequest( OUTMESS *OutMessage );
 
-   virtual string getSQLCoreStatement() const;
-   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                           CtiCommandParser               &parse,
                           OUTMESS                        *&OutMessage,
