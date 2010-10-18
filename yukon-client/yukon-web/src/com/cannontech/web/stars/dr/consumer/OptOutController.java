@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Question;
 import com.cannontech.common.survey.model.Survey;
@@ -38,6 +37,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventory;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
@@ -226,8 +226,19 @@ public class OptOutController extends AbstractConsumerController {
                                    bindingResult, flashScope, model,
                                    userContext);
         }
-        validateOptOutsRemaining(optOutBackingBean.getInventoryIds(), customerAccount);
 
+        // Validating to make sure there are opt outs left to use that have not been scheduled.
+        List<Integer> inventoryIdList = Arrays.asList(inventoryIds);
+        final boolean optingOutForToday = optOutBackingBean.getStartDate().equals(new LocalDate(userContext.getJodaTimeZone()));
+
+        MessageSourceResolvable validateOptOutsRemainingMessage = 
+            validateOptOutsRemaining(optingOutForToday, inventoryIdList, customerAccount);
+        if (validateOptOutsRemainingMessage != null) {
+            model.addAttribute("result", validateOptOutsRemainingMessage);
+            return "consumer/optout/optOutResult.jsp";
+        }
+        
+        
         boolean noSurveysToTake = false;
         int surveyId = 0;
         Integer currentSurveyIndex = optOutBackingBean.getCurrentSurveyIndex();
@@ -249,7 +260,6 @@ public class OptOutController extends AbstractConsumerController {
             }
         }
 
-        List<Integer> inventoryIdList = Arrays.asList(inventoryIds);
         Multimap<Integer, Integer> surveyIdsByInventoryId =
             optOutSurveyService.getActiveSurveyIdsByInventoryId(inventoryIdList);
         if (surveyId == 0) {
@@ -430,18 +440,24 @@ public class OptOutController extends AbstractConsumerController {
         return retVal;
     }
 
-    private void validateOptOutsRemaining(Integer[] inventoryIds,
-            CustomerAccount customerAccount) {
-        // Check that there are opt outs remaining for each inventory being
-        // opted out
-        for (int inventoryId : inventoryIds) {
-            OptOutCountHolder optOutCount = 
-                optOutService.getCurrentOptOutCount(inventoryId, customerAccount.getAccountId());
-            if(!optOutCount.isOptOutsRemaining()) {
-                throw new NotAuthorizedException("There are no remaining opt outs for " +
-                        "inventory with id: " + inventoryId);
+    private MessageSourceResolvable validateOptOutsRemaining(boolean optOutForToday,
+                                                             List<Integer> inventoryIds,
+                                                             CustomerAccount customerAccount) {
+            
+            Iterable<InventoryBase> inventoryBases = inventoryBaseDao.getByIds(inventoryIds).values();
+            
+            // Check that there are opt outs remaining for each inventory being opted out
+            for (InventoryBase inventoryBase : inventoryBases) {
+                OptOutCountHolder optOutCount = 
+                    optOutService.getCurrentOptOutCount(inventoryBase.getInventoryId(), customerAccount.getAccountId());
+
+                if(!optOutCount.isOptOutsRemaining() ||
+                   (optOutForToday && optOutCount.getRemainingOptOuts() == 1)) {
+                    return new YukonMessageSourceResolvable("yukon.dr.consumer.optout.noOptOutsAvailableForThisInventory", inventoryBase.getDeviceLabel());
+                }
             }
-        }
+            
+            return null;
     }
 
     @InitBinder
