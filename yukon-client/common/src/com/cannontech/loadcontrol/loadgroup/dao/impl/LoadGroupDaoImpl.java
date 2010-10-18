@@ -14,6 +14,8 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -28,9 +30,6 @@ import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.YukonRowMapperAdapter;
-import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
@@ -62,8 +61,8 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         final SqlStatementBuilder loadGroupQuery = new SqlStatementBuilder();
         loadGroupQuery.append(loadGroupSQLHeader);
         loadGroupQuery.append("WHERE PAO.paobjectId").eq(loadGroupId);
-        loadGroupQuery.append("AND PAO.paoClass").eq(DeviceClasses.STRING_CLASS_GROUP);
-        loadGroupQuery.append("AND PAO.category").eq(PAOGroups.STRING_CAT_DEVICE);
+        loadGroupQuery.append("AND PAO.paoClass").eq(PaoClass.GROUP);
+        loadGroupQuery.append("AND PAO.category").eq(PaoCategory.DEVICE);
         
         try {
             loadGroup = yukonJdbcTemplate.queryForObject(loadGroupQuery, loadGroupRowMapper);
@@ -85,13 +84,11 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append(loadGroupSQLHeader);
                 sql.append("WHERE PAO.paobjectId").in(subList);
-                sql.append("AND PAO.paoClass").eq(DeviceClasses.STRING_CLASS_GROUP);
-                sql.append("AND PAO.category").eq(PAOGroups.STRING_CAT_DEVICE);
+                sql.append("AND PAO.paoClass").eq(PaoClass.GROUP);
+                sql.append("AND PAO.category").eq(PaoCategory.DEVICE);
                 return sql;
             }};
-        List<LoadGroup> loadGroups =
-            template.query(sqlGenerator, loadGroupIds,
-                           new YukonRowMapperAdapter<LoadGroup>(loadGroupRowMapper));
+        List<LoadGroup> loadGroups = template.query(sqlGenerator, loadGroupIds, loadGroupRowMapper);
         return loadGroups;
     }
 
@@ -107,8 +104,8 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
          */
         final SqlStatementBuilder loadGroupQuery = new SqlStatementBuilder();
         loadGroupQuery.append(loadGroupSQLHeader);
-        loadGroupQuery.append("WHERE PAO.paoClass").eq(DeviceClasses.STRING_CLASS_GROUP);
-        loadGroupQuery.append("AND PAO.category").eq(PAOGroups.STRING_CAT_DEVICE);
+        loadGroupQuery.append("WHERE PAO.paoClass").eq(PaoClass.GROUP);
+        loadGroupQuery.append("AND PAO.category").eq(PaoCategory.DEVICE);
         loadGroupQuery.append("AND PAO.paoName").eq(loadGroupName);
         
         try {

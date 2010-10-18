@@ -8,6 +8,8 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.database.CollectionRowCallbackHandler;
+import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.YukonRowMapperAdapter;
 import com.google.common.collect.Lists;
 
 public class ChunkingSqlTemplate {
@@ -120,6 +122,12 @@ public class ChunkingSqlTemplate {
     	}
     }
     
+    public <I, R> List<R> query(final SqlFragmentGenerator<I> sqlGenerator, final Iterable<I> input, 
+                                final YukonRowMapper<R> rowMapper) {
+        
+        return query(sqlGenerator, input, new YukonRowMapperAdapter<R>(rowMapper));
+    }
+
     public void setChunkSize(final int chunkSize) {
         this.chunkSize = chunkSize;
     }
