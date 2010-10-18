@@ -316,6 +316,8 @@ enum YukonError_t
 
     ErrorNoDisconnect,
 
+    ErrorTransmitterOverheating,
+
     FinalError
 };
 

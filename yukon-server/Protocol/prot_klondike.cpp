@@ -739,12 +739,13 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
                 switch( nak_code )
                 {
                     //  return Klondike error codes and let the CCU do the translation
-                    case NAK_DirectTransmission_BusDisabled:            _error = Error_BusDisabled;           break;
-                    case NAK_DirectTransmission_DTranBusy:              _error = Error_DTranBusy;             break;
-                    case NAK_DirectTransmission_InvalidBus:             _error = Error_InvalidBus;            break;
-                    case NAK_DirectTransmission_InvalidDLCType:         _error = Error_InvalidDLCType;        break;
-                    case NAK_DirectTransmission_InvalidMessageLength:   _error = Error_InvalidMessageLength;  break;
-                    case NAK_DirectTransmission_NoRoutes:               _error = Error_NoRoutes;              break;
+                    case NAK_DirectTransmission_BusDisabled:            _error = Error_BusDisabled;             break;
+                    case NAK_DirectTransmission_DTranBusy:              _error = Error_DTranBusy;               break;
+                    case NAK_DirectTransmission_InvalidBus:             _error = Error_InvalidBus;              break;
+                    case NAK_DirectTransmission_InvalidDLCType:         _error = Error_InvalidDLCType;          break;
+                    case NAK_DirectTransmission_InvalidMessageLength:   _error = Error_InvalidMessageLength;    break;
+                    case NAK_DirectTransmission_NoRoutes:               _error = Error_NoRoutes;                break;
+                    case NAK_DirectTransmission_TransmitterOverheating: _error = Error_TransmitterOverheating;  break;
 
                     case NAK_DirectTransmission_InvalidSequence:
                     {
@@ -866,11 +867,12 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
 
                                         switch( rejected_nak_code )
                                         {
-                                            case NAK_LoadBuffer_BusDisabled:           error = Error_BusDisabled;           break;
-                                            case NAK_LoadBuffer_InvalidBus:            error = Error_InvalidBus;            break;
-                                            case NAK_LoadBuffer_InvalidDLCType:        error = Error_InvalidDLCType;        break;
-                                            case NAK_LoadBuffer_InvalidMessageLength:  error = Error_InvalidMessageLength;  break;
-                                            case NAK_LoadBuffer_NoRoutes:              error = Error_NoRoutes;              break;
+                                            case NAK_LoadBuffer_BusDisabled:            error = Error_BusDisabled;               break;
+                                            case NAK_LoadBuffer_InvalidBus:             error = Error_InvalidBus;                break;
+                                            case NAK_LoadBuffer_InvalidDLCType:         error = Error_InvalidDLCType;            break;
+                                            case NAK_LoadBuffer_InvalidMessageLength:   error = Error_InvalidMessageLength;      break;
+                                            case NAK_LoadBuffer_NoRoutes:               error = Error_NoRoutes;                  break;
+                                            case NAK_LoadBuffer_TransmitterOverheating: error = Error_TransmitterOverheating;    break;
                                             default:
                                             {
                                                 CtiLockGuard<CtiLogger> doubt_guard(dout);

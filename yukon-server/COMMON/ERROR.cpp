@@ -239,6 +239,8 @@ ERRSTRUCT CTIErrors[] = {
 
     { ErrorNoDisconnect,            "No disconnect configured on this device",      ERRTYPESYSTEM   },
 
+    { ErrorTransmitterOverheating,  "Transmitter is overheating",                   ERRTYPECOMM },
+
     { UnknownError,                 "Unknown Error",                                ERRTYPESYSTEM   },
 
 };

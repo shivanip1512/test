@@ -251,6 +251,7 @@ private:
         NAK_DirectTransmission_BusDisabled,
         NAK_DirectTransmission_InvalidDLCType,
         NAK_DirectTransmission_InvalidMessageLength,
+        NAK_DirectTransmission_TransmitterOverheating,
 
         NAK_LoadBuffer_QueueEntries = 0x00,
         NAK_LoadBuffer_NoRoutes,
@@ -259,6 +260,7 @@ private:
         NAK_LoadBuffer_BusDisabled,
         NAK_LoadBuffer_InvalidDLCType,
         NAK_LoadBuffer_InvalidMessageLength,
+        NAK_LoadBuffer_TransmitterOverheating,
         NAK_LoadBuffer_QueueFull,
 
         NAK_ReadACKReplyBuffer_InvalidRTI = 0x00,
@@ -425,6 +427,7 @@ public:
         Error_BusDisabled,
         Error_InvalidDLCType,
         Error_InvalidMessageLength,
+        Error_TransmitterOverheating,
         Error_QueueFull,
         Error_QueueEntryLost,
 

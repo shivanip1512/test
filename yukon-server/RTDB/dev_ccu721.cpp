@@ -541,6 +541,7 @@ int Ccu721Device::translateKlondikeError(Klondike::Errors error)
         case Klondike::Error_InvalidSequence:           return BADSEQUENCE;
         case Klondike::Error_NoRoutes:                  return RTNF;
         case Klondike::Error_QueueEntryLost:            return QUEUEFLUSHED;
+        case Klondike::Error_TransmitterOverheating:    return ErrorTransmitterOverheating;
 
         default:
         case Klondike::Error_Unknown:                   return NOTNORMAL;
