@@ -22,7 +22,6 @@ public class StarsConstants {
     public static final String STARS_OPERATION = "stars-Operation";
     public static final String STARS_LOGIN = "stars-Login";
     public static final String STARS_LOGOFF = "stars-Logoff";
-    public static final String STARS_NEWCUSTACCOUNT = "stars-NewCustomerAccount";
     public static final String STARS_SEARCHCUSTACCOUNT = "stars-SearchCustomerAccount";
     public static final String STARS_UPDATECUSTACCOUNT = "stars-UpdateCustomerAccount";
     public static final String STARS_SWITCHCOMMAND = "stars-SwitchCommand";

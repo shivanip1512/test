@@ -16,7 +16,6 @@ import com.cannontech.stars.web.action.ActionBase;
 import com.cannontech.stars.web.action.CreateServiceRequestAction;
 import com.cannontech.stars.web.action.DeleteServiceRequestAction;
 import com.cannontech.stars.web.action.MultiAction;
-import com.cannontech.stars.web.action.NewCustAccountAction;
 import com.cannontech.stars.web.action.SendOddsForControlAction;
 import com.cannontech.stars.web.action.UpdateServiceRequestAction;
 import com.cannontech.stars.xml.util.StarsConstants;
@@ -100,36 +99,7 @@ public class SOAPClientController implements Controller {
             catch (NumberFormatException e) {}
         }
         
-        if (action.equalsIgnoreCase("NewCustAccount")) {
-            clientAction = new NewCustAccountAction();
-            
-            if (request.getParameter("Wizard") != null) {
-                SOAPMessage msg = clientAction.build( request, session );
-                if (msg == null) {
-                    String location = ServletUtil.createSafeRedirectUrl(request, errorURL + "?Wizard=true");
-                    response.sendRedirect(location);
-                    return null;
-                }
-                
-                MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );
-                if (actions == null) actions = new MultiAction();
-                actions.addAction( clientAction, msg );
-                session.setAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD, actions );
-                
-                if (request.getParameter("Submit").equals("Done")) {
-                    // Wizard terminated and submitted in the middle
-                    destURL = errorURL = request.getContextPath() + "/operator/Consumer/NewFinal.jsp?Wizard=true";
-                    session.setAttribute( ServletUtils.ATT_REDIRECT, destURL );
-                    clientAction = actions;
-                }
-                else {
-                    String location = ServletUtil.createSafeRedirectUrl(request, ServletUtils.ATT_REDIRECT2);
-                    response.sendRedirect(location);
-                    return null;
-                }
-            }
-        }
-        else if (action.equalsIgnoreCase("SendControlOdds")) {
+        if (action.equalsIgnoreCase("SendControlOdds")) {
             clientAction = new SendOddsForControlAction();
             if (destURL == null) destURL = request.getContextPath() + "/operator/Consumer/Odds.jsp";
             if (errorURL == null) errorURL = request.getContextPath() + "/operator/Consumer/Odds.jsp";

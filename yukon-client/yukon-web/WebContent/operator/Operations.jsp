@@ -43,11 +43,11 @@
 <cti:checkRole role="ConsumerInfoRole.ROLEID">
 
 	<tags:operationSection sectionName="Consumer Account Information" sectionImageName="ConsumerLogo">
-		<cti:checkProperty property="ConsumerInfoRole.NEW_ACCOUNT_WIZARD">
+        <cti:checkRolesAndProperties value="OPERATOR_NEW_ACCOUNT_WIZARD">
 			<tags:sectionLink>
-	        	<a href="/spring/stars/operator/account/accountCreate">New Account</a>
+	        	<a href="/spring/stars/operator/account/accountCreate"><cti:msg key="yukon.web.menu.portal.consumerAccountInformation.newAccount" /></a>
 	        </tags:sectionLink>
-		</cti:checkProperty>
+        </cti:checkRolesAndProperties>
 		<c:set var="importID" scope="page">
 			<cti:getProperty property="ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT"/>
 		</c:set>

@@ -27,11 +27,7 @@
         <options>
           <option name="newAccount">
             <requireRoleProperty value="OPERATOR_NEW_ACCOUNT_WIZARD" />
-            <link>/operator/Consumer/New.jsp?Init=true&amp;Wizard=true</link>
-          </option>
-          <option name="newAccount">
-            <requireRoleProperty value="!OPERATOR_NEW_ACCOUNT_WIZARD" />
-            <link>/operator/Consumer/New.jsp?Init=true</link>
+            <link>/spring/stars/operator/account/accountCreate</link>
           </option>
           <option name="optOutAdmin">
             <link>/spring/stars/operator/optOut/admin</link>
