@@ -2025,14 +2025,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         getStrategy().setLikeDayFallBack((fallBackFlag) ? "Y" : "N");
     }
     
-    public void controlUnitsChanged(ValueChangeEvent e){
-        getStrategy().controlUnitsChanged(e.getNewValue().toString());
-    }
-
-    public void controlMethodChanged(ValueChangeEvent e){
-        getStrategy().controlMethodChanged(e.getNewValue().toString());
-    }
-    
     public void setSeasonScheduleDao(SeasonScheduleDao seasonScheduleDao) {
         this.seasonScheduleDao = seasonScheduleDao;
     }

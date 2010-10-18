@@ -32,8 +32,8 @@
             
                 <x:panelGrid columns="2">
                     <x:outputLabel for="Control_Method" value="Control Method: " title="How the CapBanks are to be controlled"/>
-                    <x:selectOneMenu id="Control_Method" onchange="submit();" disabled="#{!capControlForm.editingCBCStrategy}"
-                        value="#{capControlForm.strategy.controlMethod}" valueChangeListener="#{capControlForm.controlMethodChanged}">
+                    <x:selectOneMenu id="Control_Method" onchange="submit();" disabled="#{!capControlForm.editingCBCStrategy}" immediate="true"
+                        value="#{capControlForm.strategy.controlMethod}" valueChangeListener="#{capControlForm.strategy.controlMethodChanged}">
                         <f:selectItems value="#{capControlForm.controlMethods}"/>
                     </x:selectOneMenu>
     
@@ -145,8 +145,8 @@
                 <x:panelGrid forceId="true" id="strategyPeaksGrid" columns="2">
                 
                     <x:outputLabel for="Control_Algorithm" value="Control Algorithm: " title="The units and process we use to make control decisions"/>
-                    <x:selectOneMenu id="Control_Algorithm" onchange="controlAlgoChanged();" disabled="#{!capControlForm.editingCBCStrategy}" 
-                        value="#{capControlForm.strategy.controlUnits}" valueChangeListener="#{capControlForm.controlUnitsChanged}">
+                    <x:selectOneMenu id="Control_Algorithm" disabled="#{!capControlForm.editingCBCStrategy}" onchange="submit();" 
+                        value="#{capControlForm.strategy.controlUnits}" valueChangeListener="#{capControlForm.strategy.controlUnitsChanged}">
                         <f:selectItems value="#{capControlForm.controlAlgorithims}"/>
                     </x:selectOneMenu>
 
@@ -281,17 +281,4 @@
         
     </x:panelGrid>
     
-    <x:inputHidden forceId="true" id="controlAlgoToggle" value="false" />
-    
 </f:subview>
-
-<f:verbatim>
-    <script type="text/JavaScript">
-        
-        function controlAlgoChanged () {
-            $("controlAlgoToggle").value = "true";
-            document.forms[0].submit();
-        }
-    
-    </script>
-</f:verbatim>

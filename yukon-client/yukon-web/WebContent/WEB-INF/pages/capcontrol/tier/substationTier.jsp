@@ -105,7 +105,7 @@
                     
     				<td>
                         <capTags:warningImg paoId="${substationId}" type="SUBSTATION"/>
-                        <a id="substation_state_${substationId}" <c:if test="${hasSubstationControl}">href="javascript:void(0);" onclick="${menuEvent}</c:if>>
+                        <a id="substation_state_${substationId}" <c:if test="${hasSubstationControl}">href="javascript:void(0);" onclick="${menuEvent}"</c:if>>
                             <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="STATE" />
                         </a>
                         <cti:dataUpdaterCallback function="updateStateColorGenerator('substation_state_${substationId}')" initialize="true" value="SUBSTATION/${substationId}/STATE"/>

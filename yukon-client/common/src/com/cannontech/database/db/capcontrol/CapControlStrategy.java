@@ -3,6 +3,9 @@ package com.cannontech.database.db.capcontrol;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.faces.context.FacesContext;
+import javax.faces.event.ValueChangeEvent;
+
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
@@ -306,44 +309,49 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
     }
     
     public boolean isKVarAlgorithm () {
-        return getControlUnits().equalsIgnoreCase(ControlAlgorithm.KVAR.getDisplayName());
+        return controlUnits.equalsIgnoreCase(ControlAlgorithm.KVAR.getDisplayName());
     }
     
     public boolean isPFAlgorithm () {
-        return getControlUnits().equalsIgnoreCase(ControlAlgorithm.PFACTORKWKVAR.getDisplayName());
+        return controlUnits.equalsIgnoreCase(ControlAlgorithm.PFACTORKWKVAR.getDisplayName());
     }
     
     public boolean isVoltVar () {
-        return getControlUnits().equalsIgnoreCase(ControlAlgorithm.MULTIVOLTVAR.getDisplayName());
+        return controlUnits.equalsIgnoreCase(ControlAlgorithm.MULTIVOLTVAR.getDisplayName());
     }
     
     public boolean isVoltStrat() {
-        if (getControlUnits().equalsIgnoreCase(ControlAlgorithm.MULTIVOLT.getDisplayName()))
+        if (controlUnits.equalsIgnoreCase(ControlAlgorithm.MULTIVOLT.getDisplayName()))
             return true;
-        else if (getControlUnits().equalsIgnoreCase(ControlAlgorithm.VOLTS.getDisplayName()))
+        else if (controlUnits.equalsIgnoreCase(ControlAlgorithm.VOLTS.getDisplayName()))
             return true;
         else
             return false;
     }
     
     public boolean isTimeOfDay(){
-        return ControlMethod.getForDbString(getControlMethod()).equals(ControlMethod.TIME_OF_DAY);
+        return ControlMethod.getForDbString(controlMethod).equals(ControlMethod.TIME_OF_DAY);
     }
     
-    public void controlUnitsChanged(String newValue) {
-        targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.getControlAlgorithm(newValue));
+    public void controlUnitsChanged(ValueChangeEvent e) {
+        ControlAlgorithm newControlAlgorithm = ControlAlgorithm.getControlAlgorithm(e.getNewValue().toString());
+        targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(newControlAlgorithm);
     }
     
-    public void controlMethodChanged(String newValue) {
-        ControlMethod newMethod = ControlMethod.getForDbString(newValue);
-        ControlAlgorithm currentAlgorithm = ControlAlgorithm.getControlAlgorithm(getControlUnits());
+    public void controlMethodChanged(ValueChangeEvent e) {
+        ControlMethod newMethod = ControlMethod.getForDbString(e.getNewValue().toString());
+        ControlAlgorithm currentAlgorithm = ControlAlgorithm.getControlAlgorithm(controlUnits);
         if (newMethod.equals(ControlMethod.TIME_OF_DAY)) {
             targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.TIME_OF_DAY);
+            setControlUnits(ControlAlgorithm.TIME_OF_DAY.getDisplayName());
         } else if (!newMethod.supportsAlgorithm(currentAlgorithm)) {
             /* If the current method does not support the current algorithm, default it to KVAR.
              * Otherwise don't mess with thier settings. */
             targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.KVAR);
+            setControlUnits(ControlAlgorithm.KVAR.getDisplayName());
         }
+        setControlMethod(e.getNewValue().toString());
+        FacesContext.getCurrentInstance().renderResponse();
     }
     
     /**
