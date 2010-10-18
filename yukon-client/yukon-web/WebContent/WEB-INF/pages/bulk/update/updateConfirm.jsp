@@ -64,7 +64,7 @@
             <cti:url var="cancelUrl" value="/spring/bulk/update/upload"/>
             
             <br>
-            <input type="button" id="cancelButton" value="${cancelButton}" onclick="window.location='${cancelUrl}'">
+            <input type="button" id="cancelButton" value="${cancelButton}" onclick="window.location='${cancelUrl}'"  class="formSubmit">
             <tags:slowInput myFormId="updateConfirmForm" label="${updateButton}" labelBusy="${updateButton}" />
             
             <%-- UPDATE INFO ID --%>

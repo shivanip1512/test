@@ -11,9 +11,9 @@ public enum BulkFieldColumnHeader {
     ENABLE("enable"),
     ROUTE("route"),
     DEVICE_TYPE("deviceType"),
-    RFN_SERIAL_NUMBER("serialNumber"),
-    RFN_MANUFACTURER("manufacturer"),
-    RFN_MODEL("model"),
+    RFN_SERIAL_NUMBER("rfnSerialNumber"),
+    RFN_MANUFACTURER("rfnManufacturer"),
+    RFN_MODEL("rfnModel"),
     ;
     
     private String fieldName;

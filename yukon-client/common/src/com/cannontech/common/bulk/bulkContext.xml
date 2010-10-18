@@ -252,10 +252,10 @@
 
         <property name="inputSource">
             <bean class="com.cannontech.web.input.InputBase">
-                <property name="displayName" value="Serial Number" />
-                <property name="field" value="serialNumber" />
+                <property name="displayName" value="RFN Serial Number" />
+                <property name="field" value="rfnSerialNumber" />
                 <property name="description">
-                    <value>The serialnumber of the meter</value>
+                    <value>The serial number of the meter</value>
                 </property>
                 <property name="type" ref="inputStringType" />
             </bean>
@@ -271,8 +271,8 @@
 
         <property name="inputSource">
             <bean class="com.cannontech.web.input.InputBase">
-                <property name="displayName" value="Manufacturer" />
-                <property name="field" value="manufacturer" />
+                <property name="displayName" value="RFN Manufacturer" />
+                <property name="field" value="rfnManufacturer" />
                 <property name="description">
                     <value>The manufacturer of the meter</value>
                 </property>
@@ -290,8 +290,8 @@
 
         <property name="inputSource">
             <bean class="com.cannontech.web.input.InputBase">
-                <property name="displayName" value="Model" />
-                <property name="field" value="model" />
+                <property name="displayName" value="RFN Model" />
+                <property name="field" value="rfnModel" />
                 <property name="description">
                     <value>The model of the meter</value>
                 </property>

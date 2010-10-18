@@ -18,9 +18,9 @@ public class RfnMeterBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
 
         try {
             RfnMeter meter = rfnMeterDao.getMeter(device);
-            meter.getMeterIdentifier().setSensorSerialNumber(value.getSerialNumber());
-            meter.getMeterIdentifier().setSensorManufacturer(value.getManufacturer());
-            meter.getMeterIdentifier().setSensorModel(value.getModel());
+            meter.getMeterIdentifier().setSensorSerialNumber(value.getRfnSerialNumber());
+            meter.getMeterIdentifier().setSensorManufacturer(value.getRfnManufacturer());
+            meter.getMeterIdentifier().setSensorModel(value.getRfnModel());
             rfnMeterDao.updateMeter(meter);
         }
         catch (DataAccessException e) {

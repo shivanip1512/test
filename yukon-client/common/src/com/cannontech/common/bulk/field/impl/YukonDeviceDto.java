@@ -12,9 +12,9 @@ public class YukonDeviceDto {
     private Integer substation;
     private String deviceType;
     private Integer disconnectAddress;
-    private String serialNumber;
-    private String manufacturer;
-    private String model;
+    private String rfnSerialNumber;
+    private String rfnManufacturer;
+    private String rfnModel;
     
     // SETTER GETTERS
     public Integer getAddress() {
@@ -65,22 +65,22 @@ public class YukonDeviceDto {
     public void setDisconnectAddress(Integer disconnectAddress) {
         this.disconnectAddress = disconnectAddress;
     }
-    public String getSerialNumber() {
-        return serialNumber;
+    public String getRfnSerialNumber() {
+        return rfnSerialNumber;
     }
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
+    public void setRfnSerialNumber(String rfnSerialNumber) {
+        this.rfnSerialNumber = rfnSerialNumber;
     }
-    public String getManufacturer() {
-        return manufacturer;
+    public String getRfnManufacturer() {
+        return rfnManufacturer;
     }
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
+    public void setRfnManufacturer(String rfnManufacturer) {
+        this.rfnManufacturer = rfnManufacturer;
     }
-    public String getModel() {
-        return model;
+    public String getRfnModel() {
+        return rfnModel;
     }
-    public void setModel(String model) {
-        this.model = model;
+    public void setRfnModel(String rfnModel) {
+        this.rfnModel = rfnModel;
     }
 }

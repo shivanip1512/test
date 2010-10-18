@@ -559,6 +559,12 @@
     <entry key="yukon.common.device.bulk.columnHeader.update.instruction.DEVICE_TYPE">Device type will not change if type chosen type is not valid for the device.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.description.DEVICE_ID">Internal system ID for the device.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.instruction.DEVICE_ID">Cannot be updated, use only as an identifier column.</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.update.description.RFN_SERIAL_NUMBER">Serial Number of the RFN Meter.</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.update.instruction.RFN_SERIAL_NUMBER"></entry>
+    <entry key="yukon.common.device.bulk.columnHeader.update.description.RFN_MANUFACTURER">Manufacturer of the RFN Meter.</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.update.instruction.RFN_MANUFACTURER"></entry>
+    <entry key="yukon.common.device.bulk.columnHeader.update.description.RFN_MODEL">Model of the RFN Meter.</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.update.instruction.RFN_MODEL"></entry>
     
     <!-- updateUpload.jsp: errors -->
     <entry key="yukon.common.device.bulk.columnHeader.update.error.noIdentifier">No identifier column present.</entry>
