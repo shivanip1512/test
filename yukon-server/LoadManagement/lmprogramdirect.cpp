@@ -4896,12 +4896,12 @@ bool CtiLMProgramDirect::startTimedProgram(unsigned long secondsFrom1901, long s
             dout << CtiTime() << " - " << text << ", " << additional << endl;
         }
         setChangeReason("Timed Start");
+        manualReduceProgramLoad(secondsFrom1901, multiPilMsg,multiDispatchMsg);
         setProgramState(CtiLMProgramBase::TimedActiveState);
 
         setDirectStartTime(startTime);
         _announced_program_constraint_violation = false;
 
-        manualReduceProgramLoad(secondsFrom1901, multiPilMsg,multiDispatchMsg);
         return true;
     }
 }
