@@ -270,7 +270,6 @@ ALTER TABLE Zone
 ALTER TABLE Zone
     ADD CONSTRAINT FK_Zone_Zone FOREIGN KEY (ParentId)
         REFERENCES Zone (ZoneId);
-GO
 /* End YUK-9084 */
 
 /* Start YUK-9114 */
