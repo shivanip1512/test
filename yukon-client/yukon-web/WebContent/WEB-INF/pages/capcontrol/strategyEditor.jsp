@@ -33,7 +33,7 @@
                 <x:panelGrid columns="2">
                     <x:outputLabel for="Control_Method" value="Control Method: " title="How the CapBanks are to be controlled"/>
                     <x:selectOneMenu id="Control_Method" onchange="submit();" disabled="#{!capControlForm.editingCBCStrategy}" immediate="true"
-                        value="#{capControlForm.strategy.controlMethod}" valueChangeListener="#{capControlForm.strategy.controlMethodChanged}">
+                        value="#{capControlForm.strategy.controlMethod}" valueChangeListener="#{capControlForm.controlMethodChanged}">
                         <f:selectItems value="#{capControlForm.controlMethods}"/>
                     </x:selectOneMenu>
     
@@ -146,7 +146,7 @@
                 
                     <x:outputLabel for="Control_Algorithm" value="Control Algorithm: " title="The units and process we use to make control decisions"/>
                     <x:selectOneMenu id="Control_Algorithm" disabled="#{!capControlForm.editingCBCStrategy}" onchange="submit();" 
-                        value="#{capControlForm.strategy.controlUnits}" valueChangeListener="#{capControlForm.strategy.controlUnitsChanged}">
+                        value="#{capControlForm.strategy.controlUnits}" valueChangeListener="#{capControlForm.controlUnitsChanged}">
                         <f:selectItems value="#{capControlForm.controlAlgorithims}"/>
                     </x:selectOneMenu>
 
