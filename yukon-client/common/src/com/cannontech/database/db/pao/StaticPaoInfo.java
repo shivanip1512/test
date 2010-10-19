@@ -42,9 +42,8 @@ public class StaticPaoInfo extends DBPersistent
     }
 
 	public void add() throws java.sql.SQLException {
-		if( getStaticPaoInfoId() == null ) {
-			setStaticPaoInfoId( getNextStaticPaoInfoId());
-		}
+	    // always get a new primary key value on "add".
+		setStaticPaoInfoId( getNextStaticPaoInfoId());
 
 		Object addValues[] = {
 			getStaticPaoInfoId(), getPaobjectId(),
