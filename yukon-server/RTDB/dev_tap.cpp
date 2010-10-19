@@ -896,9 +896,9 @@ INT CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage
 
             out[sendCnt++] = CHAR_STX;
 
-            for(i = 0; i < getTap().getPagerNumber().length(); i++)
+            for(i = 0; i < getPaging().getPagerNumber().length(); i++)
             {
-                out[sendCnt++] = getTap().getPagerNumber()[(size_t)i];
+                out[sendCnt++] = getPaging().getPagerNumber()[(size_t)i];
             }
 
             out[sendCnt++] = CHAR_CR;
@@ -1570,9 +1570,9 @@ ULONG CtiDeviceTapPagingTerminal::getUniqueIdentifier() const
     {
         string num;
 
-        for(int i = 0; i < getTap().getPagerNumber().length(); i++ )
+        for(int i = 0; i < getPaging().getPagerNumber().length(); i++ )
         {
-            CHAR ch = getTap().getPagerNumber()[(size_t)i];
+            CHAR ch = getPaging().getPagerNumber()[(size_t)i];
 
             if( ::isdigit(ch) )
                 num.append(char2string(ch));

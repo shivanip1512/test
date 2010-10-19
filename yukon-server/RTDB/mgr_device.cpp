@@ -28,7 +28,7 @@
 #include "dev_tap.h"
 #include "dev_snpp.h"
 #include "dev_tnpp.h"
-#include "dev_paging_tap_base.h"
+#include "dev_paging.h"
 #include "dev_pagingreceiver.h"
 #include "dev_grp_emetcon.h"
 #include "dev_grp_energypro.h"
@@ -818,7 +818,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
                         rowFound |= loadDeviceType(paoid_subset, "LMI RTUs",               CtiDeviceLMI());
                         rowFound |= loadDeviceType(paoid_subset, "RTM devices",            CtiDeviceIED(),         "RTM");
 
-                        rowFound |= loadDeviceType(paoid_subset, "TAP devices",            DeviceTapPagingTerminalBase());
+                        rowFound |= loadDeviceType(paoid_subset, "TAP devices",            Devices::DevicePaging());
                         rowFound |= loadDeviceType(paoid_subset, "TNPP devices",           CtiDeviceTnppPagingTerminal());
                         rowFound |= loadDeviceType(paoid_subset, "RDS devices",            Devices::RDSTransmitter(),     "RDS TERMINAL");
 

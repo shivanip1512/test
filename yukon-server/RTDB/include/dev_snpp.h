@@ -22,16 +22,16 @@
 
 #include <rw\thr\mutex.h>
 
-#include "dev_paging_tap_base.h"
+#include "dev_paging.h"
 #include "dev_ied.h"
 #include "dlldefs.h"
 #include "xfer.h"
 
-class IM_EX_DEVDB CtiDeviceSnppPagingTerminal  : public DeviceTapPagingTerminalBase
+class IM_EX_DEVDB CtiDeviceSnppPagingTerminal  : public Cti::Devices::DevicePaging
 {
 private:
 
-    typedef DeviceTapPagingTerminalBase Inherited;
+    typedef Cti::Devices::DevicePaging Inherited;
 
 protected:
 

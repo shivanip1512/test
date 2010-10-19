@@ -1,36 +1,38 @@
 #include "yukon.h"
-#include "dev_paging_tap_base.h"
+#include "dev_paging.h"
 
-DeviceTapPagingTerminalBase::DeviceTapPagingTerminalBase()
+using namespace Cti::Devices;
+
+DevicePaging::DevicePaging()
 {
 }
 
-DeviceTapPagingTerminalBase::DeviceTapPagingTerminalBase(const DeviceTapPagingTerminalBase& aRef)
+DevicePaging::DevicePaging(const DevicePaging& aRef)
 {
     
 }
 
-DeviceTapPagingTerminalBase::~DeviceTapPagingTerminalBase()
+DevicePaging::~DevicePaging()
 {
 }
 
-DeviceTapPagingTerminalBase& DeviceTapPagingTerminalBase::operator=(const DeviceTapPagingTerminalBase& aRef)
+DevicePaging& DevicePaging::operator=(const DevicePaging& aRef)
 {
     if(this != &aRef)
     {
         Inherited::operator=(aRef);
 
-        _tapTable = aRef.getTap();
+        _tapTable = aRef.getPaging();
     }
     return *this;
 }
 
-const CtiTableDeviceTapPaging& DeviceTapPagingTerminalBase::getTap() const
+const CtiTableDeviceTapPaging& DevicePaging::getPaging() const
 {
     return _tapTable;
 }
 
-string DeviceTapPagingTerminalBase::getSQLCoreStatement() const
+string DevicePaging::getSQLCoreStatement() const
 {
     static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
                                      "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.portid, "
@@ -46,7 +48,7 @@ string DeviceTapPagingTerminalBase::getSQLCoreStatement() const
     return sqlCore;
 }
 
-void DeviceTapPagingTerminalBase::DecodeDatabaseReader(Cti::RowReader &rdr)
+void DevicePaging::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

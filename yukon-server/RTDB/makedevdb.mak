@@ -106,7 +106,7 @@ dev_mct_lmt2.obj \
 dev_meter.obj \
 dev_modbus.obj \
 dev_pagingreceiver.obj \
-dev_paging_tap_base.obj \
+dev_paging.obj \
 dev_quantum.obj \
 dev_repeater.obj \
 dev_repeater800.obj \

@@ -855,12 +855,12 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage* > &
 
             replaceChars(getPageBuffer(), msgPayload + sendCnt);
 
-            CHAR* xmlMsg = buildXMLMessage(getTap().getPagerNumber().c_str(),
-                                           getTap().getSenderID().c_str(),      // "yukonserver@cannontech.com",
+            CHAR* xmlMsg = buildXMLMessage(getPaging().getPagerNumber().c_str(),
+                                           getPaging().getSenderID().c_str(),      // "yukonserver@cannontech.com",
                                            msgPayload,
                                            timeStamp,
                                            prefix,
-                                           getTap().getSecurityCode().c_str());
+                                           getPaging().getSecurityCode().c_str());
 
             CHAR* out = getOutBuffer();
             out[0] = 0;
@@ -870,9 +870,9 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage* > &
             {
                 strcat(out, getPassword().c_str());                 // The path information is stored in password for now
             }
-            else if(!getTap().getPOSTPath().empty())
+            else if(!getPaging().getPOSTPath().empty())
             {
-                strcat(out, getTap().getPOSTPath().c_str());       // The path information
+                strcat(out, getPaging().getPOSTPath().c_str());       // The path information
             }
             else
             {

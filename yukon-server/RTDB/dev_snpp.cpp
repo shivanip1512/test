@@ -595,20 +595,20 @@ INT CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
 
 string CtiDeviceSnppPagingTerminal::getLoginName()
 {
-    if(!getTap().getSenderID().empty() &&
-       getTap().getSenderID().find("none") == string::npos && getTap().getSenderID() != " ")
+    if(!getPaging().getSenderID().empty() &&
+       getPaging().getSenderID().find("none") == string::npos && getPaging().getSenderID() != " ")
     {
-        return getTap().getSenderID();
+        return getPaging().getSenderID();
     }
     return string();
 }
 
 string CtiDeviceSnppPagingTerminal::getLoginPass()
 {
-    if(!getTap().getSecurityCode().empty() &&
-       getTap().getSecurityCode().find("none") == string::npos && getTap().getSecurityCode() != " ")
+    if(!getPaging().getSecurityCode().empty() &&
+       getPaging().getSecurityCode().find("none") == string::npos && getPaging().getSecurityCode() != " ")
     {
-        return getTap().getSecurityCode();
+        return getPaging().getSecurityCode();
     }
     return string();
 }
@@ -650,10 +650,10 @@ string CtiDeviceSnppPagingTerminal::getPagePass()
 
 string CtiDeviceSnppPagingTerminal::getPageNumber()
 {
-    if(!getTap().getPagerNumber().empty() &&
-        getTap().getPagerNumber().find("none") == string::npos && getTap().getPagerNumber() != " ")
+    if(!getPaging().getPagerNumber().empty() &&
+        getPaging().getPagerNumber().find("none") == string::npos && getPaging().getPagerNumber() != " ")
     {
-        return getTap().getPagerNumber();
+        return getPaging().getPagerNumber();
     }
     return string();
 }

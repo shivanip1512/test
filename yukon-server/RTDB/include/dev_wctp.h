@@ -20,7 +20,7 @@
 #include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/sax2/SAX2XMLReader.hpp>
 
-#include "dev_paging_tap_base.h"
+#include "dev_paging.h"
 #include "dev_ied.h"
 #include "dlldefs.h"
 #include "xfer.h"
@@ -29,11 +29,11 @@
 
 class SAXWctpHandler;
 
-class IM_EX_DEVDB CtiDeviceWctpTerminal  : public DeviceTapPagingTerminalBase
+class IM_EX_DEVDB CtiDeviceWctpTerminal  : public Cti::Devices::DevicePaging
 {
 private:
 
-    typedef DeviceTapPagingTerminalBase Inherited;
+    typedef Cti::Devices::DevicePaging Inherited;
 
     CHAR            *readLinePtr;
 
