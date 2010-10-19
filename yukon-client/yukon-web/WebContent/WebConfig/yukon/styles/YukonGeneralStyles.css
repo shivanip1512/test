@@ -903,8 +903,8 @@ a.simpleLink, span.simpleLink a {
     color: black;
 }
 
-span.clickableText:hover {
-	text-decoration: underline;
+span.simpleLink > a > span:hover {
+    text-decoration: underline;
 }
 
 span.footerLink span {
