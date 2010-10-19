@@ -139,7 +139,9 @@ public class ButtonTag extends YukonTagSupport {
 
             out.write(">");
 
-            if (!StringUtils.isBlank(imageUrl)) {
+            boolean hasImage = StringUtils.isNotBlank(imageUrl);
+            
+            if (hasImage) {
                 imageUrl = ServletUtil.createSafeUrl(getRequest(), imageUrl);
                 out.write("<img class=\"logoImage\" src=\"");
                 out.write(imageUrl);
@@ -147,7 +149,12 @@ public class ButtonTag extends YukonTagSupport {
             }
 
             if (!StringUtils.isBlank(labelText)) {
-                out.write("<span>");
+                out.write("<span");
+                
+                if (hasImage) {
+                    out.write(" style=\"padding-left: 5px;\"");
+                }
+                out.write(">");
                 out.write(labelText);
                 out.write("</span>");
             }

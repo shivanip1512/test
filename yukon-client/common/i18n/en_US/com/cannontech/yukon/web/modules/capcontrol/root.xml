@@ -8,22 +8,31 @@
     <entry key="yukon.web.modules.capcontrol.attributes.tapPosition">Tap Position</entry>
     <entry key="yukon.web.modules.capcontrol.attributes.controlMode">Local/Remote Mode</entry>
     
-    <entry key="yukon.web.modules.capcontrol.resetOpCount.imageUrl">/WebConfig/yukon/Icons/arrow_undo.gif</entry>
-    <entry key="yukon.web.modules.capcontrol.resetOpCount.hoverUrl">/WebConfig/yukon/Icons/arrow_undo_over.gif</entry>
-    <entry key="yukon.web.modules.capcontrol.resetOpCount.hoverText"></entry>
-    <entry key="yukon.web.modules.capcontrol.resetOpCount.label">Reset All Op Counters</entry>
-    <entry key="yukon.web.modules.capcontrol.oneline.imageUrl">/WebConfig/yukon/Icons/oneline.png</entry>
-    <entry key="yukon.web.modules.capcontrol.oneline.hoverUrl">/WebConfig/yukon/Icons/oneline_over.png</entry>
-    <entry key="yukon.web.modules.capcontrol.oneline.hoverText">Click to view One-Line</entry>
-    <entry key="yukon.web.modules.capcontrol.location.imageUrl">/WebConfig/yukon/Icons/interstate.gif</entry>
-    <entry key="yukon.web.modules.capcontrol.location.hoverUrl">/WebConfig/yukon/Icons/interstate_over.gif</entry>
-    <entry key="yukon.web.modules.capcontrol.location.hoverText">Driving Directions</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.imageUrl">/WebConfig/yukon/Icons/ivvc.png</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.hoverUrl">/WebConfig/yukon/Icons/ivvc_over.png</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.hoverText">Click for IVVC View</entry>
-    <entry key="yukon.web.modules.capcontrol.filter.hoverUrl">/WebConfig/yukon/Icons/filter.gif</entry>
-    <entry key="yukon.web.modules.capcontrol.filter.hoverText"></entry>
-    <entry key="yukon.web.modules.capcontrol.filter.label">Filter:</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.resetOpCount.imageUrl">/WebConfig/yukon/Icons/arrow_undo.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.resetOpCount.hoverUrl">/WebConfig/yukon/Icons/arrow_undo_over.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.resetOpCount.hoverText"></entry>
+    <entry key="yukon.web.modules.capcontrol.areas.resetOpCount.label">Reset All Op Counters</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.disableSystem.imageUrl">/WebConfig/yukon/Icons/disable.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.disableSystem.hoverUrl">/WebConfig/yukon/Icons/disable_over.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.disableSystem.hoverText">Disable everything system wide.</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.disableSystem.label">Disable System</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.enableSystem.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.enableSystem.hoverUrl">/WebConfig/yukon/Icons/enable_over.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.enableSystem.hoverText">Enable everything system wide.</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.enableSystem.label">Enable System</entry>
+    
+    <entry key="yukon.web.modules.capcontrol.feeders.oneline.imageUrl">/WebConfig/yukon/Icons/oneline.png</entry>
+    <entry key="yukon.web.modules.capcontrol.feeders.oneline.hoverUrl">/WebConfig/yukon/Icons/oneline_over.png</entry>
+    <entry key="yukon.web.modules.capcontrol.feeders.oneline.hoverText">Click to view One-Line</entry>
+    <entry key="yukon.web.modules.capcontrol.feeders.location.imageUrl">/WebConfig/yukon/Icons/interstate.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.feeders.location.hoverUrl">/WebConfig/yukon/Icons/interstate_over.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.feeders.location.hoverText">Driving Directions</entry>
+    <entry key="yukon.web.modules.capcontrol.feeders.ivvc.imageUrl">/WebConfig/yukon/Icons/ivvc.png</entry>
+    <entry key="yukon.web.modules.capcontrol.feeders.ivvc.hoverUrl">/WebConfig/yukon/Icons/ivvc_over.png</entry>
+    <entry key="yukon.web.modules.capcontrol.feeders.ivvc.hoverText">Click for IVVC View</entry>
+    <entry key="yukon.web.modules.capcontrol.feeders.filter.hoverUrl">/WebConfig/yukon/Icons/filter.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.feeders.filter.hoverText"></entry>
+    <entry key="yukon.web.modules.capcontrol.feeders.filter.label">Filter:</entry>
     
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.play.imageUrl">/WebConfig/yukon/Icons/control_play_blue.gif</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.play.hoverUrl">/WebConfig/yukon/Icons/control_play_blue_over.gif</entry>
@@ -49,4 +58,5 @@
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.hoverUrl">/WebConfig/yukon/Icons/add_disabled_gray.gif</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.hoverText">You do not have permission to perform this action.</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.label">New Schedule Assignment </entry>
+    
 </properties>

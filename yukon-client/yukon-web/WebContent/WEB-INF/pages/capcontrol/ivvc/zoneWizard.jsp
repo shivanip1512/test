@@ -232,10 +232,10 @@
 	
 	<div class="pageActionArea">
 		<cti:displayForPageEditModes modes="EDIT">
-			<input type="submit" value="Update">
+			<input type="submit" value="Update" class="formSubmit">
 		</cti:displayForPageEditModes>
 		<cti:displayForPageEditModes modes="CREATE">
-			<input type="submit" value="Create">
+			<input type="submit" value="Create" class="formSubmit">
 		</cti:displayForPageEditModes>
 	</div>
 

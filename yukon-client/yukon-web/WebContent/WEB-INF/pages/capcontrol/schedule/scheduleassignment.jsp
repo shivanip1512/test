@@ -10,8 +10,7 @@
 <c:set value="Confirm Sub" var="confirmCommand" />
 <c:set value="Send Time Syncs" var="sendTimeSyncsCommand" />
 
-<cti:standardPage title="Schedule Assignment" module="capcontrol">
-<cti:msgScope paths="capcontrol, yukon.web.modules.capcontrol.scheduleAssignments">
+<cti:standardPage title="Schedule Assignment" module="capcontrol" page="scheduleAssignments">
 
 	<cti:includeScript link="/JavaScript/itemPicker.js" />
 	<cti:includeScript link="/JavaScript/tableCreation.js" />
@@ -253,5 +252,4 @@
 	
 	</div>
 	</td></tr></table>
-</cti:msgScope>
 </cti:standardPage>

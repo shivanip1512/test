@@ -4,8 +4,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
-<cti:standardPage title="${mainTitle}" module="capcontrol">
-<cti:msgScope paths="capcontrol, yukon.web.modules.capcontrol">
+<cti:standardPage title="${mainTitle}" module="capcontrol" page="substations">
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
     
     <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
@@ -127,5 +126,4 @@
         Event.observe(window, 'load', checkPageExpire);
     </script>
     
-</cti:msgScope>
 </cti:standardPage>

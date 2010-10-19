@@ -124,9 +124,6 @@ function execute_CapBankMoveBack (paoId, cmdId, redirectURL) {
 	});
 } 
 
-//function to display whether the call to servlet went through
-//will pop up a div that has a header with 'cmd_name' with white background
-//'msg' text will be displayed in the specified color
 function display_status(cmd_name, msg_type, result, color) {
     var msg_div = $('cmd_msg_div');
     msg_div.style.color = color;
@@ -148,7 +145,7 @@ function display_status(cmd_name, msg_type, result, color) {
 }
 
 function hideMsgDiv() {
-    $('outerDiv').hide();
+    new Effect.Fade('outerDiv', { duration: 3.0 });
 }
 
 function getMoveBackMenu() {
@@ -160,49 +157,54 @@ for (var i=0; i < hiddens.length; i++) {
 	}
 }
 
-function handleSystemCommand() {
+function handleSystemCommand(disable) {
 	var message ='';
-	systemIsOn = $('systemCommandLink').getElementsByTagName ('span')[0].id == 'systemOn';
-	if (systemIsOn)
+	if (disable) {
 		message = 'You are turning the system off. Please confirm...';	
-	else
+	} else {
 		message = 'You are turning the system back on. Please confirm...';	
-
-	if (confirm (message))
-	{
-		sendSystemEnableCommand (systemIsOn);
 	}
-	else
-	{
-		alert ('Command cancelled successfully.');
+	if (confirm (message)) {
+		sendSystemEnableCommand (disable);
 	}
 }
 
-function sendSystemEnableCommand (systemIsOn) {
-	new Ajax.Request("/spring/capcontrol/cbcAjaxController?action=executeSystemCommand", 
-		{
-			method:"post", 
-			parameters:"turnSystemOff=" + systemIsOn, 
-			asynchronous:true
-			});
-
+function sendSystemEnableCommand (disable) {
+	var parameters = {'turnSystemOff' : disable};
+	var msgType = 'Command Message:';
+	var commandName = disable ? 'Disable System' : 'Enable System';
+    new Ajax.Request('/spring/capcontrol/systemActions/toggleSystemStatus', {
+        'method': 'post',
+        'parameters': parameters,
+        asynchronous:true,
+        'onSuccess': function (transport, result) {
+            if(result.success){
+                display_status(commandName, msgType, "Successful", "green");
+            } else {
+                display_status(commandName, msgType, "Failed", "red");
+            }
+        },
+    });
 }
 
 function sendResetOpCountCommand () {
-	message = 'You are resetting all op counters on the system. Please confirm...';	
-
-	if (confirm (message))
-	{
-	    new Ajax.Request("/spring/capcontrol/cbcAjaxController?action=executeSystemCommand", 
-	    	{
-				method:"post", 
-				parameters:"resetOpCount=true", 
-				asynchronous:true
-	    		});
-	}
-	else
-	{
-		alert ('Command cancelled successfully.');
+	var message = 'You are resetting all op counters on the system. Please confirm...';	
+	var msgType = 'Command Message:';
+	var commandName = 'Reset All Op Counters'
+	
+	if (confirm (message)) {
+	    new Ajax.Request('/spring/capcontrol/systemActions/resetOpCount', {
+	        'method': 'post',
+	        'parameters': '',
+	        asynchronous:true,
+	        'onSuccess': function (transport, result) {
+                if(result.success){
+                    display_status(commandName, msgType, "Successful", "green");
+                } else {
+                    display_status(commandName, msgType, "Failed", "red");
+                }
+            },
+	    });
 	}
 }
 

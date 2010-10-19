@@ -335,3 +335,36 @@ Event.observe(window, 'load', function() {
 function hideUpdateWarning() {
     $('updatedWarning').hide();
 }
+
+Event.observe(window, 'load', function() {
+    $$('img.hoverableImage').each(function(element) {
+        var basePath = element.src;
+        var extStart = basePath.lastIndexOf(".");
+        var hoverPath = basePath.substring(0, extStart) + "_over" + basePath.substring(extStart);
+        Event.observe(element, "mouseover", function() {
+            element.src = hoverPath;
+        });
+        Event.observe(element, "mouseout", function() {
+            element.src = basePath;
+        });
+    });
+});
+
+Event.observe(window, 'load', function() {
+    $$('img.hoverableImage').each(function(element) {
+        var basePath = element.src;
+        var extStart = basePath.lastIndexOf(".");
+        var hoverPath = basePath.substring(0, extStart) + "_over" + basePath.substring(extStart);
+        var hoverTarget = element;
+        var container = element.up(".hoverableImageContainer");
+        if (container) {
+            hoverTarget = container;
+        }
+        Event.observe(hoverTarget, "mouseover", function() {
+            element.src = hoverPath;
+        });
+        Event.observe(hoverTarget, "mouseout", function() {
+            element.src = basePath;
+        });
+    });
+});

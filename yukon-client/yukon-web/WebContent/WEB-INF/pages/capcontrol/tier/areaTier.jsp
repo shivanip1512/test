@@ -4,8 +4,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
-<cti:standardPage title="${title}" module="capcontrol">
-<cti:msgScope paths="capcontrol, yukon.web.modules.capcontrol">
+<cti:standardPage title="${title}" module="capcontrol" page="areas">
 	<%@include file="/capcontrol/capcontrolHeader.jspf"%>
     
 	<script type="text/javascript" language="JavaScript">
@@ -42,7 +41,16 @@
 			<cti:checkRolesAndProperties value="CBC_DATABASE_EDIT" >
                 <div align="right">
                     <tags:boxContainer hideEnabled="false" title="System Actions" styleClass="systemCommands">
-        				<div align="left" id="systemCommandLink"></div>
+                        <div align="left" id="systemCommandLink">
+                            <tags:dynamicChoose updaterString="CAPCONTROL/SYSTEM_ENABLE_COMMAND" suffix="">
+                                <tags:dynamicChooseOption optionId="enabled">
+                                    <cti:labeledImg key="disableSystem" href="javascript:handleSystemCommand(true)" id="systemOn"/>
+                                </tags:dynamicChooseOption>
+                                <tags:dynamicChooseOption optionId="disabled">
+                                    <cti:labeledImg key="enableSystem" href="javascript:handleSystemCommand(false)" id="systemOff"/>
+                                </tags:dynamicChooseOption>
+                            </tags:dynamicChoose>
+                        </div>
         				<div align="left">
                             <cti:labeledImg key="resetOpCount" href="javascript:sendResetOpCountCommand()" id="systemResetOpCountsLink"/>
         				</div>
@@ -163,19 +171,4 @@
 
 	</tags:boxContainer>
 	
-	<script type="text/javascript" language="JavaScript">
-		//register the event handler for the system command
-		if ($('systemCommandLink')) {
-		    Event.observe(window, 'load', function () { 
-		        new Ajax.PeriodicalUpdater('systemCommandLink', 
-		            '/spring/capcontrol/cbcAjaxController?action=updateSystemCommandMenu', {
-		            method:'post', 
-		            asynchronous:true, 
-		            frequency: 5, 
-		            onFailure: function() { $('cannonUpdaterErrorDiv').show();}
-		        });
-		    });
-		}
-	</script>
-</cti:msgScope>
 </cti:standardPage>
