@@ -3,9 +3,6 @@ package com.cannontech.database.db.capcontrol;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.faces.context.FacesContext;
-import javax.faces.event.ValueChangeEvent;
-
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
@@ -333,13 +330,13 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
         return ControlMethod.getForDbString(controlMethod).equals(ControlMethod.TIME_OF_DAY);
     }
     
-    public void controlUnitsChanged(ValueChangeEvent e) {
-        ControlAlgorithm newControlAlgorithm = ControlAlgorithm.getControlAlgorithm(e.getNewValue().toString());
+    public void controlUnitsChanged(String units) {
+        ControlAlgorithm newControlAlgorithm = ControlAlgorithm.getControlAlgorithm(units);
         targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(newControlAlgorithm);
     }
     
-    public void controlMethodChanged(ValueChangeEvent e) {
-        ControlMethod newMethod = ControlMethod.getForDbString(e.getNewValue().toString());
+    public void controlMethodChanged(String method) {
+        ControlMethod newMethod = ControlMethod.getForDbString(method);
         ControlAlgorithm currentAlgorithm = ControlAlgorithm.getControlAlgorithm(controlUnits);
         if (newMethod.equals(ControlMethod.TIME_OF_DAY)) {
             targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.TIME_OF_DAY);
@@ -350,8 +347,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
             targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.KVAR);
             setControlUnits(ControlAlgorithm.KVAR.getDisplayName());
         }
-        setControlMethod(e.getNewValue().toString());
-        FacesContext.getCurrentInstance().renderResponse();
+        setControlMethod(method);
     }
     
     /**

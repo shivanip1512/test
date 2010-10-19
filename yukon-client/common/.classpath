@@ -217,6 +217,5 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/org.osgi.core-4.1.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-beanutils-1.7.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/activemq-all-5.4.1.jar"/>
-	<classpathentry kind="lib" path="/yukon-web/WebContent/WEB-INF/lib/myfaces-api-1.1.3.jar" sourcepath="Z:/java/Third-Party Sources/myfaces"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
