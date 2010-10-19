@@ -50,6 +50,10 @@ public class StopProgramController extends ProgramControllerBase {
                 Errors errors) {
             if (!stopProgram.isStopNow()) {
                 ValidationUtils.rejectIfEmpty(errors, "stopDate", "required");
+                Date now = new Date();
+                if (now.after(stopProgram.getStopDate())) {
+                    errors.reject("stopTimeBeforeNow");
+                }
             }
         }
     }
@@ -144,7 +148,7 @@ public class StopProgramController extends ProgramControllerBase {
             programService.stopProgram(backingBean.getProgramId());
             demandResponseEventLogService.threeTierProgramStopped(yukonUser,
                                                                   program.getName(),
-                                                                  stopDate);
+                                                                  new Date());
         } else {
             programService.scheduleProgramStop(backingBean.getProgramId(),
                                                stopDate, null);
@@ -235,7 +239,6 @@ public class StopProgramController extends ProgramControllerBase {
             return multipleDetails(model, true, backingBean, bindingResult, userContext, flashScope);
         }
 
-        Date stopDate = backingBean.getStopDate();
         Map<Integer, ScenarioProgram> scenarioPrograms = null;
         if (backingBean.getControlAreaId() != null) {
             DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
@@ -260,6 +263,7 @@ public class StopProgramController extends ProgramControllerBase {
                 scenarioDao.findScenarioProgramsForScenario(backingBean.getScenarioId());
         }
 
+        Date stopDate = backingBean.getStopDate();
         if (backingBean.isStopNow()) {
             // If we're starting a scenario, we need a common base "now" time
             // for offsets.

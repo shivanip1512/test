@@ -154,3 +154,7 @@ updateProgramState = function(index) {
             onclick="parent.$('drDialog').hide()"/>
     </div>
 </form:form>
+
+<script type="text/javascript">
+updateComponentAvailability();
+</script>
