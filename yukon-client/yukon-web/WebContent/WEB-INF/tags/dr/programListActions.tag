@@ -4,78 +4,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <c:set var="paoId" value="${pao.paoIdentifier.paoId}"/>
-<cti:msg var="notRunning" key="yukon.web.modules.dr.programDetail.notRunning"/>
-<cti:msg var="alreadyRunning" key="yukon.web.modules.dr.programDetail.alreadyRunning"/>
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}">
     <tags:dynamicChoose updaterString="DR_PROGRAM/${paoId}/SHOW_ACTION" suffix="${paoId}">
-        <tags:dynamicChooseOption optionId="unknown">
-            <cti:msg var="programUnknown" key="yukon.web.modules.dr.programDetail.unknown"/>
-            <span class="subtleGray" title="${programUnknown}">
-                <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
-            </span>
-            <span class="subtleGray" title="${programUnknown}">
-                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon.disabled"/>
-            </span>
-        </tags:dynamicChooseOption>
-        <tags:dynamicChooseOption optionId="runningEnabled">
-            <span class="subtleGray" title="${alreadyRunning}">
-                <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
-            </span>
-            <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
-                <cti:param name="programId" value="${paoId}"/>
-            </cti:url>
-            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
-                                   dialogId="drDialog" 
-                                   actionUrl="${stopProgramUrl}" 
-                                   logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"/>
-        </tags:dynamicChooseOption>
-        <tags:dynamicChooseOption optionId="enabled">
-            <cti:url var="startProgramUrl" value="/spring/dr/program/start/details">
-                <cti:param name="programId" value="${paoId}"/>
-            </cti:url>
-            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
-                                   dialogId="drDialog" 
-                                   actionUrl="${startProgramUrl}" 
-                                   logoKey="yukon.web.modules.dr.programDetail.actions.startIcon"/>
-
-            <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
-                <cti:param name="programId" value="${paoId}"/>
-            </cti:url>
-            <span title="${notRunning}">
-                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon.disabled"/>
-            </span>
-        </tags:dynamicChooseOption>
-        <tags:dynamicChooseOption optionId="runningDisabled">
-            <span class="subtleGray" title="${alreadyRunning}">
-                <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
-            </span>
-
-            <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
-                <cti:param name="programId" value="${paoId}"/>
-            </cti:url>
-            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
-                                   dialogId="drDialog" 
-                                   actionUrl="${stopProgramUrl}" 
-                                   logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"/>
-        </tags:dynamicChooseOption>
-        <tags:dynamicChooseOption optionId="disabled">
-            <cti:url var="startProgramUrl" value="/spring/dr/program/start/details">
-                <cti:param name="programId" value="${paoId}"/>
-            </cti:url>
-            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
-                                   dialogId="drDialog" 
-                                   actionUrl="${startProgramUrl}" 
-                                   logoKey="yukon.web.modules.dr.programDetail.actions.startIcon"/>
-
-            <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
-                <cti:param name="programId" value="${paoId}"/>
-            </cti:url>
-            <span title="${notRunning}">
-                <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon.disabled"/>
-            </span>
-        </tags:dynamicChooseOption>
+        <dr:programListAction program="${pao}" state="unknown"/>
+        <dr:programListAction program="${pao}" state="runningEnabled"/>
+        <dr:programListAction program="${pao}" state="scheduledEnabled"/>
+        <dr:programListAction program="${pao}" state="enabled"/>
+        <dr:programListAction program="${pao}" state="runningDisabled"/>
+        <dr:programListAction program="${pao}" state="scheduledDisabled"/>
+        <dr:programListAction program="${pao}" state="disabled"/>
     </tags:dynamicChoose>
 </cti:checkPaoAuthorization>                    
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}" invert="true">

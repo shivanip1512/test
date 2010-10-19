@@ -45,7 +45,7 @@ singleProgramChecked = function(boxChecked) {
 
 updateProgramState = function(index) {
     return function(data) {
-        if (data.state.startsWith('running')) {
+        if (data.state.startsWith('running') || data.state.startsWith('scheduled')) {
             $('stopProgramCheckbox' + index).enable();
         } else {
             $('stopProgramCheckbox' + index).disable();

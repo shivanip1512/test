@@ -19,13 +19,20 @@ public class ProgramShowActionField extends ProgramBackingFieldBase {
         }
 
         // Check manual active
-        boolean manualActive = program.getProgramStatus() == LMProgramBase.STATUS_MANUAL_ACTIVE;
+        int programState = program.getProgramStatus();
+        boolean running = programState == LMProgramBase.STATUS_MANUAL_ACTIVE
+            || programState == LMProgramBase.STATUS_TIMED_ACTIVE;
+        boolean scheduled = programState == LMProgramBase.STATUS_SCHEDULED;
         boolean disabled = program.getDisableFlag();
 
-        if (manualActive && disabled) {
+        if (running && disabled) {
             return "runningDisabled";
-        } else if (manualActive && !disabled) {
+        } else if (running && !disabled) {
             return "runningEnabled";
+        } else if (scheduled && !disabled) {
+            return "scheduledEnabled";
+        } else if (scheduled && !disabled) {
+            return "scheduledEnabled";
         } else if(disabled) {
             return "disabled";
         } else {
