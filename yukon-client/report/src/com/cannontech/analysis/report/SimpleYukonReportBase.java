@@ -197,9 +197,9 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
     }
     
 
-    protected Group createSingleGroup(ColumnLayoutData columnLayoutData) {
+    private Group createSingleGroup() {
         final Group collHdgGroup = new Group();
-        collHdgGroup.setName(getSingleGroupName(columnLayoutData));
+        collHdgGroup.setName(getSingleGroupName());
     
         GroupHeader header = ReportFactory.createGroupHeaderDefault();
         createGroupLabels(header);
@@ -222,7 +222,7 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
         }
     }
 
-    protected String getSingleGroupName(ColumnLayoutData columnLayoutData) {
+    protected String getSingleGroupName() {
         return "Column Heading";
     }
 
@@ -249,7 +249,7 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
 
     protected GroupList createGroups() {
       GroupList list = new GroupList();
-      list.add(createSingleGroup(null));
+      list.add(createSingleGroup());
       return list;
     }
     
@@ -258,7 +258,7 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
         ExpressionCollection expressionCollection = super.getExpressions();
         List<? extends AggregateFooterFieldFactory> totalColumns = getFooterColumns();
         for (AggregateFooterFieldFactory factory : totalColumns) {
-            Expression expression = factory.createExpression(getSingleGroupName(factory.getSourceColumn()));
+            Expression expression = factory.createExpression(getSingleGroupName());
             if (expression != null) {
                 expressionCollection.add(expression);
             }

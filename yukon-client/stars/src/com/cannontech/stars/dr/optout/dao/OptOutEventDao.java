@@ -65,12 +65,12 @@ public interface OptOutEventDao {
 	
     /**
      * Method to get a list of opt out events by the assigning user of the opt out. 
-     * @param issuingUserId
+     * @param userId
      * @param startTime
      * @param stopTime
      * @return
      */
-    public List<OverrideHistory> getOptOutHistoryByIssuedUser(int issuingUserId, Date startTime, Date stopTime);
+    public List<OverrideHistory> getOptOutHistoryByLogUserId(int logUserId, Date startTime, Date stopTime);
 	
 	/**
 	 * Method to get a list of opt out events by inventory and time period

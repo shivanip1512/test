@@ -39,7 +39,7 @@
 
 <!-- Point Pickers -->
 <entry key="yukon.web.picker.point.pointName">Point</entry>
-<entry key="yukon.web.picker.point.pointId">Point Id</entry>
+<entry key="yukon.web.picker.point.pointId">Point ID</entry>
 <entry key="yukon.web.picker.point.deviceName">Device</entry>
 <entry key="yukon.web.picker.point.pointType">Point Type</entry>
 
@@ -54,12 +54,12 @@
 <!-- User Picker -->
 <entry key="yukon.web.picker.user.name">User</entry>
 <entry key="yukon.web.picker.user.groupName">Login Group</entry>
-<entry key="yukon.web.picker.user.userId">User Id</entry>
+<entry key="yukon.web.picker.user.userId">User ID</entry>
 <entry key="yukon.web.picker.userPicker.dialogTitle">Select User</entry>
 
 <!-- Login Group Picker -->
 <entry key="yukon.web.picker.loginGroup.groupName">Login Group</entry>
-<entry key="yukon.web.picker.loginGroup.groupId">User Id</entry>
+<entry key="yukon.web.picker.loginGroup.groupId">User ID</entry>
 <entry key="yukon.web.picker.loginGroupPicker.dialogTitle">Select Login Group</entry>
 
 <!-- Assigned Program Picker -->
@@ -104,12 +104,12 @@
 
 <!-- STARS Pickers -->
 <entry key="yukon.web.picker.customerAccount.accountNumber">Account Number</entry>
-<entry key="yukon.web.picker.customerAccount.accountId">Account Id</entry>
+<entry key="yukon.web.picker.customerAccount.accountId">Account ID</entry>
 
 <entry key="yukon.web.picker.customerAccountPicker.dialogTitle">Select Account</entry>
 
 <entry key="yukon.web.picker.lmHardwareBase.manufacturerSerialNumber">Serial Number</entry>
-<entry key="yukon.web.picker.lmHardwareBase.inventoryId">Inventory Id</entry>
+<entry key="yukon.web.picker.lmHardwareBase.inventoryId">Inventory ID</entry>
 
 <entry key="yukon.web.picker.lmHardwareBasePicker.dialogTitle">Select Inventory</entry>
 

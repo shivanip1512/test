@@ -314,14 +314,14 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 
     @Override
-    public List<OverrideHistory> getOptOutHistoryByIssuedUser(int issuingUserId,
+    public List<OverrideHistory> getOptOutHistoryByLogUserId(int logUserId,
                                                               Date startDate,
                                                               Date stopDate) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * ");
         sql.append("FROM OptOutEvent ");
-        sql.append("WHERE OptOutEventId").in(getEventsByUserId(issuingUserId));
+        sql.append("WHERE OptOutEventId").in(getEventsByUserId(logUserId));
         sql.append("  AND StartDate").lte(stopDate);
         sql.append("  AND StopDate").gte(startDate);
         sql.append("  AND (EventState").eq(OptOutEventState.START_OPT_OUT_SENT);
@@ -881,7 +881,13 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 			HardwareSummary inventory = inventoryDao.findHardwareSummaryById(inventoryId);
 			if (inventory != null){
 			    history.setSerialNumber(inventory.getSerialNumber());
+			    
 			}
+			List<Program> enrolledPrograms = 
+			    enrollmentDao.getEnrolledProgramIdsByInventory(inventoryId, 
+			                                                   history.getStartDate(), 
+			                                                   history.getStopDate());
+			history.setPrograms(enrolledPrograms);
 
 			int eventId = rs.getInt("OptOutEventId");
 			int userId = getFirstEventUser(eventId);

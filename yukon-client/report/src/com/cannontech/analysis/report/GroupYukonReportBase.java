@@ -18,7 +18,6 @@ import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.BareReportModel;
-import com.google.common.collect.Lists;
 
 /**
  * This class is meant to be used as a base class for reports that are generated from
@@ -36,15 +35,15 @@ public abstract class GroupYukonReportBase extends SimpleYukonReportBase {
     protected GroupList createGroups() {
         GroupList list = new GroupList();
         for (ColumnLayoutData columnLayoutData : getMultiGroupFieldData()) {
-            list.add(createSingleGroup(columnLayoutData));
+            list.add(createGroup(columnLayoutData));
         }
         return list;
     }
 
-    protected Group createSingleGroup(ColumnLayoutData columnLayoutData) {
+    private Group createGroup(ColumnLayoutData columnLayoutData) {
         final Group singleGroup = new Group();
         int groupFieldIndex = columIndexLookup.get(columnLayoutData.getFieldName());
-        singleGroup.setName(getSingleGroupName(columnLayoutData));
+        singleGroup.setName(getGroupName(columnLayoutData));
         
         // Add all previous columnLayoutData fields up until the one that is being processed.
         List<ColumnLayoutData> groupFieldData = getMultiGroupFieldData();
@@ -100,8 +99,7 @@ public abstract class GroupYukonReportBase extends SimpleYukonReportBase {
         return singleGroup;
     }
     
-    @Override
-    protected String getSingleGroupName(ColumnLayoutData columnLayoutData) {
+    private String getGroupName(ColumnLayoutData columnLayoutData) {
         return columnLayoutData.getFieldName() + ReportFactory.NAME_GROUP;
     }
     

@@ -1,6 +1,7 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -119,9 +120,9 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
         if (userIds != null) {
             for (Integer userId : userIds) {
                 List<OverrideHistory> overrideHistoryList = 
-                    optOutEventDao.getOptOutHistoryByIssuedUser(userId, 
-                                                                getStartDate(), 
-                                                                getStopDate());
+                    optOutEventDao.getOptOutHistoryByLogUserId(userId, 
+                                                               getStartDate(), 
+                                                               getStopDate());
                 
                 addOverrideHistoryToModel(overrideHistoryList);
             }
@@ -151,18 +152,27 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
         
         // Check to see if programs where selected and uses them to find the report data.
         if (programIds != null) {
+            List<Program> suppliedProgramIds = programDao.getByProgramIds(programIds);
+
             List<Integer> groupIdsFromSQL = programDao.getDistinctGroupIdsByYukonProgramIds(programIds);
             List<CustomerAccountWithNames> accounts = 
-                customerAccountDao.getAllAccountsWithNamesByGroupIds(energyCompanyId, 
-                                                                     groupIdsFromSQL,
-                                                                     getStartDate(),
-                                                                     getStopDate());
+                customerAccountDao.getAllAccountsWithNamesByGroupIds(energyCompanyId, groupIdsFromSQL,
+                                                                     getStartDate(), getStopDate());
+
             for (CustomerAccountWithNames account : accounts) {
-                List<OverrideHistory> overrideHistoryList =
-                    optOutEventDao.getOptOutHistoryForAccount(account.getAccountId(), 
-                                                              getStartDate(), 
-                                                              getStopDate());
-                addOverrideHistoryToModel(overrideHistoryList);
+                List<OverrideHistory> overrideHistories = 
+                    optOutEventDao.getOptOutHistoryForAccount(account.getAccountId(), getStartDate(), getStopDate());
+                
+                for (OverrideHistory overrideHistory : overrideHistories) {
+
+                    // Retrieve the involved program ids from override history entry  
+                    for (Program overrideHistoryProgram : overrideHistory.getPrograms()) {
+                        if (suppliedProgramIds.contains(overrideHistoryProgram)) {
+                            addOverrideHistoryToModel(Collections.singletonList(overrideHistory));
+                            break;
+                        }
+                    }
+                }
             }
         }
         
