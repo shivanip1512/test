@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.joda.time.Interval;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.OpenInterval;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -290,7 +290,31 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         
         return yukonJdbcTemplate.query(selectByAccountId, rowMapper);
     }
-    
+
+    public List<LMHardwareControlGroup> getForActiveEnrollments(int accountId, int inventoryId, int lmGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(selectSql);
+        sql.append("WHERE AccountId").eq(accountId);
+        sql.append("AND InventoryId").eq(inventoryId);
+        sql.append("AND LmGroupId").eq(lmGroupId);
+        sql.append("AND GroupEnrollStart IS NOT NULL");
+        sql.append("AND GroupEnrollStop IS NULL");
+        
+        return yukonJdbcTemplate.query(sql, rowMapper);
+    }
+
+    public List<LMHardwareControlGroup> getForPastEnrollments(int accountId, int inventoryId, int lmGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(selectSql);
+        sql.append("WHERE AccountId").eq(accountId);
+        sql.append("AND InventoryId").eq(inventoryId);
+        sql.append("AND LmGroupId").eq(lmGroupId);
+        sql.append("AND GroupEnrollStart IS NOT NULL");
+        sql.append("AND GroupEnrollStop IS NOT NULL");
+        
+        return yukonJdbcTemplate.query(sql, rowMapper);
+    }
+
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getDistinctGroupIdsByAccountId(final int accountId) {
         List<Integer> list = 
@@ -691,14 +715,16 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     public List<LMHardwareControlGroup> getIntersectingEnrollments(int accountId,
                                                                    int inventoryId,
                                                                    int loadGroupId,
-                                                                   Interval controlHistoryInterval) {
+                                                                   OpenInterval controlHistoryInterval) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(selectSql);
         sql.append("WHERE AccountId").eq(accountId);
         sql.append("  AND InventoryId").eq(inventoryId);
         sql.append("  AND LmGroupId").eq(loadGroupId);
-        sql.append("  AND GroupEnrollStart").lte(controlHistoryInterval.getEnd());
+        if (!controlHistoryInterval.isOpenEnd()) {
+            sql.append("  AND GroupEnrollStart").lte(controlHistoryInterval.getEnd());
+        }
         sql.append("  AND (GroupEnrollStop IS NULL");
         sql.append("       OR GroupEnrollStop").gte(controlHistoryInterval.getStart()).append(")");
         

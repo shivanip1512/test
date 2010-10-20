@@ -16,7 +16,8 @@ public interface ControlHistoryEventDao {
      * migrate the data over to the new displayable objects..
      * 
      */
-    public StarsLMControlHistory getEventsByGroup(int accountId, int lmGroupId, int inventoryId, ControlPeriod period, YukonUserContext userContext, boolean past);
+    public StarsLMControlHistory getEventsByGroup(int accountId, int lmGroupId, int inventoryId,
+                                                  ControlPeriod period, YukonUserContext userContext, boolean past);
 
     /**
      * This method gets the latest control history event for the given inventory, program, and account.
@@ -24,7 +25,8 @@ public interface ControlHistoryEventDao {
      * actual account.
      * 
      */
-    public ControlHistoryEvent getLastControlHistoryEntry(int accountId, int programId, int inventoryId, YukonUserContext userContext, boolean past);
+    public ControlHistoryEvent getLastControlHistoryEntry(int accountId, int programId, int inventoryId, 
+                                                           YukonUserContext userContext, boolean past);
     
     /**
      * This method takes in an old stars control history object and generates the

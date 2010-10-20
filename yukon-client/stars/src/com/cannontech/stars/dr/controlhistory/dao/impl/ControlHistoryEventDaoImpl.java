@@ -18,14 +18,16 @@ import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistoryEvent;
 import com.cannontech.stars.dr.controlhistory.model.ControlPeriod;
-import com.cannontech.stars.util.LMControlHistoryUtil;
-import com.cannontech.stars.xml.serialize.ControlHistory;
+import com.cannontech.stars.dr.controlhistory.model.ObservedControlHistory;
+import com.cannontech.stars.dr.controlhistory.service.LmControlHistoryUtilService;
+import com.cannontech.stars.xml.serialize.ControlHistoryEntry;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 import com.cannontech.user.YukonUserContext;
 
 public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
     private LoadGroupDao loadGroupDao;
+    private LmControlHistoryUtilService lmControlHistoryUtilService;
     private YukonJdbcTemplate yukonJdbcTemplate;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
 
@@ -59,27 +61,19 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
 
     
     
-    public StarsLMControlHistory getEventsByGroup(int customerAccountId, int lmGroupId, int inventoryId, ControlPeriod period, YukonUserContext userContext, boolean past) {
+    public StarsLMControlHistory getEventsByGroup(final int customerAccountId,  int lmGroupId, int inventoryId,
+                                                  final ControlPeriod period, final YukonUserContext yukonUserContext, boolean past) {
 
-        Holder holder = new Holder();
-        holder.groupId = lmGroupId;
-        holder.inventoryId = inventoryId;
-    
-        return getEventsByGroup(customerAccountId, holder, period, userContext, past);
-    }
-    
-    private StarsLMControlHistory getEventsByGroup(int accountId, Holder holder, ControlPeriod period, 
-                                                   YukonUserContext userContext, boolean past) {
         StarsCtrlHistPeriod starsControlPeriod = StarsCtrlHistPeriod.valueOf(period.starsName());
-        StarsLMControlHistory controlHistory = 
-            LMControlHistoryUtil.getStarsLMControlHistory(holder.groupId,
-                                                          holder.inventoryId,
-                                                          accountId,
-                                                          starsControlPeriod,
-                                                          userContext,
-                                                          past);
+        ObservedControlHistory observedControlHistory = 
+            lmControlHistoryUtilService.getObservedControlHistory(lmGroupId, inventoryId, customerAccountId,
+                                                          starsControlPeriod, yukonUserContext.getJodaTimeZone(),
+                                                          yukonUserContext.getYukonUser(), past);
         
-        return controlHistory;
+        StarsLMControlHistory starsLmControlHistory = 
+            lmControlHistoryUtilService.getStarsLmControlHistory(observedControlHistory, starsControlPeriod, yukonUserContext.getJodaTimeZone());
+
+        return starsLmControlHistory;
     }
 
     @Override
@@ -89,7 +83,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
         final List<ControlHistoryEvent> eventList = new ArrayList<ControlHistoryEvent>();
 
         for (int j = controlHistory.getControlHistoryCount() - 1; j >= 0; j--) {
-            ControlHistory history = controlHistory.getControlHistory(j);
+            ControlHistoryEntry history = controlHistory.getControlHistory(j);
 
             Instant startDateTime = history.getStartInstant();
             Instant endDateTime = startDateTime.plus(history.getControlDuration());
@@ -155,5 +149,9 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
     @Autowired
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
+    }
+    @Autowired
+    public void setLmControlHistoryUtilService(LmControlHistoryUtilService lmControlHistoryUtilService) {
+        this.lmControlHistoryUtilService = lmControlHistoryUtilService;
     }
 }

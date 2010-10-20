@@ -40,14 +40,16 @@ public class OperatorProgramControlHistoryController {
         modelMap.addAttribute("isNotEnrolled", isNotEnrolled);
         
         /* Get control history for previous enrollments */
-        List<DisplayableProgram> previousControlHistory = displayableProgramDao.getAllControlHistorySummary(accountId, userContext, ControlPeriod.PAST_DAY, true);
+        List<DisplayableProgram> previousControlHistory = 
+            displayableProgramDao.getAllControlHistorySummary(accountId, userContext, ControlPeriod.PAST_YEAR, true);
         modelMap.addAttribute("previousControlHistory", previousControlHistory);
         
         if (isNotEnrolled) {
         	return viewName; /* If there are no programs enrolled, skip retrieving the current enrollment control history. */
         }
 
-        List<DisplayableProgram> currentControlHistory = displayableProgramDao.getAllControlHistorySummary(accountId, userContext, ControlPeriod.PAST_DAY, false);
+        List<DisplayableProgram> currentControlHistory = 
+            displayableProgramDao.getAllControlHistorySummary(accountId, userContext, ControlPeriod.PAST_YEAR, false);
         modelMap.addAttribute("currentControlHistory", currentControlHistory);
         
         return viewName;

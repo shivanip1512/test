@@ -3,9 +3,9 @@ package com.cannontech.stars.dr.hardware.dao;
 import java.util.Date;
 import java.util.List;
 
-import org.joda.time.Interval;
 import org.joda.time.ReadableInstant;
 
+import com.cannontech.common.util.OpenInterval;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.hardware.dao.impl.LMHardwareControlGroupDaoImpl.DistinctEnrollment;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
@@ -96,6 +96,17 @@ public interface LMHardwareControlGroupDao {
     public List<LMHardwareControlGroup> getForPastEnrollments(int accountId);
 
     /**
+     * Returns a List<LMHardwareControlGroup> of all active enrollments of an account, inventory, and load group. 
+     */
+    public List<LMHardwareControlGroup> getForActiveEnrollments(int accountId, int inventoryId, int lmGroupId);
+
+    /**
+     * Returns a List<LMHardwareControlGroup> of past enrollments of an account, inventory, and load group. 
+     */
+    public List<LMHardwareControlGroup> getForPastEnrollments(int accountId, int inventoryId, int lmGroupId);
+
+    
+    /**
      * Retrieves a list of program id's that the account was previously enrolled in.
      * @param accountId Account id to check for past enrollments.
      * @return The list of program id's.
@@ -120,5 +131,5 @@ public interface LMHardwareControlGroupDao {
     public List<LMHardwareControlGroup> getIntersectingEnrollments(int accountId,
                                                                    int inventoryId,
                                                                    int loadGroupId,
-                                                                   Interval controlHistoryInterval);
+                                                                   OpenInterval controlHistoryInterval);
 }

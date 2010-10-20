@@ -1,29 +1,13 @@
-/*
- * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
- * XML Schema.
- * $Id: StarsLMControlHistory.java,v 1.96 2008/06/23 20:01:29 nmeverden Exp $
- */
-
 package com.cannontech.stars.xml.serialize;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
 
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
-/**
- * 
- * 
- * @version $Revision: 1.96 $ $Date: 2008/06/23 20:01:29 $
-**/
 public class StarsLMControlHistory {
 
 
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
 
     private boolean _beingControlled;
 
@@ -32,61 +16,39 @@ public class StarsLMControlHistory {
     **/
     private boolean _has_beingControlled;
 
-    private java.util.Vector _controlHistoryList;
+    private Vector<ControlHistoryEntry> _controlHistoryList;
 
     private ControlSummary _controlSummary;
 
 
-      //----------------/
-     //- Constructors -/
-    //----------------/
 
     public StarsLMControlHistory() {
         super();
-        _controlHistoryList = new Vector();
-    } //-- com.cannontech.stars.xml.serialize.StarsLMControlHistory()
+        _controlHistoryList = new Vector<ControlHistoryEntry>();
+    }
 
 
-      //-----------/
-     //- Methods -/
-    //-----------/
-
-    /**
-     * 
-     * 
-     * @param vControlHistory
-    **/
-    public void addControlHistory(ControlHistory vControlHistory)
+    public void addControlHistory(ControlHistoryEntry vControlHistory)
         throws java.lang.IndexOutOfBoundsException
     {
         _controlHistoryList.addElement(vControlHistory);
-    } //-- void addControlHistory(ControlHistory) 
+    } 
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vControlHistory
-    **/
-    public void addControlHistory(int index, ControlHistory vControlHistory)
+    public void addControlHistory(int index, ControlHistoryEntry vControlHistory)
         throws java.lang.IndexOutOfBoundsException
     {
         _controlHistoryList.insertElementAt(vControlHistory, index);
-    } //-- void addControlHistory(int, ControlHistory) 
+    }
 
-    /**
-    **/
     public void deleteBeingControlled()
     {
         this._has_beingControlled= false;
-    } //-- void deleteBeingControlled() 
+    }
 
-    /**
-    **/
-    public java.util.Enumeration enumerateControlHistory()
+    public Enumeration<ControlHistoryEntry> enumerateControlHistory()
     {
         return _controlHistoryList.elements();
-    } //-- java.util.Enumeration enumerateControlHistory() 
+    }
 
     /**
      * Returns the value of field 'beingControlled'.
@@ -96,143 +58,95 @@ public class StarsLMControlHistory {
     public boolean getBeingControlled()
     {
         return this._beingControlled;
-    } //-- boolean getBeingControlled() 
+    }
 
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public ControlHistory getControlHistory(int index)
-        throws java.lang.IndexOutOfBoundsException
+    public ControlHistoryEntry getControlHistory(int index)
+        throws IndexOutOfBoundsException
     {
-        //-- check bounds for index
         if ((index < 0) || (index > _controlHistoryList.size())) {
             throw new IndexOutOfBoundsException();
         }
         
-        return (ControlHistory) _controlHistoryList.elementAt(index);
-    } //-- ControlHistory getControlHistory(int) 
+        return (ControlHistoryEntry) _controlHistoryList.elementAt(index);
+    } 
 
-    /**
-    **/
-    public ControlHistory[] getControlHistory()
+    public ControlHistoryEntry[] getControlHistory()
     {
         int size = _controlHistoryList.size();
-        ControlHistory[] mArray = new ControlHistory[size];
+        ControlHistoryEntry[] mArray = new ControlHistoryEntry[size];
         for (int index = 0; index < size; index++) {
-            mArray[index] = (ControlHistory) _controlHistoryList.elementAt(index);
+            mArray[index] = (ControlHistoryEntry) _controlHistoryList.elementAt(index);
         }
         return mArray;
-    } //-- ControlHistory[] getControlHistory() 
+    }
+    
+    public List<ControlHistoryEntry> getControlHistoryList() {
+        return _controlHistoryList;
+    }
 
-    /**
-    **/
     public int getControlHistoryCount()
     {
         return _controlHistoryList.size();
-    } //-- int getControlHistoryCount() 
+    } 
 
-    /**
-     * Returns the value of field 'controlSummary'.
-     * 
-     * @return the value of field 'controlSummary'.
-    **/
     public ControlSummary getControlSummary()
     {
         return this._controlSummary;
-    } //-- ControlSummary getControlSummary() 
+    } 
 
-    /**
-    **/
     public boolean hasBeingControlled()
     {
         return this._has_beingControlled;
-    } //-- boolean hasBeingControlled() 
+    }
 
-    /**
-    **/
     public void removeAllControlHistory()
     {
         _controlHistoryList.removeAllElements();
-    } //-- void removeAllControlHistory() 
+    } 
 
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public ControlHistory removeControlHistory(int index)
+    public ControlHistoryEntry removeControlHistory(int index)
     {
-        java.lang.Object obj = _controlHistoryList.elementAt(index);
+        Object obj = _controlHistoryList.elementAt(index);
         _controlHistoryList.removeElementAt(index);
-        return (ControlHistory) obj;
-    } //-- ControlHistory removeControlHistory(int) 
+        return (ControlHistoryEntry) obj;
+    } 
 
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public ControlHistory removeControlHistory(ControlHistory controlHistory)
+    public ControlHistoryEntry removeControlHistory(ControlHistoryEntry controlHistory)
     {
         _controlHistoryList.remove(controlHistory);
         if (_controlSummary != null) {
             _controlSummary.subtractDuration(controlHistory.getControlDuration());
         }
         return controlHistory;
-    } //-- ControlHistory removeControlHistory(ControlHistory) 
+    } 
 
     
-    /**
-     * Sets the value of field 'beingControlled'.
-     * 
-     * @param beingControlled the value of field 'beingControlled'.
-    **/
     public void setBeingControlled(boolean beingControlled)
     {
         this._beingControlled = beingControlled;
         this._has_beingControlled = true;
-    } //-- void setBeingControlled(boolean) 
+    } 
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vControlHistory
-    **/
-    public void setControlHistory(int index, ControlHistory vControlHistory)
-        throws java.lang.IndexOutOfBoundsException
+    public void setControlHistory(int index, ControlHistoryEntry vControlHistory)
+        throws IndexOutOfBoundsException
     {
-        //-- check bounds for index
         if ((index < 0) || (index > _controlHistoryList.size())) {
             throw new IndexOutOfBoundsException();
         }
         _controlHistoryList.setElementAt(vControlHistory, index);
-    } //-- void setControlHistory(int, ControlHistory) 
+    }
 
-    /**
-     * 
-     * 
-     * @param controlHistoryArray
-    **/
-    public void setControlHistory(ControlHistory[] controlHistoryArray)
+    public void setControlHistory(ControlHistoryEntry[] controlHistoryArray)
     {
-        //-- copy array
         _controlHistoryList.removeAllElements();
         for (int i = 0; i < controlHistoryArray.length; i++) {
             _controlHistoryList.addElement(controlHistoryArray[i]);
         }
-    } //-- void setControlHistory(ControlHistory) 
+    } 
 
-    /**
-     * Sets the value of field 'controlSummary'.
-     * 
-     * @param controlSummary the value of field 'controlSummary'.
-    **/
     public void setControlSummary(ControlSummary controlSummary)
     {
         this._controlSummary = controlSummary;
-    } //-- void setControlSummary(ControlSummary) 
+    } 
 
 }

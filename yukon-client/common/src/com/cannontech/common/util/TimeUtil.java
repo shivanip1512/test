@@ -11,7 +11,6 @@ import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Hours;
-import org.joda.time.Interval;
 
 import com.google.common.collect.Lists;
 
@@ -411,12 +410,12 @@ public static int differenceMinutes(Date from, Date to) {
             && cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
     }
 
-    public static List<Interval> getOverlap(List<Interval> intervalListOne, List<Interval> intervalListTwo) {
-        List<Interval> resultList = Lists.newArrayList();
+    public static List<OpenInterval> getOverlap(List<OpenInterval> intervalListOne, List<OpenInterval> intervalListTwo) {
+        List<OpenInterval> resultList = Lists.newArrayList();
         
-        for (Interval intervalOne : intervalListOne) {
-            for (Interval intervalTwo : intervalListTwo) {
-                Interval overlapInterval = intervalOne.overlap(intervalTwo);
+        for (OpenInterval intervalOne : intervalListOne) {
+            for (OpenInterval intervalTwo : intervalListTwo) {
+                OpenInterval overlapInterval = intervalOne.overlap(intervalTwo);
                 
                 if (overlapInterval != null) {
                     resultList.add(overlapInterval);

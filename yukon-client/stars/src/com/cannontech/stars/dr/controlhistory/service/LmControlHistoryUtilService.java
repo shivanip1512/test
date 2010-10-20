@@ -2,50 +2,58 @@ package com.cannontech.stars.dr.controlhistory.service;
 
 import java.util.List;
 
-import org.joda.time.Duration;
-import org.joda.time.Interval;
+import org.joda.time.DateTimeZone;
 import org.joda.time.ReadableInstant;
 
-import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
-import com.cannontech.stars.xml.serialize.ControlHistory;
+import com.cannontech.common.util.OpenInterval;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
+import com.cannontech.stars.dr.controlhistory.model.ObservedControlHistory;
+import com.cannontech.stars.xml.serialize.ControlHistoryEntry;
+import com.cannontech.stars.xml.serialize.ControlSummary;
+import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
+import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 
 public interface LmControlHistoryUtilService {
 
 
     /**
-     * The method calculates the correct duration for a control history event by 
-     * taking into effect current enrollments.  It also modifies the start date of the control
-     * history event if the control was delayed due to enrollment starting during a control
-     * history event.
-     * 
+     * This method generates control history information that is specific to the supplied account, 
+     * load group, and piece of inventory.  It also takes into effect current enrollments and opt outs
+     * when figuring out this data.
+     * @param past 
      */
-    public Duration calculateCurrentEnrollmentControlPeriod(ControlHistory controlHistory,
-                                                            Duration controlHistoryTotal,
-                                                            ReadableInstant controlHistoryStopDateTime,
-                                                            Iterable<LMHardwareControlGroup> enrollments);
+    public ObservedControlHistory getObservedControlHistory(int groupID, int inventoryId,
+                                                            int accountId, StarsCtrlHistPeriod period, 
+                                                            DateTimeZone tz, LiteYukonUser currentUser, 
+                                                            boolean past);
+    
+    /**
+     * This method takes care of building up control history entries from the database control history
+     * entries, which are gathered from LMControlHistory.  The startDate value is used as a truncating
+     * point.  Any entry that lands on this line will be added to the control history entries list,
+     * but will only contain the piece that occurred after the start date.
+     */
+    public StarsLMControlHistory buildStarsControlHistoryForPeriod(LiteStarsLMControlHistory liteCtrlHist, 
+                                                                   ReadableInstant startInstant, ReadableInstant stopInstant,
+                                                                   DateTimeZone tz);
+
+    
+    /**
+     * This method takes an observed control history object and creates a legacy STARS control history
+     * object.  
+     */
+    @Deprecated
+    public StarsLMControlHistory getStarsLmControlHistory(ObservedControlHistory observedControlHistory, 
+                                                          StarsCtrlHistPeriod period, DateTimeZone tz);
 
     /**
-     * The method calculates the correct duration for a control history event by 
-     * taking into effect previous enrollments.  It also modifies the start date of the control
-     * history event if the control was delayed due to enrollment starting during a control
-     * history event.
+     * This method takes the list of observed control history entries and calculates the 
+     * three standard control history summary values.  These values include past day, past month,
+     * and past year.
      */
-    public Duration calculatePreviousEnrollmentControlPeriod(ControlHistory controlHistory,
-                                                             Duration controlHistoryTotal,
-                                                             ReadableInstant controlHistoryStopDateTime,
-                                                             Iterable<LMHardwareControlGroup> enrollments);
-
-    /**
-     * The method calculates the correct duration for a control history event by 
-     * taking into effect opt outs during that event. It also modifies the start date of the control
-     * history event if the control was delayed due to an active opt out that was canceled during
-     * a control history event.
-     */
-    public Duration calculateOptOutControlHistory(ControlHistory controlHistory,
-                                                  Duration controlHistoryTotal,
-                                                  ReadableInstant controlHistoryStopDateTime,
-                                                  Iterable<LMHardwareControlGroup> optOuts);
-
+    public ControlSummary getControlSummary(ObservedControlHistory observedControlHistory, DateTimeZone tz);
+    
     
     /**
      * The method returns an intersection of enrollments for a piece of inventory on an account
@@ -58,9 +66,9 @@ public interface LmControlHistoryUtilService {
      * Resulting Control History     [--] [----] []
      * 
      */
-    List<Interval> getControHistoryEnrollmentIntervals(ControlHistory controlHistory,
-                                                       int accountId,
-                                                       int inventoryId,
-                                                       int loadGroupId);
+    List<OpenInterval> getControHistoryEnrollmentIntervals(ControlHistoryEntry controlHistoryEntry,
+                                                           int accountId,
+                                                           int inventoryId,
+                                                           int loadGroupId);
 
 }
