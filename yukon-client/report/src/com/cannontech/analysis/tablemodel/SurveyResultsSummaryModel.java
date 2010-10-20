@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -103,7 +102,7 @@ public class SurveyResultsSummaryModel extends
         List<SurveyResult> surveyResults =
             optOutSurveyDao.findSurveyResults(surveyId, questionId, answerIds,
                                               includeOtherAnswers, includeUnanswered,
-                                              new DateTime(startDate), new DateTime(endDate));
+                                              new Instant(startDate), new Instant(endDate));
         for (SurveyResult result : surveyResults) {
             List<ProgramEnrollment> enrollments =
                 enrollmentDao.getHistoricalEnrollmentsByInventoryId(result.getInventoryId(),

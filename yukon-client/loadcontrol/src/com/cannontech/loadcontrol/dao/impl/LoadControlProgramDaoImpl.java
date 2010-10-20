@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -265,6 +266,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
             return null;
         }
 
+        Date eventStart = startHist.getEventTime();
         // now find the first "stop" event after the last start
         sql = new SqlStatementBuilder();
         sql.append("SELECT *");
@@ -274,8 +276,8 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         sql.append(           "row_number() OVER (ORDER BY gh.eventTime ASC) AS rowNumber");
         sql.append(      "FROM lmProgramGearHistory gh");
         sql.append(          "JOIN lmProgramHistory ph ON gh.lmProgramHistoryId = ph.lmProgramHistoryId");
-        sql.append(      "WHERE gh.eventTime").gt(when);
-        sql.append(          "AND gh.EventTime").lt(when.toInstant().plus(Duration.standardDays(30)));
+        sql.append(      "WHERE gh.eventTime").gt(eventStart);
+        sql.append(          "AND gh.EventTime").lt(new Instant(eventStart).plus(Duration.standardDays(30)));
         sql.append(          "AND ph.programId").eq(programId);
         sql.append(      ") f");
         sql.append("WHERE rowNumber = 1");
@@ -283,6 +285,11 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         try {
             stopHist = yukonJdbcOperations.queryForObject(sql, new LmProgramGearHistoryMapper());
         } catch (EmptyResultDataAccessException erdae) {
+
+        }
+
+        if (when.isAfter(new Instant(stopHist.getEventTime()))) {
+            return null;
         }
 
         ProgramControlHistory retVal = joinGearHistoriesIntoProgramHistory(startHist, stopHist);
