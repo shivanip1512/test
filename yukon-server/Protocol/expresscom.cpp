@@ -1202,19 +1202,11 @@ INT CtiProtocolExpresscom::assembleGetValue(CtiCommandParser &parse)
     if(parse.isKeyValid("xctamper"))
     {
         int tamper_flags = parse.getiValue("xctamper");
-        if(tamper_flags >= 0)
-        {
-            bool rcircuit = tamper_flags & 0x01;
-            bool runtime  = tamper_flags & 0x02;
-    
-            status = tamperInformation(rcircuit, runtime);
-        }
-        else
-        {
-            // Based on the way we parsed the command, we can never get here!
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << "Rick Astley is a great singer but no one will ever know since this can't be seen!" << endl;
-        }
+
+        bool rcircuit = tamper_flags & 0x01;
+        bool runtime  = tamper_flags & 0x02;
+
+        status = tamperInformation(rcircuit, runtime);
     }
     else if(parse.isKeyValid("xcdrsummary") )
     {
@@ -1374,10 +1366,6 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse)
                                         parse.getiValue("xcreturn", 0),
                                         parse.isKeyValid("xcsleep"),
                                         parse.getiValue("xcsleep", 0));
-
-    }
-    else if(parse.isKeyValid("xctamper"))
-    {
 
     }
     else

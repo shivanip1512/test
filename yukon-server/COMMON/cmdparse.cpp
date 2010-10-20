@@ -613,12 +613,6 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                     _cmd["tamper_runtime_fault"] = CtiParseValue(TRUE);
                 }
             }
-            else // Command string was just "getvalue tamper info"...
-            {
-                // Why yes, this is the exact same thing as above!
-                _cmd["tamper_circuit_fault"] = CtiParseValue(TRUE);
-                _cmd["tamper_runtime_fault"] = CtiParseValue(TRUE);
-            }
         }
         else if(!(token = CmdStr.match(re_dr_summary)).empty())
         {

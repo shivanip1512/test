@@ -19,7 +19,7 @@ protected:
     State    _state;
 
     // We want the children (and children ONLY) to be able to call this constructor.
-    Lcr3102ThreePartCommand(State initState, unsigned length, unsigned retries = 2);
+    Lcr3102ThreePartCommand(unsigned length, unsigned retries = 2);
 
 private:
 

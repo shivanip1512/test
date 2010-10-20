@@ -9,7 +9,7 @@ namespace Devices {
 namespace Commands {
 
 Lcr3102TamperReadCommand::Lcr3102TamperReadCommand() :
-    Lcr3102ThreePartCommand(State_ExpresscomWrite, Read_TamperReadLength)
+    Lcr3102ThreePartCommand(Read_TamperReadLength)
 {
 }
 
@@ -27,16 +27,24 @@ DlcCommand::request_ptr Lcr3102TamperReadCommand::decode(CtiTime now, const unsi
             throw CommandException(ErrorInvalidData, description);
         }
     
-        point_data tamper;
+        point_data circuit, runtime;
     
-        tamper.name    = "tamper";
-        tamper.offset  = 30;
-        tamper.type    = StatusPointType;
-        tamper.quality = NormalQuality;
-        tamper.time    = now;
-        tamper.value   = tamper_info;
+        circuit.name    = "RCircuit Tamper";
+        circuit.offset  = 30;
+        circuit.type    = StatusPointType;
+        circuit.quality = NormalQuality;
+        circuit.time    = now;
+        circuit.value   = tamper_info & 0x01;
+
+        runtime.name    = "Runtime Tamper";
+        runtime.offset  = 31;
+        runtime.type    = StatusPointType;
+        runtime.quality = NormalQuality;
+        runtime.time    = now;
+        runtime.value   = (tamper_info & 0x02) ? 1 : 0;
     
-        points.push_back(tamper);
+        points.push_back(circuit);
+        points.push_back(runtime);
     
         if( !tamper_info )
         {
@@ -60,7 +68,7 @@ DlcCommand::request_ptr Lcr3102TamperReadCommand::decode(CtiTime now, const unsi
     }
 }
 
-}   // Commands
-}   // Devices
-}   // Cti
+}
+}
+}
 

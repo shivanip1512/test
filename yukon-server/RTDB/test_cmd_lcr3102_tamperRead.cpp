@@ -81,7 +81,8 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_rcircuit_tamper )
 
         expected_pointdata expected[] = 
         {
-            { "tamper", CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x01, NormalQuality, StatusPointType, 30 }
+            { "RCircuit Tamper", CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x01, NormalQuality, StatusPointType, 30 },
+            { "Runtime Tamper",  CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x00, NormalQuality, StatusPointType, 31 }
         };
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
@@ -161,7 +162,8 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_runtime_tamper )
 
         expected_pointdata expected[] = 
         {
-            { "tamper", CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x02, NormalQuality, StatusPointType, 30 }
+            { "RCircuit Tamper", CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x00, NormalQuality, StatusPointType, 30 },
+            { "Runtime Tamper",  CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x01, NormalQuality, StatusPointType, 31 }
         };
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
@@ -239,7 +241,8 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_both_tamper )
 
         expected_pointdata expected[] = 
         {
-            { "tamper", CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x03, NormalQuality, StatusPointType, 30 }
+            { "RCircuit Tamper", CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x01, NormalQuality, StatusPointType, 30 },
+            { "Runtime Tamper",  CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x01, NormalQuality, StatusPointType, 31 }
         };
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
@@ -317,7 +320,8 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_neither_tamper )
 
         expected_pointdata expected[] = 
         {
-            { "tamper", CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x00, NormalQuality, StatusPointType, 30 }
+            { "RCircuit Tamper", CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x00, NormalQuality, StatusPointType, 30 },
+            { "Runtime Tamper",  CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x00, NormalQuality, StatusPointType, 31 }
         };
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);

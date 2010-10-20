@@ -8,8 +8,8 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
-Lcr3102ThreePartCommand::Lcr3102ThreePartCommand(State initState, unsigned length, unsigned retries) :
-    _state(initState),
+Lcr3102ThreePartCommand::Lcr3102ThreePartCommand(unsigned length, unsigned retries) :
+    _state(State_ExpresscomWrite),
     _length(length),
     _retries(retries)
 {
@@ -19,7 +19,7 @@ DlcCommand::request_ptr Lcr3102ThreePartCommand::execute(const CtiTime now)
 {
     if( _state == State_ExpresscomWrite )
     {
-        return request_ptr(new read_request_t(Read_DummyRead, 0));
+        return request_ptr(new read_request_t(Read_ExpresscomMsgSend, 0));
     }
     else
     {
@@ -50,6 +50,6 @@ DlcCommand::request_ptr Lcr3102ThreePartCommand::error(const CtiTime now, const 
     }
 }
 
-}   // Commands
-}   // Devices
-}   // Cti
+}
+}
+}
