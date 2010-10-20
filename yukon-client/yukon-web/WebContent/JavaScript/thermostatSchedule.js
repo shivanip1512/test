@@ -482,25 +482,16 @@ function changeScheduleMode() {
 		
         return;
     }
-	
-    var mode = $RF('radioALL');
     
+    var mode = $RF('radioALL');
     currentScheduleMode = mode;
-
-    if(currentScheduleMode == 'ALL') {
-    	getCurrentSchedule('WEEKEND');
-    	getCurrentSchedule('SATURDAY');
-    	getCurrentSchedule('SUNDAY');
-    }
-    else if(currentScheduleMode == 'WEEKDAY_WEEKEND') {
-    	getCurrentSchedule('WEEKEND');
-    	getCurrentSchedule('SATURDAY');
-    	getCurrentSchedule('SUNDAY');
-    }
+	
+    getCurrentSchedule('WEEKEND');
+	getCurrentSchedule('SATURDAY');
+	getCurrentSchedule('SUNDAY');
     
     // Always default to weekday selected when mode changes
     changeTimePeriod('WEEKDAY');
-    
 }
 
 function updateTimePeriodUI() {
