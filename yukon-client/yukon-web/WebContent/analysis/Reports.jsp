@@ -414,8 +414,9 @@ function makeFirstSelectedFilterValueVisible() {
         //Create a local instance of the map.
         Map<ReportFilter,List<? extends Object>> filterObjectsMap = REPORT_BEAN.getFilterObjectsMap();
         for (ReportFilter filter : filterObjectsMap.keySet()) {%>
-                document.getElementById('Div<%=filter.getFilterTitle()%>').style.display = (filterBy == <%=filter.ordinal()%>)? "block" : "none";
-        <% }  %>
+                document.getElementById('Div<%=filter.getFilterTitle()%>').style.display = (filterBy == '<%=filter%>')? "block" : "none";
+        <% } %>
+        
         }
     
         </SCRIPT>
@@ -495,7 +496,7 @@ function makeFirstSelectedFilterValueVisible() {
 					
 						<select id='filterModelType' name='filterModelType' onChange='changeFilter(this.value)'>
 							<%for (ReportFilter filter : filterObjectsMap.keySet()) {%>
-                    			<option value='<%=filter.ordinal()%>' 
+                    			<option value='<%=filter%>' 
                     				<% if (selectedReportFilter != null && selectedReportFilter.equals(filter)){%> selected <%}%>  
                     			>
                     			<%=filter.getFilterTitle() %>
