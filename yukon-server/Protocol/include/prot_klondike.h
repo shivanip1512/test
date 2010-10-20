@@ -260,7 +260,6 @@ private:
         NAK_LoadBuffer_BusDisabled,
         NAK_LoadBuffer_InvalidDLCType,
         NAK_LoadBuffer_InvalidMessageLength,
-        NAK_LoadBuffer_TransmitterOverheating,
         NAK_LoadBuffer_QueueFull,
 
         NAK_ReadACKReplyBuffer_InvalidRTI = 0x00,

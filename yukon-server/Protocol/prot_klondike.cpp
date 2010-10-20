@@ -872,7 +872,6 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
                                             case NAK_LoadBuffer_InvalidDLCType:         error = Error_InvalidDLCType;            break;
                                             case NAK_LoadBuffer_InvalidMessageLength:   error = Error_InvalidMessageLength;      break;
                                             case NAK_LoadBuffer_NoRoutes:               error = Error_NoRoutes;                  break;
-                                            case NAK_LoadBuffer_TransmitterOverheating: error = Error_TransmitterOverheating;    break;
                                             default:
                                             {
                                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
