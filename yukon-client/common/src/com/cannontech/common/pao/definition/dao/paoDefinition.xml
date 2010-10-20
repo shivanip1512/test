@@ -3490,13 +3490,13 @@
             </point>
             <point type="Status" offset="30">
                 <init>true</init>
-                <name>RCircuit Tamper</name>
-                <stategroup value="TwoStateStatus"/>
+                <name>Relay Circuit Fault</name>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="31">
                 <init>true</init>
                 <name>Runtime Tamper</name>
-                <stategroup value="TwoStateStatus"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="2000">
             	<init>true</init>
