@@ -16,7 +16,7 @@ Lcr3102TamperReadCommand::Lcr3102TamperReadCommand() :
 //  throws CommandException
 DlcCommand::request_ptr Lcr3102TamperReadCommand::decode(CtiTime now, const unsigned function, const payload_t &payload, string &description, vector<point_data> &points)
 {
-    if( _state == State_ActOnMessageRead )
+    if( _state == State_Reading )
     {
         // This was the decode from the true ActOnStoredMessage call, not the dummy.
         const unsigned char tamper_info = getValueFromBits(payload, 0, 8);
@@ -63,7 +63,7 @@ DlcCommand::request_ptr Lcr3102TamperReadCommand::decode(CtiTime now, const unsi
     else
     {
         // This was the decode call after the initial expresscom write, we need to call the next execute and change state!
-        _state = State_ActOnMessageRead;
+        _state = State_Reading;
         return execute(now);
     }
 }

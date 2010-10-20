@@ -12,7 +12,7 @@ private:
 
     enum ReadLength
     {
-        Read_DRSummaryLength  = 1
+        Read_DemandResponseSummaryLength = 1
     };
 
     enum SummaryBits
@@ -44,6 +44,6 @@ public:
     void decodeResponseByte(const unsigned char drSummaryByte, std::string &description);
 };
 
-}   // Commands
-}   // Devices
-}   // Cti
+}
+}
+}

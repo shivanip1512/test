@@ -1,4 +1,4 @@
-#include "cmd_lcr3102_DRSummaryRead.h"
+#include "cmd_lcr3102_DemandResponseSummary.h"
 
 #include "ctidate.h"
 #include "ctitime.h"
@@ -67,8 +67,11 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_controlled_only )
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
 
-        BOOST_CHECK_EQUAL(description, "Not in cold load pickup\nDevice controlling\n"
-                                       "No under voltage event\nNo under frequency event\nDevice not out of service\n");
+        BOOST_CHECK_EQUAL(description, "Not in cold load pickup\n"
+                                       "Device controlling\n"
+                                       "No under voltage event\n"
+                                       "No under frequency event\n"
+                                       "Device not out of service\n");
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -131,8 +134,10 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_cold_load_pickup )
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
 
-        BOOST_CHECK_EQUAL(description, "In cold load pickup\nNo under voltage event\n"
-                                       "No under frequency event\nDevice not out of service\n");
+        BOOST_CHECK_EQUAL(description, "In cold load pickup\n"
+                                       "No under voltage event\n"
+                                       "No under frequency event\n"
+                                       "Device not out of service\n");
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -195,8 +200,11 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling )
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
 
-        BOOST_CHECK_EQUAL(description, "Not in cold load pickup\nActivated, not controlling\nNo under voltage event\n"
-                                       "No under frequency event\nDevice not out of service\n");
+        BOOST_CHECK_EQUAL(description, "Not in cold load pickup\n"
+                                       "Activated, not controlling\n"
+                                       "No under voltage event\n"
+                                       "No under frequency event\n"
+                                       "Device not out of service\n");
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -259,8 +267,11 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling )
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
 
-        BOOST_CHECK_EQUAL(description, "Not in cold load pickup\nActivated and controlling\nNo under voltage event\n"
-                                       "No under frequency event\nDevice not out of service\n");
+        BOOST_CHECK_EQUAL(description, "Not in cold load pickup\n"
+                                       "Activated and controlling\n"
+                                       "No under voltage event\n"
+                                       "No under frequency event\n"
+                                       "Device not out of service\n");
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -323,8 +334,10 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_voltage_event )
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
 
-        BOOST_CHECK_EQUAL(description, "Not in cold load pickup\nUnder voltage event\n"
-                                       "No under frequency event\nDevice not out of service\n");
+        BOOST_CHECK_EQUAL(description, "Not in cold load pickup\n"
+                                       "Under voltage event\n"
+                                       "No under frequency event\n"
+                                       "Device not out of service\n");
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -387,8 +400,10 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_frequency_event )
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
 
-        BOOST_CHECK_EQUAL(description, "Not in cold load pickup\nNo under voltage event\n"
-                                       "Under frequency event\nDevice not out of service\n");
+        BOOST_CHECK_EQUAL(description, "Not in cold load pickup\n"
+                                       "No under voltage event\n"
+                                       "Under frequency event\n"
+                                       "Device not out of service\n");
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
@@ -451,8 +466,10 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_out_of_service )
         //  This is the last step in the command process. We should have a null pointer!
         BOOST_CHECK(!ptr.get());
 
-        BOOST_CHECK_EQUAL(description, "Not in cold load pickup\nNo under voltage event\n"
-                                       "No under frequency event\nDevice out of service\n");
+        BOOST_CHECK_EQUAL(description, "Not in cold load pickup\n"
+                                       "No under voltage event\n"
+                                       "No under frequency event\n"
+                                       "Device out of service\n");
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }

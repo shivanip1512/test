@@ -13,7 +13,7 @@ protected:
     enum State
     {
         State_ExpresscomWrite,
-        State_ActOnMessageRead
+        State_Reading
     };
 
     State    _state;
