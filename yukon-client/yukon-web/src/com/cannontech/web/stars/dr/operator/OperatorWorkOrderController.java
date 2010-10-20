@@ -150,7 +150,7 @@ public class OperatorWorkOrderController {
 
             workOrderService.createWorkOrder(workOrderDto, accountInfoFragment.getEnergyCompanyId(),
                                              accountInfoFragment.getAccountNumber(), userContext);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.viewWorkOrder.workOrderCreated"));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.workOrder.workOrderCreated"));
         
         // Update a work order
         } else {
@@ -159,7 +159,7 @@ public class OperatorWorkOrderController {
                                                                       workOrderDto.getWorkOrderBase().getOrderNumber());
 
             workOrderService.updateWorkOrder(workOrderDto, accountInfoFragment.getAccountNumber(), userContext);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.viewWorkOrder.workOrderUpdated"));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.workOrder.workOrderUpdated"));
         }
         
         return "redirect:workOrderList";
@@ -184,7 +184,7 @@ public class OperatorWorkOrderController {
         workOrderService.deleteWorkOrder(deleteWorkOrderId, accountInfoFragment.getAccountNumber(), userContext);
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.viewWorkOrder.workOrderRemoved"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.workOrder.workOrderRemoved"));
         
         return "redirect:workOrderList"; 
     }
@@ -244,7 +244,7 @@ public class OperatorWorkOrderController {
         
         if (binder.getTarget() != null) {
             DefaultMessageCodesResolver msgCodesResolver = new DefaultMessageCodesResolver();
-            msgCodesResolver.setPrefix("yukon.web.modules.operator.viewWorkOrder.");
+            msgCodesResolver.setPrefix("yukon.web.modules.operator.workOrder.");
             binder.setMessageCodesResolver(msgCodesResolver);
         }
         
