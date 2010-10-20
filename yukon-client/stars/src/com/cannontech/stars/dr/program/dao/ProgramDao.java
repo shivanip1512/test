@@ -19,7 +19,7 @@ public interface ProgramDao {
     
     public List<Program> getByAssignedProgramIds(List<Integer> assignedProgramIdList);
     
-    public List<Program> getByProgramIds(List<Integer> programIdList);
+    public List<Program> getByProgramIds(Iterable<Integer> programIdList);
     
     /**
      * Gets a program by its by its program name.  It will through an exception if it Doesn't

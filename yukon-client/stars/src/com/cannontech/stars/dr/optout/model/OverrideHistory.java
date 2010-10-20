@@ -4,9 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.joda.time.Instant;
-import org.joda.time.Interval;
-import org.joda.time.ReadableInterval;
 
+import com.cannontech.common.util.OpenInterval;
 import com.cannontech.stars.dr.program.model.Program;
 import com.google.common.collect.Lists;
 
@@ -112,15 +111,22 @@ public class OverrideHistory {
 		this.countedAgainstLimit = countedAgainstLimit;
 	}
 	
-    public ReadableInterval getInterval() {
-        Interval interval;
-        if (stopDate == null) {
-            Instant stopInstant = null;
-            interval = new Interval(new Instant(startDate), stopInstant);
-        } else {
-            interval = new Interval(new Instant(startDate), new Instant(stopDate));
-        }
-        return interval;
+	public Instant getStartInstant(){
+	    if (startDate != null) {
+	        return new Instant(startDate);
+	    }
+	    return null;
+	}
+	
+	public Instant getStopInstant(){
+	    if (stopDate != null) {
+	        return new Instant(stopDate);
+	    }
+	    return null;
+	}
+	
+    public OpenInterval getOpenInterval() {
+        return new OpenInterval(getStartInstant(), getStopInstant());
     }
 
 	
@@ -138,7 +144,6 @@ public class OverrideHistory {
 		history.setSerialNumber(this.getSerialNumber());
 		history.setUserName(this.getUserName());
 		history.setStatus(this.getStatus());
-		
 		
 		return history;
 	}
