@@ -3488,12 +3488,15 @@
                 <unitofmeasure value="Percent"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="30">
+            <point type="Status" offset="30">
                 <init>true</init>
-                <name>Tamper Information</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="0"/>
+                <name>RCircuit Tamper</name>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+            <point type="Status" offset="31">
+                <init>true</init>
+                <name>Runtime Tamper</name>
+                <stategroup value="TwoStateStatus"/>
             </point>
             <point type="Status" offset="2000">
             	<init>true</init>
