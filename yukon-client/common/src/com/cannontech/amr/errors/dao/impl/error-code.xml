@@ -841,6 +841,16 @@
     </ul>
   </troubleshooting>
 </error>
+<error code="277">
+  <category>Transmitter</category>
+  <porter>Transmitter is overheating</porter>
+  <description>DTran request was denied because the PLC transmitter is overheating.</description>
+  <troubleshooting>Ensure that nothing is causing the transmitter to overheat and allow time for the transmitter to cool.
+    <ul>
+      <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+    </ul>
+  </troubleshooting>
+</error>
 <error code="0">
 	<category>N/A</category> 
     <description>Successful Read</description>
