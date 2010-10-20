@@ -51,8 +51,11 @@ public class LMControlSummaryController extends ReportControllerBase {
         LMControlSummaryModel lmControlSummaryModel = (LMControlSummaryModel) model;
         EnergyCompanyModelAttributes ecModel = (EnergyCompanyModelAttributes)model;
         super.setRequestParameters(request);
-        int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
-        if (filterModelType == ReportFilter.PROGRAM.ordinal()) {
+
+        String filterModelType = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE.name());
+        ReportFilter filter = Enum.valueOf(ReportFilter.class, filterModelType);
+
+        if (filter == ReportFilter.PROGRAM) {
             
         	String filterValuesStr = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_VALUES, "");
         	Set<Integer> paoIdsSet = Sets.newHashSet(StringUtils.parseIntStringForList(filterValuesStr));

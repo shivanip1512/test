@@ -61,16 +61,16 @@ public class ProgramAndGearControlController extends ReportControllerBase {
         
         programAndGearControlModel.setLiteUser(ServletUtil.getYukonUser(request));
         
-        int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
-        ReportFilter reportFilter = ReportFilter.values()[filterModelType];
+        String filterModelType = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE.name());
+        ReportFilter filter = Enum.valueOf(ReportFilter.class, filterModelType);
         
         String filterValuesStr = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_VALUES, "");
         Set<Integer> paoIdsSet = Sets.newHashSet(StringUtils.parseIntStringForList(filterValuesStr));
         Set<Integer> programIdSet = Sets.newHashSet();
         
-        if (ReportFilter.PROGRAM.equals(reportFilter)) {
+        if (filter == ReportFilter.PROGRAM) {
             programIdSet = paoIdsSet;
-        } else if (ReportFilter.LMSCENARIO.equals(reportFilter)) {
+        } else if (filter == ReportFilter.LMSCENARIO) {
             ScenarioDao scenarioDao = YukonSpringHook.getBean("drScenarioDao", ScenarioDao.class);
             
             for (int scenarioId : paoIdsSet) {
@@ -78,7 +78,7 @@ public class ProgramAndGearControlController extends ReportControllerBase {
                     scenarioDao.findScenarioProgramsForScenario(scenarioId);
                 programIdSet.addAll(programs.keySet());
             }
-        } else if (ReportFilter.LMCONTROLAREA.equals(reportFilter)) {
+        } else if (filter == ReportFilter.LMCONTROLAREA) {
             
             ControlAreaDao controlAreaDao = 
                 YukonSpringHook.getBean("drControlAreaDao", ControlAreaDao.class);

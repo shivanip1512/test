@@ -32,39 +32,40 @@ public abstract class CapControlReportControllerBase extends ReportControllerBas
             idsSet.add(id);
         }
 
-        int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
+        String filterModelType = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE.name());
+        ReportFilter filter = Enum.valueOf(ReportFilter.class, filterModelType);
 
-        if (filterModelType == ReportFilter.CAPCONTROLFEEDER.ordinal()) {
+        if (filter == ReportFilter.CAPCONTROLFEEDER) {
             filterableModel.setCapBankIdsFilter(null);
             filterableModel.setFeederIdsFilter(idsSet);
             filterableModel.setSubbusIdsFilter(null);
             filterableModel.setSubstationIdsFilter(null);
             filterableModel.setAreaIdsFilter(null);
-        } else if (filterModelType == ReportFilter.CAPBANK.ordinal()) {
+        } else if (filter == ReportFilter.CAPBANK) {
             filterableModel.setCapBankIdsFilter(idsSet);
             filterableModel.setFeederIdsFilter(null);
             filterableModel.setSubbusIdsFilter(null);
             filterableModel.setSubstationIdsFilter(null);
             filterableModel.setAreaIdsFilter(null);
-        } else if (filterModelType == ReportFilter.CAPCONTROLSUBBUS.ordinal()) {
+        } else if (filter == ReportFilter.CAPCONTROLSUBBUS) {
             filterableModel.setCapBankIdsFilter(null);
             filterableModel.setFeederIdsFilter(null);
             filterableModel.setSubbusIdsFilter(idsSet);
             filterableModel.setSubstationIdsFilter(null);
             filterableModel.setAreaIdsFilter(null);
-        }else if (filterModelType == ReportFilter.CAPCONTROLSUBSTATION.ordinal()) {
+        }else if (filter == ReportFilter.CAPCONTROLSUBSTATION) {
             filterableModel.setCapBankIdsFilter(null);
             filterableModel.setFeederIdsFilter(null);
             filterableModel.setSubbusIdsFilter(null);
             filterableModel.setSubstationIdsFilter(idsSet);
             filterableModel.setAreaIdsFilter(null);
-        } else if (filterModelType == ReportFilter.AREA.ordinal()) {
+        } else if (filter == ReportFilter.AREA) {
             filterableModel.setCapBankIdsFilter(null);
             filterableModel.setFeederIdsFilter(null);
             filterableModel.setSubbusIdsFilter(null);
             filterableModel.setSubstationIdsFilter(null);
             filterableModel.setAreaIdsFilter(idsSet);
-        } else if (filterModelType == ReportFilter.STRATEGY.ordinal()) {
+        } else if (filter == ReportFilter.STRATEGY) {
         	filterableModel.setStrategyIdsFilter(idsSet);
         }
     }

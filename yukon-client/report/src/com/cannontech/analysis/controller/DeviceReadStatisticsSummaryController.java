@@ -53,9 +53,10 @@ public class DeviceReadStatisticsSummaryController extends ReportControllerBase{
             deviceReadSummaryModel.setTitle("Device Read Statistics Summary: " + attribute.getDescription());  
         }
         
-        int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
+        String filterModelType = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE.name());
+        ReportFilter filter = Enum.valueOf(ReportFilter.class, filterModelType);
 
-        if (filterModelType == ReportFilter.GROUPS.ordinal()) {
+        if (filter == ReportFilter.GROUPS) {
             String names[] = ServletRequestUtils.getStringParameters(request, ReportModelBase.ATT_FILTER_MODEL_VALUES);
             List<String> namesList = Arrays.asList(names); 
             deviceReadSummaryModel.setGroupsFilter(namesList);

@@ -425,18 +425,9 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 			else
 				setStopDate(null);
 				
-			param = req.getParameter(ATT_FILTER_MODEL_TYPE);
-			if( param != null) {
-				int filterOrdinal = Integer.valueOf(param).intValue();
-				for (ReportFilter filter : ReportFilter.values()) {
-					if( filter.ordinal() == filterOrdinal) {
-						setFilterModelType(filter);
-						break;
-					}
-				}
-			}
-			else
-				setFilterModelType(ReportFilter.NONE);	//default to nothing selected?
+	        String filterModelType = ServletRequestUtils.getStringParameter(req, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE.name());
+	        ReportFilter filter = Enum.valueOf(ReportFilter.class, filterModelType);
+			setFilterModelType(filter);
 			
 			//Load billingGroup model values
 			if ( getFilterModelType().equals(ReportFilter.GROUPS) )

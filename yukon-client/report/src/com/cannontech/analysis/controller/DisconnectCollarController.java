@@ -51,8 +51,11 @@ public class DisconnectCollarController extends ReportControllerBase {
     public void setRequestParameters(HttpServletRequest request) {
         DisconnectCollarModel diconnectModel = (DisconnectCollarModel) model;
         super.setRequestParameters(request);
-        int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
-        if (filterModelType == ReportFilter.METER.ordinal()) {
+
+        String filterModelType = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE.name());
+        ReportFilter filter = Enum.valueOf(ReportFilter.class, filterModelType);
+
+        if (filter == ReportFilter.METER) {
             String filterValueList = request.getParameter(ReportModelBase.ATT_FILTER_METER_VALUES).trim();
             StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
             int[] idsArray = new int[st.countTokens()];
@@ -70,7 +73,7 @@ public class DisconnectCollarController extends ReportControllerBase {
             }
             diconnectModel.setDeviceNames(null);
             diconnectModel.setDeviceIds(idsSet);
-        }else if (filterModelType == ReportFilter.DEVICE.ordinal()) {
+        }else if (filter == ReportFilter.DEVICE) {
             String filterValueList = request.getParameter(ReportModelBase.ATT_FILTER_DEVICE_VALUES).trim();
             StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
             int[] devicesArray = new int[st.countTokens()];

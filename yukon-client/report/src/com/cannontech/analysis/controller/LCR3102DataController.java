@@ -40,14 +40,16 @@ public class LCR3102DataController extends ReportControllerBase{
     public void setRequestParameters(HttpServletRequest request) {
         super.setRequestParameters(request);
         LCR3102DataModel lcrModel = (LCR3102DataModel)model; 
-        int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
 
-        if (filterModelType == ReportFilter.GROUPS.ordinal()) {
+        String filterModelType = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE.name());
+        ReportFilter filter = Enum.valueOf(ReportFilter.class, filterModelType);
+
+        if (filter == ReportFilter.GROUPS) {
             String names[] = ServletRequestUtils.getStringParameters(request, ReportModelBase.ATT_FILTER_MODEL_VALUES);
             List<String> namesList = Arrays.asList(names); 
             lcrModel.setGroupsFilter(namesList);
             lcrModel.setDeviceFilter(null);
-        } else if(filterModelType == ReportFilter.DEVICE.ordinal()){
+        } else if(filter == ReportFilter.DEVICE){
             String filterValueList = request.getParameter(ReportModelBase.ATT_FILTER_DEVICE_VALUES).trim();
             String names[] = filterValueList.split(", ");
             List<String> namesList = Arrays.asList(names); 

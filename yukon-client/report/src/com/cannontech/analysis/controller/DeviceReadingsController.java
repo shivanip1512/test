@@ -88,14 +88,15 @@ public class DeviceReadingsController extends ReportControllerBase{
             deviceReadingsModel.setStopDate(stopTime.toDate());
         }
         
-        int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
+        String filterModelType = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE.name());
+        ReportFilter filter = Enum.valueOf(ReportFilter.class, filterModelType);
 
-        if (filterModelType == ReportFilter.GROUPS.ordinal()) {
+        if (filter == ReportFilter.GROUPS) {
             String names[] = ServletRequestUtils.getStringParameters(request, ReportModelBase.ATT_FILTER_MODEL_VALUES);
             List<String> namesList = Arrays.asList(names); 
             deviceReadingsModel.setGroupsFilter(namesList);
             deviceReadingsModel.setDeviceFilter(null);
-        } else if(filterModelType == ReportFilter.DEVICE.ordinal()){
+        } else if(filter == ReportFilter.DEVICE){
             String filterValueList = request.getParameter(ReportModelBase.ATT_FILTER_DEVICE_VALUES).trim();
             String names[] = filterValueList.split(", ");
             List<String> namesList = Arrays.asList(names); 
