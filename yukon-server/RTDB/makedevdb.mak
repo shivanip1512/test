@@ -44,6 +44,7 @@ cmd_mct410_hourlyread.obj \
 cmd_mct420_LcdConfiguration.obj \
 cmd_lcr3102_ThreePart.obj \
 cmd_lcr3102_tamperRead.obj \
+cmd_lcr3102_DRSummaryRead.obj \
 dev_710.obj \
 dev_a1.obj \
 dev_alpha.obj \

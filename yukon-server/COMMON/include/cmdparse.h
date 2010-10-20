@@ -158,6 +158,7 @@ public:
 #define CMD_FLAG_GV_DUTYCYCLE    0x00400000
 
 #define CMD_FLAG_GV_TAMPER_INFO  0x00800000     // Used for the Lcr3102 Expresscom Messages
+#define CMD_FLAG_GV_DR_SUMMARY   0x01000000     // Lcr3102 Expresscom 3-part
 /* Defined below.... be careful
 #define CMD_FLAG_OFFSET          0x10000000     // A specific offset is defined in the next cmd field
 */

@@ -116,6 +116,7 @@ public:
         mtThermostatSetpointBump         = 0x1b,
         mtData                           = 0x1d,
         mtCapcontrol                     = 0x20,
+        mtDemandResponseSummary          = 0x85,
         mtTamper                         = 0x8b
 
     } CtiExpresscomMessageType_t;
@@ -184,6 +185,7 @@ private:
     INT timeSync(const CtiTime &gmt, bool fullsync = true);
 
     INT tamperInformation(bool rcircuit, bool runtime);
+    INT demandResponseSummary();
 
     INT signalTest(BYTE test);
     INT timedLoadControl(UINT loadMask, UINT shedtime_seconds, BYTE randin = 0, BYTE randout = 0, USHORT delay = 0 );                 // This is a shed!

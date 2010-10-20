@@ -1206,6 +1206,19 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
 
         function = OutMessage->Sequence;
     }
+    else if(parse.getFlags() & CMD_FLAG_GV_DR_SUMMARY)
+    {
+        string xcomRequest = "getvalue xcom dr summary serial " + CtiNumStr(getSerial());
+
+        parse = CtiCommandParser(xcomRequest);
+        parse.setValue("xc_serial", getSerial());
+
+        DlcCommandSPtr tamperRead(new Lcr3102DemandResponseSummaryCommand());
+
+        found = tryExecuteCommand(*OutMessage, tamperRead);
+
+        function = OutMessage->Sequence;
+    }
     else if(parse.getFlags() & CMD_FLAG_GV_RUNTIME || parse.getFlags() & CMD_FLAG_GV_SHEDTIME)
     {
         if(parse.getFlags() & CMD_FLAG_GV_RUNTIME)

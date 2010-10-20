@@ -59,6 +59,7 @@ test_cmd_dlc.obj \
 test_cmd_mct410_hourlyread.obj \
 test_cmd_mct420_LcdConfiguration.obj \
 test_cmd_lcr3102_tamperRead.obj \
+test_cmd_lcr3102_DRSummaryRead.obj \
 test_dev_grp.obj \
 test_mgr_point.obj \
 test_dev_ccu721.obj \

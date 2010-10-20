@@ -14,7 +14,10 @@ protected:
     {
         Read_DummyRead          =  0x00,
         Read_ActOnStoredMessage =   0x0,
-        Read_TamperReadLength   =     1,
+
+        // Lengths for the responses
+        Read_TamperReadLength = 1,
+        Read_DRSummaryLength  = 1
     };
 
 };

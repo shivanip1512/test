@@ -456,6 +456,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 
     // Expresscom 3-part commands
     static const boost::regex   re_tamper_info      (CtiString("tamper info( circuit| runtamper)?"));
+    static const boost::regex   re_dr_summary       (CtiString("dr summary"));
 
     CtiTokenizer   tok(CmdStr);
 
@@ -618,6 +619,10 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                 _cmd["tamper_circuit_fault"] = CtiParseValue(TRUE);
                 _cmd["tamper_runtime_fault"] = CtiParseValue(TRUE);
             }
+        }
+        else if(!(token = CmdStr.match(re_dr_summary)).empty())
+        {
+            flag |= CMD_FLAG_GV_DR_SUMMARY;
         }
         else if(CmdStr.contains(" minmax"))
         {
@@ -4439,6 +4444,7 @@ void CtiCommandParser::doParseGetValueExpresscom(const string &_CmdStr)
     CtiString   token;
 
     static const boost::regex   re_tamper_info("xcom tamper info( circuit)?( runtamper)?");
+    static const boost::regex   re_dr_summary ("xcom dr summary");
 
     CtiTokenizer   tok(CmdStr);
     token = tok(); // Get the first one into the hopper....
@@ -4449,6 +4455,10 @@ void CtiCommandParser::doParseGetValueExpresscom(const string &_CmdStr)
         if(temp.contains("runtamper")) iValue |= 0x02;
 
         _cmd["xctamper"] = CtiParseValue( iValue );
+    }
+    if(!(temp = CmdStr.match(re_dr_summary)).empty())
+    {
+        _cmd["xcdrsummary"] = CtiParseValue(TRUE);
     }
 }
 

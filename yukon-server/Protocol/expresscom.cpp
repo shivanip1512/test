@@ -265,6 +265,17 @@ INT CtiProtocolExpresscom::tamperInformation(bool rcircuit, bool runtime)
     return status;
 }
 
+INT CtiProtocolExpresscom::demandResponseSummary()
+{
+    INT status = NoError;
+
+    _message.push_back( mtDemandResponseSummary );
+    
+    incrementMessageCount();
+
+    return status;
+}
+
 INT CtiProtocolExpresscom::signalTest(BYTE test)
 {
     INT status = NoError;
@@ -1204,6 +1215,10 @@ INT CtiProtocolExpresscom::assembleGetValue(CtiCommandParser &parse)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << "Rick Astley is a great singer but no one will ever know since this can't be seen!" << endl;
         }
+    }
+    else if(parse.isKeyValid("xcdrsummary") )
+    {
+        status = demandResponseSummary();
     }
     else
     {
