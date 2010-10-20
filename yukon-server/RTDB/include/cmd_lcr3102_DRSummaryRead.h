@@ -10,6 +10,11 @@ class IM_EX_DEVDB Lcr3102DemandResponseSummaryCommand : public Lcr3102ThreePartC
 {
 private:
 
+    enum ReadLength
+    {
+        Read_DRSummaryLength  = 1
+    };
+
     enum SummaryBits
     {
         Summary_Controlling             = 0x01,

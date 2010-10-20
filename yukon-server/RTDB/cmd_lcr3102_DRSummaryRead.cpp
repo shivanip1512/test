@@ -9,7 +9,7 @@ namespace Devices {
 namespace Commands {
 
 Lcr3102DemandResponseSummaryCommand::Lcr3102DemandResponseSummaryCommand() :
-    Lcr3102ThreePartCommand(State_ExpresscomWrite, Read_DRSummaryLength)
+    Lcr3102ThreePartCommand(Read_DRSummaryLength)
 {
 }
 
