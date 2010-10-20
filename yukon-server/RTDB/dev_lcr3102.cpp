@@ -1183,29 +1183,11 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
     else if(parse.getFlags() & CMD_FLAG_GV_TAMPER_INFO)
     {
         // Redo the parse string to be the expresscom string.
-        string xcomRequest = "getvalue xcom tamper info ";
-
-        if (parse.isKeyValid("tamper_circuit_fault"))
-        {
-            xcomRequest += "circuit ";
-        }
-        if (parse.isKeyValid("tamper_runtime_fault")) 
-        {
-            xcomRequest += "runtamper ";
-        }
-        else if(!parse.isKeyValid("tamper_circuit_fault"))
-        {
-            // Behavior extracted from CmdParse. If the user didn't specify either in the command and simply entered
-            // "getvalue tamper info" we should give them both anyway.
-            xcomRequest += "circuit runtamper ";
-        }
-
-        xcomRequest += "serial " + CtiNumStr(getSerial());
+        string xcomRequest = "getvalue xcom tamper info serial " + CtiNumStr(getSerial());
 
         parse = CtiCommandParser(xcomRequest);
         parse.setValue("xc_serial", getSerial());
 
-        // Execute the command?
         DlcCommandSPtr tamperRead(new Lcr3102TamperReadCommand());
 
         found = tryExecuteCommand(*OutMessage, tamperRead);

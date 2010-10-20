@@ -455,7 +455,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     static const boost::regex   re_duty_cycle       (CtiString("duty cycle( ct ") + str_num + CtiString(")?"));
 
     // Expresscom 3-part commands
-    static const boost::regex   re_tamper_info      (CtiString("tamper info( circuit| runtamper)?"));
+    static const boost::regex   re_tamper_info      (CtiString("tamper info"));
     static const boost::regex   re_dr_summary       (CtiString("dr summary"));
 
     CtiTokenizer   tok(CmdStr);
@@ -593,26 +593,6 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         else if(!(token = CmdStr.match(re_tamper_info)).empty())
         {
             flag |= CMD_FLAG_GV_TAMPER_INFO;
-
-            CtiTokenizer cmdtok(token);
-
-            cmdtok(); // Move past "tamper"
-            cmdtok(); // Move past "info"
-
-            if(!(temp = cmdtok()).empty()) // Is there anything after "getvalue tamper info"...?
-            {
-                // User can only specify one or the other, hence the "else if".
-                if( temp.contains(" circuit") )         _cmd["tamper_circuit_fault"] = CtiParseValue(TRUE);
-                else if( temp.contains(" runtamper") )  _cmd["tamper_runtime_fault"] = CtiParseValue(TRUE);
-                else
-                {
-                    // But I guess since this parser can't do everything perfectly...
-                    // There was clearly something else present, but to not screw up later code, we'll just set
-                    // both of the tampers to true as a dreadful workaround.
-                    _cmd["tamper_circuit_fault"] = CtiParseValue(TRUE);
-                    _cmd["tamper_runtime_fault"] = CtiParseValue(TRUE);
-                }
-            }
         }
         else if(!(token = CmdStr.match(re_dr_summary)).empty())
         {
@@ -4431,13 +4411,10 @@ void CtiCommandParser::doParseGetValueExpresscom(const string &_CmdStr)
 {
     CtiString CmdStr(_CmdStr);
 
-    int iValue = 0x00;
-
-    CtiString   str;
     CtiString   temp;
     CtiString   token;
 
-    static const boost::regex   re_tamper_info("xcom tamper info( circuit)?( runtamper)?");
+    static const boost::regex   re_tamper_info("xcom tamper info");
     static const boost::regex   re_dr_summary ("xcom dr summary");
 
     CtiTokenizer   tok(CmdStr);
@@ -4445,14 +4422,11 @@ void CtiCommandParser::doParseGetValueExpresscom(const string &_CmdStr)
 
     if(!(temp = CmdStr.match(re_tamper_info)).empty())
     {
-        if(temp.contains("circuit"))   iValue |= 0x01;
-        if(temp.contains("runtamper")) iValue |= 0x02;
-
-        _cmd["xctamper"] = CtiParseValue( iValue );
+        _cmd["xctamper"] = true;
     }
     if(!(temp = CmdStr.match(re_dr_summary)).empty())
     {
-        _cmd["xcdrsummary"] = CtiParseValue(TRUE);
+        _cmd["xcdrsummary"] = true;
     }
 }
 

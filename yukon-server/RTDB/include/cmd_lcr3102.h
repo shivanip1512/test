@@ -14,10 +14,6 @@ protected:
     {
         Read_ExpresscomMsgSend  =  0x00,
         Read_ActOnStoredMessage =   0x0,
-
-        // Lengths for the responses
-        Read_TamperReadLength = 1,
-        Read_DRSummaryLength  = 1
     };
 
 };

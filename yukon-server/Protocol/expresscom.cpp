@@ -249,17 +249,12 @@ INT CtiProtocolExpresscom::timeSync(const CtiTime &local, bool fullsync)
     return status;
 }
 
-INT CtiProtocolExpresscom::tamperInformation(bool rcircuit, bool runtime)
+INT CtiProtocolExpresscom::tamperInformation()
 {
     INT status = NoError;
 
-    BYTE tamperValue = 0x00;
-
-    tamperValue |= rcircuit ? 0x01 : 0x00;
-    tamperValue |= runtime  ? 0x02 : 0x00;
-
     _message.push_back( mtTamper );
-    _message.push_back( tamperValue );
+    _message.push_back( 0x03 ); // Requests both of the tamper bits from the LCR 3102.
 
     incrementMessageCount();
     return status;
@@ -1201,12 +1196,7 @@ INT CtiProtocolExpresscom::assembleGetValue(CtiCommandParser &parse)
 
     if(parse.isKeyValid("xctamper"))
     {
-        int tamper_flags = parse.getiValue("xctamper");
-
-        bool rcircuit = tamper_flags & 0x01;
-        bool runtime  = tamper_flags & 0x02;
-
-        status = tamperInformation(rcircuit, runtime);
+        status = tamperInformation();
     }
     else if(parse.isKeyValid("xcdrsummary") )
     {

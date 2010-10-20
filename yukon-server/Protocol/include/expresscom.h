@@ -184,7 +184,7 @@ private:
     INT sync();
     INT timeSync(const CtiTime &gmt, bool fullsync = true);
 
-    INT tamperInformation(bool rcircuit, bool runtime);
+    INT tamperInformation();
     INT demandResponseSummary();
 
     INT signalTest(BYTE test);

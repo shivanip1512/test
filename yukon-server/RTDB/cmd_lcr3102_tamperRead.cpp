@@ -29,19 +29,19 @@ DlcCommand::request_ptr Lcr3102TamperReadCommand::decode(CtiTime now, const unsi
     
         point_data circuit, runtime;
     
-        circuit.name    = "RCircuit Tamper";
+        circuit.name    = "Relay Circuit Fault";
         circuit.offset  = 30;
         circuit.type    = StatusPointType;
         circuit.quality = NormalQuality;
         circuit.time    = now;
-        circuit.value   = tamper_info & 0x01;
+        circuit.value   = !!(tamper_info & 0x01);
 
         runtime.name    = "Runtime Tamper";
         runtime.offset  = 31;
         runtime.type    = StatusPointType;
         runtime.quality = NormalQuality;
         runtime.time    = now;
-        runtime.value   = (tamper_info & 0x02) ? 1 : 0;
+        runtime.value   = !!(tamper_info & 0x02);
     
         points.push_back(circuit);
         points.push_back(runtime);
@@ -54,7 +54,7 @@ DlcCommand::request_ptr Lcr3102TamperReadCommand::decode(CtiTime now, const unsi
         {
             description = "";
             
-            if(tamper_info & 0x01) description += "RCircuit Fault detected. ";
+            if(tamper_info & 0x01) description += "Relay Circuit Fault detected. ";
             if(tamper_info & 0x02) description += "Runtime Tamper detected. ";
         }
 

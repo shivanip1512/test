@@ -8,6 +8,13 @@ namespace Commands {
 
 class IM_EX_DEVDB Lcr3102TamperReadCommand : public Lcr3102ThreePartCommand
 {
+private:
+
+    enum ReadLength
+    {
+        Read_TamperReadLength = 1
+    };
+
 public:
     
     Lcr3102TamperReadCommand();
