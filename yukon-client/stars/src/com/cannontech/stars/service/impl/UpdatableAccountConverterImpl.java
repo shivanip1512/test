@@ -112,32 +112,32 @@ public class UpdatableAccountConverterImpl implements UpdatableAccountConverter 
 		Address streetAddress = acctDto.getStreetAddress();
 		String cityName = custFields[ImportManagerUtil.IDX_CITY];
 		if (!StringUtils.isEmpty(cityName)) {
-		    streetAddress.setCityName((cityName == null) ? "" : cityName);
+		    streetAddress.setCityName(cityName);
 		}
 
 		String county = custFields[ImportManagerUtil.IDX_COUNTY];
 		if (!StringUtils.isEmpty(county)) {
-		    streetAddress.setCounty((county == null) ? "" : county);
+		    streetAddress.setCounty(county);
 		}
 		
 		String locationAddress1 = custFields[ImportManagerUtil.IDX_STREET_ADDR1];
 		if (!StringUtils.isEmpty(locationAddress1)) {
-		    streetAddress.setLocationAddress1((locationAddress1 == null) ? "" : locationAddress1);
+		    streetAddress.setLocationAddress1(locationAddress1);
 		}
 		    
 		String locationAddress2 = custFields[ImportManagerUtil.IDX_STREET_ADDR2];
 		if (!StringUtils.isEmpty(locationAddress2)) {
-		    streetAddress.setLocationAddress2((locationAddress2 == null) ? "" : locationAddress2);
+		    streetAddress.setLocationAddress2(locationAddress2);
 		}
 		
 		String stateCode = custFields[ImportManagerUtil.IDX_STATE];
 		if (!StringUtils.isEmpty(stateCode)) {
-		    streetAddress.setStateCode((stateCode == null) ? "" : stateCode);
+		    streetAddress.setStateCode(stateCode);
 		}
 		
 		String zipCode = custFields[ImportManagerUtil.IDX_ZIP_CODE];
 		if (!StringUtils.isEmpty(zipCode)) {
-		    streetAddress.setZipCode((zipCode == null) ? "" : zipCode);
+		    streetAddress.setZipCode(zipCode);
 		}
  		
 		// site
