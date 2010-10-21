@@ -80,7 +80,7 @@
                         <a href="${quickLinkUrl}"><cti:msg key="yukon.web.modules.dr.home.activeControlAreasQuickSearch"/></a><br>
                     </cti:checkRolesAndProperties>
                     <cti:url var="quickLinkUrl" value="/spring/dr/program/list">
-                        <cti:param name="state" value="active"/>
+                        <cti:param name="state" value="ACTIVE"/>
                     </cti:url>
                     <a href="${quickLinkUrl}"><cti:msg key="yukon.web.modules.dr.home.activeProgramsQuickSearch"/></a><br>
                     <cti:url var="quickLinkUrl" value="/spring/dr/loadGroup/list">
