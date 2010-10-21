@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.account.dao;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -35,6 +36,9 @@ public interface CustomerAccountDao {
     
     public CustomerAccountWithNames getAccountWithNamesByCustomerId(final int customerId,
                                                                     final int ecId);
+
+    public Map<Integer, CustomerAccountWithNames> getAccountsWithNamesByAccountId(
+            Iterable<Integer> accountIds);
 
     /**
      * This method returns a customerAccountWithNames object that contains contact information

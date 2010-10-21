@@ -4,10 +4,13 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
+import com.cannontech.stars.dr.optout.model.SurveyResult;
 import com.google.common.collect.Lists;
 
 public abstract class SurveyResultsModelBase<T> extends BareReportModelBase<T> {
@@ -26,6 +29,9 @@ public abstract class SurveyResultsModelBase<T> extends BareReportModelBase<T> {
     protected List<Integer> programIds;
 
     protected List<T> data = Lists.newArrayList();
+
+    private final static MessageSourceResolvable unansweredReason =
+        new YukonMessageSourceResolvable("yukon.web.modules.survey.report.unanswered");
 
     @Override
     protected T getRow(int rowIndex) {
@@ -108,6 +114,17 @@ public abstract class SurveyResultsModelBase<T> extends BareReportModelBase<T> {
 
     public void setData(List<T> data) {
         this.data = data;
+    }
+
+    public Object getReason(SurveyResult result, String baseKey) {
+        Integer answerId = result.getSurveyQuestionAnswerId();
+        if (answerId != null) {
+            return new YukonMessageSourceResolvable(baseKey + "." + result.getAnswerKey());
+        }
+        if (result.getTextAnswer() != null) {
+            return result.getTextAnswer();
+        }
+        return unansweredReason;
     }
 
     @Autowired

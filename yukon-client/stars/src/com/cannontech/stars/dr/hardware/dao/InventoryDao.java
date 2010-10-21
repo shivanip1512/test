@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.hardware.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
@@ -28,6 +29,13 @@ public interface InventoryDao {
     public List<HardwareSummary> getAllHardwareSummaryForAccount(int accountId);
     
     public HardwareSummary findHardwareSummaryById(int inventoryId);
+
+    /**
+     * Get a map of inventoryId -> hardware summary for all of the passed in
+     * inventory ids.
+     */
+    public Map<Integer, HardwareSummary> findHardwareSummariesById(
+            Iterable<Integer> inventoryIds);
     
     /**
      * Method to get a list of thermostat summary based on an account id

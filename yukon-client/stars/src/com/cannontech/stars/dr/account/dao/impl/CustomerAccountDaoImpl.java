@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,8 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactDao;
@@ -31,6 +35,9 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountRowMapper;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.util.ECUtils;
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
+import com.google.common.collect.Maps;
 
 public class CustomerAccountDaoImpl implements CustomerAccountDao {
     private static final String insertSql;
@@ -265,7 +272,39 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         List<CustomerAccountWithNames> rs = yukonJdbcTemplate.query(sql, specialAccountInfoRowMapper);
         return rs.get(0);
     }
-    
+
+    @Override
+    public Map<Integer, CustomerAccountWithNames> getAccountsWithNamesByAccountId(
+            Iterable<Integer> accountIds) {
+        ChunkingMappedSqlTemplate template =
+            new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append(selectAccountContactInfoSql);
+                sql.append("WHERE ca.accountId").in(subList);
+                return sql;
+            }
+        };
+
+        Function<Integer, Integer> typeMapper = Functions.identity();
+        ParameterizedRowMapper<Map.Entry<Integer, CustomerAccountWithNames>> rowMapper =
+            new ParameterizedRowMapper<Entry<Integer,CustomerAccountWithNames>>() {
+            @Override
+            public Entry<Integer, CustomerAccountWithNames> mapRow(ResultSet rs, int rowNum)
+                    throws SQLException {
+                CustomerAccountWithNames acctInfo = specialAccountInfoRowMapper.mapRow(rs, rowNum);
+                Integer accountId = acctInfo.getAccountId();
+                return Maps.immutableEntry(accountId, acctInfo);
+            }
+        };
+
+        Map<Integer, CustomerAccountWithNames> retVal =
+            template.mappedQuery(sqlGenerator, accountIds, rowMapper, typeMapper);
+        return retVal;
+    }
+
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CustomerAccountWithNames getAcountWithNamesByAccountNumber(String accountNumber, 
                                                                               final int ecId) {

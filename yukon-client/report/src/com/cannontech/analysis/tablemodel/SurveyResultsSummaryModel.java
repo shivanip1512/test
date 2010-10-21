@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.survey.model.Question;
 import com.cannontech.common.survey.model.Survey;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
@@ -64,13 +63,13 @@ public class SurveyResultsSummaryModel extends
         }
 
         // The program control history here is used only if a new row needs to be created.
-        ModelRow rowForResult(SurveyResult result, String baseKey) {
+        ModelRow rowForResult(SurveyResult result, Object reason) {
             Integer answerId = result.getSurveyQuestionAnswerId();
             if (answerId != null) {
                 ModelRow retVal = dropDownAnswerRows.get(answerId);
                 if (retVal == null) {
                     retVal = new ModelRow(hist);
-                    retVal.reason = new YukonMessageSourceResolvable(baseKey + result.getAnswerKey());
+                    retVal.reason = reason;
                     dropDownAnswerRows.put(answerId, retVal);
                 }
                 return retVal;
@@ -79,14 +78,14 @@ public class SurveyResultsSummaryModel extends
                 ModelRow retVal = otherAnswerRows.get(result.getTextAnswer());
                 if (retVal == null) {
                     retVal = new ModelRow(hist);
-                    retVal.reason = result.getTextAnswer();
+                    retVal.reason = reason;
                     otherAnswerRows.put(result.getTextAnswer(), retVal);
                 }
                 return retVal;
             }
             if (unansweredRow == null) {
                 unansweredRow = new ModelRow(hist);
-                unansweredRow.reason = new YukonMessageSourceResolvable("yukon.web.modules.survey.report.unanswered");
+                unansweredRow.reason = reason;
             }
             return unansweredRow;
         }
@@ -102,7 +101,8 @@ public class SurveyResultsSummaryModel extends
         List<SurveyResult> surveyResults =
             optOutSurveyDao.findSurveyResults(surveyId, questionId, answerIds,
                                               includeOtherAnswers, includeUnanswered,
-                                              new Instant(startDate), new Instant(endDate));
+                                              new Instant(startDate), new Instant(endDate),
+                                              null, null);
         for (SurveyResult result : surveyResults) {
             List<ProgramEnrollment> enrollments =
                 enrollmentDao.getHistoricalEnrollmentsByInventoryId(result.getInventoryId(),
@@ -117,7 +117,7 @@ public class SurveyResultsSummaryModel extends
 
         Survey survey = surveyDao.getSurveyById(surveyId);
         Question question = surveyDao.getQuestionById(questionId);
-        String baseKey = "yukon.web.surveys." + survey.getSurveyKey() + "." + question.getQuestionKey() + ".";
+        String baseKey = survey.getBaseKey(question);
         Map<Integer, ProgramControlHistory> programControlHistoriesById = Maps.newHashMap();
         Map<Integer, Integer> programIdsByAssignedProgramId =
             assignedProgramDao.getProgramIdsByAssignedProgramIds(assignedProgramIdsBySurveyResult.values());
@@ -143,7 +143,7 @@ public class SurveyResultsSummaryModel extends
                             resultsByProgramHistoryId.put(programHistoryId, histSummary);
                         }
 
-                        ModelRow summaryRow = histSummary.rowForResult(result, baseKey);
+                        ModelRow summaryRow = histSummary.rowForResult(result, getReason(result, baseKey));
                         summaryRow.numDevicesOverridden++;
 
                         programControlHistoriesById.put(programHistoryId, hist);

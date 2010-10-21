@@ -37,4 +37,12 @@ public class Survey {
     public void setSurveyKey(String surveyKey) {
         this.surveyKey = surveyKey;
     }
+
+    public String getBaseKey() {
+        return "yukon.web.surveys." + surveyKey;
+    }
+
+    public String getBaseKey(Question question) {
+        return getBaseKey() + "." + question.getQuestionKey();
+    }
 }

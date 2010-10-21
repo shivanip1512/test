@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,7 @@ import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.model.OverrideStatus;
+import com.cannontech.stars.dr.optout.model.SurveyResult;
 import com.cannontech.stars.dr.program.model.Program;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
@@ -698,9 +700,51 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		    yukonJdbcTemplate.query(sql, new OptOutEventRowMapper());
 		return scheduledOptOuts;
 	}
-	
-	@Transactional
-	private int getFirstEventUser(int optOutEventId) {
+
+	@Override
+    public Multimap<SurveyResult, OptOutEvent> getOptOutsBySurveyResult(
+            Iterable<SurveyResult> surveyResults) {
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT sr.surveyResultId, e.optOutEventId, el.optOutEventLogId,");
+                sql.append(    "e.inventoryId, e.customerAccountId, e.scheduledDate,");
+                sql.append(    "e.startDate, e.stopDate, e.eventCounts, e.eventState");
+                sql.append("FROM optOutEvent e");
+                sql.append(    "JOIN optOutEventLog el ON e.optOutEventId = el.optOutEventId");
+                sql.append(    "JOIN optOutSurveyResult sr ON sr.optOutEventLogId = el.optOutEventLogId");
+                sql.append("WHERE sr.surveyResultId").in(subList);
+                return sql;
+            }
+        };
+
+        Function<SurveyResult, Integer> typeMapper = new Function<SurveyResult, Integer>() {
+            @Override
+            public Integer apply(SurveyResult from) {
+                return from.getSurveyResultId();
+            }};
+
+        YukonRowMapper<Map.Entry<Integer, OptOutEvent>> mappingRowMapper =
+            new YukonRowMapper<Map.Entry<Integer, OptOutEvent>>() {
+                OptOutEventRowMapper rowMapper = new OptOutEventRowMapper();
+                @Override
+                public Entry<Integer, OptOutEvent> mapRow(YukonResultSet rs)
+                        throws SQLException {
+                    OptOutEvent event = rowMapper.mapRow(rs);
+                    return Maps.immutableEntry(rs.getInt("surveyResultId"), event);
+                }
+        };
+
+        Multimap<SurveyResult, OptOutEvent> retVal =
+            template.multimappedQuery(sqlGenerator, surveyResults, mappingRowMapper, typeMapper);
+
+        return retVal;
+    }
+
+    private int getFirstEventUser(int optOutEventId) {
 
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT LogUserId");

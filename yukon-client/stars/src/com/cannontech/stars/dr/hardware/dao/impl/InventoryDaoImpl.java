@@ -4,18 +4,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.SqlStringStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -28,6 +33,9 @@ import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.hardware.model.InventoryCategory;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
+import com.google.common.collect.Maps;
 
 /**
  * Implementation class for InventoryDao
@@ -54,13 +62,13 @@ public class InventoryDaoImpl implements InventoryDao {
         selectHardwareSummarySql = sql.toString();
     }
 
-    private SimpleJdbcTemplate jdbcTemplate;
+    private YukonJdbcTemplate jdbcTemplate;
     private ECMappingDao ecMappingDao;
     private LMHardwareEventDao hardwareEventDao;
     private HardwareSummaryRowMapper hardwareSummaryRowMapper = new HardwareSummaryRowMapper();
 
     @Autowired
-    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
+    public void setJdbcTemplate(YukonJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -127,6 +135,38 @@ public class InventoryDaoImpl implements InventoryDao {
 
         return hardware;
     }    
+
+    @Override
+    public Map<Integer, HardwareSummary> findHardwareSummariesById(
+            Iterable<Integer> inventoryIds) {
+        ChunkingMappedSqlTemplate template =
+            new ChunkingMappedSqlTemplate(jdbcTemplate);
+
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append(selectHardwareSummarySql);
+                sql.append("WHERE ib.inventoryId").in(subList);
+                return sql;
+            }
+        };
+
+        Function<Integer, Integer> typeMapper = Functions.identity();
+        ParameterizedRowMapper<Map.Entry<Integer, HardwareSummary>> rowMapper =
+            new ParameterizedRowMapper<Entry<Integer,HardwareSummary>>() {
+            @Override
+            public Entry<Integer, HardwareSummary> mapRow(ResultSet rs, int rowNum)
+                    throws SQLException {
+                HardwareSummary hardware = hardwareSummaryRowMapper.mapRow(rs, rowNum);
+                Integer inventoryId = hardware.getInventoryId();
+                return Maps.immutableEntry(inventoryId, hardware);
+            }
+        };
+
+        Map<Integer, HardwareSummary> retVal =
+            template.mappedQuery(sqlGenerator, inventoryIds, rowMapper, typeMapper);
+        return retVal;
+    }
 
     @Override
     public List<HardwareSummary> getThermostatSummaryByAccount(CustomerAccount account) {

@@ -146,17 +146,13 @@ function updateFieldsFromBackingBean() {
 <form:form action="${submitUrl}" commandName="reportConfig">
     <form:hidden path="surveyId"/>
 
-    <input type="hidden" id="reportTypeSelect" name="reportType" value="summary"/>
     <tags:nameValueContainer2>
-        <%--
-        detail report isn't defined yet
         <tags:nameValue2 nameKey=".reportType">
 		    <form:select id="reportTypeSelect" path="reportType" onchange="reportTypeChanged()">
 		        <form:option value="summary"><i:inline key=".summary"/></form:option>
 		        <form:option value="detail"><i:inline key=".detail"/></form:option>
 		    </form:select>
         </tags:nameValue2>
-        --%>
         <tags:nameValue2 nameKey=".startDate">
             <tags:dateInputCalendar fieldName="startDate" springInput="true"/>
         </tags:nameValue2>

@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -208,7 +209,8 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
     public List<SurveyResult> findSurveyResults(int surveyId,
             int questionId, Iterable<Integer> answerIds,
             boolean includeOtherAnswers, boolean includeUnanswered,
-            ReadableInstant begin, ReadableInstant end) {
+            ReadableInstant begin, ReadableInstant end,
+            String accountNumber, String serialNumber) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT r.surveyResultId, r.surveyId, r.whenTaken,");
         sql.append(    "r.accountId, r.accountNumber, ra.surveyResultAnswerId,");
@@ -220,9 +222,18 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
         sql.append(    "JOIN optOutSurveyResult oosr ON oosr.surveyResultId = r.surveyResultId");
         sql.append(    "JOIN optOutEventLog l ON l.optOutEventLogId = oosr.optOutEventLogId");
         sql.append(    "LEFT JOIN surveyQuestionAnswer sqa ON ra.surveyQuestionAnswerId = sqa.surveyQuestionAnswerId");
+        if (!StringUtils.isBlank(serialNumber)) {
+            sql.append("JOIN lmHardwareBase hwb ON hwb.inventoryId = l.inventoryId");
+        }
         sql.append("WHERE r.surveyId").eq(surveyId);
         sql.append(    "AND ra.surveyQuestionId").eq(questionId);
         sql.append(    "AND l.eventAction").eq(OptOutAction.START_OPT_OUT);
+        if (!StringUtils.isBlank(accountNumber)) {
+            sql.append("AND r.accountNumber").eq(accountNumber);
+        }
+        if (!StringUtils.isBlank(serialNumber)) {
+            sql.append("AND hwb.manufacturerSerialNumber").eq(serialNumber);
+        }
 
         SqlFragmentCollection answersOr = SqlFragmentCollection.newOrCollection();
         if (answerIds != null && answerIds.iterator().hasNext()) {
