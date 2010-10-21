@@ -131,15 +131,14 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
             Instant lmCtrlHistStop = lmCtrlHist.getStopDateInstant();
             
             if (ActiveRestoreEnum.getActiveRestoreStartEntries().contains(controlHistoryActiveRestore)) {
-                boolean activeControlHistory = hist != null ? true : false;
-                if (activeControlHistory) {
+                // Clean up any existing control entries before creating a new entry.
+                if (hist != null) {
                     hist.setControlDuration(new Duration(lmCtrlHist.getStartDateInstant(), histStartDate));
                     hist.setIsCurrentlyControlling(false);
                 }
                 
-                hist = new ControlHistoryEntry();
-
                 // This is a new control
+                hist = new ControlHistoryEntry();
                 if (!StarsUtils.isReadableInsantEqual(lmCtrlHistStart, lastStartTime)) {
                     lastStartTime = lmCtrlHistStart;
 

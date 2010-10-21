@@ -34,9 +34,9 @@ public class OpenInterval {
             }
         });
     
-    public OpenInterval(Instant start2, Instant end2) {
-        start = start2;
-        end = end2;
+    public OpenInterval(Instant start, Instant end) {
+        this.start = start;
+        this.end = end;
     }
 
     public boolean isOpenStart() {
