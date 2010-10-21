@@ -150,7 +150,7 @@
           </option>
 
           <option name="surveys">
-            <link>/spring/stars/optOutSurvey/list</link>
+            <link>/spring/stars/survey/list</link>
             <requireRoleProperty value="OPERATOR_SURVEY_EDIT" />
           </option>
 
