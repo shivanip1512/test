@@ -2,6 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%@ tag body-content="empty" %>
 <%@ attribute name="path" required="true" type="java.lang.String"%>
@@ -15,19 +16,8 @@
 <%-- VIEW MODE --%>
 <cti:displayForPageEditModes modes="VIEW">
 	<spring:bind path="${path}">
-	
-		<c:set var="labelFound" value="false"/>
-		<c:forEach var="item" items="${items}">
-			<c:if test="${status.value == item[itemValue]}">
-				${item[itemLabel]}
-				<c:set var="labelFound" value="true"/>
-			</c:if>
-		</c:forEach>
-		
-		<c:if test="${!labelFound}">
-			${defaultItemLabel}
-		</c:if>
-	
+	    <tags:showListEntry path="${path}" items="${items}" 
+                            itemValue="${itemValue}" itemLabel="${itemLabel}"/>
 	</spring:bind>
 </cti:displayForPageEditModes>
 

@@ -66,8 +66,8 @@
                 <td><tags:showYukonListEntry value="${workOrder.workOrderBase.workTypeId}" energyCompanyId="${energyCompanyId}" listName="SERVICE_TYPE"/></td>
                 <td><tags:showYukonListEntry value="${workOrder.workOrderBase.currentStateId}" energyCompanyId="${energyCompanyId}" listName="SERVICE_STATUS"/></td>
                 <td><spring:escapeBody htmlEscape="true">${workOrder.workOrderBase.orderedBy}</spring:escapeBody></td>
-                <td><tags:showListEntry value="${workOrder.workOrderBase.serviceCompanyId}" items="${allServiceCompanies}" 
-                                        itemLabel="companyName" itemValue="companyId"/></td>
+                <td><tags:listItem value="${workOrder.workOrderBase.serviceCompanyId}" items="${allServiceCompanies}" 
+                                   itemLabel="companyName" itemValue="companyId"/></td>
                 <td class="description">
                     <spring:escapeBody htmlEscape="true">${workOrder.workOrderBase.description}</spring:escapeBody>
                 </td>

@@ -11,4 +11,4 @@
 
 <cti:yukonListEntryList var="entryList" listName="${listName}" energyCompanyId="${energyCompanyId}"/>
 
-<tags:showListEntry value="${value}" items="${entryList}" itemValue="entryID" itemLabel="entryText"/>
+<tags:listItem value="${value}" items="${entryList}" itemValue="entryID" itemLabel="entryText"/>
