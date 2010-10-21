@@ -111,22 +111,34 @@ public class UpdatableAccountConverterImpl implements UpdatableAccountConverter 
 		// street address
 		Address streetAddress = acctDto.getStreetAddress();
 		String cityName = custFields[ImportManagerUtil.IDX_CITY];
-		streetAddress.setCityName((cityName == null) ? "" : cityName);
+		if (!StringUtils.isEmpty(cityName)) {
+		    streetAddress.setCityName((cityName == null) ? "" : cityName);
+		}
 
 		String county = custFields[ImportManagerUtil.IDX_COUNTY];
-		streetAddress.setCounty((county == null) ? "" : county);
+		if (!StringUtils.isEmpty(county)) {
+		    streetAddress.setCounty((county == null) ? "" : county);
+		}
 		
 		String locationAddress1 = custFields[ImportManagerUtil.IDX_STREET_ADDR1];
-		streetAddress.setLocationAddress1((locationAddress1 == null) ? "" : locationAddress1);
-
+		if (!StringUtils.isEmpty(locationAddress1)) {
+		    streetAddress.setLocationAddress1((locationAddress1 == null) ? "" : locationAddress1);
+		}
+		    
 		String locationAddress2 = custFields[ImportManagerUtil.IDX_STREET_ADDR2];
-		streetAddress.setLocationAddress2((locationAddress2 == null) ? "" : locationAddress2);
+		if (!StringUtils.isEmpty(locationAddress2)) {
+		    streetAddress.setLocationAddress2((locationAddress2 == null) ? "" : locationAddress2);
+		}
 		
 		String stateCode = custFields[ImportManagerUtil.IDX_STATE];
-		streetAddress.setStateCode((stateCode == null) ? "" : stateCode);
+		if (!StringUtils.isEmpty(stateCode)) {
+		    streetAddress.setStateCode((stateCode == null) ? "" : stateCode);
+		}
 		
 		String zipCode = custFields[ImportManagerUtil.IDX_ZIP_CODE];
-		streetAddress.setZipCode((zipCode == null) ? "" : zipCode);
+		if (!StringUtils.isEmpty(zipCode)) {
+		    streetAddress.setZipCode((zipCode == null) ? "" : zipCode);
+		}
  		
 		// site
 		SiteInformation siteInfo = acctDto.getSiteInfo();
