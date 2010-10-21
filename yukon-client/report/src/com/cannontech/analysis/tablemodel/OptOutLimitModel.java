@@ -2,6 +2,7 @@ package com.cannontech.analysis.tablemodel;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -59,6 +60,22 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
         public Date optOutStop;
     }
 
+    private Comparator<OverrideHistory> overrideHistoryAccountIdInventoryIdComparator = 
+        new Comparator<OverrideHistory>(){
+
+            @Override
+            public int compare(OverrideHistory overrideHistoryOne, OverrideHistory overrideHistoryTwo) {
+                
+                int compareToIgnoreCase = overrideHistoryOne.getAccountNumber().compareToIgnoreCase(overrideHistoryTwo.getAccountNumber());
+                
+                if (compareToIgnoreCase == 0) {
+                    return overrideHistoryOne.getInventoryId().compareTo(overrideHistoryTwo.getInventoryId());
+                }
+                
+                return compareToIgnoreCase;
+            }
+        };
+    
     public String getTitle() {
         return "Opt Out Limit Report";
     }
@@ -184,6 +201,9 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
      * needed to make a report row entry.
      */
     private void addOverrideHistoryToModel(List<OverrideHistory> overrideHistoryList) {
+        
+        Collections.sort(overrideHistoryList, overrideHistoryAccountIdInventoryIdComparator);
+        
         for (OverrideHistory overrideHistory : overrideHistoryList) {
             
             CustomerAccountWithNames customerAccountWithName =
