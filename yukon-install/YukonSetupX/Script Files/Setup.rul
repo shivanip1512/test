@@ -284,7 +284,7 @@ end;
 function OnUpdateUIBefore()
 number nResult;
 BOOL bOptYes, bOptNo, bOpt;
-string sMasterConfig, sOldVersion, sMsg1, sMsg2, sCMD, sArgs;
+string sMasterConfig, sOldVersion, sMsg1, sMsg2, sCMD, sArgs, sDir;
 begin
 	//set the string shown on the installer windows' title bars
 	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
@@ -365,6 +365,16 @@ begin
 	LaunchApplication(sCMD, sArgs, "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
 	//get out of "hidden" app-launch mode
 	LaunchApplication("", "", "", SW_NORMAL, 0, LAAW_OPTION_WAIT);
+	
+	//Delete the contents of Yukon\Server\web\webapps\ROOT\WEB-INF\lib
+	//(this is to protect from any conflicts that might ensue with upgraded jars,
+	//since installscript projects only update files with the same name as a file being
+	//installed)
+	sDir = TARGETDIR ^ "\\Server\\web\\webapps\\ROOT\\WEB-INF\\lib";
+	nResult = DeleteDir(sDir, ALLCONTENTS);
+	if(nResult < 0) then
+		MessageBox("Unable to delete \"" + sDir + "\".  Old jars may still be present.", WARNING);
+	endif;
 	
 	//set installer to update all features that are currently installed
 	FeatureReinstall();
