@@ -675,6 +675,9 @@ public class OperatorAccountController {
         List<LiteYukonGroup> ecResidentialGroups = Lists.newArrayList(energyCompany.getResidentialCustomerGroups());
         boolean showLoginSection = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_CREATE_LOGIN_FOR_ACCOUNT, user);
         
+        List<Substation> substations = substationDao.getAllSubstationsByEnergyCompanyId(energyCompany.getEnergyCompanyID());
+        modelMap.addAttribute("substations", substations);
+
         modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);
         modelMap.addAttribute("supportsPasswordSet", true);
         modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyID());
