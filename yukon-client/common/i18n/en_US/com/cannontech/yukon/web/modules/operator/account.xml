@@ -215,8 +215,8 @@
     <entry key="yukon.web.modules.operator.accountImport.importErrorsContainer.title">Prescan Errors By Line Number</entry> 
     <entry key="yukon.web.modules.operator.accountImport.prescanResultsContainer.title">Prescan Results</entry> 
     <entry key="yukon.web.modules.operator.accountImport.prescanStatus">Prescan Status</entry> 
-    <entry key="yukon.web.modules.operator.accountImport.accountsToImport">Accounts Processed</entry> 
-    <entry key="yukon.web.modules.operator.accountImport.hardwareToImport">Hardware Processed</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.accountsToImport">Customer File Lines Processed</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.hardwareToImport">Hardware File Lines Processed</entry> 
     <entry key="yukon.web.modules.operator.accountImport.importErrors">Errors</entry> 
     <entry key="yukon.web.modules.operator.accountImport.errorsLink">Show Errors</entry> 
     <entry key="yukon.web.modules.operator.accountImport.backLink">Back to Account Import</entry> 

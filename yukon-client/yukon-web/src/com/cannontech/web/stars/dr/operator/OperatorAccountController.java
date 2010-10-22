@@ -173,6 +173,13 @@ public class OperatorAccountController {
         
         modelMap.addAttribute("resultId", result.getResultId());
         modelMap.addAttribute("prescan", true);
+        if(hardwareFileUpload.getFile() != null) {
+            modelMap.addAttribute("showHardwareStats", true);
+        }
+        if(accountFileUpload.getFile() != null) {
+            modelMap.addAttribute("showCustomerStats", true);
+        }
+        
         return "operator/account/accountImportResults.jsp";
     }
     
@@ -226,6 +233,11 @@ public class OperatorAccountController {
         modelMap.addAttribute("callbackResult", result);
         modelMap.addAttribute("totalCount", hardwareLines + accountLines);
         modelMap.addAttribute("prescan", false);
+        
+        if(result.getAccountFileUpload().getFile() != null) {
+            modelMap.addAttribute("showCustomerStats", true);
+        }
+        
         return "operator/account/accountImportResults.jsp";
     }
     

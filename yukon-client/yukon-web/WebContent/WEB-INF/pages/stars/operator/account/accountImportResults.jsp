@@ -56,24 +56,30 @@
                         </cti:classUpdater>
                     </tags:nameValue2>
                     
-                    <tags:nameValue2 nameKey=".accountsToImport">
-                        <cti:dataUpdaterValue identifier="${resultId}/ACCOUNTS_PROCESSED" type="ACCOUNT_IMPORT"/>
-                    </tags:nameValue2>
+                    <c:if test="${showCustomerStats}">
+                        <tags:nameValue2 nameKey=".accountsToImport">
+                            <cti:dataUpdaterValue identifier="${resultId}/ACCOUNTS_PROCESSED" type="ACCOUNT_IMPORT"/>
+                        </tags:nameValue2>
+                    </c:if>
                     
-                    <tags:nameValue2 nameKey=".hardwareToImport">
-                        <cti:dataUpdaterValue identifier="${resultId}/HARDWARE_PROCESSED" type="ACCOUNT_IMPORT"/>
-                    </tags:nameValue2>
+                    <c:if test="${showHardwareStats}">
+                        <tags:nameValue2 nameKey=".hardwareToImport">
+                            <cti:dataUpdaterValue identifier="${resultId}/HARDWARE_PROCESSED" type="ACCOUNT_IMPORT"/>
+                        </tags:nameValue2>
+                    </c:if>
                     
                 </c:when>
                 <c:otherwise>
                 
                     <tags:nameValue2 nameKey=".progressBarLabel">
-                        <tags:updateableProgressBar totalCount="${totalCount}" countKey="ACCOUNT_IMPORT/${resultId}/COMPLETED_COUNT"/>
+                        <tags:updateableProgressBar totalCount="${totalCount}" countKey="ACCOUNT_IMPORT/${resultId}/COMPLETED_COUNT" hideCount="true"/>
                     </tags:nameValue2>
                     
-                    <tags:nameValue2 nameKey=".accountsProgress">
-                        <cti:dataUpdaterValue identifier="${resultId}/ACCOUNT_STATS" type="ACCOUNT_IMPORT"/>
-                    </tags:nameValue2>
+                    <c:if test="${showCustomerStats}">
+                        <tags:nameValue2 nameKey=".accountsProgress">
+                            <cti:dataUpdaterValue identifier="${resultId}/ACCOUNT_STATS" type="ACCOUNT_IMPORT"/>
+                        </tags:nameValue2>
+                    </c:if>
                     
                     <tags:nameValue2 nameKey=".hardwareProgress">
                         <cti:dataUpdaterValue identifier="${resultId}/HARDWARE_STATS" type="ACCOUNT_IMPORT"/>

@@ -59,14 +59,20 @@ public enum AccountImportTypeEnum {
     
     HARDWARE_STATS(new ResultAccessor<AccountImportResult>() {
         public Object getValue(AccountImportResult accountImportResult) {
-            YukonMessageSourceResolvable msg = new YukonMessageSourceResolvable("yukon.web.modules.operator.accountImport.hardwareStats", accountImportResult.getNumHwAdded(), accountImportResult.getNumHwUpdated(), accountImportResult.getNumHwRemoved());
+            YukonMessageSourceResolvable msg = new YukonMessageSourceResolvable("yukon.web.modules.operator.accountImport.hardwareStats", 
+                                                                                accountImportResult.getHardwareAdded().size(), 
+                                                                                accountImportResult.getHardwareUpdated().size(), 
+                                                                                accountImportResult.getHardwareRemoved().size());
             return msg;
         }
     }),
     
     ACCOUNT_STATS(new ResultAccessor<AccountImportResult>() {
         public Object getValue(AccountImportResult accountImportResult) {
-            YukonMessageSourceResolvable msg = new YukonMessageSourceResolvable("yukon.web.modules.operator.accountImport.accountStats", accountImportResult.getNumAcctAdded(), accountImportResult.getNumAcctUpdated(), accountImportResult.getNumAcctRemoved());
+            YukonMessageSourceResolvable msg = new YukonMessageSourceResolvable("yukon.web.modules.operator.accountImport.accountStats", 
+                                                                                accountImportResult.getAccountsAdded().size(), 
+                                                                                accountImportResult.getAccountsUpdated().size(), 
+                                                                                accountImportResult.getAccountsRemoved().size());
             return msg;
         }
     });

@@ -15,6 +15,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.web.bulk.util.BulkFileUpload;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class AccountImportResult implements Completable {
     
@@ -119,14 +120,14 @@ public class AccountImportResult implements Completable {
     private String position;
     private int numAcctTotal = 0;
     private int numAcctImported = 0;
-    private int numAcctAdded = 0;
-    private int numAcctUpdated = 0;
-    private int numAcctRemoved = 0;
     private int numHwTotal = 0;
     private int numHwImported = 0;
-    private int numHwAdded = 0;
-    private int numHwUpdated = 0;
-    private int numHwRemoved = 0;
+    private Map<String, String> accountsAdded = Maps.newHashMap();
+    private Map<String, String> accountsUpdated = Maps.newHashMap();
+    private Map<String, String> accountsRemoved = Maps.newHashMap();
+    private Map<String, String> hardwareAdded = Maps.newHashMap();
+    private Map<String, String> hardwareUpdated = Maps.newHashMap();
+    private Map<String, String> hardwareRemoved = Maps.newHashMap();
     private Map<Integer, String[]> hwLines;
     private Map<Integer, String[]> custLines;
     private String resultId;
@@ -202,30 +203,6 @@ public class AccountImportResult implements Completable {
         this.numAcctImported = numAcctImported;
     }
 
-    public int getNumAcctAdded() {
-        return numAcctAdded;
-    }
-
-    public void setNumAcctAdded(int numAcctAdded) {
-        this.numAcctAdded = numAcctAdded;
-    }
-
-    public int getNumAcctUpdated() {
-        return numAcctUpdated;
-    }
-
-    public void setNumAcctUpdated(int numAcctUpdated) {
-        this.numAcctUpdated = numAcctUpdated;
-    }
-
-    public int getNumAcctRemoved() {
-        return numAcctRemoved;
-    }
-
-    public void setNumAcctRemoved(int numAcctRemoved) {
-        this.numAcctRemoved = numAcctRemoved;
-    }
-
     public int getNumHwTotal() {
         return numHwTotal;
     }
@@ -240,30 +217,6 @@ public class AccountImportResult implements Completable {
 
     public void setNumHwImported(int numHwImported) {
         this.numHwImported = numHwImported;
-    }
-
-    public int getNumHwAdded() {
-        return numHwAdded;
-    }
-
-    public void setNumHwAdded(int numHwAdded) {
-        this.numHwAdded = numHwAdded;
-    }
-
-    public int getNumHwUpdated() {
-        return numHwUpdated;
-    }
-
-    public void setNumHwUpdated(int numHwUpdated) {
-        this.numHwUpdated = numHwUpdated;
-    }
-
-    public int getNumHwRemoved() {
-        return numHwRemoved;
-    }
-
-    public void setNumHwRemoved(int numHwRemoved) {
-        this.numHwRemoved = numHwRemoved;
     }
 
     public Map<Integer, String[]> getHwLines() {
@@ -338,7 +291,7 @@ public class AccountImportResult implements Completable {
     }
     
     public int getCompleted() {
-        return getNumHwImported() + getNumAcctImported() + getImportErrors();
+        return (hwLines == null ? 0 : hwLines.size() - 1) + (custLines == null ? 0 : custLines.size() - 1);
     }
     
     public boolean isCanceled() {
@@ -360,6 +313,30 @@ public class AccountImportResult implements Completable {
 
     public boolean hasErrors() {
         return !getErrorList().isEmpty();
+    }
+
+    public Map<String, String> getAccountsAdded() {
+        return accountsAdded;
+    }
+    
+    public Map<String, String> getAccountsUpdated() {
+        return accountsUpdated;
+    }
+    
+    public Map<String, String> getAccountsRemoved() {
+        return accountsRemoved;
+    }
+    
+    public Map<String, String> getHardwareAdded() {
+        return hardwareAdded;
+    }
+    
+    public Map<String, String> getHardwareUpdated() {
+        return hardwareUpdated;
+    }
+    
+    public Map<String, String> getHardwareRemoved() {
+        return hardwareRemoved;
     }
 
     public void setPrescan(boolean prescan) {

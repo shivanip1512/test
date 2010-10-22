@@ -1001,7 +1001,7 @@ public class AccountImportService {
                 
                 starsControllableDeviceHelper.removeDeviceFromAccount(dto, result.getCurrentUser());
                 
-                result.setNumHwRemoved(result.getNumHwRemoved() + 1);
+                result.getHardwareRemoved().put(hwFields[ImportManagerUtil.IDX_SERIAL_NO], hwFields[ImportManagerUtil.IDX_SERIAL_NO]);
             }
             else if (liteInv == null) {
                 hardwareEventLogService.hardwareCreationAttemptedThroughAccountImporter(userContext.getYukonUser(),
@@ -1012,7 +1012,7 @@ public class AccountImportService {
                                 .getAccountNumber(), hwFields, energyCompany);
                 liteInv = starsControllableDeviceHelper.addDeviceToAccount(dto, result.getCurrentUser());
                 
-                result.setNumHwAdded(result.getNumHwAdded() + 1);
+                result.getHardwareAdded().put(hwFields[ImportManagerUtil.IDX_SERIAL_NO], hwFields[ImportManagerUtil.IDX_SERIAL_NO]);
             } else if (!result.isInsertSpecified()) {
                 hardwareEventLogService.hardwareUpdateAttemptedThroughAccountImporter(userContext.getYukonUser(),
                                                                                       hwFields[ImportManagerUtil.IDX_SERIAL_NO]);
@@ -1024,7 +1024,7 @@ public class AccountImportService {
                 starsControllableDeviceDTOConverter.updateDtoWithHwFields(dto, hwFields, energyCompany);
                 liteInv = starsControllableDeviceHelper.updateDeviceOnAccount(dto, result.getCurrentUser());
                 
-                result.setNumHwUpdated(result.getNumHwUpdated() + 1);
+                result.getHardwareUpdated().put(hwFields[ImportManagerUtil.IDX_SERIAL_NO], hwFields[ImportManagerUtil.IDX_SERIAL_NO]);
             }
         } catch (StarsClientRequestException e) {
             automationCheck(e.getMessage(), result.isAutomatedImport());
@@ -1058,7 +1058,7 @@ public class AccountImportService {
                     accountService.deleteAccount(liteAcctInfo.getCustomerAccount().getAccountNumber(), 
                                                  userContext.getYukonUser());
                     
-                    result.setNumAcctRemoved(result.getNumAcctRemoved() + 1);
+                    result.getAccountsRemoved().put(custFields[ImportManagerUtil.IDX_ACCOUNT_NO], custFields[ImportManagerUtil.IDX_ACCOUNT_NO]);
                     result.setNumAcctImported(result.getNumAcctImported() + 1);
                     
                     return null;
@@ -1078,7 +1078,7 @@ public class AccountImportService {
                 accountService.addAccount(updatableAccount, userContext.getYukonUser());
                 liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
                 
-                result.setNumAcctAdded(result.getNumAcctAdded() + 1);
+                result.getAccountsAdded().put(custFields[ImportManagerUtil.IDX_ACCOUNT_NO], custFields[ImportManagerUtil.IDX_ACCOUNT_NO]);
             } else if (!result.isInsertSpecified()) {
                 accountEventLogService.accountUpdateAttemptedThroughAccountImporter(userContext.getYukonUser(),
                                                                                     custFields[ImportManagerUtil.IDX_ACCOUNT_NO]);
@@ -1091,7 +1091,7 @@ public class AccountImportService {
                 UpdatableAccount updatableAccount = updatableAccountConverter.getUpdatedUpdatableAccount(liteAcctInfo, custFields, energyCompany);
                 accountService.updateAccount(updatableAccount, userContext.getYukonUser());
                 
-                result.setNumAcctUpdated(result.getNumAcctUpdated() + 1);
+                result.getAccountsUpdated().put(custFields[ImportManagerUtil.IDX_ACCOUNT_NO], custFields[ImportManagerUtil.IDX_ACCOUNT_NO]);
             }
     
         } catch (Exception e) {
