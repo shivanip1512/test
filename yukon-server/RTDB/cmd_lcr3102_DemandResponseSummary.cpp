@@ -9,27 +9,17 @@ namespace Devices {
 namespace Commands {
 
 Lcr3102DemandResponseSummaryCommand::Lcr3102DemandResponseSummaryCommand() :
-    Lcr3102ThreePartCommand(Read_DemandResponseSummaryLength)
+    Lcr3102ThreePartCommand(ReadLength_DemandResponseSummary)
 {
 }
 
-DlcCommand::request_ptr Lcr3102DemandResponseSummaryCommand::decode(CtiTime now, const unsigned function, const payload_t &payload, string &description, vector<point_data> &points)
+DlcCommand::request_ptr Lcr3102DemandResponseSummaryCommand::decodeReading(CtiTime now, const unsigned function, const payload_t &payload, string &description, vector<point_data> &points)
 {
-    if( _state == State_Reading )
-    {
-        // This was the decode from the true ActOnStoredMessage call.
-        const unsigned char drSummary_info = getValueFromBits(payload, 0, 8);
-      
-        decodeResponseByte(drSummary_info, description);
+    const unsigned char drSummary_info = getValueFromBits(payload, 0, 8);
+  
+    decodeResponseByte(drSummary_info, description);
 
-        return request_ptr();
-    }
-    else
-    {
-        // This was the decode call after the initial expresscom write, we need to call the next execute and change state!
-        _state = State_Reading;
-        return execute(now);
-    }
+    return request_ptr();
 }
 
 // Throws command exception

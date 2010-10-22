@@ -27,6 +27,21 @@ DlcCommand::request_ptr Lcr3102ThreePartCommand::execute(const CtiTime now)
     }
 }
 
+DlcCommand::request_ptr Lcr3102ThreePartCommand::decode(CtiTime now, const unsigned function, const payload_t &payload, string &description, vector<point_data> &points)
+{
+    if( _state == State_Reading )
+    {
+        // This was the decode from the true ActOnStoredMessage call.
+        return decodeReading(now, function, payload, description, points);
+    }
+    else
+    {
+        // This was the decode call after the initial expresscom write, we need to call the next execute and change state!
+        _state = State_Reading;
+        return execute(now);
+    }
+}
+
 DlcCommand::request_ptr Lcr3102ThreePartCommand::error(const CtiTime now, const int error_code, std::string &description)
 {
     if( description.empty() )

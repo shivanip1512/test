@@ -10,17 +10,16 @@ class IM_EX_DEVDB Lcr3102TamperReadCommand : public Lcr3102ThreePartCommand
 {
 private:
 
-    enum ReadLength
+    enum ReadLengths
     {
-        Read_TamperReadLength = 1
+        ReadLength_Tamper = 1
     };
 
 public:
     
     Lcr3102TamperReadCommand();
 
-    virtual request_ptr decode (const CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points);
-    
+    virtual request_ptr decodeReading(const CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points);
 };
 
 }
