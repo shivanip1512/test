@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,7 +16,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.web.bulk.util.BulkFileUpload;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class AccountImportResult implements Completable {
     
@@ -122,12 +123,12 @@ public class AccountImportResult implements Completable {
     private int numAcctImported = 0;
     private int numHwTotal = 0;
     private int numHwImported = 0;
-    private Map<String, String> accountsAdded = Maps.newHashMap();
-    private Map<String, String> accountsUpdated = Maps.newHashMap();
-    private Map<String, String> accountsRemoved = Maps.newHashMap();
-    private Map<String, String> hardwareAdded = Maps.newHashMap();
-    private Map<String, String> hardwareUpdated = Maps.newHashMap();
-    private Map<String, String> hardwareRemoved = Maps.newHashMap();
+    private Set<String> accountsAdded = Sets.newHashSet();
+    private Set<String> accountsUpdated = Sets.newHashSet();
+    private Set<String> accountsRemoved = Sets.newHashSet();
+    private Set<String> hardwareAdded = Sets.newHashSet();
+    private Set<String> hardwareUpdated = Sets.newHashSet();
+    private Set<String> hardwareRemoved = Sets.newHashSet();
     private Map<Integer, String[]> hwLines;
     private Map<Integer, String[]> custLines;
     private String resultId;
@@ -315,27 +316,27 @@ public class AccountImportResult implements Completable {
         return !getErrorList().isEmpty();
     }
 
-    public Map<String, String> getAccountsAdded() {
+    public Set<String> getAccountsAdded() {
         return accountsAdded;
     }
     
-    public Map<String, String> getAccountsUpdated() {
+    public Set<String> getAccountsUpdated() {
         return accountsUpdated;
     }
     
-    public Map<String, String> getAccountsRemoved() {
+    public Set<String> getAccountsRemoved() {
         return accountsRemoved;
     }
     
-    public Map<String, String> getHardwareAdded() {
+    public Set<String> getHardwareAdded() {
         return hardwareAdded;
     }
     
-    public Map<String, String> getHardwareUpdated() {
+    public Set<String> getHardwareUpdated() {
         return hardwareUpdated;
     }
     
-    public Map<String, String> getHardwareRemoved() {
+    public Set<String> getHardwareRemoved() {
         return hardwareRemoved;
     }
 
