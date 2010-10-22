@@ -1116,10 +1116,6 @@ input.formSubmit,
     padding-right: 10px;
 }
 
-button.formSubmit {
-    padding-bottom: 1px;
-}
-
 button.formSubmit span {
     vertical-align: middle;
 }
