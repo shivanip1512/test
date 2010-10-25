@@ -285,10 +285,10 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         try {
             stopHist = yukonJdbcOperations.queryForObject(sql, new LmProgramGearHistoryMapper());
         } catch (EmptyResultDataAccessException erdae) {
-
+            // no stop history means control is still ongoing
         }
 
-        if (when.isAfter(new Instant(stopHist.getEventTime()))) {
+        if (stopHist != null && when.isAfter(new Instant(stopHist.getEventTime()))) {
             return null;
         }
 
