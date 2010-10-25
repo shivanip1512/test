@@ -91,7 +91,7 @@ public class ThermostatManualController extends AbstractThermostatController {
 
     @RequestMapping(value = "/consumer/thermostat/saveLabel", method = RequestMethod.POST)
     public String saveLabel(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
-            String newDisplayLabel, LiteYukonUser user, ModelMap map) throws Exception {
+            String displayLabel, LiteYukonUser user, ModelMap map) throws Exception {
 
         if (thermostatIds.size() != 1) {
             throw new IllegalArgumentException("You can only change the label of 1 thermostat at a time.");
@@ -103,14 +103,14 @@ public class ThermostatManualController extends AbstractThermostatController {
         accountEventLogService.thermostatLabelChangeAttemptedByConsumer(user,
                                                                         thermostat.getSerialNumber(),
                                                                         thermostat.getDeviceLabel(),
-                                                                        newDisplayLabel);
+                                                                        displayLabel);
         
         accountCheckerService.checkInventory(user, 
                                              thermostatIds.toArray(new Integer[thermostatIds.size()]));
         
 
 
-        thermostat.setDeviceLabel(newDisplayLabel);
+        thermostat.setDeviceLabel(displayLabel);
 
         inventoryDao.save(thermostat);
 
