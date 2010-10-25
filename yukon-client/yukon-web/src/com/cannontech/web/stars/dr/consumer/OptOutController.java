@@ -229,8 +229,9 @@ public class OptOutController extends AbstractConsumerController {
 
         // Validating to make sure there are opt outs left to use that have not been scheduled.
         List<Integer> inventoryIdList = Arrays.asList(inventoryIds);
-        final boolean optingOutForToday = optOutBackingBean.getStartDate().equals(new LocalDate(userContext.getJodaTimeZone()));
-
+        LocalDate optOutStartDate = optOutBackingBean.getStartDate();
+        final boolean optingOutForToday = optOutStartDate.equals(new LocalDate(userContext.getJodaTimeZone()));
+        
         MessageSourceResolvable validateOptOutsRemainingMessage = 
             validateOptOutsRemaining(optingOutForToday, inventoryIdList, customerAccount);
         if (validateOptOutsRemainingMessage != null) {
