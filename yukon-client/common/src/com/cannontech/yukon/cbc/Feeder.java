@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Vector;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
+import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointUnits;
 
@@ -42,7 +43,7 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
 	private Integer currentVarPtQuality = null;
 	private Boolean waiveControlFlag = null;
 
-	private String controlUnits = ControlAlgorithm.KVAR.getDisplayName();
+	private ControlAlgorithm controlUnits = ControlAlgorithm.KVAR;
 	private int decimalPlaces = 0;
 	private Boolean peakTimeFlag = Boolean.TRUE;
 
@@ -58,7 +59,7 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
     private String solution = null;
     private Double peakPFSetPoint = new Double(100.0);
     private Double offpeakPFSetPoint = new Double(100.0);
-    private String controlmethod = null;
+    private ControlMethod controlmethod = null;
     private Double phaseA = new Double(0.0);
     private Double phaseB = new Double(0.0);
     private Double phaseC = new Double(0.0);
@@ -438,7 +439,7 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	/**
 	 * @return
 	 */
-	public String getControlUnits()
+	public ControlAlgorithm getControlUnits()
 	{
 		return controlUnits;
 	}
@@ -462,9 +463,9 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	/**
 	 * @param string
 	 */
-	public void setControlUnits(String string)
+	public void setControlUnits(ControlAlgorithm units)
 	{
-		controlUnits = string;
+		controlUnits = units;
 	}
 
 	/**
@@ -649,10 +650,10 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
     public void setPeakPFSetPoint(Double peakPFSetting) {
         this.peakPFSetPoint = peakPFSetting;
     }
-	public String getControlmethod() {
+	public ControlMethod getControlmethod() {
 		return controlmethod;
 	}
-	public void setControlmethod(String controlmethod) {
+	public void setControlmethod(ControlMethod controlmethod) {
 		this.controlmethod = controlmethod;
 	}
     
@@ -692,7 +693,7 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 		this.usePhaseData = usePhaseData;
 	}
 	public boolean isPowerFactorControlled() {
-		return ControlAlgorithm.PFACTORKWKVAR.getDisplayName().equalsIgnoreCase(controlUnits);
+		return controlUnits == ControlAlgorithm.PFACTOR_KW_KVAR;
 	}
     public Integer getOriginalParentId() {
         return originalParentId;

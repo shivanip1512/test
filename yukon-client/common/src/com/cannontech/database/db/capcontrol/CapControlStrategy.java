@@ -21,7 +21,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 	
 	private Integer strategyID = null;
 	private String strategyName = null;
-	private String controlMethod = ControlMethod.INDIVIDUAL_FEEDER.getDatabaseRepresentation();
+	private ControlMethod controlMethod = ControlMethod.INDIVIDUAL_FEEDER;
 	private Integer maxDailyOperation = new Integer(0);
 	private Character maxOperationDisableFlag = new Character('N');
 	private Integer peakStartTime = new Integer(0);
@@ -31,7 +31,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 	private Integer minConfirmPercent = new Integer(75);
 	private Integer failurePercent = new Integer(25);
 	private String daysOfWeek = new String("NYYYYYNN");
-	private String controlUnits = ControlAlgorithm.KVAR.getDisplayName();
+	private ControlAlgorithm controlUnits = ControlAlgorithm.KVAR;
 	private Integer controlDelayTime = new Integer(0);
 	private Integer controlSendRetries = new Integer(0);
     private String integrateFlag = "N";
@@ -56,10 +56,10 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 	
 	public void add() throws SQLException {
 		Object[] addValues = {
-			getStrategyID(), getStrategyName(), getControlMethod(), getMaxDailyOperation(), 
+			getStrategyID(), getStrategyName(), getControlMethod().name(), getMaxDailyOperation(), 
 			getMaxOperationDisableFlag(), getPeakStartTime(), getPeakStopTime(),
 			getControlInterval(), getMinResponseTime(), getMinConfirmPercent(),
-			getFailurePercent(), getDaysOfWeek(), getControlUnits(),
+			getFailurePercent(), getDaysOfWeek(), getControlUnits().name(),
 			getControlDelayTime(), getControlSendRetries(),
 			getIntegrateFlag(), getIntegratePeriod(), 
             getLikeDayFallBack(), getEndDaySettings()
@@ -69,10 +69,10 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 	
 	public void update() throws SQLException {
         Object setValues[]= { 
-            getStrategyName(), getControlMethod(), getMaxDailyOperation(), 
+            getStrategyName(), getControlMethod().name(), getMaxDailyOperation(), 
             getMaxOperationDisableFlag(), getPeakStartTime(), getPeakStopTime(),
             getControlInterval(), getMinResponseTime(), getMinConfirmPercent(),
-            getFailurePercent(), getDaysOfWeek(), getControlUnits(),
+            getFailurePercent(), getDaysOfWeek(), getControlUnits().name(),
             getControlDelayTime(), getControlSendRetries(),
             getIntegrateFlag(), getIntegratePeriod(),
             getLikeDayFallBack(), getEndDaySettings()
@@ -89,7 +89,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
     
         if( results.length == SETTER_COLUMNS.length ) {
             setStrategyName( (String) results[0] );
-            setControlMethod( (String) results[1] );
+            setControlMethod( ControlMethod.valueOf((String) results[1]) );
             setMaxDailyOperation( (Integer) results[2] );
             setMaxOperationDisableFlag( new Character(results[3].toString().charAt(0)) );       
             setPeakStartTime( (Integer)results[4] );
@@ -99,7 +99,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
             setMinConfirmPercent( (Integer) results[8] );
             setFailurePercent( (Integer) results[9] );
             setDaysOfWeek( (String) results[10] );
-            setControlUnits( (String) results[11] );
+            setControlUnits( ControlAlgorithm.valueOf((String) results[11]) );
             setControlDelayTime( (Integer) results[12] );
             setControlSendRetries( (Integer) results[13] );
             setIntegrateFlag((String)results[14]);
@@ -120,11 +120,11 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 		return controlInterval;
 	}
 	
-	public String getControlMethod() {
+	public ControlMethod getControlMethod() {
 		return controlMethod;
 	}
 	
-	public String getControlUnits() {
+	public ControlAlgorithm getControlUnits() {
 		return controlUnits;
 	}
 	
@@ -184,20 +184,11 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 		this.controlInterval = newValue;
 	}
 	
-	/**
-	 * Sets the control method for this strategy, if the control method is 
-	 * time of day, we also set the control units to time of day since the
-	 * UI no longer has the ability to touch that field.
-	 */
-	public void setControlMethod(String newControlMethod) {
+	public void setControlMethod(ControlMethod newControlMethod) {
 		controlMethod = newControlMethod;
-		ControlMethod method = ControlMethod.getForDbString(newControlMethod);
-		if(method == ControlMethod.TIME_OF_DAY) {
-			setControlUnits(ControlAlgorithm.TIME_OF_DAY.getDisplayName());
-		}
 	}
 	
-	public void setControlUnits(String newControlUnits) {
+	public void setControlUnits(ControlAlgorithm newControlUnits) {
 		controlUnits = newControlUnits;
 	}
 	
@@ -306,48 +297,28 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
     }
     
     public boolean isKVarAlgorithm () {
-        return controlUnits.equalsIgnoreCase(ControlAlgorithm.KVAR.getDisplayName());
+        return controlUnits == ControlAlgorithm.KVAR;
     }
     
     public boolean isPFAlgorithm () {
-        return controlUnits.equalsIgnoreCase(ControlAlgorithm.PFACTORKWKVAR.getDisplayName());
+        return controlUnits == ControlAlgorithm.PFACTOR_KW_KVAR;
     }
     
     public boolean isVoltVar () {
-        return controlUnits.equalsIgnoreCase(ControlAlgorithm.MULTIVOLTVAR.getDisplayName());
+        return controlUnits == ControlAlgorithm.MULTI_VOLT_VAR;
     }
     
     public boolean isVoltStrat() {
-        if (controlUnits.equalsIgnoreCase(ControlAlgorithm.MULTIVOLT.getDisplayName()))
+        if (controlUnits == ControlAlgorithm.MULTI_VOLT)
             return true;
-        else if (controlUnits.equalsIgnoreCase(ControlAlgorithm.VOLTS.getDisplayName()))
+        else if (controlUnits == ControlAlgorithm.VOLTS)
             return true;
         else
             return false;
     }
     
     public boolean isTimeOfDay(){
-        return ControlMethod.getForDbString(controlMethod).equals(ControlMethod.TIME_OF_DAY);
-    }
-    
-    public void controlUnitsChanged(String units) {
-        ControlAlgorithm newControlAlgorithm = ControlAlgorithm.getControlAlgorithm(units);
-        targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(newControlAlgorithm);
-    }
-    
-    public void controlMethodChanged(String method) {
-        ControlMethod newMethod = ControlMethod.getForDbString(method);
-        ControlAlgorithm currentAlgorithm = ControlAlgorithm.getControlAlgorithm(controlUnits);
-        if (newMethod.equals(ControlMethod.TIME_OF_DAY)) {
-            targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.TIME_OF_DAY);
-            setControlUnits(ControlAlgorithm.TIME_OF_DAY.getDisplayName());
-        } else if (!newMethod.supportsAlgorithm(currentAlgorithm)) {
-            /* If the current method does not support the current algorithm, default it to KVAR.
-             * Otherwise don't mess with thier settings. */
-            targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.KVAR);
-            setControlUnits(ControlAlgorithm.KVAR.getDisplayName());
-        }
-        setControlMethod(method);
+        return controlMethod == ControlMethod.TIME_OF_DAY;
     }
     
     /**

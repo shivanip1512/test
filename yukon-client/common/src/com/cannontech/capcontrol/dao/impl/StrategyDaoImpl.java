@@ -47,7 +47,7 @@ public class StrategyDaoImpl implements StrategyDao{
         int strategyId =  nextValueHelper.getNextValue("CapControlStrategy"); // StrategyId
         Object[] values = new Object[] {
             name,  // Strategy Name
-            ControlMethod.INDIVIDUAL_FEEDER.getDatabaseRepresentation(), // Control Method
+            ControlMethod.INDIVIDUAL_FEEDER, // Control Method
             0, // Max Daily Operations
             "N", // Max Operation Disable Flag
             0, // Peak Start Time
@@ -88,8 +88,8 @@ public class StrategyDaoImpl implements StrategyDao{
                 
                 strategy.setStrategyId(from.getStrategyID());
                 strategy.setStrategyName(from.getStrategyName());
-                strategy.setControlMethod(ControlMethod.getForDbString(from.getControlMethod()).getDisplayName());
-                strategy.setControlUnits(from.getControlUnits());
+                strategy.setControlMethod(from.getControlMethod().getDisplayName());
+                strategy.setControlUnits(from.getControlUnits().getDisplayName());
                 
                 strategy.setPeakStartTime(durationFormattingService.formatDuration(from.getPeakStartTime(), TimeUnit.SECONDS, DurationFormat.HM_SHORT, userContext));
                 strategy.setPeakStopTime(durationFormattingService.formatDuration(from.getPeakStopTime(), TimeUnit.SECONDS, DurationFormat.HM_SHORT, userContext));
@@ -184,7 +184,7 @@ public class StrategyDaoImpl implements StrategyDao{
             CapControlStrategy strategy = new CapControlStrategy();
             strategy.setStrategyID( rs.getInt("StrategyID"));
             strategy.setStrategyName( rs.getString("StrategyName") );
-            strategy.setControlMethod( rs.getString("ControlMethod") );
+            strategy.setControlMethod( ControlMethod.valueOf(rs.getString("ControlMethod")) );
             strategy.setMaxDailyOperation( rs.getInt("MaxDailyOperation") );
             strategy.setMaxOperationDisableFlag( new Character(rs.getString(5).charAt(0)) );      
             strategy.setPeakStartTime( rs.getInt("PeakStartTime") );
@@ -194,7 +194,7 @@ public class StrategyDaoImpl implements StrategyDao{
             strategy.setMinConfirmPercent( rs.getInt("MinConfirmPercent") );
             strategy.setFailurePercent( rs.getInt("FailurePercent") );
             strategy.setDaysOfWeek( rs.getString("DaysOfWeek") );
-            strategy.setControlUnits( rs.getString("ControlUnits") );
+            strategy.setControlUnits( ControlAlgorithm.valueOf(rs.getString("ControlUnits")) );
             strategy.setControlDelayTime( rs.getInt("ControlDelayTime") );
             strategy.setControlSendRetries( rs.getInt("ControlSendRetries") );
             strategy.setIntegrateFlag(rs.getString("IntegrateFlag"));
@@ -325,8 +325,7 @@ public class StrategyDaoImpl implements StrategyDao{
 
         List<PeakTargetSetting> settings = yukonJdbcTemplate.query(sql.getSql(), mapper, sql.getArguments());
         if(settings.isEmpty()) {
-            ControlAlgorithm algorithm = ControlAlgorithm.getControlAlgorithm(strategy.getControlUnits());
-            settings = StrategyPeakSettingsHelper.getSettingDefaults(algorithm);
+            settings = StrategyPeakSettingsHelper.getSettingDefaults(strategy.getControlUnits());
         }
         
         return settings;

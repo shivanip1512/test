@@ -18,12 +18,12 @@ public class StrategyPeakSettingsHelper {
                 break;
                 
             case VOLTS :
-            case MULTIVOLT :
+            case MULTI_VOLT :
                 settings.add(TargetSettingType.UPPER_VOLT_LIMIT.getPeakTargetSetting());
                 settings.add(TargetSettingType.LOWER_VOLT_LIMIT.getPeakTargetSetting());
                 break;
             
-            case MULTIVOLTVAR:
+            case MULTI_VOLT_VAR :
                 settings.add(TargetSettingType.UPPER_VOLT_LIMIT.getPeakTargetSetting());
                 settings.add(TargetSettingType.LOWER_VOLT_LIMIT.getPeakTargetSetting());
                 
@@ -31,7 +31,7 @@ public class StrategyPeakSettingsHelper {
                 settings.add(TargetSettingType.KVAR_LAGGING.getPeakTargetSetting());
                 break;
                 
-            case PFACTORKWKVAR :
+            case PFACTOR_KW_KVAR :
                 settings.add(TargetSettingType.TARGET_PF.getPeakTargetSetting());
                 settings.add(TargetSettingType.MIN_BANK_CLOSE.getPeakTargetSetting());
                 settings.add(TargetSettingType.MIN_BANK_OPEN.getPeakTargetSetting());
@@ -84,7 +84,7 @@ public class StrategyPeakSettingsHelper {
     }
 
     public static String getPeakSettingsString(CapControlStrategy strategy) {
-        ControlAlgorithm algorithm = ControlAlgorithm.getControlAlgorithm(strategy.getControlUnits());
+        ControlAlgorithm algorithm = strategy.getControlUnits();
         String settingString = null;
         switch(algorithm) {
         
@@ -96,14 +96,14 @@ public class StrategyPeakSettingsHelper {
                 break;
                 
             case VOLTS:
-            case MULTIVOLT:
+            case MULTI_VOLT :
                 PeakTargetSetting lowerVoltLimit = getPeakTargetSetting(TargetSettingType.LOWER_VOLT_LIMIT, strategy.getTargetSettings());
                 PeakTargetSetting upperVoltLimit = getPeakTargetSetting(TargetSettingType.UPPER_VOLT_LIMIT, strategy.getTargetSettings());
                 
                 settingString = lowerVoltLimit.getPeakValue() + "<" + "Volt" + "<" + upperVoltLimit.getPeakValue();
                 break;
                 
-            case MULTIVOLTVAR:
+            case MULTI_VOLT_VAR:
                 kvarLag = getPeakTargetSetting(TargetSettingType.KVAR_LAGGING, strategy.getTargetSettings());
                 kvarLead = getPeakTargetSetting(TargetSettingType.KVAR_LEADING, strategy.getTargetSettings());
                 lowerVoltLimit = getPeakTargetSetting(TargetSettingType.LOWER_VOLT_LIMIT, strategy.getTargetSettings());
@@ -113,7 +113,7 @@ public class StrategyPeakSettingsHelper {
                 settingString += " : " + kvarLag.getPeakValue() + "<" + "kVar" + "<" + kvarLead.getPeakValue();
                 break;
                 
-            case PFACTORKWKVAR:
+            case PFACTOR_KW_KVAR:
                 PeakTargetSetting targetPF = getPeakTargetSetting(TargetSettingType.TARGET_PF, strategy.getTargetSettings());
                 PeakTargetSetting minBankOpen = getPeakTargetSetting(TargetSettingType.MIN_BANK_OPEN, strategy.getTargetSettings());
                 PeakTargetSetting minBankClose = getPeakTargetSetting(TargetSettingType.MIN_BANK_CLOSE, strategy.getTargetSettings());
@@ -145,7 +145,7 @@ public class StrategyPeakSettingsHelper {
     }
     
     public static String getOffPeakSettingsString(CapControlStrategy strategy) {
-        ControlAlgorithm algorithm = ControlAlgorithm.getControlAlgorithm(strategy.getControlUnits());
+        ControlAlgorithm algorithm = strategy.getControlUnits();
         String settingString = null;
         switch(algorithm) {
         
@@ -157,14 +157,14 @@ public class StrategyPeakSettingsHelper {
                 break;
                 
             case VOLTS:
-            case MULTIVOLT:
+            case MULTI_VOLT:
                 PeakTargetSetting lowerVoltLimit = getPeakTargetSetting(TargetSettingType.LOWER_VOLT_LIMIT, strategy.getTargetSettings());
                 PeakTargetSetting upperVoltLimit = getPeakTargetSetting(TargetSettingType.UPPER_VOLT_LIMIT, strategy.getTargetSettings());
                 
                 settingString = lowerVoltLimit.getOffPeakValue() + "<" + "Volt" + "<" + upperVoltLimit.getOffPeakValue();
                 break;
                 
-            case MULTIVOLTVAR:
+            case MULTI_VOLT_VAR:
                 kvarLag = getPeakTargetSetting(TargetSettingType.KVAR_LAGGING, strategy.getTargetSettings());
                 kvarLead = getPeakTargetSetting(TargetSettingType.KVAR_LEADING, strategy.getTargetSettings());
                 lowerVoltLimit = getPeakTargetSetting(TargetSettingType.LOWER_VOLT_LIMIT, strategy.getTargetSettings());
@@ -174,7 +174,7 @@ public class StrategyPeakSettingsHelper {
                 settingString += " : " + kvarLag.getOffPeakValue() + "<" + "kVar" + "<" + kvarLead.getOffPeakValue();
                 break;
                 
-            case PFACTORKWKVAR:
+            case PFACTOR_KW_KVAR:
                 PeakTargetSetting targetPF = getPeakTargetSetting(TargetSettingType.TARGET_PF, strategy.getTargetSettings());
                 PeakTargetSetting minBankOpen = getPeakTargetSetting(TargetSettingType.MIN_BANK_OPEN, strategy.getTargetSettings());
                 PeakTargetSetting minBankClose = getPeakTargetSetting(TargetSettingType.MIN_BANK_CLOSE, strategy.getTargetSettings());

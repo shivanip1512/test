@@ -55,8 +55,7 @@ public class ViewableFeeder {
     
     public boolean isIndividualFeederControlled() {
     	try {
-	    	ControlMethod method = ControlMethod.getForDbString(getFeeder().getControlmethod());
-	    	return method == ControlMethod.INDIVIDUAL_FEEDER;
+	    	return getFeeder().getControlmethod() == ControlMethod.INDIVIDUAL_FEEDER;
     	} catch (IllegalArgumentException e) {
 			return false;
 		}

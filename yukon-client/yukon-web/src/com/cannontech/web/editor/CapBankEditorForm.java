@@ -86,14 +86,8 @@ public class CapBankEditorForm extends DBEditorForm {
     
     public boolean isIntegratedVoltVarControlled(){
         Feeder feeder = cache.getFeeder(cache.getCapBankDevice(getCapBank().getCapBank().getDeviceID()).getParentID());
-        String controlUnits = feeder.getControlUnits();
-        try{
-            ControlAlgorithm algorithm = ControlAlgorithm.getControlAlgorithm(controlUnits);
-            if(algorithm.equals(ControlAlgorithm.INTEGRATED_VOLT_VAR)) {
-                return true;
-            }
-        } catch(IllegalArgumentException ex) {
-            return false;
+        if(feeder.getControlUnits() == ControlAlgorithm.INTEGRATED_VOLT_VAR) {
+            return true;
         }
         return false;
     }

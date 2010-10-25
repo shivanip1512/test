@@ -33,7 +33,7 @@
                 <x:panelGrid columns="2">
                     <x:outputLabel for="Control_Method" value="Control Method: " title="How the CapBanks are to be controlled"/>
                     <x:selectOneMenu id="Control_Method" onchange="submit();" disabled="#{!capControlForm.editingCBCStrategy}" immediate="true"
-                        value="#{capControlForm.strategy.controlMethod}" valueChangeListener="#{capControlForm.controlMethodChanged}">
+                        value="#{capControlForm.strategy.controlMethod}" valueChangeListener="#{capControlForm.controlMethodChanged}" converter="controlMethodConverter">
                         <f:selectItems value="#{capControlForm.controlMethods}"/>
                     </x:selectOneMenu>
     
@@ -136,22 +136,26 @@
             </x:htmlTag>
         </h:column>
         
-        <h:column rendered="#{!capControlForm.timeOfDay}" >
+        <h:column>
             <x:htmlTag value="fieldset" styleClass="fieldSet">
                 <x:htmlTag value="legend">
-                    <x:outputText value="Strategy Peaks" />
+                    <x:outputText value="Strategy Target Settings" />
                 </x:htmlTag>
                 
+                <f:verbatim>
+                    <!-- DO NOT DISABLE THE Control_Algorithm DROP DOWN FOR IVVC: If it is disable or not rendered it will update incorrectly when changing control mehtod. -->
+                </f:verbatim>
                 <x:panelGrid forceId="true" id="strategyPeaksGrid" columns="2">
                 
                     <x:outputLabel for="Control_Algorithm" value="Control Algorithm: " title="The units and process we use to make control decisions"/>
-                    <x:selectOneMenu id="Control_Algorithm" disabled="#{!capControlForm.editingCBCStrategy}" onchange="submit();" 
-                        value="#{capControlForm.strategy.controlUnits}" valueChangeListener="#{capControlForm.controlUnitsChanged}">
+                    <x:selectOneMenu id="Control_Algorithm" disabled="#{!capControlForm.editingCBCStrategy}" value="#{capControlForm.strategy.controlUnits}" 
+                        converter="controlAlgorithmConverter" onchange="submit();"
+                        valueChangeListener="#{capControlForm.controlUnitsChanged}">
                         <f:selectItems value="#{capControlForm.controlAlgorithims}"/>
                     </x:selectOneMenu>
 
-                    <x:outputLabel for="Peak_Start_Time" value="Peak Start Time: " title="Starting time for the peak time window" />
-                    <x:panelGroup>
+                    <x:outputLabel for="Peak_Start_Time" value="Peak Start Time: " title="Starting time for the peak time window"  rendered="#{!capControlForm.timeOfDay}"/>
+                    <x:panelGroup rendered="#{!capControlForm.timeOfDay}">
                         <x:inputText id="Peak_Start_Time" styleClass="char16Label" disabled="#{!capControlForm.editingCBCStrategy}"
                             required="true" converter="cti_TimeConverter"
                             value="#{capControlForm.strategy.peakStartTime}" >
@@ -159,8 +163,8 @@
                         <x:outputText id="PkStartLab" value="(HH:mm)" styleClass="padUnitsLabel"/>
                     </x:panelGroup>
             
-                    <x:outputLabel for="Peak_Stop_Time" value="Peak Stop Time: " title="Stop time for the peak time window" />
-                    <x:panelGroup>
+                    <x:outputLabel for="Peak_Stop_Time" value="Peak Stop Time: " title="Stop time for the peak time window" rendered="#{!capControlForm.timeOfDay}"/>
+                    <x:panelGroup rendered="#{!capControlForm.timeOfDay}">
                         <x:inputText id="Peak_Stop_Time" styleClass="char16Label" disabled="#{!capControlForm.editingCBCStrategy}"
                             required="true" converter="cti_TimeConverter"
                             value="#{capControlForm.strategy.peakStopTime}" >
@@ -170,41 +174,66 @@
 
                 </x:panelGrid>
                 
-                <h:dataTable id="peakSettingsData" var="setting" headerClass="peakSettingsTableHeader" rowClasses="peakSettingsTableCell"
-                    value="#{capControlForm.strategy.targetSettings}"
-                    columnClasses="peakSettingsTableCell">
+                <h:dataTable id="peakSettingsData" var="setting" headerClass="peakSettingsTableHeader" rowClasses="peakSettingsTableCell" columnClasses="peakSettingsTableCell"
+                    value="#{capControlForm.strategy.targetSettings}">
 
                     <h:column>
                         <f:facet name="header">
+                            <x:outputText value="Week Day" rendered="#{capControlForm.timeOfDay}"/>
                         </f:facet>
-                        <h:outputText value="#{setting.name}" />
+                        <h:outputText value="#{setting.name}" style="padding-left:50px;"/>
                         <h:outputText value=":" />
                     </h:column>
 
                     <h:column>
                         <f:facet name="header">
-                            <x:outputText value="Peak" />
+                            <x:outputText value="#{capControlForm.peakHeader}"/>
                         </f:facet>
                         <x:inputText styleClass="char8Label" required="true" value="#{setting.peakValue}" />
                         <x:outputText value="#{setting.units}" styleClass="padUnitsLabel"/>
                     </h:column>
                     
+                    <h:column rendered="#{capControlForm.timeOfDay}">
+                        <f:facet name="header">
+                            <x:outputText value="Open" />
+                        </f:facet>
+                        <x:outputText value="#{100 - setting.peakValue}" styleClass="padUnitsLabel"/>
+                        <x:outputText value="%" styleClass="padUnitsLabel"/>
+                    </h:column>
+                    
+                    <h:column rendered="#{capControlForm.timeOfDay}">
+                        <f:facet name="header">
+                            <x:outputText value="Weekend" />
+                        </f:facet>
+                        <h:outputText value="#{setting.name}" style="padding-left:50px;"/>
+                    </h:column>
+                    
                     <h:column>
                         <f:facet name="header">
-                            <x:outputText value="Off Peak" />
+                            <x:outputText value="#{capControlForm.offPeakHeader}"/>
                         </f:facet>
                         <x:inputText styleClass="char8Label" required="true" value="#{setting.offPeakValue}" />
                         <x:outputText value="#{setting.units}" styleClass="padUnitsLabel"/>
                     </h:column>
+                    
+                    <h:column rendered="#{capControlForm.timeOfDay}">
+                        <f:facet name="header">
+                            <x:outputText value="Open" />
+                        </f:facet>
+                        <x:outputText value="#{100 - setting.offPeakValue}" styleClass="padUnitsLabel"/>
+                        <x:outputText value="%" styleClass="padUnitsLabel"/>
+                    </h:column>
 
                 </h:dataTable>
-                    
-                <x:outputText value="* ( - ) indicates leading" rendered="#{capControlForm.strategy.PFAlgorithm}"/>
+                
+                <x:htmlTag value="br"/>
+                
+                <x:outputText value="* ( - ) indicates leading" rendered="#{capControlForm.strategy.PFAlgorithm}" rendered="#{!capControlForm.timeOfDay}"/>
             </x:htmlTag>
             
             <x:htmlTag value="br"/>
             
-            <x:htmlTag value="fieldset" styleClass="fieldSet">
+            <x:htmlTag value="fieldset" styleClass="fieldSet" rendered="#{!capControlForm.timeOfDay}">
                 <x:htmlTag value="legend">
                     <x:outputText value="Peak Operating Days" />
                 </x:htmlTag>
@@ -213,68 +242,6 @@
                     disabled="#{!capControlForm.editingCBCStrategy}" layout="pageDirection">
                     <f:selectItems value="#{selLists.daySelections}"/>
                 </x:selectManyCheckbox>
-            </x:htmlTag>
-        </h:column>
-        
-        <h:column rendered="#{capControlForm.timeOfDay}" >
-            <x:htmlTag value="fieldset" styleClass="fieldSet">
-                <x:htmlTag value="legend">
-                    <x:outputText value="Time of Day Strategy Settings" />
-                </x:htmlTag>
-                
-                <h:dataTable id="timeOfDaySettingsData" var="todSetting" headerClass="peakSettingsTableHeader" rowClasses="peakSettingsTableCell"
-                    value="#{capControlForm.strategy.targetSettings}"
-                    columnClasses="peakSettingsTableCell">
-
-                    <h:column>
-                        <f:facet name="header">
-                            <x:outputText value="Week Day" />
-                        </f:facet>
-                        <h:outputText value="#{todSetting.name}" style="padding-left:50px;"/>
-                    </h:column>
-
-                    <h:column>
-                        <f:facet name="header">
-                            <x:outputText value="Close" />
-                        </f:facet>
-                        <x:inputText styleClass="char4Label" required="true" value="#{todSetting.peakValue}" />
-                        <x:outputText value="%" styleClass="padUnitsLabel"/>
-                    </h:column>
-                    
-                    <h:column>
-                        <f:facet name="header">
-                            <x:outputText value="Open" />
-                        </f:facet>
-                        <x:outputText value="#{100 - todSetting.peakValue}" styleClass="padUnitsLabel"/>
-                        <x:outputText value="%" styleClass="padUnitsLabel"/>
-                    </h:column>
-                    
-                    <h:column>
-                        <f:facet name="header">
-                            <x:outputText value="Weekend" />
-                        </f:facet>
-                        <h:outputText value="#{todSetting.name}" style="padding-left:50px;"/>
-                    </h:column>
-
-                    <h:column>
-                        <f:facet name="header">
-                            <x:outputText value="Close" />
-                        </f:facet>
-                        <x:inputText styleClass="char4Label" required="true" value="#{todSetting.offPeakValue}" />
-                        <x:outputText value="%" styleClass="padUnitsLabel"/>
-                    </h:column>
-                    
-                    <h:column>
-                        <f:facet name="header">
-                            <x:outputText value="Open" />
-                        </f:facet>
-                        <x:outputText value="#{100 - todSetting.offPeakValue}" styleClass="padUnitsLabel"/>
-                        <x:outputText value="%" styleClass="padUnitsLabel"/>
-                    </h:column>
-
-                </h:dataTable>
-                    
-                
             </x:htmlTag>
             
         </h:column>

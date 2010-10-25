@@ -83,7 +83,7 @@ public class ViewableSubBus {
     }
     
     public boolean isBusControlled() {
-    	ControlMethod method = getSubBus().getControlMethodEnum();
+        ControlMethod method = getSubBus().getControlMethod();
     	return method == ControlMethod.BUSOPTIMIZED_FEEDER
     		|| method == ControlMethod.SUBSTATION_BUS;
     }

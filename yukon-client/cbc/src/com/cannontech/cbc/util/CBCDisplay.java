@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.common.gui.util.Colors;
@@ -570,9 +571,9 @@ public class CBCDisplay {
             num.setMaximumFractionDigits(1);
             num.setMinimumFractionDigits(1);
             
-            if(subBus.getControlMethod().equalsIgnoreCase("TimeOfDay")) {
+            if(subBus.getControlMethod() == ControlMethod.TIME_OF_DAY) {
                 return "TOD";
-            } else if (subBus.getControlMethod().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
+            } else if (subBus.getControlMethod() == ControlMethod.NONE) {
                 return CtiUtilities.STRING_NONE;
             } 
             
@@ -810,9 +811,9 @@ public class CBCDisplay {
             NumberFormat num = NumberFormat.getNumberInstance();
             num.setMaximumFractionDigits(1);
             num.setMinimumFractionDigits(1);
-            if(feeder.getControlmethod().equalsIgnoreCase("TimeOfDay")) {
+            if(feeder.getControlmethod() == ControlMethod.TIME_OF_DAY) {
                 return "TOD";
-            } else if (feeder.getControlmethod().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
+            } else if (feeder.getControlmethod() == ControlMethod.NONE) {
                 return CtiUtilities.STRING_NONE;
             } 
 
@@ -1169,7 +1170,7 @@ public class CBCDisplay {
             return CBCUtils.getAreaNameForSubBus(subBus.getCcId());
         }
         case SUB_ONELINE_CTL_METHOD_COLUMN: {
-            return subBus.getControlMethod();
+            return subBus.getControlMethod().getDisplayName();
         }
 
         case SUB_TARGET_COLUMN: {

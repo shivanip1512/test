@@ -2,12 +2,13 @@ package com.cannontech.capcontrol;
 
 
 public enum ControlAlgorithm {
-	 
+	
+    NONE("NONE"),
 	KVAR("kVAr"),
 	VOLTS("VOLTS"),
-	MULTIVOLT("Multi Volt"),
-	MULTIVOLTVAR("Multi Volt Var"),
-	PFACTORKWKVAR("P-Factor kW/kVAr"),
+	MULTI_VOLT("Multi Volt"),
+	MULTI_VOLT_VAR("Multi Volt Var"),
+	PFACTOR_KW_KVAR("P-Factor kW/kVAr"),
 	INTEGRATED_VOLT_VAR("Integrated Volt/Var"),
 	TIME_OF_DAY("Time of Day");
 	
@@ -21,9 +22,9 @@ public enum ControlAlgorithm {
 		return displayName;
 	}
 	
-	static public ControlAlgorithm getControlAlgorithm(String commandName) {
+	static public ControlAlgorithm getDisplayName(String displayName) {
 		for (ControlAlgorithm value : ControlAlgorithm.values()) {
-			if (commandName.equals(value.displayName)) {
+			if (displayName.equals(value.displayName)) {
 				return value;
 			}
 		}

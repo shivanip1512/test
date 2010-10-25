@@ -28,7 +28,7 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
 
     private Integer currentVarLoadPointID = null;
     private Integer currentWattLoadPointID = null;
-    private String controlUnits = null;
+    private ControlAlgorithm controlUnits = null;
     private Integer estimatedVarLoadPointID = null;
     private Integer dailyOperationsAnalogPointId = null;
     private Integer powerFactorPointId = null;
@@ -64,7 +64,7 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
     private Double phaseA = new Double(0.0);
     private Double phaseB = new Double(0.0);
     private Double phaseC = new Double(0.0);
-    private String controlMethod = null;
+    private ControlMethod controlMethod = null;
     private Integer displayOrder;
     private Boolean voltReductionFlag = null;
     private Boolean usePhaseData = null;
@@ -530,7 +530,7 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
     /**
      * @return
      */
-    public String getControlUnits() {
+    public ControlAlgorithm getControlUnits() {
         return controlUnits;
     }
 
@@ -551,8 +551,8 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
     /**
      * @param string
      */
-    public void setControlUnits(String string) {
-        controlUnits = string;
+    public void setControlUnits(ControlAlgorithm units) {
+        controlUnits = units;
     }
 
     /**
@@ -714,11 +714,11 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
         this.peakPFSetPoint = peakPFSetting;
     }
 
-	public String getControlMethod() {
+	public ControlMethod getControlMethod() {
 		return controlMethod;
 	}
 
-	public void setControlMethod(String controlMethod) {
+	public void setControlMethod(ControlMethod controlMethod) {
 		this.controlMethod = controlMethod;
 	}
 
@@ -779,7 +779,7 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
 	}
 	
 	public boolean isPowerFactorControlled() {
-        return ControlAlgorithm.PFACTORKWKVAR.getDisplayName().equalsIgnoreCase(controlUnits);
+	    return controlUnits == ControlAlgorithm.PFACTOR_KW_KVAR;
 	}
 
     public Boolean getPrimaryBusFlag() {
@@ -814,7 +814,4 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
         return strategyId;
     }
     
-    public ControlMethod getControlMethodEnum() {
-    	return ControlMethod.getForDbString(getControlMethod());
-    }
 }

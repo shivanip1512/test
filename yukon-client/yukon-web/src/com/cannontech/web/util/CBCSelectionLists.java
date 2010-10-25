@@ -154,20 +154,20 @@ public class CBCSelectionLists {
 
 	private static final SelectItem[] cbcControlMethods =  {
 		//value, label
-		new SelectItem(ControlMethod.INDIVIDUAL_FEEDER.getDatabaseRepresentation(), ControlMethod.INDIVIDUAL_FEEDER.getDisplayName()),
-		new SelectItem(ControlMethod.BUSOPTIMIZED_FEEDER.getDatabaseRepresentation(), ControlMethod.BUSOPTIMIZED_FEEDER.getDisplayName()),		
-		new SelectItem(ControlMethod.MANUAL_ONLY.getDatabaseRepresentation(), ControlMethod.MANUAL_ONLY.getDisplayName()),		
-		new SelectItem(ControlMethod.SUBSTATION_BUS.getDatabaseRepresentation(), ControlMethod.SUBSTATION_BUS.getDisplayName()),
-		new SelectItem(ControlMethod.TIME_OF_DAY.getDatabaseRepresentation(), ControlMethod.TIME_OF_DAY.getDisplayName())
+		new SelectItem(ControlMethod.INDIVIDUAL_FEEDER, ControlMethod.INDIVIDUAL_FEEDER.getDisplayName()),
+		new SelectItem(ControlMethod.BUSOPTIMIZED_FEEDER, ControlMethod.BUSOPTIMIZED_FEEDER.getDisplayName()),		
+		new SelectItem(ControlMethod.MANUAL_ONLY, ControlMethod.MANUAL_ONLY.getDisplayName()),		
+		new SelectItem(ControlMethod.SUBSTATION_BUS, ControlMethod.SUBSTATION_BUS.getDisplayName()),
+		new SelectItem(ControlMethod.TIME_OF_DAY, ControlMethod.TIME_OF_DAY.getDisplayName())
 	};
 
 
 	private static final SelectItem[] cbcControlAlgorithim =  {
-		new SelectItem(ControlAlgorithm.KVAR.getDisplayName(), ControlAlgorithm.KVAR.getDisplayName()),
-		new SelectItem(ControlAlgorithm.PFACTORKWKVAR.getDisplayName(), ControlAlgorithm.PFACTORKWKVAR.getDisplayName()),
-		new SelectItem(ControlAlgorithm.MULTIVOLT.getDisplayName(), ControlAlgorithm.MULTIVOLT.getDisplayName()),
-		new SelectItem(ControlAlgorithm.VOLTS.getDisplayName(), ControlAlgorithm.VOLTS.getDisplayName()),
-        new SelectItem(ControlAlgorithm.MULTIVOLTVAR.getDisplayName(), ControlAlgorithm.MULTIVOLTVAR.getDisplayName()),
+		new SelectItem(ControlAlgorithm.KVAR, ControlAlgorithm.KVAR.getDisplayName()),
+		new SelectItem(ControlAlgorithm.PFACTOR_KW_KVAR, ControlAlgorithm.PFACTOR_KW_KVAR.getDisplayName()),
+		new SelectItem(ControlAlgorithm.MULTI_VOLT, ControlAlgorithm.MULTI_VOLT.getDisplayName()),
+		new SelectItem(ControlAlgorithm.VOLTS, ControlAlgorithm.VOLTS.getDisplayName()),
+        new SelectItem(ControlAlgorithm.MULTI_VOLT_VAR, ControlAlgorithm.MULTI_VOLT_VAR.getDisplayName()),
     };
 	
 	private static SelectItem[] capBankOpStates =  {

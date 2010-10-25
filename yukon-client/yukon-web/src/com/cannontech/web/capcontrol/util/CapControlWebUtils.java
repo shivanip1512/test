@@ -40,7 +40,7 @@ public class CapControlWebUtils {
         for(SubBus subBus: subBusList) {
             ViewableSubBus viewable = new ViewableSubBus();
             viewable.setSubBus(subBus);
-            viewable.setIvvcControlled(subBus.getControlUnits().equalsIgnoreCase(ControlAlgorithm.INTEGRATED_VOLT_VAR.getDisplayName()));
+            viewable.setIvvcControlled(subBus.getControlUnits() == ControlAlgorithm.INTEGRATED_VOLT_VAR);
             
             int alternateStationId = 0;
             int alternateAreaId = 0;
@@ -73,7 +73,7 @@ public class CapControlWebUtils {
                 //Check to see if we are an IVVC enabled
                 StrategyDao strategyDao = YukonSpringHook.getBean("strategyDao", StrategyDao.class);
                 CapControlStrategy strategy = strategyDao.getForId(subBus.getStrategyId());
-                if(ControlAlgorithm.getControlAlgorithm(strategy.getControlUnits()) == ControlAlgorithm.INTEGRATED_VOLT_VAR) {
+                if(strategy.getControlUnits() == ControlAlgorithm.INTEGRATED_VOLT_VAR) {
                     viewable.setIvvcControlled(true);
                 }
             }
@@ -94,7 +94,7 @@ public class CapControlWebUtils {
             
             viewable.setFeeder(feeder);
             viewable.setSubBusName(subBusName);
-            viewable.setIvvcControlled(feeder.getControlUnits().equalsIgnoreCase(ControlAlgorithm.INTEGRATED_VOLT_VAR.getDisplayName()));
+            viewable.setIvvcControlled(feeder.getControlUnits() == ControlAlgorithm.INTEGRATED_VOLT_VAR);
             
             if (feeder.getOriginalParentId() > 0) {
                 viewable.setMovedFeeder(true); 

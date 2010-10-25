@@ -5,6 +5,8 @@ package com.cannontech.yukon.cbc;
  * Creation date: (8/17/00 3:21:47 PM)
  * @author: 
  */
+import com.cannontech.capcontrol.ControlAlgorithm;
+import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.message.util.CollectionExtracter;
 import com.cannontech.message.util.CollectionInserter;
 import com.roguewave.vsj.DefineCollectable;
@@ -42,12 +44,13 @@ public String getCxxStringId() {
 /**
  * getJavaClass method comment.
  */
-public Class getJavaClass() {
+public Class<Feeder> getJavaClass() {
 	return Feeder.class;
 }
 /**
  * restoreGuts method comment.
  */
+@SuppressWarnings("unchecked")
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
 	super.restoreGuts( obj, vstr, polystr );
@@ -98,7 +101,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 		((int)vstr.extractUnsignedInt() == 1)
 		? new Boolean(true) : new Boolean(false) );
 
-	feeder.setControlUnits( (String)vstr.restoreObject(SimpleMappings.CString) );
+	feeder.setControlUnits( ControlAlgorithm.valueOf((String)vstr.restoreObject(SimpleMappings.CString)) );
 	feeder.setDecimalPlaces( (int)vstr.extractUnsignedInt() );
 	feeder.setPeakTimeFlag(
 		 ((int)vstr.extractUnsignedInt() == 1)
@@ -119,7 +122,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 			? new Boolean(true) : new Boolean(false));
     feeder.setPeakPFSetPoint(new Double( vstr.extractDouble() ));
     feeder.setOffpeakPFSetPoint(new Double( vstr.extractDouble() ));
-	feeder.setControlmethod((String) vstr.restoreObject( SimpleMappings.CString ));
+	feeder.setControlmethod(ControlMethod.valueOf((String) vstr.restoreObject( SimpleMappings.CString )));
     feeder.setPhaseA( new Double( vstr.extractDouble() ));
     feeder.setPhaseB( new Double( vstr.extractDouble() ));
     feeder.setPhaseC( new Double( vstr.extractDouble() ));

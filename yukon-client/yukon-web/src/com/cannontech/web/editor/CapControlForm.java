@@ -90,6 +90,8 @@ import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
+import com.cannontech.database.db.capcontrol.PeakTargetSetting;
+import com.cannontech.database.db.capcontrol.StrategyPeakSettingsHelper;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.holiday.HolidaySchedule;
 import com.cannontech.database.db.pao.PAOSchedule;
@@ -163,6 +165,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private NextValueHelper nextValueHelper;
     
     Logger log = YukonLogManager.getLogger(CapControlForm.class);
+    private ControlAlgorithm currentControlAlgorithm;
+    private ControlMethod currentControlMethod;
     
     /**
      * Returns a Season object for each season of the current schedule.
@@ -542,6 +546,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             CapControlStrategy strat = (CapControlStrategy)getDbPersistent();
             itemId = strat.getStrategyID().intValue();
             editingCBCStrategy = true;
+            currentControlAlgorithm = strat.getControlUnits();
+            currentControlMethod = strat.getControlMethod();
             initPanels(CapControlTypes.CAP_CONTROL_STRATEGY);
         }
 		
@@ -1734,11 +1740,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
 	//delegate to this class because generic class doesn't have to know about business rules	
 	public SelectItem[]  getControlMethods () {
-    	String algorithm = getCbcStrategiesMap().get( new Integer ( getCurrentStrategyID() )).getControlUnits();
-    	if (algorithm.equalsIgnoreCase(ControlAlgorithm.MULTIVOLT.getDisplayName())) {
+	    ControlAlgorithm algorithm = getCbcStrategiesMap().get( new Integer ( getCurrentStrategyID() )).getControlUnits();
+    	if (algorithm == ControlAlgorithm.MULTI_VOLT) {
     		controlMethods = new SelectItem [2];
-    		controlMethods[0] = new SelectItem(ControlMethod.INDIVIDUAL_FEEDER.getDatabaseRepresentation(), StringUtils.addCharBetweenWords( ' ', ControlMethod.INDIVIDUAL_FEEDER.getDatabaseRepresentation()));
-    		controlMethods[1] = new SelectItem(ControlMethod.SUBSTATION_BUS.getDatabaseRepresentation(), StringUtils.addCharBetweenWords( ' ', ControlMethod.SUBSTATION_BUS.getDatabaseRepresentation()));
+    		controlMethods[0] = new SelectItem(ControlMethod.INDIVIDUAL_FEEDER, ControlMethod.INDIVIDUAL_FEEDER.getDisplayName());
+    		controlMethods[1] = new SelectItem(ControlMethod.SUBSTATION_BUS, ControlMethod.SUBSTATION_BUS.getDisplayName());
     	} else {
     		controlMethods = new CBCSelectionLists().getCbcControlMethods();
         }
@@ -1949,13 +1955,19 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         capbankTab = -1;
     }
     
-    public List<SelectItem> getControlAlgorithims(){
-        List<SelectItem> items = Lists.newArrayList(selectionLists.getCbcControlAlgorithim());
-        String currentMethod = getStrategy().getControlMethod();
-        if(currentMethod.equalsIgnoreCase(ControlMethod.SUBSTATION_BUS.getDatabaseRepresentation())) {
-            items.add(new SelectItem(ControlAlgorithm.INTEGRATED_VOLT_VAR.getDisplayName(), ControlAlgorithm.INTEGRATED_VOLT_VAR.getDisplayName()));
+    public List<SelectItem> getControlAlgorithims() {
+        ControlMethod currentMethod = getStrategy().getControlMethod();
+        if (currentControlMethod == ControlMethod.TIME_OF_DAY) {
+            return Lists.newArrayList(new SelectItem(ControlAlgorithm.TIME_OF_DAY, ControlAlgorithm.TIME_OF_DAY.getDisplayName()));
+        } else {
+        
+            List<SelectItem> items = Lists.newArrayList(selectionLists.getCbcControlAlgorithim());
+            if(currentMethod == ControlMethod.SUBSTATION_BUS) {
+                items.add(new SelectItem(ControlAlgorithm.INTEGRATED_VOLT_VAR, ControlAlgorithm.INTEGRATED_VOLT_VAR.getDisplayName()));
+            }
+            
+            return items;
         }
-        return items;
     }
     
     public void setItemId(int itemId) {
@@ -2025,13 +2037,53 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         getStrategy().setLikeDayFallBack((fallBackFlag) ? "Y" : "N");
     }
     
-    public void controlUnitsChanged(ValueChangeEvent e){
-        getStrategy().controlUnitsChanged(e.getNewValue().toString());
+    public void controlUnitsChanged(ValueChangeEvent e) {
+        ControlAlgorithm newControlAlgorithm = ControlAlgorithm.valueOf(e.getNewValue().toString());
+        currentControlAlgorithm = newControlAlgorithm;
+        List<PeakTargetSetting> newTargetSettings = determineCorrectDefaultTargetSettings(currentControlMethod, currentControlAlgorithm); 
+        getStrategy().setTargetSettings(newTargetSettings);
     }
-
-    public void controlMethodChanged(ValueChangeEvent e){
-        getStrategy().controlMethodChanged(e.getNewValue().toString());
+    
+    public void controlMethodChanged(ValueChangeEvent e) {
+        ControlMethod newMethod = ControlMethod.valueOf(e.getNewValue().toString());
+        currentControlMethod = newMethod;
+        
+        /* Set new control algorithm */
+        if(currentControlMethod == ControlMethod.TIME_OF_DAY) {
+            getStrategy().setControlUnits(ControlAlgorithm.TIME_OF_DAY);
+            currentControlAlgorithm = ControlAlgorithm.TIME_OF_DAY;
+        } else {
+            getStrategy().setControlUnits(ControlAlgorithm.KVAR);
+            currentControlAlgorithm = ControlAlgorithm.KVAR;
+        }
+        
+        /* Set new target settings */
+        List<PeakTargetSetting> newTargetSettings = determineCorrectDefaultTargetSettings(currentControlMethod, currentControlAlgorithm); 
+        getStrategy().setTargetSettings(newTargetSettings);
+        
+        /* Set new control method */
+        getStrategy().setControlMethod(currentControlMethod);
+        
         FacesContext.getCurrentInstance().renderResponse();
+    }
+    
+    private static List<PeakTargetSetting> determineCorrectDefaultTargetSettings(ControlMethod method, ControlAlgorithm algorithm) {
+        List<PeakTargetSetting> defaultTargetSettings;
+        if (method == ControlMethod.TIME_OF_DAY) {
+            defaultTargetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.TIME_OF_DAY);
+        } else {
+            defaultTargetSettings = StrategyPeakSettingsHelper.getSettingDefaults(algorithm);
+        }
+        
+        return defaultTargetSettings;
+    }
+    
+    public String getPeakHeader() {
+        return isTimeOfDay() ? "Close" : "Peak";
+    }
+    
+    public String getOffPeakHeader() {
+        return isTimeOfDay() ? "Open" : "Off Peak";
     }
     
     public void setSeasonScheduleDao(SeasonScheduleDao seasonScheduleDao) {

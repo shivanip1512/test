@@ -5,6 +5,8 @@ package com.cannontech.yukon.cbc;
  * Creation date: (8/17/00 3:21:47 PM)
  * @author: 
  */
+import com.cannontech.capcontrol.ControlAlgorithm;
+import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.message.util.CollectionExtracter;
 import com.cannontech.message.util.CollectionInserter;
 import com.roguewave.vsj.DefineCollectable;
@@ -65,7 +67,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	subBus.setCurrentWattLoadPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setCurrentWattLoadPointValue( new Double( vstr.extractDouble() ) );
 	subBus.setMapLocationID( (String) vstr.restoreObject( SimpleMappings.CString ) );
-	subBus.setControlUnits( (String) vstr.restoreObject( SimpleMappings.CString ) );
+	subBus.setControlUnits( ControlAlgorithm.valueOf((String) vstr.restoreObject( SimpleMappings.CString )) );
 	subBus.setDecimalPlaces( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setNewPointDataReceivedFlag( ((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
 	subBus.setBusUpdateFlag( ((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
@@ -99,7 +101,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	subBus.setOvUvDisabledFlag( ((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
     subBus.setPeakPFSetPoint(new Double( vstr.extractDouble() ));
     subBus.setOffpeakPFSetPoint(new Double( vstr.extractDouble() ));
-    subBus.setControlMethod((String) vstr.restoreObject( SimpleMappings.CString ));
+    subBus.setControlMethod(ControlMethod.valueOf((String) vstr.restoreObject( SimpleMappings.CString )));
     subBus.setPhaseA( new Double( vstr.extractDouble() ));
     subBus.setPhaseB( new Double( vstr.extractDouble() ));
     subBus.setPhaseC( new Double( vstr.extractDouble() ));
