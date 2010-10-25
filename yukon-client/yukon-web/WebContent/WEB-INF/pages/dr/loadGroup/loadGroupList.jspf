@@ -20,6 +20,9 @@
 	<c:if test="${!empty param.programId}">
 		<cti:param name="programId" value="${param.programId}" />
 	</c:if>
+	<c:if test="${!empty param.loadGroupId}">
+		<cti:param name="loadGroupId" value="${param.loadGroupId}" />
+	</c:if>
 </cti:url>
 
 <script type="text/javascript">
@@ -30,13 +33,15 @@
 
 <%-- Load Group filtering popup section --%>
 
-<cti:msg var="filterLabel"
-	key="yukon.web.modules.dr.loadGroupList.filters" />
+<cti:msg var="filterLabel" key="yukon.web.modules.dr.loadGroupList.filters"/>
 <tags:simplePopup id="filterPopup" title="${filterLabel}">
 	<form:form action="${submitUrl}" commandName="backingBean" method="get">
 		<c:if test="${!empty param.programId}">
-			<input type="hidden" name="programId" value="${param.programId}" />
+			<input type="hidden" name="programId" value="${param.programId}"/>
 		</c:if>
+        <c:if test="${!empty param.loadGroupId}">
+            <input type="hidden" name="loadGroupId" value="${param.loadGroupId}"/>
+        </c:if>
 		<tags:sortFields backingBean="${backingBean}" />
 		<cti:msg var="minStr"
 			key="yukon.web.modules.dr.loadGroupList.filter.min" />
@@ -78,9 +83,15 @@
 						<cti:msg var="fieldName"
 							key="yukon.web.modules.dr.loadGroupList.filter.lastAction" />
 						<td>${fieldName}</td>
-						<td><tags:dateInputCalendar springInput="true"
-							fieldName="lastAction.min" /> &nbsp;${toStr}&nbsp; <tags:dateInputCalendar
-							springInput="true" fieldName="lastAction.max" /></td>
+						<td>
+                            <table>
+                                <tr>
+                                    <td><tags:dateInputCalendar springInput="true" fieldName="lastAction.min"/></td>
+                                    <td>${toStr}</td>
+                                    <td><tags:dateInputCalendar springInput="true" fieldName="lastAction.max"/></td>
+                                </tr>
+                            </table>
+                        </td>
 					</cti:checkRolesAndProperties>
 
 					<%--
@@ -205,3 +216,8 @@
 		</c:otherwise>
 	</c:choose>
 </tags:pagedBox>
+<c:if test="${hasFilterErrors}">
+    <script type="text/javascript">
+        $('filterPopup').show();
+    </script>
+</c:if>

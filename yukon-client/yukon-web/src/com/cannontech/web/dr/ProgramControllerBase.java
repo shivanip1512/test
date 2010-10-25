@@ -58,14 +58,14 @@ public class ProgramControllerBase {
             model.addAttribute("errors", errors);
         }
     }
-    
-    protected void addErrorsToFlashScopeIfNecessary(BindingResult bindingResult, FlashScope flashScope) {
-    	
-    	if (bindingResult.hasErrors()) {
-    	
-	    	List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-			flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-    	}
+
+    protected void addErrorsToFlashScopeIfNecessary(
+            BindingResult bindingResult, FlashScope flashScope) {
+        if (bindingResult.hasErrors()) {
+            List<MessageSourceResolvable> messages =
+                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        }
     }
 
     @Autowired

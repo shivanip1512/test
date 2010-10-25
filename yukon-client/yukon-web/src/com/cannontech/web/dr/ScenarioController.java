@@ -16,7 +16,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
@@ -50,13 +49,10 @@ public class ScenarioController {
     private FavoritesDao favoritesDao;
 
     @RequestMapping("/scenario/list")
-    public String list(ModelMap modelMap, 
-                       YukonUserContext userContext,
-                       @ModelAttribute("backingBean") ListBackingBean backingBean, 
-                       BindingResult result,
-                       SessionStatus status) {
-        // TODO:  validation on backing bean
-
+    public String list(ModelMap model,
+            @ModelAttribute("backingBean") ListBackingBean backingBean,
+            BindingResult bindingResult, FlashScope flashScope,
+            YukonUserContext userContext) {
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
 
         filters.add(new AuthorizedFilter<DisplayablePao>(paoAuthorizationService, 
@@ -68,7 +64,7 @@ public class ScenarioController {
             filters.add(new NameFilter(backingBean.getName()));
             isFiltered = true;
         }
-        modelMap.addAttribute("isFiltered", isFiltered);
+        model.addAttribute("isFiltered", isFiltered);
 
         // Sorting - name is default sorter
         Comparator<DisplayablePao> sorter = new DisplayablePaoComparator();
@@ -81,44 +77,51 @@ public class ScenarioController {
             scenarioService.filterScenarios(userContext, filter, sorter, startIndex,
                                             backingBean.getItemsPerPage());
 
-        modelMap.addAttribute("searchResult", searchResult);
-        modelMap.addAttribute("scenarios", searchResult.getResultList());
+        model.addAttribute("searchResult", searchResult);
+        model.addAttribute("scenarios", searchResult.getResultList());
         Map<Integer, Boolean> favoritesByPaoId =
             favoritesDao.favoritesByPao(searchResult.getResultList(),
                                         userContext.getYukonUser());
-        modelMap.addAttribute("favoritesByPaoId", favoritesByPaoId);
+        model.addAttribute("favoritesByPaoId", favoritesByPaoId);
+
+        addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
 
         return "dr/scenario/list.jsp";
     }
 
     @RequestMapping("/scenario/detail")
-    public String detail(int scenarioId, ModelMap modelMap,
-            YukonUserContext userContext,
+    public String detail(int scenarioId, ModelMap model,
             @ModelAttribute("backingBean") ProgramListBackingBean backingBean,
-            BindingResult bindingResult,
-            SessionStatus status, FlashScope flashScope) {
-        if (bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> messages =
-                YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-        }
-
+            BindingResult bindingResult, YukonUserContext userContext,
+            FlashScope flashScope) {
     	DisplayablePao scenario = scenarioDao.getScenario(scenarioId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      scenario, 
                                                      Permission.LM_VISIBLE);
 
         favoritesDao.detailPageViewed(scenarioId);
-        modelMap.addAttribute("scenario", scenario);
+        model.addAttribute("scenario", scenario);
         boolean isFavorite =
             favoritesDao.isFavorite(scenarioId, userContext.getYukonUser());
-        modelMap.addAttribute("isFavorite", isFavorite);
+        model.addAttribute("isFavorite", isFavorite);
 
         UiFilter<DisplayablePao> detailFilter = new ForScenarioFilter(scenarioId);
-        programControllerHelper.filterPrograms(modelMap, userContext, backingBean,
-                                               bindingResult, status, detailFilter);
+        programControllerHelper.filterPrograms(model, userContext, backingBean,
+                                               bindingResult, detailFilter);
+
+        addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
 
         return "dr/scenario/detail.jsp";
+    }
+
+    private void addFilterErrorsToFlashScopeIfNecessary(ModelMap model,
+            BindingResult bindingResult, FlashScope flashScope) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("hasFilterErrors", true);
+            List<MessageSourceResolvable> messages =
+                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        }
     }
 
     @InitBinder

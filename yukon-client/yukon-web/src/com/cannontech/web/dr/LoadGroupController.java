@@ -8,16 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -59,19 +60,19 @@ public class LoadGroupController {
     }
 
     @RequestMapping("/loadGroup/list")
-    public String list(ModelMap modelMap, YukonUserContext userContext,
+    public String list(ModelMap model,
             @ModelAttribute("backingBean") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
-            BindingResult result, SessionStatus status) {
-
-        loadGroupControllerHelper.filterGroups(modelMap, userContext, backingBean,
-                                               result, status, null);
+            BindingResult bindingResult, YukonUserContext userContext,
+            FlashScope flashScope) {
+        loadGroupControllerHelper.filterGroups(model, userContext, backingBean,
+                                               bindingResult, null, flashScope);
         return "dr/loadGroup/list.jsp";
     }    
 
     @RequestMapping("/loadGroup/detail")
-    public String detail(int loadGroupId, ModelMap modelMap,
+    public String detail(int loadGroupId, ModelMap model,
             @ModelAttribute("backingBean") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
-            BindingResult result, SessionStatus status, YukonUserContext userContext) {
+            BindingResult bindingResult, FlashScope flashScope, YukonUserContext userContext) {
         
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
@@ -79,19 +80,19 @@ public class LoadGroupController {
                                                      Permission.LM_VISIBLE);
 
         favoritesDao.detailPageViewed(loadGroupId);
-        modelMap.addAttribute("loadGroup", loadGroup);
+        model.addAttribute("loadGroup", loadGroup);
         boolean isFavorite =
             favoritesDao.isFavorite(loadGroupId, userContext.getYukonUser());
-        modelMap.addAttribute("isFavorite", isFavorite);
-        modelMap.addAttribute("parentPrograms",
+        model.addAttribute("isFavorite", isFavorite);
+        model.addAttribute("parentPrograms",
                               programService.findProgramsForLoadGroup(loadGroupId, userContext));
-        modelMap.addAttribute("parentLoadGroups",
+        model.addAttribute("parentLoadGroups",
                               loadGroupService.findLoadGroupsForMacroLoadGroup(loadGroupId, userContext));
 
         UiFilter<DisplayablePao> detailFilter =
             new LoadGroupsForMacroLoadGroupFilter(loadGroupId);
-        loadGroupControllerHelper.filterGroups(modelMap, userContext, backingBean,
-                                               result, status, detailFilter);
+        loadGroupControllerHelper.filterGroups(model, userContext, backingBean,
+                                               bindingResult, detailFilter, flashScope);
 
         return "dr/loadGroup/detail.jsp";
     }
@@ -207,9 +208,14 @@ public class LoadGroupController {
         modelMap.addAttribute("popupId", "drDialog");
         return "common/closePopup.jsp";
     }
-    
+
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+        if (binder.getTarget() != null) {
+            MessageCodesResolver msgCodesResolver =
+                new YukonMessageCodeResolver("yukon.web.modules.dr.loadGroup.");
+            binder.setMessageCodesResolver(msgCodesResolver);
+        }
         loadGroupControllerHelper.initBinder(binder, userContext);
     }
     

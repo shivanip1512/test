@@ -20,7 +20,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
@@ -28,6 +27,7 @@ import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.util.IntegerRange;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -63,7 +63,7 @@ import com.google.common.collect.Ordering;
 public class ControlAreaController {
     public static class ControlAreaListBackingBean extends ListBackingBean {
         private String state;
-        private Range<Integer> priority = new Range<Integer>();
+        private IntegerRange priority = new IntegerRange();
 
         // TODO:
         // START and STOP (HH:MM only)
@@ -81,11 +81,11 @@ public class ControlAreaController {
             this.state = state;
         }
 
-        public Range<Integer> getPriority() {
+        public IntegerRange getPriority() {
             return priority;
         }
 
-        public void setPriority(Range<Integer> priority) {
+        public void setPriority(IntegerRange priority) {
             this.priority = priority;
         }
 
@@ -108,10 +108,23 @@ public class ControlAreaController {
     private FavoritesDao favoritesDao;
     private ControlAreaNameField controlAreaNameField;
 
+    private SimpleValidator<ControlAreaListBackingBean> filterValidator =
+        new SimpleValidator<ControlAreaListBackingBean>(ControlAreaListBackingBean.class) {
+            @Override
+            protected void doValidation(ControlAreaListBackingBean target,
+                    Errors errors) {
+                if (target.priority.isInverted()) {
+                    errors.reject("priorityFromAfterTo");
+                }
+            }
+    };
+
     @RequestMapping("/controlArea/list")
-    public String list(ModelMap modelMap, YukonUserContext userContext,
+    public String list(ModelMap model,
             @ModelAttribute("backingBean") ControlAreaListBackingBean backingBean,
-            BindingResult result, SessionStatus status) {
+            BindingResult bindingResult, FlashScope flashScope,
+            YukonUserContext userContext) {
+        filterValidator.validate(backingBean, bindingResult);
 
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
 
@@ -138,7 +151,7 @@ public class ControlAreaController {
             filters.add(new PriorityFilter(controlAreaService, backingBean.getPriority()));
             isFiltered = true;
         }
-        modelMap.addAttribute("isFiltered", isFiltered);
+        model.addAttribute("isFiltered", isFiltered);
 
         // Sorting - name is default sorter
         Comparator<DisplayablePao> defaultSorter = controlAreaNameField.getSorter(userContext);
@@ -175,42 +188,39 @@ public class ControlAreaController {
             controlAreaService.filterControlAreas(filter, sorter, startIndex,
                                                   backingBean.getItemsPerPage(), userContext);
 
-        modelMap.addAttribute("searchResult", searchResult);
-        modelMap.addAttribute("controlAreas", searchResult.getResultList());
+        model.addAttribute("searchResult", searchResult);
+        model.addAttribute("controlAreas", searchResult.getResultList());
         Map<Integer, Boolean> favoritesByPaoId =
             favoritesDao.favoritesByPao(searchResult.getResultList(),
                                         userContext.getYukonUser());
-        modelMap.addAttribute("favoritesByPaoId", favoritesByPaoId);
+        model.addAttribute("favoritesByPaoId", favoritesByPaoId);
+
+        addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
 
         return "dr/controlArea/list.jsp";
     }
 
     @RequestMapping("/controlArea/detail")
-    public String detail(int controlAreaId, ModelMap modelMap,
+    public String detail(int controlAreaId, ModelMap model,
             YukonUserContext userContext,
             @ModelAttribute("backingBean") ProgramControllerHelper.ProgramListBackingBean backingBean,
-            BindingResult bindingResult, SessionStatus status,
-            FlashScope flashScope) {
-        if (bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> messages =
-                YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-        }
-
+            BindingResult bindingResult, FlashScope flashScope) {
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                      controlArea,
                                                      Permission.LM_VISIBLE);
 
         favoritesDao.detailPageViewed(controlAreaId);
-        modelMap.addAttribute("controlArea", controlArea);
+        model.addAttribute("controlArea", controlArea);
         boolean isFavorite =
             favoritesDao.isFavorite(controlAreaId, userContext.getYukonUser());
-        modelMap.addAttribute("isFavorite", isFavorite);
+        model.addAttribute("isFavorite", isFavorite);
 
         UiFilter<DisplayablePao> detailFilter = new ForControlAreaFilter(controlAreaId);
-        programControllerHelper.filterPrograms(modelMap, userContext, backingBean,
-                                               bindingResult, status, detailFilter);
+        programControllerHelper.filterPrograms(model, userContext, backingBean,
+                                               bindingResult, detailFilter);
+
+        addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
 
         return "dr/controlArea/detail.jsp";
     }
@@ -539,6 +549,16 @@ public class ControlAreaController {
     private String closeDialog(ModelMap modelMap) {
         modelMap.addAttribute("popupId", "drDialog");
         return "common/closePopup.jsp";
+    }
+
+    private void addFilterErrorsToFlashScopeIfNecessary(ModelMap model,
+            BindingResult bindingResult, FlashScope flashScope) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("hasFilterErrors", true);
+            List<MessageSourceResolvable> messages =
+                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        }
     }
 
     @InitBinder

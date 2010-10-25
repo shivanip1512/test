@@ -98,4 +98,9 @@
 		</c:choose>
 	</tags:pagedBox>
 
+    <c:if test="${hasFilterErrors}">
+        <script type="text/javascript">
+            $('filterPopup').show();
+        </script>
+    </c:if>
 </cti:standardPage>

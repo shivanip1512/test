@@ -4,24 +4,27 @@ import java.beans.PropertyEditor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.util.DateRange;
 import com.cannontech.common.util.Range;
+import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
@@ -36,6 +39,8 @@ import com.cannontech.dr.loadgroup.service.LoadGroupFieldService;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Ordering;
@@ -43,7 +48,7 @@ import com.google.common.collect.Ordering;
 public class LoadGroupControllerHelper {
     public static class LoadGroupListBackingBean extends ListBackingBean {
         private String state;
-        private Range<Date> lastAction = new Range<Date>();
+        private DateRange lastAction = new DateRange();
         private Range<Double> loadCapacity = new Range<Double>();
         
         public String getState() {
@@ -52,10 +57,10 @@ public class LoadGroupControllerHelper {
         public void setState(String state) {
             this.state = state;
         }
-        public Range<Date> getLastAction() {
+        public DateRange getLastAction() {
             return lastAction;
         }
-        public void setLastAction(Range<Date> lastAction) {
+        public void setLastAction(DateRange lastAction) {
             this.lastAction = lastAction;
         }
         public Range<Double> getLoadCapacity() {
@@ -65,7 +70,18 @@ public class LoadGroupControllerHelper {
             this.loadCapacity = loadCapacity;
         }
     }
-    
+
+    private SimpleValidator<LoadGroupListBackingBean> validator =
+        new SimpleValidator<LoadGroupListBackingBean>(LoadGroupListBackingBean.class) {
+            @Override
+            protected void doValidation(LoadGroupListBackingBean target,
+                    Errors errors) {
+                if (target.lastAction.isInverted()) {
+                    errors.reject("lastActionFromTimeAfterToTime");
+                }
+            }
+    };
+
     private LoadGroupService loadGroupService = null;
     private PaoAuthorizationService paoAuthorizationService;
     private DatePropertyEditorFactory datePropertyEditorFactory;
@@ -89,11 +105,11 @@ public class LoadGroupControllerHelper {
         binder.registerCustomEditor(Object.class, "loadCapacity.max", numberEditor);
     }
 
-    public void filterGroups(ModelMap modelMap, YukonUserContext userContext,
-            LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
-            BindingResult result, SessionStatus status,
-            UiFilter<DisplayablePao> detailFilter) {
-        // TODO:  validation on backing bean
+    public void filterGroups(ModelMap model, YukonUserContext userContext,
+            LoadGroupListBackingBean backingBean, BindingResult bindingResult,
+            UiFilter<DisplayablePao> detailFilter, FlashScope flashScope) {
+        validator.validate(backingBean, bindingResult);
+
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
         if (detailFilter != null) {
             filters.add(detailFilter);
@@ -126,7 +142,7 @@ public class LoadGroupControllerHelper {
             filters.add(new LoadGroupLoadCapacityFilter(loadGroupService, backingBean.getLoadCapacity()));
             isFiltered = true;
         }
-        modelMap.addAttribute("isFiltered", isFiltered);
+        model.addAttribute("isFiltered", isFiltered);
 
         // Sorting - name is default sorter
         Comparator<DisplayablePao> defaultSorter = loadGroupNameField.getSorter(userContext);
@@ -154,12 +170,24 @@ public class LoadGroupControllerHelper {
             loadGroupService.filterGroups(filter, sorter, startIndex,
                                           backingBean.getItemsPerPage(), userContext);
 
-        modelMap.addAttribute("searchResult", searchResult);
-        modelMap.addAttribute("loadGroups", searchResult.getResultList());
+        model.addAttribute("searchResult", searchResult);
+        model.addAttribute("loadGroups", searchResult.getResultList());
         Map<Integer, Boolean> favoritesByPaoId =
             favoritesDao.favoritesByPao(searchResult.getResultList(),
                                         userContext.getYukonUser());
-        modelMap.addAttribute("favoritesByPaoId", favoritesByPaoId);
+        model.addAttribute("favoritesByPaoId", favoritesByPaoId);
+
+        addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
+    }
+
+    private void addFilterErrorsToFlashScopeIfNecessary(ModelMap model,
+            BindingResult bindingResult, FlashScope flashScope) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("hasFilterErrors", true);
+            List<MessageSourceResolvable> messages =
+                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        }
     }
 
     @Autowired

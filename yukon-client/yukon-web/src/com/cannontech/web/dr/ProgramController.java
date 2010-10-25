@@ -4,6 +4,7 @@ package com.cannontech.web.dr;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -11,11 +12,11 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
@@ -23,6 +24,9 @@ import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.dr.LoadGroupControllerHelper.LoadGroupListBackingBean;
+import com.cannontech.web.dr.ProgramControllerHelper.ProgramListBackingBean;
 
 @Controller
 @RequestMapping("/program/*")
@@ -31,47 +35,43 @@ public class ProgramController extends ProgramControllerBase {
     private FavoritesDao favoritesDao;
 
     @RequestMapping
-    public String list(ModelMap modelMap, YukonUserContext userContext,
-            @ModelAttribute("backingBean") ProgramControllerHelper.ProgramListBackingBean backingBean,
-            BindingResult result, SessionStatus status, FlashScope flashScope) {
+    public String list(ModelMap model, YukonUserContext userContext,
+            @ModelAttribute("backingBean") ProgramListBackingBean backingBean,
+            BindingResult bindingResult, FlashScope flashScope) {
+        programControllerHelper.filterPrograms(model, userContext, backingBean,
+                                               bindingResult, null);
 
-        programControllerHelper.filterPrograms(modelMap, userContext, backingBean,
-                                               result, status, null);
-        
-        addErrorsToFlashScopeIfNecessary(result, flashScope);
+        addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
 
         return "dr/program/list.jsp";
     }
 
     @RequestMapping
-    public String detail(int programId, ModelMap modelMap,
-            YukonUserContext userContext,
-            @ModelAttribute("backingBean") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
-            BindingResult result, SessionStatus status, FlashScope flashScope) {
-        
+    public String detail(int programId, ModelMap model,
+            @ModelAttribute("backingBean") LoadGroupListBackingBean backingBean,
+            BindingResult bindingResult, YukonUserContext userContext,
+            FlashScope flashScope) {
         DisplayablePao program = programService.getProgram(programId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      program, 
                                                      Permission.LM_VISIBLE);
 
         favoritesDao.detailPageViewed(programId);
-        modelMap.addAttribute("program", program);
+        model.addAttribute("program", program);
         boolean isFavorite =
             favoritesDao.isFavorite(programId, userContext.getYukonUser());
-        modelMap.addAttribute("isFavorite", isFavorite);
+        model.addAttribute("isFavorite", isFavorite);
 
         UiFilter<DisplayablePao> detailFilter = new LoadGroupsForProgramFilter(programId);
-        loadGroupControllerHelper.filterGroups(modelMap, userContext, backingBean,
-                                               result, status, detailFilter);
+        loadGroupControllerHelper.filterGroups(model, userContext, backingBean,
+                                               bindingResult, detailFilter, flashScope);
 
         DisplayablePao parentControlArea =
             controlAreaService.findControlAreaForProgram(userContext, programId);
-        modelMap.addAttribute("parentControlArea", parentControlArea);
+        model.addAttribute("parentControlArea", parentControlArea);
         List<Scenario> parentScenarios = scenarioDao.findScenariosForProgram(programId);
-        modelMap.addAttribute("parentScenarios", parentScenarios);
-        
-        addErrorsToFlashScopeIfNecessary(result, flashScope);
-        
+        model.addAttribute("parentScenarios", parentScenarios);
+
         return "dr/program/detail.jsp";
     }
 
@@ -145,6 +145,16 @@ public class ProgramController extends ProgramControllerBase {
         }
         
         return closeDialog(modelMap);
+    }
+
+    private void addFilterErrorsToFlashScopeIfNecessary(ModelMap model,
+            BindingResult bindingResult, FlashScope flashScope) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("hasFilterErrors", true);
+            List<MessageSourceResolvable> messages =
+                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        }
     }
 
     @InitBinder

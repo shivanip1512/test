@@ -82,8 +82,14 @@
 							<cti:msg var="fieldName"
 								key="yukon.web.modules.dr.controlAreaList.filter.priority" />
 							<td>${fieldName}</td>
-							<td><form:input path="priority.min" size="5" />&nbsp;${minStr}&nbsp;&nbsp;
-							<form:input path="priority.max" size="5" />&nbsp;${maxStr}</td>
+							<td>
+                              <table>
+                                <tr>
+                                  <td><tags:input path="priority.min" size="5"/>&nbsp;${minStr}</td>
+                                  <td><tags:input path="priority.max" size="5"/>&nbsp;${maxStr}</td>
+                                </tr>
+                              </table>
+                            </td>
 						</cti:checkRolesAndProperties>
 
 						<%--
@@ -258,4 +264,9 @@
 		</c:choose>
 	</tags:pagedBox>
 
+    <c:if test="${hasFilterErrors}">
+        <script type="text/javascript">
+            $('filterPopup').show();
+        </script>
+    </c:if>
 </cti:standardPage>

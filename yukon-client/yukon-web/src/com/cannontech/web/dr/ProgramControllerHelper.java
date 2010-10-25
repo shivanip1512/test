@@ -15,9 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
@@ -25,7 +25,9 @@ import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DateRange;
+import com.cannontech.common.util.IntegerRange;
 import com.cannontech.common.util.Range;
+import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
@@ -52,7 +54,7 @@ public class ProgramControllerHelper {
         private String state;
         private DateRange start = new DateRange();
         private DateRange stop = new DateRange();
-        private Range<Integer> priority = new Range<Integer>();
+        private IntegerRange priority = new IntegerRange();
         private Range<Double> loadCapacity = new Range<Double>();
 
         public String getState() {
@@ -79,11 +81,11 @@ public class ProgramControllerHelper {
             this.stop = stop;
         }
 
-        public Range<Integer> getPriority() {
+        public IntegerRange getPriority() {
             return priority;
         }
 
-        public void setPriority(Range<Integer> priority) {
+        public void setPriority(IntegerRange priority) {
             this.priority = priority;
         }
 
@@ -95,6 +97,23 @@ public class ProgramControllerHelper {
             this.loadCapacity = loadCapacity;
         }
     }
+
+    private SimpleValidator<ProgramListBackingBean> validator =
+        new SimpleValidator<ProgramListBackingBean>(ProgramListBackingBean.class) {
+            @Override
+            protected void doValidation(ProgramListBackingBean target,
+                    Errors errors) {
+                if (target.start.isInverted()) {
+                    errors.reject("startFromTimeAfterToTime");
+                }
+                if (target.stop.isInverted()) {
+                    errors.reject("stopFromTimeAfterToTime");
+                }
+                if (target.priority.isInverted()) {
+                    errors.reject("priorityFromAfterTo");
+                }
+            }
+    };
 
     private ProgramService programService = null;
     private PaoAuthorizationService paoAuthorizationService;
@@ -144,10 +163,10 @@ public class ProgramControllerHelper {
     }
 
     public void filterPrograms(ModelMap modelMap, YukonUserContext userContext,
-            ProgramControllerHelper.ProgramListBackingBean backingBean,
-            BindingResult result, SessionStatus status,
+            ProgramListBackingBean backingBean, BindingResult bindingResult,
             UiFilter<DisplayablePao> detailFilter) {
-        // TODO:  validation on backing bean
+        validator.validate(backingBean, bindingResult);
+
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
         if (detailFilter != null) {
             filters.add(detailFilter);
@@ -156,7 +175,7 @@ public class ProgramControllerHelper {
         filters.add(new AuthorizedFilter<DisplayablePao>(paoAuthorizationService, 
                                          userContext.getYukonUser(),
                                          Permission.LM_VISIBLE));
-        
+
         boolean isFiltered = false;
         if (!StringUtils.isEmpty(backingBean.getName())) {
             filters.add(new NameFilter(backingBean.getName()));
@@ -187,19 +206,19 @@ public class ProgramControllerHelper {
         // Sorting - name is default sorter
         Comparator<DisplayablePao> defaultSorter = programNameField.getSorter(userContext);
         Comparator<DisplayablePao> sorter = defaultSorter;
-        if(!StringUtils.isEmpty(backingBean.getSort())) {
+        if (!StringUtils.isEmpty(backingBean.getSort())) {
             // If there is a custom sorter, add it
             
             DemandResponseBackingField<LMProgramBase> sortField = 
                 programFieldService.getBackingField(backingBean.getSort());
             
             sorter = sortField.getSorter(userContext);
-            if(backingBean.getDescending()) {
+            if (backingBean.getDescending()) {
                 sorter = Collections.reverseOrder(sorter);
             }
             
             // Don't double sort if name is the sort field
-            if(programNameField != sortField) {
+            if (programNameField != sortField) {
                 sorter = Ordering.from(sorter).compound(defaultSorter);
             }
         }
