@@ -148,7 +148,13 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 			new LCDisplayItem( ControlAreaActionListener.SEL_ALL_CONTROL_AREAS);
 		d1.setLocalTableModels(
 			new TableModel[] { 
-					getControlAreaTableModel(),
+			        new FilteredControlAreaTableModel(
+			                                          new int[] {LMControlArea.STATE_ACTIVE,
+			                                                  LMControlArea.STATE_FULLY_ACTIVE,
+			                                                  LMControlArea.STATE_MANUAL_ACTIVE,
+			                                                  LMControlArea.STATE_INACTIVE,
+			                                                  LMControlArea.STATE_CNTRL_ATTEMPT},
+			                                                  getControlAreaTableModel().getTableModelListeners()),
 					getProgramTableModel(),
 					getGroupTableModel() } );
 
