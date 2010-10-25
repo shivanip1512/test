@@ -606,7 +606,7 @@ void CtiCapController::controlLoop()
                             {
                                 CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[j];
                                 if ( currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder &&
-                                    stringCompareIgnoreCase(currentFeeder->getStrategy()->getStrategyName(), "(none)") &&
+                                    stringCompareIgnoreCase(currentFeeder->getStrategy()->getStrategyName(), ControlStrategy::NoControlUnit) &&
                                     (currentFeeder->getStrategy()->getPeakStartTime() > 0 && currentFeeder->getStrategy()->getPeakStopTime() > 0 ))
                                 {
                                     currentFeeder->isPeakTime(currentDateTime);

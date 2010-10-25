@@ -575,19 +575,19 @@ void ControlStrategy::restoreStates(const ControlStrategy * backup)
 
 
 const std::string ControlStrategy::NoControlMethod                  = "NONE";
-const std::string ControlStrategy::IndividualFeederControlMethod    = "IndividualFeeder";
-const std::string ControlStrategy::SubstationBusControlMethod       = "SubstationBus";
-const std::string ControlStrategy::BusOptimizedFeederControlMethod  = "BusOptimizedFeeder";
-const std::string ControlStrategy::ManualOnlyControlMethod          = "ManualOnly";
-const std::string ControlStrategy::TimeOfDayControlMethod           = "TimeOfDay";
+const std::string ControlStrategy::IndividualFeederControlMethod    = "INDIVIDUAL_FEEDER";
+const std::string ControlStrategy::SubstationBusControlMethod       = "SUBSTATION_BUS";
+const std::string ControlStrategy::BusOptimizedFeederControlMethod  = "BUSOPTIMIZED_FEEDER";
+const std::string ControlStrategy::ManualOnlyControlMethod          = "MANUAL_ONLY";
+const std::string ControlStrategy::TimeOfDayControlMethod           = "TIME_OF_DAY";
 
-const std::string ControlStrategy::NoControlUnit                    = "(none)";
-const std::string ControlStrategy::KVarControlUnit                  = "kVAr";
+const std::string ControlStrategy::NoControlUnit                    = "NONE";
+const std::string ControlStrategy::KVarControlUnit                  = "KVAR";
 const std::string ControlStrategy::VoltsControlUnit                 = "VOLTS";
-const std::string ControlStrategy::MultiVoltControlUnit             = "Multi Volt";
-const std::string ControlStrategy::MultiVoltVarControlUnit          = "Multi Volt/VAR";
-const std::string ControlStrategy::PFactorKWKVarControlUnit         = "P-Factor kW/kVAr";
-const std::string ControlStrategy::PFactorKWKQControlUnit           = "P-Factor kW/kQ";
-const std::string ControlStrategy::TimeOfDayControlUnit             = "Time of Day";
-const std::string ControlStrategy::IntegratedVoltVarControlUnit     = "Integrated Volt/Var";
+const std::string ControlStrategy::MultiVoltControlUnit             = "MULTI_VOLT";
+const std::string ControlStrategy::MultiVoltVarControlUnit          = "MULTI_VOLT_VAR";
+const std::string ControlStrategy::PFactorKWKVarControlUnit         = "PFACTOR_KW_KVAR";
+const std::string ControlStrategy::PFactorKWKQControlUnit           = "PFACTOR_KW_KQ";
+const std::string ControlStrategy::TimeOfDayControlUnit             = "TIME_OF_DAY";
+const std::string ControlStrategy::IntegratedVoltVarControlUnit     = "INTEGRATED_VOLT_VAR";
 

@@ -381,7 +381,7 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() <<  " - Verification Not Enabled on SubBus: "<<currentSubstationBus->getPaoName() <<" due to SubBus Strategy = (none)"<< endl;
+                dout << CtiTime() <<  " - Verification Not Enabled on SubBus: "<<currentSubstationBus->getPaoName() <<" due to SubBus Strategy = "<<ControlStrategy::NoControlUnit<< endl;
             }
 
         }
