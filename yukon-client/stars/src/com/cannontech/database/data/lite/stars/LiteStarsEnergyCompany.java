@@ -62,6 +62,7 @@ import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
@@ -1279,7 +1280,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         if (liteAcctInfo == null) return;
         
         // Remove customer from the cache
-        ServerUtils.handleDBChange( liteAcctInfo.getCustomer(), DBChangeMsg.CHANGE_TYPE_DELETE );
+        ServerUtils.handleDBChange( liteAcctInfo.getCustomer(), DbChangeType.DELETE );
         
     }
     

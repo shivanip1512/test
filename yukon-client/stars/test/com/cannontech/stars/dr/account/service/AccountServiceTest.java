@@ -39,6 +39,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
@@ -254,7 +255,7 @@ public class AccountServiceTest {
             DBChangeMsg.CHANGE_YUKON_USER_DB,
             DBChangeMsg.CAT_YUKON_USER,
             DBChangeMsg.CAT_YUKON_USER,
-            DBChangeMsg.CHANGE_TYPE_ADD));
+            DbChangeType.ADD));
         expect(addressDaoMock.add(new LiteAddress())).andReturn(true);
         expect(addressDaoMock.add(new LiteAddress())).andReturn(true);
         contactDaoMock.saveContact(new LiteContact(1));
@@ -262,7 +263,7 @@ public class AccountServiceTest {
                                DBChangeMsg.CHANGE_CONTACT_DB,
                                DBChangeMsg.CAT_CUSTOMERCONTACT,
                                DBChangeMsg.CAT_CUSTOMERCONTACT,
-                               DBChangeMsg.CHANGE_TYPE_ADD));
+                               DbChangeType.ADD));
         contactNotificationDaoMock.saveNotification(new LiteContactNotification(1));
         expectLastCall().times(3);
         expect(authDaoMock.getUserTimeZone(user)).andReturn(TimeZone.getDefault());
@@ -272,7 +273,7 @@ public class AccountServiceTest {
                                DBChangeMsg.CHANGE_CUSTOMER_DB,
                                DBChangeMsg.CAT_CUSTOMER,
                                DBChangeMsg.CAT_CUSTOMER,
-                               DBChangeMsg.CHANGE_TYPE_ADD));
+                               DbChangeType.ADD));
         expect(siteInformationDaoMock.getSubstationIdByName("SuperStation")).andReturn(-1);
         siteInformationDaoMock.add(new LiteSiteInformation());
         expect(accountSiteDaoMock.add(new AccountSite())).andReturn(true);
@@ -283,7 +284,7 @@ public class AccountServiceTest {
                                                             DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
                                                             DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                                             DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                                                            DBChangeMsg.CHANGE_TYPE_ADD));
+                                                            DbChangeType.ADD));
         ecMappingDaoMock.addECToAccountMapping(new ECToAccountMapping());
         
         /*

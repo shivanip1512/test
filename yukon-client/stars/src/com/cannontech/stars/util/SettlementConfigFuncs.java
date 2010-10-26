@@ -20,6 +20,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -322,7 +323,7 @@ public final class SettlementConfigFuncs {
 				DBChangeMsg.CHANGE_SETTLEMENT_DB,
 				DBChangeMsg.CAT_SETTLEMENT,
 				DBChangeMsg.CAT_SETTLEMENT,
-				DBChangeMsg.CHANGE_TYPE_UPDATE
+				DbChangeType.UPDATE
 				);
 			ServerUtils.handleDBChangeMsg(msg);
 		}

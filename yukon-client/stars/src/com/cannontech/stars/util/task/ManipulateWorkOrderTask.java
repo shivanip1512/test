@@ -22,6 +22,7 @@ import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.data.stars.report.WorkOrderBase;
 import com.cannontech.database.db.stars.integration.SAMToCRS_PTJ;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.util.EventUtils;
@@ -163,7 +164,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 		    				DBChangeMsg.CHANGE_WORK_ORDER_DB,
 		    				DBChangeMsg.CAT_WORK_ORDER,
 		    				DBChangeMsg.CAT_WORK_ORDER,
-		    				DBChangeMsg.CHANGE_TYPE_UPDATE
+		    				DbChangeType.UPDATE
 		    			);
 		    		//Change the dbChangeMessage source so the stars message handler will handle it instead of ignore it.
 					dbChangeMessage.setSource("ManipulateWorkOrder:ForceHandleDBChange");

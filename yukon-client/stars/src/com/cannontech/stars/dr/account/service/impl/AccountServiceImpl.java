@@ -48,6 +48,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.i18n.service.YukonUserContextService;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
@@ -188,7 +189,7 @@ public class AccountServiceImpl implements AccountService {
                 DBChangeMsg.CHANGE_YUKON_USER_DB,
                 DBChangeMsg.CAT_YUKON_USER,
                 DBChangeMsg.CAT_YUKON_USER,
-                DBChangeMsg.CHANGE_TYPE_ADD));
+                DbChangeType.ADD));
         }
             
         /*
@@ -276,7 +277,7 @@ public class AccountServiceImpl implements AccountService {
                                DBChangeMsg.CHANGE_CUSTOMER_DB,
                                DBChangeMsg.CAT_CUSTOMER,
                                DBChangeMsg.CAT_CUSTOMER,
-                               DBChangeMsg.CHANGE_TYPE_ADD));
+                               DbChangeType.ADD));
             
         /*
          * Create comercial/industrial customer if company was passed
@@ -307,7 +308,7 @@ public class AccountServiceImpl implements AccountService {
                                    DBChangeMsg.CHANGE_CUSTOMER_DB,
                                    DBChangeMsg.CAT_CI_CUSTOMER,
                                    DBChangeMsg.CAT_CI_CUSTOMER,
-                                   DBChangeMsg.CHANGE_TYPE_ADD));
+                                   DbChangeType.ADD));
         }
             
         /*
@@ -366,7 +367,7 @@ public class AccountServiceImpl implements AccountService {
                                                         DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
                                                         DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                                         DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                                                        DBChangeMsg.CHANGE_TYPE_ADD));
+                                                        DbChangeType.ADD));
             
         /*
          * Add mapping
@@ -497,7 +498,7 @@ public class AccountServiceImpl implements AccountService {
                                            DBChangeMsg.CHANGE_CUSTOMER_DB,
                                            DBChangeMsg.CAT_CUSTOMER,
                                            DBChangeMsg.CAT_CUSTOMER,
-                                           DBChangeMsg.CHANGE_TYPE_DELETE));
+                                           DbChangeType.DELETE));
         
         /*
          * Delete login
@@ -511,7 +512,7 @@ public class AccountServiceImpl implements AccountService {
                                    DBChangeMsg.CHANGE_YUKON_USER_DB,
                                    DBChangeMsg.CAT_YUKON_USER,
                                    DBChangeMsg.CAT_YUKON_USER,
-                                   DBChangeMsg.CHANGE_TYPE_DELETE)); 
+                                   DbChangeType.DELETE)); 
         }
         
         /*
@@ -522,7 +523,7 @@ public class AccountServiceImpl implements AccountService {
                                DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
                                DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                               DBChangeMsg.CHANGE_TYPE_DELETE));
+                               DbChangeType.DELETE));
         
         log.info("Account: " +account.getAccountNumber()+ " deleted successfully.");
         
@@ -673,7 +674,7 @@ public class AccountServiceImpl implements AccountService {
                     DBChangeMsg.CHANGE_YUKON_USER_DB,
                     DBChangeMsg.CAT_YUKON_USER,
                     DBChangeMsg.CAT_YUKON_USER,
-                    DBChangeMsg.CHANGE_TYPE_ADD));
+                    DbChangeType.ADD));
             }
         }
         
@@ -705,7 +706,7 @@ public class AccountServiceImpl implements AccountService {
                                                         DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
                                                         DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                                         DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                                                        DBChangeMsg.CHANGE_TYPE_UPDATE));
+                                                        DbChangeType.UPDATE));
         
         /*
          * Update the primary contact
@@ -722,7 +723,7 @@ public class AccountServiceImpl implements AccountService {
             DBChangeMsg.CHANGE_CONTACT_DB,
             DBChangeMsg.CAT_CUSTOMERCONTACT,
             DBChangeMsg.CAT_CUSTOMERCONTACT,
-            DBChangeMsg.CHANGE_TYPE_UPDATE));
+            DbChangeType.UPDATE));
         
         /*
          * Update the notifications
@@ -883,7 +884,7 @@ public class AccountServiceImpl implements AccountService {
                                                         DBChangeMsg.CHANGE_CUSTOMER_DB,
                                                         DBChangeMsg.CAT_CUSTOMER,
                                                         DBChangeMsg.CAT_CUSTOMER,
-                                                        DBChangeMsg.CHANGE_TYPE_UPDATE));
+                                                        DbChangeType.UPDATE));
         
         /*
          * Update account site

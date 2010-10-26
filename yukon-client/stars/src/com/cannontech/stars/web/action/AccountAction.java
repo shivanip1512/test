@@ -13,6 +13,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.util.ServerUtils;
@@ -54,14 +55,14 @@ public class AccountAction {
         com.cannontech.database.data.customer.Contact contact =
                 (com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( primContact );
         Transaction.createTransaction( Transaction.DELETE, contact ).execute();
-        ServerUtils.handleDBChange( primContact, DBChangeMsg.CHANGE_TYPE_DELETE );
+        ServerUtils.handleDBChange( primContact, DbChangeType.DELETE );
         
         Vector<LiteContact> contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
         for (int i = 0; i < contacts.size(); i++) {
             LiteContact liteContact = contacts.get(i);
             contact = (com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
             Transaction.createTransaction( Transaction.DELETE, contact ).execute();
-            ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
+            ServerUtils.handleDBChange( liteContact, DbChangeType.DELETE );
             int userId = liteContact.getLoginID();
             if (userId != UserUtils.USER_DEFAULT_ID &&
                     userId != UserUtils.USER_ADMIN_ID &&
@@ -77,7 +78,7 @@ public class AccountAction {
         
         // Delete lite and stars objects
         energyCompany.deleteCustAccountInformation( liteAcctInfo );
-        ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_DELETE );
+        ServerUtils.handleDBChange( liteAcctInfo, DbChangeType.DELETE );
     }
 
     

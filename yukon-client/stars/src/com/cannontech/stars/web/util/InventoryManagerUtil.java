@@ -51,6 +51,7 @@ import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
@@ -431,7 +432,7 @@ public class InventoryManagerUtil {
 			Transaction.createTransaction( Transaction.DELETE, dbPer ).execute();
 			
 			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages(
-					(CTIDbChange)dbPer, DBChangeMsg.CHANGE_TYPE_DELETE );
+					(CTIDbChange)dbPer, DbChangeType.DELETE );
 			for (int i = 0; i < dbChange.length; i++)
 				ServerUtils.handleDBChangeMsg( dbChange[i] );
 		}

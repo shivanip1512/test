@@ -63,6 +63,7 @@ import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
@@ -126,7 +127,7 @@ public class StarsAdminUtil {
                     grpExpresscom.setPAOName( energyCompany.getName() + " Default Route" );  
                     grpExpresscom.setRouteID( new Integer(routeID) );  
                     grpExpresscom = Transaction.createTransaction( Transaction.INSERT, grpExpresscom ).execute();
-                    ServerUtils.handleDBChangeMsg( grpExpresscom.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
+                    ServerUtils.handleDBChangeMsg( grpExpresscom.getDBChangeMsgs(DbChangeType.ADD)[0] );
                 }
 
 
@@ -156,7 +157,7 @@ public class StarsAdminUtil {
 				macro.setMacroType( MacroTypes.GROUP );
 				grpSerial.getMacroGroupVector().add( macro );
 				grpSerial = Transaction.createTransaction( Transaction.INSERT, grpSerial ).execute();
-				ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
+				ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DbChangeType.ADD)[0] );
                 }
                 
                 PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
@@ -195,7 +196,7 @@ public class StarsAdminUtil {
     				com.cannontech.database.db.device.lm.LMGroupExpressCom grpDB = group.getLMGroupExpressComm();
     				grpDB.setRouteID( new Integer(routeID) );
     				Transaction.createTransaction( Transaction.UPDATE, grpDB ).execute();
-    				ServerUtils.handleDBChangeMsg( group.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_UPDATE)[0] );
+    				ServerUtils.handleDBChangeMsg( group.getDBChangeMsgs(DbChangeType.UPDATE)[0] );
                 }
 			}
 			
@@ -234,12 +235,12 @@ public class StarsAdminUtil {
     			MacroGroup grpSerial = (MacroGroup) LMFactory.createLoadManagement( DeviceTypes.MACRO_GROUP );
     			grpSerial.setDeviceID( new Integer(serialGrpID) );
     			Transaction.createTransaction( Transaction.DELETE, grpSerial ).execute();
-    			ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_DELETE)[0] );
+    			ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DbChangeType.DELETE)[0] );
     			
     			LMGroupExpressCom grpDftRoute = (LMGroupExpressCom) LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_EXPRESSCOMM );
     			grpDftRoute.setLMGroupID( new Integer(dftRtGrpID) );
     			Transaction.createTransaction( Transaction.DELETE, grpDftRoute ).execute();
-    			ServerUtils.handleDBChangeMsg( grpDftRoute.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_DELETE)[0] );
+    			ServerUtils.handleDBChangeMsg( grpDftRoute.getDBChangeMsgs(DbChangeType.DELETE)[0] );
     		}
         }
 	}
@@ -349,7 +350,7 @@ public class StarsAdminUtil {
 		company = Transaction.createTransaction( Transaction.INSERT, company ).execute();
 		
 		LiteContact liteContact = (LiteContact) StarsLiteFactory.createLite(company.getPrimaryContact());
-		ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
+		ServerUtils.handleDBChange( liteContact, DbChangeType.ADD );
 		
 		LiteServiceCompany liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( companyDB );
 		energyCompany.addServiceCompany( liteCompany );
@@ -389,7 +390,7 @@ public class StarsAdminUtil {
 		
 		energyCompany.deleteServiceCompany( companyID );
 		
-		ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
+		ServerUtils.handleDBChange( liteContact, DbChangeType.DELETE );
 	}
 	
 	public static void deleteAllServiceCompanies(LiteStarsEnergyCompany energyCompany)
@@ -922,7 +923,7 @@ public class StarsAdminUtil {
 		adminGroupUpdated |= DaoFactory.getRoleDao().updateGroupRoleProperty( adminGroup, AdministratorRole.ROLEID, AdministratorRole.ADMIN_MANAGE_MEMBERS, CtiUtilities.TRUE_STRING );
 		
 		if (adminGroupUpdated)
-			ServerUtils.handleDBChange( adminGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
+			ServerUtils.handleDBChange( adminGroup, DbChangeType.UPDATE );
 		
 		adminGroup = member.getOperatorAdminGroup();
 		String value = null;
@@ -931,7 +932,7 @@ public class StarsAdminUtil {
 				&& DaoFactory.getRoleDao().updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING, value ))
 			|| ((value = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTIONAL_PRODUCT_DEV )) != null
 				&& DaoFactory.getRoleDao().updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.OPTIONAL_PRODUCT_DEV, value )))
-			ServerUtils.handleDBChange( adminGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
+			ServerUtils.handleDBChange( adminGroup, DbChangeType.UPDATE );
 	}
 	
 	public static void removeMember(LiteStarsEnergyCompany energyCompany, int memberID) throws Exception {
@@ -995,7 +996,7 @@ public class StarsAdminUtil {
 		newGroup = Transaction.createTransaction(Transaction.INSERT, newGroup).execute();
 		
 		LiteYukonGroup liteGroup = new LiteYukonGroup( newGroup.getGroupID().intValue() );
-		ServerUtils.handleDBChange( liteGroup, DBChangeMsg.CHANGE_TYPE_ADD );
+		ServerUtils.handleDBChange( liteGroup, DbChangeType.ADD );
 		
 		return DaoFactory.getRoleDao().getGroup( liteGroup.getGroupID() );
 	}
@@ -1042,7 +1043,7 @@ public class StarsAdminUtil {
 		adminGrp = Transaction.createTransaction(Transaction.INSERT, adminGrp).execute();
 		
 		LiteYukonGroup liteGroup = new LiteYukonGroup( adminGrp.getGroupID().intValue() );
-		ServerUtils.handleDBChange( liteGroup, DBChangeMsg.CHANGE_TYPE_ADD );
+		ServerUtils.handleDBChange( liteGroup, DbChangeType.ADD );
 		
 		return DaoFactory.getRoleDao().getGroup( liteGroup.getGroupID() );
 	}
@@ -1090,7 +1091,7 @@ public class StarsAdminUtil {
 				userDB.getLoginStatus()
 				);
         liteUser.setAuthType(defaultAuthType);
-		ServerUtils.handleDBChange( liteUser, DBChangeMsg.CHANGE_TYPE_ADD );
+		ServerUtils.handleDBChange( liteUser, DbChangeType.ADD );
         
         if (authenticationService.supportsPasswordSet(defaultAuthType)) {
             authenticationService.setPassword(liteUser, password);
@@ -1160,7 +1161,7 @@ public class StarsAdminUtil {
 			Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
 		}
 		
-		ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
+		ServerUtils.handleDBChange( liteUser, DbChangeType.UPDATE );
 	}
 	
 	public static List<YukonSelectionList> getSelectionListsInUse(LiteStarsEnergyCompany energyCompany, StarsYukonUser user) {

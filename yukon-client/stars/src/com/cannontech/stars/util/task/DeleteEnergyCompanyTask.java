@@ -31,6 +31,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
@@ -133,7 +134,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 				
 				try {
 				    com.cannontech.database.data.user.YukonUser.deleteOperatorLogin(userIDs[i]);
-				    ServerUtils.handleDBChange( DaoFactory.getYukonUserDao().getLiteYukonUser(userIDs[i]), DBChangeMsg.CHANGE_TYPE_DELETE );
+				    ServerUtils.handleDBChange( DaoFactory.getYukonUserDao().getLiteYukonUser(userIDs[i]), DbChangeType.DELETE );
 				} catch (UnsupportedOperationException e) {
 				    log.error(e);
 				}
@@ -344,11 +345,11 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			Transaction.createTransaction( Transaction.DELETE, ec ).execute();
 			
 			StarsDatabaseCache.getInstance().deleteEnergyCompany( energyCompany.getLiteID() );
-			ServerUtils.handleDBChange( energyCompany, DBChangeMsg.CHANGE_TYPE_DELETE );
+			ServerUtils.handleDBChange( energyCompany, DbChangeType.DELETE );
 			if (energyCompany.getPrimaryContactID() != CtiUtilities.NONE_ZERO_ID) {
 			    try {
     				LiteContact liteContact = DaoFactory.getContactDao().getContact( energyCompany.getPrimaryContactID() );
-    				ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
+    				ServerUtils.handleDBChange( liteContact, DbChangeType.DELETE );
 			    }catch(EmptyResultDataAccessException ignore) {}
 			}
 			
@@ -358,7 +359,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			        defaultUserId != com.cannontech.user.UserUtils.USER_DEFAULT_ID)
 			{
 				com.cannontech.database.data.user.YukonUser.deleteOperatorLogin(defaultUserId);
-				ServerUtils.handleDBChange( energyCompany.getUser(), DBChangeMsg.CHANGE_TYPE_DELETE );
+				ServerUtils.handleDBChange( energyCompany.getUser(), DbChangeType.DELETE );
 			}
 			
 			// Delete the privilege group of the default operator login
@@ -367,7 +368,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
                 dftGroup.setGroupID(new Integer(liteGroup.getGroupID()));
 
                 Transaction.createTransaction(Transaction.DELETE, dftGroup).execute();
-                ServerUtils.handleDBChange(liteGroup, DBChangeMsg.CHANGE_TYPE_DELETE);
+                ServerUtils.handleDBChange(liteGroup, DbChangeType.DELETE);
             }
 			status = STATUS_FINISHED;
 		}

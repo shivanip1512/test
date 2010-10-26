@@ -2,12 +2,13 @@ package com.cannontech.stars.util;
 
 import java.util.List;
 
+
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yc.gui.YC;
 import com.cannontech.yc.gui.YCDefaults;
 import com.cannontech.yukon.IServerConnection;
@@ -103,11 +104,11 @@ public class ServerUtils {
 		}
 	}
 	
-	public static void handleDBChange(com.cannontech.database.data.lite.LiteBase lite, int typeOfChange) {
+	public static void handleDBChange(com.cannontech.database.data.lite.LiteBase lite, DbChangeType dbChangeType) {
 		DBChangeMsg msg = null;
 		
 		if (lite == null) {
-			msg = new DBChangeMsg( 0, Integer.MAX_VALUE, "", "", typeOfChange );
+			msg = new DBChangeMsg( 0, Integer.MAX_VALUE, "", "", dbChangeType);
 		}
 		else if (lite.getLiteType() == LiteTypes.STARS_CUST_ACCOUNT_INFO) {
 			msg = new DBChangeMsg(
@@ -115,7 +116,7 @@ public class ServerUtils {
 				DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
 				DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
 				DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-				typeOfChange
+				dbChangeType
 				);
 		}
 		else if (lite.getLiteType() == LiteTypes.YUKON_USER) {
@@ -124,7 +125,7 @@ public class ServerUtils {
 				DBChangeMsg.CHANGE_YUKON_USER_DB,
 				DBChangeMsg.CAT_YUKON_USER,
 				DBChangeMsg.CAT_YUKON_USER,
-				typeOfChange
+				dbChangeType
 				);
 		}
 		else if (lite.getLiteType() == LiteTypes.CONTACT) {
@@ -133,7 +134,7 @@ public class ServerUtils {
 				DBChangeMsg.CHANGE_CONTACT_DB,
 				DBChangeMsg.CAT_CUSTOMERCONTACT,
 				DBChangeMsg.CAT_CUSTOMERCONTACT,
-				typeOfChange
+				dbChangeType
 				);
 		}
 		else if (lite.getLiteType() == LiteTypes.YUKON_GROUP) {
@@ -142,7 +143,7 @@ public class ServerUtils {
 				DBChangeMsg.CHANGE_YUKON_USER_DB,
 				DBChangeMsg.CAT_YUKON_USER_GROUP,
 				DBChangeMsg.CAT_YUKON_USER_GROUP,
-				typeOfChange
+				dbChangeType
 				);
 		}
 		else if (lite.getLiteType() == LiteTypes.ENERGY_COMPANY) {
@@ -151,7 +152,7 @@ public class ServerUtils {
 				DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
 				DBChangeMsg.CAT_ENERGY_COMPANY,
 				DBChangeMsg.CAT_ENERGY_COMPANY,
-				typeOfChange
+				dbChangeType
 				);
 		}
 		else if (lite.getLiteType() == LiteTypes.CUSTOMER) {
@@ -160,7 +161,7 @@ public class ServerUtils {
 				DBChangeMsg.CHANGE_CUSTOMER_DB,
 				DBChangeMsg.CAT_CUSTOMER,
 				DBChangeMsg.CAT_CUSTOMER,
-				typeOfChange
+				dbChangeType
 				);
 		}
 		else if (lite.getLiteType() == LiteTypes.CUSTOMER_CI) {
@@ -169,7 +170,7 @@ public class ServerUtils {
 				DBChangeMsg.CHANGE_CUSTOMER_DB,
 				DBChangeMsg.CAT_CI_CUSTOMER,
 				DBChangeMsg.CAT_CI_CUSTOMER,
-				typeOfChange
+				dbChangeType
 				);
 		}
 		else if( lite.getLiteType() == LiteTypes.STARS_SERVICE_COMPANY_DESIGNATION_CODE){
@@ -178,7 +179,7 @@ public class ServerUtils {
 				DBChangeMsg.CHANGE_SERVICE_COMPANY_DESIGNATION_CODE_DB,
 				DBChangeMsg.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
 				DBChangeMsg.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
-				typeOfChange
+				dbChangeType
 				);
 		}
 

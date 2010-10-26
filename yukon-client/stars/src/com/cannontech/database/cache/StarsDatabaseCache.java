@@ -44,6 +44,7 @@ import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.stars.LMProgramWebPublishing;
 import com.cannontech.database.db.web.YukonWebConfiguration;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -286,7 +287,7 @@ public class StarsDatabaseCache implements DBChangeListener {
              *TODO: Will need to add more functionality to handle deletes and adds if STARS is tied
              *together more firmly with Yukon in the future.  (Example might be MCT inventory contents.) 
              */
-            if(msg.getTypeOfChange() != DBChangeMsg.CHANGE_TYPE_DELETE)
+            if(msg.getDbChangeType() != DbChangeType.DELETE)
                 litePao = DaoFactory.getPaoDao().getLiteYukonPAO( msg.getId() );
             else {
                 CTILogger.debug("DBChangeMsg for a deleted PAO: " + msg);
@@ -380,8 +381,8 @@ public class StarsDatabaseCache implements DBChangeListener {
 	    for (Integer energyCompanyId : energyCompanyIds) {
 	        LiteStarsEnergyCompany energyCompany = getEnergyCompany(energyCompanyId);
 
-	        switch( msg.getTypeOfChange() ) {
-	            case DBChangeMsg.CHANGE_TYPE_ADD:
+	        switch( msg.getDbChangeType() ) {
+	            case ADD:
 
 	                try {
 	                    // Create a lite appliance category from the supplied applianceCategoryId
@@ -399,7 +400,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 	                }
 	                break;
 
-	            case DBChangeMsg.CHANGE_TYPE_UPDATE:
+	            case UPDATE:
                     try {
                         // Create a lite appliance category from the supplied applianceCategoryId
                         com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
@@ -416,7 +417,7 @@ public class StarsDatabaseCache implements DBChangeListener {
                     }
 	                break;
 
-	            case DBChangeMsg.CHANGE_TYPE_DELETE:
+	            case DELETE:
 	                energyCompany.deleteProgram(lmProgramWebPublishing.getProgramID());
 	                break;
 	        }
@@ -436,8 +437,8 @@ public class StarsDatabaseCache implements DBChangeListener {
 	    for (Integer energyCompanyId : energyCompanyIds) {
 	        LiteStarsEnergyCompany energyCompany = getEnergyCompany(energyCompanyId);
 
-	        switch( msg.getTypeOfChange() ) {
-	            case DBChangeMsg.CHANGE_TYPE_ADD:
+	        switch( msg.getDbChangeType() ) {
+	            case ADD:
 
 	                try {
 	                    // Create a lite appliance category from the supplied applianceCategoryId
@@ -454,7 +455,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 	                }
 	                break;
 
-	            case DBChangeMsg.CHANGE_TYPE_UPDATE:
+	            case UPDATE:
                     try {
                         // Create a lite appliance category from the supplied applianceCategoryId
                         com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
@@ -470,7 +471,7 @@ public class StarsDatabaseCache implements DBChangeListener {
                     }
 	                break;
 
-	            case DBChangeMsg.CHANGE_TYPE_DELETE:
+	            case DELETE:
 	                energyCompany.deleteApplianceCategory(applianceCategoryId);
 	                break;
 	        }
@@ -478,13 +479,13 @@ public class StarsDatabaseCache implements DBChangeListener {
 	}
 
 	private void handleLMProgramChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteLMProgramWebPublishing liteProg) {
-		switch( msg.getTypeOfChange() )
+		switch( msg.getDbChangeType())
 		{
-			case DBChangeMsg.CHANGE_TYPE_ADD:
+			case ADD:
 				// Don't need to do anything
 				break;
 				
-			case DBChangeMsg.CHANGE_TYPE_UPDATE :
+			case UPDATE :
 				try {
 					// Update group list of the LM program
 					com.cannontech.database.db.device.lm.LMProgramDirectGroup[] groups =
@@ -515,21 +516,21 @@ public class StarsDatabaseCache implements DBChangeListener {
 				
 				break;
 				
-			case DBChangeMsg.CHANGE_TYPE_DELETE :
+			case DELETE :
 				// Don't need to do anything
 				break;
 		}
 	}
 	
 	private void handleLMGroupChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteLMProgramWebPublishing liteProg) {
-		switch( msg.getTypeOfChange() )
+		switch( msg.getDbChangeType())
 		{
-			case DBChangeMsg.CHANGE_TYPE_ADD:
+			case ADD:
 				// Don't need to do anything
 				break;
 				
-			case DBChangeMsg.CHANGE_TYPE_UPDATE :
-			case DBChangeMsg.CHANGE_TYPE_DELETE :
+			case UPDATE :
+			case DELETE :
 				try {
 					// Update group list of the LM program
 					com.cannontech.database.db.device.lm.LMProgramDirectGroup[] groups =
@@ -557,12 +558,12 @@ public class StarsDatabaseCache implements DBChangeListener {
 	}
 	
 	private void handleYukonUserChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, StarsCustAccountInformation starsAcctInfo) {
-		switch( msg.getTypeOfChange() ) {
-			case DBChangeMsg.CHANGE_TYPE_ADD:
+		switch( msg.getDbChangeType() ) {
+			case ADD:
 				// Don't need to do anything
 				break;
 				
-			case DBChangeMsg.CHANGE_TYPE_UPDATE:
+			case UPDATE:
 				if (starsAcctInfo.getStarsUser().getUserID() == msg.getId()) {
 					LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( msg.getId() );
 					starsAcctInfo.setStarsUser( StarsLiteFactory.createStarsUser(liteUser, energyCompany) );
@@ -570,23 +571,23 @@ public class StarsDatabaseCache implements DBChangeListener {
 				
 				break;
 				
-			case DBChangeMsg.CHANGE_TYPE_DELETE:
+			case DELETE:
 				// Don't need to do anything
 				break;
 		}
 	}
 
 	private void handleRouteChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany) {
-		switch( msg.getTypeOfChange() ) {
-			case DBChangeMsg.CHANGE_TYPE_ADD:
+		switch( msg.getDbChangeType()) {
+			case ADD:
 				// Don't need to do anything
 				break;
 				
-			case DBChangeMsg.CHANGE_TYPE_UPDATE:
+			case UPDATE:
 				// Don't need to do anything
 				break;
 				
-			case DBChangeMsg.CHANGE_TYPE_DELETE:
+			case DELETE:
 				try {
 					StarsAdminUtil.removeRoute( energyCompany, msg.getId() );
 				}

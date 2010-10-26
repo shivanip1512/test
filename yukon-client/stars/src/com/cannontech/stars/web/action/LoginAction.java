@@ -14,6 +14,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsMsgUtils;
@@ -62,7 +63,7 @@ public class LoginAction {
         LiteYukonUser liteUser = new LiteYukonUser(dbUser.getUserID().intValue(), dbUser.getUsername(), dbUser.getLoginStatus());
         liteUser.setAuthType(dbUser.getAuthType());
     
-        ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);
+        ServerUtils.handleDBChange(liteUser, DbChangeType.ADD);
     
         if (authenticationService.supportsPasswordSet(defaultAuthType) && !authTypeChange) {
             authenticationService.setPassword(liteUser, login.getPassword());
@@ -72,7 +73,7 @@ public class LoginAction {
             liteContact.setLoginID(liteUser.getUserID());
             com.cannontech.database.data.customer.Contact contact = (com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent(liteContact);
             Transaction.createTransaction(Transaction.UPDATE, contact.getContact()).execute();
-            ServerUtils.handleDBChange(liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE);
+            ServerUtils.handleDBChange(liteContact, DbChangeType.UPDATE);
         }
     
         return liteUser;
@@ -85,7 +86,7 @@ public class LoginAction {
             liteContact.setLoginID(com.cannontech.user.UserUtils.USER_DEFAULT_ID);
             com.cannontech.database.data.customer.Contact contact = (com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent(liteContact);
             Transaction.createTransaction(Transaction.UPDATE, contact.getContact()).execute();
-            ServerUtils.handleDBChange(liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE);
+            ServerUtils.handleDBChange(liteContact, DbChangeType.UPDATE);
         }
     
         com.cannontech.database.data.user.YukonUser yukonUser = new com.cannontech.database.data.user.YukonUser();
@@ -94,7 +95,7 @@ public class LoginAction {
         Transaction.createTransaction(Transaction.DELETE, yukonUser).execute();
     
         StarsDatabaseCache.getInstance().deleteStarsYukonUser(userID);
-        ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_DELETE);
+        ServerUtils.handleDBChange(liteUser, DbChangeType.DELETE);
     }
 
 }
