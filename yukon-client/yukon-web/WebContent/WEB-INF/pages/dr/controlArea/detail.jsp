@@ -108,26 +108,495 @@
 
                         <%-- Actions are enabled only if the user has CONTROL_COMMAND for LM objects --%>
                         <tags:dynamicChoose updaterString="DR_CONTROLAREA/${controlAreaId}/SHOW_ACTION" suffix="${controlAreaId}">
+
                             <%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
-                            <dr:controlAreaActions controlArea="${controlArea}" state="noAssignedPrograms"/>
+                            <tags:dynamicChooseOption optionId="noAssignedPrograms">
+                                <cti:msg var="disabledMessage" key="yukon.web.modules.dr.controlAreaDetail.noAssignedPrograms"/>
+                                <span class="disabledAction" title="${disabledMessage}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
+                                </span>
+                                <br>
+                                <span class="disabledAction" title="${disabledMessage}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
+                                </span>
+                                <br>
+                                <span class="disabledAction" title="${disabledMessage}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
+                                </span>
+                                <br>
+                                <span class="disabledAction" title="${disabledMessage}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
+                                </span>
+                                <br>
+                                <span class="disabledAction" title="${disabledMessage}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
+                                </span>
+                                <br>
+                                <span class="disabledAction" title="${disabledMessage}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
+                                </span>
+                                <br>
+                            </tags:dynamicChooseOption>
 
                             <%-- Actions shown when the Control Area is enabled but not fully active --%>
-                            <dr:controlAreaActions state="enabled" controlArea="${controlArea}"/>
+                            <tags:dynamicChooseOption optionId="enabled">
+                                <cti:url var="startControlAreaUrl" value="/spring/dr/program/start/multipleDetails">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title"
+                                    dialogId="drDialog" actionUrl="${startControlAreaUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
+                                <br>
+                                <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stop/multipleDetails">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title"
+                                    dialogId="drDialog" actionUrl="${stopControlAreaUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
+                                <br>
+                                    <c:choose>
+                                        <%-- Trigger actions are only active for Control Areas with at least one threshold trigger --%>
+                                        <c:when test="${controlArea.hasThresholdTrigger}">
+                                            <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
+                                                <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                            </cti:url>
+                                            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"
+                                                dialogId="drDialog" actionUrl="${sendTriggerChangeUrl}"
+                                                logoKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon"
+                                                labelKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <cti:msg var="triggersChangeDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.disabled"/>
+                                            <span class="disabledAction" title="${triggersChangeDisabled}">
+                                                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon.disabled"/>
+                                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
+                                            </span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                <br>
+                                <cti:url var="sendChangeTimeWindowUrl" value="/spring/dr/controlArea/getChangeTimeWindowValues">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"
+                                    dialogId="drDialog" actionUrl="${sendChangeTimeWindowUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
+                                <br>
+                                <cti:url var="sendDisableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="isEnabled" value="false"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendDisableConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendDisableUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
+                                <br>
+                                <c:choose>
+                                    <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
+                                    <c:when test="${!empty controlArea.triggers}">
+                                        <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
+                                            <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                        </cti:url>
+                                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"
+                                            dialogId="drDialog" actionUrl="${sendResetPeakUrl}"
+                                            logoKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon"
+                                            labelKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:msg var="resetDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.disabled"/>
+                                        <span class="disabledAction" title="${resetDisabled}">
+                                            <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon.disabled"/>
+                                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
+                                        </span>
+                                    </c:otherwise>
+                                </c:choose>
+                                <br>
+                            </tags:dynamicChooseOption>
 
                             <%-- Actions shown when the Control Area is fully active and enabled --%>
-                            <dr:controlAreaActions state="fullyActiveEnabled" controlArea="${controlArea}"/>
+                            <tags:dynamicChooseOption optionId="fullyActiveEnabled">
+                                <cti:msg var="disabledMessage" key="yukon.web.modules.dr.controlAreaDetail.fullyActive"/>
+                                <span class="disabledAction" title="${disabledMessage}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
+                                </span>
+                                <br>
+                                <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stop/multipleDetails">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title"
+                                    dialogId="drDialog" actionUrl="${stopControlAreaUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
+                                <br>
+                                    <c:choose>
+                                        <%-- Trigger actions are only active for Control Areas with at least one threshold trigger --%>
+                                        <c:when test="${controlArea.hasThresholdTrigger}">
+                                            <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
+                                                <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                            </cti:url>
+                                            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"
+                                                dialogId="drDialog" actionUrl="${sendTriggerChangeUrl}"
+                                                logoKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon"
+                                                labelKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <cti:msg var="triggersChangeDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.disabled"/>
+                                            <span class="disabledAction" title="${triggersChangeDisabled}">
+                                                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon.disabled"/>
+                                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
+                                            </span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                <br>
+                                <cti:url var="sendChangeTimeWindowUrl" value="/spring/dr/controlArea/getChangeTimeWindowValues">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"
+                                    dialogId="drDialog" actionUrl="${sendChangeTimeWindowUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
+                                <br>
+                                <cti:url var="sendDisableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="isEnabled" value="false"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendDisableConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendDisableUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
+                                <br>
+                                <c:choose>
+                                    <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
+                                    <c:when test="${!empty controlArea.triggers}">
+                                        <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
+                                            <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                        </cti:url>
+                                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"
+                                            dialogId="drDialog" actionUrl="${sendResetPeakUrl}"
+                                            logoKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon"
+                                            labelKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:msg var="resetDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.disabled"/>
+                                        <span class="disabledAction" title="${resetDisabled}">
+                                            <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon.disabled"/>
+                                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
+                                        </span>
+                                    </c:otherwise>
+                                </c:choose>
+                                <br>
+                            </tags:dynamicChooseOption>
 
                             <%-- Actions shown when the Control Area is disabled but not fully active --%>
-                            <dr:controlAreaActions state="disabled" controlArea="${controlArea}"/>
+                            <tags:dynamicChooseOption optionId="disabled">
+                                <cti:url var="startControlAreaUrl" value="/spring/dr/program/start/multipleDetails">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title"
+                                    dialogId="drDialog" actionUrl="${startControlAreaUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
+                                <br>
+                                <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stop/multipleDetails">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title"
+                                    dialogId="drDialog" actionUrl="${stopControlAreaUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
+                                <br>
+                                    <c:choose>
+                                        <%-- Trigger actions are only active for Control Areas with at least one threshold trigger --%>
+                                        <c:when test="${controlArea.hasThresholdTrigger}">
+                                            <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
+                                                <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                            </cti:url>
+                                            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"
+                                                dialogId="drDialog" actionUrl="${sendTriggerChangeUrl}"
+                                                logoKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon"
+                                                labelKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <cti:msg var="triggersChangeDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.disabled"/>
+                                            <span class="disabledAction" title="${triggersChangeDisabled}">
+                                                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon.disabled"/>
+                                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
+                                            </span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                <br>
+                                <cti:url var="sendChangeTimeWindowUrl" value="/spring/dr/controlArea/getChangeTimeWindowValues">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"
+                                    dialogId="drDialog" actionUrl="${sendChangeTimeWindowUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
+                                <br>
+                                <cti:url var="sendEnableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="isEnabled" value="true"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendEnableConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendEnableUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
+                                <br>
+                                <c:choose>
+                                    <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
+                                    <c:when test="${!empty controlArea.triggers}">
+                                        <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
+                                            <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                        </cti:url>
+                                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"
+                                            dialogId="drDialog" actionUrl="${sendResetPeakUrl}"
+                                            logoKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon"
+                                            labelKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:msg var="resetDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.disabled"/>
+                                        <span class="disabledAction" title="${resetDisabled}">
+                                            <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon.disabled"/>
+                                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
+                                        </span>
+                                    </c:otherwise>
+                                </c:choose>
+                                <br>
+                            </tags:dynamicChooseOption>
 
                             <%-- Actions shown when the Control Area is fully active and disabled --%>
-                            <dr:controlAreaActions state="fullyActiveDisabled" controlArea="${controlArea}"/>
+                            <tags:dynamicChooseOption optionId="fullyActiveDisabled">
+                                <cti:msg var="disabledMessage" key="yukon.web.modules.dr.controlAreaDetail.fullyActive"/>
+                                <span class="disabledAction" title="${disabledMessage}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
+                                </span>
+                                <br>
+                                <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stop/multipleDetails">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title"
+                                    dialogId="drDialog" actionUrl="${stopControlAreaUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
+                                <br>
+                                    <c:choose>
+                                        <%-- Trigger actions are only active for Control Areas with at least one threshold trigger --%>
+                                        <c:when test="${controlArea.hasThresholdTrigger}">
+                                            <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
+                                                <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                            </cti:url>
+                                            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"
+                                                dialogId="drDialog" actionUrl="${sendTriggerChangeUrl}"
+                                                logoKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon"
+                                                labelKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <cti:msg var="triggersChangeDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.disabled"/>
+                                            <span class="disabledAction" title="${triggersChangeDisabled}">
+                                                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon.disabled"/>
+                                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
+                                            </span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                <br>
+                                <cti:url var="sendChangeTimeWindowUrl" value="/spring/dr/controlArea/getChangeTimeWindowValues">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"
+                                    dialogId="drDialog" actionUrl="${sendChangeTimeWindowUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
+                                <br>
+                                <cti:url var="sendEnableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="isEnabled" value="true"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendEnableConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendEnableUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
+                                <br>
+                                <c:choose>
+                                    <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
+                                    <c:when test="${!empty controlArea.triggers}">
+                                        <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
+                                            <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                        </cti:url>
+                                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"
+                                            dialogId="drDialog" actionUrl="${sendResetPeakUrl}"
+                                            logoKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon"
+                                            labelKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:msg var="resetDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.disabled"/>
+                                        <span class="disabledAction" title="${resetDisabled}">
+                                            <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon.disabled"/>
+                                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
+                                        </span>
+                                    </c:otherwise>
+                                </c:choose>
+                                <br>
+                            </tags:dynamicChooseOption>
 
                             <%-- Actions shown when the Control Area is inactive and disabled --%>
-                            <dr:controlAreaActions state="inactiveDisabled" controlArea="${controlArea}"/>
+                            <tags:dynamicChooseOption optionId="inactiveDisabled">
+                                <cti:url var="startControlAreaUrl" value="/spring/dr/program/start/multipleDetails">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title"
+                                    dialogId="drDialog" actionUrl="${startControlAreaUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
+                                <br>
+                                <cti:msg var="disabledMessage" key="yukon.web.modules.dr.controlAreaDetail.inactive"/>
+                                <span class="disabledAction" title="${disabledMessage}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
+                                </span>
+                                <br>
+                                    <c:choose>
+                                        <%-- Trigger actions are only active for Control Areas with at least one threshold trigger --%>
+                                        <c:when test="${controlArea.hasThresholdTrigger}">
+                                            <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
+                                                <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                            </cti:url>
+                                            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"
+                                                dialogId="drDialog" actionUrl="${sendTriggerChangeUrl}"
+                                                logoKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon"
+                                                labelKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <cti:msg var="triggersChangeDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.disabled"/>
+                                            <span class="disabledAction" title="${triggersChangeDisabled}">
+                                                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon.disabled"/>
+                                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
+                                            </span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                <br>
+                                <cti:url var="sendChangeTimeWindowUrl" value="/spring/dr/controlArea/getChangeTimeWindowValues">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"
+                                    dialogId="drDialog" actionUrl="${sendChangeTimeWindowUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
+                                <br>
+                                <cti:url var="sendEnableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="isEnabled" value="true"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendEnableConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendEnableUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
+                                <br>
+                                <c:choose>
+                                    <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
+                                    <c:when test="${!empty controlArea.triggers}">
+                                        <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
+                                            <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                        </cti:url>
+                                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"
+                                            dialogId="drDialog" actionUrl="${sendResetPeakUrl}"
+                                            logoKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon"
+                                            labelKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:msg var="resetDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.disabled"/>
+                                        <span class="disabledAction" title="${resetDisabled}">
+                                            <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon.disabled"/>
+                                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
+                                        </span>
+                                    </c:otherwise>
+                                </c:choose>
+                                <br>
+                            </tags:dynamicChooseOption>
 
                             <%-- Actions shown when the Control Area is inactive and enabled --%>
-                            <dr:controlAreaActions state="inactiveEnabled" controlArea="${controlArea}"/>
+                            <tags:dynamicChooseOption optionId="inactiveEnabled">
+                                <cti:url var="startControlAreaUrl" value="/spring/dr/program/start/multipleDetails">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title"
+                                    dialogId="drDialog" actionUrl="${startControlAreaUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
+                                <br>
+                                <cti:msg var="disabledMessage" key="yukon.web.modules.dr.controlAreaDetail.inactive"/>
+                                <span class="disabledAction" title="${disabledMessage}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
+                                </span>
+                                <br>
+                                    <c:choose>
+                                        <%-- Trigger actions are only active for Control Areas with at least one threshold trigger --%>
+                                        <c:when test="${controlArea.hasThresholdTrigger}">
+                                            <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
+                                                <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                            </cti:url>
+                                            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"
+                                                dialogId="drDialog" actionUrl="${sendTriggerChangeUrl}"
+                                                logoKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon"
+                                                labelKey="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <cti:msg var="triggersChangeDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.disabled"/>
+                                            <span class="disabledAction" title="${triggersChangeDisabled}">
+                                                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon.disabled"/>
+                                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
+                                            </span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                <br>
+                                <cti:url var="sendChangeTimeWindowUrl" value="/spring/dr/controlArea/getChangeTimeWindowValues">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"
+                                    dialogId="drDialog" actionUrl="${sendChangeTimeWindowUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
+                                <br>
+                                <cti:url var="sendDisableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
+                                    <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                    <cti:param name="isEnabled" value="false"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendDisableConfirm.title"
+                                    dialogId="drDialog" actionUrl="${sendDisableUrl}"
+                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon"
+                                    labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
+                                <br>
+                                <c:choose>
+                                    <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
+                                    <c:when test="${!empty controlArea.triggers}">
+                                        <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
+                                            <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                        </cti:url>
+                                        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"
+                                            dialogId="drDialog" actionUrl="${sendResetPeakUrl}"
+                                            logoKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon"
+                                            labelKey="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:msg var="resetDisabled" key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak.disabled"/>
+                                        <span class="disabledAction" title="${resetDisabled}">
+                                            <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon.disabled"/>
+                                            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
+                                        </span>
+                                    </c:otherwise>
+                                </c:choose>
+                                <br>
+                            </tags:dynamicChooseOption>
                         </tags:dynamicChoose>
                     </cti:checkPaoAuthorization>
 
