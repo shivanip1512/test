@@ -13,6 +13,7 @@ import com.cannontech.cbc.model.ZoneHierarchy;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.capcontrol.ivvc.models.ZoneAssignmentRow;
 import com.cannontech.web.capcontrol.ivvc.models.ZoneDto;
 import com.cannontech.web.capcontrol.ivvc.service.ZoneService;
@@ -52,7 +53,7 @@ public class ZoneServiceImpl implements ZoneService {
         zoneDao.updateCapBankToZoneMapping(zoneDto.getZoneId(), banksToZone);
         zoneDao.updatePointToZoneMapping(zoneDto.getZoneId(), pointsToZone);
 
-        sendZoneChangeDbMessage(zone.getId(),DBChangeMsg.CHANGE_TYPE_ADD);
+        sendZoneChangeDbMessage(zone.getId(), DbChangeType.ADD);
         
         return true;
     }
@@ -86,7 +87,7 @@ public class ZoneServiceImpl implements ZoneService {
         zoneDao.updateCapBankToZoneMapping(zoneDto.getZoneId(), banksToZone);
         zoneDao.updatePointToZoneMapping(zoneDto.getZoneId(), pointsToZone);
         
-        sendZoneChangeDbMessage(zone.getId(),DBChangeMsg.CHANGE_TYPE_UPDATE);
+        sendZoneChangeDbMessage(zone.getId(), DbChangeType.UPDATE);
         
         return true;
     }
@@ -95,7 +96,7 @@ public class ZoneServiceImpl implements ZoneService {
     @Transactional
     public boolean deleteZone(int zoneId) {
         zoneDao.delete(zoneId);      
-        sendZoneChangeDbMessage(zoneId,DBChangeMsg.CHANGE_TYPE_DELETE);
+        sendZoneChangeDbMessage(zoneId, DbChangeType.DELETE);
         return true;
     }
     
@@ -193,12 +194,12 @@ public class ZoneServiceImpl implements ZoneService {
     	return zoneDao.getPointToZoneMappingById(zoneId);
     }
     
-    private void sendZoneChangeDbMessage(int zoneId, int typeOfChange) {
+     private void sendZoneChangeDbMessage(int zoneId, DbChangeType dbChangeType) {
         DBChangeMsg msg = new DBChangeMsg(zoneId,
                                           DBChangeMsg.CHANGE_IVVC_ZONE,
                                           PAOGroups.STRING_CAT_CAPCONTROL,
                                           "Zone",
-                                          typeOfChange);
+                                          dbChangeType);
         
         dbPersistantDao.processDBChange(msg);
     }

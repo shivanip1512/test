@@ -17,6 +17,7 @@ import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SettlementConfigFuncs;
@@ -81,7 +82,7 @@ public class UpdateSettlementConfigController extends StarsAdminActionController
                             DBChangeMsg.CHANGE_SETTLEMENT_DB,
                             DBChangeMsg.CAT_SETTLEMENT,
                             DBChangeMsg.CAT_SETTLEMENT,
-                            DBChangeMsg.CHANGE_TYPE_ADD
+                            DbChangeType.ADD
                             );
                         ServerUtils.handleDBChangeMsg(msg);
                     }
@@ -135,7 +136,7 @@ public class UpdateSettlementConfigController extends StarsAdminActionController
                                 DBChangeMsg.CHANGE_SETTLEMENT_DB,
                                 DBChangeMsg.CAT_SETTLEMENT,
                                 DBChangeMsg.CAT_SETTLEMENT,
-                                DBChangeMsg.CHANGE_TYPE_ADD
+                                DbChangeType.ADD
                                 );
                             ServerUtils.handleDBChangeMsg(msg);
                         }
@@ -182,7 +183,7 @@ public class UpdateSettlementConfigController extends StarsAdminActionController
                             DBChangeMsg.CHANGE_SETTLEMENT_DB,
                             DBChangeMsg.CAT_SETTLEMENT,
                             DBChangeMsg.CAT_SETTLEMENT,
-                            DBChangeMsg.CHANGE_TYPE_DELETE
+                            DbChangeType.DELETE
                             );
                         ServerUtils.handleDBChangeMsg(msg);
                     }

@@ -20,6 +20,7 @@ import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -27,7 +28,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
@@ -36,7 +37,6 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.StarsAdminUtil;
-import com.cannontech.user.UserUtils;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsAdminActionController;
 
@@ -143,7 +143,7 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                         notifEmail.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
                         notifEmail.setDisableFlag( "N" );
                         notifEmail.setNotification( request.getParameter("Email") );
-                        notifEmail.setOpCode( Transaction.INSERT );
+                        notifEmail.setOpCode( TransactionType.INSERT );
                         
                         contact.getContactNotifVect().add( notifEmail );
                     }
@@ -152,11 +152,11 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     address.setStateCode( "" );
                     contact.setAddress( address );
                     
-                    contact = Transaction.createTransaction( Transaction.INSERT, contact ).execute();
+                    contact = Transaction.createTransaction( TransactionType.INSERT, contact ).execute();
                     
                     LiteContact liteContact = new LiteContact( contact.getContact().getContactID().intValue() );
                     StarsLiteFactory.setLiteContact( liteContact, contact );
-                    ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
+                    ServerUtils.handleDBChange( liteContact, DbChangeType.ADD );
                     
                     // Create the energy company
                     com.cannontech.database.db.company.EnergyCompany company =
@@ -164,7 +164,7 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     company.setName(companyName);
                     company.setPrimaryContactID( contact.getContact().getContactID() );
                     company.setUserID( new Integer(liteUser.getUserID()) );
-                    company = Transaction.createTransaction(Transaction.INSERT, company).execute();
+                    company = Transaction.createTransaction(TransactionType.INSERT, company).execute();
                     
                     SqlStatement stmt = new SqlStatement(
                                                          "INSERT INTO EnergyCompanyOperatorLoginList VALUES(" +
@@ -178,7 +178,7 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     LiteStarsEnergyCompany newCompany = factory.createEnergyCompany(company);
                     
                     StarsDatabaseCache.getInstance().addEnergyCompany( newCompany );
-                    ServerUtils.handleDBChange( newCompany, DBChangeMsg.CHANGE_TYPE_ADD );
+                    ServerUtils.handleDBChange( newCompany, DbChangeType.ADD );
                     
                     // Create login for the second operator
                     if (request.getParameter("Username2").length() > 0) {

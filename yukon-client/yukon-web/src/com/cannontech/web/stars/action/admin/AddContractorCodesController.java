@@ -13,6 +13,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -64,7 +65,7 @@ public class AddContractorCodesController extends StarsAdminActionController {
         if(code.length() >= minLength) {
             ServiceCompanyDesignationCode newCode = new ServiceCompanyDesignationCode(code, new Integer(servCompanyID));
             Transaction.createTransaction(Transaction.INSERT, newCode).execute();
-            ServerUtils.handleDBChange(StarsLiteFactory.createLite(newCode), DBChangeMsg.CHANGE_TYPE_ADD);
+            ServerUtils.handleDBChange(StarsLiteFactory.createLite(newCode), DbChangeType.ADD);
         }
     }
     

@@ -17,6 +17,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -170,7 +171,7 @@ public class MeterProfileSaveController extends StarsInventoryActionController {
                   DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
                   DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                   DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                  DBChangeMsg.CHANGE_TYPE_UPDATE
+                  DbChangeType.UPDATE
             );
             dbChangeMessage.setSource("STARS Self-Message");
             ServerUtils.handleDBChangeMsg(dbChangeMessage);

@@ -11,15 +11,17 @@ import org.springframework.web.bind.ServletRequestUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionType;
+import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.data.stars.report.ServiceCompany;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.stars.util.ECUtils;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -43,11 +45,9 @@ public class UpdateServiceCompanyController extends StarsAdminActionController {
             int companyID = ServletRequestUtils.getIntParameter(request,"CompanyID");
             boolean newCompany = (companyID == -1);
 
-            com.cannontech.database.data.stars.report.ServiceCompany company =
-                new com.cannontech.database.data.stars.report.ServiceCompany();
+            ServiceCompany company = new ServiceCompany();
 
-            com.cannontech.database.data.customer.Contact contact =
-                new com.cannontech.database.data.customer.Contact();
+            Contact contact = new Contact();
             com.cannontech.database.db.contact.Contact contactDB = contact.getContact();
 
             LiteServiceCompany liteCompany = null;
@@ -72,10 +72,10 @@ public class UpdateServiceCompanyController extends StarsAdminActionController {
 
             ContactNotification emailNotif = null;
             for (int i = 0; i < contact.getContactNotifVect().size(); i++) {
-                ContactNotification notif = (ContactNotification) contact.getContactNotifVect().get(i);
+                ContactNotification notif = contact.getContactNotifVect().get(i);
                 if (notif.getNotificationCatID().intValue() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) {
                     emailNotif = notif;
-                    emailNotif.setOpCode( Transaction.DELETE );
+                    emailNotif.setOpCode( TransactionType.DELETE );
                     break;
                 }
             }
@@ -83,14 +83,14 @@ public class UpdateServiceCompanyController extends StarsAdminActionController {
             if (request.getParameter("Email").length() > 0) {
                 if (emailNotif != null) {
                     emailNotif.setNotification( request.getParameter("Email") );
-                    emailNotif.setOpCode( Transaction.UPDATE );
+                    emailNotif.setOpCode( TransactionType.UPDATE );
                 }
                 else {
-                    emailNotif = new com.cannontech.database.db.contact.ContactNotification();
+                    emailNotif = new ContactNotification();
                     emailNotif.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
                     emailNotif.setDisableFlag( "N" );
                     emailNotif.setNotification( request.getParameter("Email") );
-                    emailNotif.setOpCode( Transaction.INSERT );
+                    emailNotif.setOpCode( TransactionType.INSERT );
                     contact.getContactNotifVect().add( emailNotif );
                 }
             }
@@ -106,11 +106,10 @@ public class UpdateServiceCompanyController extends StarsAdminActionController {
                 company.setAddress( address );
                 company.setPrimaryContact( contact );
                 company.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-                company = (com.cannontech.database.data.stars.report.ServiceCompany)
-                Transaction.createTransaction( Transaction.INSERT, company ).execute();
+                company = Transaction.createTransaction( TransactionType.INSERT, company ).execute();
 
                 liteContact = (LiteContact) StarsLiteFactory.createLite( contact );
-                ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
+                ServerUtils.handleDBChange( liteContact, DbChangeType.ADD );
 
                 liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( company );
                 energyCompany.addServiceCompany( liteCompany );
@@ -124,13 +123,12 @@ public class UpdateServiceCompanyController extends StarsAdminActionController {
                                                          starsAddr, energyCompany.getAddress(company.getAddress().getAddressID().intValue()) );
             }
             else {
-                contact = (com.cannontech.database.data.customer.Contact)
-                    Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
+                contact = Transaction.createTransaction( TransactionType.UPDATE, contact ).execute();
                 StarsLiteFactory.setLiteContact( liteContact, contact );
-                ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
+                ServerUtils.handleDBChange( liteContact, DbChangeType.UPDATE );
 
                 company.setPrimaryContact(contact);
-                company = (com.cannontech.database.data.stars.report.ServiceCompany) Transaction.createTransaction( Transaction.UPDATE, company ).execute();
+                company = Transaction.createTransaction( TransactionType.UPDATE, company ).execute();
                 StarsLiteFactory.setLiteServiceCompany( liteCompany, company );
 
                 if (request.getParameter("hasCodes") != null && request.getParameter("hasCodes").length() > 0) 
@@ -144,13 +142,13 @@ public class UpdateServiceCompanyController extends StarsAdminActionController {
                         if(codeToUpdateString != null && codeToUpdateString.length() > 0)
                         {
                             currentCode.setDesignationCodeValue(codeToUpdateString);
-                            currentCode = (ServiceCompanyDesignationCode)Transaction.createTransaction( Transaction.UPDATE, currentCode).execute();
-                            ServerUtils.handleDBChange(StarsLiteFactory.createLite(currentCode), DBChangeMsg.CHANGE_TYPE_UPDATE);
+                            currentCode = Transaction.createTransaction( TransactionType.UPDATE, currentCode).execute();
+                            ServerUtils.handleDBChange(StarsLiteFactory.createLite(currentCode), DbChangeType.UPDATE);
                         }
                         else if(codeToUpdateString != null && codeToUpdateString.length() <= 0)
                         {
-                            currentCode = (ServiceCompanyDesignationCode)Transaction.createTransaction(Transaction.DELETE, currentCode).execute();
-                            ServerUtils.handleDBChange(StarsLiteFactory.createLite(currentCode), DBChangeMsg.CHANGE_TYPE_DELETE);
+                            currentCode = Transaction.createTransaction(TransactionType.DELETE, currentCode).execute();
+                            ServerUtils.handleDBChange(StarsLiteFactory.createLite(currentCode), DbChangeType.DELETE);
                         }
                     }
                 }

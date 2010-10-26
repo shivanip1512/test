@@ -1,6 +1,7 @@
 package com.cannontech.web.editor;
 
 import java.sql.Connection;
+
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +21,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -57,7 +59,7 @@ public abstract class DBEditorForm {
             Transaction<DBPersistent> t = Transaction.createTransaction(Transaction.UPDATE, db);
             t.execute();
 
-            generateDBChangeMsg(db, DBChangeMsg.CHANGE_TYPE_UPDATE);
+            generateDBChangeMsg(db, DbChangeType.UPDATE);
         } catch (TransactionException e) {
             CTILogger.error(e.getMessage(), e);
             facesMsg.setDetail("Error updating the database, " + e.getMessage());
@@ -106,7 +108,7 @@ public abstract class DBEditorForm {
         }
 
         try {
-            generateDBChangeMsg(db, DBChangeMsg.CHANGE_TYPE_ADD);
+            generateDBChangeMsg(db, DbChangeType.ADD);
         } catch (Exception e) {
             CTILogger.error(e.getMessage(), e);
             facesMsg.setDetail("Error with Connection to Servers, " + e.getMessage());
@@ -132,7 +134,7 @@ public abstract class DBEditorForm {
             Transaction<DBPersistent> t = Transaction.createTransaction(Transaction.DELETE, db);
             t.execute();
 
-            generateDBChangeMsg(db, DBChangeMsg.CHANGE_TYPE_DELETE);
+            generateDBChangeMsg(db, DbChangeType.DELETE);
         } catch (TransactionException e) {
             CTILogger.error(e.getMessage(), e);
             facesMsg.setDetail("Error deleting '" + db + "' from the database: " + e.getMessage());
@@ -154,11 +156,11 @@ public abstract class DBEditorForm {
      * Insert the method's description here. Creation date: (10/9/2001 1:49:24
      * PM)
      */
-    protected void generateDBChangeMsg(DBPersistent object, int changeType) {
+    protected void generateDBChangeMsg(DBPersistent object, DbChangeType dbChangeType) {
         if (object instanceof CTIDbChange) {
             DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance()
                                                          .createDBChangeMessages((CTIDbChange) object,
-                                                                                 changeType);
+                                                                                 dbChangeType);
 
             for (int i = 0; i < dbChange.length; i++) {
                 // set the username for each dbchagne to be the current Yukon

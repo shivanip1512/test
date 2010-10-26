@@ -9,11 +9,15 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionType;
+import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.database.db.contact.ContactNotification;
+import com.cannontech.database.db.customer.Address;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -39,8 +43,7 @@ public class UpdateEnergyCompanyController extends StarsAdminActionController {
             StarsEnergyCompany ec = ecSettings.getStarsEnergyCompany();
 
             // Create the data object from the request parameters
-            com.cannontech.database.data.customer.Contact contact =
-                new com.cannontech.database.data.customer.Contact();
+            Contact contact = new Contact();
 
             boolean newContact = (energyCompany.getPrimaryContactID() == CtiUtilities.NONE_ZERO_ID);
             LiteContact liteContact = null;
@@ -54,15 +57,14 @@ public class UpdateEnergyCompanyController extends StarsAdminActionController {
                 StarsLiteFactory.setContact( contact, liteContact, energyCompany );
             }
 
-            com.cannontech.database.db.contact.ContactNotification notifPhone = null;
-            com.cannontech.database.db.contact.ContactNotification notifFax = null;
-            com.cannontech.database.db.contact.ContactNotification notifEmail = null;
+            ContactNotification notifPhone = null;
+            ContactNotification notifFax = null;
+            ContactNotification notifEmail = null;
 
             for (int i = 0; i < contact.getContactNotifVect().size(); i++) {
-                com.cannontech.database.db.contact.ContactNotification notif =
-                    (com.cannontech.database.db.contact.ContactNotification) contact.getContactNotifVect().get(i);
+                ContactNotification notif = contact.getContactNotifVect().get(i);
                 // Set all the opcode to DELETE first, then change it to UPDATE or add INSERT accordingly
-                notif.setOpCode( Transaction.DELETE );
+                notif.setOpCode( TransactionType.DELETE );
 
                 if (notif.getNotificationCatID().intValue() == YukonListEntryTypes.YUK_ENTRY_ID_PHONE)
                     notifPhone = notif;
@@ -75,14 +77,14 @@ public class UpdateEnergyCompanyController extends StarsAdminActionController {
             if (request.getParameter("PhoneNo").length() > 0) {
                 if (notifPhone != null) {
                     notifPhone.setNotification( ServletUtils.formatPhoneNumberForStorage(request.getParameter("PhoneNo")) );
-                    notifPhone.setOpCode( Transaction.UPDATE );
+                    notifPhone.setOpCode( TransactionType.UPDATE );
                 }
                 else {
-                    notifPhone = new com.cannontech.database.db.contact.ContactNotification();
+                    notifPhone = new ContactNotification();
                     notifPhone.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_PHONE) );
                     notifPhone.setDisableFlag( "Y" );
                     notifPhone.setNotification( ServletUtils.formatPhoneNumberForStorage(request.getParameter("PhoneNo")) );
-                    notifPhone.setOpCode( Transaction.INSERT );
+                    notifPhone.setOpCode( TransactionType.INSERT );
 
                     contact.getContactNotifVect().add( notifPhone );
                 }
@@ -91,14 +93,14 @@ public class UpdateEnergyCompanyController extends StarsAdminActionController {
             if (request.getParameter("FaxNo").length() > 0) {
                 if (notifFax != null) {
                     notifFax.setNotification( ServletUtils.formatPhoneNumberForStorage(request.getParameter("FaxNo")) );
-                    notifFax.setOpCode( Transaction.UPDATE );
+                    notifFax.setOpCode( TransactionType.UPDATE );
                 }
                 else {
-                    notifFax = new com.cannontech.database.db.contact.ContactNotification();
+                    notifFax = new ContactNotification();
                     notifFax.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_FAX) );
                     notifFax.setDisableFlag( "Y" );
                     notifFax.setNotification( ServletUtils.formatPhoneNumberForStorage(request.getParameter("FaxNo")) );
-                    notifFax.setOpCode( Transaction.INSERT );
+                    notifFax.setOpCode( TransactionType.INSERT );
 
                     contact.getContactNotifVect().add( notifFax );
                 }
@@ -107,22 +109,21 @@ public class UpdateEnergyCompanyController extends StarsAdminActionController {
             if (request.getParameter("Email").length() > 0) {
                 if (notifEmail != null) {
                     notifEmail.setNotification( request.getParameter("Email") );
-                    notifEmail.setOpCode( Transaction.UPDATE );
+                    notifEmail.setOpCode( TransactionType.UPDATE );
                 }
                 else {
-                    notifEmail = new com.cannontech.database.db.contact.ContactNotification();
+                    notifEmail = new ContactNotification();
                     notifEmail.setNotificationCatID( new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
                     notifEmail.setDisableFlag( "N" );
                     notifEmail.setNotification( request.getParameter("Email") );
-                    notifEmail.setOpCode( Transaction.INSERT );
+                    notifEmail.setOpCode( TransactionType.INSERT );
 
                     contact.getContactNotifVect().add( notifEmail );
                 }
             }
 
             if (newContact) {
-                com.cannontech.database.db.customer.Address addr =
-                    new com.cannontech.database.db.customer.Address();
+                Address addr = new Address();
                 StarsEnergyCompany ecTemp = (StarsEnergyCompany) session.getAttribute( StarsAdminUtil.ENERGY_COMPANY_TEMP );
                 if (ecTemp != null)
                     StarsFactory.setCustomerAddress( addr, ecTemp.getCompanyAddress() );
@@ -130,26 +131,24 @@ public class UpdateEnergyCompanyController extends StarsAdminActionController {
                     addr.setStateCode( "" );
                 contact.setAddress( addr );
 
-                contact = (com.cannontech.database.data.customer.Contact)
-                Transaction.createTransaction( Transaction.INSERT, contact ).execute();
+                contact = Transaction.createTransaction( TransactionType.INSERT, contact ).execute();
                 liteContact = new LiteContact( contact.getContact().getContactID().intValue() );
                 StarsLiteFactory.setLiteContact( liteContact, contact );
 
-                ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
+                ServerUtils.handleDBChange( liteContact, DbChangeType.ADD );
             }
             else if(contact.getContact().getContLastName() != null) {
-                contact = (com.cannontech.database.data.customer.Contact)
-                Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
+                contact = Transaction.createTransaction( TransactionType.UPDATE, contact ).execute();
                 StarsLiteFactory.setLiteContact( liteContact, contact );
 
-                ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
+                ServerUtils.handleDBChange( liteContact, DbChangeType.UPDATE );
             }
 
             String compName = request.getParameter("CompanyName");
             if (newContact || !energyCompany.getName().equals( compName )) {
                 energyCompany.setName( compName );
                 energyCompany.setPrimaryContactID( contact.getContact().getContactID().intValue() );
-                Transaction.createTransaction( Transaction.UPDATE, StarsLiteFactory.createDBPersistent(energyCompany) ).execute();
+                Transaction.createTransaction( TransactionType.UPDATE, StarsLiteFactory.createDBPersistent(energyCompany) ).execute();
             }
 
             int routeID = Integer.parseInt(request.getParameter("Route"));
@@ -216,7 +215,7 @@ public class UpdateEnergyCompanyController extends StarsAdminActionController {
                                                                                  request.getParameter("OptOutNotif") );
 
             if (adminGroupUpdated)
-                ServerUtils.handleDBChange( adminGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
+                ServerUtils.handleDBChange( adminGroup, DbChangeType.UPDATE );
 
             StarsLiteFactory.setStarsEnergyCompany( ec, energyCompany );
 

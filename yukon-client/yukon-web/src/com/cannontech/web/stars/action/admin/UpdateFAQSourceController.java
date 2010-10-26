@@ -14,6 +14,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ServerUtils;
@@ -73,13 +74,13 @@ public class UpdateFAQSourceController extends StarsAdminActionController {
         for (int i = 0; i < operGroups.length; i++) {
             if (StringUtils.isNotEmpty(this.roleDao.getRolePropValueGroup(operGroups[i], ConsumerInfoRole.WEB_LINK_FAQ, null)) &&
                     DaoFactory.getRoleDao().updateGroupRoleProperty(operGroups[i], ConsumerInfoRole.ROLEID, ConsumerInfoRole.WEB_LINK_FAQ, faqLink))
-                ServerUtils.handleDBChange( operGroups[i], DBChangeMsg.CHANGE_TYPE_UPDATE );
+                ServerUtils.handleDBChange( operGroups[i], DbChangeType.UPDATE );
         }
 
         for (int i = 0; i < custGroups.length; i++) {
             if (StringUtils.isNotEmpty(this.roleDao.getRolePropValueGroup(custGroups[i], ResidentialCustomerRole.WEB_LINK_FAQ, null)) &&
                     DaoFactory.getRoleDao().updateGroupRoleProperty(custGroups[i], ResidentialCustomerRole.ROLEID, ResidentialCustomerRole.WEB_LINK_FAQ, faqLink))
-                ServerUtils.handleDBChange( custGroups[i], DBChangeMsg.CHANGE_TYPE_UPDATE );
+                ServerUtils.handleDBChange( custGroups[i], DbChangeType.UPDATE );
         }
     }
 

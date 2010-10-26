@@ -13,6 +13,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.web.stars.action.StarsAdminActionController;
@@ -37,7 +38,7 @@ public class DeleteOperatorLoginController extends StarsAdminActionController {
                 try {
                     LiteYukonUser liteUser = this.yukonUserDao.getLiteYukonUser(loginID);
                     com.cannontech.database.data.user.YukonUser.deleteOperatorLogin(id);
-                    ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_DELETE);
+                    ServerUtils.handleDBChange(liteUser, DbChangeType.DELETE);
                 } catch (UnsupportedOperationException e) {
                     log.error(e);
                 }
