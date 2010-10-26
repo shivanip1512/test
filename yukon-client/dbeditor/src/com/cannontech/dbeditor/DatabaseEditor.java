@@ -78,6 +78,7 @@ import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.tou.TOUSchedule;
+import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.model.DBTreeModel;
 import com.cannontech.database.model.DBTreeNode;
@@ -102,6 +103,7 @@ import com.cannontech.dbeditor.wizard.tou.TOUScheduleWizardPanel;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.roles.yukon.BillingRole;
@@ -778,7 +780,7 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 					if( !smarty.getDBPersistent(i).equals(smarty.getOwnerDBPersistent()) )
 						generateDBChangeMsg( 
 								smarty.getDBPersistent(i),
-								DBChangeMsg.CHANGE_TYPE_ADD );
+								DbChangeType.ADD );
 								
 				selectedObject = smarty.getOwnerDBPersistent();
 			}			
@@ -787,7 +789,7 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 			selectedObject = t1.execute();
 
 			//always do this
-			generateDBChangeMsg( selectedObject, DBChangeMsg.CHANGE_TYPE_UPDATE );
+			generateDBChangeMsg( selectedObject, DbChangeType.UPDATE );
 			
 			//for some reason, the new 410 points never show up after a ChangeType
 			if(com.cannontech.database.data.device.DeviceTypesFuncs.isMCT4XX(newType))
@@ -797,7 +799,7 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 					DBChangeMsg.CHANGE_POINT_DB,
 					DBChangeMsg.CAT_POINT, 
 					PointTypes.getType(PointTypes.ACCUMULATOR_DEMAND),
-					DBChangeMsg.CHANGE_TYPE_ADD );
+					DbChangeType.ADD );
 				getConnToDispatch().queue(ptChange);
 				com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
 				getTreeViewPanel().refresh();
@@ -1002,14 +1004,14 @@ private void deleteDBPersistent( DBPersistent deletable )
 	{
 	    // get dbChangeMsgs BEFORE execute
         // this may be a delete and the dbChangeMsgs may not be retrievable after execute
-	    DBChangeMsg[] msgs = getDBChangeMsgs(deletable, DBChangeMsg.CHANGE_TYPE_DELETE);
+	    DBChangeMsg[] msgs = getDBChangeMsgs(deletable, DbChangeType.DELETE);
 	    
 		Transaction t = Transaction.createTransaction(Transaction.DELETE, deletable);
 		
 		deletable = t.execute();
 	
 		//fire DBChange messages out to Dispatch
-		queueDBChangeMsgs(deletable, DBChangeMsg.CHANGE_TYPE_DELETE, msgs);
+		queueDBChangeMsgs(deletable, DbChangeType.DELETE, msgs);
 	
 		fireMessage(new MessageEvent(this, deletable + " deleted successfully from the database."));
 	}
@@ -1382,18 +1384,18 @@ public void fireMessage(MessageEvent event) {
  * @param changeType
  * @return
  */
-private DBChangeMsg[] getDBChangeMsgs(com.cannontech.database.db.DBPersistent object, int changeType) {
+private DBChangeMsg[] getDBChangeMsgs(com.cannontech.database.db.DBPersistent object, DbChangeType dbChangeType) {
     
     com.cannontech.message.dispatch.message.DBChangeMsg[] dbChanges = null;
     
-    if( object instanceof com.cannontech.database.db.CTIDbChange )
+    if( object instanceof CTIDbChange )
     {
-        dbChanges = com.cannontech.database.cache.DefaultDatabaseCache.getInstance().createDBChangeMessages(
-                    (com.cannontech.database.db.CTIDbChange)object, changeType );
+        dbChanges = DefaultDatabaseCache.getInstance().createDBChangeMessages(
+                    (CTIDbChange)object, dbChangeType );
     } else {
         
         throw new IllegalArgumentException("Non " + 
-         com.cannontech.database.db.CTIDbChange.class.getName() + 
+         CTIDbChange.class.getName() + 
          " class tried to generate a " + DBChangeMsg.class.getName() + 
             " its class was : " + object.getClass().getName() );
     }
@@ -1407,7 +1409,7 @@ private DBChangeMsg[] getDBChangeMsgs(com.cannontech.database.db.DBPersistent ob
  * @param changeType
  * @param dbChange
  */
-private void queueDBChangeMsgs(com.cannontech.database.db.DBPersistent object, int changeType, DBChangeMsg[] dbChange) 
+private void queueDBChangeMsgs(com.cannontech.database.db.DBPersistent object, DbChangeType dbChangeType, DBChangeMsg[] dbChange) 
 {
 	for( int i = 0; i < dbChange.length; i++ )
 	{
@@ -1422,13 +1424,13 @@ private void queueDBChangeMsgs(com.cannontech.database.db.DBPersistent object, i
 
         // Special case for point deletion
         if (lBase == null && dbChange[i].getDatabase() == DBChangeMsg.CHANGE_POINT_DB
-		        && changeType == DBChangeMsg.CHANGE_TYPE_DELETE && object instanceof PointBase) {
+		        && dbChangeType == DbChangeType.DELETE && object instanceof PointBase) {
 		    
 		    lBase = LiteFactory.createLite(object);
 		}
 
 		//tell our tree we may need to change the display
-		updateTreePanel( lBase, dbChange[i].getTypeOfChange() );
+		updateTreePanel( lBase, (dbChange[i]).getDbChangeType() );
      
 		getConnToDispatch().queue(dbChange[i]);
 	}
@@ -1440,10 +1442,10 @@ private void queueDBChangeMsgs(com.cannontech.database.db.DBPersistent object, i
  * @param object
  * @param changeType
  */
-private void generateDBChangeMsg( com.cannontech.database.db.DBPersistent object, int changeType  ) {
+private void generateDBChangeMsg( com.cannontech.database.db.DBPersistent object, DbChangeType dbChangeType  ) {
     
-    DBChangeMsg[] msgs = getDBChangeMsgs(object, changeType);
-    queueDBChangeMsgs(object, changeType, msgs);
+    DBChangeMsg[] msgs = getDBChangeMsgs(object, dbChangeType);
+    queueDBChangeMsgs(object, dbChangeType, msgs);
 }
 	
 		
@@ -1835,10 +1837,8 @@ public void handleDBChangeMsg( final DBChangeMsg msg, final LiteBase liteBase ) 
 	    SwingUtilities.invokeLater(new Runnable() {
 	        public void run() {
         		StringBuffer txtMsg = new StringBuffer(
-                    (msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_ADD ? "ADD" :
-        		    (msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_DELETE ? "DELETE" :
-        		    (msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_UPDATE ? "UPDATE" : ""))) 
-        		    + " Database Change Message received from: " + msg.getUserName() + " at " + msg.getSource());
+        		    msg.getDbChangeType()
+                    + " Database Change Message received from: " + msg.getUserName() + " at " + msg.getSource());
         		
         		if (!SwingUtilities.isEventDispatchThread()) {
         		    log.error("oops");
@@ -1866,13 +1866,13 @@ public void handleDBChangeMsg( final DBChangeMsg msg, final LiteBase liteBase ) 
         			getTreeViewPanel().refresh();	
         		} else {
         			//tell our tree we may need to change the display
-        			updateTreePanel( liteBase, msg.getTypeOfChange() );
+        			updateTreePanel( liteBase, msg.getDbChangeType() );
         		}
         
         		//display a message on the message panel telling us about this event...Only if its a Device Change OR INSERT/UPDATE...other wise don't bother printing out Point Add messages.
         		if(msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB  || 
-        		        msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_DELETE ||
-        		        msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_UPDATE ) {
+        		        msg.getDbChangeType() == DbChangeType.DELETE ||
+        		        msg.getDbChangeType() == DbChangeType.UPDATE ) {
         		    fireMessage( new MessageEvent( DatabaseEditor.this, txtMsg.toString(), MessageEvent.INFORMATION_MESSAGE) );
         		}
 	        }
@@ -2472,7 +2472,7 @@ public boolean insertDBPersistent( DBPersistent newItem )
 		fireMessage(new MessageEvent(this, messageString));
 	
 		//fire DBChange messages out to Dispatch
-		generateDBChangeMsg( newItem, DBChangeMsg.CHANGE_TYPE_ADD );
+		generateDBChangeMsg( newItem, DbChangeType.ADD );
 		
 		success = true;
 	}
@@ -2892,7 +2892,7 @@ private void updateConnectionStatus(IServerConnection conn) {
     		dbPersistent = t.execute();
     
     		//write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
-    		generateDBChangeMsg( dbPersistent, DBChangeMsg.CHANGE_TYPE_UPDATE );
+    		generateDBChangeMsg( dbPersistent, DbChangeType.UPDATE );
     		
     		String messageString = dbPersistent + " updated successfully in the database.";
     		fireMessage( new MessageEvent( this, messageString) );
@@ -2921,8 +2921,8 @@ private void updateConnectionStatus(IServerConnection conn) {
      * @param lBase - LiteBase that has changed
      * @param changeType - Type of DBChange
      */
-    private void updateTreePanel(com.cannontech.database.data.lite.LiteBase lBase, int changeType) {
-        getTreeViewPanel().processDBChange(changeType, lBase);
+    private void updateTreePanel(com.cannontech.database.data.lite.LiteBase lBase, DbChangeType dbChangeType) {
+        getTreeViewPanel().processDBChange(dbChangeType, lBase);
         getTreeViewPanel().revalidate();
     }
 

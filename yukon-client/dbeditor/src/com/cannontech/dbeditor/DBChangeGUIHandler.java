@@ -7,6 +7,7 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * @author rneuharth
@@ -48,7 +49,8 @@ public class DBChangeGUIHandler {
 	public void handleGUIChange( DBChangeMsg msg ) {
 
 	    //Check change type first, only create lite object from panel if change type is one we care about.
-        if( (msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_DELETE || msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_UPDATE) ) {
+        if( (msg.getDbChangeType() == DbChangeType.DELETE || 
+                msg.getDbChangeType() == DbChangeType.UPDATE) ) {
 
             LiteBase liteObject = null;
     		if( thePanel.getOriginalObjectToEdit() instanceof DBPersistent ) {
