@@ -3,7 +3,6 @@ package com.cannontech.web.picker.v2;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
@@ -41,8 +40,13 @@ public class LmHardwareBasePicker extends DatabasePicker<LMHardwareBase> {
     protected void updateFilters(List<SqlFilter> sqlFilters,
                                  List<PostProcessingFilter<LMHardwareBase>> postProcessingFilters,
                                  String extraArgs, YukonUserContext userContext) {
-        
-        int energyCompanyId = NumberUtils.toInt(extraArgs, 0);
+        int energyCompanyId;
+        try {
+            energyCompanyId = Integer.parseInt(extraArgs);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException();
+        }
+
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         List<Integer> energyCompanyIds = energyCompany.getAllEnergyCompaniesDownward();
         sqlFilters.add(new InventoryToECFilter(energyCompanyIds));
