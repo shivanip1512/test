@@ -11,6 +11,7 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -314,9 +315,9 @@ public class LocateRouteDialog extends javax.swing.JDialog implements java.awt.e
     public void handleDBChangeMsg(DBChangeMsg msg, LiteBase liteBase) {
         
         if(msg.getCategory().equals(PAOGroups.STRING_CAT_ROUTE)){
-            int typeOfChange = msg.getTypeOfChange();
+            DbChangeType dbChangeType = msg.getDbChangeType();
             
-            if (typeOfChange == DBChangeMsg.CHANGE_TYPE_UPDATE) {
+            if (dbChangeType == DbChangeType.UPDATE) {
                 for (int i = 0; i < getRouteComboBox().getItemCount(); i++) {
     
                     Object item = getRouteComboBox().getItemAt(i);
@@ -331,9 +332,9 @@ public class LocateRouteDialog extends javax.swing.JDialog implements java.awt.e
                         }
                     }
                 }
-            } else if (typeOfChange == DBChangeMsg.CHANGE_TYPE_ADD) {
+            } else if (dbChangeType == DbChangeType.ADD) {
                 getRouteComboBox().addItem(liteBase);
-            } else if (typeOfChange == DBChangeMsg.CHANGE_TYPE_DELETE) {
+            } else if (dbChangeType == DbChangeType.DELETE) {
                 getRouteComboBox().removeItem(liteBase);
             }
         }

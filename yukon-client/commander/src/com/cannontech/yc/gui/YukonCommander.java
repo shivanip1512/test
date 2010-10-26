@@ -78,6 +78,7 @@ import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.application.CommanderRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yc.MessageType;
@@ -1277,12 +1278,12 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                     
                     // Update the route combo box - if necessary
                     if(msg.getCategory().equals(PAOGroups.STRING_CAT_ROUTE)){
-                        updateRouteCombo(msg.getTypeOfChange(), object);
+                        updateRouteCombo(msg.getDbChangeType(), object);
                     }
                     
                     // Update the tree
                     Object selectedObject = getTreeViewPanel().getSelectedItem();
-                    getTreeViewPanel().processDBChange(msg.getTypeOfChange(), object);
+                    getTreeViewPanel().processDBChange(msg.getDbChangeType(), object);
                     
                     //if we had something selected we just lost it... so reselect it now
                     if ( selectedObject != null ) {
@@ -1310,11 +1311,11 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
      * @param typeOfChange - Type of change msg
      * @param liteBase - Route that changed 
      */
-    private void updateRouteCombo(int typeOfChange, LiteBase liteBase) {
+    private void updateRouteCombo(DbChangeType dbChangeType, LiteBase liteBase) {
 
         JComboBox routeComboBox = this.getSerialRoutePanel().getRouteComboBox();
 
-        if (typeOfChange == DBChangeMsg.CHANGE_TYPE_UPDATE) {
+        if (dbChangeType == DbChangeType.UPDATE) {
             for (int i = 0; i < routeComboBox.getItemCount(); i++) {
 
                 Object item = routeComboBox.getItemAt(i);
@@ -1329,9 +1330,9 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                     }
                 }
             }
-        } else if (typeOfChange == DBChangeMsg.CHANGE_TYPE_ADD) {
+        } else if (dbChangeType == DbChangeType.ADD) {
             routeComboBox.addItem(liteBase);
-        } else if (typeOfChange == DBChangeMsg.CHANGE_TYPE_DELETE) {
+        } else if (dbChangeType == DbChangeType.DELETE) {
             routeComboBox.removeItem(liteBase);
         }
 

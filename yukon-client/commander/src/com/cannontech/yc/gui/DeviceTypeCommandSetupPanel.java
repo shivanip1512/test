@@ -15,6 +15,7 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.command.DeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteCommand;
@@ -89,7 +90,7 @@ public DeviceTypeCommandSetupPanel() {
 				if( o instanceof Command)
 				{
 					((Command)o).setCategory(getDeviceType());
-					writeDBChange((Command)o, Transaction.INSERT, DBChangeMsg.CHANGE_TYPE_ADD );
+					writeDBChange((Command)o, TransactionType.INSERT);
 					Command cmd = (Command)o;
 					if( CommandCategory.isCommandCategory(getDeviceType()))
 					{
@@ -107,7 +108,7 @@ public DeviceTypeCommandSetupPanel() {
 							dbP.setCommand(cmd);
 							//TODO - Change to be the RoleProperty id for this user
 							dbP.setCommandGroupID(new Integer(com.cannontech.database.db.command.DeviceTypeCommand.DEFAULT_COMMANDS_GROUP_ID));
-							writeDBChange(dbP, Transaction.INSERT, DBChangeMsg.CHANGE_TYPE_ADD);
+							writeDBChange(dbP, TransactionType.INSERT);
 						}
 						if( dbP  != null)
 							((DeviceTypeCommandsTableModel)getDandDCommandTable().getModel()).addRowToEnd(dbP);						
@@ -124,7 +125,7 @@ public DeviceTypeCommandSetupPanel() {
 
 						//TODO - Change to be the RoleProperty id for this user
 						dbP.setCommandGroupID(new Integer(com.cannontech.database.db.command.DeviceTypeCommand.DEFAULT_COMMANDS_GROUP_ID));
-						writeDBChange(dbP, Transaction.INSERT, DBChangeMsg.CHANGE_TYPE_ADD);
+						writeDBChange(dbP, TransactionType.INSERT);
 
 						((DeviceTypeCommandsTableModel)getDandDCommandTable().getModel()).addRowToEnd(dbP);						
 					}
@@ -149,11 +150,11 @@ public DeviceTypeCommandSetupPanel() {
 				if( dbP.getDeviceCommandID() == null)// a non-category entry, (category entries do not have a deviceCommandID
 				{	//remove the command (and associatively any deviceTypeCommands too
 				    Command cmd = dbP.getCommand();
-				    writeDBChange(cmd, Transaction.DELETE, DBChangeMsg.CHANGE_TYPE_DELETE);
+				    writeDBChange(cmd, TransactionType.DELETE);
 				}
 				else
 				{	//remove just the deviceTypeCommand, Command will "linger" in the database for now TODO
-				    writeDBChange(dbP, Transaction.DELETE, DBChangeMsg.CHANGE_TYPE_DELETE);
+				    writeDBChange(dbP, TransactionType.DELETE);
 				}
 				((DeviceTypeCommandsTableModel)getDandDCommandTable().getModel()).removeRow(rowToRemove);
 				getDandDCommandTable().getSelectionModel().clearSelection();
@@ -184,7 +185,7 @@ public DeviceTypeCommandSetupPanel() {
 				if( o instanceof Command)
 				{
 				    cmd = (Command)o;				    
-					writeDBChange(cmd, Transaction.UPDATE, DBChangeMsg.CHANGE_TYPE_UPDATE );
+					writeDBChange(cmd, TransactionType.UPDATE);
 					((DeviceTypeCommandsTableModel)getDandDCommandTable().getModel()).fireTableRowsUpdated(rowToEdit, rowToEdit);
 				}
 			}
@@ -772,22 +773,22 @@ constraintsDeviceTypeCommandSetupPanel.gridheight = 6;
 				{
 					//Set the DisplayOrder of the objects based on their order in the table.
 					tempValue.getDeviceTypeCommand().setDisplayOrder(new Integer (newIndex));
-					writeDBChange(tempValue, Transaction.UPDATE, DBChangeMsg.CHANGE_TYPE_UPDATE);
+					writeDBChange(tempValue, TransactionType.UPDATE);
 				}
 			}
 		}
 	}
-	public void writeDBChange(DBPersistent item, int transType, int changeType) 
+	public void writeDBChange(DBPersistent item, TransactionType transactionType) 
 	{
 		if( item != null )
 		{
 			try
 			{
-				Transaction t = Transaction.createTransaction(transType, item);
+				Transaction t = Transaction.createTransaction(transactionType, item);
 				item = t.execute();
 
-				//write the DBChangeMessage out to Dispatch since it was a Successfull ADD
-				DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, changeType);
+				//write the DBChangeMessage out to Dispatch since it was a Successful ADD
+				DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, transactionType.getDbChangeType());
 			
 				for( int i = 0; i < dbChange.length; i++)
 				{
