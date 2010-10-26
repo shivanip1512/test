@@ -34,6 +34,7 @@ import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.util.Command;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
@@ -4520,7 +4521,7 @@ private void setUpMainFrame( String previousItem )
     					DBChangeMsg.CHANGE_TDC_DB,
     					"ALL",
     					"ALL",
-    					DBChangeMsg.CHANGE_TYPE_UPDATE );
+    					DbChangeType.UPDATE );
     
     	            
     		//tell our tree we may need to change the display	

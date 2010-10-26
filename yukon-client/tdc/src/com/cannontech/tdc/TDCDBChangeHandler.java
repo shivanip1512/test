@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.Timer;
 
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
@@ -63,8 +64,8 @@ class TDCDBChangeHandler implements ActionListener
 			  msg.getDatabase() == DBChangeMsg.CHANGE_POINT_DB ||
 			  msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB ||
 			  msg.getDatabase() == DBChangeMsg.CHANGE_STATE_GROUP_DB) && 
-			 (msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_DELETE ||
-			  msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_UPDATE) )
+			 (msg.getDbChangeType() == DbChangeType.DELETE ||
+			  msg.getDbChangeType() == DbChangeType.UPDATE) )
 		{
 	
 			//search for specific IDs here
