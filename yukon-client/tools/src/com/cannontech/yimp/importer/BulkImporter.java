@@ -44,24 +44,14 @@ import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.MCT400SeriesBase;
-import com.cannontech.database.data.device.MCT410CL;
-import com.cannontech.database.data.device.MCT410FL;
-import com.cannontech.database.data.device.MCT410GL;
-import com.cannontech.database.data.device.MCT410IL;
-import com.cannontech.database.data.device.MCT430A;
-import com.cannontech.database.data.device.MCT430A3;
-import com.cannontech.database.data.device.MCT430S4;
-import com.cannontech.database.data.device.MCT430SL;
-import com.cannontech.database.data.device.MCT470;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.device.DeviceRoutes;
 import com.cannontech.database.db.importer.ImportData;
@@ -69,6 +59,7 @@ import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
@@ -266,7 +257,7 @@ public void runImport(List<ImportData> imps) {
         currentEntry = imps.get(j);
 	
 		//mark entry for deletion
-		imps.get(j).setOpCode(Transaction.DELETE);
+		imps.get(j).setOpCode(TransactionType.DELETE);
 		
 		String name = currentEntry.getName();
 		String address = currentEntry.getAddress();
@@ -539,7 +530,7 @@ public void runImport(List<ImportData> imps) {
                          
                     }*/
 				if( updateTransaction) {
-                    dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE); //update transaction and DBChange write
+                    dbPersistentDao.performDBChange(yukonPaobject, TransactionType.UPDATE); //update transaction and DBChange write
 				}
                 log.info("Updated " + yukonPaobject.getPAOType() + " with name " + name + " with address " + address + ".");
                 successCounter++;
@@ -603,11 +594,11 @@ public void runImport(List<ImportData> imps) {
 			
 			try {
 			    //Add Pao (Database insert AND DbChange Message
-			    dbPersistentDao.performDBChange(current400Series, Transaction.INSERT);
+			    dbPersistentDao.performDBChange(current400Series, TransactionType.INSERT);
 			    log.debug("Insert into DB with DBChangeMessage: Device(" + current400Series.getPAObjectID() + ").");
 			
                 //Add Points (Database insert but NO dbChange Message
-                dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, Transaction.INSERT);
+                dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, TransactionType.INSERT);
                 log.debug("Insert into DB with NO DBChangeMessage: " + points.size() + " Points for Device(" + current400Series.getPAObjectID() + ").");
 
                 SimpleDevice yukonDevice = new SimpleDevice(current400Series.getPAObjectID(), PAOGroups.getDeviceType(current400Series.getPAOType()));
@@ -618,7 +609,7 @@ public void runImport(List<ImportData> imps) {
                 //write pending communication entry for porter thread to pick up
                 boolean importerCommunications = Boolean.parseBoolean(roleDao.getGlobalPropertyValue(SystemRole.BULK_IMPORTER_COMMUNICATIONS_ENABLED));
                 if (importerCommunications){
-                    Transaction.createTransaction(Transaction.INSERT, pc).execute();
+                    Transaction.createTransaction(TransactionType.INSERT, pc).execute();
                 }
                 
 				successVector.add(imps.get(j));
@@ -682,7 +673,7 @@ public void runImport(List<ImportData> imps) {
 	try {
 		//having trouble with fail adds...want to make sure these work
 		for(int m = 0; m < failures.size(); m++) {
-			failures.get(m).setOpCode(Transaction.INSERT);
+			failures.get(m).setOpCode(TransactionType.INSERT);
 		}		
 		
 		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
@@ -1009,16 +1000,16 @@ private void handleSuccessfulLocate(Return returnMsg) {
     try {
         porterRequest = new Request( retMCT.getPAObjectID().intValue(), INTERVAL_COMMAND, currentMessageID );
         log.info("Successful location of device " + returnMsg.getDeviceID() + " on route " + routeName +" ("+ routeID+").");
-        retMCT = (MCT400SeriesBase) Transaction.createTransaction(Transaction.RETRIEVE, retMCT).execute();
+        retMCT = (MCT400SeriesBase) Transaction.createTransaction(TransactionType.RETRIEVE, retMCT).execute();
         if(routeID != null)
             retMCT.getDeviceRoutes().setRouteID(routeID);
         else
             throw new TransactionException("Route not found for a message ID of " + returnMsg.getUserMessageID());
 
         log.info(retMCT.getPAOType() + "with name " + retMCT.getPAOName() + " was successfully located on route " + routeName +" ("+ routeID+").");
-        Transaction.createTransaction(Transaction.UPDATE, retMCT).execute();
+        Transaction.createTransaction(TransactionType.UPDATE, retMCT).execute();
         DBChangeMsg retMCTChange = new DBChangeMsg(retMCT.getPAObjectID().intValue(), DBChangeMsg.CHANGE_PAO_DB, 
-        		retMCT.getPAOCategory(), retMCT.getPAOType(), DBChangeMsg.CHANGE_TYPE_UPDATE);
+        		retMCT.getPAOCategory(), retMCT.getPAOType(), DbChangeType.UPDATE);
 			
 		getDispatchConnection().write(retMCTChange);
 		

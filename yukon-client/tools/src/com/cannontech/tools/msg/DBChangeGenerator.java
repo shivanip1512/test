@@ -6,7 +6,10 @@ package com.cannontech.tools.msg;
  * @author: 
  */
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.util.Command;
 
 public class DBChangeGenerator {
@@ -83,12 +86,12 @@ public static void main(String[] args)
 	{
 		for( int j = 0; j < id.length; j++ )
 		{				
-			com.cannontech.message.dispatch.message.DBChangeMsg msg = new com.cannontech.message.dispatch.message.DBChangeMsg(
+			DBChangeMsg msg = new DBChangeMsg(
 					id[j],
-					com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_PAO_DB,
-					com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE,
-					com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK[0],
-					com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
+					DBChangeMsg.CHANGE_PAO_DB,
+					PAOGroups.STRING_CAT_DEVICE,
+					PAOGroups.STRING_CAP_BANK[0],
+					DbChangeType.UPDATE );
 
 			msg.setTimeStamp( new java.util.Date() );
 			

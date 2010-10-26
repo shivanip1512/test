@@ -11,25 +11,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Vector;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.LogWriter;
-import com.cannontech.core.dao.impl.PointDaoImpl;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.SqlStatement;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.db.NestedDBPersistent;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
@@ -196,7 +186,7 @@ public class ImportFuncs
 			for(int x = 0; x < impsSuccess.size(); x++) {
 				//this entry finally worked...remove from ImportFail table
 				if(addy.compareTo(impsSuccess.get(x).getAddress()) == 0) {
-					previousFailures.get(j).setOpCode(Transaction.DELETE);
+					previousFailures.get(j).setOpCode(TransactionType.DELETE);
 					failVector.add(previousFailures.get(j));
 					continue;
 				}
@@ -205,7 +195,7 @@ public class ImportFuncs
 			for(int y = 0; y < impsFailed.size(); y++) {
 				//this entry failed again...set the current ImportFail to be updated
 				if(addy.compareTo(impsFailed.get(y).getAddress()) == 0) {
-					impsFailed.get(y).setOpCode(Transaction.UPDATE);	
+					impsFailed.get(y).setOpCode(TransactionType.UPDATE);	
 				}
 			}
 		}

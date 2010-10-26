@@ -35,6 +35,7 @@ import com.cannontech.database.db.stars.integration.CRSToSAM_PremiseMeterChange;
 import com.cannontech.database.db.stars.integration.SAMToCRS_PTJ;
 import com.cannontech.database.db.stars.integration.SwitchReplacement;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.EventUtils;
@@ -250,7 +251,7 @@ public final class YukonCRSIntegrator
                                 DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
                                 DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                 DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                                DBChangeMsg.CHANGE_TYPE_UPDATE
+                                DbChangeType.UPDATE
                             );
 				            dbChangeMessage.setSource("RunCRSToSam_PremiseMeterChange:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
                             ServerUtils.handleDBChangeMsg(dbChangeMessage);
@@ -625,7 +626,7 @@ public final class YukonCRSIntegrator
     				DBChangeMsg.CHANGE_WORK_ORDER_DB,
     				DBChangeMsg.CAT_WORK_ORDER,
     				DBChangeMsg.CAT_WORK_ORDER,
-    				DBChangeMsg.CHANGE_TYPE_ADD
+    				DbChangeType.ADD
     			);
 	            dbChangeMessage.setSource("RunCRSToSam_PTJ:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
                 ServerUtils.handleDBChangeMsg(dbChangeMessage);
@@ -766,7 +767,7 @@ public final class YukonCRSIntegrator
     				DBChangeMsg.CHANGE_WORK_ORDER_DB,
     				DBChangeMsg.CAT_WORK_ORDER,
     				DBChangeMsg.CAT_WORK_ORDER,
-    				DBChangeMsg.CHANGE_TYPE_ADD
+    				DbChangeType.ADD
     			);
 	            dbChangeMessage.setSource("RunSwitchReplacement:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
                 ServerUtils.handleDBChangeMsg(dbChangeMessage);

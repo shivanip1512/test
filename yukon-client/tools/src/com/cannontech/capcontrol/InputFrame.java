@@ -42,6 +42,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.tools.gui.CTIProgressBar;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -633,7 +634,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 					
 					DBChangeMsg[] dbChange = 
 							DefaultDatabaseCache.getInstance().createDBChangeMessages(
-								(CTIDbChange)smartMulti, DBChangeMsg.CHANGE_TYPE_ADD );
+								(CTIDbChange)smartMulti, DbChangeType.ADD );
 
 					for( int j = 0; j < dbChange.length; j++ )
 					{
