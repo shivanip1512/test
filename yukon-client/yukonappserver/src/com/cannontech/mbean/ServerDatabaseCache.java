@@ -51,11 +51,13 @@ import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.capcontrol.CapBank;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.server.cache.AlarmCategoryLoader;
 import com.cannontech.yukon.server.cache.BaselineLoader;
@@ -209,9 +211,9 @@ protected ServerDatabaseCache(String databaseAlias) {
  * Creation date: (3/29/2001 12:27:17 PM)
  * @param newItem com.cannontech.database.db.DBPersistent
  */
-public synchronized DBChangeMsg[] createDBChangeMessages( com.cannontech.database.db.CTIDbChange newItem, int changeType )
+public synchronized DBChangeMsg[] createDBChangeMessages( CTIDbChange newItem, DbChangeType dbChangeType )
 {
-	return newItem.getDBChangeMsgs( changeType );
+	return newItem.getDBChangeMsgs( dbChangeType);
 }
 /**
  * Insert the method's description here.
@@ -1085,7 +1087,7 @@ public static synchronized com.cannontech.yukon.IDatabaseCache getInstance()
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleAlarmCategoryChange( int changeType, int id )
+private synchronized LiteBase handleAlarmCategoryChange( DbChangeType dbChangeType, int id )
 {
 	boolean alreadyAdded = false;
 	LiteBase lBase = null;
@@ -1094,9 +1096,9 @@ private synchronized LiteBase handleAlarmCategoryChange( int changeType, int id 
 	if( allAlarmCategories == null )
 		return lBase;
 
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
+		case ADD:
 				for(int i=0;i<allAlarmCategories.size();i++)
 				{
 					if( allAlarmCategories.get(i).getAlarmStateID() == id )
@@ -1115,7 +1117,7 @@ private synchronized LiteBase handleAlarmCategoryChange( int changeType, int id 
 				}				
 				break;
 
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case UPDATE:
 				for(int i=0;i<allAlarmCategories.size();i++)
 				{
 					if( allAlarmCategories.get(i).getAlarmStateID() == id )
@@ -1126,7 +1128,7 @@ private synchronized LiteBase handleAlarmCategoryChange( int changeType, int id 
 					}
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DELETE:
 				for(int i=0;i<allAlarmCategories.size();i++)
 				{
 					if( allAlarmCategories.get(i).getAlarmStateID() == id )
@@ -1148,7 +1150,7 @@ private synchronized LiteBase handleAlarmCategoryChange( int changeType, int id 
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleYukonImageChange( int changeType, int id )
+private synchronized LiteBase handleYukonImageChange( DbChangeType dbChangeType, int id )
 {
    boolean alreadyAdded = false;
    LiteBase lBase = null;
@@ -1157,9 +1159,9 @@ private synchronized LiteBase handleYukonImageChange( int changeType, int id )
    if( allYukonImages == null )
 	  return lBase;
 
-   switch(changeType)
+   switch(dbChangeType)
    {
-	  case DBChangeMsg.CHANGE_TYPE_ADD:
+	  case ADD:
 			for(int i=0;i<allYukonImages.size();i++)
 			{
 			   if( allYukonImages.get(i).getImageID() == id )
@@ -1178,7 +1180,7 @@ private synchronized LiteBase handleYukonImageChange( int changeType, int id )
 			}           
 			break;
 
-	  case DBChangeMsg.CHANGE_TYPE_UPDATE:
+	  case UPDATE:
 			for(int i=0;i<allYukonImages.size();i++)
 			{
 			   if( allYukonImages.get(i).getImageID() == id )
@@ -1189,7 +1191,7 @@ private synchronized LiteBase handleYukonImageChange( int changeType, int id )
 			   }
 			}
 			break;
-	  case DBChangeMsg.CHANGE_TYPE_DELETE:
+	  case DELETE:
 			for(int i=0;i<allYukonImages.size();i++)
 			{
 			   if( allYukonImages.get(i).getImageID() == id )
@@ -1211,13 +1213,13 @@ private synchronized LiteBase handleYukonImageChange( int changeType, int id )
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleContactChange( int changeType, int id )
+private synchronized LiteBase handleContactChange( DbChangeType dbChangeType, int id )
 {
     LiteBase lBase = null;
     
-    switch(changeType)
+    switch(dbChangeType)
     {
-    case DBChangeMsg.CHANGE_TYPE_ADD:
+    case ADD:
     {
         if ( id == DBChangeMsg.CHANGE_INVALID_ID )
             break;
@@ -1227,7 +1229,7 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
         
         break;
     }
-    case DBChangeMsg.CHANGE_TYPE_UPDATE:
+    case UPDATE:
     {
         allContactsMap.remove(id);
         LiteContact lc = getAContactByContactID(id);
@@ -1238,7 +1240,7 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
         
         break;
     }
-    case DBChangeMsg.CHANGE_TYPE_DELETE:
+    case DELETE:
         //special case for this handler!!!!
         if ( id == DBChangeMsg.CHANGE_INVALID_ID )
         {
@@ -1279,7 +1281,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
 {
 	String objectType = dbChangeMsg.getObjectType();
 	String dbCategory = dbChangeMsg.getCategory();
-	int dbType = dbChangeMsg.getTypeOfChange();
+	DbChangeType dbChangeType = dbChangeMsg.getDbChangeType();
 	int database = dbChangeMsg.getDatabase();
 	int id = dbChangeMsg.getId();
 	LiteBase retLBase = null;
@@ -1287,11 +1289,11 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
 	if( database == DBChangeMsg.CHANGE_POINT_DB )
 	{
 		allPointLimits = null;
-		retLBase = handlePointChange( dbType, id, noObjectNeeded );
+		retLBase = handlePointChange( dbChangeType, id, noObjectNeeded );
 	}
 	else if( database == DBChangeMsg.CHANGE_PAO_DB )
 	{
-		retLBase = handleYukonPAOChange( dbType, id);
+		retLBase = handleYukonPAOChange( dbChangeType, id);
 		
 
 		//if any device changes, 
@@ -1311,7 +1313,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
 			int type = PAOGroups.getDeviceType(objectType);
 			if(com.cannontech.database.data.device.DeviceTypesFuncs.usesDeviceMeterGroup(type))
 			{
-				handleDeviceMeterGroupChange( dbType, id);
+				handleDeviceMeterGroupChange( dbChangeType, id);
 			}
 		}
 		else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_LOADMANAGEMENT) )
@@ -1342,22 +1344,22 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
 	}
 	else if( database == DBChangeMsg.CHANGE_STATE_GROUP_DB )
 	{
-		retLBase = handleStateGroupChange( dbType, id );		
+		retLBase = handleStateGroupChange( dbChangeType, id );		
 	}
 	else if( database == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB )
 	{
-		retLBase = handleAlarmCategoryChange( dbType, id );
+		retLBase = handleAlarmCategoryChange( dbChangeType, id );
 	}
    else if( database == DBChangeMsg.CHANGE_YUKON_IMAGE )
    { 
-	  retLBase = handleYukonImageChange( dbType, id );
+	  retLBase = handleYukonImageChange( dbChangeType, id );
    }
 	else if( database == DBChangeMsg.CHANGE_NOTIFICATION_GROUP_DB )
 	{
 		//clear out the Contacts as they may have changed
 		releaseAllContacts();
 		
-		retLBase = handleNotificationGroupChange( dbType, id );
+		retLBase = handleNotificationGroupChange( dbChangeType, id );
 	}
 //	else if( database == DBChangeMsg.CHANGE_NOTIFICATION_RECIPIENT_DB )
 //	{
@@ -1371,51 +1373,51 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
 	    
 	    releaseAllCustomers();
 	    
-	    retLBase = handleContactChange( dbType, id );		
+	    retLBase = handleContactChange( dbChangeType, id );		
 	}
 	else if( database == DBChangeMsg.CHANGE_GRAPH_DB )
 	{
-		retLBase = handleGraphDefinitionChange( dbType, id );
+		retLBase = handleGraphDefinitionChange( dbChangeType, id );
 	}
 	else if( database == DBChangeMsg.CHANGE_HOLIDAY_SCHEDULE_DB )
 	{
-		retLBase = handleHolidayScheduleChange( dbType, id );
+		retLBase = handleHolidayScheduleChange( dbChangeType, id );
 	}
 	else if( database == DBChangeMsg.CHANGE_BASELINE_DB )
 	{
-		retLBase = handleBaselineChange( dbType, id );
+		retLBase = handleBaselineChange( dbChangeType, id );
 	}
 	else if( database == DBChangeMsg.CHANGE_SEASON_SCHEDULE_DB )
 	{
-		retLBase = handleSeasonScheduleChange( dbType, id );
+		retLBase = handleSeasonScheduleChange( dbChangeType, id );
 	}
 	else if( database == DBChangeMsg.CHANGE_TOU_SCHEDULE_DB )
 	{
-		retLBase = handleTOUScheduleChange( dbType, id );
+		retLBase = handleTOUScheduleChange( dbChangeType, id );
 	}
 	else if( database == DBChangeMsg.CHANGE_CONFIG_DB )
 	{
         if (DBChangeMsg.CAT_DEVICE_CONFIG.equals(dbCategory)) {
          // Do nothing - no cache for device configs
         } else {
-            retLBase = handleConfigChange(dbType, id);
+            retLBase = handleConfigChange(dbChangeType, id);
         }
 	}
 	else if( database == DBChangeMsg.CHANGE_TAG_DB )
 	{
-		retLBase = handleTagChange( dbType, id );
+		retLBase = handleTagChange( dbChangeType, id );
 	}
 	else if( database == DBChangeMsg.CHANGE_LMCONSTRAINT_DB )
 	{
-		retLBase = handleLMProgramConstraintChange( dbType, id );
+		retLBase = handleLMProgramConstraintChange( dbChangeType, id );
 	}
 	else if( database == DBChangeMsg.CHANGE_DEVICETYPE_COMMAND_DB)
 	{
-		retLBase = handleDeviceTypeCommandChange(dbType, id);
+		retLBase = handleDeviceTypeCommandChange(dbChangeType, id);
 	}
 	else if( database == DBChangeMsg.CHANGE_COMMAND_DB )
 	{
-		retLBase = handleCommandChange( dbType, id );
+		retLBase = handleCommandChange( dbChangeType, id );
 	}
 	else if( database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
 	{
@@ -1424,7 +1426,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
 
 	} else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB ) {
 		allNotificationGroups = null;
-		retLBase = handleCustomerChange( dbType, id, dbCategory, noObjectNeeded );
+		retLBase = handleCustomerChange( dbChangeType, id, dbCategory, noObjectNeeded );
 		
 		if( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CI_CUSTOMER)) {
 			allCICustomers = null;
@@ -1438,9 +1440,9 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
 	else if( database == DBChangeMsg.CHANGE_YUKON_USER_DB ) 
 	{
 		if( DBChangeMsg.CAT_YUKON_USER_GROUP.equalsIgnoreCase(dbCategory) )
-			retLBase = handleYukonGroupChange( dbType, id );
+			retLBase = handleYukonGroupChange( dbChangeType, id );
 		else
-			retLBase = handleYukonUserChange( dbType, id, noObjectNeeded);
+			retLBase = handleYukonUserChange( dbChangeType, id, noObjectNeeded);
 		
 		// This seems heavy handed!
 		allYukonGroups = null;
@@ -1457,7 +1459,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
 	}
 	else if ( database == DBChangeMsg.CHANGE_SETTLEMENT_DB)
 	{
-		retLBase = handleSettlementConfigChange(dbType, id);
+		retLBase = handleSettlementConfigChange(dbChangeType, id);
 	}
 	else if( database == DBChangeMsg.CHANGE_SERVICE_COMPANY_DB ||
 			database == DBChangeMsg.CHANGE_SERVICE_COMPANY_DESIGNATION_CODE_DB )
@@ -1493,7 +1495,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleDeviceMeterGroupChange( int changeType, int id )
+private synchronized LiteBase handleDeviceMeterGroupChange( DbChangeType dbChangeType, int id )
 {
 	boolean alreadyAdded = false;
 	LiteBase lBase = null;
@@ -1507,9 +1509,9 @@ private synchronized LiteBase handleDeviceMeterGroupChange( int changeType, int 
         return lBase;
     }
 
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
+		case ADD:
 				for(int i=0;i<allDeviceMeterGroups.size();i++)
 				{
 					if( allDeviceMeterGroups.get(i).getDeviceID() == id )
@@ -1527,7 +1529,7 @@ private synchronized LiteBase handleDeviceMeterGroupChange( int changeType, int 
 					lBase = liteDMG;
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case UPDATE:
 				for(int i=0;i<allDeviceMeterGroups.size();i++)
 				{
 					if( allDeviceMeterGroups.get(i).getDeviceID() == id )
@@ -1539,7 +1541,7 @@ private synchronized LiteBase handleDeviceMeterGroupChange( int changeType, int 
 					}
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DELETE:
 				for(int i=0;i<allDeviceMeterGroups.size();i++)
 				{
 					if( allDeviceMeterGroups.get(i).getDeviceID() == id )
@@ -1560,7 +1562,7 @@ private synchronized LiteBase handleDeviceMeterGroupChange( int changeType, int 
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleGraphDefinitionChange( int changeType, int id )
+private synchronized LiteBase handleGraphDefinitionChange( DbChangeType dbChangeType, int id )
 {
 	boolean alreadyAdded = false;
 	LiteBase lBase = null;
@@ -1569,9 +1571,9 @@ private synchronized LiteBase handleGraphDefinitionChange( int changeType, int i
 	if( allGraphDefinitions == null )
 		return lBase;
 
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
+		case ADD:
 				for(int i=0;i<allGraphDefinitions.size();i++)
 				{
 					if( allGraphDefinitions.get(i).getGraphDefinitionID() == id )
@@ -1589,7 +1591,7 @@ private synchronized LiteBase handleGraphDefinitionChange( int changeType, int i
 					lBase = lsg;
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case UPDATE:
 				for(int i=0;i<allGraphDefinitions.size();i++)
 				{
 					if( allGraphDefinitions.get(i).getGraphDefinitionID() == id )
@@ -1600,7 +1602,7 @@ private synchronized LiteBase handleGraphDefinitionChange( int changeType, int i
 					}
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DELETE:
 				for(int i=0;i<allGraphDefinitions.size();i++)
 				{
 					if( allGraphDefinitions.get(i).getGraphDefinitionID() == id )
@@ -1621,7 +1623,7 @@ private synchronized LiteBase handleGraphDefinitionChange( int changeType, int i
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleHolidayScheduleChange( int changeType, int id )
+private synchronized LiteBase handleHolidayScheduleChange( DbChangeType dbChangeType, int id )
 {
 	boolean alreadyAdded = false;
 	LiteBase lBase = null;
@@ -1630,9 +1632,9 @@ private synchronized LiteBase handleHolidayScheduleChange( int changeType, int i
 	if( allHolidaySchedules == null )
 		return lBase;
 
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
+		case ADD:
 				for(int i=0;i<allHolidaySchedules.size();i++)
 				{
 					if( allHolidaySchedules.get(i).getHolidayScheduleID() == id )
@@ -1650,7 +1652,7 @@ private synchronized LiteBase handleHolidayScheduleChange( int changeType, int i
 					lBase = lh;
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case UPDATE:
 				for(int i=0;i<allHolidaySchedules.size();i++)
 				{
 					if( allHolidaySchedules.get(i).getHolidayScheduleID() == id )
@@ -1661,7 +1663,7 @@ private synchronized LiteBase handleHolidayScheduleChange( int changeType, int i
 					}
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DELETE:
 				for(int i=0;i<allHolidaySchedules.size();i++)
 				{
 					if( allHolidaySchedules.get(i).getHolidayScheduleID() == id )
@@ -1678,7 +1680,7 @@ private synchronized LiteBase handleHolidayScheduleChange( int changeType, int i
 
 	return lBase;
 }
-private synchronized LiteBase handleDeviceTypeCommandChange( int changeType, int id )
+private synchronized LiteBase handleDeviceTypeCommandChange( DbChangeType dbChangeType, int id )
 {
 	boolean alreadyAdded = false;
 	LiteBase lBase = null;
@@ -1687,9 +1689,9 @@ private synchronized LiteBase handleDeviceTypeCommandChange( int changeType, int
 	if( allDeviceTypeCommands == null )
 		return lBase;
 
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
+		case ADD:
 				for(int i=0;i<allDeviceTypeCommands.size();i++)
 				{
 					if( allDeviceTypeCommands.get(i).getDeviceCommandID() == id )
@@ -1707,7 +1709,7 @@ private synchronized LiteBase handleDeviceTypeCommandChange( int changeType, int
 					lBase = ldtc;
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case UPDATE:
 				for(int i=0;i<allDeviceTypeCommands.size();i++)
 				{
 					if( allDeviceTypeCommands.get(i).getDeviceCommandID() == id )
@@ -1718,7 +1720,7 @@ private synchronized LiteBase handleDeviceTypeCommandChange( int changeType, int
 					}
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DELETE:
 				for(int i=0;i<allDeviceTypeCommands.size();i++)
 				{
 					if( allDeviceTypeCommands.get(i).getDeviceCommandID() == id )
@@ -1737,7 +1739,7 @@ private synchronized LiteBase handleDeviceTypeCommandChange( int changeType, int
 }
 
 
-private synchronized LiteBase handleBaselineChange( int changeType, int id )
+private synchronized LiteBase handleBaselineChange( DbChangeType dbChangeType, int id )
 {
 	boolean alreadyAdded = false;
 	LiteBase lBase = null;
@@ -1746,9 +1748,9 @@ private synchronized LiteBase handleBaselineChange( int changeType, int id )
 	if( allBaselines == null )
 		return lBase;
 
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
+		case ADD:
 				for(int i=0;i<allBaselines.size();i++)
 				{
 					if( allBaselines.get(i).getBaselineID() == id )
@@ -1766,7 +1768,7 @@ private synchronized LiteBase handleBaselineChange( int changeType, int id )
 					lBase = lh;
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case UPDATE:
 				for(int i=0;i<allBaselines.size();i++)
 				{
 					if( allBaselines.get(i).getBaselineID() == id )
@@ -1777,7 +1779,7 @@ private synchronized LiteBase handleBaselineChange( int changeType, int id )
 					}
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DELETE:
 				for(int i=0;i<allBaselines.size();i++)
 				{
 					if( allBaselines.get(i).getBaselineID() == id )
@@ -1795,7 +1797,7 @@ private synchronized LiteBase handleBaselineChange( int changeType, int id )
 	return lBase;
 }
 
-private synchronized LiteBase handleSeasonScheduleChange( int changeType, int id )
+private synchronized LiteBase handleSeasonScheduleChange( DbChangeType dbChangeType, int id )
 {
 	boolean alreadyAdded = false;
 	LiteBase lBase = null;
@@ -1804,9 +1806,9 @@ private synchronized LiteBase handleSeasonScheduleChange( int changeType, int id
 	if( allSeasonSchedules == null )
 		return lBase;
 
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
+		case ADD:
 				for(int i=0;i<allSeasonSchedules.size();i++)
 				{
 					if( allSeasonSchedules.get(i).getScheduleID() == id )
@@ -1824,7 +1826,7 @@ private synchronized LiteBase handleSeasonScheduleChange( int changeType, int id
 					lBase = lh;
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case UPDATE:
 				for(int i=0;i<allSeasonSchedules.size();i++)
 				{
 					if( allSeasonSchedules.get(i).getScheduleID() == id )
@@ -1835,7 +1837,7 @@ private synchronized LiteBase handleSeasonScheduleChange( int changeType, int id
 					}
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DELETE:
 				for(int i=0;i<allSeasonSchedules.size();i++)
 				{
 					if( allSeasonSchedules.get(i).getScheduleID() == id )
@@ -1853,7 +1855,7 @@ private synchronized LiteBase handleSeasonScheduleChange( int changeType, int id
 	return lBase;
 }
 
-private synchronized LiteBase handleTOUScheduleChange( int changeType, int id )
+private synchronized LiteBase handleTOUScheduleChange( DbChangeType dbChangeType, int id )
 {
 	boolean alreadyAdded = false;
 	LiteBase lBase = null;
@@ -1862,9 +1864,9 @@ private synchronized LiteBase handleTOUScheduleChange( int changeType, int id )
 	if( allTOUSchedules == null )
 		return lBase;
 
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
+		case ADD:
 				for(int i=0;i<allTOUSchedules.size();i++)
 				{
 					if( allTOUSchedules.get(i).getScheduleID() == id )
@@ -1882,7 +1884,7 @@ private synchronized LiteBase handleTOUScheduleChange( int changeType, int id )
 					lBase = lh;
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case UPDATE:
 				for(int i=0;i<allTOUSchedules.size();i++)
 				{
 					if( allTOUSchedules.get(i).getScheduleID() == id )
@@ -1893,7 +1895,7 @@ private synchronized LiteBase handleTOUScheduleChange( int changeType, int id )
 					}
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DELETE:
 				for(int i=0;i<allTOUSchedules.size();i++)
 				{
 					if( allTOUSchedules.get(i).getScheduleID() == id )
@@ -1915,7 +1917,7 @@ private synchronized LiteBase handleTOUScheduleChange( int changeType, int id )
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleCommandChange( int changeType, int id )
+private synchronized LiteBase handleCommandChange( DbChangeType dbChangeType, int id )
 {
 	LiteBase lBase = null;
 
@@ -1923,9 +1925,9 @@ private synchronized LiteBase handleCommandChange( int changeType, int id )
 	if( allCommands == null )
 		return lBase;
 	
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
+		case ADD:
 		
 				lBase = allCommandsMap.get( new Integer(id) );				
 				if( lBase == null )
@@ -1939,7 +1941,7 @@ private synchronized LiteBase handleCommandChange( int changeType, int id )
 				}
 				break;
 
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case UPDATE:
 		
 				LiteCommand lc = allCommandsMap.get( new Integer(id) );				
 				lc.retrieve( databaseAlias );
@@ -1947,7 +1949,7 @@ private synchronized LiteBase handleCommandChange( int changeType, int id )
 				lBase = lc;
 				break;
 
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DELETE:
 
 				for(int i=0;i<allCommands.size();i++)
 				{
@@ -1969,7 +1971,7 @@ private synchronized LiteBase handleCommandChange( int changeType, int id )
 }
 
 
-private synchronized LiteBase handleConfigChange( int changeType, int id )
+private synchronized LiteBase handleConfigChange( DbChangeType dbChangeType, int id )
 {
 	boolean alreadyAdded = false;
 	LiteBase lBase = null;
@@ -1978,9 +1980,9 @@ private synchronized LiteBase handleConfigChange( int changeType, int id )
 	if( allConfigs == null )
 		return lBase;
 
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
+		case ADD:
 				for(int i=0;i<allConfigs.size();i++)
 				{
 					if( allConfigs.get(i).getConfigID() == id )
@@ -1998,7 +2000,7 @@ private synchronized LiteBase handleConfigChange( int changeType, int id )
 					lBase = lh;
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case UPDATE:
 				for(int i=0;i<allConfigs.size();i++)
 				{
 					if( allConfigs.get(i).getConfigID() == id )
@@ -2009,7 +2011,7 @@ private synchronized LiteBase handleConfigChange( int changeType, int id )
 					}
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DELETE:
 				for(int i=0;i<allConfigs.size();i++)
 				{
 					if( allConfigs.get(i).getConfigID() == id )
@@ -2027,7 +2029,7 @@ private synchronized LiteBase handleConfigChange( int changeType, int id )
 	return lBase;
 }
 
-private synchronized LiteBase handleTagChange( int changeType, int id )
+private synchronized LiteBase handleTagChange( DbChangeType dbChangeType, int id )
 {
 	boolean alreadyAdded = false;
 	LiteBase lTag = null;
@@ -2036,9 +2038,9 @@ private synchronized LiteBase handleTagChange( int changeType, int id )
 	if( allTags == null )
 		return lTag;
 
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
+		case ADD:
 				for(int i=0;i<allTags.size();i++)
 				{
 					if( allTags.get(i).getTagID() == id )
@@ -2056,7 +2058,7 @@ private synchronized LiteBase handleTagChange( int changeType, int id )
 					lTag = lh;
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case UPDATE:
 				for(int i=0;i<allTags.size();i++)
 				{
 					if( allTags.get(i).getTagID() == id )
@@ -2067,7 +2069,7 @@ private synchronized LiteBase handleTagChange( int changeType, int id )
 					}
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DELETE:
 				for(int i=0;i<allTags.size();i++)
 				{
 					if( allTags.get(i).getTagID() == id )
@@ -2084,7 +2086,7 @@ private synchronized LiteBase handleTagChange( int changeType, int id )
 
 	return lTag;
 }
-private synchronized LiteBase handleSettlementConfigChange( int changeType, int id)
+private synchronized LiteBase handleSettlementConfigChange( DbChangeType dbChangeType, int id)
 {
 	LiteBase lBase = null;
 
@@ -2092,9 +2094,9 @@ private synchronized LiteBase handleSettlementConfigChange( int changeType, int 
 	if( allSettlementConfigs == null )
 		return lBase;
 
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
+		case ADD:
 
 			lBase = allSettlementConfigsMap.get( new Integer(id));
 			if( lBase == null)
@@ -2108,14 +2110,14 @@ private synchronized LiteBase handleSettlementConfigChange( int changeType, int 
 			}
 			break;
 			
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case UPDATE:
 			
 			LiteSettlementConfig lsc = allSettlementConfigsMap.get(new Integer(id));
 			lsc.retrieve(databaseAlias);
 			lBase = lsc;
 			break;
 			
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DELETE:
 			for(int i=0;i<allSettlementConfigs.size();i++)
 			{
 				if( allSettlementConfigs.get(i).getConfigID() == id )
@@ -2133,7 +2135,7 @@ private synchronized LiteBase handleSettlementConfigChange( int changeType, int 
 
 	return lBase;
 }
-private synchronized LiteBase handleLMProgramConstraintChange( int changeType, int id )
+private synchronized LiteBase handleLMProgramConstraintChange( DbChangeType dbChangeType, int id )
 {
 	boolean alreadyAdded = false;
 	LiteBase lBase = null;
@@ -2142,9 +2144,9 @@ private synchronized LiteBase handleLMProgramConstraintChange( int changeType, i
 	if( allLMProgramConstraints == null )
 		return lBase;
 
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
+		case ADD:
 				for(int i=0;i<allLMProgramConstraints.size();i++)
 				{
 					if( allLMProgramConstraints.get(i).getConstraintID() == id )
@@ -2162,7 +2164,7 @@ private synchronized LiteBase handleLMProgramConstraintChange( int changeType, i
 					lBase = lh;
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case UPDATE:
 				for(int i=0;i<allLMProgramConstraints.size();i++)
 				{
 					if( allLMProgramConstraints.get(i).getConstraintID() == id )
@@ -2173,7 +2175,7 @@ private synchronized LiteBase handleLMProgramConstraintChange( int changeType, i
 					}
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DELETE:
 				for(int i=0;i<allLMProgramConstraints.size();i++)
 				{
 					if( allLMProgramConstraints.get(i).getConstraintID() == id )
@@ -2195,7 +2197,7 @@ private synchronized LiteBase handleLMProgramConstraintChange( int changeType, i
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleNotificationGroupChange( int changeType, int id )
+private synchronized LiteBase handleNotificationGroupChange( DbChangeType dbChangeType, int id )
 {
 	boolean alreadyAdded = false;
 	LiteBase lBase = null;
@@ -2204,9 +2206,9 @@ private synchronized LiteBase handleNotificationGroupChange( int changeType, int
 	if( allNotificationGroups == null )
 		return lBase;
 
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
+		case ADD:
 				for(int i=0;i<allNotificationGroups.size();i++)
 				{
 					if( allNotificationGroups.get(i).getNotificationGroupID() == id )
@@ -2224,7 +2226,7 @@ private synchronized LiteBase handleNotificationGroupChange( int changeType, int
 					lBase = lg;
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case UPDATE:
 				for(int i=0;i<allNotificationGroups.size();i++)
 				{
 					if( allNotificationGroups.get(i).getNotificationGroupID() == id )
@@ -2235,7 +2237,7 @@ private synchronized LiteBase handleNotificationGroupChange( int changeType, int
 					}
 				}
 				break;
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DELETE:
 				for(int i=0;i<allNotificationGroups.size();i++)
 				{
 					if( allNotificationGroups.get(i).getNotificationGroupID() == id )
@@ -2257,24 +2259,24 @@ private synchronized LiteBase handleNotificationGroupChange( int changeType, int
  * Creation date: (12/7/00 12:34:05 PM)
  * @param noObjectNeeded 
  */
-private synchronized LiteBase handlePointChange( int changeType, int id, boolean noObjectNeeded )
+private synchronized LiteBase handlePointChange( DbChangeType dbChangeType, int id, boolean noObjectNeeded )
 {
     // this method is really simply now that we don't cache points
     if (noObjectNeeded) return null;
 	LiteBase lBase = null;
 	
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
+		case ADD:
 		    // Return this so clients like the editor get a db change :(
             lBase = pointDao.getLitePoint(id);
             break;
 
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case UPDATE:
             lBase = pointDao.getLitePoint(id);
             break;
 
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DELETE:
             break;
 
 		default:
@@ -2287,7 +2289,7 @@ private synchronized LiteBase handlePointChange( int changeType, int id, boolean
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleStateGroupChange( int changeType, int id )
+private synchronized LiteBase handleStateGroupChange( DbChangeType dbChangeType, int id )
 {
 	LiteBase lBase = null;
 
@@ -2295,9 +2297,9 @@ private synchronized LiteBase handleStateGroupChange( int changeType, int id )
 	if( allStateGroupMap == null )
 		return lBase;
 
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
+		case ADD:
 			lBase = allStateGroupMap.get( new Integer(id) );				
 			if( lBase == null )
 			{	
@@ -2308,14 +2310,14 @@ private synchronized LiteBase handleStateGroupChange( int changeType, int id )
 			}
 			break;
 
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case UPDATE:
 			LiteStateGroup ly = allStateGroupMap.get( new Integer(id) );				
 			ly.retrieve( databaseAlias );
 					
 			lBase = ly;
 			break;
 
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DELETE:
 			lBase = allStateGroupMap.remove( new Integer(id) );
 			break;
 
@@ -2333,14 +2335,14 @@ private synchronized LiteBase handleStateGroupChange( int changeType, int id )
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private LiteBase handleCustomerChange( int changeType, int id, String dbCategory, boolean noObjectNeeded)
+private LiteBase handleCustomerChange( DbChangeType dbChangeType, int id, String dbCategory, boolean noObjectNeeded)
 {
 	LiteBase lBase = null;
 
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
-        case DBChangeMsg.CHANGE_TYPE_UPDATE:		    
+		case ADD:
+        case UPDATE:		    
             customerCache.remove( new Integer(id));
 			if(!noObjectNeeded)
 			{
@@ -2356,7 +2358,7 @@ private LiteBase handleCustomerChange( int changeType, int id, String dbCategory
 			}
 			break;
 
-        case DBChangeMsg.CHANGE_TYPE_DELETE:
+        case DELETE:
 		    customerCache.remove( new Integer(id));
 		    break;
 		default:
@@ -2371,7 +2373,7 @@ private LiteBase handleCustomerChange( int changeType, int id, String dbCategory
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleYukonGroupChange( int changeType, int id )
+private synchronized LiteBase handleYukonGroupChange( DbChangeType dbChangeType, int id )
 {
     boolean alreadyAdded = false;
     LiteBase lBase = null;
@@ -2379,9 +2381,9 @@ private synchronized LiteBase handleYukonGroupChange( int changeType, int id )
     // if the storage is not already loaded, we must not care about it
     if ( allYukonGroups != null ) {
 
-        switch(changeType)
+        switch(dbChangeType)
         {
-        case DBChangeMsg.CHANGE_TYPE_ADD:
+        case ADD:
             for(int i=0;i<allYukonGroups.size();i++)
             {
                 if( allYukonGroups.get(i).getGroupID() == id )
@@ -2400,7 +2402,7 @@ private synchronized LiteBase handleYukonGroupChange( int changeType, int id )
             }
             break;
 
-        case DBChangeMsg.CHANGE_TYPE_UPDATE:
+        case UPDATE:
             for(int i=0;i<allYukonGroups.size();i++)
             {
                 if( allYukonGroups.get(i).getGroupID() == id )
@@ -2412,7 +2414,7 @@ private synchronized LiteBase handleYukonGroupChange( int changeType, int id )
             }
             break;
 
-        case DBChangeMsg.CHANGE_TYPE_DELETE:
+        case DELETE:
             for(int i=0;i<allYukonGroups.size();i++)
             {
                 if( allYukonGroups.get(i).getGroupID() == id )
@@ -2439,14 +2441,14 @@ private synchronized LiteBase handleYukonGroupChange( int changeType, int id )
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleYukonUserChange( int changeType, int id, boolean noObjectNeeded )
+private synchronized LiteBase handleYukonUserChange( DbChangeType dbChangeType, int id, boolean noObjectNeeded )
 {
     LiteBase lBase = null;
 
     LiteYukonUser lu = null;
-    switch(changeType)
+    switch(dbChangeType)
     {
-    case DBChangeMsg.CHANGE_TYPE_ADD:
+    case ADD:
         if( !noObjectNeeded )
         {
             lu = new LiteYukonUser(id);
@@ -2455,7 +2457,7 @@ private synchronized LiteBase handleYukonUserChange( int changeType, int id, boo
         }
         break;
 
-    case DBChangeMsg.CHANGE_TYPE_UPDATE:
+    case UPDATE:
         if (!noObjectNeeded) {
             lu = new LiteYukonUser(id);
             lu.retrieve(databaseAlias);
@@ -2464,7 +2466,7 @@ private synchronized LiteBase handleYukonUserChange( int changeType, int id, boo
         adjustUserMappings(id);
         break;
 
-    case DBChangeMsg.CHANGE_TYPE_DELETE:
+    case DELETE:
         adjustUserMappings(id); 
         break;
 
@@ -2477,7 +2479,7 @@ private synchronized LiteBase handleYukonUserChange( int changeType, int id, boo
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
+private synchronized LiteBase handleYukonPAOChange( DbChangeType dbChangeType, int id )
 {
 	LiteBase lBase = null;
 
@@ -2490,9 +2492,9 @@ private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
         return lBase;
     }   
     
-	switch(changeType)
+	switch(dbChangeType)
 	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
+		case ADD:
 
 			lBase = allPAOsMap.get( new Integer(id) );				
 			if( lBase == null )
@@ -2506,7 +2508,7 @@ private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
 			}
 			break;
 
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+		case UPDATE:
 
 			LiteYukonPAObject ly = allPAOsMap.get( new Integer(id) );				
 			ly.retrieve( databaseAlias );
@@ -2514,7 +2516,7 @@ private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
 			lBase = ly;
 			break;
 
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
+		case DELETE:
 				for(int i=0;i<allYukonPAObjects.size();i++)
 				{
 					if( allYukonPAObjects.get(i).getYukonID() == id )

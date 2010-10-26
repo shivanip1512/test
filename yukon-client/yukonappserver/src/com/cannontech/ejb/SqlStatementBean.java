@@ -8,6 +8,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionType;
 import com.cannontech.yukon.ISQLStatement;
 
 /**
@@ -58,7 +59,7 @@ public class SqlStatementBean implements ISQLStatement
 		java.util.StringTokenizer tok = new java.util.StringTokenizer(sql);
 	
 		//determine whether this is going to be an add, update, retrieve, or delete	
-		int operation = Transaction.RETRIEVE; //default to retrieve i guess
+		TransactionType transactionType = TransactionType.RETRIEVE; //default to retrieve i guess
 		String opStr = null;
 		
 		if( tok.hasMoreTokens() )
@@ -67,22 +68,22 @@ public class SqlStatementBean implements ISQLStatement
 	
 			if( opStr.equals("select") )
 			{
-				operation = Transaction.RETRIEVE;
+			    transactionType = TransactionType.RETRIEVE;
 			}
 			else
 			if( opStr.equals("insert") )
 			{
-				operation = Transaction.INSERT;
+			    transactionType = TransactionType.INSERT;
 			}
 			else
 			if( opStr.equals("delete") )
 			{
-				operation = Transaction.DELETE;
+			    transactionType = TransactionType.DELETE;
 			}
 			else
 			if( opStr.equals("update") )
 			{
-				operation = Transaction.UPDATE;
+			    transactionType = TransactionType.UPDATE;
 			}		
 		}
 	
@@ -95,7 +96,7 @@ public class SqlStatementBean implements ISQLStatement
 	                 ": " + innerSql.sql );
 	   }
 	   
-		Transaction t = Transaction.createTransaction( operation, innerSql, databaseAlias );
+		Transaction t = Transaction.createTransaction( transactionType, innerSql, databaseAlias );
 		innerSql = (InnerSqlStatement)t.execute();
 	}
 	

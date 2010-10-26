@@ -1,6 +1,7 @@
 package com.cannontech.ejb;
 
 import java.io.ByteArrayInputStream;
+
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,11 +22,10 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDBPersistent;
@@ -45,7 +45,7 @@ public class DBPersistentBean implements IDBPersistent {
      * @ejb:interface-method
      * tview-type="remote" 
      **/
-    public DBPersistent execute( int operation, DBPersistent obj ) throws TransactionException
+    public DBPersistent execute( TransactionType operation, DBPersistent obj ) throws TransactionException
     {
         return internalExecute( operation, obj );
     }   
@@ -61,7 +61,7 @@ public class DBPersistentBean implements IDBPersistent {
     }
     
     
-    private DBPersistent internalExecute(final int operation, final DBPersistent object ) throws TransactionException
+    private DBPersistent internalExecute(final TransactionType operation, final DBPersistent object ) throws TransactionException
     {
         final boolean objectSuppliedConnection;
         if (object.getDbConnection() != null) {
@@ -72,8 +72,7 @@ public class DBPersistentBean implements IDBPersistent {
         }
         
         if (log.isDebugEnabled()) {
-            String operationStr = CtiUtilities.findConstantName(operation, IDBPersistent.class);
-            log.debug("DBPersistentBean TrX started " + operationStr);
+            log.debug("DBPersistentBean TrX started " + operation);
         }
         
         try {
