@@ -41,6 +41,7 @@ import com.cannontech.graph.exportdata.ExportDataFile;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendProperties;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.util.Command;
 import com.cannontech.util.ServletUtil;
@@ -745,7 +746,7 @@ public void getDataNow(java.util.List paobjects)
 				item = t.execute();
 
 				//write the DBChangeMessage out to Dispatch since it was a Successfull ADD
-				DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DBChangeMsg.CHANGE_TYPE_ADD);
+				DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DbChangeType.ADD);
 			
 				for( int i = 0; i < dbChange.length; i++)
 				{
@@ -770,7 +771,7 @@ public void getDataNow(java.util.List paobjects)
 			item = t.execute();
 			
 			//write the DBChangeMessage out to Dispatch since it was a Successfull DELETE
-			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DBChangeMsg.CHANGE_TYPE_DELETE);
+			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DbChangeType.DELETE);
 					
 			for( int i = 0; i < dbChange.length; i++)
 			{
@@ -807,7 +808,7 @@ public void getDataNow(java.util.List paobjects)
 			item = (GraphDefinition)t.execute();
 			
 			//write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
-			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DBChangeMsg.CHANGE_TYPE_UPDATE);
+			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DbChangeType.UPDATE);
 					
 			for( int i = 0; i < dbChange.length; i++)
 			{
