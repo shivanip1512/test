@@ -44,7 +44,7 @@ public class LmHardwareBasePicker extends DatabasePicker<LMHardwareBase> {
         try {
             energyCompanyId = Integer.parseInt(extraArgs);
         } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("The energy company id was not supplied.");
         }
 
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
