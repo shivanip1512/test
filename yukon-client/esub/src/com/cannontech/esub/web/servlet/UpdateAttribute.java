@@ -22,6 +22,7 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.operator.EsubDrawingsRole;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.conns.ConnPool;
@@ -120,7 +121,7 @@ public class UpdateAttribute extends HttpServlet {
 		
 		// update the cache and send out a db change	
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		DBChangeMsg[] msg = cache.createDBChangeMessages((CTIDbChange) dbObj, DBChangeMsg.CHANGE_TYPE_UPDATE);
+		DBChangeMsg[] msg = cache.createDBChangeMessages((CTIDbChange) dbObj, DbChangeType.UPDATE);
 		for(int i = 0; i < msg.length; i++ ) {
 			cache.handleDBChangeMessage(msg[i]);			
 		
