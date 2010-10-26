@@ -33,7 +33,7 @@ import com.cannontech.database.dbchange.DbChangeIdentifier;
 import com.cannontech.database.dbchange.DbChangeMessageHolder;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.yukon.concrete.ResourceFactory;
+import com.cannontech.yukon.DbPersistentBeanFactory;
 
 /**
  * @author snebben
@@ -47,6 +47,8 @@ public class DBPersistentDaoImpl implements DBPersistentDao
     
     private AsyncDynamicDataSource asyncDynamicDataSource;
     
+    private DbPersistentBeanFactory dbPersistentBeanFactory;
+    
     @Override
     public DBPersistent retrieveDBPersistent(LiteBase liteObject) {
 
@@ -55,7 +57,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
         if( liteObject != null) {
             dbPersistent = LiteFactory.createDBPersistent(liteObject);
             try {
-                dbPersistent = ResourceFactory.getIYukon().createIDBPersistent().execute(TransactionType.RETRIEVE, dbPersistent);
+                dbPersistent = dbPersistentBeanFactory.createNewDbPersistentBean().execute(TransactionType.RETRIEVE, dbPersistent);
             } catch(Exception e) {
                 com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
             }
@@ -94,7 +96,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
 
     private void executeTransaction(DBPersistent item,
             TransactionType transactionType) throws TransactionException {
-        ResourceFactory.getIYukon().createIDBPersistent().execute(transactionType, item);
+    	dbPersistentBeanFactory.createNewDbPersistentBean().execute(transactionType, item);
     }
 
     private DBChangeMsg[] getDBChangeMsgs(DBPersistent item, DbChangeType dbChangeType) {
@@ -210,7 +212,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
     public void performDBChangeWithNoMsg(DBPersistent dbPersistent, TransactionType transactionType) {
         
         try {
-            ResourceFactory.getIYukon().createIDBPersistent().execute(transactionType, dbPersistent);
+        	dbPersistentBeanFactory.createNewDbPersistentBean().execute(transactionType, dbPersistent);
         } catch( TransactionException e ) {
             throw new PersistenceException("Unable to save DBPersistent (dbpersistent=" + 
                                            dbPersistent + ", transactionType=" + transactionType + ")", e);
@@ -221,4 +223,10 @@ public class DBPersistentDaoImpl implements DBPersistentDao
     public void setAsyncDynamicDataSource(AsyncDynamicDataSource asyncDynamicDataSource) {
         this.asyncDynamicDataSource = asyncDynamicDataSource;
     }
+    
+    @Autowired
+    public void setDbPersistentBeanFactory(
+			DbPersistentBeanFactory dbPersistentBeanFactory) {
+		this.dbPersistentBeanFactory = dbPersistentBeanFactory;
+	}
 }
