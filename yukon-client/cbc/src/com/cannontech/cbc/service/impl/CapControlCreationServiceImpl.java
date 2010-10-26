@@ -31,6 +31,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.VoltageRegulatorType;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.common.pao.PaoType;
 
 public class CapControlCreationServiceImpl implements CapControlCreationService {
@@ -166,7 +167,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
         
 	    int newRegId = voltageRegulatorDao.add(regulator);
 
-        sendDeviceDBChangeMessage(newRegId, DBChangeMsg.CHANGE_TYPE_ADD, regulator.getType().getDbValue());
+        sendDeviceDBChangeMessage(newRegId, DbChangeType.ADD, regulator.getType().getDbValue());
         
         return newRegId;
     }
@@ -176,7 +177,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		areaDao.add(area);
 		
 		//Send DB add message
-        sendCapcontrolDBChangeMessage(area.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.AREA);
+        sendCapcontrolDBChangeMessage(area.getId(),DbChangeType.ADD,CapControlType.AREA);
 	}
 	
 	@Override
@@ -184,7 +185,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
         areaDao.addSpecialArea(specialArea);
         
         //Send DB add message
-        sendCapcontrolDBChangeMessage(specialArea.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SPECIAL_AREA);
+        sendCapcontrolDBChangeMessage(specialArea.getId(),DbChangeType.ADD,CapControlType.SPECIAL_AREA);
     }
 	
 	@Override
@@ -192,7 +193,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		substationDao.add(substation);
 
 		//Send DB add message
-		sendCapcontrolDBChangeMessage(substation.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SUBSTATION);
+		sendCapcontrolDBChangeMessage(substation.getId(),DbChangeType.ADD,CapControlType.SUBSTATION);
 	}
 	
 	@Override
@@ -210,8 +211,8 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		boolean ret = substationDao.assignSubstation(areaId, substationId);
 		
 		if (ret) {
-			sendCapcontrolDBChangeMessage(substationId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.SUBSTATION);
-			sendCapcontrolDBChangeMessage(areaId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.AREA);
+			sendCapcontrolDBChangeMessage(substationId,DbChangeType.UPDATE,CapControlType.SUBSTATION);
+			sendCapcontrolDBChangeMessage(areaId,DbChangeType.UPDATE,CapControlType.AREA);
 		}
 		return ret;
 	}
@@ -233,7 +234,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	public void createCapbank(Capbank bank) {
 		capbankDao.add(bank);
 		
-		sendCapcontrolDBChangeMessage(bank.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.CAPBANK);
+		sendCapcontrolDBChangeMessage(bank.getId(),DbChangeType.ADD,CapControlType.CAPBANK);
 	}
 	
 	@Override
@@ -241,8 +242,8 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		boolean ret = capbankDao.assignCapbank(feederId, bankId);
 		
 		if (ret) {
-			sendCapcontrolDBChangeMessage(bankId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.CAPBANK);
-			sendCapcontrolDBChangeMessage(feederId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.FEEDER);
+			sendCapcontrolDBChangeMessage(bankId,DbChangeType.UPDATE,CapControlType.CAPBANK);
+			sendCapcontrolDBChangeMessage(feederId,DbChangeType.UPDATE,CapControlType.FEEDER);
 		}
 		
 		return ret;
@@ -266,15 +267,15 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	public void createFeeder(Feeder feeder) {
 		feederDao.add(feeder);
 		
-		sendCapcontrolDBChangeMessage(feeder.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.FEEDER);
+		sendCapcontrolDBChangeMessage(feeder.getId(),DbChangeType.ADD,CapControlType.FEEDER);
 	}
 	
 	@Override
 	public boolean assignFeeder(int feederId, int subBusId) {
 		boolean ret = feederDao.assignFeeder(subBusId, feederId);
 		if (ret) {
-			sendCapcontrolDBChangeMessage(feederId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.FEEDER);
-			sendCapcontrolDBChangeMessage(subBusId,DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.SUBBUS);
+			sendCapcontrolDBChangeMessage(feederId,DbChangeType.UPDATE,CapControlType.FEEDER);
+			sendCapcontrolDBChangeMessage(subBusId,DbChangeType.UPDATE,CapControlType.SUBBUS);
 		}
 		
 		return ret;
@@ -299,7 +300,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	public void createSubstationBus(SubstationBus subBus) {
 		substationBusDao.add(subBus);
 		
-		sendCapcontrolDBChangeMessage(subBus.getId(),DBChangeMsg.CHANGE_TYPE_ADD,CapControlType.SUBBUS);
+		sendCapcontrolDBChangeMessage(subBus.getId(),DbChangeType.ADD,CapControlType.SUBBUS);
 	}
 	
 	@Override
@@ -307,8 +308,8 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		boolean ret = substationBusDao.assignSubstationBus(substationId, subBusId);
 		
 		if (ret) {
-			sendCapcontrolDBChangeMessage(subBusId,DBChangeMsg.CHANGE_TYPE_UPDATE, CapControlType.SUBBUS);
-			sendCapcontrolDBChangeMessage(substationId, DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.SUBSTATION);
+			sendCapcontrolDBChangeMessage(subBusId,DbChangeType.UPDATE, CapControlType.SUBBUS);
+			sendCapcontrolDBChangeMessage(substationId, DbChangeType.UPDATE,CapControlType.SUBSTATION);
 		}
 		
 		return ret; 
@@ -334,7 +335,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		capbankControllerDao.add(controller);
 
 		String type = controller.getType().getDbString();
-        sendDeviceDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_ADD,type);
+        sendDeviceDBChangeMessage(controller.getId(),DbChangeType.ADD,type);
 	}
 	
 	@Override
@@ -344,7 +345,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 
 		if (success) {
 			String devType = controller.getType().getDbString();
-			sendDeviceDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_ADD,devType);
+			sendDeviceDBChangeMessage(controller.getId(),DbChangeType.ADD,devType);
 		}
 		
 		return success;
@@ -356,8 +357,8 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		PaoType deviceType = controller.getType();
 		
 		if (ret) {
-		    sendDeviceDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_UPDATE, deviceType.getDbString());
-		    sendCapcontrolDBChangeMessage(capbankId, DBChangeMsg.CHANGE_TYPE_UPDATE,CapControlType.CAPBANK.getDbValue());
+		    sendDeviceDBChangeMessage(controller.getId(),DbChangeType.UPDATE, deviceType.getDbString());
+		    sendCapcontrolDBChangeMessage(capbankId, DbChangeType.UPDATE,CapControlType.CAPBANK.getDbValue());
 		}
 		
 		return ret; 
@@ -399,21 +400,21 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		return litePao.getYukonID();
 	}
 	
-    private void sendDeviceDBChangeMessage(int paoId, int changeType, String type) {
+    private void sendDeviceDBChangeMessage(int paoId, DbChangeType dbChangeType, String type) {
         DBChangeMsg msg = new DBChangeMsg(paoId, DBChangeMsg.CHANGE_PAO_DB,
-                PAOGroups.STRING_CAT_DEVICE, type, changeType); 
+                PAOGroups.STRING_CAT_DEVICE, type, dbChangeType); 
         dbPersistantDao.processDBChange(msg);
     }
 
 	
-	private void sendCapcontrolDBChangeMessage(int paoId, int changeType, String type) {
+	private void sendCapcontrolDBChangeMessage(int paoId, DbChangeType dbChangeType, String type) {
 		DBChangeMsg msg = new DBChangeMsg(paoId, DBChangeMsg.CHANGE_PAO_DB,
-				PAOGroups.STRING_CAT_CAPCONTROL, type, changeType);	
+				PAOGroups.STRING_CAT_CAPCONTROL, type, dbChangeType);	
 		dbPersistantDao.processDBChange(msg);
 	}
 	
-	private void sendCapcontrolDBChangeMessage(int paoId, int changeType, CapControlType type) {
-		sendCapcontrolDBChangeMessage(paoId,changeType,type.getDbValue());
+	private void sendCapcontrolDBChangeMessage(int paoId, DbChangeType dbChangeType, CapControlType type) {
+		sendCapcontrolDBChangeMessage(paoId, dbChangeType, type.getDbValue());
 	}
 	
 	@Autowired
