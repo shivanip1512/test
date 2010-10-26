@@ -15,6 +15,7 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -369,9 +370,9 @@ public void update() throws java.sql.SQLException
 	/* (non-Javadoc)
 	 * @see com.cannontech.database.db.CTIDbChange#getDBChangeMsgs(int)
 	 */
-	public DBChangeMsg[] getDBChangeMsgs(int typeOfChange)
+	public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 	{
-		ArrayList list = new ArrayList(10);
+		ArrayList<DBChangeMsg> list = new ArrayList<DBChangeMsg>(10);
 
 		//add the basic change method
 		list.add( new DBChangeMsg(
@@ -379,30 +380,28 @@ public void update() throws java.sql.SQLException
 						DBChangeMsg.CHANGE_COMMAND_DB,
 						DBChangeMsg.CAT_COMMAND,
 						DBChangeMsg.CAT_COMMAND,
-						typeOfChange ) );
+						dbChangeType ) );
  
 		//if we are deleteing this Command, we need to take in account the DeviceTypeCommand entries that also get deleted	
-		if( typeOfChange == DBChangeMsg.CHANGE_TYPE_DELETE )
+		if( dbChangeType == DbChangeType.DELETE )
 		{
 			//get all the deviceCommandIds that have this Command
-		    Vector liteDevTypeCmds = DaoFactory.getCommandDao().getAllDevTypeCommands(getCommandID().intValue());
+		    Vector<LiteDeviceTypeCommand> liteDevTypeCmds = DaoFactory.getCommandDao().getAllDevTypeCommands(getCommandID().intValue());
 			
-			//add a new message for each point
-			for( int i = 0; i < liteDevTypeCmds.size(); i++ )
-			{
-				DBChangeMsg msg = new DBChangeMsg(
-							((LiteDeviceTypeCommand)liteDevTypeCmds.get(i)).getDeviceCommandID(),
+		    for (LiteDeviceTypeCommand liteDeviceTypeCommand : liteDevTypeCmds) {
+            	DBChangeMsg msg = new DBChangeMsg(
+							liteDeviceTypeCommand.getDeviceCommandID(),
 							DBChangeMsg.CHANGE_DEVICETYPE_COMMAND_DB,
 							DBChangeMsg.CAT_DEVICETYPE_COMMAND,
 							DBChangeMsg.CAT_DEVICETYPE_COMMAND,
-							typeOfChange );
+							dbChangeType );
 						
 				list.add( msg );
 			}	
 		}
 		
 		DBChangeMsg[] dbChange = new DBChangeMsg[list.size()];
-		return (DBChangeMsg[])list.toArray( dbChange );
+		return list.toArray( dbChange );
 		
 	}
 

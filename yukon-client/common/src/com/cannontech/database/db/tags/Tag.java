@@ -6,6 +6,9 @@
  */
 package com.cannontech.database.db.tags;
 
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
+
 
 /**
  * @author jdayton
@@ -198,18 +201,16 @@ public void update()
 	/* (non-Javadoc)
 	 * @see com.cannontech.database.db.CTIDbChange#getDBChangeMsgs(int)
 	 */
-public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
-{
-	com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
-	{
-		new com.cannontech.message.dispatch.message.DBChangeMsg(
-			getTagID().intValue(),
-			com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TAG_DB,
-			com.cannontech.message.dispatch.message.DBChangeMsg.CAT_TAG,
-			com.cannontech.message.dispatch.message.DBChangeMsg.CAT_TAG,
-			typeOfChange)
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+	
+    DBChangeMsg[] msgs = {
+            new DBChangeMsg(
+                            getTagID().intValue(),
+                            DBChangeMsg.CHANGE_TAG_DB,
+                            DBChangeMsg.CAT_TAG,
+                            DBChangeMsg.CAT_TAG,
+                            dbChangeType)
 	};
-
 
 	return msgs;
 }

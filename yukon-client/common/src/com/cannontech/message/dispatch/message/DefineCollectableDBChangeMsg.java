@@ -64,7 +64,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	dbChange.setDatabase( vstr.extractInt() );
 	dbChange.setCategory( (String)vstr.restoreObject(SimpleMappings.CString) );
 	dbChange.setObjectType( (String)vstr.restoreObject(SimpleMappings.CString) );
-	dbChange.setTypeOfChange( vstr.extractInt() );
+	dbChange.setDbChangeType( DbChangeType.getForType(vstr.extractInt()) );
 }
 /**
  * saveGuts method comment.
@@ -79,6 +79,6 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertInt( dbChange.getDatabase() );
 	vstr.saveObject( dbChange.getCategory(), SimpleMappings.CString );
 	vstr.saveObject( dbChange.getObjectType(), SimpleMappings.CString );
-	vstr.insertInt( dbChange.getTypeOfChange() );
+	vstr.insertInt( dbChange.getDbChangeType().getTypeOfChange() );
 }
 }

@@ -1,5 +1,8 @@
 package com.cannontech.database.data.season;
 
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
+
 /**
  * Insert the type's description here.
  * Creation date: (6/22/2004 10:35:21 AM)
@@ -63,19 +66,17 @@ public void delete() throws java.sql.SQLException
  * Creation date: (6/22/2004 10:35:21 AM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
-{
-	com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
-	{
-		new com.cannontech.message.dispatch.message.DBChangeMsg(
-					getScheduleID().intValue(),
-					com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_SEASON_SCHEDULE_DB,
-					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_SEASON_SCHEDULE,
-					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_SEASON_SCHEDULE,
-					typeOfChange)
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+    
+	DBChangeMsg[] msgs = {
+	        new DBChangeMsg(
+	                        getScheduleID().intValue(),
+	                        DBChangeMsg.CHANGE_SEASON_SCHEDULE_DB,
+	                        DBChangeMsg.CAT_SEASON_SCHEDULE,
+	                        DBChangeMsg.CAT_SEASON_SCHEDULE,
+	                        dbChangeType)
 	};
-
-
+	
 	return msgs;
 }
 /**

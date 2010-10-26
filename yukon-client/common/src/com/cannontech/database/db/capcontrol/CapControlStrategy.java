@@ -12,6 +12,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -324,7 +325,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
     /**
      * Generates a DBChange msg.
      */
-    public DBChangeMsg[] getDBChangeMsgs( int typeOfChange ) {
+    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
         DBChangeMsg[] dbChange = new DBChangeMsg[1];
 
         //add the basic change method
@@ -332,7 +333,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
                         getStrategyID().intValue(),
                         DBChangeMsg.CHANGE_CBC_STRATEGY_DB,
                         DBChangeMsg.CAT_CBC_STRATEGY,
-                        typeOfChange );
+                        dbChangeType);
 
         return dbChange;
     }

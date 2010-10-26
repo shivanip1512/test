@@ -4,14 +4,15 @@ import static com.cannontech.database.dbchange.ChangeSequenceStrategyEnum.ERROR;
 import static com.cannontech.database.dbchange.ChangeSequenceStrategyEnum.KEEP_BOTH;
 import static com.cannontech.database.dbchange.ChangeSequenceStrategyEnum.KEEP_FIRST;
 import static com.cannontech.database.dbchange.ChangeSequenceStrategyEnum.KEEP_LAST;
-import static com.cannontech.database.dbchange.ChangeTypeEnum.ADD;
-import static com.cannontech.database.dbchange.ChangeTypeEnum.DELETE;
-import static com.cannontech.database.dbchange.ChangeTypeEnum.UPDATE;
+import static com.cannontech.message.dispatch.message.DbChangeType.ADD;
+import static com.cannontech.message.dispatch.message.DbChangeType.DELETE;
+import static com.cannontech.message.dispatch.message.DbChangeType.UPDATE;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import com.cannontech.common.exception.BadConfigurationException;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class ChangeSequenceDecoder {
     private static final Map<ChangeSequence, ChangeSequenceStrategyEnum> strategyLookup = new HashMap<ChangeSequence, ChangeSequenceStrategyEnum>();
@@ -31,22 +32,22 @@ public class ChangeSequenceDecoder {
         initData(DELETE, UPDATE, ERROR);
     }
     
-    private static void initData(ChangeTypeEnum first, ChangeTypeEnum second, ChangeSequenceStrategyEnum strategy) {
+    private static void initData(DbChangeType first, DbChangeType second, ChangeSequenceStrategyEnum strategy) {
         ChangeSequenceStrategyEnum last = strategyLookup.put(new ChangeSequence(first, second), strategy);
         if (last != null) {
             throw new BadConfigurationException("Bad setup, can't repeat a change sequence combination");
         }
     }
 
-    public static ChangeSequenceStrategyEnum getStrategy(ChangeTypeEnum first, ChangeTypeEnum second) {
+    public static ChangeSequenceStrategyEnum getStrategy(DbChangeType first, DbChangeType second) {
         return strategyLookup.get(new ChangeSequence(first, second));
     }
     
     private static class ChangeSequence {
-        private ChangeTypeEnum first;
-        private ChangeTypeEnum second;
+        private DbChangeType first;
+        private DbChangeType second;
         
-        public ChangeSequence(ChangeTypeEnum first, ChangeTypeEnum second) {
+        public ChangeSequence(DbChangeType first, DbChangeType second) {
             super();
             this.first = first;
             this.second = second;

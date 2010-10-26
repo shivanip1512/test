@@ -1,6 +1,8 @@
 package com.cannontech.database.db.notification;
 
 import com.cannontech.database.SqlUtils;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * This type was created in VisualAge.
@@ -130,18 +132,16 @@ public java.lang.String getCategoryName() {
  * Creation date: (12/19/2001 1:45:25 PM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 {
-	com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
-	{
-		new com.cannontech.message.dispatch.message.DBChangeMsg(
-					getAlarmCategoryID().intValue(),
-					com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_ALARM_CATEGORY_DB,
-					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_ALARMCATEGORY,
-					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_ALARMCATEGORY,
-					typeOfChange)
+	DBChangeMsg[] msgs = { 
+	        new DBChangeMsg(
+	                        getAlarmCategoryID().intValue(),
+	                        DBChangeMsg.CHANGE_ALARM_CATEGORY_DB,
+	                        DBChangeMsg.CAT_ALARMCATEGORY,
+	                        DBChangeMsg.CAT_ALARMCATEGORY,
+	                        dbChangeType)
 	};
-
 
 	return msgs;
 }

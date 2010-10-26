@@ -38,7 +38,7 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.model.DbBackgroundTreeModel;
 import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.NullDBTreeModel;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.base.Predicate;
 
 public class TreeViewPanel extends javax.swing.JPanel implements java.awt.ItemSelectable, javax.swing.event.TreeWillExpandListener, ItemListener
@@ -763,15 +763,14 @@ public void undoLastSelection(boolean val) {
      * @param msg - DBChange
      * @param object - Lite Base that was modified
      */
-    public void processDBChange(int changeType, LiteBase liteBase) {
-    
-        if (changeType == DBChangeMsg.CHANGE_TYPE_ADD) {
+    public void processDBChange(DbChangeType dbChangeType, LiteBase liteBase) {
+        if (dbChangeType == DbChangeType.ADD) {
             this.treeObjectInsert(liteBase);
-        } else if (changeType == DBChangeMsg.CHANGE_TYPE_DELETE) {
+        } else if (dbChangeType == DbChangeType.DELETE) {
             this.treeObjectDelete(liteBase);
-        } else if (changeType == DBChangeMsg.CHANGE_TYPE_UPDATE) {
+        } else if (dbChangeType == DbChangeType.UPDATE) {
             this.treeObjectUpdated(liteBase);
         } else
-            throw new IllegalArgumentException("Unrecognized CHANGE_TYPE:  " + changeType);
+            throw new IllegalArgumentException("Unrecognized DbChangeType:  " + dbChangeType);
     }
 }

@@ -1,5 +1,8 @@
 package com.cannontech.database.data.baseline;
 
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
+
 /**
  * Insert the type's description here.
  * Creation date: (7/24/2003 2:05:21 PM)
@@ -65,18 +68,16 @@ public void delete() throws java.sql.SQLException
 }
 
 
-public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 {
-	com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
-	{
-		new com.cannontech.message.dispatch.message.DBChangeMsg(
+	DBChangeMsg[] msgs = { 
+	        new DBChangeMsg(
 					getBaselineID().intValue(),
-					com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_BASELINE_DB,
-					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_BASELINE,
-					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_BASELINE,
-					typeOfChange)
+					DBChangeMsg.CHANGE_BASELINE_DB,
+					DBChangeMsg.CAT_BASELINE,
+					DBChangeMsg.CAT_BASELINE,
+					dbChangeType)
 	};
-
 
 	return msgs;
 }

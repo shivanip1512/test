@@ -14,6 +14,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class TableToDBChangeMappingServiceImpl implements TableToDBChangeMappingService{
     
@@ -36,17 +37,17 @@ public class TableToDBChangeMappingServiceImpl implements TableToDBChangeMapping
     private void addDBTableListener(final String tableName, final int database, final String category, final String objectType) {
         databaseMigrationService.addDBTableListener(tableName, new TableChangeCallback() {
             public void rowInserted(int primaryKey) {
-                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, objectType, DBChangeMsg.CHANGE_TYPE_ADD);
+                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, objectType, DbChangeType.ADD);
                 dbPersistentDao.processDBChange(dbChangeMsg);
             }
 
             public void rowUpdated(int primaryKey) {
-                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, objectType, DBChangeMsg.CHANGE_TYPE_UPDATE);
+                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, objectType, DbChangeType.UPDATE);
                 dbPersistentDao.processDBChange(dbChangeMsg);
             }
 
             public void rowDeleted(int primaryKey) {
-                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, objectType, DBChangeMsg.CHANGE_TYPE_DELETE);
+                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, objectType, DbChangeType.DELETE);
                 dbPersistentDao.processDBChange(dbChangeMsg);
             }
         });
@@ -57,21 +58,21 @@ public class TableToDBChangeMappingServiceImpl implements TableToDBChangeMapping
             public void rowInserted(int primaryKey) {
                 LitePoint litePoint = pointDao.getLitePoint(primaryKey);
                 String pointType = PointTypes.getType(litePoint.getLiteType());
-                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, pointType, DBChangeMsg.CHANGE_TYPE_ADD);
+                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, pointType, DbChangeType.ADD);
                 dbPersistentDao.processDBChange(dbChangeMsg);
             }
 
             public void rowUpdated(int primaryKey) {
                 LitePoint litePoint = pointDao.getLitePoint(primaryKey);
                 String pointType = PointTypes.getType(litePoint.getLiteType());
-                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, pointType, DBChangeMsg.CHANGE_TYPE_UPDATE);
+                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, pointType, DbChangeType.UPDATE);
                 dbPersistentDao.processDBChange(dbChangeMsg);
             }
 
             public void rowDeleted(int primaryKey) {
                 LitePoint litePoint = pointDao.getLitePoint(primaryKey);
                 String pointType = PointTypes.getType(litePoint.getLiteType());
-                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, pointType, DBChangeMsg.CHANGE_TYPE_DELETE);
+                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, pointType, DbChangeType.DELETE);
                 dbPersistentDao.processDBChange(dbChangeMsg);
             }
         });

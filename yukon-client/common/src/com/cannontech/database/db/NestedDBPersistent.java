@@ -2,7 +2,7 @@ package com.cannontech.database.db;
 
 import java.sql.SQLException;
 
-import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionType;
 
 /**
  * @author rneuharth
@@ -18,53 +18,44 @@ import com.cannontech.database.Transaction;
 public abstract class NestedDBPersistent extends DBPersistent
 {
 	//used to specify what the DB operation for this instance is 
-	private transient int opCode = Transaction.UPDATE;
+	private transient TransactionType opCode = TransactionType.UPDATE;
 
 
-	/**
-	 * @return
-	 */
-	public int getOpCode()
-	{
-		return opCode;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setOpCode(int i)
-	{
-		opCode = i;
-	}
-
+	public TransactionType getOpCode() {
+        return opCode;
+    }
+	
+	public void setOpCode(TransactionType opCode) {
+        this.opCode = opCode;
+    }
+	
 	/**
 	 * Executes the set operation
 	 */
-	public void executeNestedOp() throws SQLException
-	{
+	public void executeNestedOp() throws SQLException {
 		switch( getOpCode() )
 		{
-			case Transaction.INSERT:
+			case INSERT:
 				add();
 				break;
 
-			case Transaction.DELETE:
+			case DELETE:
 				delete();
 				break;
 
-			case Transaction.ADD_PARTIAL:
+			case ADD_PARTIAL:
 				addPartial();
 				break;
 
-			case Transaction.DELETE_PARTIAL:
+			case DELETE_PARTIAL:
 				deletePartial();
 				break;
 
-			case Transaction.RETRIEVE:
+			case RETRIEVE:
 				retrieve();
 				break;
 
-			case Transaction.UPDATE:
+			case UPDATE:
 				update();
 				break;
 				
@@ -74,6 +65,4 @@ public abstract class NestedDBPersistent extends DBPersistent
 		}
 
 	}
-
-
 }

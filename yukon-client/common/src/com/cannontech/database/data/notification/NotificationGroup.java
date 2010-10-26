@@ -9,6 +9,8 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.lm.LMDirectNotificationGroupList;
 import com.cannontech.database.db.notification.AlarmCategory;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * This type was created in VisualAge.
@@ -115,18 +117,16 @@ public void delete() throws java.sql.SQLException
  * Creation date: (12/19/2001 1:45:25 PM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
-{
-	com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
-	{
-		new com.cannontech.message.dispatch.message.DBChangeMsg(
-					getNotificationGroup().getNotificationGroupID().intValue(),
-					com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_NOTIFICATION_GROUP_DB,
-					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_NOTIFCATIONGROUP,
-					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_NOTIFCATIONGROUP,
-					typeOfChange)
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+     
+    DBChangeMsg[] msgs = { 
+            new DBChangeMsg(
+                            getNotificationGroup().getNotificationGroupID().intValue(),
+                            DBChangeMsg.CHANGE_NOTIFICATION_GROUP_DB,
+                            DBChangeMsg.CAT_NOTIFCATIONGROUP,
+                            DBChangeMsg.CAT_NOTIFCATIONGROUP,
+                            dbChangeType)
 	};
-
 
 	return msgs;
 }

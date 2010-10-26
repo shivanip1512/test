@@ -3,6 +3,7 @@ package com.cannontech.database.data.multi;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public abstract class CommonMulti extends com.cannontech.database.db.DBPersistent 
 {
@@ -38,7 +39,7 @@ public void delete() throws java.sql.SQLException
 
 }
 
-public DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 {
 	java.util.ArrayList<DBChangeMsg> list = new java.util.ArrayList<DBChangeMsg>(10);
 
@@ -48,7 +49,7 @@ public DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
 		{
 			//add the basic change method
 			DBChangeMsg[] msgs = 
-				((CTIDbChange)getDBPersistentVector().get(i)).getDBChangeMsgs(typeOfChange);
+				((CTIDbChange)getDBPersistentVector().get(i)).getDBChangeMsgs(dbChangeType);
 
 			for( int j = 0; j < msgs.length; j++ )
 				list.add( msgs[j] );

@@ -28,6 +28,7 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableMap;
@@ -170,7 +171,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
                         DBChangeMsg.CHANGE_YUKON_USER_DB,
                         DBChangeMsg.CAT_YUKON_USER_GROUP,
                         "",
-                        DBChangeMsg.CHANGE_TYPE_UPDATE);
+                        DbChangeType.UPDATE);
         dbPersistentDao.processDBChange(dbChangeMsg);
     }
     

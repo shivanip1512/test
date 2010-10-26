@@ -2,6 +2,8 @@ package com.cannontech.database.db.device.lm;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * @author jdayton
@@ -176,19 +178,17 @@ public final static boolean usesHolidaySchedule(int holSchID, String databaseAli
 	}
 }
 
-public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 {
-	com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
-	{
-		new com.cannontech.message.dispatch.message.DBChangeMsg(
-			getConstraintID().intValue(),
-			com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_LMCONSTRAINT_DB,
-			com.cannontech.message.dispatch.message.DBChangeMsg.CAT_LMCONSTRAINT,
-			com.cannontech.message.dispatch.message.DBChangeMsg.CAT_LMCONSTRAINT,
-			typeOfChange)
+	DBChangeMsg[] msgs = {
+	         new DBChangeMsg(
+	                         getConstraintID().intValue(),
+	                         DBChangeMsg.CHANGE_LMCONSTRAINT_DB,
+	                         DBChangeMsg.CAT_LMCONSTRAINT,
+	                         DBChangeMsg.CAT_LMCONSTRAINT,
+	                         dbChangeType)
 	};
-
-
+	
 	return msgs;
 }
 

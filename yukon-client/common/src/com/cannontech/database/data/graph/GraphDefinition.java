@@ -9,6 +9,7 @@ import com.cannontech.database.db.graph.GraphCustomerList;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.database.db.web.OperatorLoginGraphList;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * Insert the type's description here.
@@ -31,9 +32,9 @@ public GraphDefinition() {
  * Creation date: (12/19/2001 1:45:25 PM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 {
-	ArrayList list = new ArrayList(10);
+	ArrayList<DBChangeMsg> list = new ArrayList<DBChangeMsg>(10);
 
 	//add the basic change method
 	list.add( new DBChangeMsg(
@@ -41,10 +42,10 @@ public DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
 					DBChangeMsg.CHANGE_GRAPH_DB,
 					DBChangeMsg.CAT_GRAPH,
 					DBChangeMsg.CAT_GRAPH,
-					typeOfChange ) );
+					dbChangeType) );
 	 
-	DBChangeMsg[] dbChange = new com.cannontech.message.dispatch.message.DBChangeMsg[list.size()];
-	return (DBChangeMsg[])list.toArray( dbChange );
+	DBChangeMsg[] dbChange = new DBChangeMsg[list.size()];
+	return list.toArray( dbChange );
 }
 /**
  * This method was created by a SmartGuide.

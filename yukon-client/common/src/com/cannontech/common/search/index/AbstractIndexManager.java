@@ -44,8 +44,8 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.search.HitsCallbackHandler;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.database.dbchange.ChangeTypeEnum;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * Abstract class which manages index building and updating.
@@ -181,7 +181,7 @@ public abstract class AbstractIndexManager implements IndexManager {
 
     /**
      * Method to process a DBChangeMsg
-     * @param changeType 
+     * @param dbChangeType 
      * @param id - Id of db change msg object
      * @param database - Database of the db change msg
      * @param i 
@@ -190,7 +190,7 @@ public abstract class AbstractIndexManager implements IndexManager {
      * @return Index update info for the dbchange or null if the change should
      *         not be processed for this index
      */
-    abstract protected IndexUpdateInfo processDBChange(ChangeTypeEnum changeType, int id, int database, String category,
+    abstract protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category,
             String type);
 
     public float getPercentDone() {
@@ -211,8 +211,7 @@ public abstract class AbstractIndexManager implements IndexManager {
     public void dbChangeReceived(DBChangeMsg dbChange) {
 
         try {
-            ChangeTypeEnum changeType = ChangeTypeEnum.createFromDbChange(dbChange);
-            IndexUpdateInfo info = this.processDBChange(changeType,
+            IndexUpdateInfo info = this.processDBChange(dbChange.getDbChangeType(),
                                                         dbChange.getId(),
                                                         dbChange.getDatabase(),
                                                         dbChange.getCategory(),

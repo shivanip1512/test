@@ -43,10 +43,11 @@ import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class IDatabaseCacheAdapter implements IDatabaseCache {
-    public DBChangeMsg[] createDBChangeMessages(CTIDbChange newItem, int changeType) {
+    public DBChangeMsg[] createDBChangeMessages(CTIDbChange newItem, DbChangeType dbChangeType) {
         throw new UnsupportedOperationException();
     }
 

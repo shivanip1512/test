@@ -14,8 +14,6 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.management.ManagementFactory;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -1646,44 +1644,6 @@ public static double convertTemperature(double temperature, String fromUnit, Str
             s.add(t);
         }
         return s;
-    }
-    
-    public static String findConstantName(int i, Class<?> c) {
-        Field[] declaredFields = c.getFields();
-        for (int j = 0; j < declaredFields.length; j++) {
-            Field field = declaredFields[j];
-            int modifiers = field.getModifiers();
-            if (!Modifier.isStatic(modifiers)) {
-                continue;
-            }
-            if (Integer.class.isAssignableFrom(field.getType())) {
-                try {
-                    Integer value = (Integer) field.get(null);
-                    if (value.intValue() == i) {
-                        return field.getName();
-                    }
-                } catch (IllegalArgumentException e) {
-                    CTILogger.error(e);
-                } catch (IllegalAccessException e) {
-                    CTILogger.error(e);
-                }
-            }
-
-            if (Integer.TYPE.isAssignableFrom(field.getType())) {
-                try {
-                    int value = field.getInt(null);
-                    if (value == i) {
-                        return field.getName();
-                    }
-                } catch (IllegalArgumentException e) {
-                    CTILogger.error(e);
-                } catch (IllegalAccessException e) {
-                    CTILogger.error(e);
-                }
-            }
-            
-        }
-        return Integer.toString(i);
     }
     
     /**

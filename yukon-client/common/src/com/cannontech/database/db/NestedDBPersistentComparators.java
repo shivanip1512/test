@@ -9,7 +9,7 @@ package com.cannontech.database.db;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.device.DeviceVerification;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
@@ -183,7 +183,7 @@ public final class NestedDBPersistentComparators
 				if( areNestedObjectsEqual(oldNest, newNest, comparator) )
 				{
 					// item in OLD list & NEW list, update
-					newNest.setOpCode( Transaction.UPDATE );
+					newNest.setOpCode( TransactionType.UPDATE );
 					tempVect.add( newNest );
 					fnd = true;
 					break;
@@ -193,7 +193,7 @@ public final class NestedDBPersistentComparators
 			if( !fnd )
 			{
 				// item in OLD list only, delete
-				oldNest.setOpCode( Transaction.DELETE );
+				oldNest.setOpCode( TransactionType.DELETE );
 				tempVect.add( oldNest );
 			}
 		}
@@ -217,7 +217,7 @@ public final class NestedDBPersistentComparators
 			if(!inOld)
 			{
 				// item in NEW list, add
-				newNest.setOpCode( Transaction.INSERT );
+				newNest.setOpCode( TransactionType.INSERT );
 				tempVect.add( newNest );
 			}
 		}

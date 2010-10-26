@@ -9,6 +9,7 @@ import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.DeviceCustomerList;
 import com.cannontech.database.db.graph.GraphCustomerList;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class Customer extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange {	
 	private com.cannontech.database.db.customer.Customer customer = null;
@@ -212,7 +213,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 		}
 	}
 
-	public DBChangeMsg[] getDBChangeMsgs(int typeOfChange) {
+	public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
 		String categoryType = DBChangeMsg.CAT_CUSTOMER;
 		if( getCustomer().getCustomerTypeID().intValue() == CustomerTypes.CUSTOMER_CI)
 			categoryType= DBChangeMsg.CAT_CI_CUSTOMER;
@@ -223,7 +224,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 						DBChangeMsg.CHANGE_CUSTOMER_DB,
 						categoryType,
 						categoryType,
-						typeOfChange);
+						dbChangeType);
 
 		return msgs;
 	}

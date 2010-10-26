@@ -7,6 +7,7 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * @author alauinger
@@ -280,14 +281,14 @@ public class YukonGroupRole extends DBPersistent implements IDefinedYukonRole, C
 	}
 
     @Override
-    public DBChangeMsg[] getDBChangeMsgs(int typeOfChange) {
+    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
         DBChangeMsg[] msgs =
         {
             new DBChangeMsg(getGroupID().intValue(),
                             DBChangeMsg.CHANGE_YUKON_USER_DB,
                             DBChangeMsg.CAT_YUKON_USER_GROUP,
                             DBChangeMsg.CAT_YUKON_USER,
-                            typeOfChange)
+                            dbChangeType)
         };
 
         return msgs;

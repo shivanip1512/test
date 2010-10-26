@@ -28,6 +28,7 @@ import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.PointData;
 
 public class OpcService implements OpcConnectionListener, DBChangeListener{
@@ -324,7 +325,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
             }
             
         } else if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB 
-                && dbChange.getTypeOfChange() != DBChangeMsg.CHANGE_TYPE_DELETE) {
+                && dbChange.getDbChangeType() != DbChangeType.DELETE) {
             // This is for a device, need to grab all point id's related to it.
             int paoId = dbChange.getId();
             log.debug(" OPC dispatch event with ID: " + paoId);
@@ -344,7 +345,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
             public void run() {
                 for (FdrTranslation translation : translationList) {
                     //If its a delete, do not attempt to re-add it. This is for all points being processed.
-                    if (dbChange.getTypeOfChange() != DBChangeMsg.CHANGE_TYPE_DELETE) {
+                    if (dbChange.getDbChangeType() != DbChangeType.DELETE) {
                         processOpcTranslation(translation);                            
                     }
                 }

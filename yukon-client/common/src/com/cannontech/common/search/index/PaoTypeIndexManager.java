@@ -12,8 +12,8 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 
 import com.cannontech.common.search.YukonObjectAnalyzer;
-import com.cannontech.database.dbchange.ChangeTypeEnum;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * Class which manages point device lucene index creation and update.
@@ -78,7 +78,7 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
         return doc;
     }
 
-    protected IndexUpdateInfo processDBChange(ChangeTypeEnum changeType, int id, int database, String category, String type) {
+    protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category, String type) {
         if (database == DBChangeMsg.CHANGE_PAO_DB) {
             // Device change msg
             
@@ -88,7 +88,7 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
                 return null;
             }
             
-            return this.processPaoChange(changeType, id);
+            return this.processPaoChange(dbChangeType, id);
         }
 
         // Return null if no update is to be done
@@ -101,10 +101,10 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
      * @return Index update info for the pao change
      */
     @SuppressWarnings("unchecked")
-    private IndexUpdateInfo processPaoChange(ChangeTypeEnum changeType, int paoId) {
+    private IndexUpdateInfo processPaoChange(DbChangeType dbChangeType, int paoId) {
 
         Term term = new Term("paoid", Integer.toString(paoId));
-        if (changeType == ChangeTypeEnum.DELETE) {
+        if (dbChangeType == DbChangeType.DELETE) {
             return new IndexUpdateInfo(null, term);
         }
         List<Document> docList = new ArrayList<Document>();

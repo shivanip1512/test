@@ -8,11 +8,14 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.NestedDBPersistentComparators;
 import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -116,21 +119,21 @@ private void deletePoints() throws java.sql.SQLException
  * Creation date: (12/19/2001 1:45:25 PM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 {
-	java.util.ArrayList list = new java.util.ArrayList(10);
+	ArrayList<DBChangeMsg> list = new ArrayList<DBChangeMsg>(10);
 
 	//add the basic change method
-	list.add( new com.cannontech.message.dispatch.message.DBChangeMsg(
-					getPAObjectID().intValue(),
-					com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_PAO_DB,
-					getPAOCategory(),
-					getPAOType(),
-					typeOfChange ) );
+	list.add( new DBChangeMsg(
+	                          getPAObjectID().intValue(),
+	                          DBChangeMsg.CHANGE_PAO_DB,
+	                          getPAOCategory(),
+	                          getPAOType(),
+	                          dbChangeType) );
 
 
 	//if we are deleteing this PAO, we need to take in account the Points that also get deleted	
-	if( typeOfChange == com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_DELETE )
+	if( dbChangeType == DbChangeType.DELETE )
 	{
 		//get all the point ids and their types that are owned by this PAObject
 		int[][] idsAndTypes = DaoFactory.getPointDao().getAllPointIDsAndTypesForPAObject(getPAObjectID());
@@ -138,22 +141,21 @@ public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( in
 		//add a new message for each point
 		for( int i = 0; i < idsAndTypes.length; i++ )
 		{
-			com.cannontech.message.dispatch.message.DBChangeMsg msg = 
-					new com.cannontech.message.dispatch.message.DBChangeMsg(
-						idsAndTypes[i][0],
-						com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_POINT_DB,
-						com.cannontech.message.dispatch.message.DBChangeMsg.CAT_POINT,
-						com.cannontech.database.data.point.PointTypes.getType( idsAndTypes[i][1] ),
-						typeOfChange );
-					
+			DBChangeMsg msg = new DBChangeMsg(
+			                                  idsAndTypes[i][0],
+			                                  DBChangeMsg.CHANGE_POINT_DB,
+			                                  DBChangeMsg.CAT_POINT,
+			                                  PointTypes.getType( idsAndTypes[i][1] ),
+			                                  dbChangeType);
+
 			list.add( msg );
 		}	
 
 	}
 	
 	 
-	com.cannontech.message.dispatch.message.DBChangeMsg[] dbChange = new com.cannontech.message.dispatch.message.DBChangeMsg[list.size()];
-	return (com.cannontech.message.dispatch.message.DBChangeMsg[])list.toArray( dbChange );
+	DBChangeMsg[] dbChange = new DBChangeMsg[list.size()];
+	return list.toArray( dbChange );
 }
 /**
  * Insert the method's description here.

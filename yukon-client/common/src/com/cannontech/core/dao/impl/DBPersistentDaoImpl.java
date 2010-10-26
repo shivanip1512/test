@@ -21,18 +21,19 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.dbchange.ChangeSequenceDecoder;
 import com.cannontech.database.dbchange.ChangeSequenceStrategyEnum;
-import com.cannontech.database.dbchange.ChangeTypeEnum;
 import com.cannontech.database.dbchange.DbChangeIdentifier;
 import com.cannontech.database.dbchange.DbChangeMessageHolder;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.yukon.concrete.ResourceFactory;
 
 /**
  * @author snebben
@@ -54,8 +55,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
         if( liteObject != null) {
             dbPersistent = LiteFactory.createDBPersistent(liteObject);
             try {
-                Transaction<DBPersistent> t = Transaction.createTransaction(Transaction.RETRIEVE, dbPersistent);
-                dbPersistent = t.execute();
+                dbPersistent = ResourceFactory.getIYukon().createIDBPersistent().execute(TransactionType.RETRIEVE, dbPersistent);
             } catch(Exception e) {
                 com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
             }
@@ -63,32 +63,27 @@ public class DBPersistentDaoImpl implements DBPersistentDao
         return dbPersistent;
     }
 
+    @Deprecated
     @Override
     public void performDBChange(DBPersistent item, int transactionType) throws PersistenceException {
+        TransactionType transactionTypeEnum = TransactionType.getForOp(transactionType);
+        performDBChange(item, transactionTypeEnum); 
+    }
+    
+    @Override
+    public void performDBChange(DBPersistent item, TransactionType transactionType) throws PersistenceException {
 
         try {
-            DBChangeMsg[] dbChangeMsgs = null;
-            switch(transactionType) {
-                case Transaction.INSERT:
-                    executeTransaction(item, transactionType);
-                    dbChangeMsgs = getDBChangeMsgs(item, DBChangeMsg.CHANGE_TYPE_ADD);
-                    break;
-                case Transaction.DELETE:
-                    dbChangeMsgs = getDBChangeMsgs(item, DBChangeMsg.CHANGE_TYPE_DELETE);
-                    executeTransaction(item, transactionType);
-                    break;
-                case Transaction.UPDATE:
-                    executeTransaction(item, transactionType);
-                    dbChangeMsgs = getDBChangeMsgs(item, DBChangeMsg.CHANGE_TYPE_UPDATE);
-                    break;
-                default:
-                    executeTransaction(item, transactionType);
-            }
-
-            //write the DBChangeMessage out to Dispatch since it was a Successful UPDATE
-            if (dbChangeMsgs != null) {
-                for (DBChangeMsg changeMsg : dbChangeMsgs) {
-                    processDBChange(changeMsg);
+            executeTransaction(item, transactionType);
+            
+            // Generate and process db change messages when not of type NONE
+            DbChangeType dbChangeType = transactionType.getDbChangeType();
+            if (dbChangeType != DbChangeType.NONE) {
+                DBChangeMsg[] dbChangeMsgs = getDBChangeMsgs(item, transactionType.getDbChangeType());
+                if (dbChangeMsgs != null) {
+                    for (DBChangeMsg changeMsg : dbChangeMsgs) {
+                        processDBChange(changeMsg);
+                    }
                 }
             }
         } catch( TransactionException e ) {
@@ -98,14 +93,13 @@ public class DBPersistentDaoImpl implements DBPersistentDao
     }
 
     private void executeTransaction(DBPersistent item,
-            int transactionType) throws TransactionException {
-        Transaction<DBPersistent> t = Transaction.createTransaction( transactionType, item);
-        t.execute();
+            TransactionType transactionType) throws TransactionException {
+        ResourceFactory.getIYukon().createIDBPersistent().execute(transactionType, item);
     }
 
-    private DBChangeMsg[] getDBChangeMsgs(DBPersistent item, int dbChangeType) {
+    private DBChangeMsg[] getDBChangeMsgs(DBPersistent item, DbChangeType dbChangeType) {
         DBChangeMsg[] dbChangeMsgs = null;
-        if (dbChangeType != DBChangeMsg.CHANGE_TYPE_NONE) {
+        if (dbChangeType != DbChangeType.NONE) {
             if(item instanceof CTIDbChange){
                 dbChangeMsgs = ((CTIDbChange)item).getDBChangeMsgs(dbChangeType);
             }
@@ -178,8 +172,8 @@ public class DBPersistentDaoImpl implements DBPersistentDao
                 previous.put(id, changeMsg);
             } else {
                 // get strategy for this pairing
-                ChangeTypeEnum previousType = ChangeTypeEnum.createFromDbChange(previousMessage);
-                ChangeTypeEnum currentType = ChangeTypeEnum.createFromDbChange(changeMsg);
+                DbChangeType previousType = previousMessage.getDbChangeType();
+                DbChangeType currentType = changeMsg.getDbChangeType();
                 ChangeSequenceStrategyEnum strategy = ChangeSequenceDecoder.getStrategy(previousType, currentType);
                 switch (strategy) {
                 case KEEP_BOTH:
@@ -205,7 +199,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
 
     @Override
     @Transactional
-    public void performDBChangeWithNoMsg(List<DBPersistent> items, int transactionType) {
+    public void performDBChangeWithNoMsg(List<DBPersistent> items, TransactionType transactionType) {
         for (DBPersistent dbPersistentObj : items) {
             performDBChangeWithNoMsg(dbPersistentObj, transactionType);
         }
@@ -213,12 +207,10 @@ public class DBPersistentDaoImpl implements DBPersistentDao
 
 
     @Override
-    public void performDBChangeWithNoMsg(DBPersistent dbPersistent, int transactionType) {
+    public void performDBChangeWithNoMsg(DBPersistent dbPersistent, TransactionType transactionType) {
         
         try {
-            Transaction<?> t = Transaction.createTransaction( transactionType, dbPersistent);
-            t.execute();
-            
+            ResourceFactory.getIYukon().createIDBPersistent().execute(transactionType, dbPersistent);
         } catch( TransactionException e ) {
             throw new PersistenceException("Unable to save DBPersistent (dbpersistent=" + 
                                            dbPersistent + ", transactionType=" + transactionType + ")", e);

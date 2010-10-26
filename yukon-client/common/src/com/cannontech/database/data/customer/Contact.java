@@ -8,6 +8,8 @@ import com.cannontech.database.db.NestedDBPersistentComparators;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Address;
 import com.cannontech.database.db.customer.Customer;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * This type was created in VisualAge.
@@ -128,18 +130,16 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	 * Creation date: (12/19/2001 1:45:25 PM)
 	 * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
 	 */
-	public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
-	{
-		com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
-		{
-			new com.cannontech.message.dispatch.message.DBChangeMsg(
-						getContact().getContactID().intValue(),
-						com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_CONTACT_DB,
-						com.cannontech.message.dispatch.message.DBChangeMsg.CAT_CUSTOMERCONTACT,
-						com.cannontech.message.dispatch.message.DBChangeMsg.CAT_CUSTOMERCONTACT,
-						typeOfChange)
-		};
-	
+	public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+	    
+		DBChangeMsg[] msgs = {
+		        new DBChangeMsg(
+		                        getContact().getContactID().intValue(),
+		                        DBChangeMsg.CHANGE_CONTACT_DB,
+		                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+		                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+		                        dbChangeType)
+		};	
 	
 		return msgs;
 	}

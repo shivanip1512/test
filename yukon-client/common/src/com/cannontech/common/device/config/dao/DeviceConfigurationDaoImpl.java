@@ -29,6 +29,7 @@ import com.cannontech.database.StringRowMapper;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.input.InputBeanWrapperImpl;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputSource;
@@ -95,7 +96,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     public void save(ConfigurationBase configuration) {
 
         String sql = null;
-        int typeOfChange = DBChangeMsg.CHANGE_TYPE_ADD;
+        DbChangeType dbChangeType = DbChangeType.ADD;
         if (configuration.getId() == null) {
 
             // Insert new configuration
@@ -109,7 +110,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             // Update configuration
             sql = "UPDATE DeviceConfiguration set Name = ?, Type = ? WHERE DeviceConfigurationId = ?";
 
-            typeOfChange = DBChangeMsg.CHANGE_TYPE_UPDATE;
+            dbChangeType = DbChangeType.UPDATE;
         }
 
         // Save Configuration
@@ -157,7 +158,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                                                DBChangeMsg.CHANGE_CONFIG_DB,
                                                DBChangeMsg.CAT_DEVICE_CONFIG,
                                                DB_CHANGE_OBJECT_TYPE,
-                                               typeOfChange);
+                                               dbChangeType);
 
         dbPersistentDao.processDBChange(dbChange);
 
@@ -229,7 +230,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                                                DBChangeMsg.CHANGE_CONFIG_DB,
                                                DBChangeMsg.CAT_DEVICE_CONFIG,
                                                DB_CHANGE_OBJECT_TYPE,
-                                               DBChangeMsg.CHANGE_TYPE_DELETE);
+                                               DbChangeType.DELETE);
 
         dbPersistentDao.processDBChange(dbChange);
     }
@@ -275,7 +276,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                                                DBChangeMsg.CHANGE_CONFIG_DB,
                                                DBChangeMsg.CAT_DEVICE_CONFIG,
                                                "device",
-                                               DBChangeMsg.CHANGE_TYPE_UPDATE);
+                                               DbChangeType.UPDATE);
         // Send DBChangeMsgs
         dbPersistentDao.processDBChange(dbChange);
     }
@@ -290,7 +291,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                                                DBChangeMsg.CHANGE_CONFIG_DB,
                                                DBChangeMsg.CAT_DEVICE_CONFIG,
                                                "device",
-                                               DBChangeMsg.CHANGE_TYPE_UPDATE);
+                                               DbChangeType.UPDATE);
         dbPersistentDao.processDBChange(dbChange);
     }
 

@@ -3,6 +3,7 @@ package com.cannontech.database;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.yukon.concrete.ResourceFactory;
 
+@Deprecated
 public class Transaction<E extends DBPersistent> {
     public static final int INSERT = 1;
     public static final int UPDATE = 2;
@@ -11,29 +12,35 @@ public class Transaction<E extends DBPersistent> {
     public static final int DELETE_PARTIAL = 5;
     public static final int ADD_PARTIAL = 6;
 
-    private int operation;
+    private TransactionType transactionType;
     private com.cannontech.yukon.IDBPersistent db = null;
 
     private E object;
 
-    private Transaction(int operation, E obj) {
+    private Transaction(TransactionType transactionType, E obj) {
         super();
-        this.operation = operation;
+        this.transactionType = transactionType;
         this.object = obj;
     }
 
-    private Transaction(int operation, E obj, String databaseAlias) {
+    private Transaction(TransactionType transactionType, E obj, String databaseAlias) {
         super();
-        this.operation = operation;
+        this.transactionType = transactionType;
         this.object = obj;
     }
 
+    public static <R extends DBPersistent> Transaction<R> createTransaction(TransactionType transactionType, R obj) {
+        return new Transaction<R>(transactionType, obj);
+    }
+
+    @Deprecated
     public static <R extends DBPersistent> Transaction<R> createTransaction(int operation, R obj) {
-        return new Transaction<R>(operation, obj);
+        TransactionType transactionType = TransactionType.getForOp(operation);
+        return new Transaction<R>(transactionType, obj);
     }
-
-    public static <R extends DBPersistent> Transaction<R> createTransaction(int operation, R obj, String databaseAlias) {
-        return new Transaction<R>(operation, obj, databaseAlias);
+    
+    public static <R extends DBPersistent> Transaction<R> createTransaction(TransactionType transactionType, R obj, String databaseAlias) {
+        return new Transaction<R>(transactionType, obj, databaseAlias);
     }
 
     private com.cannontech.yukon.IDBPersistent getDB() {
@@ -45,6 +52,6 @@ public class Transaction<E extends DBPersistent> {
 
     @SuppressWarnings("unchecked")
     public E execute() throws TransactionException {
-        return (E) getDB().execute(this.operation, this.object );
+        return (E) getDB().execute(this.transactionType, this.object );
     }
 }

@@ -11,6 +11,8 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.user.YukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
 
@@ -292,18 +294,16 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	 * Creation date: (12/19/2001 1:45:25 PM)
 	 * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
 	 */
-	public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
-	{
-		com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
-		{
-			new com.cannontech.message.dispatch.message.DBChangeMsg(
-						getContactID().intValue(),
-						com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_CONTACT_DB,
-						com.cannontech.message.dispatch.message.DBChangeMsg.CAT_CUSTOMERCONTACT,
-						com.cannontech.message.dispatch.message.DBChangeMsg.CAT_CUSTOMERCONTACT,
-						typeOfChange)
-		};
-	
+	public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+
+	    DBChangeMsg[] msgs = {
+	            new DBChangeMsg(
+	                            getContactID().intValue(),
+	                            DBChangeMsg.CHANGE_CONTACT_DB,
+	                            DBChangeMsg.CAT_CUSTOMERCONTACT,
+	                            DBChangeMsg.CAT_CUSTOMERCONTACT,
+	                            dbChangeType)
+		};	
 	
 		return msgs;
 	}

@@ -11,6 +11,7 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -268,7 +269,7 @@ public class PAOSchedule extends DBPersistent implements CTIDbChange, Comparable
 	/**
 	 * Generates a DB Change message for this db object
 	 */
-	public DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
+	public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 	{
 		DBChangeMsg[] msgs = {
 			new DBChangeMsg(
@@ -276,7 +277,7 @@ public class PAOSchedule extends DBPersistent implements CTIDbChange, Comparable
 				DBChangeMsg.CHANGE_PAO_SCHEDULE_DB,
 				DBChangeMsg.CAT_PAO_SCHEDULE,
 				DBChangeMsg.CAT_PAO_SCHEDULE,
-				typeOfChange)
+				dbChangeType)
 		};
 
 		return msgs;

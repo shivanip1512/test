@@ -1,5 +1,8 @@
 package com.cannontech.database.data.state;
 
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
+
 /**
  * This type was created in VisualAge.
  */
@@ -51,18 +54,16 @@ public void delete() throws java.sql.SQLException
  * Creation date: (12/19/2001 1:45:25 PM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
-{
-	com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
-	{
-		new com.cannontech.message.dispatch.message.DBChangeMsg(
-					getStateGroup().getStateGroupID().intValue(),
-					com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_STATE_GROUP_DB,
-					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_STATEGROUP,
-					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_STATEGROUP,
-					typeOfChange)
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+	
+    DBChangeMsg[] msgs = {
+            new DBChangeMsg(
+                            getStateGroup().getStateGroupID().intValue(),
+                            DBChangeMsg.CHANGE_STATE_GROUP_DB,
+                            DBChangeMsg.CAT_STATEGROUP,
+                            DBChangeMsg.CAT_STATEGROUP,
+                            dbChangeType)
 	};
-
 
 	return msgs;
 }

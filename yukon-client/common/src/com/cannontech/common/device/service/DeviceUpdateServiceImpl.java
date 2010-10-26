@@ -57,6 +57,7 @@ import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
@@ -172,7 +173,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             throw new PersistenceException("Could not save device type change", e);
         }
         
-        DBChangeMsg[] changeMsgs = changedDevice.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_UPDATE);
+        DBChangeMsg[] changeMsgs = changedDevice.getDBChangeMsgs(DbChangeType.UPDATE);
         // Send DBChangeMsgs
         for (DBChangeMsg msg : changeMsgs) {
             dbPersistentDao.processDBChange(msg);

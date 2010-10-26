@@ -2,6 +2,7 @@ package com.cannontech.core.service.impl;
 
 import static org.junit.Assert.fail;
 
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
@@ -23,8 +24,10 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoAdapter;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.ScheduledExecutorMock;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.core.service.PorterQueueDataService;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -150,8 +153,8 @@ public class LongLoadProfileServiceImplTest {
                     
                     };
             }
-
-			public void performDBChangeWithNoMsg(List<DBPersistent> items, int transactionType) {
+            @Override
+			public void performDBChangeWithNoMsg(List<DBPersistent> items, TransactionType transactionType) {
 			}
 			
 			@Override
@@ -160,8 +163,13 @@ public class LongLoadProfileServiceImplTest {
 
             @Override
             public void performDBChangeWithNoMsg(
-                    DBPersistent dbPersistent, int transactionType) {
+                    DBPersistent dbPersistent, TransactionType transactionType) {
             }
+            
+            @Override
+            public void performDBChange(DBPersistent item, TransactionType transactionType)
+                    throws PersistenceException {
+            }            
 
         });
         

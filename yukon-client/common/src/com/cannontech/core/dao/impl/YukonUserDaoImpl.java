@@ -19,6 +19,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.MappingRowCallbackHandler;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -28,6 +29,7 @@ import com.cannontech.database.data.user.YukonGroup;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -231,7 +233,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
         yukonJdbcOperations.update(deleteYukonUser, userId);
 
         
-        sendUserDbChangeMsg(userId, DBChangeMsg.CHANGE_TYPE_DELETE);        
+        sendUserDbChangeMsg(userId, DbChangeType.DELETE);        
 	}
 
 	@Override
@@ -273,7 +275,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
         sql.append("AND GroupId").in(yukonGroupIds);
         yukonJdbcOperations.update(sql);
 
-        sendUserDbChangeMsg(user.getUserID(), DBChangeMsg.CHANGE_TYPE_DELETE);
+        sendUserDbChangeMsg(user.getUserID(), DbChangeType.DELETE);
     }
 	
     public void addUserToGroup(LiteYukonUser user, LiteYukonGroup... yukonGroups){
@@ -287,18 +289,18 @@ public class YukonUserDaoImpl implements YukonUserDao {
             yukonJdbcOperations.update(sql.getSql(), user.getUserID(), yukonGroup.getGroupID());
         }
 
-        sendUserDbChangeMsg(user.getUserID(), DBChangeMsg.CHANGE_TYPE_ADD);
+        sendUserDbChangeMsg(user.getUserID(), DbChangeType.ADD);
     }
     
     /**
      * @param userId
      */
-    private void sendUserDbChangeMsg(Integer userId, int dbChangeMsgType) {
+    private void sendUserDbChangeMsg(Integer userId, DbChangeType dbChangeType) {
         DBChangeMsg changeMsg = new DBChangeMsg(userId,
                                                 DBChangeMsg.CHANGE_YUKON_USER_DB,
                                                 DBChangeMsg.CAT_YUKON_USER,
                                                 DBChangeMsg.CAT_YUKON_USER,
-                                                dbChangeMsgType);
+                                                dbChangeType);
         dbPersistantDao.processDBChange(changeMsg);
     }
 	
@@ -344,7 +346,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
         login.getYukonGroups().addElement(((YukonGroup)LiteFactory.convertLiteToDBPers(group)).getYukonGroup());
         login.getYukonUser().setLoginStatus(LoginStatusEnum.ENABLED);
         
-        dbPersistantDao.performDBChange(login, DBChangeMsg.CHANGE_TYPE_ADD);
+        dbPersistantDao.performDBChange(login, TransactionType.INSERT);
         
         return new LiteYukonUser(login.getUserID(), login.getYukonUser().getUsername(), login.getYukonUser().getLoginStatus(), login.getYukonUser().getAuthType());
     }

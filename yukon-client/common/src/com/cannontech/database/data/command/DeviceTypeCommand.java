@@ -6,6 +6,7 @@ import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.Command;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * Insert the type's description here.
@@ -28,9 +29,9 @@ public DeviceTypeCommand() {
 /**
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 {
-	ArrayList list = new ArrayList(10);
+	ArrayList<DBChangeMsg> list = new ArrayList<DBChangeMsg>(10);
 
 	//add the basic change method
 	list.add( new DBChangeMsg(
@@ -38,10 +39,10 @@ public DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
 					DBChangeMsg.CHANGE_DEVICETYPE_COMMAND_DB,
 					DBChangeMsg.CAT_DEVICETYPE_COMMAND,
 					DBChangeMsg.CAT_DEVICETYPE_COMMAND,
-					typeOfChange ) );
+					dbChangeType) );
 	 
 	DBChangeMsg[] dbChange = new DBChangeMsg[list.size()];
-	return (DBChangeMsg[])list.toArray( dbChange );
+	return list.toArray( dbChange );
 }
 /**
  * This method was created by a SmartGuide.

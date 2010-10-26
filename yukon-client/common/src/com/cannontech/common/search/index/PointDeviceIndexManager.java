@@ -13,8 +13,8 @@ import org.apache.lucene.index.Term;
 import com.cannontech.common.search.YukonObjectAnalyzer;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointUnits;
-import com.cannontech.database.dbchange.ChangeTypeEnum;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * Class which manages point device lucene index creation and update.
@@ -101,7 +101,7 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
         return doc;
     }
 
-    protected IndexUpdateInfo processDBChange(ChangeTypeEnum changeType, int id, int database, String category, String type) {
+    protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category, String type) {
         if (database == DBChangeMsg.CHANGE_PAO_DB && PAOGroups.STRING_CAT_DEVICE.equalsIgnoreCase(category)) {
             // Device change msg
             
@@ -111,11 +111,11 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
                 return null;
             }
             
-            return this.processDeviceChange(changeType, id);
+            return this.processDeviceChange(dbChangeType, id);
         } else if (database == DBChangeMsg.CHANGE_POINT_DB
                 && DBChangeMsg.CAT_POINT.equals(category)) {
             // Point change msg
-            return this.processPointChange(changeType, id);
+            return this.processPointChange(dbChangeType, id);
         }
 
         // Return null if no update is to be done
@@ -128,10 +128,10 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
      * @return Index update info for the device change
      */
     @SuppressWarnings("unchecked")
-    private IndexUpdateInfo processDeviceChange(ChangeTypeEnum changeType, int deviceId) {
+    private IndexUpdateInfo processDeviceChange(DbChangeType dbChangeType, int deviceId) {
 
         Term term = new Term("deviceid", Integer.toString(deviceId));
-        if (changeType == ChangeTypeEnum.DELETE) {
+        if (dbChangeType == DbChangeType.DELETE) {
             // no need to hit the database to create an empty
             // list of documents for that deviceId
             // note: deleting a device will NOT currently generate point delete messages
@@ -157,10 +157,10 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
      * @return Index update info for the point change
      */
     @SuppressWarnings("unchecked")
-    private IndexUpdateInfo processPointChange(ChangeTypeEnum changeType, int pointId) {
+    private IndexUpdateInfo processPointChange(DbChangeType dbChangeType, int pointId) {
 
         Term term = new Term("pointid", Integer.toString(pointId));
-        if (changeType == ChangeTypeEnum.DELETE) {
+        if (dbChangeType == DbChangeType.DELETE) {
             // no need to hit the database to create an empty
             // list of documents for that pointId
             return new IndexUpdateInfo(null, term);

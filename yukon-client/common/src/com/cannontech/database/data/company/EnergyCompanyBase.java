@@ -1,5 +1,8 @@
 package com.cannontech.database.data.company;
 
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
+
 /**
  * Insert the type's description here.
  * Creation date: (12/6/00 3:54:11 PM)
@@ -93,18 +96,16 @@ public void delete() throws java.sql.SQLException
  * Creation date: (12/19/2001 1:45:25 PM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 {
-	com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
-	{
-		new com.cannontech.message.dispatch.message.DBChangeMsg(
-					getEnergyCompany().getEnergyCompanyID().intValue(),
-					com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
-					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_ENERGY_COMPANY,
-					null,
-					typeOfChange)
+	DBChangeMsg[] msgs = {
+	        new DBChangeMsg(
+	                        getEnergyCompany().getEnergyCompanyID().intValue(),
+	                        DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
+	                        DBChangeMsg.CAT_ENERGY_COMPANY,
+	                        null,
+	                        dbChangeType)
 	};
-
 
 	return msgs;
 }

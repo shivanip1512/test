@@ -14,7 +14,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	private int database = CHANGE_INVALID_ID;
 
 	//add, delete or update
-	private int typeOfChange = CHANGE_INVALID_ID;
+	private DbChangeType dbChangeType = DbChangeType.NONE;
 
 	//PAOCategory if PAObject, everythingelse does not matter
 	private String category = null;
@@ -107,16 +107,6 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
     public static final String CAT_WEB_CONFIG = "Web Configuration";
     public static final String CAT_STARS_PUBLISHED_PROGRAM = "Stars Published Program";
 	
-	//THE FOLLOWING EXIST ONLY IN THE JAVA VERSION OF THIS MESSAGE!
-	//HEED THIS WARNING AND DO NOT MIX W/C++ - MAYBE TEMPORARY
-	public static final int CHANGE_DSM2_PROGRAM_DB = 50;
-
-	//Possible values for the typeOfChange field	
-	public static final int CHANGE_TYPE_NONE = -1;
-	public static final int CHANGE_TYPE_ADD = 0;
-	public static final int CHANGE_TYPE_DELETE = 1;
-	public static final int CHANGE_TYPE_UPDATE = 2;
-	
 	public static final int RELOAD_ALL = 0;
 
 
@@ -130,7 +120,7 @@ protected DBChangeMsg()
 /**
  * DBChangeMsg constructor comment.
  */
-public DBChangeMsg( int id_, int database_, String category_, String objectType_, int typeOfChange_ )
+public DBChangeMsg( int id_, int database_, String category_, String objectType_, DbChangeType dbChangeType)
 {
 	super();
 
@@ -138,108 +128,64 @@ public DBChangeMsg( int id_, int database_, String category_, String objectType_
 	setDatabase(database_);
 	setCategory(category_);
 	setObjectType(objectType_);
-	setTypeOfChange(typeOfChange_);
+	setDbChangeType(dbChangeType);
 	setPriority(15);
-
 }
 
 /**
  * Defaults the ObjectType to a (none) string
  * 
  */
-public DBChangeMsg( int id_, int database_, String category_, int typeOfChange_ )
+public DBChangeMsg( int id_, int database_, String category_, DbChangeType dbChangeType)
 {
-	this( id_, database_, category_, CtiUtilities.STRING_NONE, typeOfChange_ );
+	this( id_, database_, category_, CtiUtilities.STRING_NONE, dbChangeType);
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (12/19/2001 11:08:45 AM)
- * @return java.lang.String
- */
 public java.lang.String getCategory() {
 	return category;
 }
-/**
- * This method was created in VisualAge.
- * @return int
- */
+
 public int getDatabase() {
 	return database;
 }
-/**
- * Insert the method's description here.
- * Creation date: (12/19/2001 11:00:38 AM)
- * @return int
- */
+
 public int getId() {
 	return id;
 }
-/**
- * Insert the method's description here.
- * Creation date: (12/19/2001 11:00:38 AM)
- * @return java.lang.String
- */
+
 public java.lang.String getObjectType() {
 	return objectType;
 }
-/**
- * Insert the method's description here.
- * Creation date: (12/19/2001 11:00:38 AM)
- * @return int
- */
-public int getTypeOfChange() {
-	return typeOfChange;
+
+public DbChangeType getDbChangeType() {
+    return dbChangeType;
 }
-/**
- * Insert the method's description here.
- * Creation date: (12/19/2001 11:08:45 AM)
- * @param newCategory java.lang.String
- */
+
 public void setCategory(java.lang.String newCategory) {
 	category = newCategory;
 }
-/**
- * This method was created in VisualAge.
- * @param newValue int
- */
+
 public void setDatabase(int newValue) {
 	this.database = newValue;
 }
-/**
- * Insert the method's description here.
- * Creation date: (12/19/2001 11:00:38 AM)
- * @param newId int
- */
+
 public void setId(int newId) {
 	id = newId;
 }
-/**
- * Insert the method's description here.
- * Creation date: (12/19/2001 11:00:38 AM)
- * @param newObjectType java.lang.String
- */
+
 public void setObjectType(java.lang.String newObjectType) {
 	objectType = newObjectType;
 }
-/**
- * Insert the method's description here.
- * Creation date: (12/19/2001 11:00:38 AM)
- * @param newTypeOfChange int
- */
-public void setTypeOfChange(int newTypeOfChange) {
-	typeOfChange = newTypeOfChange;
+
+public void setDbChangeType(DbChangeType dbChangeType) {
+    this.dbChangeType = dbChangeType;
 }
-/**
- * Insert the method's description here.
- * Creation date: (1/31/00 4:47:17 PM)
- * @return java.lang.String
- */
+
 public String toString() 
 {
 	StringBuilder retString = new StringBuilder(150);
 	retString .append("DbChange: Database=" + getDatabase());
-	retString .append("; Type=" + getTypeOfChange());
+	retString .append("; Type=" + getDbChangeType());
 	retString .append("; ID=" + getId());
 	retString .append("; Category=" + getCategory());
 	retString .append("; ObjectType=" + getObjectType());

@@ -24,6 +24,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
@@ -36,6 +37,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class DeviceCreationServiceImpl implements DeviceCreationService {
 
@@ -64,7 +66,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         newDevice.setPAOName(newDeviceName);
 
         try {
-            Transaction.createTransaction(Transaction.INSERT, newDevice).execute();
+            Transaction.createTransaction(TransactionType.INSERT, newDevice).execute();
         } catch (TransactionException e) {
             throw new DeviceCreationException(String.format("Could not create new device named '%s' from template '%s'", newDeviceName, templateName), e);
         }
@@ -116,7 +118,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             newDevice.setAddress(address);
             newDevice.getDeviceRoutes().setRouteID(routeId);
 
-            Transaction.createTransaction(Transaction.INSERT, newDevice).execute();
+            Transaction.createTransaction(TransactionType.INSERT, newDevice).execute();
             
             // db change msg
             processDeviceDbChange(newDevice);
@@ -148,7 +150,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
             DeviceBase templateDevice = DeviceFactory.createDevice(templateYukonDevice.getDeviceType());
             templateDevice.setDeviceID(templateDeviceId);
-            templateDevice = Transaction.createTransaction(Transaction.RETRIEVE, templateDevice).execute();
+            templateDevice = Transaction.createTransaction(TransactionType.RETRIEVE, templateDevice).execute();
 
             return templateDevice;
         }
@@ -188,7 +190,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         }
         
         // insert
-        dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, Transaction.INSERT);
+        dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, TransactionType.INSERT);
     }
     
     private List<PointBase> getPointsForPao(int id) {
@@ -201,7 +203,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             PointBase pointBase = (PointBase)LiteFactory.createDBPersistent(litePoint);
             
             try {
-                Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, pointBase).execute();
+                Transaction.createTransaction(TransactionType.RETRIEVE, pointBase).execute();
                 points.add(pointBase);
             }
             catch (TransactionException e) {
@@ -218,7 +220,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
                                           DBChangeMsg.CHANGE_PAO_DB,
                                           PAOGroups.STRING_CAT_DEVICE,
                                           newDevice.getPAOType(),
-                                          DBChangeMsg.CHANGE_TYPE_ADD );
+                                          DbChangeType.ADD );
         dbPersistentDao.processDBChange(msg);
     }
 

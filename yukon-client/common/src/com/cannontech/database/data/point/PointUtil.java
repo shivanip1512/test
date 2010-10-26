@@ -17,6 +17,7 @@ import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * @author yao To change the template for this generated type comment go to
@@ -95,7 +96,7 @@ public class PointUtil {
             
                 DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance()
                                                              .createDBChangeMessages((CTIDbChange) pointVector,
-                                                                                     DBChangeMsg.CHANGE_TYPE_ADD);
+                                                                                     DbChangeType.ADD);
                 //make sure we update the cache
                 for (int i = 0; i < dbChange.length; i++)
                     DefaultDatabaseCache.getInstance().handleDBChangeMessage( dbChange[i] );

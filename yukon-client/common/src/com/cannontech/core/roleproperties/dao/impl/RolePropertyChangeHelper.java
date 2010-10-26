@@ -9,6 +9,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class RolePropertyChangeHelper {
     
@@ -22,7 +23,7 @@ public class RolePropertyChangeHelper {
 
             @Override
             public void dbChangeReceived(DBChangeMsg dbChange) {
-                 if (dbChange.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB && dbChange.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_UPDATE) {
+                 if (dbChange.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB && dbChange.getDbChangeType() == DbChangeType.UPDATE) {
                      if (log.isDebugEnabled()) {
                          log.debug("sending clearCache to RolePropertyDao because: " + dbChange);
                      }

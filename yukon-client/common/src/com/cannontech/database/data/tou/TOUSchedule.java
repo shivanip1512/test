@@ -7,6 +7,8 @@
 package com.cannontech.database.data.tou;
 
 import com.cannontech.database.db.tou.TOUDayMapping;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * @author jdayton
@@ -100,19 +102,16 @@ public void delete() throws java.sql.SQLException
  * Creation date: (9/22/2004 10:35:21 AM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
-{
-	com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
-	{
-		new com.cannontech.message.dispatch.message.DBChangeMsg(
-					getScheduleID().intValue(),
-					com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TOU_SCHEDULE_DB,
-					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_TOU_SCHEDULE,
-					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_TOU_SCHEDULE,
-					typeOfChange)
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+    
+    DBChangeMsg[] msgs = {
+            new DBChangeMsg(
+                            getScheduleID().intValue(),
+                            DBChangeMsg.CHANGE_TOU_SCHEDULE_DB,
+                            DBChangeMsg.CAT_TOU_SCHEDULE,
+                            DBChangeMsg.CAT_TOU_SCHEDULE,
+                            dbChangeType)
 	};
-
-
 	return msgs;
 }
 /**

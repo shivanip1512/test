@@ -11,7 +11,7 @@ import com.cannontech.common.bulk.service.BulkMeterDeleterService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 
@@ -96,7 +96,7 @@ public class BulkMeterDeleterServiceImpl implements BulkMeterDeleterService {
                 liteYukonPersistentItems.add(liteYukonPersistentItem);
             }
             dbPersistentDao.performDBChangeWithNoMsg(liteYukonPersistentItems,
-                                                     Transaction.DELETE);
+                                                     TransactionType.DELETE);
         }
     }
 

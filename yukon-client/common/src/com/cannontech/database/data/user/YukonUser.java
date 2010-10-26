@@ -19,6 +19,7 @@ import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.database.db.user.YukonUserRole;
 import com.cannontech.database.db.web.EnergyCompanyOperatorLoginList;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -328,15 +329,15 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	/**
 	 * @see com.cannontech.database.db.CTIDbChange#getDBChangeMsgs(int)
 	 */
-	public DBChangeMsg[] getDBChangeMsgs(int typeOfChange) {
-		com.cannontech.message.dispatch.message.DBChangeMsg[] msgs =
-		{
-			new com.cannontech.message.dispatch.message.DBChangeMsg(
-					getYukonUser().getUserID().intValue(),
-					com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_YUKON_USER_DB,
-					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_YUKON_USER,
-					com.cannontech.message.dispatch.message.DBChangeMsg.CAT_YUKON_USER,
-					typeOfChange)
+	public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+		
+	    DBChangeMsg[] msgs = {
+	            new DBChangeMsg(
+	                            getYukonUser().getUserID().intValue(),
+	                            DBChangeMsg.CHANGE_YUKON_USER_DB,
+	                            DBChangeMsg.CAT_YUKON_USER,
+	                            DBChangeMsg.CAT_YUKON_USER,
+	                            dbChangeType)
 		};
 
 		return msgs;

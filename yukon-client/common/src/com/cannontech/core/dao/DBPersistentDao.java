@@ -2,6 +2,7 @@ package com.cannontech.core.dao;
 
 import java.util.List;
 
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -17,6 +18,9 @@ public interface DBPersistentDao {
      * @param transactionType
      * @throws PersistenceException
      */
+    public void performDBChange(DBPersistent item, TransactionType transactionType) throws PersistenceException;
+
+    @Deprecated
     public void performDBChange(DBPersistent item, int transactionType) throws PersistenceException;
 
     /**
@@ -25,7 +29,7 @@ public interface DBPersistentDao {
      * @param items
      * @param transactionType
      */
-    public void performDBChangeWithNoMsg(List<DBPersistent> items, int transactionType);
+    public void performDBChangeWithNoMsg(List<DBPersistent> items, TransactionType transactionType);
 
     /**
      * Create a transactionType Transaction and execute.
@@ -33,7 +37,7 @@ public interface DBPersistentDao {
      * @param items
      * @param transactionType
      */
-    public void performDBChangeWithNoMsg(DBPersistent dbPersistent, int transactionType);
+    public void performDBChangeWithNoMsg(DBPersistent dbPersistent, TransactionType transactionType);
 
     /**
      * Process a db change message

@@ -41,6 +41,7 @@ import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
@@ -435,7 +436,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
                                           DBChangeMsg.CHANGE_PAO_DB,
                                           PAOGroups.STRING_CAT_DEVICE,
                                           paoGroupsWrapper.getPAOTypeString(device.getPaoIdentifier().getPaoType().getDeviceTypeId()),
-                                          DBChangeMsg.CHANGE_TYPE_UPDATE );
+                                          DbChangeType.UPDATE );
 
         dbPersistantDao.processDBChange(msg);
     }

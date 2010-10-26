@@ -46,6 +46,7 @@ import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -516,7 +517,7 @@ public final class ContactDaoImpl implements ContactDao {
     public void saveContact(LiteContact contact) {
 
         int contactId = contact.getContactID();
-        int changeType;
+        DbChangeType dbChangeType;
         
         StringBuilder sql = new StringBuilder();
         if (contactId == -1) { // Insert if id is -1, otherwise update
@@ -535,7 +536,7 @@ public final class ContactDaoImpl implements ContactDao {
             contact.setAddressID(address.getAddressID());
             // END HACK
             
-            changeType = DBChangeMsg.CHANGE_TYPE_ADD;
+            dbChangeType = DbChangeType.ADD;
             
             contactId = nextValueHelper.getNextValue("Contact");
             contact.setContactID(contactId);
@@ -545,7 +546,7 @@ public final class ContactDaoImpl implements ContactDao {
             sql.append(" VALUES (?,?,?,?,?)");
         } else {
             // Update if id is not -1
-            changeType = DBChangeMsg.CHANGE_TYPE_UPDATE;
+            dbChangeType = DbChangeType.UPDATE;
 
             sql.append("UPDATE Contact");
             sql.append(" SET ContFirstName = ?, ContLastName = ?, LogInId = ?, AddressId = ?");
@@ -571,7 +572,7 @@ public final class ContactDaoImpl implements ContactDao {
             DBChangeMsg.CHANGE_CONTACT_DB,
             DBChangeMsg.CAT_CUSTOMERCONTACT,
             DBChangeMsg.CAT_CUSTOMERCONTACT,
-            changeType);
+            dbChangeType);
         
         dbPersistantDao.processDBChange(changeMsg);
 
@@ -617,7 +618,7 @@ public final class ContactDaoImpl implements ContactDao {
                 DBChangeMsg.CHANGE_CONTACT_DB,
                 DBChangeMsg.CAT_CUSTOMERCONTACT,
                 DBChangeMsg.CAT_CUSTOMERCONTACT,
-                DBChangeMsg.CHANGE_TYPE_DELETE);
+                DbChangeType.DELETE);
         dbPersistantDao.processDBChange(changeMsg);
     }
     
@@ -655,7 +656,7 @@ public final class ContactDaoImpl implements ContactDao {
                                                 DBChangeMsg.CHANGE_CONTACT_DB,
                                                 DBChangeMsg.CAT_CUSTOMERCONTACT,
                                                 DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                                DBChangeMsg.CHANGE_TYPE_UPDATE);
+                                                DbChangeType.UPDATE);
         
         dbPersistantDao.processDBChange(changeMsg);
     	
