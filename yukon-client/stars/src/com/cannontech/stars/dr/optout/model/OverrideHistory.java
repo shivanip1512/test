@@ -111,6 +111,10 @@ public class OverrideHistory {
 		this.countedAgainstLimit = countedAgainstLimit;
 	}
 	
+    /**
+     * This returns an instant of the override history start date.
+     * This method will return null if the start date is null. 
+     */
 	public Instant getStartInstant(){
 	    if (startDate != null) {
 	        return new Instant(startDate);
@@ -118,6 +122,10 @@ public class OverrideHistory {
 	    return null;
 	}
 	
+	/**
+	 * This returns an instant of the override history stop date.
+	 * This method will return null if the stop date is null. 
+	 */
 	public Instant getStopInstant(){
 	    if (stopDate != null) {
 	        return new Instant(stopDate);
