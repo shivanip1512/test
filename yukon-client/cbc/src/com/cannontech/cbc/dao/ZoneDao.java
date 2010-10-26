@@ -2,6 +2,8 @@ package com.cannontech.cbc.dao;
 
 import java.util.List;
 
+import com.cannontech.capcontrol.CapBankToZoneMapping;
+import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.cbc.model.Zone;
 
 public interface ZoneDao {
@@ -27,7 +29,7 @@ public interface ZoneDao {
      * @param zoneId
      * @param bankIds
      */
-    public void updateCapBankAssignments(int zoneId, List<Integer> bankIds);
+    public void updateCapBankToZoneMapping(int zoneId, List<CapBankToZoneMapping> banksToZone);
     
     /**
      * This function will assign the passed in list of point ids to the zoneId.
@@ -35,7 +37,7 @@ public interface ZoneDao {
      * @param zoneId
      * @param pointids
      */
-    public void updatePointAssignments(int zoneId, List<Integer> pointids);
+    public void updatePointToZoneMapping(int zoneId, List<PointToZoneMapping> pointsToZone);
     
     
     /**
@@ -65,4 +67,18 @@ public interface ZoneDao {
      * @return
      */
     public List<Integer> getPointIdsByZone(int zoneId);
+
+	/**
+     * Return the CapBankToZoneMapping object for a zone.
+     * @param zoneId
+     * @return
+     */
+	public List<CapBankToZoneMapping> getBankToZoneMappingById(int zoneId);
+	
+	/**
+     * Return the PointToZoneMapping object for a zone.
+     * @param zoneId
+     * @return
+     */
+	public List<PointToZoneMapping> getPointToZoneMappingById(int zoneId);
 }

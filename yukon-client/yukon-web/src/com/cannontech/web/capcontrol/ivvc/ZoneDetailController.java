@@ -27,16 +27,16 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.capcontrol.VoltageRegulatorPointMapping;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.capcontrol.ivvc.models.VfGraphData;
-import com.cannontech.web.capcontrol.ivvc.models.VfGraphSettings;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.capcontrol.ivvc.service.ZoneService;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.util.CapControlWebUtils;
 import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.VoltageRegulatorFlags;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubStation;
+import com.cannontech.yukon.cbc.VoltageRegulatorFlags;
 import com.google.common.collect.Lists;
 
 
@@ -96,21 +96,13 @@ public class ZoneDetailController {
     }
     
     @RequestMapping
-    public String chartData(ModelMap model, LiteYukonUser user, int zoneId) {
-        VfGraphData graph = voltageFlatnessGraphService.getZoneGraphData(user, zoneId);
+    public String chart(ModelMap model, YukonUserContext userContext, int zoneId) {
+        VfGraph graph = voltageFlatnessGraphService.getZoneGraph(userContext, zoneId);
         
         model.addAttribute("graph", graph);
+        model.addAttribute("graphSettings", graph.getSettings());
         
-        return "ivvc/flatnessGraphData.jsp";
-    }
-    
-    @RequestMapping
-    public String chartSettings(ModelMap model, LiteYukonUser user, int zoneId) {
-        VfGraphSettings graph = voltageFlatnessGraphService.getZoneGraphSettings(user, zoneId);
-        
-        model.addAttribute("graph", graph);
-        
-        return "ivvc/flatnessGraphSettings.jsp";
+        return "ivvc/flatnessGraph.jsp";
     }
     
     private void setupDetails(ModelMap model, VoltageRegulatorFlags regulatorFlags) {

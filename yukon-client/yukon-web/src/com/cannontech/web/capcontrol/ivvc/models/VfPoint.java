@@ -2,6 +2,7 @@ package com.cannontech.web.capcontrol.ivvc.models;
 
 public class VfPoint {
     
+	private String description;
     private double x;
     private double y;
     
@@ -10,11 +11,28 @@ public class VfPoint {
     }
     
     public VfPoint(double x, double y) {
-        this.x = x;
+        this(null,x,y);
+    }
+    
+    public VfPoint(VfPoint point) {
+        this(point.getDescription(), point.getX(), point.getY());
+    }
+    
+    public VfPoint(String description, double x, double y) {
+        this.description = description;
+    	this.x = x;
         this.y = y;
     }
     
-    public double getX() {
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public double getX() {
         return x;
     }
 

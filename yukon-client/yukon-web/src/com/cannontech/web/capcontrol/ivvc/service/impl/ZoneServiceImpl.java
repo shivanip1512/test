@@ -5,12 +5,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.capcontrol.CapBankToZoneMapping;
+import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.cbc.dao.ZoneDao;
 import com.cannontech.cbc.model.Zone;
 import com.cannontech.cbc.model.ZoneHierarchy;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.web.capcontrol.ivvc.models.ZoneAssignmentRow;
 import com.cannontech.web.capcontrol.ivvc.models.ZoneDto;
 import com.cannontech.web.capcontrol.ivvc.service.ZoneService;
 import com.google.common.collect.ArrayListMultimap;
@@ -42,9 +45,12 @@ public class ZoneServiceImpl implements ZoneService {
         zone.setRegulatorId(regulatorId);
         zone.setSubstationBusId(substationBusId);
         
+        List<CapBankToZoneMapping> banksToZone = getCapBankToZoneMappingByDto(zoneDto);
+        List<PointToZoneMapping> pointsToZone = getPointToZoneMappingByDto(zoneDto);
+        
         zoneDao.save(zone);
-        zoneDao.updateCapBankAssignments(zone.getId(), zoneDto.getBankIds());
-        zoneDao.updatePointAssignments(zone.getId(), zoneDto.getPointIds());
+        zoneDao.updateCapBankToZoneMapping(zoneDto.getZoneId(), banksToZone);
+        zoneDao.updatePointToZoneMapping(zoneDto.getZoneId(), pointsToZone);
 
         sendZoneChangeDbMessage(zone.getId(),DBChangeMsg.CHANGE_TYPE_ADD);
         
@@ -73,10 +79,12 @@ public class ZoneServiceImpl implements ZoneService {
         zone.setRegulatorId(regulatorId);
         zone.setSubstationBusId(substationBusId);
         
+        List<CapBankToZoneMapping> banksToZone = getCapBankToZoneMappingByDto(zoneDto);
+        List<PointToZoneMapping> pointsToZone = getPointToZoneMappingByDto(zoneDto);
         
         zoneDao.save(zone);
-        zoneDao.updateCapBankAssignments(zone.getId(), zoneDto.getBankIds());
-        zoneDao.updatePointAssignments(zone.getId(), zoneDto.getPointIds());
+        zoneDao.updateCapBankToZoneMapping(zoneDto.getZoneId(), banksToZone);
+        zoneDao.updatePointToZoneMapping(zoneDto.getZoneId(), pointsToZone);
         
         sendZoneChangeDbMessage(zone.getId(),DBChangeMsg.CHANGE_TYPE_UPDATE);
         
@@ -89,6 +97,30 @@ public class ZoneServiceImpl implements ZoneService {
         zoneDao.delete(zoneId);      
         sendZoneChangeDbMessage(zoneId,DBChangeMsg.CHANGE_TYPE_DELETE);
         return true;
+    }
+    
+    private List<CapBankToZoneMapping> getCapBankToZoneMappingByDto(ZoneDto zoneDto) {
+    	List<CapBankToZoneMapping> banks = Lists.newArrayList();
+        for (ZoneAssignmentRow bankRow : zoneDto.getBankAssignments()) {
+        	int bankId = bankRow.getId();
+        	int zoneId = zoneDto.getZoneId();
+        	double order = bankRow.getOrder();
+        	CapBankToZoneMapping bank = new CapBankToZoneMapping(bankId, zoneId, order);
+        	banks.add(bank);
+        }
+        return banks;
+    }
+    
+    private List<PointToZoneMapping> getPointToZoneMappingByDto(ZoneDto zoneDto) {
+    	List<PointToZoneMapping> points = Lists.newArrayList();
+        for (ZoneAssignmentRow pointRow : zoneDto.getPointAssignments()) {
+        	int pointId = pointRow.getId();
+        	int zoneId = zoneDto.getZoneId();
+        	double order = pointRow.getOrder();
+        	PointToZoneMapping point = new PointToZoneMapping(pointId, zoneId, order);
+        	points.add(point);
+        }
+        return points;
     }
     
     @Override 
@@ -149,6 +181,16 @@ public class ZoneServiceImpl implements ZoneService {
     
     public List<Integer> getPointIdsForZoneId(int zoneId) {        
         return zoneDao.getPointIdsByZone(zoneId);
+    }
+    
+    @Override
+    public List<CapBankToZoneMapping> getCapBankToZoneMapping(int zoneId) {
+    	return zoneDao.getBankToZoneMappingById(zoneId);
+    }
+    
+    @Override
+    public List<PointToZoneMapping> getPointToZoneMapping(int zoneId) {
+    	return zoneDao.getPointToZoneMappingById(zoneId);
     }
     
     private void sendZoneChangeDbMessage(int zoneId, int typeOfChange) {

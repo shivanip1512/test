@@ -1,25 +1,51 @@
 package com.cannontech.web.capcontrol.ivvc.models;
 
-import java.util.List;
 
 public class VfGraphSettings {
-    
-    private int width;
-    private List<VfLineSettings> lines;
-    
-    public List<VfLineSettings> getLines() {
-        return lines;
-    }
 
-    public void setLines(List<VfLineSettings> lines) {
-        this.lines = lines;
-    }
+	private double yLowerBound;
+	private double yUpperBound;
+	private String yAxisLabel;
+	private String xAxisLabel;
+	private String graphTitle;
     
-    public int getWidth() {
-        return width;
-    }
+	public double getYLowerBound() {
+		return yLowerBound;
+	}
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
+	public void setYLowerBound(double yLowerBound) {
+		this.yLowerBound = yLowerBound;
+	}
+
+	public double getYUpperBound() {
+		return yUpperBound;
+	}
+
+	public void setYUpperBound(double yUpperBound) {
+		this.yUpperBound = yUpperBound;
+	}
+
+	public String getYAxisLabel() {
+		return yAxisLabel;
+	}
+
+	public void setYAxisLabel(String yAxisLabel) {
+		this.yAxisLabel = yAxisLabel;
+	}
+
+	public String getXAxisLabel() {
+		return xAxisLabel;
+	}
+
+	public void setXAxisLabel(String xAxisLabel) {
+		this.xAxisLabel = xAxisLabel;
+	}
+
+	public String getGraphTitle() {
+		return graphTitle;
+	}
+
+	public void setGraphTitle(String graphTitle) {
+		this.graphTitle = graphTitle;
+	}
 }

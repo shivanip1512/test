@@ -22,7 +22,7 @@
 	    
 		for(var i = 0; i < selectedPaoInfo.size(); i++) {
 			var paoId = selectedPaoInfo[i].paoId;
-			addRow(url,paoId,'bank');	
+			addRow(url,paoId,i,'bank');	
 		}
 	    
 	    return true;
@@ -35,18 +35,18 @@
 		
 		for(var i = 0; i < selectedPointInfo.size(); i++) {
 	    	var pointId = selectedPointInfo[i].pointId;		
-	    	addRow(url,pointId,'point');
+	    	addRow(url,pointId,i,'point');
 		}
 		
 	    return true;
 	}
 	
-	addRow = function (url,id,rowType) {
+	addRow = function (url,id,index,rowType) {
 	    var newRow = $('defaultRow').cloneNode(true);
 	    $(rowType+'TableBody').appendChild(newRow);
 
 	    new Ajax.Request(url,{
-	        parameters: {'id': id},
+	        parameters: {'id': id, 'index': index},
 	        onSuccess: function(transport) {
 	            var dummyHolder = document.createElement('div');
 	            dummyHolder.innerHTML = transport.responseText;
@@ -94,11 +94,12 @@
 </cti:displayForPageEditModes>
 
 <form:form commandName="zoneDto" action="${action}" >
+	<form:hidden path="zoneId" id="zoneId"/>
+
 	<span id="errorOnPage" style="display:none" class="errorIndicator">Missing fields are marked in red.</span>
 
 	<tags:nameValueContainer2 style="border-collapse:separate;border-spacing:5px;">
 		<%-- Zone Name --%>
-		<form:hidden path="zoneId" id="zoneId"/>
 		<tags:inputNameValue path="name" nameKey=".label.name" size="50"/>
 
 		<%-- Regulator Selection --%>
@@ -161,18 +162,22 @@
 							<tr>
 								<th><i:inline key=".table.bank.name"/></th>
 								<th><i:inline key=".table.bank.device"/></th>
+								<th><i:inline key=".table.order"/></th>
 								<th><i:inline key=".table.remove"/></th>
 							</tr>
 						</thead>
 						<tbody id="bankTableBody">
-							<c:forEach var="row" items="${assignedBanks}">
+							<c:forEach var="row" varStatus="status" items="${zoneDto.bankAssignments}">
 								<tr id="${row.type}_${row.id}">
 									<td>
-										<input type="hidden" value="${row.id}" name="${row.type}Ids"/>
+										<form:hidden path="bankAssignments[${status.index}].id" id="bankAssignments[${status.index}].id"/>
 										<spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
 									</td>
 									<td>
 										<spring:escapeBody htmlEscape="true">${row.device}</spring:escapeBody>
+									</td>
+									<td>
+										<tags:input path="bankAssignments[${status.index}].order" size="1"/>
 									</td>
 									<td>
 										<cti:img key="delete" href="javascript:removeTableRow('${row.type}_${row.id}')"/>
@@ -199,18 +204,22 @@
 							<tr>
 								<th><i:inline key=".table.point.name"/></th>
 								<th><i:inline key=".table.point.device"/></th>
+								<th><i:inline key=".table.order"/></th>
 								<th><i:inline key=".table.remove"/></th>
 							</tr>
 						</thead>
 						<tbody id="pointTableBody">
-							<c:forEach var="row" items="${assignedPoints}">
+							<c:forEach var="row" varStatus="status" items="${zoneDto.pointAssignments}">
 								<tr id="${row.type}_${row.id}">
 									<td>
-										<input type="hidden" value="${row.id}" name="${row.type}Ids"/>
+										<form:hidden path="pointAssignments[${status.index}].id" id="pointAssignments[${status.index}].id"/>
 										<spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
 									</td>
 									<td>
 										<spring:escapeBody htmlEscape="true">${row.device}</spring:escapeBody>
+									</td>
+									<td>
+										<tags:input path="pointAssignments[${status.index}].order" size="1"/>
 									</td>
 									<td>
 										<cti:img key="delete" href="javascript:removeTableRow('${row.type}_${row.id}')"/>

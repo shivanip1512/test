@@ -1,8 +1,10 @@
 package com.cannontech.web.capcontrol.ivvc.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
+import com.cannontech.common.util.LazyList;
+import com.cannontech.common.util.SimpleSupplier;
 
 public class ZoneDto {
     
@@ -11,8 +13,12 @@ public class ZoneDto {
     private int parentZoneId = -1;
     private int substationBusId = -1;
     private int regulatorId = -1;
-    private List<Integer> bankIds = Lists.newArrayList();
-    private List<Integer> pointIds = Lists.newArrayList();
+    
+    private List<ZoneAssignmentRow> bankAssignments = new LazyList<ZoneAssignmentRow>(new ArrayList<ZoneAssignmentRow>(), 
+			new SimpleSupplier<ZoneAssignmentRow>(ZoneAssignmentRow.class));
+    
+    private List<ZoneAssignmentRow> pointAssignments = new LazyList<ZoneAssignmentRow>(new ArrayList<ZoneAssignmentRow>(), 
+            										new SimpleSupplier<ZoneAssignmentRow>(ZoneAssignmentRow.class));
 
     public int getZoneId() {
         return zoneId;
@@ -54,19 +60,19 @@ public class ZoneDto {
         this.regulatorId = regulatorId;
     }
 
-    public List<Integer> getBankIds() {
-        return bankIds;
-    }
+	public List<ZoneAssignmentRow> getBankAssignments() {
+		return bankAssignments;
+	}
 
-    public void setBankIds(List<Integer> bankIds) {
-        this.bankIds = bankIds;
-    }
+	public void setBankAssignments(List<ZoneAssignmentRow> bankAssignments) {
+		this.bankAssignments = bankAssignments;
+	}
 
-    public List<Integer> getPointIds() {
-        return pointIds;
-    }
+	public List<ZoneAssignmentRow> getPointAssignments() {
+		return pointAssignments;
+	}
 
-    public void setPointIds(List<Integer> pointIds) {
-        this.pointIds = pointIds;
-    }
+	public void setPointAssignments(List<ZoneAssignmentRow> pointAssignments) {
+		this.pointAssignments = pointAssignments;
+	}
 }

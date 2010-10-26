@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DynamicDataDao;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 
 public class DynamicDataDaoImpl implements DynamicDataDao {
@@ -37,12 +38,26 @@ public class DynamicDataDaoImpl implements DynamicDataDao {
         
         return yukonJdbcTemplate.query(sqlBuilder, pointDeltaRowMapper);
     }
+    
+
+	@Override
+	public List<Integer> getMonitorPointsForBank(int bankId) {
+		SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        
+        sqlBuilder.append("SELECT PointID");
+        sqlBuilder.append("FROM CCMonitorBankList");
+        sqlBuilder.append("WHERE BankID = ").appendArgument(bankId);;
+        sqlBuilder.append("ORDER BY DisplayOrder");
+        
+        List<Integer> points = yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
+        return points;
+	}
 
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
-
+    
     private class PointDeltaRowMapper implements ParameterizedRowMapper<CapBankPointDelta> {
         @Override
         public CapBankPointDelta mapRow(ResultSet rs, int rowNum) throws SQLException {

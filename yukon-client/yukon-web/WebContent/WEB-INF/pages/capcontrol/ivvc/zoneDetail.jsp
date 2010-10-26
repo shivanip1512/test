@@ -256,11 +256,8 @@
 		<cti:dataGridCell>
 			<tags:boxContainer2 nameKey="voltageProfile" hideEnabled="true" showInitially="true">
 				<!--Chart -->
-		        <c:set var="amChartsProduct" value="amxy"/>
-		        <c:url var="amDataFile" scope="page" value="/spring/capcontrol/ivvc/zone/chartData">
-		        	<cti:param name="zoneId" value="${zoneId}"/>
-		        </c:url>
-		        <c:url var="amSettingsFile" scope="page" value="/spring/capcontrol/ivvc/zone/chartSettings">
+		        <c:set var="amChartsProduct" value="amline"/>
+		        <c:url var="amDataFile" scope="page" value="/spring/capcontrol/ivvc/zone/chart">
 		        	<cti:param name="zoneId" value="${zoneId}"/>
 		        </c:url>
 		        <c:url var="amSrc" scope="page" value="/JavaScript/amChart/${amChartsProduct}.swf">
@@ -268,7 +265,7 @@
 		            <c:param name="${amChartsProduct}_flashWidth" value="100%" />
 		            <c:param name="${amChartsProduct}_flashHeight" value="100%" />
 		            <c:param name="${amChartsProduct}_preloaderColor" value="#000000" />
-		            <c:param name="${amChartsProduct}_settingsFile" value="${amSettingsFile}" />
+		            <c:param name="${amChartsProduct}_settingsFile" value="${amDataFile}" />
 		            <c:param name="${amChartsProduct}_dataFile" value="${amDataFile}" />
 		        </c:url>
 		        
@@ -293,7 +290,7 @@
 		        <c:set var="swfWidth" value="100%"/>
 		        
 		        <script type="text/javascript">
-		           var so = new SWFObject("${amSrc}", "dataGraph", "${swfWidth}", "350", "8", "#FFFFFF");
+		           var so = new SWFObject("${amSrc}", "amline", "${swfWidth}", "500", "8", "#FFFFFF");
 		           so.useExpressInstall('${expressInstallSrc}');
 		           so.write("${uniqueId}");
 		        </script>

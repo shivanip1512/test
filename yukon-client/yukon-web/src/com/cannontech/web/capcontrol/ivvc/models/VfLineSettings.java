@@ -2,24 +2,20 @@ package com.cannontech.web.capcontrol.ivvc.models;
 
 public class VfLineSettings {
     
-    private int id;
     private String color;
     private int fillAlpha = 0;
+    private String bullet;
     private boolean minMax = true;
+    private boolean showBullet = true;
+    private boolean verticalLines = false;
     
-    public VfLineSettings(int id, String color, int fillAlpha, boolean minMax) {
-        this.id = id;
+    public VfLineSettings(String color, int fillAlpha, String bullet, boolean minMax, boolean showLine, boolean verticalLines) {
         this.color = color;
         this.fillAlpha = fillAlpha;
+        this.bullet = bullet;
         this.minMax = minMax;
-    }
-    
-    public int getId() {
-        return id;
-    }
-    
-    public void setId(int id) {
-        this.id = id;
+        this.showBullet = showLine;
+        this.verticalLines = verticalLines;
     }
     
     public String getColor() {
@@ -56,4 +52,28 @@ public class VfLineSettings {
     public void setMinMax(boolean minMax) {
         this.minMax = minMax;
     }
+
+	public boolean isShowBullet() {
+		return showBullet;
+	}
+
+	public void setShowBullet(boolean showBullet) {
+		this.showBullet = showBullet;
+	}
+
+	public String getBullet() {
+		return bullet;
+	}
+
+	public void setBullet(String bullet) {
+		this.bullet = bullet;
+	}
+
+	public boolean isVerticalLines() {
+		return verticalLines;
+	}
+
+	public void setVerticalLines(boolean verticalLines) {
+		this.verticalLines = verticalLines;
+	}
 }

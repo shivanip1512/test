@@ -8,4 +8,5 @@ public interface DynamicDataDao {
 
     public List<CapBankPointDelta> getAllPointDeltasForBankIds(List<Integer> bankIds);
     
+    public List<Integer> getMonitorPointsForBank(int bankId);
 }

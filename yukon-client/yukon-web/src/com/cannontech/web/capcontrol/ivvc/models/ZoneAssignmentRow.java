@@ -6,6 +6,7 @@ public class ZoneAssignmentRow {
     private int id;
     private String name;
     private String device;
+    private double order;
     
     public String getType() {
         return type;
@@ -38,4 +39,12 @@ public class ZoneAssignmentRow {
     public void setDevice(String device) {
         this.device = device;
     }
+
+	public double getOrder() {
+		return order;
+	}
+
+	public void setOrder(double order) {
+		this.order = order;
+	}
 }

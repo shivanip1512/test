@@ -4,16 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.model.ZoneHierarchy;
-import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
-import com.cannontech.web.capcontrol.ivvc.models.VfGraphData;
-import com.cannontech.web.capcontrol.ivvc.models.VfGraphSettings;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.capcontrol.ivvc.service.ZoneService;
 import com.cannontech.yukon.cbc.StreamableCapObject;
@@ -52,23 +53,13 @@ public class BusViewController {
     }
     
     @RequestMapping
-    public String chartData(ModelMap model, LiteYukonUser user, int subBusId) {
+    public String chart(ModelMap model, YukonUserContext userContext, int subBusId) {
         
-        VfGraphData graph = voltageFlatnessGraphService.getSubBusGraphData(user, subBusId);
-        
+        VfGraph graph = voltageFlatnessGraphService.getSubBusGraph(userContext, subBusId);
         model.addAttribute("graph", graph);
+        model.addAttribute("graphSettings", graph.getSettings());
         
-        return "ivvc/flatnessGraphData.jsp";
-    }
-    
-    @RequestMapping
-    public String chartSettings(ModelMap model, LiteYukonUser user, int subBusId) {
-        
-        VfGraphSettings graph = voltageFlatnessGraphService.getSubBusGraphSettings(user, subBusId);
-        
-        model.addAttribute("graph", graph);
-        
-        return "ivvc/flatnessGraphSettings.jsp";
+        return "ivvc/flatnessGraph.jsp";
     }
     
     private void setupStrategyDetails(ModelMap model, CapControlCache cache, int subBusId) {

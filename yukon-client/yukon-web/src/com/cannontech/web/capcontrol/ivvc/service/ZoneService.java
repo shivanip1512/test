@@ -2,6 +2,8 @@ package com.cannontech.web.capcontrol.ivvc.service;
 
 import java.util.List;
 
+import com.cannontech.capcontrol.CapBankToZoneMapping;
+import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.cbc.model.Zone;
 import com.cannontech.cbc.model.ZoneHierarchy;
 import com.cannontech.web.capcontrol.ivvc.models.ZoneDto;
@@ -19,4 +21,7 @@ public interface ZoneService {
     
     public List<Integer> getCapBankIdsForZoneId(int zoneId);
     public List<Integer> getPointIdsForZoneId(int zoneId);
+    
+    public List<CapBankToZoneMapping> getCapBankToZoneMapping(int zoneId);
+    public List<PointToZoneMapping> getPointToZoneMapping(int zoneId);
 }
