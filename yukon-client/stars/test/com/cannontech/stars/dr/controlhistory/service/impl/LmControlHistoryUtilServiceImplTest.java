@@ -1255,7 +1255,7 @@ public class LmControlHistoryUtilServiceImplTest {
 
         controlHistoryEntry.setStartInstant(dateTimeFormmater.parseDateTime(startDate).toInstant());
         controlHistoryEntry.setControlDuration(controlDuration);
-        controlHistoryEntry.setIsCurrentlyControlling(isConstrolling);
+        controlHistoryEntry.setCurrentlyControlling(isConstrolling);
 
         return controlHistoryEntry;
     }

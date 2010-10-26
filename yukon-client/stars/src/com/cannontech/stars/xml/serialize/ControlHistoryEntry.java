@@ -8,7 +8,7 @@ import com.cannontech.common.util.OpenInterval;
 public class ControlHistoryEntry {
     private Instant startInstant;
     private Duration controlDuration;
-    private boolean isCurrentlyControlling = false;
+    private boolean currentlyControlling = false;
 
     public ControlHistoryEntry() {}
 
@@ -18,12 +18,12 @@ public class ControlHistoryEntry {
         }
         
         if (interval.isOpenEnd()) {
-            isCurrentlyControlling = true;
+            currentlyControlling = true;
         }
         
         startInstant = interval.getStart();
         
-        if (isCurrentlyControlling) {
+        if (currentlyControlling) {
             controlDuration = interval.withCurrentEnd().toClosedInterval().toDuration();
         } else {
             controlDuration = interval.toClosedInterval().toDuration();
@@ -50,14 +50,14 @@ public class ControlHistoryEntry {
     }
     
     public boolean isCurrentlyControlling() {
-        return isCurrentlyControlling;
+        return currentlyControlling;
     } 
-    public void setIsCurrentlyControlling(boolean isCurrentlyControlling) {
-        this.isCurrentlyControlling = isCurrentlyControlling;
+    public void setCurrentlyControlling(boolean currentlyControlling) {
+        this.currentlyControlling = currentlyControlling;
     }
     
     public OpenInterval getOpenInterval() {
-        if (isCurrentlyControlling) {
+        if (currentlyControlling) {
             return OpenInterval.createOpenEnd(startInstant);
         } else {
             return OpenInterval.createClosed(getStartInstant(), getEndInstant());

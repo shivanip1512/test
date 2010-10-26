@@ -10,10 +10,8 @@ public class ObservedControlHistory {
     private List<ControlHistoryEntry> controlHistoryEntryList = Lists.newArrayList();
     
     public boolean isBeingControlled() {
-        for (ControlHistoryEntry controlHistory : controlHistoryEntryList) {
-            if (controlHistory.getOpenInterval().isOpenEnd()) {
-                return true;
-            }
+        if (controlHistoryEntryList.size() != 0) {
+            return controlHistoryEntryList.get(controlHistoryEntryList.size()-1).isCurrentlyControlling();
         }
         
         return false;

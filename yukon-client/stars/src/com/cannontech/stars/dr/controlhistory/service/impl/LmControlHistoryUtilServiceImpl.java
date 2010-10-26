@@ -134,7 +134,7 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
                 // Clean up any existing control entries before creating a new entry.
                 if (hist != null) {
                     hist.setControlDuration(new Duration(lmCtrlHist.getStartDateInstant(), histStartDate));
-                    hist.setIsCurrentlyControlling(false);
+                    hist.setCurrentlyControlling(false);
                 }
                 
                 // This is a new control
@@ -152,7 +152,7 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
                     starsCtrlHist.addControlHistory( hist );
                 }
 
-                hist.setIsCurrentlyControlling(true);
+                hist.setCurrentlyControlling(true);
 
             } else if (ActiveRestoreEnum.CONTINUE_CONTROL.equals(controlHistoryActiveRestore) ||
                         ActiveRestoreEnum.LOG_TIMER.equals(controlHistoryActiveRestore)) {
@@ -174,7 +174,7 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
             } else if ((ActiveRestoreEnum.getActiveRestoreStopEntries().contains(controlHistoryActiveRestore))) {
 
                   if (hist != null) {
-                      hist.setIsCurrentlyControlling(false);
+                      hist.setCurrentlyControlling(false);
                       if (controlStartDate.equals(lastStartTime)) {
                           Duration controlHistoryDuration = new Duration(histStartDate,lmCtrlHistStop);
         
