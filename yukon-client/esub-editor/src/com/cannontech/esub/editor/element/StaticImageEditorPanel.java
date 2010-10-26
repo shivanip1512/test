@@ -15,7 +15,7 @@ import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.dbeditor.wizard.state.YukonImagePanel;
 import com.cannontech.esub.element.StaticImage;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.conns.ConnPool;
 
 /**
@@ -256,7 +256,7 @@ public class StaticImageEditorPanel extends DataInputPanel {
 								if(img instanceof CTIDbChange) {
 									com.cannontech.message.dispatch.message.DBChangeMsg[] dbChange = 
 										com.cannontech.database.cache.DefaultDatabaseCache.getInstance().createDBChangeMessages(
-												(com.cannontech.database.db.CTIDbChange)img, DBChangeMsg.CHANGE_TYPE_ADD);
+												(com.cannontech.database.db.CTIDbChange)img, DbChangeType.ADD);
 											  
 									for( int i = 0; i < dbChange.length; i++ )
 									{
@@ -275,7 +275,7 @@ public class StaticImageEditorPanel extends DataInputPanel {
 								if(img instanceof CTIDbChange) {
 									com.cannontech.message.dispatch.message.DBChangeMsg[] dbChange = 
 										com.cannontech.database.cache.DefaultDatabaseCache.getInstance().createDBChangeMessages(
-												(com.cannontech.database.db.CTIDbChange)img, DBChangeMsg.CHANGE_TYPE_DELETE);
+												(com.cannontech.database.db.CTIDbChange)img, DbChangeType.DELETE);
 								 			  
 									for( int i = 0; i < dbChange.length; i++ )
 									{
