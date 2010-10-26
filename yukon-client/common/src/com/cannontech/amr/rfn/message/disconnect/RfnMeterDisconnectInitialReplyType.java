@@ -4,5 +4,6 @@ public enum RfnMeterDisconnectInitialReplyType {
     OK,
     NO_NODE,
     NO_GATEWAY,
-    TIMEOUT
+    FAILURE,
+    TIMEOUT, // Yukon specific timeout
 }

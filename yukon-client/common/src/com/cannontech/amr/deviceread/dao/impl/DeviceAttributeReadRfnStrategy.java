@@ -101,14 +101,14 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
                 
                 @Override
                 public void receivedDataError(RfnMeterReadingDataReplyType replyType) {
-                    MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.rfn.dataError", replyType.toString());
+                    MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.rfn.dataError", replyType);
                     DeviceAttributeReadError dataError = new DeviceAttributeReadError(DeviceAttributeReadErrorType.COMMUNICATION, summary);
                     delegateCallback.receivedError(rfnMeter.getPaoIdentifier(), dataError);
                 }
                 
                 @Override
                 public void receivedStatusError(RfnMeterReadingReplyType replyType) {
-                    MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.rfn.statusError", replyType.toString());
+                    MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.rfn.statusError", replyType);
                     DeviceAttributeReadError dataError = new DeviceAttributeReadError(DeviceAttributeReadErrorType.UNKNOWN, summary);
                     delegateCallback.receivedError(rfnMeter.getPaoIdentifier(), dataError);
                 }

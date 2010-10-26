@@ -4,5 +4,6 @@ public enum RfnMeterReadingReplyType {
     OK,
     NO_NODE,
     NO_GATEWAY,
-    TIMEOUT
+    FAILURE,
+    TIMEOUT, // Yukon specific timeout
 }
