@@ -24,7 +24,8 @@
 #include "ccarea.h"
 #include "ccsparea.h"
 #include "ccstate.h"
-#include "LoadTapChanger.h"
+#include "VoltageRegulator.h"
+
 
 typedef std::vector<CtiCCSubstationPtr> CtiCCSubstation_vec;
 typedef std::vector<CtiCCAreaPtr> CtiCCArea_vec;
@@ -145,12 +146,12 @@ public:
         SYNC_CBC_CAPBANK_STATE, //52
         SEND_ALL_SYNC_CBC_CAPBANK_STATE, //53
 
-        LTC_SCAN_INTEGRITY = 70,
-        LTC_REMOTE_CONTROL_ENABLE,
-        LTC_REMOTE_CONTROL_DISABLE,
-        LTC_TAP_POSITION_RAISE,
-        LTC_TAP_POSITION_LOWER,
-        LTC_KEEP_ALIVE,
+        VOLTAGE_REGULATOR_INTEGRITY_SCAN = 70,
+        VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE,
+        VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE,
+        VOLTAGE_REGULATOR_TAP_POSITION_RAISE,
+        VOLTAGE_REGULATOR_TAP_POSITION_LOWER,
+        VOLTAGE_REGULATOR_KEEP_ALIVE,
     };
 
     CtiCCCommand(LONG commandId);
@@ -446,31 +447,6 @@ private:
     CtiCCSubstationBus_vec* _ccSubstationBuses;
 };
 
-
-
-class LtcMessage : public CtiCCMessage
-{
-RWDECLARE_COLLECTABLE( LtcMessage )
-
-public:
-    LtcMessage();
-    LtcMessage(const LtcMessage& ltcMessage);
-    virtual ~LtcMessage();
-
-    virtual CtiMessage* replicateMessage() const;
-
-    void restoreGuts( RWvistream& );
-    void saveGuts( RWvostream&) const;
-
-    LtcMessage& operator=(const LtcMessage& right);
-
-    void insertLtc(LoadTapChangerPtr ltcPtr);
-
-private:
-
-    std::vector<LoadTapChangerPtr> _ltcList;
-};
-
 class CtiCCCapBankStatesMsg : public CtiCCMessage
 {
 RWDECLARE_COLLECTABLE( CtiCCCapBankStatesMsg )
@@ -635,6 +611,30 @@ private:
     CtiCCServerResponse() { }; //provided for polymorphic persitence only
     long responseType;
     string response;
+};
+
+class VoltageRegulatorMessage : public CtiCCMessage
+{
+RWDECLARE_COLLECTABLE( VoltageRegulatorMessage )
+
+public:
+    VoltageRegulatorMessage();
+    VoltageRegulatorMessage(const VoltageRegulatorMessage & toCopy);
+    VoltageRegulatorMessage & operator=(const VoltageRegulatorMessage & rhs);
+
+    virtual ~VoltageRegulatorMessage();
+
+    virtual CtiMessage * replicateMessage() const;
+
+    void saveGuts(RWvostream & ostrm) const;
+
+    void insert(Cti::CapControl::VoltageRegulator * regulator);
+
+private:
+
+    void cleanup();
+
+    std::vector<Cti::CapControl::VoltageRegulator *> regulators;
 };
 
 #endif

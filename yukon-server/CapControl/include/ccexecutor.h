@@ -5,6 +5,7 @@
 #include "msg_signal.h"
 #include "AttributeService.h"
 #include "ccutil.h"
+#include "VoltageRegulatorManager.h"
 
 #include <rw/thr/countptr.h>
 #include <rw/thr/thrfunc.h>
@@ -112,19 +113,20 @@ class CtiCCCommandExecutor : public CtiCCExecutor
         void enableTimeControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
         void disableTimeControl(std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
 
-        //Ltc Commands
-        void sendLtcCommands     (const LONG command);
+        // Voltage Regulator Commands
+        void sendVoltageRegulatorCommands   (const LONG command);
     public:
-        // LTC Commands Public for unit tests. This must stand until the message sending can be/is refactored.
+        // Voltage Regulator Commands
+        // Public for unit tests. This must stand until the message sending can be/is refactored.
         // These should never be called outside the class
-        void scanLtcIntegrity    (const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
-        void sendLtcRemoteControl(const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
-        void sendLtcTapPosition  (const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiRequestMsg*> &requests);
-        void sendLtcKeepAlive    (const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiRequestMsg*> &requests);
+        void scanVoltageRegulatorIntegrity    (const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
+        void sendVoltageRegulatorRemoteControl(const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
+        void sendVoltageRegulatorTapPosition  (const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiRequestMsg*> &requests);
+        void sendVoltageRegulatorKeepAlive    (const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiRequestMsg*> &requests);
 
     private:
         //Helper Functions
-        void ltcKeepAliveHelper(const int paoId, const int keepAliveTime, const string& paoName, std::vector<CtiMessage*> &toDispatch, std::vector<CtiRequestMsg*> &requests);
+        void voltageRegulatorKeepAliveHelper(Cti::CapControl::VoltageRegulatorManager::SharedPtr regulator, const int keepAliveTime, std::vector<CtiMessage*> &toDispatch, std::vector<CtiRequestMsg*> &requests);
         void setParentOvUvFlags(int paoId, CapControlType type, bool ovuvFlag, CtiMultiMsg_vec& modifiedSubBuses);
         void printOutEventLogsByIdAndType(int paoId, CapControlType type, const string& actionText, const string& userName,
                                           CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);

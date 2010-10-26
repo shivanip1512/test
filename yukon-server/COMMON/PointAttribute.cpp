@@ -7,7 +7,7 @@ PointAttribute::AttributeMap PointAttribute::nameToAttributeMap = PointAttribute
 const PointAttribute PointAttribute::Unknown = PointAttribute(PointAttribute::UnknownAttribute,"UNKNOWN");
 const PointAttribute PointAttribute::TapDown = PointAttribute(PointAttribute::TapDownAttribute,"TAP_DOWN");
 const PointAttribute PointAttribute::TapUp = PointAttribute(PointAttribute::TapUpAttribute,"TAP_UP");
-const PointAttribute PointAttribute::LtcVoltage = PointAttribute(PointAttribute::LtcVoltageAttribute,"VOLTAGE");
+const PointAttribute PointAttribute::Voltage = PointAttribute(PointAttribute::VoltageAttribute,"VOLTAGE");
 const PointAttribute PointAttribute::AutoRemoteControl = PointAttribute(PointAttribute::AutoRemoteControlAttribute,"AUTO_REMOTE_CONTROL");
 const PointAttribute PointAttribute::TapPosition = PointAttribute(PointAttribute::TapPositionAttribute,"TAP_POSITION");
 const PointAttribute PointAttribute::KeepAlive = PointAttribute(PointAttribute::KeepAliveAttribute,"KEEP_ALIVE");
@@ -46,4 +46,9 @@ PointAttribute::PointAttribute(Attribute value, const std::string& name)
 const bool PointAttribute::operator == (const PointAttribute& rhs) const
 {
     return _value == rhs._value;
+}
+
+const bool PointAttribute::operator <  (const PointAttribute& rhs) const
+{
+    return _value < rhs._value;
 }

@@ -23,6 +23,16 @@ LitePoint::~LitePoint()
 
 }
 
+LitePoint::LitePoint( const int Id, const CtiPointType_t Type, const std::string & Name, const int PaoId, const int Offset)
+    : _pointId(Id),
+    _pointType(Type),
+    _pointName(Name),
+    _paoId(PaoId),
+    _pointOffset(Offset)
+{
+
+}
+
 void LitePoint::setPointId(int pointId)
 {
     _pointId = pointId;

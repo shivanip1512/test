@@ -27,8 +27,8 @@ class CtiTime;
 #define CTICCSUBSTATION_ID          524
 #define CTICCSUBSTATION_MSG_ID      525
 #define CTICCSERVERRESPONSE_ID      526
-#define CTILTC_ID                   527
-#define CTILTC_MSG_ID               528
+#define CTIVOLTAGEREGULATOR_ID      527
+#define CTIVOLTAGEREGULATOR_MSG_ID  528
 
 #define DYNAMICCOMMAND_ID           529
 

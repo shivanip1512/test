@@ -14,7 +14,6 @@
 #include "ccstate.h"
 #include "ccmessage.h"
 #include "ccstatsobject.h"
-#include "LoadTapChanger.h"
 #include "CapControlPointDataHandler.h"
 #include "PointDataListener.h"
 #include "ccutil.h"
@@ -23,6 +22,8 @@
 #include "StrategyLoader.h"
 #include "ZoneManager.h"
 #include "ZoneLoader.h"
+#include "VoltageRegulatorManager.h"
+#include "VoltageRegulatorLoader.h"
 #include "AttributeService.h"
 #include "DatabaseDaoFactory.h"
 
@@ -93,7 +94,6 @@ typedef map< long, CtiCCSubstationPtr > SubstationMap;
 typedef map< long, CtiCCSubstationBusPtr > SubBusMap;
 typedef map< long, CtiCCFeederPtr > FeederMap;
 typedef map< long, CtiCCCapBankPtr > CapBankMap;
-typedef map< long, LoadTapChangerPtr> LtcMap;
 
 class CtiCCSubstationBusStore : public PointDataListener
 {
@@ -179,8 +179,6 @@ public:
     CtiCCSubstationBusPtr findSubBusByPAObjectID(long paobject_id);
     CtiCCFeederPtr findFeederByPAObjectID(long paobject_id);
     CtiCCCapBankPtr findCapBankByPAObjectID(long paobject_id);
-    LoadTapChangerPtr findLtcById(long ltcId);
-    CtiCCSubstationBusPtr findSubBusByLtcId(long ltcId);
 
     long findAreaIDbySubstationID(long substationId);
     bool findSpecialAreaIDbySubstationID(long substationId, multimap< long, long>::iterator &begin, multimap< long, long >::iterator &end);
@@ -189,7 +187,6 @@ public:
     long findSubBusIDbyCapBankID(long capBankId);
     long findFeederIDbyCapBankID(long capBankId);
     long findCapBankIDbyCbcID(long cbcId);
-    long findSubBusIdByLtcId(long ltcId);
 
     long findSubIDbyAltSubID(long altSubId, int index);
 
@@ -203,7 +200,6 @@ public:
     void deleteSubstation(long substationId);
     void deleteArea(long areaId);
     void deleteSpecialArea(long areaId);
-    void deleteLtcById(long ltcId);
 
     void reloadCapBankFromDatabase(long capBankId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
                                    map< long, CtiCCFeederPtr > *paobject_feeder_map,
@@ -258,7 +254,6 @@ public:
                                                         map< long, CtiCCSpecialPtr > *paobject_specialarea_map );
     void reloadAndAssignHolidayStrategysFromDatabase(long strategyId);
     void reloadStrategyParametersFromDatabase(long strategyId);
-    void reloadLtcFromDatabase(long ltcId);
 
     void reCalculateOperationStatsFromDatabase( );
     void resetAllOperationStats();
@@ -430,7 +425,6 @@ public:
     AreaMap* getPAOAreaMap();
     SubstationMap* getPAOStationMap();
     SpecialAreaMap* getPAOSpecialAreaMap();
-    LtcMap* getLtcMap();
 
     static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
     static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE2;
@@ -464,7 +458,6 @@ protected:
     void addSubBusToPaoMap(CtiCCSubstationBusPtr bus);
     void addSubBusToAltBusMap(CtiCCSubstationBusPtr bus);
     void addFeederToPaoMap(CtiCCFeederPtr feeder);
-    void addLtcToPaoMap(LoadTapChangerPtr ltc);
 
 public:
     std::vector<CtiCCSubstationBusPtr> getSubBusesByAreaId(int areaId);
@@ -582,7 +575,6 @@ private:
     SubBusMap _paobject_subbus_map;
     FeederMap _paobject_feeder_map;
     CapBankMap _paobject_capbank_map;
-    LtcMap _paobject_ltc_map;
 
     multimap< long, CtiCCAreaPtr > _pointid_area_map;
     multimap< long, CtiCCSpecialPtr > _pointid_specialarea_map;
@@ -595,6 +587,10 @@ private:
 
     Cti::CapControl::ZoneManager    _zoneManager;
 
+protected:
+    boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager> _voltageRegulatorManager;
+
+private:
     multimap< long, long > _substation_specialarea_map;
     map< long, long > _substation_area_map;
     map< long, long > _subbus_substation_map;
@@ -602,7 +598,6 @@ private:
     map< long, long > _capbank_subbus_map;
     map< long, long > _capbank_feeder_map;
     map< long, long > _cbc_capbank_map;
-    map< long, long > _ltc_subbus_map;
 
     multimap< long, long > _altsub_sub_idmap;
 
@@ -625,6 +620,7 @@ public:
     Cti::CapControl::ZoneManager & getZoneManager();
     bool reloadZoneFromDatabase(const long zoneId);
 
-
+    boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager>  getVoltageRegulatorManager();
+    bool reloadVoltageRegulatorFromDatabase(const long regulatorId);
 
 };

@@ -15,7 +15,7 @@ class IM_EX_CTIBASE PointAttribute
             UnknownAttribute,
             TapDownAttribute,
             TapUpAttribute,
-            LtcVoltageAttribute,
+            VoltageAttribute,
             AutoRemoteControlAttribute,
             TapPositionAttribute,
             KeepAliveAttribute
@@ -24,7 +24,7 @@ class IM_EX_CTIBASE PointAttribute
         static const PointAttribute Unknown;
         static const PointAttribute TapDown;
         static const PointAttribute TapUp;
-        static const PointAttribute LtcVoltage;
+        static const PointAttribute Voltage;
         static const PointAttribute AutoRemoteControl;
         static const PointAttribute TapPosition;
         static const PointAttribute KeepAlive;
@@ -35,6 +35,7 @@ class IM_EX_CTIBASE PointAttribute
         static const PointAttribute& valueOf(const std::string& name);
 
         const bool operator == (const PointAttribute& rhs) const;
+        const bool operator <  (const PointAttribute& rhs) const;
 
     private:
 

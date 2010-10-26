@@ -15,8 +15,8 @@ enum CapControlType
     Strategy,
     Schedule,
     SpecialArea,
-    Zone,
-    Ltc = TYPELTC
+    ZoneType,                   // added Type suffix to remove warnings from compiler
+    VoltageRegulatorType
 };
 
 CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString);

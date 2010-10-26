@@ -5,13 +5,23 @@
 #include "yukon.h"
 #include "ccsubstationbusstore.h"
 #include "ccexecutor.h"
-
 #include "ccUnitTestUtil.h"
-#include "LoadTapChanger.h"
-
 #include "AttributeService.h"
 #include "PointAttribute.h"
 #include "ccmessage.h"
+#include "VoltageRegulatorLoader.h"
+#include "GangOperatedVoltageRegulator.h"
+
+// Objects
+using Cti::CapControl::VoltageRegulator;
+using Cti::CapControl::VoltageRegulatorLoader;
+using Cti::CapControl::VoltageRegulatorManager;
+using Cti::CapControl::GangOperatedVoltageRegulator;
+
+// Exceptions
+using Cti::CapControl::NoVoltageRegulator;
+using Cti::CapControl::MissingPointAttribute;
+
 
 /**
  * Created to hide the DB from unit tests. Returns good results.
@@ -54,7 +64,7 @@ class TestAttributeService : public AttributeService
                     point.setPointId(42);
                     return point;
                 }
-                case PointAttribute::LtcVoltageAttribute:
+                case PointAttribute::VoltageAttribute:
                 {
                     //Analog
                     LitePoint point;
@@ -108,372 +118,331 @@ class TestAttributeService_ErrorCase : public AttributeService
 };
 
 
-void preTestSetup()
+class VoltageRegulatorUnitTestLoader : public VoltageRegulatorLoader
 {
-    Test_CtiCCSubstationBusStore* testStore = new Test_CtiCCSubstationBusStore();
-    CtiCCSubstationBusStore::setInstance(testStore);
+public:
 
-    LoadTapChangerPtr ltcPtr = new LoadTapChanger();
-    ltcPtr->setPaoId(1);
-    ltcPtr->setPaoName("Ltc Number 1");
-    testStore->insertLtcToPaoMap(ltcPtr);
+    virtual VoltageRegulatorManager::VoltageRegulatorMap load(const long Id)
+    {
+        VoltageRegulatorManager::VoltageRegulatorMap    regulators;
 
+        regulators[1] = VoltageRegulatorManager::SharedPtr(new GangOperatedVoltageRegulator);
+        regulators[1]->setPaoId(1);
+        regulators[1]->setPaoType(VoltageRegulator::LoadTapChanger);
+
+        return regulators;
+    }
+};
+
+
+struct TestCapControlBusStore : public CtiCCSubstationBusStore
+{
+    void setVoltageRegulatorManager(boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager> manager)
+    {
+        _voltageRegulatorManager = manager;
+    }
+
+    void initialize()
+    {
+        TestAttributeService    attributes;
+
+        boost::shared_ptr<VoltageRegulatorManager> manager( new VoltageRegulatorManager( std::auto_ptr<VoltageRegulatorUnitTestLoader>( new VoltageRegulatorUnitTestLoader ) ) );
+        manager->setAttributeService( & attributes );
+
+        setVoltageRegulatorManager(manager);
+        reloadVoltageRegulatorFromDatabase(-1);   // reload all 
+    }
+};
+
+
+struct TestCapControlBusStore_ErrorCase : public CtiCCSubstationBusStore
+{
+    void setVoltageRegulatorManager(boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager> manager)
+    {
+        _voltageRegulatorManager = manager;
+    }
+
+    void initialize()
+    {
+        TestAttributeService_ErrorCase    attributes;
+
+        boost::shared_ptr<VoltageRegulatorManager> manager( new VoltageRegulatorManager( std::auto_ptr<VoltageRegulatorUnitTestLoader>( new VoltageRegulatorUnitTestLoader ) ) );
+        manager->setAttributeService( & attributes );
+
+        setVoltageRegulatorManager(manager);
+        reloadVoltageRegulatorFromDatabase(-1);   // reload all 
+    }
+};
+
+
+BOOST_AUTO_TEST_CASE(test_scanLtcIntegrity_Success)
+{
+    TestCapControlBusStore * theStore = new TestCapControlBusStore();
+    CtiCCSubstationBusStore::setInstance( theStore );
+    theStore->initialize();
+
+    std::vector<CtiMessage*>        toDispatch;
+    std::vector<CtiCCEventLogMsg*>  events;
+    std::vector<CtiRequestMsg*>     requests;
+
+    CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN, 1);//Consumed in executor.
+    CtiCCCommandExecutor commandExecutor(commandMsg);
+
+    BOOST_CHECK_NO_THROW( commandExecutor.scanVoltageRegulatorIntegrity(commandMsg->getCommand(),toDispatch,events,requests) );
+
+    BOOST_CHECK_EQUAL( 1, toDispatch.size() );
+    BOOST_CHECK_EQUAL( 0, events.size()     );
+    BOOST_CHECK_EQUAL( 1, requests.size()   );
+
+    CtiCCSubstationBusStore::deleteInstance();
 }
 
-BOOST_AUTO_TEST_CASE(test_scanLtcIntegrity)
+
+BOOST_AUTO_TEST_CASE(test_scanLtcIntegrity_NoVoltageRegulator_Exception)
 {
-    preTestSetup();
+    TestCapControlBusStore * theStore = new TestCapControlBusStore();
+    CtiCCSubstationBusStore::setInstance( theStore );
+    theStore->initialize();
 
-    std::vector<CtiMessage*> toDispatch;
-    std::vector<CtiCCEventLogMsg*> events;
-    std::vector<CtiRequestMsg*> requests;
+    std::vector<CtiMessage*>        toDispatch;
+    std::vector<CtiCCEventLogMsg*>  events;
+    std::vector<CtiRequestMsg*>     requests;
 
-    //Shortcutting to just the number of messages returned.
-    //These tests could be enhanced by checking the messages returned to see if they are expected.
+    CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN, 2);//Consumed in executor.
+    CtiCCCommandExecutor commandExecutor(commandMsg);
 
-    //Successful command.
-    {
-        delete_container(toDispatch);
-        delete_container(events);
-        delete_container(requests);
-        toDispatch.clear();
-        events.clear();
-        requests.clear();
+    BOOST_CHECK_THROW( commandExecutor.scanVoltageRegulatorIntegrity(commandMsg->getCommand(),toDispatch,events,requests),
+                       NoVoltageRegulator );
 
-        TestAttributeService* attributeService = new TestAttributeService();
-        CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_SCAN_INTEGRITY, 1);//Consumed in exectuor.
-        CtiCCCommandExecutor commandExecutor(commandMsg);
-        commandExecutor.setAttributeService(attributeService);
+    BOOST_CHECK_EQUAL( 0, toDispatch.size() );
+    BOOST_CHECK_EQUAL( 0, events.size()     );
+    BOOST_CHECK_EQUAL( 0, requests.size()   );
 
-        commandExecutor.scanLtcIntegrity(commandMsg->getCommand(),toDispatch,events,requests);
-
-        BOOST_CHECK(toDispatch.size() == 1);
-        BOOST_CHECK(events.size() == 0);
-        BOOST_CHECK(requests.size() == 1);
-    }
-
-    //PaoId of 0 Error case. No out messages is the only way to tell... Add error flags?
-    {
-        delete_container(toDispatch);
-        delete_container(events);
-        delete_container(requests);
-        toDispatch.clear();
-        events.clear();
-        requests.clear();
-
-        TestAttributeService* attributeService = new TestAttributeService();
-        CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_SCAN_INTEGRITY, 0);//Consumed in exectuor.
-        CtiCCCommandExecutor commandExecutor(commandMsg);
-        commandExecutor.setAttributeService(attributeService);
-
-        commandExecutor.scanLtcIntegrity(commandMsg->getCommand(),toDispatch,events,requests);
-
-        BOOST_CHECK(toDispatch.size() == 0);
-        BOOST_CHECK(events.size() == 0);
-        BOOST_CHECK(requests.size() == 0);
-    }
-
-    //PaoId of 2 does not exist. No out messages is the only way to tell... Add error flags?
-    {
-        delete_container(toDispatch);
-        delete_container(events);
-        delete_container(requests);
-        toDispatch.clear();
-        events.clear();
-        requests.clear();
-
-        TestAttributeService* attributeService = new TestAttributeService();
-        CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_SCAN_INTEGRITY, 2);//Consumed in exectuor.
-        CtiCCCommandExecutor commandExecutor(commandMsg);
-        commandExecutor.setAttributeService(attributeService);
-
-        commandExecutor.scanLtcIntegrity(commandMsg->getCommand(),toDispatch,events,requests);
-
-        BOOST_CHECK(toDispatch.size() == 0);
-        BOOST_CHECK(events.size() == 0);
-        BOOST_CHECK(requests.size() == 0);
-    }
-
-    //Point Attribute Not Found. No out messages is the only way to tell... Add error flags?
-    {
-        delete_container(toDispatch);
-        delete_container(events);
-        delete_container(requests);
-        toDispatch.clear();
-        events.clear();
-        requests.clear();
-
-        TestAttributeService_ErrorCase* attributeService = new TestAttributeService_ErrorCase();
-        CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_SCAN_INTEGRITY, 1);//Consumed in exectuor.
-        CtiCCCommandExecutor commandExecutor(commandMsg);
-        commandExecutor.setAttributeService(attributeService);
-
-        commandExecutor.scanLtcIntegrity(commandMsg->getCommand(),toDispatch,events,requests);
-
-        BOOST_CHECK(toDispatch.size() == 0);
-        BOOST_CHECK(events.size() == 0);
-        BOOST_CHECK(requests.size() == 0);
-    }
+    CtiCCSubstationBusStore::deleteInstance();
 }
 
-BOOST_AUTO_TEST_CASE(test_sendLtcRemoteControl)
+
+BOOST_AUTO_TEST_CASE(test_scanLtcIntegrity_MissingPointAttribute_Exception)
 {
-    preTestSetup();
+    TestCapControlBusStore_ErrorCase * theStore = new TestCapControlBusStore_ErrorCase();
+    CtiCCSubstationBusStore::setInstance( theStore );
+    theStore->initialize();
 
-    std::vector<CtiMessage*> toDispatch;
-    std::vector<CtiCCEventLogMsg*> events;
-    std::vector<CtiRequestMsg*> requests;
+    std::vector<CtiMessage*>        toDispatch;
+    std::vector<CtiCCEventLogMsg*>  events;
+    std::vector<CtiRequestMsg*>     requests;
 
-    //Shortcutting to just the number of messages returned.
-    //These tests could be enhanced by checking the messages returned to see if they are expected.
+    CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN, 1);//Consumed in executor.
+    CtiCCCommandExecutor commandExecutor(commandMsg);
 
-    //Successful command.
-    {
-        delete_container(toDispatch);
-        delete_container(events);
-        delete_container(requests);
-        toDispatch.clear();
-        events.clear();
-        requests.clear();
+    BOOST_CHECK_THROW( commandExecutor.scanVoltageRegulatorIntegrity(commandMsg->getCommand(),toDispatch,events,requests),
+                       MissingPointAttribute );
 
-        TestAttributeService* attributeService = new TestAttributeService();
-        CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_REMOTE_CONTROL_ENABLE, 1);//Consumed in exectuor.
-        CtiCCCommandExecutor commandExecutor(commandMsg);
-        commandExecutor.setAttributeService(attributeService);
+    BOOST_CHECK_EQUAL( 0, toDispatch.size() );
+    BOOST_CHECK_EQUAL( 0, events.size()     );
+    BOOST_CHECK_EQUAL( 0, requests.size()   );
 
-        commandExecutor.sendLtcRemoteControl(commandMsg->getCommand(),toDispatch,events,requests);
-
-        BOOST_CHECK(toDispatch.size() == 1);
-        BOOST_CHECK(events.size() == 0);
-        BOOST_CHECK(requests.size() == 1);
-    }
-
-    //PaoId of 0 Error case. No out messages is the only way to tell... Add error flags?
-    {
-        delete_container(toDispatch);
-        delete_container(events);
-        delete_container(requests);
-        toDispatch.clear();
-        events.clear();
-        requests.clear();
-
-        TestAttributeService* attributeService = new TestAttributeService();
-        CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_REMOTE_CONTROL_ENABLE, 0);//Consumed in exectuor.
-        CtiCCCommandExecutor commandExecutor(commandMsg);
-        commandExecutor.setAttributeService(attributeService);
-
-        commandExecutor.sendLtcRemoteControl(commandMsg->getCommand(),toDispatch,events,requests);
-
-        BOOST_CHECK(toDispatch.size() == 0);
-        BOOST_CHECK(events.size() == 0);
-        BOOST_CHECK(requests.size() == 0);
-    }
-
-    //PaoId of 2 does not exist. No out messages is the only way to tell... Add error flags?
-    {
-        delete_container(toDispatch);
-        delete_container(events);
-        delete_container(requests);
-        toDispatch.clear();
-        events.clear();
-        requests.clear();
-
-        TestAttributeService* attributeService = new TestAttributeService();
-        CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_REMOTE_CONTROL_ENABLE, 2);//Consumed in exectuor.
-        CtiCCCommandExecutor commandExecutor(commandMsg);
-        commandExecutor.setAttributeService(attributeService);
-
-        commandExecutor.sendLtcRemoteControl(commandMsg->getCommand(),toDispatch,events,requests);
-
-        BOOST_CHECK(toDispatch.size() == 0);
-        BOOST_CHECK(events.size() == 0);
-        BOOST_CHECK(requests.size() == 0);
-    }
-
-    //Point Attribute Not Found. No out messages is the only way to tell... Add error flags?
-    {
-        delete_container(toDispatch);
-        delete_container(events);
-        delete_container(requests);
-        toDispatch.clear();
-        events.clear();
-        requests.clear();
-
-        TestAttributeService_ErrorCase* attributeService = new TestAttributeService_ErrorCase();
-        CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_REMOTE_CONTROL_ENABLE, 1);//Consumed in exectuor.
-        CtiCCCommandExecutor commandExecutor(commandMsg);
-        commandExecutor.setAttributeService(attributeService);
-
-        commandExecutor.sendLtcRemoteControl(commandMsg->getCommand(),toDispatch,events,requests);
-
-        BOOST_CHECK(toDispatch.size() == 0);
-        BOOST_CHECK(events.size() == 0);
-        BOOST_CHECK(requests.size() == 0);
-    }
+    CtiCCSubstationBusStore::deleteInstance();
 }
 
-BOOST_AUTO_TEST_CASE(test_sendLtcTapPosition)
+
+BOOST_AUTO_TEST_CASE(test_sendLtcRemoteControl_Success)
 {
-    preTestSetup();
+    TestCapControlBusStore * theStore = new TestCapControlBusStore();
+    CtiCCSubstationBusStore::setInstance( theStore );
+    theStore->initialize();
 
-    std::vector<CtiMessage*> toDispatch;
-    std::vector<CtiRequestMsg*> requests;
+    std::vector<CtiMessage*>        toDispatch;
+    std::vector<CtiCCEventLogMsg*>  events;
+    std::vector<CtiRequestMsg*>     requests;
 
-    //Shortcutting to just the number of messages returned.
-    //These tests could be enhanced by checking the messages returned to see if they are expected.
+    CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE, 1);//Consumed in executor.
+    CtiCCCommandExecutor commandExecutor(commandMsg);
 
-    //Successful command.
-    {
-        delete_container(toDispatch);
-        delete_container(requests);
-        toDispatch.clear();
-        requests.clear();
+    BOOST_CHECK_NO_THROW( commandExecutor.sendVoltageRegulatorRemoteControl(commandMsg->getCommand(),toDispatch,events,requests) );
 
-        TestAttributeService* attributeService = new TestAttributeService();
-        CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_TAP_POSITION_RAISE, 1);//Consumed in exectuor.
-        CtiCCCommandExecutor commandExecutor(commandMsg);
-        commandExecutor.setAttributeService(attributeService);
+    BOOST_CHECK_EQUAL( 1, toDispatch.size() );
+    BOOST_CHECK_EQUAL( 0, events.size()     );
+    BOOST_CHECK_EQUAL( 1, requests.size()   );
 
-        commandExecutor.sendLtcTapPosition(commandMsg->getCommand(),toDispatch,requests);
-
-        BOOST_CHECK(toDispatch.size() == 1);
-        BOOST_CHECK(requests.size() == 1);
-    }
-
-    //PaoId of 0 Error case. No out messages is the only way to tell... Add error flags?
-    {
-        delete_container(toDispatch);
-        delete_container(requests);
-        toDispatch.clear();
-        requests.clear();
-
-        TestAttributeService* attributeService = new TestAttributeService();
-        CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_TAP_POSITION_RAISE, 0);//Consumed in exectuor.
-        CtiCCCommandExecutor commandExecutor(commandMsg);
-        commandExecutor.setAttributeService(attributeService);
-
-        commandExecutor.sendLtcTapPosition(commandMsg->getCommand(),toDispatch,requests);
-
-        BOOST_CHECK(toDispatch.size() == 0);
-        BOOST_CHECK(requests.size() == 0);
-    }
-
-    //PaoId of 2 does not exist. No out messages is the only way to tell... Add error flags?
-    {
-        delete_container(toDispatch);
-        delete_container(requests);
-        toDispatch.clear();
-        requests.clear();
-
-        TestAttributeService* attributeService = new TestAttributeService();
-        CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_TAP_POSITION_RAISE, 2);//Consumed in exectuor.
-        CtiCCCommandExecutor commandExecutor(commandMsg);
-        commandExecutor.setAttributeService(attributeService);
-
-        commandExecutor.sendLtcTapPosition(commandMsg->getCommand(),toDispatch,requests);
-
-        BOOST_CHECK(toDispatch.size() == 0);
-        BOOST_CHECK(requests.size() == 0);
-    }
-
-    //Point Attribute Not Found. No out messages is the only way to tell... Add error flags?
-    {
-        delete_container(toDispatch);
-        delete_container(requests);
-        toDispatch.clear();
-        requests.clear();
-
-        TestAttributeService_ErrorCase* attributeService = new TestAttributeService_ErrorCase();
-        CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_TAP_POSITION_RAISE, 1);//Consumed in exectuor.
-        CtiCCCommandExecutor commandExecutor(commandMsg);
-        commandExecutor.setAttributeService(attributeService);
-
-        commandExecutor.sendLtcTapPosition(commandMsg->getCommand(),toDispatch,requests);
-
-        BOOST_CHECK(toDispatch.size() == 0);
-        BOOST_CHECK(requests.size() == 0);
-    }
+    CtiCCSubstationBusStore::deleteInstance();
 }
 
-BOOST_AUTO_TEST_CASE(test_sendLtcKeepAlive)
+
+BOOST_AUTO_TEST_CASE(test_sendLtcRemoteControl_NoVoltageRegulator_Exception)
 {
-    preTestSetup();
+    TestCapControlBusStore * theStore = new TestCapControlBusStore();
+    CtiCCSubstationBusStore::setInstance( theStore );
+    theStore->initialize();
 
-    std::vector<CtiMessage*> toDispatch;
-    std::vector<CtiRequestMsg*> requests;
+    std::vector<CtiMessage*>        toDispatch;
+    std::vector<CtiCCEventLogMsg*>  events;
+    std::vector<CtiRequestMsg*>     requests;
 
-    //Shortcutting to just the number of messages returned.
-    //These tests could be enhanced by checking the messages returned to see if they are expected.
+    CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE, 2);//Consumed in executor.
+    CtiCCCommandExecutor commandExecutor(commandMsg);
 
-    //Successful command.
-    {
-        delete_container(toDispatch);
-        toDispatch.clear();
-        delete_container(requests);
-        requests.clear();
+    BOOST_CHECK_THROW( commandExecutor.sendVoltageRegulatorRemoteControl(commandMsg->getCommand(),toDispatch,events,requests),
+                       NoVoltageRegulator );
 
-        TestAttributeService* attributeService = new TestAttributeService();
-        CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, 1);//Consumed in exectuor.
-        CtiCCCommandExecutor commandExecutor(commandMsg);
-        commandExecutor.setAttributeService(attributeService);
+    BOOST_CHECK_EQUAL( 0, toDispatch.size() );
+    BOOST_CHECK_EQUAL( 0, events.size()     );
+    BOOST_CHECK_EQUAL( 0, requests.size()   );
 
-        commandExecutor.sendLtcKeepAlive(commandMsg->getCommand(),toDispatch,requests);
-
-        BOOST_CHECK(toDispatch.size() == 1);
-        BOOST_CHECK(requests.size() == 1);
-    }
-
-    //PaoId of 0 Error case. No out messages is the only way to tell... Add error flags?
-    {
-        delete_container(toDispatch);
-        toDispatch.clear();
-        delete_container(requests);
-        requests.clear();
-
-        TestAttributeService* attributeService = new TestAttributeService();
-        CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, 0);//Consumed in exectuor.
-        CtiCCCommandExecutor commandExecutor(commandMsg);
-        commandExecutor.setAttributeService(attributeService);
-
-        commandExecutor.sendLtcKeepAlive(commandMsg->getCommand(),toDispatch,requests);
-
-        BOOST_CHECK(toDispatch.size() == 0);
-        BOOST_CHECK(requests.size() == 0);
-    }
-
-    //PaoId of 2 does not exist. No out messages is the only way to tell... Add error flags?
-    {
-        delete_container(toDispatch);
-        toDispatch.clear();
-        delete_container(requests);
-        requests.clear();
-
-        TestAttributeService* attributeService = new TestAttributeService();
-        CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, 2);//Consumed in exectuor.
-        CtiCCCommandExecutor commandExecutor(commandMsg);
-        commandExecutor.setAttributeService(attributeService);
-
-        commandExecutor.sendLtcKeepAlive(commandMsg->getCommand(),toDispatch,requests);
-
-        BOOST_CHECK(toDispatch.size() == 0);
-        BOOST_CHECK(requests.size() == 0);
-    }
-
-    //Point Attribute Not Found. No out messages is the only way to tell... Add error flags?
-    {
-        delete_container(toDispatch);
-        toDispatch.clear();
-        delete_container(requests);
-        requests.clear();
-
-        TestAttributeService_ErrorCase* attributeService = new TestAttributeService_ErrorCase();
-        CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, 1);//Consumed in exectuor.
-        CtiCCCommandExecutor commandExecutor(commandMsg);
-        commandExecutor.setAttributeService(attributeService);
-
-        commandExecutor.sendLtcKeepAlive(commandMsg->getCommand(),toDispatch,requests);
-
-        BOOST_CHECK(toDispatch.size() == 0);
-        BOOST_CHECK(requests.size() == 0);
-    }
+    CtiCCSubstationBusStore::deleteInstance();
 }
+
+
+BOOST_AUTO_TEST_CASE(test_sendLtcRemoteControl_MissingPointAttribute_Exception)
+{
+    TestCapControlBusStore_ErrorCase * theStore = new TestCapControlBusStore_ErrorCase();
+    CtiCCSubstationBusStore::setInstance( theStore );
+    theStore->initialize();
+
+    std::vector<CtiMessage*>        toDispatch;
+    std::vector<CtiCCEventLogMsg*>  events;
+    std::vector<CtiRequestMsg*>     requests;
+
+    CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE, 1);//Consumed in executor.
+    CtiCCCommandExecutor commandExecutor(commandMsg);
+
+    BOOST_CHECK_THROW( commandExecutor.sendVoltageRegulatorRemoteControl(commandMsg->getCommand(),toDispatch,events,requests),
+                       MissingPointAttribute );
+
+    BOOST_CHECK_EQUAL( 0, toDispatch.size() );
+    BOOST_CHECK_EQUAL( 0, events.size()     );
+    BOOST_CHECK_EQUAL( 0, requests.size()   );
+
+    CtiCCSubstationBusStore::deleteInstance();
+}
+
+
+BOOST_AUTO_TEST_CASE(test_sendLtcTapPosition_Success)
+{
+    TestCapControlBusStore * theStore = new TestCapControlBusStore();
+    CtiCCSubstationBusStore::setInstance( theStore );
+    theStore->initialize();
+
+    std::vector<CtiMessage*>        toDispatch;
+    std::vector<CtiRequestMsg*>     requests;
+
+    CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE, 1);//Consumed in executor.
+    CtiCCCommandExecutor commandExecutor(commandMsg);
+
+    BOOST_CHECK_NO_THROW( commandExecutor.sendVoltageRegulatorTapPosition(commandMsg->getCommand(),toDispatch,requests) );
+
+    BOOST_CHECK_EQUAL( 1, toDispatch.size() );
+    BOOST_CHECK_EQUAL( 1, requests.size()   );
+
+    CtiCCSubstationBusStore::deleteInstance();
+}
+
+
+BOOST_AUTO_TEST_CASE(test_sendLtcTapPosition_NoVoltageRegulator_Exception)
+{
+    TestCapControlBusStore * theStore = new TestCapControlBusStore();
+    CtiCCSubstationBusStore::setInstance( theStore );
+    theStore->initialize();
+
+    std::vector<CtiMessage*>        toDispatch;
+    std::vector<CtiRequestMsg*>     requests;
+
+    CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE, 2);//Consumed in executor.
+    CtiCCCommandExecutor commandExecutor(commandMsg);
+
+    BOOST_CHECK_THROW( commandExecutor.sendVoltageRegulatorTapPosition(commandMsg->getCommand(),toDispatch,requests),
+                       NoVoltageRegulator );
+
+    BOOST_CHECK_EQUAL( 0, toDispatch.size() );
+    BOOST_CHECK_EQUAL( 0, requests.size()   );
+
+    CtiCCSubstationBusStore::deleteInstance();
+}
+
+
+BOOST_AUTO_TEST_CASE(test_sendLtcTapPosition_MissingPointAttribute_Exception)
+{
+    TestCapControlBusStore_ErrorCase * theStore = new TestCapControlBusStore_ErrorCase();
+    CtiCCSubstationBusStore::setInstance( theStore );
+    theStore->initialize();
+
+    std::vector<CtiMessage*>        toDispatch;
+    std::vector<CtiRequestMsg*>     requests;
+
+    CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE, 1);//Consumed in executor.
+    CtiCCCommandExecutor commandExecutor(commandMsg);
+
+    BOOST_CHECK_THROW( commandExecutor.sendVoltageRegulatorTapPosition(commandMsg->getCommand(),toDispatch,requests),
+                       MissingPointAttribute );
+
+    BOOST_CHECK_EQUAL( 0, toDispatch.size() );
+    BOOST_CHECK_EQUAL( 0, requests.size()   );
+
+    CtiCCSubstationBusStore::deleteInstance();
+}
+
+
+BOOST_AUTO_TEST_CASE(test_sendLtcKeepAlive_Success)
+{
+    TestCapControlBusStore * theStore = new TestCapControlBusStore();
+    CtiCCSubstationBusStore::setInstance( theStore );
+    theStore->initialize();
+
+    std::vector<CtiMessage*>        toDispatch;
+    std::vector<CtiRequestMsg*>     requests;
+
+    CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE, 1);//Consumed in executor.
+    CtiCCCommandExecutor commandExecutor(commandMsg);
+
+    BOOST_CHECK_NO_THROW( commandExecutor.sendVoltageRegulatorKeepAlive(commandMsg->getCommand(),toDispatch,requests) );
+
+    BOOST_CHECK_EQUAL( 1, toDispatch.size() );
+    BOOST_CHECK_EQUAL( 1, requests.size()   );
+
+    CtiCCSubstationBusStore::deleteInstance();
+}
+
+
+BOOST_AUTO_TEST_CASE(test_sendLtcKeepAlive_NoVoltageRegulator_Exception)
+{
+    TestCapControlBusStore * theStore = new TestCapControlBusStore();
+    CtiCCSubstationBusStore::setInstance( theStore );
+    theStore->initialize();
+
+    std::vector<CtiMessage*>        toDispatch;
+    std::vector<CtiRequestMsg*>     requests;
+
+    CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE, 2);//Consumed in executor.
+    CtiCCCommandExecutor commandExecutor(commandMsg);
+
+    BOOST_CHECK_THROW( commandExecutor.sendVoltageRegulatorKeepAlive(commandMsg->getCommand(),toDispatch,requests),
+                       NoVoltageRegulator );
+
+    BOOST_CHECK_EQUAL( 0, toDispatch.size() );
+    BOOST_CHECK_EQUAL( 0, requests.size()   );
+
+    CtiCCSubstationBusStore::deleteInstance();
+}
+
+
+BOOST_AUTO_TEST_CASE(test_sendLtcKeepAlive_MissingPointAttribute_Exception)
+{
+    TestCapControlBusStore_ErrorCase * theStore = new TestCapControlBusStore_ErrorCase();
+    CtiCCSubstationBusStore::setInstance( theStore );
+    theStore->initialize();
+
+    std::vector<CtiMessage*>        toDispatch;
+    std::vector<CtiRequestMsg*>     requests;
+
+    CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE, 1);//Consumed in executor.
+    CtiCCCommandExecutor commandExecutor(commandMsg);
+
+    BOOST_CHECK_THROW( commandExecutor.sendVoltageRegulatorKeepAlive(commandMsg->getCommand(),toDispatch,requests),
+                       MissingPointAttribute );
+
+    BOOST_CHECK_EQUAL( 0, toDispatch.size() );
+    BOOST_CHECK_EQUAL( 0, requests.size()   );
+
+    CtiCCSubstationBusStore::deleteInstance();
+}
+

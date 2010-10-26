@@ -789,75 +789,6 @@ ULONG CtiCCSubstationBusMsg::SubBusDeleted   = 0x00000002;
 ULONG CtiCCSubstationBusMsg::SubBusAdded     = 0x00000004;
 ULONG CtiCCSubstationBusMsg::SubBusModified  = 0x00000008;
 
-
-
-/////////////////
-// LtcMessage
-RWDEFINE_COLLECTABLE( LtcMessage, CTILTC_MSG_ID )
-
-LtcMessage::LtcMessage() : CtiCCMessage("LtcMessage")
-{
-
-}
-
-LtcMessage::LtcMessage(const LtcMessage& ltcMessage) : CtiCCMessage("LtcMessage")
-{
-    operator=(ltcMessage);
-}
-
-LtcMessage::~LtcMessage()
-{
-    if (_ltcList.size() > 0)
-    {
-        delete_container(_ltcList);
-        _ltcList.clear();
-    }
-}
-
-CtiMessage* LtcMessage::replicateMessage() const
-{
-    return new LtcMessage(*this);
-}
-
-void LtcMessage::restoreGuts(RWvistream& istrm)
-{
-    //Should never be called
-}
-
-void LtcMessage::saveGuts(RWvostream& ostrm) const
-{
-    CtiCCMessage::saveGuts(ostrm);
-
-    ostrm << _ltcList;
-}
-
-LtcMessage& LtcMessage::operator=(const LtcMessage& right)
-{
-    if( this != &right )
-    {
-        CtiCCMessage::operator=(right);
-
-        if (_ltcList.size() > 0)
-        {
-            delete_container(_ltcList);
-            _ltcList.clear();
-        }
-
-        for each(LoadTapChangerPtr ltcPtr in right._ltcList)
-        {
-            insertLtc(ltcPtr);
-        }
-    }
-
-    return *this;
-}
-
-void LtcMessage::insertLtc(LoadTapChangerPtr ltcPtr)
-{
-    LoadTapChangerPtr newLtc = new LoadTapChanger(*ltcPtr);
-    _ltcList.push_back(newLtc);
-}
-
 /*===========================================================================
     CtiCCCapBankStatesMsg
 ===========================================================================*/
@@ -1571,4 +1502,74 @@ CtiMessage* CtiCCServerResponse::replicateMessage() const
     return new CtiCCServerResponse(*this);
 }
 
+
+//////////////////////////
+///
+RWDEFINE_COLLECTABLE( VoltageRegulatorMessage, CTIVOLTAGEREGULATOR_MSG_ID )
+
+VoltageRegulatorMessage::VoltageRegulatorMessage()
+    : CtiCCMessage("VoltageRegulatorMessage")
+{
+    // empty
+}
+
+
+VoltageRegulatorMessage::VoltageRegulatorMessage(const VoltageRegulatorMessage & toCopy)
+    : CtiCCMessage("VoltageRegulatorMessage")
+{
+    operator=(toCopy);
+}
+
+
+VoltageRegulatorMessage & VoltageRegulatorMessage::operator=(const VoltageRegulatorMessage & rhs)
+{
+    if( this != &rhs )
+    {
+        CtiCCMessage::operator=(rhs);
+
+        cleanup();
+        for each( Cti::CapControl::VoltageRegulator * regulator in rhs.regulators )
+        {
+            insert(regulator);
+        }
+    }
+
+    return *this;
+}
+
+
+VoltageRegulatorMessage::~VoltageRegulatorMessage()
+{
+    cleanup();
+}
+
+
+CtiMessage * VoltageRegulatorMessage::replicateMessage() const
+{
+    return new VoltageRegulatorMessage(*this);
+}
+
+
+void VoltageRegulatorMessage::saveGuts(RWvostream & ostrm) const
+{
+    CtiCCMessage::saveGuts(ostrm);
+
+    ostrm << regulators;
+}
+
+
+void VoltageRegulatorMessage::insert(Cti::CapControl::VoltageRegulator * regulator)
+{
+    regulators.push_back( regulator->replicate() );
+}
+
+
+void VoltageRegulatorMessage::cleanup()
+{
+    if (regulators.size() > 0)
+    {
+        delete_container(regulators);
+        regulators.clear();
+    }
+}
 

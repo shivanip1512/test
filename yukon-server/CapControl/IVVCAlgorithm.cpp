@@ -19,6 +19,9 @@
 
 using Cti::CapControl::PointResponse;
 
+using Cti::CapControl::VoltageRegulator;
+using Cti::CapControl::VoltageRegulatorManager;
+
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern ULONG _POINT_AGE;
 extern ULONG _POST_CONTROL_WAIT;
@@ -30,6 +33,7 @@ extern double _IVVC_NONWINDOW_MULTIPLIER;
 extern double _IVVC_BANKS_REPORTING_RATIO;
 extern bool _IVVC_STATIC_DELTA_VOLTAGES;
 extern bool _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS;
+extern ULONG _REFUSAL_TIMEOUT;
 
 
 IVVCAlgorithm::IVVCAlgorithm(const PointDataRequestFactoryPtr& factory)
@@ -59,9 +63,21 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         {
             ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
             long                    regulatorID = zone->getRegulatorId();
-            LoadTapChangerPtr       ltcPtr = store->findLtcById(regulatorID);
 
-            if ((regulatorID <= 0) || !ltcPtr)
+            VoltageRegulatorManager::SharedPtr  regulator;
+
+            try
+            {
+                regulator = store->getVoltageRegulatorManager()->getVoltageRegulator(regulatorID);
+            }
+            catch ( const NoVoltageRegulator & noRegulator )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+            }
+
+            if ((regulatorID <= 0) || !regulator)
             {
                 haveZoneWithNoRegulator = true;
                 if ( state->isShowNoLtcAttachedMsg() )           // show message?
@@ -70,14 +86,14 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     state->setState(IVVCState::IVVC_WAIT); // reset algorithm
 
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Configuration Error. No LTC attached to zone: " << zone->getName() << endl;
+                    dout << CtiTime() << " - Configuration Error. No Voltage Regulator attached to zone: " << zone->getName() << endl;
                 }
             }
             else
             {
                 //This would be better if we had some method of executing a function at a scheduled time.
                 //Have the Ltc update its flags
-                ltcPtr->updateFlags();
+                regulator->updateFlags( ((_IVVC_MIN_TAP_PERIOD_MINUTES * 60) / 2) );
             }
         }
         if (haveZoneWithNoRegulator)
@@ -356,7 +372,25 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             CtiTime now;
             CtiTime controlTime = state->getTimeStamp();
             long maxConfirmTime = strategy->getMaxConfirmTime();
-            bool isControlled = subbus->isAlreadyControlled();
+
+            bool isControlled = false;
+
+            if( bank->getControlStatus() == CtiCCCapBank::OpenPending ||
+                bank->getControlStatus() == CtiCCCapBank::ClosePending )
+            {
+                isControlled = subbus->isAlreadyControlled();
+            }
+            else 
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                dout << CtiTime() << " IVVC Algorithm: Controlled bank: " << bank->getPaoName() 
+                     << " not in pending state.  Resetting IVVC Control loop." << endl;
+
+                state->setState(IVVCState::IVVC_WAIT);
+                return;
+            }
+
             if (isControlled || (now > (controlTime+maxConfirmTime)))
             {
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
@@ -486,9 +520,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                     if (regulatorID > 0)
                     {
-                        if ( isLtcInRemoteMode(regulatorID) )
+                        if ( isVoltageRegulatorInRemoteMode(regulatorID) )
                         {
-                            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_REMOTE_CONTROL_DISABLE,regulatorID))->execute();
+                            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE,regulatorID))->execute();
                         }
                     }
                 }
@@ -597,7 +631,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                         if ( regulatorId > 0 )
                         {
                             CtiCCExecutorFactory::createExecutor( 
-                                new CtiCCCommand( CtiCCCommand::LTC_TAP_POSITION_LOWER, regulatorId ) )->execute();
+                                new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER, regulatorId ) )->execute();
 
                             if (_CC_DEBUG & CC_DEBUG_IVVC)
                             {
@@ -616,7 +650,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                         if ( regulatorId > 0 )
                         {
                             CtiCCExecutorFactory::createExecutor( 
-                                new CtiCCCommand( CtiCCCommand::LTC_TAP_POSITION_RAISE, regulatorId ) )->execute();
+                                new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE, regulatorId ) )->execute();
 
                             if (_CC_DEBUG & CC_DEBUG_IVVC)
                             {
@@ -754,7 +788,7 @@ void IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
         {
             ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
 
-            LitePoint point = attributeService.getPointByPaoAndAttribute(zone->getRegulatorId(), PointAttribute::LtcVoltage);
+            LitePoint point = attributeService.getPointByPaoAndAttribute(zone->getRegulatorId(), PointAttribute::Voltage);
             if (point.getPointType() == InvalidPointType)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -767,7 +801,7 @@ void IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
                 if (sendScan == true)
                 {
                     pr.requestLatestValue = false;
-                    CtiCCCommand* ltcScan = new CtiCCCommand(CtiCCCommand::LTC_SCAN_INTEGRITY,zone->getRegulatorId());
+                    CtiCCCommand* ltcScan = new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN,zone->getRegulatorId());
                     CtiCCExecutorFactory::createExecutor(ltcScan)->execute();
                 }
 
@@ -995,7 +1029,7 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
             long regulatorID = zoneManager.getZone(ID)->getRegulatorId();
             if (regulatorID > 0)
             {
-                CtiMessage *keepAlive = new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, regulatorID);
+                CtiMessage *keepAlive = new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE, regulatorID);
                 CtiCCExecutorFactory::createExecutor(keepAlive)->execute();
             }
         }
@@ -1034,16 +1068,33 @@ void IVVCAlgorithm::sendPointChangesAndEvents(DispatchConnectionPtr dispatchConn
 }
 
 
-bool IVVCAlgorithm::isLtcInRemoteMode(const long ltcId) const
+bool IVVCAlgorithm::isVoltageRegulatorInRemoteMode(const long regulatorID) const
 {
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-
-    LoadTapChangerPtr ltc = store->findLtcById(ltcId);
-
-    LitePoint remotePoint = ltc->getAutoRemotePoint();
-
     double value = -1.0;
-    ltc->getPointValue(remotePoint.getPointId(), value);
+
+    try
+    {
+        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+        VoltageRegulatorManager::SharedPtr regulator = 
+                store->getVoltageRegulatorManager()->getVoltageRegulator(regulatorID);
+
+        LitePoint point = regulator->getPointByAttribute(PointAttribute::AutoRemoteControl);
+
+        regulator->getPointValue( point.getPointId(), value );
+    }
+    catch ( const NoVoltageRegulator & noRegulator )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+
+        dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+    }
+    catch ( const MissingPointAttribute & missingAttribute )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+
+        dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+    }
 
     return (value != 0.0);  // Remote Mode
 }
@@ -1136,12 +1187,19 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
             bool isCapBankClosed = (currentBank->getControlStatus() == CtiCCCapBank::Close ||
                                     currentBank->getControlStatus() == CtiCCCapBank::CloseQuestionable);
 
+            if ( currentBank->getIgnoreFlag() && 
+                 CtiTime::now() > CtiTime( currentBank->getLastStatusChangeTime().seconds() + (_REFUSAL_TIMEOUT * 60) ) )
+            {
+                currentBank->setIgnoreFlag(FALSE);
+            }
+
             // if banks operational state isn't switched or if disabled
             // or not in one of the above 4 states we aren't eligible for control.
 
             if ( !stringCompareIgnoreCase(currentBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
                  !currentBank->getLocalControlFlag() &&
                  !currentBank->getDisableFlag() &&
+                 !currentBank->getIgnoreFlag() &&
                  (isCapBankOpen || isCapBankClosed) &&
                  (deltas.find(currentBank->getTwoWayPoints()->getVoltageId()) != deltas.end()))
             {
@@ -1340,7 +1398,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
             {
                 AttributeService    attributeService;
 
-                LitePoint   point = attributeService.getPointByPaoAndAttribute(zone->getRegulatorId(), PointAttribute::LtcVoltage);
+                LitePoint   point = attributeService.getPointByPaoAndAttribute(zone->getRegulatorId(), PointAttribute::Voltage);
 
                 if (point.getPointType() == InvalidPointType)
                 {
@@ -1563,7 +1621,7 @@ bool IVVCAlgorithm::allRegulatorsInRemoteMode(const long subbusId) const
 
         if (regulatorID > 0)
         {
-            remoteMode &= isLtcInRemoteMode(regulatorID);
+            remoteMode &= isVoltageRegulatorInRemoteMode(regulatorID);
         }
     }
 

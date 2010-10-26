@@ -55,6 +55,7 @@ using namespace Cti::CapControl;
 using Database::DatabaseDaoFactory;
 
 
+
 CtiTime timeSaver;
 
 /*---------------------------------------------------------------------------
@@ -67,7 +68,8 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE),
                                                     _wassubbusdeletedflag(FALSE),
                                                     _lastindividualdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
                                                     _strategyManager( std::auto_ptr<StrategyDBLoader>( new StrategyDBLoader ) ),
-                                                    _zoneManager( std::auto_ptr<ZoneDBLoader>( new ZoneDBLoader ) )
+                                                    _zoneManager( std::auto_ptr<ZoneDBLoader>( new ZoneDBLoader ) ),
+_voltageRegulatorManager( new Cti::CapControl::VoltageRegulatorManager(std::auto_ptr<VoltageRegulatorDBLoader>( new VoltageRegulatorDBLoader ) ) )
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     _ccSubstationBuses = new CtiCCSubstationBus_vec;
@@ -112,6 +114,10 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE),
 
     _pointDataHandler.setPointDataListener(this);
     _daoFactory = boost::shared_ptr<DaoFactory>(new DatabaseDaoFactory());
+
+    _voltageRegulatorManager->setAttributeService( & _attributeService );
+    _voltageRegulatorManager->setPointDataHandler( & _pointDataHandler );
+
 }
 
 /*--------------------------------------------------------------------------
@@ -433,18 +439,6 @@ CtiCCSubstationPtr CtiCCSubstationBusStore::findSubstationByPAObjectID(long paob
     return (iter == _paobject_substation_map.end() ? NULL : iter->second);
 }
 
-LoadTapChangerPtr CtiCCSubstationBusStore::findLtcById(long ltcId)
-{
-    map< long, LoadTapChangerPtr >::iterator iter = _paobject_ltc_map.find(ltcId);
-    return (iter == _paobject_ltc_map.end() ? NULL : iter->second);
-}
-
-CtiCCSubstationBusPtr CtiCCSubstationBusStore::findSubBusByLtcId(long ltcId)
-{
-    long subBusId = findSubBusIdByLtcId(ltcId);
-    return findSubBusByPAObjectID(subBusId);
-}
-
 CtiCCSubstationBusPtr CtiCCSubstationBusStore::findSubBusByPAObjectID(long paobject_id)
 {
     map< long, CtiCCSubstationBusPtr >::iterator iter = _paobject_subbus_map.find(paobject_id);
@@ -502,13 +496,6 @@ long CtiCCSubstationBusStore::findCapBankIDbyCbcID(long cbcId)
     return (iter == _cbc_capbank_map.end() ? NULL : iter->second);
 }
 
-long CtiCCSubstationBusStore::findSubBusIdByLtcId(long ltcId)
-{
-    map< long, long >::iterator iter = _ltc_subbus_map.find(ltcId);
-    return (iter == _ltc_subbus_map.end() ? NULL : iter->second);
-}
-
-
 long CtiCCSubstationBusStore::findSubIDbyAltSubID(long altSubId, int index)
 {
     multimap< long, long >::iterator iter = _altsub_sub_idmap.find(altSubId);
@@ -544,10 +531,6 @@ void CtiCCSubstationBusStore::addSubBusToAltBusMap(CtiCCSubstationBusPtr bus)
 void CtiCCSubstationBusStore::addFeederToPaoMap(CtiCCFeederPtr feeder)
 {
     _paobject_feeder_map.insert(make_pair(feeder->getPaoId(),feeder));
-}
-void CtiCCSubstationBusStore::addLtcToPaoMap(LoadTapChangerPtr ltc)
-{
-    _paobject_ltc_map.insert(make_pair(ltc->getPaoId(),ltc));
 }
 
 std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBusStore::getSubBusesByAreaId(int areaId)
@@ -908,11 +891,17 @@ CapControlType CtiCCSubstationBusStore::determineTypeById(int paoId)
         return SpecialArea;
     }
 
-    //Ltc is not off extending RWCollectable
-    CapControlPao* pao = findLtcById(paoId);
-    if (pao != NULL)
+    try
     {
-        return Ltc;
+        VoltageRegulatorManager::SharedPtr  regulator = _voltageRegulatorManager->getVoltageRegulator(paoId);
+        if ( regulator )    // I know the if() isn't needed because of the throw on the lookup.  It just seemed weird without it.
+        {
+            return VoltageRegulatorType;
+        }
+    }
+    catch ( const NoVoltageRegulator & noRegulator )
+    {
+        // Swallow this exception
     }
 
     //Unknown
@@ -926,8 +915,8 @@ CapControlPointDataHandler& CtiCCSubstationBusStore::getPointDataHandler()
 
 bool CtiCCSubstationBusStore::handlePointDataByPaoId(int paoId, CtiPointDataMsg* message)
 {
-    //Currently only LTC does this. The idea will be all types do it
-    // and this can be accomplished once all objects inherit off CapControlPao
+    // Currently only Voltage Regulator types do this.
+    // The idea will be all types do it, this can be accomplished once all objects inherit off CapControlPao
 
     bool handled = false;
 
@@ -936,9 +925,20 @@ bool CtiCCSubstationBusStore::handlePointDataByPaoId(int paoId, CtiPointDataMsg*
         CapControlType type = determineTypeById(paoId);
         switch (type)
         {
-            case Ltc:
-                ((UpdatablePao*) findLtcById(paoId))->handlePointData(message);
-                handled = true;
+            case VoltageRegulatorType:
+                {
+                    try
+                    {
+                        VoltageRegulatorManager::SharedPtr  regulator = _voltageRegulatorManager->getVoltageRegulator(paoId);
+                        
+                        regulator->handlePointData( message );
+                        handled = true;
+                    }
+                    catch ( const NoVoltageRegulator & noRegulator )
+                    {
+                        // Swallow this exception
+                    }
+                }
                 break;
             default:
                 break;
@@ -1356,8 +1356,13 @@ void CtiCCSubstationBusStore::reset()
                 dout << CtiTime() << " - No Substations in: " << __FILE__ << " at: " << __LINE__ << endl;
             }
 
-            /** Loading LTCs **/
-            reloadLtcFromDatabase(0);
+            /*************************************************************
+            ******  Loading Voltage Regulators                 ******
+            **************************************************************/
+            if ( ! reloadVoltageRegulatorFromDatabase( -1 ) )
+            {
+                return;
+            }
 
             /*************************************************************
             ******  Loading Zones                              ******
@@ -5466,139 +5471,6 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId,
     }
 }
 
-void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
-{
-    LoadTapChangerPtr ltcPtr = NULL;
-
-    if (ltcId > 0)
-    {
-        //Clear out the ltc we are about to reload.
-        ltcPtr = findLtcById(ltcId);
-        if (ltcPtr != NULL)
-        {
-            //Cleanup Point Registration maps/listeners
-            _pointDataHandler.removeAllPointsForPao(ltcId);
-
-            deleteLtcById(ltcId);
-        }
-    }
-    else
-    {
-        //Clear all Ltcs
-        for each(const LtcMap::value_type& p in _paobject_ltc_map)
-        {
-            if (p.second != NULL)
-            {
-                _pointDataHandler.removeAllPointsForPao(p.second->getPaoId());
-                delete p.second;
-            }
-        }
-        _paobject_ltc_map.clear();
-        _ltc_subbus_map.clear();
-    }
-
-    CtiTime currentDateTime;
-
-    //Load From Database
-    {
-        static const string sqlNoID =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
-                                          "YP.description, YP.disableflag "
-                                       "FROM yukonpaobject YP "
-                                       "WHERE YP.paoclass = 'VOLTAGEREGULATOR' ";
-
-        // For now 'Load Tap Changer' and 'Gang Operated Regulator' are exactly the same thing
-        //   "AND (YP.type = 'Load Tap Changer' OR YP.type = 'Gang Operated Regulator')";
-
-        Cti::Database::DatabaseConnection connection;
-        Cti::Database::DatabaseReader rdr(connection);
-
-        if( ltcId > 0 )
-        {
-            static const string sqlID = string(sqlNoID + " AND YP.paobjectid = ?");
-            rdr.setCommandText(sqlID);
-            rdr << ltcId;
-        }
-        else
-        {
-            rdr.setCommandText(sqlNoID);
-        }
-
-        rdr.execute();
-
-        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-        {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << loggedSQLstring << endl;
-            }
-        }
-
-        while ( rdr() )
-        {
-            ltcPtr = new LoadTapChanger(rdr);
-            _paobject_ltc_map.insert(make_pair(ltcPtr->getPaoId(),ltcPtr));
-        }
-    }
-
-    // Load and Register for points
-    std::list<LoadTapChangerPtr> ltcList;
-    if (ltcId > 0)
-    {
-        LoadTapChangerPtr ltcPtr = findLtcById(ltcId);
-        if (ltcPtr != NULL)
-        {
-            ltcList.push_back(ltcPtr);
-        }
-    }
-    else
-    {
-        for each(const LtcMap::value_type& p in _paobject_ltc_map)
-        {
-            ltcList.push_back(p.second);
-        }
-    }
-
-    for each(LoadTapChangerPtr ltc in ltcList)
-    {
-        int ltcId = ltc->getPaoId();
-        LitePoint point = _attributeService.getPointByPaoAndAttribute(ltcId,PointAttribute::LtcVoltage);
-        if (point.getPointType() != InvalidPointType)
-        {
-            ltc->setLtcVoltagePoint(point);
-            _pointDataHandler.addPoint(point.getPointId(),ltcId);
-        }
-
-        point = _attributeService.getPointByPaoAndAttribute(ltcId,PointAttribute::TapDown);
-        if (point.getPointType() != InvalidPointType)
-        {
-            ltc->setLowerTapPoint(point);
-            _pointDataHandler.addPoint(point.getPointId(),ltcId);
-        }
-
-        point = _attributeService.getPointByPaoAndAttribute(ltcId,PointAttribute::TapUp);
-        if (point.getPointType() != InvalidPointType)
-        {
-            ltc->setRaiseTapPoint(point);
-            _pointDataHandler.addPoint(point.getPointId(),ltcId);
-        }
-
-        point = _attributeService.getPointByPaoAndAttribute(ltcId,PointAttribute::TapPosition);
-        if (point.getPointType() != InvalidPointType)
-        {
-            ltc->setTapPosition(point);
-            _pointDataHandler.addPoint(point.getPointId(),ltcId);
-        }
-
-        point = _attributeService.getPointByPaoAndAttribute(ltcId,PointAttribute::AutoRemoteControl);
-        if (point.getPointType() != InvalidPointType)
-        {
-            ltc->setAutoRemotePoint(point);
-            _pointDataHandler.addPoint(point.getPointId(),ltcId);
-        }
-    }
-}
-
 /*---------------------------------------------------------------------------
     reloadSubBusFromDB
 
@@ -8446,32 +8318,6 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
 
 }
 
-void CtiCCSubstationBusStore::deleteLtcById(long ltcId)
-{
-    LoadTapChangerPtr ltcptr = findLtcById(ltcId);
-    if (ltcptr == NULL)
-    {
-        return;
-    }
-
-    //If this is assigned to a bus, remove it.
-    map< long, long >::iterator itr = _ltc_subbus_map.find(ltcId);
-    if (itr != _ltc_subbus_map.end())
-    {
-        CtiCCSubstationBusPtr busPtr = findSubBusByPAObjectID(itr->second);
-        if (busPtr != NULL)
-        {
-//            busPtr->setLtcId(0);
-        }
-        _ltc_subbus_map.erase(ltcId);
-    }
-
-    //delete and remove from ltc Map
-    delete ltcptr;
-    ltcptr = NULL;
-    _paobject_ltc_map.erase(ltcId);
-}
-
 void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
 {
     CtiCCSubstationBusPtr subToDelete = findSubBusByPAObjectID(subBusId);
@@ -9533,7 +9379,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
 
                         break;
                     }
-                    case CapControlType::Zone:
+                    case ZoneType:
                     {
                         forceFullReload = true;
                         _reloadList.clear();
@@ -10094,11 +9940,6 @@ void CtiCCSubstationBusStore::removeItemsFromMap(int mapType, long first)
 SubBusMap* CtiCCSubstationBusStore::getPAOSubMap()
 {
     return &_paobject_subbus_map;
-}
-
-LtcMap* CtiCCSubstationBusStore::getLtcMap()
-{
-    return &_paobject_ltc_map;
 }
 
 AreaMap* CtiCCSubstationBusStore::getPAOAreaMap()
@@ -11357,6 +11198,37 @@ bool CtiCCSubstationBusStore::reloadZoneFromDatabase(const long zoneId)
 }
 
 
+boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager>  CtiCCSubstationBusStore::getVoltageRegulatorManager()
+{
+    return _voltageRegulatorManager;
+}
+
+
+bool CtiCCSubstationBusStore::reloadVoltageRegulatorFromDatabase(const long regulatorId)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+
+    try
+    {
+        if (regulatorId == -1)
+        {
+            _voltageRegulatorManager->reloadAll();
+        }
+        else
+        {
+            _voltageRegulatorManager->reload(regulatorId);
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+
+    return true;
+}
+
+
 /* Private Static members */
 const string CtiCCSubstationBusStore::m3iAMFMInterfaceString = "M3I";
 
@@ -11376,7 +11248,4 @@ const string CtiCCSubstationBusStore::m3iAMFMNullString = "(NULL)";
 
 const string CtiCCSubstationBusStore::CAP_CONTROL_DBCHANGE_MSG_SOURCE = "CAP_CONTROL_SERVER";
 const string CtiCCSubstationBusStore::CAP_CONTROL_DBCHANGE_MSG_SOURCE2 = "CAP_CONTROL_SERVER_FORCED_RELOAD";
-
-
-
 

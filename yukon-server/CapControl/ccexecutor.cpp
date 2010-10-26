@@ -18,6 +18,7 @@
 
 using namespace std;
 using Cti::CapControl::DynamicCommandExecutor;
+using Cti::CapControl::VoltageRegulatorManager;
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
@@ -183,13 +184,13 @@ void CtiCCCommandExecutor::execute()
         sendLocalControl();
         break;
 
-    case CtiCCCommand::LTC_SCAN_INTEGRITY:
-    case CtiCCCommand::LTC_REMOTE_CONTROL_ENABLE:
-    case CtiCCCommand::LTC_REMOTE_CONTROL_DISABLE:
-    case CtiCCCommand::LTC_TAP_POSITION_RAISE:
-    case CtiCCCommand::LTC_TAP_POSITION_LOWER:
-    case CtiCCCommand::LTC_KEEP_ALIVE:
-        sendLtcCommands( _command->getCommand());
+    case CtiCCCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN:
+    case CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE:
+    case CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE:
+    case CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE:
+    case CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER:
+    case CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE:
+        sendVoltageRegulatorCommands( _command->getCommand());
         break;
     case CtiCCCommand::SYNC_CBC_CAPBANK_STATE:
         syncCbcAndCapBankStates();
@@ -6774,18 +6775,11 @@ void CtiCCCommandExecutor::SendAllData()
     CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
     CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*(store->getCCSubstations(CtiTime().seconds())), CtiCCSubstationsMsg::AllSubsSent))->execute();
 
-    LtcMap* ltcMap = store->getLtcMap();
-
-    if (ltcMap->size() > 0)
+    // Send all Voltage Regulators
+    VoltageRegulatorMessage * message = store->getVoltageRegulatorManager()->getVoltageRegulatorMessage(true);
+    if ( message != 0 )
     {
-        LtcMessage* ltcMessage = new LtcMessage();
-        for each (const std::pair<long,LoadTapChangerPtr> ltcPair in *ltcMap)
-        {
-            LoadTapChangerPtr ltc = ltcPair.second;
-            ltc->setUpdated(false);
-            ltcMessage->insertLtc(ltc);
-        }
-        CtiCCExecutorFactory::createExecutor(ltcMessage)->execute();
+        CtiCCExecutorFactory::createExecutor(message)->execute();
     }
 }
 
@@ -8032,7 +8026,7 @@ std::auto_ptr<CtiCCExecutor> CtiCCExecutorFactory::createExecutor(const CtiMessa
         case CTICCSPECIALAREAS_MSG_ID:
         case CTICCSUBSTATION_MSG_ID:
         case CTICCSERVERRESPONSE_ID:
-        case CTILTC_MSG_ID:
+        case CTIVOLTAGEREGULATOR_MSG_ID:
             ret_val.reset(new CtiCCClientMsgExecutor((CtiMessage*)message));
             break;
 
@@ -8082,42 +8076,65 @@ std::auto_ptr<CtiCCExecutor> CtiCCExecutorFactory::createExecutor(const CtiMessa
 }
 
 
-void CtiCCCommandExecutor::sendLtcCommands(const LONG command)
+void CtiCCCommandExecutor::sendVoltageRegulatorCommands(const LONG command)
 {
     std::vector<CtiMessage*>        toDispatch;
     std::vector<CtiCCEventLogMsg*>  events;
     std::vector<CtiRequestMsg*>     requests;
 
-    switch (command)
+    std::string commandName("Voltage Regulator ");
+
+    try
     {
-        case CtiCCCommand::LTC_SCAN_INTEGRITY:
+        switch (command)
         {
-            scanLtcIntegrity(command, toDispatch, events, requests);
+            case CtiCCCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN:
+            {
+                commandName += "Integrity Scan";
+                scanVoltageRegulatorIntegrity(command, toDispatch, events, requests);
+                break;
+            }
+            case CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE:
+            case CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE:
+            {
+                commandName += "Remote Control";
+                sendVoltageRegulatorRemoteControl(command, toDispatch, events, requests);
+                break;
+            }
+            case CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE:
+            case CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER:
+            {
+                commandName += "Tap Position";
+                sendVoltageRegulatorTapPosition(command, toDispatch, requests);
+                break;
+            }
+            case CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE:
+            {
+                commandName += "Keep Alive";
+                sendVoltageRegulatorKeepAlive(command, toDispatch, requests);
+                break;
+            }
+            default:
+            {
+                 CtiLockGuard<CtiLogger> logger_guard(dout);
+                 dout << CtiTime() << " - Voltage Regulator Command not implemented: " << command << endl;
+            }
             break;
         }
-        case CtiCCCommand::LTC_REMOTE_CONTROL_ENABLE:
-        case CtiCCCommand::LTC_REMOTE_CONTROL_DISABLE:
-        {
-            sendLtcRemoteControl(command, toDispatch, events, requests);
-            break;
-        }
-        case CtiCCCommand::LTC_TAP_POSITION_RAISE:
-        case CtiCCCommand::LTC_TAP_POSITION_LOWER:
-        {
-            sendLtcTapPosition(command, toDispatch, requests);
-            break;
-        }
-        case CtiCCCommand::LTC_KEEP_ALIVE:
-        {
-            sendLtcKeepAlive(command, toDispatch, requests);
-            break;
-        }
-        default:
-        {
-             CtiLockGuard<CtiLogger> logger_guard(dout);
-             dout << CtiTime() << " - LTC Command not implemented: " << command << endl;
-        }
-        break;
+    }
+    catch ( const NoVoltageRegulator & noRegulator )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+
+        dout << CtiTime() << " - " << commandName << " command failed.\n"
+             << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+    }
+    catch ( const MissingPointAttribute & missingAttribute )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+
+        dout << CtiTime() << " - " << commandName << " command failed.\n"
+             << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
     }
 
     for each(CtiCCEventLogMsg* message in events)
@@ -8139,209 +8156,134 @@ void CtiCCCommandExecutor::sendLtcCommands(const LONG command)
     toDispatch.clear();
 }
 
-
-void CtiCCCommandExecutor::scanLtcIntegrity (const LONG                     commandType,
-                                             std::vector<CtiMessage*>       &toDispatch,
-                                             std::vector<CtiCCEventLogMsg*> &events,
-                                             std::vector<CtiRequestMsg*>    &requests)
+void CtiCCCommandExecutor::scanVoltageRegulatorIntegrity(const LONG                     commandType,
+                                                         std::vector<CtiMessage*>       &toDispatch,
+                                                         std::vector<CtiCCEventLogMsg*> &events,
+                                                         std::vector<CtiRequestMsg*>    &requests)
 {
-    string commandName = "LTC Integrity Scan";
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    
+    VoltageRegulatorManager::SharedPtr regulator = store->getVoltageRegulatorManager()->getVoltageRegulator( _command->getId() );
 
-    int paoId = _command->getId();
-    if (paoId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << commandName << " command rejected, id of 0 received. " << endl;
-        return;
-    }
-
-    string paoName;
-    {
-        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-
-        LoadTapChangerPtr ltcPtr = store->findLtcById(paoId);
-        if (ltcPtr == NULL)
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << commandName << " command failed, LTC not found with id: " << paoId << endl;
-
-            return;
-        }
-        paoName = ltcPtr->getPaoName();
-    }
-
-    LitePoint point = _attributeService->getPointByPaoAndAttribute(paoId,PointAttribute::LtcVoltage);
-    if (point.getPointType() == InvalidPointType)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << commandName << " command failed, Voltage Point not found on LTC: " << paoId << endl;
-        return;
-    }
+    LitePoint point = regulator->getPointByAttribute(PointAttribute::Voltage);
 
     //Logging Action
-    string text = string("Integrity Scan");
-    string additional = string("LTC Name: ");
-    additional += paoName;
-
-    CtiMessage* msg = new CtiSignalMsg(point.getPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser());
-    toDispatch.push_back(msg);
+    toDispatch.push_back( new CtiSignalMsg( point.getPointId(),
+                                            0,
+                                            std::string("Integrity Scan"),
+                                            std::string("Voltage Regulator Name: " + regulator->getPaoName()),
+                                            CapControlLogType,
+                                            SignalEvent,
+                                            _command->getUser() ) );
 
     //Command Action
-    CtiRequestMsg* reqMsg = NULL;
-    string commandString = "scan integrity " + CtiNumStr(point.getPaoId()).toString();
-    reqMsg = createPorterRequestMsg(point.getPointId(),commandString);
+    std::string commandString = "scan integrity " + CtiNumStr( point.getPaoId() );
+
+    CtiRequestMsg * reqMsg = createPorterRequestMsg( point.getPointId(), commandString );
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
 }
 
-void CtiCCCommandExecutor::sendLtcRemoteControl(const LONG                     commandType,
-                                                std::vector<CtiMessage*>       &toDispatch,
-                                                std::vector<CtiCCEventLogMsg*> &events,
-                                                std::vector<CtiRequestMsg*>    &requests)
+void CtiCCCommandExecutor::sendVoltageRegulatorRemoteControl(const LONG                     commandType,
+                                                             std::vector<CtiMessage*>       &toDispatch,
+                                                             std::vector<CtiCCEventLogMsg*> &events,
+                                                             std::vector<CtiRequestMsg*>    &requests)
 {
-    string commandName = "LTC Remote Control";
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    int paoId = _command->getId();
-    if (paoId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << commandName << " command rejected, id of 0 received. " << endl;
-        return;
-    }
+    VoltageRegulatorManager::SharedPtr regulator = store->getVoltageRegulatorManager()->getVoltageRegulator( _command->getId() );
 
-    LoadTapChangerPtr ltcPtr = NULL;
-    string paoName;
-    {
-        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-
-        ltcPtr = store->findLtcById(paoId);
-        if (ltcPtr == NULL)
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << commandName << " command failed, LTC not found with id: " << paoId << endl;
-
-            return;
-        }
-        paoName = ltcPtr->getPaoName();
-    }
-
-    LitePoint point = _attributeService->getPointByPaoAndAttribute(paoId,PointAttribute::AutoRemoteControl);
-    if (point.getPointType() == InvalidPointType)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << commandName << " command failed, Remote Control Point not found on LTC: " << paoId << endl;
-        return;
-    }
+    LitePoint point = regulator->getPointByAttribute(PointAttribute::AutoRemoteControl);
 
     //Logging Action
-    string text;
-    string additional = string("LTC Name: ");
-    additional += paoName;
+    std::string text("Enable Remote Control");
+    std::string enableString(" 0");
 
-    if (commandType == CtiCCCommand::LTC_REMOTE_CONTROL_ENABLE)
+    if ( commandType == CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE )
     {
-        ltcPtr->setManualLocalMode(false);
-        text = string("Enable Remote Control");
+        regulator->setOperatingMode(VoltageRegulator::RemoteMode);
     }
     else
     {
-        ltcPtr->setManualLocalMode(true);
-        text = string("Disable Remote Control");
+        regulator->setOperatingMode(VoltageRegulator::LocalMode);
+        text = "Disable Remote Control";
+        enableString = " 1";
+
         //sends a 0 to kill the keep alive
-        ltcKeepAliveHelper(paoId,0,paoName,toDispatch,requests);
+        voltageRegulatorKeepAliveHelper( regulator,
+                                         0,
+                                         toDispatch,
+                                         requests );
     }
 
-    CtiMessage* msg = new CtiSignalMsg(point.getPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser());
-    toDispatch.push_back(msg);
+    toDispatch.push_back( new CtiSignalMsg( point.getPointId(),
+                                            0,
+                                            text,
+                                            std::string("Voltage Regulator Name: " + regulator->getPaoName()),
+                                            CapControlLogType,
+                                            SignalEvent,
+                                            _command->getUser() ) );
 
     //Command Action
-    string enableString = (commandType == CtiCCCommand::LTC_REMOTE_CONTROL_ENABLE) ? string(" 0") : string(" 1");
-    string commandString = "putvalue analog " + CtiNumStr(point.getPointOffset()).toString() + enableString;
-
-    CtiRequestMsg* reqMsg = createPorterRequestMsg(point.getPointId(),commandString);
+    std::string commandString = "putvalue analog " + CtiNumStr( point.getPointOffset() ) + enableString;
+    
+    CtiRequestMsg * reqMsg = createPorterRequestMsg( point.getPointId(), commandString );
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
 }
 
-void CtiCCCommandExecutor::sendLtcTapPosition(const LONG                  commandType,
-                                              std::vector<CtiMessage*>    &toDispatch,
-                                              std::vector<CtiRequestMsg*> &requests)
+void CtiCCCommandExecutor::sendVoltageRegulatorTapPosition(const LONG                  commandType,
+                                                           std::vector<CtiMessage*>    &toDispatch,
+                                                           std::vector<CtiRequestMsg*> &requests)
 {
-    string commandName = "LTC Tap Position";
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    int paoId = _command->getId();
-    if (paoId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << commandName << " command rejected, id of 0 received. " << endl;
-        return;
-    }
+    VoltageRegulatorManager::SharedPtr regulator = store->getVoltageRegulatorManager()->getVoltageRegulator( _command->getId() );
 
-    LoadTapChangerPtr ltcPtr = NULL;
-    string paoName;
-
-    {
-        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-
-        ltcPtr = store->findLtcById(paoId);
-        if (ltcPtr == NULL)
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << commandName << " command failed, LTC not found with id: " << paoId << endl;
-
-            return;
-        }
-        paoName = ltcPtr->getPaoName();
-    }
-
-    LitePoint point;
-
-    //Logging Action
-    string text;
-    string additional = string("LTC Name: ");
-    additional += paoName;
+    LitePoint   point;
+    std::string text;
 
     switch (commandType)
     {
-        case CtiCCCommand::LTC_TAP_POSITION_RAISE:
+        case CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE:
         {
-            ltcPtr->notifyTapOperation(LoadTapChanger::RaiseTap,CtiTime());
-            point = _attributeService->getPointByPaoAndAttribute(paoId,PointAttribute::TapUp);
-            text = string("Raise Tap Position");
+            text = "Raise Tap Position";
+            regulator->notifyTapOperation( VoltageRegulator::RaiseTap, CtiTime() );
+            point = regulator->getPointByAttribute( PointAttribute::TapUp );
             break;
         }
-        case CtiCCCommand::LTC_TAP_POSITION_LOWER:
+        case CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER:
         {
-            ltcPtr->notifyTapOperation(LoadTapChanger::LowerTap,CtiTime());
-            point = _attributeService->getPointByPaoAndAttribute(paoId,PointAttribute::TapDown);
-            text = string("Lower Tap Position");
+            text = "Lower Tap Position";
+            regulator->notifyTapOperation( VoltageRegulator::LowerTap, CtiTime() );
+            point = regulator->getPointByAttribute( PointAttribute::TapDown );
             break;
         }
         default:
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " Invalid tap position command: " << commandType << endl;
+
+            dout << CtiTime() << " Invalid Tap Position command: " << commandType << std::endl;
             return;
         }
     }
 
-    if (point.getPointType() == InvalidPointType)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << commandName << " command failed, " << text << " Point not found on LTC: " << paoId << endl;
-        return;
-    }
+    //Logging Action
+    toDispatch.push_back( new CtiSignalMsg( point.getPointId(),
+                                            0,
+                                            text,
+                                            std::string("Voltage Regulator Name: " + regulator->getPaoName()),
+                                            CapControlLogType,
+                                            SignalEvent,
+                                            _command->getUser() ) );
 
-    CtiMessage* msg = new CtiSignalMsg(point.getPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser());
-    toDispatch.push_back(msg);
+    std::string commandString = "control close select pointid " + CtiNumStr( point.getPointId() );
 
     //Command Action
-    CtiRequestMsg* reqMsg = NULL;
-    string commandString = "control close select pointid " + CtiNumStr(point.getPointId()).toString();
-    reqMsg = createPorterRequestMsg(point.getPaoId(),commandString);
+    CtiRequestMsg * reqMsg = createPorterRequestMsg( point.getPointId(), commandString );
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
 }
@@ -8355,68 +8297,41 @@ void CtiCCCommandExecutor::sendLtcTapPosition(const LONG                  comman
  * @param commandType
  * @param paoId
  */
-void CtiCCCommandExecutor::sendLtcKeepAlive(const LONG commandType,
-                                            std::vector<CtiMessage*> &toDispatch,
-                                            std::vector<CtiRequestMsg*> &requests)
+void CtiCCCommandExecutor::sendVoltageRegulatorKeepAlive(const LONG                  commandType,
+                                                         std::vector<CtiMessage*>    &toDispatch,
+                                                         std::vector<CtiRequestMsg*> &requests)
 {
-    string commandName = "LTC Keep Alive";
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    int paoId = _command->getId();
-    if (paoId == 0)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << commandName << " command rejected, id of 0 received. " << endl;
-        return;
-    }
+    VoltageRegulatorManager::SharedPtr regulator = store->getVoltageRegulatorManager()->getVoltageRegulator( _command->getId() );
 
-    string paoName;
-    {
-        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-
-        LoadTapChangerPtr ltcPtr = store->findLtcById(paoId);
-        if (ltcPtr == NULL)
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << commandName << " command failed, LTC not found with id: " << paoId << endl;
-
-            return;
-        }
-        paoName = ltcPtr->getPaoName();
-    }
-
-    ltcKeepAliveHelper(paoId, _IVVC_HEARTBEAT_CONFIG, paoName, toDispatch, requests);
+    voltageRegulatorKeepAliveHelper( regulator,
+                                     _IVVC_HEARTBEAT_CONFIG,
+                                     toDispatch,
+                                     requests );
 }
 
-void CtiCCCommandExecutor::ltcKeepAliveHelper(const int paoId,
-                                              const int keepAliveTime,
-                                              const string& paoName,
-                                              std::vector<CtiMessage*> &toDispatch,
-                                              std::vector<CtiRequestMsg*> &requests)
+void CtiCCCommandExecutor::voltageRegulatorKeepAliveHelper(Cti::CapControl::VoltageRegulatorManager::SharedPtr  regulator,
+                                                           const int                   keepAliveTime,
+                                                           std::vector<CtiMessage*>    &toDispatch,
+                                                           std::vector<CtiRequestMsg*> &requests)
 {
-    LitePoint point = _attributeService->getPointByPaoAndAttribute(paoId,PointAttribute::KeepAlive);
-    if (point.getPointType() == InvalidPointType)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << "Keep Alive command failed. Point not found on LTC: " << paoId << endl;
-
-        return;
-    }
-    int deviceId = point.getPaoId();
-    int pointOffset = point.getPointOffset();
-
-    CtiRequestMsg* reqMsg = NULL;
-    string commandString = "putvalue analog " + CtiNumStr(pointOffset).toString() + " " + CtiNumStr((int)keepAliveTime).toString();
-    reqMsg = createPorterRequestMsg(deviceId,commandString);
-    reqMsg->setSOE(5);
-    requests.push_back(reqMsg);
+    LitePoint point = regulator->getPointByAttribute(PointAttribute::KeepAlive);
 
     //Logging Action
-    string text = string("LTC Keep Alive");
-    string additional = string("LTC Name: ");
-    additional += paoName;
+    toDispatch.push_back( new CtiSignalMsg( point.getPointOffset(),
+                                            0,
+                                            std::string("Keep Alive"),
+                                            std::string("Voltage Regulator Name: " + regulator->getPaoName()),
+                                            CapControlLogType,
+                                            SignalEvent,
+                                            _command->getUser() ) );
 
-    CtiMessage* msg = new CtiSignalMsg(pointOffset,0,text,additional,CapControlLogType,SignalEvent,_command->getUser());
-    toDispatch.push_back(msg);
+    std::string commandString = "putvalue analog " + CtiNumStr( point.getPointOffset() ) + " " + CtiNumStr( keepAliveTime );
+
+    CtiRequestMsg * reqMsg = createPorterRequestMsg( point.getPaoId(), commandString );
+    reqMsg->setSOE(5);
+    requests.push_back(reqMsg);
 }
 

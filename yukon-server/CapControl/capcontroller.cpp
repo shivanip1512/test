@@ -940,36 +940,19 @@ void CtiCapController::controlLoop()
                 dout << CtiTime() << " - Exception while execute strategies " << __FILE__ << " at:" << __LINE__ << endl;
             }
 
-            /////
-            // Send LTC's with changes.
+            // Send updated Voltage Regulators.
             try
             {
-                LtcMap* ltcMap = store->getLtcMap();
-                LtcMessage* ltcMessage = NULL;
-
-                for each (const std::pair<long,LoadTapChangerPtr> ltcPair in *ltcMap)
+                VoltageRegulatorMessage * message = store->getVoltageRegulatorManager()->getVoltageRegulatorMessage(false);
+                if ( message != 0 )
                 {
-                    LoadTapChangerPtr ltc = ltcPair.second;
-                    if (ltc->isUpdated())
-                    {
-                        if (ltcMessage == NULL)
-                        {
-                            ltcMessage = new LtcMessage();
-                        }
-                        ltc->setUpdated(false);
-                        ltcMessage->insertLtc(ltc);
-                    }
-                }
-
-                if (ltcMessage != NULL)
-                {
-                    getOutClientMsgQueueHandle().write(ltcMessage);
+                    getOutClientMsgQueueHandle().write( message );
                 }
             }
             catch (...)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Exception while execute strategies " << __FILE__ << " at:" << __LINE__ << endl;
+                dout << CtiTime() << " - Exception while updating Voltage Regulators.  " << __FILE__ << " at: " << __LINE__ << endl;
             }
         }
 
@@ -2308,7 +2291,7 @@ void CtiCapController::parseMessage(RWCollectable *message)
                             dout << CtiTime() << " IVVC - Zone Change received. Reloading All Zones." << endl;
                         }
 
-                        CC_DBRELOAD_INFO reloadInfo = {dbChange->getId(), dbChange->getTypeOfChange(), CapControlType::Zone};
+                        CC_DBRELOAD_INFO reloadInfo = {dbChange->getId(), dbChange->getTypeOfChange(), ZoneType};
                         CtiCCSubstationBusStore::getInstance()->insertDBReloadList(reloadInfo);
                     }
                 }

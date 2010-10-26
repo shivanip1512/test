@@ -17,7 +17,6 @@ class Test_CtiCCSubstationBusStore : public CtiCCSubstationBusStore
         void insertSubstationToPaoMap(CtiCCSubstationPtr station){addSubstationToPaoMap(station);};
         void insertSubBusToPaoMap(CtiCCSubstationBusPtr bus){addSubBusToPaoMap(bus);};
         void insertFeederToPaoMap(CtiCCFeederPtr feeder){addFeederToPaoMap(feeder);};
-        void insertLtcToPaoMap(LoadTapChangerPtr ltc){addLtcToPaoMap(ltc);};
         void insertSubBusToAltBusMap(CtiCCSubstationBusPtr bus){addSubBusToAltBusMap(bus);};
 
 };
