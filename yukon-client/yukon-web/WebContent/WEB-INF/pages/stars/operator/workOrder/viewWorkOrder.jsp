@@ -142,7 +142,7 @@
                                 <c:forEach var="eventBase" items="${eventHistory}">
                                     <tr>
                                         <td class="nonwrapping" ><cti:formatDate value="${eventBase.eventTimestamp}" type="BOTH"/></td>
-                                        <td><tags:showYukonListEntry value="${eventBase.actionId}" energyCompanyId="${energyCompanyId}" listName="SERVICE_STATUS" /></td>
+                                        <td><tags:yukonListEntry value="${eventBase.actionId}" energyCompanyId="${energyCompanyId}" listName="SERVICE_STATUS" /></td>
                                     </tr>
                                 </c:forEach>
                                 

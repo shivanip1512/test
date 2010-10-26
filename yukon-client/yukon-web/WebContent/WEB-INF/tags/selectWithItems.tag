@@ -16,7 +16,7 @@
 <%-- VIEW MODE --%>
 <cti:displayForPageEditModes modes="VIEW">
 	<spring:bind path="${path}">
-	    <tags:listItem path="${path}" items="${items}" 
+	    <tags:listItem value="${status.value}" items="${items}" 
                        itemValue="${itemValue}" itemLabel="${itemLabel}"/>
 	</spring:bind>
 </cti:displayForPageEditModes>
