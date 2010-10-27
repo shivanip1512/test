@@ -156,7 +156,7 @@ public class StopProgramController extends ProgramControllerBase {
                                                                         program.getName(),
                                                                         stopDate);
         }
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopProgram.programStopped"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopProgram.programStopRequested"));
         
         return closeDialog(model);
     }
@@ -289,10 +289,10 @@ public class StopProgramController extends ProgramControllerBase {
         }
         
         if(backingBean.getControlAreaId() != null){
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopMultiplePrograms.controlAreaStopped"));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopMultiplePrograms.controlAreaStopRequested"));
         }
         if(backingBean.getScenarioId() != null){
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopMultiplePrograms.scenarioStopped"));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopMultiplePrograms.scenarioStopRequested"));
         }
         
         return closeDialog(model);

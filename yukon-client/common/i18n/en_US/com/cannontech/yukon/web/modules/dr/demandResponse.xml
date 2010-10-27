@@ -190,7 +190,7 @@
 <entry key="yukon.web.modules.dr.program.startProgram.nextButton">Next</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.cancelButton">Cancel</entry>
-<entry key="yukon.web.modules.dr.program.startProgram.programStarted">Program started.</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.programStartRequested">Program start requested.</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.noProgramsSelected">At least one program must be selected to start.</entry>
 
 <!-- stop program -->
@@ -212,7 +212,7 @@
 <entry key="yukon.web.modules.dr.program.stopProgram.nextButton">Next</entry>
 <entry key="yukon.web.modules.dr.program.stopProgram.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.stopProgram.cancelButton">Cancel</entry>
-<entry key="yukon.web.modules.dr.program.stopProgram.programStopped">Program stopped.</entry>
+<entry key="yukon.web.modules.dr.program.stopProgram.programStopRequested">Program stop requested.</entry>
 
 <entry key="yukon.web.modules.dr.program.stopProgram.required.stopDate">A valid stop date is required if "stop now" not selected.</entry>
 <entry key="yukon.web.modules.dr.program.stopProgram.typeMismatch.stopDate">A valid stop date is required if "stop now" not selected.</entry>
@@ -253,8 +253,8 @@
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.nextButton">Next</entry>
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.cancelButton">Cancel</entry>
-<entry key="yukon.web.modules.dr.program.startMultiplePrograms.scenarioStarted">Scenario started.</entry>
-<entry key="yukon.web.modules.dr.program.startMultiplePrograms.controlAreaStarted">Control area started.</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.scenarioStartRequested">Scenario start requested.</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.controlAreaStartRequested">Control area start requested.</entry>
 
 <!-- stop multiple programs -->
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.title">Stop Programs</entry>
@@ -274,8 +274,8 @@
 
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.cancelButton">Cancel</entry>
-<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.scenarioStopped">Scenario stopped.</entry>
-<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.controlAreaStopped">Control area stopped.</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.scenarioStopRequested">Scenario stop requested.</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.controlAreaStopRequested">Control area stop requested.</entry>
 
 <!-- getChangeGearValue.jsp -->
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.title">Send Change Gear</entry>
