@@ -714,6 +714,9 @@
                 <entry key="ACCOUNT_IMPORT">
                     <ref local="accountImportBackingService"/>
                 </entry>
+                <entry key="CAPCONTROL">
+                    <ref local="capControlBackingService"/>
+                </entry>
             </map>
         </property>
     </bean>
@@ -870,6 +873,9 @@
     <bean id="abstractAreaFormattingService" class="com.cannontech.web.updater.capcontrol.AbstractAreaFormatingService"
           parent="abstractFormattingService" abstract="true">
     </bean>
+    
+    <bean id="capControlBackingService" class="com.cannontech.web.updater.capcontrol.CapControlBackingService"/>
+    <bean id="capControlSystemEnableCommandHandler" class="com.cannontech.web.updater.capcontrol.handler.CapControlSystemEnableCommandHandler"/>
     
     <bean id="voltageRegulatorBackingService" class="com.cannontech.web.updater.capcontrol.VoltageRegulatorBackingService"/>
     <bean id="voltageRegulatorModeUpdaterHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorModeUpdaterHandler"/>
