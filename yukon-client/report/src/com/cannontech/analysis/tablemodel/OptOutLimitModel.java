@@ -66,7 +66,17 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
                 int compareToIgnoreCase = modelOne.accountNumber.compareToIgnoreCase(modelTwo.accountNumber);
                 
                 if (compareToIgnoreCase == 0) {
-                    return modelOne.serialNumber.compareTo(modelTwo.serialNumber);
+                	if (modelOne.serialNumber == null) {
+                		if (modelTwo.serialNumber == null) {
+                			return 1;	//modelOne
+                		} else {
+                			return -1;	//modelTwo
+                		}
+                	} else if (modelTwo.serialNumber == null) {
+            			return 1;	//modelOne
+            		} else {
+            			return modelOne.serialNumber.compareTo(modelTwo.serialNumber);
+            		}
                 }
 
                 return compareToIgnoreCase;
@@ -263,9 +273,9 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
     
             OptOutLimitModel.ModelRow row = new OptOutLimitModel.ModelRow();
             
-            row.accountNumberAndName = row.accountNumber + " - " + row.accountName;            
             row.accountNumber = customerAccountWithName.getAccountNumber();
-            row.accountName = customerAccountWithName.getFirstName() + " " + customerAccountWithName.getLastName(); 
+            row.accountName = customerAccountWithName.getFirstName() + " " + customerAccountWithName.getLastName();
+            row.accountNumberAndName = "#" + row.accountNumber + " - " + row.accountName;
             row.serialNumber = overrideHistory.getSerialNumber();
             row.alternateTrackingNumber = customerAccountWithName.getAlternateTrackingNumber();
             row.enrolledProgram = getProgramNames(programList);
