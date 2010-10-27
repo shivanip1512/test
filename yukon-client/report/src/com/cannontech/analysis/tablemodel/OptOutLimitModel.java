@@ -30,16 +30,11 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
 
     private Logger log = YukonLogManager.getLogger(OptOutLimitModel.class);
 
-    private CustomerAccountDao customerAccountDao = 
-        (CustomerAccountDao) YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
-    private EnrollmentDao enrollmentDao = 
-        (EnrollmentDao) YukonSpringHook.getBean("enrollmentDao", EnrollmentDao.class);
-    private InventoryBaseDao inventoryBaseDao =
-        (InventoryBaseDao) YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
-    private ProgramDao programDao = 
-        (ProgramDao) YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
-    private OptOutEventDao optOutEventDao = 
-        (OptOutEventDao) YukonSpringHook.getBean("optOutEventDao", OptOutEventDao.class);
+    private CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
+    private EnrollmentDao enrollmentDao =  YukonSpringHook.getBean("enrollmentDao", EnrollmentDao.class);
+    private InventoryBaseDao inventoryBaseDao = YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
+    private ProgramDao programDao =  YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
+    private OptOutEventDao optOutEventDao = YukonSpringHook.getBean("optOutEventDao", OptOutEventDao.class);
     
     // member variables
     private List<ModelRow> data = new ArrayList<ModelRow>();
@@ -51,6 +46,8 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
     
     static public class ModelRow {
         public String accountNumberAndName;
+        public String accountNumber;	// accountNumber and accountName also exist as their separate fields to  
+        public String accountName;		//  allow for cvs export of the non combined data.
         public String serialNumber;
         public String alternateTrackingNumber;
         public String enrolledProgram;
@@ -60,18 +57,18 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
         public Date optOutStop;
     }
 
-    private Comparator<OverrideHistory> overrideHistoryAccountIdInventoryIdComparator = 
-        new Comparator<OverrideHistory>(){
+    private Comparator<OptOutLimitModel.ModelRow> optOutLimitModelRowComparator = 
+        new Comparator<OptOutLimitModel.ModelRow>(){
 
             @Override
-            public int compare(OverrideHistory overrideHistoryOne, OverrideHistory overrideHistoryTwo) {
+            public int compare(OptOutLimitModel.ModelRow modelOne, OptOutLimitModel.ModelRow modelTwo) {
                 
-                int compareToIgnoreCase = overrideHistoryOne.getAccountNumber().compareToIgnoreCase(overrideHistoryTwo.getAccountNumber());
+                int compareToIgnoreCase = modelOne.accountNumber.compareToIgnoreCase(modelTwo.accountNumber);
                 
                 if (compareToIgnoreCase == 0) {
-                    return overrideHistoryOne.getInventoryId().compareTo(overrideHistoryTwo.getInventoryId());
+                    return modelOne.serialNumber.compareTo(modelTwo.serialNumber);
                 }
-                
+
                 return compareToIgnoreCase;
             }
         };
@@ -192,7 +189,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
                 }
             }
         }
-        
+        Collections.sort(data, optOutLimitModelRowComparator);        
         log.info("Report Records Collected from Database: " + data.size());
     }
 
@@ -202,7 +199,6 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
      */
     private void addOverrideHistoryToModel(List<OverrideHistory> overrideHistoryList) {
         
-        Collections.sort(overrideHistoryList, overrideHistoryAccountIdInventoryIdComparator);
         
         for (OverrideHistory overrideHistory : overrideHistoryList) {
             
@@ -267,9 +263,9 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
     
             OptOutLimitModel.ModelRow row = new OptOutLimitModel.ModelRow();
             
-            row.accountNumberAndName = "#" + customerAccountWithName.getAccountNumber() + " ---- " +
-                                       customerAccountWithName.getLastName() + ", " + 
-                                       customerAccountWithName.getFirstName();
+            row.accountNumberAndName = row.accountNumber + " - " + row.accountName;            
+            row.accountNumber = customerAccountWithName.getAccountNumber();
+            row.accountName = customerAccountWithName.getFirstName() + " " + customerAccountWithName.getLastName(); 
             row.serialNumber = overrideHistory.getSerialNumber();
             row.alternateTrackingNumber = customerAccountWithName.getAlternateTrackingNumber();
             row.enrolledProgram = getProgramNames(programList);
