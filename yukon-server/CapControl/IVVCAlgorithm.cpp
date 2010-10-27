@@ -503,104 +503,110 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::IVVC_COMMS_LOST:
         {
-            //Switch to LTC to automode.
-            //save state so we know to re-enable remote when we start up again.
+            state->setState(IVVCState::IVVC_WAIT);
+
+            if ( ! state->isCommsLost() )
             {
-                ZoneManager & zoneManager = store->getZoneManager();
-                Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus(subbusId);
+                state->setCommsLost(true);
 
-                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                // Switch the voltage regulators to auto mode.
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " IVVC Algorithm: Comms lost, sending remote control disable. " << endl;
-                }
-                for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
-                {
-                    long regulatorID = zoneManager.getZone(ID)->getRegulatorId();
-
-                    if (regulatorID > 0)
+                    if (_CC_DEBUG & CC_DEBUG_IVVC)
                     {
-                        if ( isVoltageRegulatorInRemoteMode(regulatorID) )
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " IVVC Algorithm: Comms lost, sending remote control disable. " << endl;
+                    }
+
+                    ZoneManager & zoneManager = store->getZoneManager();
+                    Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus(subbusId);
+
+                    for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
+                    {
+                        long regulatorID = zoneManager.getZone(ID)->getRegulatorId();
+
+                        if (regulatorID > 0)
                         {
-                            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE,regulatorID))->execute();
+                            if ( isVoltageRegulatorInRemoteMode(regulatorID) )
+                            {
+                                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE, regulatorID))->execute();
+                            }
                         }
                     }
                 }
-            }
 
-            state->setState(IVVCState::IVVC_WAIT);
-            state->setCommsLost(true);
-
-            {   // Write to the event log...
-                LONG stationId, areaId, spAreaId;
-                store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
-
-                CtiMultiMsg* ccEvents = new CtiMultiMsg();
-                ccEvents->insert(
-                    new CtiCCEventLogMsg(
-                            0,
-                            SYS_PID_CAPCONTROL,
-                            spAreaId,
-                            areaId,
-                            stationId,
-                            subbus->getPaoId(),
-                            0,
-                            capControlIvvcCommStatus,
-                            0,
-                            0,
-                            "IVVC Comms Lost",
-                            "cap control") );
-
-                // capControlIvvcMissingPoint
-
-                std::set<long> missingIds = state->getGroupRequest()->getMissingPoints();
-                for each (long ID in missingIds)
+                // Write to the event log.
                 {
+                    LONG stationId, areaId, spAreaId;
+                    store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
+
+                    CtiMultiMsg* ccEvents = new CtiMultiMsg();
                     ccEvents->insert(
                         new CtiCCEventLogMsg(
                                 0,
-                                ID,
+                                SYS_PID_CAPCONTROL,
                                 spAreaId,
                                 areaId,
                                 stationId,
                                 subbus->getPaoId(),
                                 0,
-                                capControlIvvcMissingPoint,
+                                capControlIvvcCommStatus,
                                 0,
                                 0,
-                                "IVVC Missing Point Response",
+                                "IVVC Comms Lost",
                                 "cap control") );
+
+                    PointValueMap rejectedPoints = state->getGroupRequest()->getRejectedPointValues();
+                    std::set<long> missingIds = state->getGroupRequest()->getMissingPoints();
+
+                    for each (const PointValueMap::value_type& pv in rejectedPoints)
+                    {
+                        std::ostringstream  eventText;
+
+                        eventText
+                            << "IVVC Rejected Point Response - Quality: 0x"
+                            << std::hex << pv.second.quality << std::dec
+                            << " - Timestamp: "
+                            << pv.second.timestamp;
+
+                        ccEvents->insert(
+                            new CtiCCEventLogMsg(
+                                    0,
+                                    pv.first,   
+                                    spAreaId,
+                                    areaId,
+                                    stationId,
+                                    subbus->getPaoId(),
+                                    0,
+                                    capControlIvvcRejectedPoint,
+                                    0,
+                                    pv.second.value,
+                                    eventText.str(),
+                                    "cap control") );
+
+                        // remove the rejected point Ids the set of missingIds to reduce log entries.
+                        missingIds.erase( pv.first );
+                    }
+
+                    for each (long ID in missingIds)
+                    {
+                        ccEvents->insert(
+                            new CtiCCEventLogMsg(
+                                    0,
+                                    ID,
+                                    spAreaId,
+                                    areaId,
+                                    stationId,
+                                    subbus->getPaoId(),
+                                    0,
+                                    capControlIvvcMissingPoint,
+                                    0,
+                                    0,
+                                    "IVVC Missing Point Response",
+                                    "cap control") );
+                    }
+
+                    sendEvents(dispatchConnection, ccEvents);
                 }
-
-
-                PointValueMap rejectedPoints = state->getGroupRequest()->getRejectedPointValues();
-                for each (const PointValueMap::value_type& pv in rejectedPoints)
-                {
-                    std::ostringstream  eventText;
-
-                    eventText
-                        << "IVVC Rejected Point Response - Quality: 0x"
-                        << std::hex << pv.second.quality << std::dec
-                        << " - Timestamp: "
-                        << pv.second.timestamp;
-
-                    ccEvents->insert(
-                        new CtiCCEventLogMsg(
-                                0,
-                                pv.first,   
-                                spAreaId,
-                                areaId,
-                                stationId,
-                                subbus->getPaoId(),
-                                0,
-                                capControlIvvcRejectedPoint,
-                                0,
-                                pv.second.value,
-                                eventText.str(),
-                                "cap control") );
-                }
-
-                sendEvents(dispatchConnection, ccEvents);
             }
             break;
         }
