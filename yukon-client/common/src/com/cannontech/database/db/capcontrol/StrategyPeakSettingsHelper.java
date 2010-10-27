@@ -92,7 +92,7 @@ public class StrategyPeakSettingsHelper {
                 PeakTargetSetting kvarLag = getPeakTargetSetting(TargetSettingType.KVAR_LAGGING, strategy.getTargetSettings());
                 PeakTargetSetting kvarLead = getPeakTargetSetting(TargetSettingType.KVAR_LEADING, strategy.getTargetSettings());
                 
-                settingString = kvarLag.getPeakValue() + "<" + "kVar" + "<" + kvarLead.getPeakValue();
+                settingString = kvarLag.getPeakValue() + "<" + "kVAr" + "<" + kvarLead.getPeakValue();
                 break;
                 
             case VOLTS:
@@ -110,7 +110,7 @@ public class StrategyPeakSettingsHelper {
                 upperVoltLimit = getPeakTargetSetting(TargetSettingType.UPPER_VOLT_LIMIT, strategy.getTargetSettings());
                 
                 settingString = lowerVoltLimit.getPeakValue() + "<" + "Volt" + "<" + upperVoltLimit.getPeakValue();
-                settingString += " : " + kvarLag.getPeakValue() + "<" + "kVar" + "<" + kvarLead.getPeakValue();
+                settingString += " : " + kvarLag.getPeakValue() + "<" + "kVAr" + "<" + kvarLead.getPeakValue();
                 break;
                 
             case PFACTOR_KW_KVAR:
@@ -153,7 +153,7 @@ public class StrategyPeakSettingsHelper {
                 PeakTargetSetting kvarLag = getPeakTargetSetting(TargetSettingType.KVAR_LAGGING, strategy.getTargetSettings());
                 PeakTargetSetting kvarLead = getPeakTargetSetting(TargetSettingType.KVAR_LEADING, strategy.getTargetSettings());
                 
-                settingString = kvarLag.getOffPeakValue() + "<" + "kVar" + "<" + kvarLead.getOffPeakValue();
+                settingString = kvarLag.getOffPeakValue() + "<" + "kVAr" + "<" + kvarLead.getOffPeakValue();
                 break;
                 
             case VOLTS:
@@ -171,7 +171,7 @@ public class StrategyPeakSettingsHelper {
                 upperVoltLimit = getPeakTargetSetting(TargetSettingType.UPPER_VOLT_LIMIT, strategy.getTargetSettings());
                 
                 settingString = lowerVoltLimit.getOffPeakValue() + "<" + "Volt" + "<" + upperVoltLimit.getOffPeakValue();
-                settingString += " : " + kvarLag.getOffPeakValue() + "<" + "kVar" + "<" + kvarLead.getOffPeakValue();
+                settingString += " : " + kvarLag.getOffPeakValue() + "<" + "kVAr" + "<" + kvarLead.getOffPeakValue();
                 break;
                 
             case PFACTOR_KW_KVAR:
