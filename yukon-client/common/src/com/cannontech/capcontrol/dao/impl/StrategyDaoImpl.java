@@ -57,7 +57,7 @@ public class StrategyDaoImpl implements StrategyDao{
             75, // Min Confirm Percent
             25, // Failure Percent
             "NYYYYYNN", // Days of the Week
-            ControlAlgorithm.KVAR.getDisplayName(), // Control Units
+            ControlAlgorithm.KVAR, // Control Units
             0, // Control Delay Time
             0, // Control Send Retries
             "N", // Integrate Flag
