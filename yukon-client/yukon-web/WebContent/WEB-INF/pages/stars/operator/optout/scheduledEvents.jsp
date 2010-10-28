@@ -23,7 +23,7 @@
 					        <c:forEach var="event" items="${scheduledEvents}">
 					            <tr>
 					                <td><cti:formatDate value="${event.startDate}" type="DATEHM"/></td>
-					                <td><cti:formatTimePeriod startDate="${event.startDate}" endDate="${event.stopDate}" type="DH"/></td>
+					                <td><cti:formatDuration startDate="${event.startDate}" endDate="${event.stopDate}" type="DH"/></td>
 					                <td>${event.accountNumber}</td>
 					                <td>${event.serialNumber}</td>
 					            </tr>
