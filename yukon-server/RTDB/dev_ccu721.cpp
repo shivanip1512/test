@@ -356,8 +356,9 @@ int Ccu721Device::recvCommRequest(OUTMESS *OutMessage)
 
     _current_om = OutMessage;
 
-    if( _current_om->EventCode & DTRAN &&
-        _current_om->EventCode & BWORD )
+    if( _current_om->EventCode & DTRAN
+        && (_current_om->EventCode & BWORD ||
+            _current_om->EventCode & AWORD) )
     {
         byte_buffer_t dtran_message;
 
@@ -365,6 +366,7 @@ int Ccu721Device::recvCommRequest(OUTMESS *OutMessage)
 
         return _klondike.setCommand(Klondike::Command_DirectTransmission,
                                     dtran_message,
+                                    //  This only works because A words don't have an InLength set.
                                     (_current_om->InLength)?(EmetconProtocol::determineDWordCount(_current_om->InLength) * DWORDLEN):(0),
                                     _current_om->Priority,
                                     _current_om->Buffer.BSt.DlcRoute.Stages,
