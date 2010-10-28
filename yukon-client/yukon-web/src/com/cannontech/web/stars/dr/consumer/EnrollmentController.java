@@ -166,6 +166,7 @@ public class EnrollmentController extends AbstractConsumerController {
         retVal.setRelay(enrollment.getRelay());
         retVal.setInventoryId(enrollment.getInventoryId());
         retVal.setEnroll(isEnrolled);
+        retVal.setLmGroupId(displayableEnrollmentProgram.getLoadGroupId());
         return retVal;
     }
 
