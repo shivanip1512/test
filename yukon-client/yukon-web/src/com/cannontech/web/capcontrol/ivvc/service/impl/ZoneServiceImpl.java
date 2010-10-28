@@ -46,10 +46,12 @@ public class ZoneServiceImpl implements ZoneService {
         zone.setRegulatorId(regulatorId);
         zone.setSubstationBusId(substationBusId);
         
+        zoneDao.save(zone);
+        zoneDto.setZoneId(zone.getId());
+        
         List<CapBankToZoneMapping> banksToZone = getCapBankToZoneMappingByDto(zoneDto);
         List<PointToZoneMapping> pointsToZone = getPointToZoneMappingByDto(zoneDto);
         
-        zoneDao.save(zone);
         zoneDao.updateCapBankToZoneMapping(zoneDto.getZoneId(), banksToZone);
         zoneDao.updatePointToZoneMapping(zoneDto.getZoneId(), pointsToZone);
 
