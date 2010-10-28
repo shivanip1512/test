@@ -1,36 +1,6 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_pao
-*
-* Class:  CtiTblPAO
-* Date:   9/12/2001
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pao.h-arc  $
-* REVISION     :  $Revision: 1.7.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:49 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __TBL_PAO_H__
-#define __TBL_PAO_H__
-#pragma warning( disable : 4786)
-
-
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
-#include <windows.h>
-#include <limits.h>
+#pragma once
 
 #include "row_reader.h"
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
 
 #include "dbmemobject.h"
 
@@ -114,5 +84,3 @@ public:
 };
 
 inline bool CtiTblPAO::isInhibited() const { return _disableFlag; }
-
-#endif // #ifndef __TBL_PAO_H__

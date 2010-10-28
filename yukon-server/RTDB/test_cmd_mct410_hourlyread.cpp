@@ -16,6 +16,39 @@ struct expected_pointdata
     unsigned offset;
 };
 
+bool operator!=(const DlcCommand::point_data &pd, const expected_pointdata &ep)
+{
+    return pd.time    != ep.time
+        || pd.value   != ep.value
+        || pd.quality != ep.quality
+        || pd.type    != ep.type
+        || pd.offset  != ep.offset;
+}
+
+std::ostream &operator<<(std::ostream &os, const expected_pointdata &ep)
+{
+    os << "(" << ep.time.asString()
+       << "," << ep.value
+       << "," << ep.quality
+       << "," << ep.type
+       << "," << ep.offset
+       << ")";
+
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const DlcCommand::point_data &pd)
+{
+    os << "(" << pd.time.asString()
+       << "," << pd.value
+       << "," << pd.quality
+       << "," << pd.type
+       << "," << pd.offset
+       << ")";
+
+    return os;
+}
+
 BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_active)
 {
     const CtiDate start(11, 8, 2010);
@@ -83,16 +116,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_active)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 
     {
@@ -141,16 +165,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_active)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 }
 
@@ -222,16 +237,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_inactive)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 
     {
@@ -279,16 +285,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_inactive)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 }
 
@@ -360,16 +357,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_fall_2010)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 
     {
@@ -419,16 +407,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_fall_2010)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 }
 
@@ -499,16 +478,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_spring_2011)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 
     {
@@ -558,16 +528,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_spring_2011)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 }
 
@@ -638,16 +599,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_channel_2)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 
     {
@@ -696,16 +648,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_channel_2)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 }
 
@@ -775,16 +718,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_yesterday)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 
     {
@@ -833,16 +767,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_yesterday)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 }
 
@@ -914,16 +839,7 @@ BOOST_AUTO_TEST_CASE(test_command_multi_day_read_dst_active)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 
     {
@@ -977,16 +893,7 @@ BOOST_AUTO_TEST_CASE(test_command_multi_day_read_dst_active)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 
     {
@@ -1037,16 +944,7 @@ BOOST_AUTO_TEST_CASE(test_command_multi_day_read_dst_active)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 
     {
@@ -1095,16 +993,7 @@ BOOST_AUTO_TEST_CASE(test_command_multi_day_read_dst_active)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 }
 
@@ -1317,16 +1206,7 @@ BOOST_AUTO_TEST_CASE(test_decode_invalid_midnight_kwh_reading)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 
     {
@@ -1352,16 +1232,7 @@ BOOST_AUTO_TEST_CASE(test_decode_invalid_midnight_kwh_reading)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 }
 
@@ -1423,16 +1294,7 @@ BOOST_AUTO_TEST_CASE(test_decode_one_bad_delta_on_first_read)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 
     {
@@ -1467,16 +1329,7 @@ BOOST_AUTO_TEST_CASE(test_decode_one_bad_delta_on_first_read)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 }
 
@@ -1538,16 +1391,7 @@ BOOST_AUTO_TEST_CASE(test_decode_all_bad_deltas_on_first_read)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 }
 
@@ -1653,16 +1497,7 @@ BOOST_AUTO_TEST_CASE(test_decode_payload_too_small_once)
 
         unsigned expected_size = sizeof(expected) / sizeof(expected_pointdata);
 
-        BOOST_CHECK_EQUAL(points.size(), expected_size);
-
-        for( int i = 0; i < expected_size; i++ )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].time,    expected[i].time);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].value,   expected[i].value);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].quality, expected[i].quality);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].type,    expected[i].type);
-            BOOST_CHECK_INDEXED_EQUAL(i, points[i].offset,  expected[i].offset);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), expected, expected + expected_size);
     }
 }
 

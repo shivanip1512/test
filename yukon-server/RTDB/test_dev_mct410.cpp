@@ -1,15 +1,11 @@
-/*
- * test Mct410Device
- *
- */
-
 #include "dev_mct410.h"
 #include "devicetypes.h"
 
-#include <boost/test/floating_point_comparison.hpp>
+#include "boost_test_helpers.h"
 
 #define BOOST_TEST_MAIN "Test dev_mct410"
 #include <boost/test/unit_test.hpp>
+#include <boost/lambda/lambda.hpp>
 
 #include <limits>
 
@@ -30,6 +26,16 @@ struct test_Mct410Device : Mct410Device
     using Mct410Device::getDemandData;
     using Mct410Device::extractDynamicPaoInfo;
     using Mct410Device::executePutConfig;
+
+    using Mct410Device::decodeDisconnectStatus;
+    using Mct410Device::decodeDisconnectConfig;
+    using Mct410Device::decodeDisconnectDemandLimitConfig;
+    using Mct410Device::decodeDisconnectCyclingConfig;
+
+    virtual LONG getDemandInterval()
+    {
+        return 3600;
+    }
 };
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
@@ -58,43 +64,43 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
     test_Mct410Device::point_info pi;
 
     pi = dev.getDemandData(dc[0].raw_value, 2, dc[0].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[0].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, dc[0].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[0].freeze_bit);
 
     pi = dev.getDemandData(dc[1].raw_value, 2, dc[1].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[1].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, dc[1].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[1].freeze_bit);
 
     pi = dev.getDemandData(dc[2].raw_value, 2, dc[2].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[2].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, dc[2].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[2].freeze_bit);
 
     pi = dev.getDemandData(dc[3].raw_value, 2, dc[3].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[3].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, dc[3].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[3].freeze_bit);
 
     pi = dev.getDemandData(dc[4].raw_value, 2, dc[4].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[4].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, dc[4].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[4].freeze_bit);
 
     pi = dev.getDemandData(dc[5].raw_value, 2, dc[5].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[5].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, dc[5].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[5].freeze_bit);
 
     pi = dev.getDemandData(dc[6].raw_value, 2, dc[6].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[6].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, dc[6].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[6].freeze_bit);
 
     pi = dev.getDemandData(dc[7].raw_value, 2, dc[7].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[7].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, dc[7].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[7].freeze_bit);
 
     pi = dev.getDemandData(dc[8].raw_value, 2, dc[8].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[8].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, dc[8].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[8].freeze_bit);
 
     pi = dev.getDemandData(dc[9].raw_value, 2, dc[9].frozen);
-    BOOST_CHECK_SMALL(pi.value - dc[9].value, std::numeric_limits<double>::epsilon());
+    BOOST_CHECK_EQUAL(pi.value, dc[9].value);
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[9].freeze_bit);
 }
 
@@ -594,3 +600,291 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor)
     retList.clear();
     outList.clear();
 }
+
+BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectStatus)
+{
+    {
+        test_Mct410Device mct410;
+
+        DSTRUCT DSt;
+
+        DSt.Message[0] = 0x3c;
+        DSt.Message[1] = 0x02;
+        DSt.Message[8] = 123;
+
+        string expected =
+            "Load limiting mode active\n"
+            "Cycling mode active, currently connected\n"
+            "Disconnect state uncertain (powerfail during disconnect)\n"
+            "Disconnect error - demand detected after disconnect command sent to collar\n"
+            "Disconnect load limit count: 123\n";
+
+        string result = mct410.decodeDisconnectStatus(DSt);
+
+        BOOST_CHECK_EQUAL(expected, result);
+    }
+
+    {
+        test_Mct410Device mct410;
+
+        DSTRUCT DSt;
+
+        DSt.Message[0] = 0x1c;
+        DSt.Message[1] = 0x00;
+        DSt.Message[8] = 199;
+
+        string expected =
+            "Load limiting mode active\n"
+            "Cycling mode active, currently connected\n"
+            "Disconnect load limit count: 199\n";
+
+        string result = mct410.decodeDisconnectStatus(DSt);
+
+        BOOST_CHECK_EQUAL(expected, result);
+    }
+
+    {
+        test_Mct410Device mct410;
+
+        DSTRUCT DSt;
+
+        DSt.Message[0] = 0x10;
+        DSt.Message[1] = 0x00;
+        DSt.Message[8] = 17;
+
+        string expected =
+            "Disconnect load limit count: 17\n";
+
+        string result = mct410.decodeDisconnectStatus(DSt);
+
+        BOOST_CHECK_EQUAL(expected, result);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectDemandLimitConfig)
+{
+    //  Possibilities:  Has config.  Has demand limit bit.  Has demand threshold.
+    struct
+    {
+        const int config;
+        const double demand_threshold;
+        const string expected;
+    }
+    tc[] =
+    {
+        {-1,   0.00, "Disconnect demand threshold disabled\n"},
+        {-1,   0.18, "Disconnect demand threshold: 0.180 kW\n"},
+        {0x00, 0.00, "Disconnect demand threshold disabled\n"},
+        {0x00, 0.19, "Disconnect demand threshold disabled\n"},
+        {0x08, 0.00, "Disconnect demand threshold disabled\n"},
+        {0x08, 0.20, "Demand limit mode enabled\n"
+                     "Disconnect demand threshold: 0.200 kW\n"}
+    };
+
+    BOOST_CHECK_EQUAL(tc[0].expected, test_Mct410Device::decodeDisconnectDemandLimitConfig(tc[0].config, tc[0].demand_threshold));
+    BOOST_CHECK_EQUAL(tc[1].expected, test_Mct410Device::decodeDisconnectDemandLimitConfig(tc[1].config, tc[1].demand_threshold));
+    BOOST_CHECK_EQUAL(tc[2].expected, test_Mct410Device::decodeDisconnectDemandLimitConfig(tc[2].config, tc[2].demand_threshold));
+    BOOST_CHECK_EQUAL(tc[3].expected, test_Mct410Device::decodeDisconnectDemandLimitConfig(tc[3].config, tc[3].demand_threshold));
+    BOOST_CHECK_EQUAL(tc[4].expected, test_Mct410Device::decodeDisconnectDemandLimitConfig(tc[4].config, tc[4].demand_threshold));
+    BOOST_CHECK_EQUAL(tc[5].expected, test_Mct410Device::decodeDisconnectDemandLimitConfig(tc[5].config, tc[5].demand_threshold));
+}
+
+
+BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectCyclingConfig)
+{
+    struct
+    {
+        const int config;
+        const unsigned disconnect_minutes;
+        const unsigned connect_minutes;
+        const string expected;
+    }
+    tc[] =
+    {
+        {-1,   0, 0, "Disconnect cycling mode disabled\n"},
+        {-1,   0, 1, "Disconnect cycling mode disabled\n"},
+        {-1,   2, 0, "Disconnect cycling mode disabled\n"},
+        {-1,   3, 4, "Cycling mode - disconnect minutes: 3\n"
+                     "Cycling mode - connect minutes   : 4\n"},
+        {0x00, 0, 0, "Disconnect cycling mode disabled\n"},
+        {0x00, 0, 1, "Disconnect cycling mode disabled\n"},
+        {0x00, 2, 0, "Disconnect cycling mode disabled\n"},
+        {0x00, 3, 4, "Disconnect cycling mode disabled\n"},
+        {0x08, 0, 0, "Disconnect cycling mode disabled\n"},
+        {0x08, 0, 1, "Disconnect cycling mode disabled\n"},
+        {0x08, 2, 0, "Disconnect cycling mode disabled\n"},
+        {0x08, 3, 4, "Disconnect cycling mode disabled\n"},
+        {0x10, 0, 0, "Disconnect cycling mode enabled\n"
+                     "Cycling mode - disconnect minutes: 0\n"
+                     "Cycling mode - connect minutes   : 0\n"},
+        {0x10, 0, 1, "Disconnect cycling mode enabled\n"
+                     "Cycling mode - disconnect minutes: 0\n"
+                     "Cycling mode - connect minutes   : 1\n"},
+        {0x10, 2, 0, "Disconnect cycling mode enabled\n"
+                     "Cycling mode - disconnect minutes: 2\n"
+                     "Cycling mode - connect minutes   : 0\n"},
+        {0x10, 3, 4, "Disconnect cycling mode enabled\n"
+                     "Cycling mode - disconnect minutes: 3\n"
+                     "Cycling mode - connect minutes   : 4\n"},
+        {0x18, 0, 0, "Disconnect cycling mode disabled\n"},
+        {0x18, 0, 1, "Disconnect cycling mode disabled\n"},
+        {0x18, 2, 0, "Disconnect cycling mode disabled\n"},
+        {0x18, 3, 4, "Disconnect cycling mode disabled\n"}
+    };
+
+    BOOST_CHECK_EQUAL(tc[ 0].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 0].config, tc[ 0].disconnect_minutes, tc[ 0].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 1].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 1].config, tc[ 1].disconnect_minutes, tc[ 1].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 2].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 2].config, tc[ 2].disconnect_minutes, tc[ 2].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 3].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 3].config, tc[ 3].disconnect_minutes, tc[ 3].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 4].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 4].config, tc[ 4].disconnect_minutes, tc[ 4].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 5].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 5].config, tc[ 5].disconnect_minutes, tc[ 5].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 6].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 6].config, tc[ 6].disconnect_minutes, tc[ 6].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 7].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 7].config, tc[ 7].disconnect_minutes, tc[ 7].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 8].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 8].config, tc[ 8].disconnect_minutes, tc[ 8].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[ 9].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 9].config, tc[ 9].disconnect_minutes, tc[ 9].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[10].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[10].config, tc[10].disconnect_minutes, tc[10].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[11].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[11].config, tc[11].disconnect_minutes, tc[11].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[12].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[12].config, tc[12].disconnect_minutes, tc[12].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[13].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[13].config, tc[13].disconnect_minutes, tc[13].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[14].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[14].config, tc[14].disconnect_minutes, tc[14].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[15].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[15].config, tc[15].disconnect_minutes, tc[15].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[16].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[16].config, tc[16].disconnect_minutes, tc[16].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[17].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[17].config, tc[17].disconnect_minutes, tc[17].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[18].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[18].config, tc[18].disconnect_minutes, tc[18].connect_minutes));
+    BOOST_CHECK_EQUAL(tc[19].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[19].config, tc[19].disconnect_minutes, tc[19].connect_minutes));
+}
+
+BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectConfig)
+{
+    //  Test case permutations:
+    //    SSPEC: < Cycling, < ConfigReadEnhanced, == ConfigReadEnhanced
+    //    DSTRUCT: length < 13, length = 13
+    //    Config byte: not retrieved, autoreconnect disabled, autoreconnect enabled
+    //  Config byte cannot be missing when the SSPEC is ConfigReadEnhanced, since it returns the config byte
+
+    struct test_case
+    {
+        const int sspec_revision;
+        const int dst_length;
+        const int config_byte;
+        const string expected;
+    }
+    test_cases[] =
+    {
+        //  sspec_revision < Mct410Device::SspecRev_Disconnect_Cycling
+        {11, 12,   -1, "Disconnect receiver address: 131844\n"
+                       "Disconnect load limit connect delay: 34 minutes\n"
+                       "Disconnect demand threshold: 0.129 kW\n"},
+        {11, 12, 0x00, "Disconnect receiver address: 131844\n"
+                       "Disconnect load limit connect delay: 34 minutes\n"
+                       "Disconnect demand threshold disabled\n"},
+        {11, 12, 0x04, "Disconnect receiver address: 131844\n"
+                       "Disconnect load limit connect delay: 34 minutes\n"
+                       "Autoreconnect enabled\n"
+                       "Disconnect demand threshold disabled\n"},
+        //  if the message length is >= 13, the config byte is in the message
+        {11, 13, 0x00, "Disconnect receiver address: 131844\n"
+                       "Disconnect load limit connect delay: 34 minutes\n"
+                       "Disconnect demand threshold disabled\n"},
+        {11, 13, 0x04, "Disconnect receiver address: 131844\n"
+                       "Disconnect load limit connect delay: 34 minutes\n"
+                       "Autoreconnect enabled\n"
+                       "Disconnect demand threshold disabled\n"},
+
+        //  sspec_revision < Mct410Device::SspecRev_Disconnect_ConfigReadEnhanced
+        {19, 12,   -1, "Disconnect receiver address: 131844\n"
+                       "Disconnect load limit connect delay: 34 minutes\n"
+                       "Disconnect demand threshold: 0.129 kW\n"
+                       "Cycling mode - disconnect minutes: 10\n"
+                       "Cycling mode - connect minutes   : 11\n"},
+        {19, 12, 0x00, "Disconnect receiver address: 131844\n"
+                       "Disconnect load limit connect delay: 34 minutes\n"
+                       "Disconnect demand threshold disabled\n"
+                       "Disconnect cycling mode disabled\n"},
+        {19, 12, 0x04, "Disconnect receiver address: 131844\n"
+                       "Disconnect load limit connect delay: 34 minutes\n"
+                       "Autoreconnect enabled\n"
+                       "Disconnect demand threshold disabled\n"
+                       "Disconnect cycling mode disabled\n"},
+        //  if the message length is >= 13, the config byte is in the message
+        {19, 13, 0x00, "Disconnect receiver address: 131844\n"
+                       "Disconnect load limit connect delay: 34 minutes\n"
+                       "Disconnect demand threshold disabled\n"
+                       "Disconnect cycling mode disabled\n"},
+        {19, 13, 0x04, "Disconnect receiver address: 131844\n"
+                       "Disconnect load limit connect delay: 34 minutes\n"
+                       "Autoreconnect enabled\n"
+                       "Disconnect demand threshold disabled\n"
+                       "Disconnect cycling mode disabled\n"},
+
+        //  sspec_revision == Mct410Device::SspecRev_Disconnect_ConfigReadEnhanced
+        {20, 12,   -1, "Disconnect receiver address: 131844\n"
+                       "Disconnect load limit connect delay: 34 minutes\n"
+                       "Disconnect demand threshold: 0.129 kW\n"
+                       "Cycling mode - disconnect minutes: 10\n"
+                       "Cycling mode - connect minutes   : 11\n"},
+        {20, 12, 0x00, "Disconnect receiver address: 131844\n"
+                       "Disconnect load limit connect delay: 34 minutes\n"
+                       "Disconnect demand threshold disabled\n"
+                       "Disconnect cycling mode disabled\n"},
+        {20, 12, 0x04, "Disconnect receiver address: 131844\n"
+                       "Disconnect load limit connect delay: 34 minutes\n"
+                       "Autoreconnect enabled\n"
+                       "Disconnect demand threshold disabled\n"
+                       "Disconnect cycling mode disabled\n"},
+        //  if the message length is >= 13, the config byte is in the message
+        {20, 13, 0x00, "Disconnect receiver address: 131844\n"
+                       "Disconnect load limit connect delay: 34 minutes\n"
+                       "Disconnect verification threshhold: 12.300 kW (205 Wh/minute)\n"
+                       "Disconnect demand threshold disabled\n"
+                       "Disconnect cycling mode disabled\n"},
+        {20, 13, 0x04, "Disconnect receiver address: 131844\n"
+                       "Disconnect load limit connect delay: 34 minutes\n"
+                       "Disconnect verification threshhold: 12.300 kW (205 Wh/minute)\n"
+                       "Autoreconnect enabled\n"
+                       "Disconnect demand threshold disabled\n"
+                       "Disconnect cycling mode disabled\n"},
+    };
+
+    const unsigned count = sizeof(test_cases) / sizeof(*test_cases);
+
+    struct my_test
+    {
+        typedef test_case test_case_type;
+        typedef string    result_type;
+
+        result_type operator()(const test_case_type &tc)
+        {
+            DSTRUCT DSt;
+
+            DSt.Message[2] = 2;     //  Disconnect address
+            DSt.Message[3] = 3;     //     :
+            DSt.Message[4] = 4;     //     :
+            DSt.Message[5] = 0x35;  //  Disconnect demand threshold
+            DSt.Message[6] = 0x08;  //     :
+            DSt.Message[7] = 34;    //  Disconnect load limit connect delay
+
+            DSt.Message[9]  = 10;
+            DSt.Message[10] = 11;
+
+            DSt.Message[11] = tc.config_byte;
+            DSt.Message[12] = 205;
+
+            DSt.Length      = tc.dst_length;
+
+            test_Mct410Device mct410;
+
+            mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, tc.sspec_revision);
+            mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, tc.config_byte);
+
+            return mct410.decodeDisconnectConfig(DSt);
+        }
+    };
+
+    Cti::TestRunner<my_test> tr(test_cases, test_cases + count);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(tr.expected_begin(), tr.expected_end(),
+                                  tr.results_begin(),  tr.results_end());
+
+}
+

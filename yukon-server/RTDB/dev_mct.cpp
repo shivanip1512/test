@@ -2701,6 +2701,10 @@ INT MctDevice::executeControl(CtiRequestMsg                  *pReq,
             //  the 410 requires some dead time to transmit to its disconnect base
             dead_air = true;
         }
+        else if( getType() == TYPEMCT420CL )
+        {
+            found = false;
+        }
     }
     else if( parse.getFlags() & (CMD_FLAG_CTL_DISCONNECT | CMD_FLAG_CTL_OPEN) )
     {
@@ -2734,6 +2738,10 @@ INT MctDevice::executeControl(CtiRequestMsg                  *pReq,
 
                 found = false;
             }
+        }
+        else if( getType() == TYPEMCT420CL )
+        {
+            found = false;
         }
     }
     else if(parse.isKeyValid("latch_relays"))

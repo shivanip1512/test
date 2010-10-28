@@ -355,8 +355,8 @@ portfield.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		msg_ptreg.h msg_reg.h queue.h prot_base.h xfer.h tbl_dialup.h \
 		tbl_direct.h tbl_dv_idlcremote.h trx_info.h \
 		critical_section.h porter.h devicetypes.h trx_711.h dev_tap.h \
-		tbl_dv_tappaging.h dev_ied.h tbl_dv_ied.h dev_snpp.h \
-		dev_modbus.h prot_modbus.h tbl_dv_address.h \
+		dev_paging.h tbl_dv_tappaging.h dev_ied.h tbl_dv_ied.h \
+		dev_snpp.h dev_modbus.h prot_modbus.h tbl_dv_address.h \
 		dev_pagingreceiver.h tbl_dv_pagingreceiver.h dev_tnpp.h \
 		tbl_dv_tnpp.h dev_rtc.h tbl_dv_rtc.h dev_rtm.h \
 		verification_objects.h dev_fmu.h dev_wctp.h master.h \
@@ -420,8 +420,8 @@ portfill.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
 		queue.h prot_base.h tbl_dialup.h tbl_direct.h \
 		tbl_dv_idlcremote.h trx_info.h trx_711.h dev_tap.h \
-		tbl_dv_tappaging.h dev_ied.h tbl_dv_ied.h dev_snpp.h \
-		dev_tnpp.h tbl_dv_tnpp.h dev_pagingreceiver.h \
+		dev_paging.h tbl_dv_tappaging.h dev_ied.h tbl_dv_ied.h \
+		dev_snpp.h dev_tnpp.h tbl_dv_tnpp.h dev_pagingreceiver.h \
 		tbl_dv_pagingreceiver.h dev_wctp.h prot_versacom.h \
 		expresscom.h ctistring.h
 portglob.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \

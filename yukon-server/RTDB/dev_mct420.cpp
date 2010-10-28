@@ -169,6 +169,42 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
     return NoError;
 }
 
+string Mct420Device::decodeDisconnectStatus(const DSTRUCT &DSt)
+{
+    //  The MCT-420 supports all of the MCT-410's statuses
+    string resultStr = Mct410Device::decodeDisconnectStatus(DSt);
+
+    //  and adds load side voltage detection as well
+    if( DSt.Message[0] & 0x40 )
+    {
+        resultStr += "Load side voltage detected\n";
+    }
+
+    return resultStr;
+}
+
+
+//  I wanted to keep devicetypes.h away from everything else...
+//    In The Year 2000, we shouldn't have to compare against types, but that's where we're at right now
+#include "devicetypes.h"
+
+bool Mct420Device::isSupported(const Mct410Device::Features feature) const
+{
+    switch( feature )
+    {
+        case Feature_DisconnectCollar:
+        {
+            //  this is the only MCT-420 that supports the collar right now
+            return getType() == TYPEMCT420FL;
+        }
+        default:
+        {
+            return Mct410Device::isSupported(feature);
+        }
+    }
+}
+
+
 }
 }
 

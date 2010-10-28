@@ -3,8 +3,6 @@
 #include "dev_mct4xx.h"
 #include "dev_mct410_commands.h"
 
-#include "boost/ptr_container/ptr_map.hpp"
-
 namespace Cti {
 namespace Devices {
 
@@ -22,9 +20,9 @@ private:
     static const ConfigPartsList  _config_parts;
     static       ConfigPartsList  initConfigParts();
 
-    static string describeStatusAndEvents(unsigned char *buf);
+    static std::string describeStatusAndEvents(unsigned char *buf);
 
-    static CtiDate parseDateValue(string date_str);
+    static CtiDate parseDateValue(std::string date_str);
 
     struct daily_read_info_t
     {
@@ -79,14 +77,6 @@ private:
         SspecRev_BetaHi =  200,  //  rev 20.0
     };
 
-    enum Features
-    {
-        Feature_HourlyKwh
-    };
-
-    virtual bool isSupported(const Mct410Device::Features f) const;
-
-    virtual bool isSupported(const Mct4xxDevice::Features f) const;
     virtual bool sspecValid(const unsigned sspec, const unsigned rev) const;
 
     void readSspec(const OUTMESS &OutMessage, list<OUTMESS *> &outList) const;
@@ -96,6 +86,15 @@ protected:
     static read_key_store_t initReadKeyStore();
 
     virtual bool getOperation( const UINT &cmd,  BSTRUCT &bst ) const;
+
+    enum Features
+    {
+        Feature_HourlyKwh,
+        Feature_DisconnectCollar
+    };
+
+    virtual bool isSupported(const Mct4xxDevice::Features f) const;
+    virtual bool isSupported(const Mct410Device::Features f) const;
 
     enum Commands
     {
@@ -385,6 +384,13 @@ protected:
     INT decodeGetConfigDisconnect  ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigAddress     ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigPhaseDetect ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+
+    virtual std::string decodeDisconnectConfig(const DSTRUCT &DSt);
+
+    static std::string decodeDisconnectDemandLimitConfig(const int config_byte, double demand_threshhold);
+    static std::string decodeDisconnectCyclingConfig    (const int config_byte, const int disconnect_minutes, const int connect_minutes);
+
+    virtual std::string decodeDisconnectStatus(const DSTRUCT &DSt);
 
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );

@@ -126,6 +126,7 @@ Mct410Device::read_key_store_t Mct410Device::initReadKeyStore()
     readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos,  7, 1, CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay));
     readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos,  9, 1, CtiTableDynamicPaoInfo::Key_MCT_DisconnectMinutes));
     readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos, 10, 1, CtiTableDynamicPaoInfo::Key_MCT_ConnectMinutes));
+    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos, 11, 1, CtiTableDynamicPaoInfo::Key_MCT_Configuration));
 
     return readKeyStore;
 }
@@ -3988,6 +3989,8 @@ INT Mct410Device::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeNow,
 
         CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
         switch( DSt->Message[0] & 0x03 )
         {
             case RawStatus_Connected:               state = StateGroup_Connected;      break;
@@ -4004,130 +4007,177 @@ INT Mct410Device::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeNow,
 
         resultStr  = getName() + " / Disconnect Info:\n";
 
-        if( DSt->Message[0] & 0x04 )
-        {
-            resultStr += "Load limiting mode active\n";
-        }
-        if( DSt->Message[0] & 0x08 )
-        {
-            resultStr += "Cycling mode active, currently ";
-
-            if( DSt->Message[0] & 0x10 )    resultStr += "connected\n";
-            else                            resultStr += "disconnected\n";
-        }
-
-        if( DSt->Message[0] & 0x20 )
-        {
-            resultStr += "Disconnect state uncertain (powerfail during disconnect)\n";
-        }
-
-        if( DSt->Message[1] & 0x02 )
-        {
-            resultStr += "Disconnect error - demand detected after disconnect command sent to collar\n";
-        }
-
-        resultStr += "Disconnect load limit count: " + CtiNumStr(DSt->Message[8]) + string("\n");
+        resultStr += decodeDisconnectStatus(*DSt);
 
         resultStr += getName() + " / Disconnect Config:\n";
 
-        long disconnectaddress = DSt->Message[2] << 16 |
-                                 DSt->Message[3] <<  8 |
-                                 DSt->Message[4];
+        resultStr += decodeDisconnectConfig(*DSt);
 
-        resultStr += "Disconnect receiver address: " + CtiNumStr(disconnectaddress) + string("\n");
-
-        resultStr += "Disconnect load limit connect delay: " + CtiNumStr(DSt->Message[7]) + string(" minutes\n");
-
-        int config_byte = -1;
-
-        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_Disconnect_ConfigReadEnhanced
-            && DSt->Length >= 13 )
-        {
-            config_byte = DSt->Message[11];
-
-            //  threshhold is in units of Wh/minute, so we convert it into kW
-            resultStr += "Disconnect verification threshhold: " + CtiNumStr((float)DSt->Message[12] / 16.667, 3) + string(" kW (" + CtiNumStr(DSt->Message[12]) + " Wh/minute)\n");
-        }
-        else if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
-        {
-            config_byte = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
-        }
-
-        point_info demand_threshhold = getData(DSt->Message + 5, 2, ValueType_DynamicDemand);
-
-        //  adjust for the demand interval
-        demand_threshhold.value *= 3600 / getDemandInterval();
-        //  adjust for the 0.1 kWh factor of getData()
-        demand_threshhold.value /= 10.0;
-
-        //  only the config byte tells us if demand limit mode is really enabled
-        if( config_byte >= 0 )
-        {
-            if( config_byte & 0x04 )
-            {
-                resultStr += "Autoreconnect enabled\n";
-            }
-
-            if( config_byte & 0x08 && demand_threshhold.value )
-            {
-                resultStr += "Demand limit mode enabled\n";
-                resultStr += "Disconnect demand threshold: ";
-                resultStr += CtiNumStr(demand_threshhold.value) + string(" kW\n");
-            }
-            else
-            {
-                resultStr += "Disconnect demand threshold disabled\n";
-            }
-        }
-        else
-        {
-            if( demand_threshhold.value )
-            {
-                resultStr += "Disconnect demand threshold: ";
-                resultStr += CtiNumStr(demand_threshhold.value) + string(" kW\n");
-            }
-            else
-            {
-                resultStr += "Disconnect demand threshold disabled\n";
-            }
-        }
-
-        //  include the cycle information
-        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_Disconnect_Cycle )
-        {
-            if( config_byte >= 0 )
-            {
-                //  cycling only - demand limit mode takes precedence, if it's set
-                if( (config_byte & 0x18) == 0x10 )
-                {
-                    resultStr += "Disconnect cycling mode enabled\n";
-
-                    resultStr += "Cycling mode - disconnect minutes: " + CtiNumStr(DSt->Message[9])  + string("\n");
-                    resultStr += "Cycling mode - connect minutes   : " + CtiNumStr(DSt->Message[10]) + string("\n");
-                }
-                else
-                {
-                    resultStr += "Disconnect cycling mode disabled\n";
-                }
-            }
-            else if( DSt->Message[9] && DSt->Message[10] )
-            {
-                resultStr += "Cycling mode - disconnect minutes: " + CtiNumStr(DSt->Message[9])  + string("\n");
-                resultStr += "Cycling mode - connect minutes   : " + CtiNumStr(DSt->Message[10]) + string("\n");
-            }
-            else
-            {
-                resultStr += "Disconnect cycling mode disabled\n";
-            }
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
         ReturnMsg->setResultString(resultStr);
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
     return status;
+}
+
+
+string Mct410Device::decodeDisconnectStatus(const DSTRUCT &DSt)
+{
+    string resultStr;
+
+    if( DSt.Message[0] & 0x04 )
+    {
+        resultStr += "Load limiting mode active\n";
+    }
+
+    if( DSt.Message[0] & 0x08 )
+    {
+        resultStr += "Cycling mode active, currently ";
+
+        if( DSt.Message[0] & 0x10 )  resultStr += "connected\n";
+        else                         resultStr += "disconnected\n";
+    }
+
+    if( DSt.Message[0] & 0x20 )
+    {
+        resultStr += "Disconnect state uncertain (powerfail during disconnect)\n";
+    }
+
+    if( DSt.Message[1] & 0x02 )
+    {
+        resultStr += "Disconnect error - demand detected after disconnect command sent to collar\n";
+    }
+
+    resultStr += "Disconnect load limit count: " + CtiNumStr(DSt.Message[8]) + string("\n");
+
+    return resultStr;
+}
+
+
+
+string Mct410Device::decodeDisconnectConfig(const DSTRUCT &DSt)
+{
+    string resultStr;
+
+    if( isSupported(Feature_DisconnectCollar) )
+    {
+        long disconnectaddress = DSt.Message[2] << 16 |
+                                 DSt.Message[3] <<  8 |
+                                 DSt.Message[4];
+
+        resultStr += "Disconnect receiver address: " + CtiNumStr(disconnectaddress) + string("\n");
+    }
+
+    resultStr += "Disconnect load limit connect delay: " + CtiNumStr(DSt.Message[7]) + string(" minutes\n");
+
+    int config_byte = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
+
+    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_Disconnect_ConfigReadEnhanced
+        && DSt.Length >= 13 )
+    {
+        //  assign over the top of the DynamicPaoInfo value - it will either match or be more recent
+        //    extractDynamicPaoInfo() gets called AFTER ModelDecode(), so
+        //    the new value won't be available via getDynamicInfo() until after this decode
+        config_byte = DSt.Message[11];
+
+        //  threshhold is in units of Wh/minute, so we convert it into kW
+        resultStr += "Disconnect verification threshhold: " + CtiNumStr((float)DSt.Message[12] / 16.667, 3) + string(" kW (" + CtiNumStr(DSt.Message[12]) + " Wh/minute)\n");
+    }
+
+    point_info demand_threshhold = getData(DSt.Message + 5, 2, ValueType_DynamicDemand);
+
+    //  adjust for the demand interval
+    demand_threshhold.value *= 3600 / getDemandInterval();
+    //  adjust for the 0.1 kWh factor of getData()
+    demand_threshhold.value /= 10.0;
+
+    //  no need to check if it's not supported
+    if( isSupported(Feature_DisconnectCollar) )
+    {
+        if( config_byte >= 0 && config_byte & 0x04 )
+        {
+            resultStr += "Autoreconnect enabled\n";
+        }
+    }
+
+    resultStr += decodeDisconnectDemandLimitConfig(config_byte, demand_threshhold.value);
+
+    //  include the cycle information
+    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_Disconnect_Cycle )
+    {
+        resultStr += decodeDisconnectCyclingConfig(config_byte, DSt.Message[9], DSt.Message[10]);
+    }
+
+    return resultStr;
+}
+
+
+string Mct410Device::decodeDisconnectDemandLimitConfig(const int config_byte, double demand_threshhold)
+{
+    string resultStr;
+
+    //  only the config byte tells us if demand limit mode is really enabled
+    if( config_byte >= 0 )
+    {
+        if( config_byte & 0x08 && demand_threshhold )
+        {
+            resultStr += "Demand limit mode enabled\n";
+            resultStr += "Disconnect demand threshold: ";
+            resultStr += CtiNumStr(demand_threshhold) + string(" kW\n");
+        }
+        else
+        {
+            resultStr += "Disconnect demand threshold disabled\n";
+        }
+    }
+    else
+    {
+        if( demand_threshhold )
+        {
+            resultStr += "Disconnect demand threshold: ";
+            resultStr += CtiNumStr(demand_threshhold) + string(" kW\n");
+        }
+        else
+        {
+            resultStr += "Disconnect demand threshold disabled\n";
+        }
+    }
+
+    return resultStr;
+}
+
+
+string Mct410Device::decodeDisconnectCyclingConfig(const int config_byte, const int disconnect_minutes, const int connect_minutes)
+{
+    string resultStr;
+
+    if( config_byte >= 0 )
+    {
+        //  cycling only - demand limit mode takes precedence, if it's set
+        if( (config_byte & 0x18) == 0x10 )
+        {
+            resultStr += "Disconnect cycling mode enabled\n";
+
+            resultStr += "Cycling mode - disconnect minutes: " + CtiNumStr(disconnect_minutes)  + string("\n");
+            resultStr += "Cycling mode - connect minutes   : " + CtiNumStr(connect_minutes) + string("\n");
+        }
+        else
+        {
+            resultStr += "Disconnect cycling mode disabled\n";
+        }
+    }
+    else if( disconnect_minutes && connect_minutes )
+    {
+        resultStr += "Cycling mode - disconnect minutes: " + CtiNumStr(disconnect_minutes)  + string("\n");
+        resultStr += "Cycling mode - connect minutes   : " + CtiNumStr(connect_minutes) + string("\n");
+    }
+    else
+    {
+        resultStr += "Disconnect cycling mode disabled\n";
+    }
+
+    return resultStr;
 }
 
 
@@ -4380,6 +4430,11 @@ bool Mct410Device::isSupported(const Features feature) const
         {
             return sspecAtLeast(SspecRev_HourlyKwh);
         }
+        case Feature_DisconnectCollar:
+        {
+            //  all MCT-410s support the disconnect collar
+            return true;
+        }
         default:
         {
             return false;
@@ -4402,6 +4457,7 @@ bool Mct410Device::isSupported(const Mct4xxDevice::Features feature) const
         }
         default:
         {
+            //  does not call the parent, since it's a pure virtual
             return false;
         }
     }
