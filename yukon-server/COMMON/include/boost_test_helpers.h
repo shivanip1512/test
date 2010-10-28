@@ -1,3 +1,5 @@
+#include "boost/bind.hpp"
+
 namespace Cti {
 
 template<typename test_fixture>

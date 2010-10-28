@@ -171,14 +171,16 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
 
 string Mct420Device::decodeDisconnectStatus(const DSTRUCT &DSt)
 {
-    //  The MCT-420 supports all of the MCT-410's statuses
-    string resultStr = Mct410Device::decodeDisconnectStatus(DSt);
+    string resultStr;
 
     //  and adds load side voltage detection as well
     if( DSt.Message[0] & 0x40 )
     {
         resultStr += "Load side voltage detected\n";
     }
+
+    //  The MCT-420 supports all of the MCT-410's statuses
+    resultStr += Mct410Device::decodeDisconnectStatus(DSt);
 
     return resultStr;
 }

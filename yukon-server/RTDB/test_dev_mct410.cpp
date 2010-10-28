@@ -5,7 +5,6 @@
 
 #define BOOST_TEST_MAIN "Test dev_mct410"
 #include <boost/test/unit_test.hpp>
-#include <boost/lambda/lambda.hpp>
 
 #include <limits>
 
@@ -603,62 +602,56 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor)
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectStatus)
 {
+    struct test_case
     {
-        test_Mct410Device mct410;
-
-        DSTRUCT DSt;
-
-        DSt.Message[0] = 0x3c;
-        DSt.Message[1] = 0x02;
-        DSt.Message[8] = 123;
-
-        string expected =
-            "Load limiting mode active\n"
-            "Cycling mode active, currently connected\n"
-            "Disconnect state uncertain (powerfail during disconnect)\n"
-            "Disconnect error - demand detected after disconnect command sent to collar\n"
-            "Disconnect load limit count: 123\n";
-
-        string result = mct410.decodeDisconnectStatus(DSt);
-
-        BOOST_CHECK_EQUAL(expected, result);
+        const unsigned char dst_message_0;
+        const unsigned char dst_message_1;
+        const unsigned char dst_message_8;
+        const string expected;
     }
-
+    test_cases[] =
     {
-        test_Mct410Device mct410;
+        {0x3c, 0x02, 123, "Load limiting mode active\n"
+                          "Cycling mode active, currently connected\n"
+                          "Disconnect state uncertain (powerfail during disconnect)\n"
+                          "Disconnect error - demand detected after disconnect command sent to collar\n"
+                          "Disconnect load limit count: 123\n"},
+        {0x3c, 0x02, 123, "Load limiting mode active\n"
+                          "Cycling mode active, currently connected\n"
+                          "Disconnect state uncertain (powerfail during disconnect)\n"
+                          "Disconnect error - demand detected after disconnect command sent to collar\n"
+                          "Disconnect load limit count: 123\n"},
+        {0x1c, 0x00, 199, "Load limiting mode active\n"
+                          "Cycling mode active, currently connected\n"
+                          "Disconnect load limit count: 199\n"},
+        {0x10, 0x00,  17, "Disconnect load limit count: 17\n"},
+    };
 
-        DSTRUCT DSt;
+    const unsigned count = sizeof(test_cases) / sizeof(*test_cases);
 
-        DSt.Message[0] = 0x1c;
-        DSt.Message[1] = 0x00;
-        DSt.Message[8] = 199;
-
-        string expected =
-            "Load limiting mode active\n"
-            "Cycling mode active, currently connected\n"
-            "Disconnect load limit count: 199\n";
-
-        string result = mct410.decodeDisconnectStatus(DSt);
-
-        BOOST_CHECK_EQUAL(expected, result);
-    }
-
+    struct my_test
     {
-        test_Mct410Device mct410;
+        typedef test_case test_case_type;
+        typedef string    result_type;
 
-        DSTRUCT DSt;
+        result_type operator()(const test_case_type &tc)
+        {
+            test_Mct410Device mct410;
 
-        DSt.Message[0] = 0x10;
-        DSt.Message[1] = 0x00;
-        DSt.Message[8] = 17;
+            DSTRUCT DSt;
 
-        string expected =
-            "Disconnect load limit count: 17\n";
+            DSt.Message[0] = tc.dst_message_0;
+            DSt.Message[1] = tc.dst_message_1;
+            DSt.Message[8] = tc.dst_message_8;
 
-        string result = mct410.decodeDisconnectStatus(DSt);
+            return mct410.decodeDisconnectStatus(DSt);
+        }
+    };
 
-        BOOST_CHECK_EQUAL(expected, result);
-    }
+    Cti::TestRunner<my_test> tr(test_cases, test_cases + count);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(tr.expected_begin(), tr.expected_end(),
+                                  tr.results_begin(),  tr.results_end());
 }
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectDemandLimitConfig)

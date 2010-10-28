@@ -14,6 +14,7 @@ struct test_Mct420Device : Mct420Device
 {
     using CtiTblPAOLite::_type;
     using Mct420Device::decodeDisconnectConfig;
+    using Mct420Device::decodeDisconnectStatus;
 
     enum test_Features
     {
@@ -168,5 +169,60 @@ BOOST_AUTO_TEST_CASE(test_dev_mct420_decodeDisconnectConfig)
     BOOST_CHECK_EQUAL_COLLECTIONS(tr.expected_begin(), tr.expected_end(),
                                   tr.results_begin(),  tr.results_end());
 
+}
+
+
+BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectStatus)
+{
+    struct test_case
+    {
+        const unsigned char dst_message_0;
+        const unsigned char dst_message_1;
+        const unsigned char dst_message_8;
+        const string expected;
+    }
+    test_cases[] =
+    {
+        {0x3c, 0x02, 123, "Load limiting mode active\n"
+                          "Cycling mode active, currently connected\n"
+                          "Disconnect state uncertain (powerfail during disconnect)\n"
+                          "Disconnect error - demand detected after disconnect command sent to collar\n"
+                          "Disconnect load limit count: 123\n"},
+        {0x7c, 0x02, 124, "Load side voltage detected\n"
+                          "Load limiting mode active\n"
+                          "Cycling mode active, currently connected\n"
+                          "Disconnect state uncertain (powerfail during disconnect)\n"
+                          "Disconnect error - demand detected after disconnect command sent to collar\n"
+                          "Disconnect load limit count: 124\n"},
+        {0x10, 0x00, 125, "Disconnect load limit count: 125\n"},
+        {0x50, 0x00, 126, "Load side voltage detected\n"
+                          "Disconnect load limit count: 126\n"},
+    };
+
+    const unsigned count = sizeof(test_cases) / sizeof(*test_cases);
+
+    struct my_test
+    {
+        typedef test_case test_case_type;
+        typedef string    result_type;
+
+        result_type operator()(const test_case_type &tc)
+        {
+            test_Mct420Device mct420;
+
+            DSTRUCT DSt;
+
+            DSt.Message[0] = tc.dst_message_0;
+            DSt.Message[1] = tc.dst_message_1;
+            DSt.Message[8] = tc.dst_message_8;
+
+            return mct420.decodeDisconnectStatus(DSt);
+        }
+    };
+
+    Cti::TestRunner<my_test> tr(test_cases, test_cases + count);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(tr.expected_begin(), tr.expected_end(),
+                                  tr.results_begin(),  tr.results_end());
 }
 
