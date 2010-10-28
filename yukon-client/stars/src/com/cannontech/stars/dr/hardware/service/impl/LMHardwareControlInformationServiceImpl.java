@@ -31,14 +31,13 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     public boolean startEnrollment(int inventoryId, int loadGroupId, int accountId,
             int relay, int programId, LiteYukonUser currentUser, boolean useHardwardAddressing) {
         Validate.notNull(currentUser, "CurrentUser cannot be null");
-        List<LMHardwareControlGroup> controlInformationList;
         /*Shouldn't already be an entry, but this might be a repeat enrollment.  Check for existence*/
         try {
-            controlInformationList = 
+            LMHardwareControlGroup existingEnrollment =
                 lmHardwareControlGroupDao
-                    .getCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(inventoryId, 
-                                                                               programId, 
-                                                                               accountId);
+                    .findCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(inventoryId, 
+                                                                                programId, 
+                                                                                accountId);
             Instant now = new Instant();
 
             // Clear all the opt outs for the enrolled inventory
@@ -53,12 +52,11 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
              * We need to allow this method to do stops as well as starts to help migrate from legacy STARS systems and to
              * properly log repetitive enrollments.
              */
-            for(LMHardwareControlGroup existingEnrollment : controlInformationList) {
-                if (existingEnrollment.getLmGroupId() != loadGroupId || existingEnrollment.getRelay() != relay) {
-                    existingEnrollment.setGroupEnrollStop(now);
-                    existingEnrollment.setUserIdSecondAction(currentUser.getUserID());
-                    lmHardwareControlGroupDao.update(existingEnrollment);
-                }
+            if (existingEnrollment != null &&
+                (existingEnrollment.getLmGroupId() != loadGroupId || existingEnrollment.getRelay() != relay)) {
+                existingEnrollment.setGroupEnrollStop(now);
+                existingEnrollment.setUserIdSecondAction(currentUser.getUserID());
+                lmHardwareControlGroupDao.update(existingEnrollment);
             }
 
             /*Do the start*/

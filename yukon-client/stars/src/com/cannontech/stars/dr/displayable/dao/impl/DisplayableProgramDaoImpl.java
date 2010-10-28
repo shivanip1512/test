@@ -67,9 +67,9 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
         
         // Filter Rule #2
         boolean containsOnlyNotEnrolledHistory = controlHistoryService.containsOnlyNotEnrolledHistory(controlHistoryList);
-        if (!past &&applyFilters && containsOnlyNotEnrolledHistory) return null;
+        if (!past && applyFilters && containsOnlyNotEnrolledHistory) return null;
         
-        List<DisplayableControlHistory> displayableControlHistoryList = new ArrayList<DisplayableControlHistory>(controlHistoryList.size());
+        List<DisplayableControlHistory> displayableControlHistoryList = Lists.newArrayListWithExpectedSize(controlHistoryList.size());
 
         for (final ControlHistory controlHistory : controlHistoryList) {
             DisplayableControlHistoryType displayableType = null;
@@ -120,15 +120,13 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
         return getForAccount(accountId, userContext, controlPeriod, applyFilters, programList, past);
     }
 
-    private List<DisplayableProgram> getForAccount(int accountId,
-                                              YukonUserContext userContext,
-                                              ControlPeriod controlPeriod,
-                                              boolean applyFilters,
-                                              List<Program> programList,
-                                              boolean past) {
+    private List<DisplayableProgram> getForAccount(int accountId, YukonUserContext userContext,
+                                                   ControlPeriod controlPeriod, boolean applyFilters,
+                                                   List<Program> programList, boolean past) {
+        
         ListMultimap<Integer,ControlHistory> controlHistoryMap = controlHistoryDao.getControlHistory(accountId, userContext, controlPeriod, past);
 
-        final List<DisplayableProgram> displayableProgramList = new ArrayList<DisplayableProgram>(programList.size());
+        final List<DisplayableProgram> displayableProgramList = Lists.newArrayListWithExpectedSize(programList.size());
 
         for (final Program program : programList) {
             Integer programId = program.getProgramId();

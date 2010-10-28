@@ -233,12 +233,11 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                 try {
                     Transaction.createTransaction( Transaction.UPDATE, configDB ).execute();
                     
-                    List<LMHardwareControlGroup> existingGroups = 
-                        lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(liteHw.getInventoryID(), programId, liteHw.getAccountID());
-                    if (existingGroups.size() > 0) {
-                        LMHardwareControlGroup harwareControlGroup = existingGroups.get(0);
-                        harwareControlGroup.setLmGroupId(groupMapping.getLoadGroupID());
-                        lmHardwareControlGroupDao.update(harwareControlGroup);
+                    LMHardwareControlGroup existingEnrollment = 
+                        lmHardwareControlGroupDao.findCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(liteHw.getInventoryID(), programId, liteHw.getAccountID());
+                    if (existingEnrollment != null) {
+                        existingEnrollment.setLmGroupId(groupMapping.getLoadGroupID());
+                        lmHardwareControlGroupDao.update(existingEnrollment);
                     } else {
                         configurationSet.add( hwsToAdjust.get(i) );
                         numFailure++;

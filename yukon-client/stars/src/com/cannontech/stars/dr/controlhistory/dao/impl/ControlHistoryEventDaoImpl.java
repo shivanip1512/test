@@ -32,8 +32,10 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
     private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     protected static class Holder {
-        int groupId;
+        int accountId;
         int inventoryId;
+        int groupId;
+        int programId;
     }
     
     public ControlHistoryEvent getLastControlHistoryEntry(int accountId, int programId, int inventoryId, YukonUserContext userContext, boolean past){
@@ -44,7 +46,9 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
             StarsLMControlHistory starsLMControlHistory = getEventsByGroup(accountId, loadGroup.getLoadGroupId(), inventoryId, ControlPeriod.ALL, userContext, past);
             
             Holder holder = new Holder();
+            holder.accountId = accountId;
             holder.inventoryId = inventoryId;
+            holder.programId = programId;
             holder.groupId = loadGroup.getLoadGroupId();
 
             List<ControlHistoryEvent> controlHistoryEventList = toEventList(programId, starsLMControlHistory, userContext);

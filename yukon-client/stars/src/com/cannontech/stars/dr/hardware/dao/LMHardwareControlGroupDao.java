@@ -70,7 +70,7 @@ public interface LMHardwareControlGroupDao {
     
     public List<LMHardwareControlGroup> getCurrentEnrollmentByProgramIdAndAccountId(int programId, int accountId);
     
-    public List<LMHardwareControlGroup> getCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(int inventoryId, int programId, int accountId);    
+    public LMHardwareControlGroup findCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(int inventoryId, int programId, int accountId);    
     
     public List<LMHardwareControlGroup> getByInventoryIdAndAccountIdAndType(int inventoryId, int accountId, int type);
 

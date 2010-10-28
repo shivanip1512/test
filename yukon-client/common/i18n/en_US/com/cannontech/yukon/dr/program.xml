@@ -8,6 +8,7 @@
     <entry key="yukon.dr.program.displayname.chanceOfControl.UNLIKELY">Unlikely</entry>
 
     <entry key="yukon.dr.program.displayname.controlHistoryStatus.NOT_ENROLLED">Not Enrolled</entry>
+    <entry key="yukon.dr.program.displayname.controlHistoryStatus.VIRTUALLY_ENROLLED">Enrolled in a virtual program</entry>
     <entry key="yukon.dr.program.displayname.controlHistoryStatus.OPTED_OUT">Opted Out</entry>
 	<entry key="yukon.dr.program.displayname.controlHistoryStatus.CONTROLLED_PREVIOUSLY">Last controlled: {0}</entry>
     <entry key="yukon.dr.program.displayname.controlHistoryStatus.CONTROLLED_TODAY">Controlled today</entry>

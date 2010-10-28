@@ -54,7 +54,6 @@ import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
-import com.cannontech.stars.dr.util.ControlGroupUtil;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.ServerUtils;
@@ -942,12 +941,15 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
     @Override
     public boolean isProgramEnrolled(final int customerAccountId, final int inventoryId, final int programId) {
-        final List<LMHardwareControlGroup> entryList = 
-                    lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(inventoryId, 
-                                                                                                        programId,
-                                                                                                        customerAccountId);
-        boolean isProgramEnrolled = ControlGroupUtil.isEnrolled(entryList, new Instant());
-        return isProgramEnrolled;
+        final LMHardwareControlGroup currentEnrollment = 
+                    lmHardwareControlGroupDao.findCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(inventoryId, 
+                                                                                                         programId,
+                                                                                                         customerAccountId);
+        
+        if (currentEnrollment != null) {
+            return currentEnrollment.isActiveEnrollment();
+        }
+        return false;
     }
     
     @Autowired

@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
@@ -120,8 +121,8 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT InventoryId, LMGroupId, AccountId, ProgramId");
         sql.append("FROM LMHardwareControlGroup");
-        sql.append("WHERE AccountID").eq(accountId);
-        sql.append("  AND Type").eq(1);
+        sql.append("WHERE AccountId").eq(accountId);
+        sql.append("  AND Type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
         
         if(!past) {
             sql.append("AND GroupEnrollStop IS NULL");
@@ -133,10 +134,10 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
             @Override
             public DistinctEnrollment mapRow(ResultSet rs, int rowNum) throws SQLException {
                 DistinctEnrollment enrollment = new DistinctEnrollment();
-                enrollment.setAccountId(rs.getInt("accountId"));
-                enrollment.setInventoryId(rs.getInt("inventoryId"));
+                enrollment.setAccountId(rs.getInt("AccountId"));
+                enrollment.setInventoryId(rs.getInt("InventoryId"));
                 enrollment.setGroupId(rs.getInt("LMGroupId"));
-                enrollment.setProgramId(rs.getInt("programId"));
+                enrollment.setProgramId(rs.getInt("ProgramId"));
                 return enrollment;
             }
         });
@@ -483,19 +484,22 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         return yukonJdbcTemplate.query(selectCurrentEnrollmentByProgramIdAndAccountId, rowMapper);
     }      
 
-    public List<LMHardwareControlGroup> 
-                getCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(int inventoryId, 
-                                                                          int programId, 
-                                                                          int accountId) {
-        SqlStatementBuilder selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId = new SqlStatementBuilder();
-        selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId.appendFragment(selectSql);
-        selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId.append("WHERE InventoryId").eq(inventoryId);
-        selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId.append("AND ProgramId").eq(programId);
-        selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId.append("AND AccountId").eq(accountId);
-        selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId.append("AND GroupEnrollStop IS NULL");
-        selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId.append("AND NOT GroupEnrollStart IS NULL");
+    public LMHardwareControlGroup 
+                findCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(int inventoryId, int programId, int accountId) {
 
-        return yukonJdbcTemplate.query(selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId, rowMapper);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(selectSql);
+        sql.append("WHERE InventoryId").eq(inventoryId);
+        sql.append("AND ProgramId").eq(programId);
+        sql.append("AND AccountId").eq(accountId);
+        sql.append("AND GroupEnrollStop IS NULL");
+        sql.append("AND NOT GroupEnrollStart IS NULL");
+
+        try {
+            return yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }    
     
     public List<LMHardwareControlGroup> getCurrentOptOutByProgramIdAndAccountId(int programId, 
@@ -727,6 +731,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         }
         sql.append("  AND (GroupEnrollStop IS NULL");
         sql.append("       OR GroupEnrollStop").gte(controlHistoryInterval.getStart()).append(")");
+        sql.append("  AND Type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
         
         List<LMHardwareControlGroup> enrollments = yukonJdbcTemplate.query(sql, createRowMapper());
         return enrollments;
