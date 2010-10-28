@@ -26,7 +26,7 @@ public class EventLogCategoryValidator extends SimpleValidator<EventLogCategoryB
         LocalDate stopDate = eventLogCategoryBackingBean.getStopDate();
         if (startDate != null && stopDate != null && startDate.isAfter(stopDate)) {
             YukonValidationUtils.rejectValues(errors,
-                                              "yukon.web.modules.support.byCategory.startDateMustBeBeforeStopDate",
+                                              "yukon.web.modules.support.startDateMustBeBeforeStopDate",
                                               "startDate",
                                               "stopDate");
         }
