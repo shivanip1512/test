@@ -3,12 +3,17 @@ package com.cannontech.analysis.tablemodel;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.Instant;
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.survey.model.Question;
 import com.cannontech.common.survey.model.Survey;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -16,8 +21,12 @@ import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.SurveyResult;
+import com.cannontech.stars.dr.program.service.ProgramEnrollment;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 public class SurveyResultsDetailModel extends
         SurveyResultsModelBase<SurveyResultsDetailModel.ModelRow> {
@@ -32,7 +41,10 @@ public class SurveyResultsDetailModel extends
     private InventoryDao inventoryDao;
     private CustomerAccountDao customerAccountDao;
 
-    public static class ModelRow implements Cloneable {
+    private final static MessageSourceResolvable noControlDuringOptOut =
+        new YukonMessageSourceResolvable("yukon.web.modules.survey.report.noControlDuringOptOut");
+
+    public static class ModelRow {
         public String accountNumber;
         public String serialNumber;
         public String altTrackingNumber;
@@ -40,29 +52,48 @@ public class SurveyResultsDetailModel extends
         public Date scheduledDate;
         public Date startDate;
         public Date endDate;
-        public String loadProgram;
+        public Object loadProgram;
         public String gear;
+
+        private ModelRow() {}
+        private ModelRow(ModelRow toCopy) {
+            accountNumber = toCopy.accountNumber;
+            serialNumber = toCopy.serialNumber;
+            altTrackingNumber = toCopy.altTrackingNumber;
+            reason = toCopy.reason;
+            scheduledDate = toCopy.scheduledDate;
+            startDate = toCopy.startDate;
+            endDate = toCopy.endDate;
+        }
     }
 
     public void doLoadData() {
+        ReadableInstant startDate = getStartDateAsInstant();
         if (startDate == null) {
-            startDate = new Instant(0).toDate();
+            startDate = new Instant(0);
         }
 
+        Multimap<SurveyResult, Integer> assignedProgramIdsBySurveyResult = ArrayListMultimap.create();
+        Map<Integer, List<ProgramEnrollment>> enrollmentsBySurveyResultId = Maps.newHashMap();
         List<SurveyResult> surveyResults =
             optOutSurveyDao.findSurveyResults(surveyId, questionId, answerIds,
                                               includeOtherAnswers, includeUnanswered,
-                                              new Instant(startDate), new Instant(endDate),
+                                              startDate, getStopDateAsInstant(),
                                               accountNumber, deviceSerialNumber);
 
-        Survey survey = surveyDao.getSurveyById(surveyId);
-        Question question = surveyDao.getQuestionById(questionId);
-        String baseKey = survey.getBaseKey(question);
         Multimap<SurveyResult, OptOutEvent> optOutsBySurveyResult =
             optOutEventDao.getOptOutsBySurveyResult(surveyResults);
         List<Integer> inventoryIds = Lists.newArrayList();
         List<Integer> accountIds = Lists.newArrayList();
         for (SurveyResult result : surveyResults) {
+            List<ProgramEnrollment> enrollments =
+                enrollmentDao.getHistoricalEnrollmentsByInventoryId(result.getInventoryId(),
+                                                                    result.getWhenTaken());
+            enrollmentsBySurveyResultId.put(result.getSurveyResultId(), enrollments);
+            for (ProgramEnrollment enrollment : enrollments) {
+                assignedProgramIdsBySurveyResult.put(result, enrollment.getAssignedProgramId());
+            }
+
             Integer accountId = result.getAccountId();
             if (accountId != null && accountId != 0) {
                 accountIds.add(result.getAccountId());
@@ -72,11 +103,35 @@ public class SurveyResultsDetailModel extends
             }
         }
 
+        Survey survey = surveyDao.getSurveyById(surveyId);
+        Question question = surveyDao.getQuestionById(questionId);
+        String baseKey = survey.getBaseKey(question);
+
+        Map<Integer, Integer> programIdsByAssignedProgramId =
+            assignedProgramDao.getProgramIdsByAssignedProgramIds(assignedProgramIdsBySurveyResult.values());
+        Set<Integer> programIdsToUse = null;
+        if (programIds != null && !programIds.isEmpty()) {
+            programIdsToUse = Sets.newHashSet(programIds);
+        }
+
         Map<Integer, HardwareSummary> hardwareSummariesById =
             inventoryDao.findHardwareSummariesById(inventoryIds);
         Map<Integer, CustomerAccountWithNames> accountsByAccountId =
             customerAccountDao.getAccountsWithNamesByAccountId(accountIds);
         for (SurveyResult result : surveyResults) {
+            List<ProgramEnrollment> enrollments = enrollmentsBySurveyResultId.get(result.getSurveyResultId());
+            List<ProgramControlHistory> programsControlledDuringOptOut = Lists.newArrayList();
+            for (ProgramEnrollment enrollment : enrollments) {
+                int programId = programIdsByAssignedProgramId.get(enrollment.getAssignedProgramId());
+                if (programIdsToUse == null || programIdsToUse.contains(programId)) {
+                    ProgramControlHistory hist =
+                        loadControlProgramDao.findHistoryForProgramAtTime(programId, result.getWhenTaken());
+                    if (hist != null) {
+                        programsControlledDuringOptOut.add(hist);
+                    }
+                }
+            }
+
             for (OptOutEvent event : optOutsBySurveyResult.get(result)) {
                 ModelRow row = new ModelRow();
                 row.accountNumber = result.getAccountNumber();
@@ -92,10 +147,18 @@ public class SurveyResultsDetailModel extends
                 row.startDate = event.getStartDate().toDate();
                 row.endDate = event.getStopDate().toDate();
 
-                row.loadProgram = "TODO: program";
-                row.gear = "TODO: gear";
-
-                data.add(row);
+                if (programsControlledDuringOptOut.isEmpty()) {
+                    row.loadProgram = noControlDuringOptOut;
+                    row.gear = "";
+                    data.add(row);
+                } else {
+                    for (ProgramControlHistory hist : programsControlledDuringOptOut) {
+                        ModelRow programRow = new ModelRow(row);
+                        programRow.loadProgram = hist.getProgramName();
+                        programRow.gear = hist.getGearName();
+                        data.add(programRow);
+                    }
+                }
             }
         }
     }
@@ -124,10 +187,6 @@ public class SurveyResultsDetailModel extends
 
     public void setDeviceSerialNumber(String deviceSerialNumber) {
         this.deviceSerialNumber = deviceSerialNumber;
-    }
-
-    public static void setTitle(String title) {
-        SurveyResultsDetailModel.title = title;
     }
 
     @Autowired

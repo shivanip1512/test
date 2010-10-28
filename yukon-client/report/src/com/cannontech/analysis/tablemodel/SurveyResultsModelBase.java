@@ -1,6 +1,5 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,19 +8,24 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
+import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
+import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
 import com.cannontech.stars.dr.optout.model.SurveyResult;
 import com.google.common.collect.Lists;
 
-public abstract class SurveyResultsModelBase<T> extends BareReportModelBase<T> {
+public abstract class SurveyResultsModelBase<T> extends BareDatedReportModelBase<T> {
     protected YukonJdbcTemplate yukonJdbcTemplate;
     protected SurveyDao surveyDao;
     protected OptOutSurveyDao optOutSurveyDao;
+    protected LoadControlProgramDao loadControlProgramDao;
+    protected EnrollmentDao enrollmentDao;
+    protected AssignedProgramDao assignedProgramDao;
+
 
     // inputs
     protected int surveyId;
-    protected Date startDate;
-    protected Date endDate;
     protected int questionId;
     protected List<Integer> answerIds;
     protected boolean includeOtherAnswers;
@@ -50,22 +54,6 @@ public abstract class SurveyResultsModelBase<T> extends BareReportModelBase<T> {
 
     public void setSurveyId(int surveyId) {
         this.surveyId = surveyId;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
     }
 
     public int getQuestionId() {
@@ -140,5 +128,20 @@ public abstract class SurveyResultsModelBase<T> extends BareReportModelBase<T> {
     @Autowired
     public void setOptOutSurveyDao(OptOutSurveyDao optOutSurveyDao) {
         this.optOutSurveyDao = optOutSurveyDao;
+    }
+
+    @Autowired
+    public void setLoadControlProgramDao(LoadControlProgramDao loadControlProgramDao) {
+        this.loadControlProgramDao = loadControlProgramDao;
+    }
+
+    @Autowired
+    public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
+        this.enrollmentDao = enrollmentDao;
+    }
+
+    @Autowired
+    public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
+        this.assignedProgramDao = assignedProgramDao;
     }
 }

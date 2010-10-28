@@ -94,7 +94,7 @@ public class SurveyReportController {
         @Override
         protected void doValidation(ReportConfig reportConfig, Errors errors) {
             Date start = reportConfig.getStartDate();
-            Date end = reportConfig.getEndDate();
+            Date end = reportConfig.getStopDate();
             if (start != null && end != null && start.after(end)) {
                 errors.reject("startTimeNotBeforeStopTime");
             }
@@ -112,7 +112,7 @@ public class SurveyReportController {
     @RequestMapping
     public String config(ModelMap model, int surveyId,
             YukonUserContext userContext) {
-        Survey survey = verifyEditable(surveyId, userContext);
+        Survey survey = verifyEnergyCompany(surveyId, userContext);
         model.addAttribute("survey", survey);
         ReportConfig reportConfig = new ReportConfig();
         reportConfig.setSurveyId(surveyId);
@@ -141,7 +141,7 @@ public class SurveyReportController {
             BindingResult bindingResult, FlashScope flashScope,
             YukonUserContext userContext) throws Exception {
         int surveyId = reportConfig.getSurveyId();
-        Survey survey = verifyEditable(surveyId, userContext);
+        Survey survey = verifyEnergyCompany(surveyId, userContext);
         model.addAttribute("survey", survey);
         Question question = surveyDao.getQuestionById(reportConfig.getQuestionId());
         model.addAttribute("question", question);
@@ -202,18 +202,13 @@ public class SurveyReportController {
         return "surveyReport/report.jsp";
     }
 
-    private Survey verifyEditable(Survey survey, YukonUserContext userContext) {
+    private Survey verifyEnergyCompany(int surveyId, YukonUserContext userContext) {
+        Survey survey = surveyDao.getSurveyById(surveyId);
         LiteEnergyCompany energyCompany =
             energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
         if (energyCompany.getEnergyCompanyID() != survey.getEnergyCompanyId()) {
             throw new NotAuthorizedException("energy company mismatch");
         }
-        return survey;
-    }
-
-    private Survey verifyEditable(int surveyId, YukonUserContext userContext) {
-        Survey survey = surveyDao.getSurveyById(surveyId);
-        verifyEditable(survey, userContext);
         return survey;
     }
 
@@ -230,7 +225,7 @@ public class SurveyReportController {
         PropertyEditor dayEndDateEditor =
             datePropertyEditorFactory.getPropertyEditor(DateOnlyMode.END_OF_DAY, userContext);
         binder.registerCustomEditor(Date.class, "startDate", dayStartDateEditor);
-        binder.registerCustomEditor(Date.class, "endDate", dayEndDateEditor);
+        binder.registerCustomEditor(Date.class, "stopDate", dayEndDateEditor);
     }
 
     @Autowired

@@ -10,7 +10,7 @@ public class ReportConfig {
     private int surveyId;
     private String reportType;
     private Date startDate;
-    private Date endDate;
+    private Date stopDate;
     private int questionId;
     private List<Integer> answerIds = Lists.newArrayList();
     private boolean includeOtherAnswers;
@@ -43,12 +43,12 @@ public class ReportConfig {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
-        return endDate;
+    public Date getStopDate() {
+        return stopDate;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setStopDate(Date stopDate) {
+        this.stopDate = stopDate;
     }
 
     public int getQuestionId() {

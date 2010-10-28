@@ -8,14 +8,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.Instant;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.joda.time.ReadableInstant;
 
 import com.cannontech.common.survey.model.Question;
 import com.cannontech.common.survey.model.Survey;
-import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
-import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
-import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.optout.model.SurveyResult;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.google.common.collect.ArrayListMultimap;
@@ -27,10 +24,6 @@ import com.google.common.collect.Sets;
 
 public class SurveyResultsSummaryModel extends
         SurveyResultsModelBase<SurveyResultsSummaryModel.ModelRow> {
-    private LoadControlProgramDao loadControlProgramDao;
-    private EnrollmentDao enrollmentDao;
-    private AssignedProgramDao assignedProgramDao;
-
     // inputs
     // all inputs are covered by base class
 
@@ -92,8 +85,9 @@ public class SurveyResultsSummaryModel extends
     }
 
     public void doLoadData() {
+        ReadableInstant startDate = getStartDateAsInstant();
         if (startDate == null) {
-            startDate = new Instant(0).toDate();
+            startDate = new Instant(0);
         }
 
         Multimap<SurveyResult, Integer> assignedProgramIdsBySurveyResult = ArrayListMultimap.create();
@@ -101,7 +95,7 @@ public class SurveyResultsSummaryModel extends
         List<SurveyResult> surveyResults =
             optOutSurveyDao.findSurveyResults(surveyId, questionId, answerIds,
                                               includeOtherAnswers, includeUnanswered,
-                                              new Instant(startDate), new Instant(endDate),
+                                              startDate, getStopDateAsInstant(),
                                               null, null);
         for (SurveyResult result : surveyResults) {
             List<ProgramEnrollment> enrollments =
@@ -181,24 +175,5 @@ public class SurveyResultsSummaryModel extends
     @Override
     public String getTitle() {
         return title;
-    }
-
-    public static void setTitle(String title) {
-        SurveyResultsSummaryModel.title = title;
-    }
-
-    @Autowired
-    public void setLoadControlProgramDao(LoadControlProgramDao loadControlProgramDao) {
-        this.loadControlProgramDao = loadControlProgramDao;
-    }
-
-    @Autowired
-    public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
-        this.enrollmentDao = enrollmentDao;
-    }
-
-    @Autowired
-    public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
-        this.assignedProgramDao = assignedProgramDao;
     }
 }

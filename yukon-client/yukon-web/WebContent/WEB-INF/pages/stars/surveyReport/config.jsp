@@ -157,7 +157,7 @@ function updateFieldsFromBackingBean() {
             <tags:dateInputCalendar fieldName="startDate" springInput="true"/>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".endDate">
-            <tags:dateInputCalendar fieldName="endDate" springInput="true"/>
+            <tags:dateInputCalendar fieldName="stopDate" springInput="true"/>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".question">
             <form:select id="questionSelect" path="questionId" onchange="questionChanged()">

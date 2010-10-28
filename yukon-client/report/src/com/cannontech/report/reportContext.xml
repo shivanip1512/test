@@ -863,7 +863,7 @@
                     </property>
                 </bean>
                 <bean class="com.cannontech.web.input.InputBase">
-                    <property name="field" value="endDate"/>
+                    <property name="field" value="stopDate"/>
                     <property name="displayName" value="End Date"/>
                     <property name="type">
                       <bean class="com.cannontech.web.input.type.DateType"/>
@@ -929,7 +929,7 @@
                     </property>
                 </bean>
                 <bean class="com.cannontech.web.input.InputBase">
-                    <property name="field" value="endDate"/>
+                    <property name="field" value="stopDate"/>
                     <property name="displayName" value="End Date"/>
                     <property name="type">
                       <bean class="com.cannontech.web.input.type.DateType"/>

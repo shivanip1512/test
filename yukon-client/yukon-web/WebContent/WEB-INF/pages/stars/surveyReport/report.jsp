@@ -21,11 +21,11 @@
         </c:if>
     </tags:nameValue2>
     <tags:nameValue2 nameKey=".endDate">
-        <c:if test="${empty reportConfig.endDate}">
+        <c:if test="${empty reportConfig.stopDate}">
             <i:inline key=".noEndDate"/>
         </c:if>
-        <c:if test="${!empty reportConfig.endDate}">
-            <cti:formatDate type="DATEHM" value="${reportConfig.endDate}"/>
+        <c:if test="${!empty reportConfig.stopDate}">
+            <cti:formatDate type="DATEHM" value="${reportConfig.stopDate}"/>
         </c:if>
     </tags:nameValue2>
     <tags:nameValue2 nameKey=".question">
