@@ -3,9 +3,9 @@ package com.cannontech.database.data.pao;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
 public enum VoltageRegulatorType implements DatabaseRepresentationSource {
-	LOAD_TAP_CHANGER("Load Tap Changer", "Load Tap Changer"), //left as lower case b/c that is how it is in DB currently
-	GANG_OPERATED("GANGOPERATED", "Gang Operated"),
-	PHASE_OPERATED("PHASEOPERATED", "Phase Operated"),
+	LOAD_TAP_CHANGER("LTC", "Load Tap Changer"), //left as lower case b/c that is how it is in DB currently
+	GANG_OPERATED("GO_REGULATOR", "Gang Operated"),
+	PHASE_OPERATED("PO_REGULATOR", "Phase Operated"),
 	;
 	
 	private String dbValue;
