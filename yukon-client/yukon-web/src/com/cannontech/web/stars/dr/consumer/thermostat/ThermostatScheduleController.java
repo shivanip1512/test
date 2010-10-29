@@ -42,6 +42,7 @@ import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
+import com.google.common.collect.Lists;
 
 /**
  * Controller for Consumer-side Thermostat schedule operations
@@ -75,7 +76,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         AccountThermostatSchedule defaultSchedule = null;
         int accountId = account.getAccountId();
         if (scheduleId != null) {
-        	
         	schedule = accountThermostatScheduleDao.findByIdAndAccountId(scheduleId, accountId);
         	if (!schedulableThermostatType.getSupportedScheduleModes().contains(schedule.getThermostatScheduleMode())) {
         		throw new IllegalStateException("Thermostat type " + schedulableThermostatType + " does not support schedule mode " + schedule.getThermostatScheduleMode());
@@ -84,7 +84,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 
         // first try to get specific schedule asked for
         if (scheduleId != null) {
-        	
         	schedule = accountThermostatScheduleDao.findByIdAndAccountId(scheduleId, accountId);
         	if (schedule != null && !schedulableThermostatType.getSupportedScheduleModes().contains(schedule.getThermostatScheduleMode())) {
         		throw new IllegalStateException("Thermostat type " + schedulableThermostatType + " does not support schedule mode " + schedule.getThermostatScheduleMode());
@@ -94,20 +93,36 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         // next try to get the schedule the thermostat is currently associated with (or the default if none)
         // or use the default schedule as a template if "createAsNew"
         if (schedule == null) {
-        	
         	if (BooleanUtils.isTrue(createAsNew)) {
-        		
         		schedule = thermostatService.getAccountThermostatScheduleTemplate(accountId, schedulableThermostatType);
-        		
         	} else {
-        		
         		schedule = accountThermostatScheduleDao.findByInventoryId(thermostat.getId());
         		if (schedule == null) {
         			schedule = thermostatService.getAccountThermostatScheduleTemplate(accountId, schedulableThermostatType);
         		}
         	}
-        	
         }
+        
+        //make sure the schedule has entries for each time of week associated with its current mode
+        for(TimeOfWeek timeOfWeek : schedule.getThermostatScheduleMode().getAssociatedTimeOfWeeks()){
+            List<AccountThermostatScheduleEntry> entries = schedule.getEntriesByTimeOfWeekMultimap().get(timeOfWeek);
+            if(entries.size()==0){
+                //No entries for this time of week on this schedule.  Copy entries from Weekday,
+                //which is used in all modes
+                List<AccountThermostatScheduleEntry> weekdayEntries = schedule.getEntriesByTimeOfWeekMultimap().get(TimeOfWeek.WEEKDAY);
+                List<AccountThermostatScheduleEntry> newEntries = Lists.newArrayList();
+                for(AccountThermostatScheduleEntry weekdayEntry : weekdayEntries){
+                    AccountThermostatScheduleEntry copiedEntry = new AccountThermostatScheduleEntry();
+                    copiedEntry.setTimeOfWeek(timeOfWeek);
+                    copiedEntry.setCoolTemp(weekdayEntry.getCoolTemp());
+                    copiedEntry.setHeatTemp(weekdayEntry.getHeatTemp());
+                    copiedEntry.setStartTime(weekdayEntry.getStartTime());
+                    newEntries.add(copiedEntry);
+                }
+                schedule.addScheduleEntries(newEntries);
+            }
+        }
+        
         String useScheduleName = operatorThermostatHelper.generateDefaultNameForUnnamedSchdule(schedule, thermostatIds.size() == 1 ? thermostat.getLabel() : null, yukonUserContext);
         schedule.setScheduleName(useScheduleName);
         

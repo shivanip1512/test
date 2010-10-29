@@ -64,6 +64,10 @@ public class AccountThermostatSchedule {
 		this.scheduleEntries = scheduleEntries;
 	}
 	
+	public void addScheduleEntries(List<AccountThermostatScheduleEntry> scheduleEntries) {
+	    this.scheduleEntries.addAll(scheduleEntries);
+	}
+	
 	public ListMultimap<TimeOfWeek, AccountThermostatScheduleEntry> getEntriesByTimeOfWeekMultimap() {
         ListMultimap<TimeOfWeek, AccountThermostatScheduleEntry> result = ArrayListMultimap.create();
         for (AccountThermostatScheduleEntry atsEntry : this.getScheduleEntries()) {
