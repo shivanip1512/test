@@ -13,7 +13,7 @@ protected:
     enum FunctionReads
     {
         Read_ExpresscomMsgSend  =  0x00,
-        Read_ActOnStoredMessage =   0x0,
+        Read_ActOnStoredMessage =  0x100,
     };
 
 };

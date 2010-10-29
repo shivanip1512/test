@@ -44,8 +44,8 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_controlled_only )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->function,  0x100);
+        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  1);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
@@ -111,8 +111,8 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_cold_load_pickup )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->function,  0x100);
+        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  1);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
@@ -177,8 +177,8 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->function,  0x100);
+        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  1);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
@@ -244,8 +244,8 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->function,  0x100);
+        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  1);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
@@ -311,8 +311,8 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_voltage_event )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->function,  0x100);
+        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  1);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
@@ -377,8 +377,8 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_frequency_event )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->function,  0x100);
+        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  1);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
@@ -443,8 +443,8 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_out_of_service )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->function,  0x100);
+        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  1);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
@@ -509,8 +509,8 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling_conflict )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->function,  0x100);
+        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  1);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
@@ -575,8 +575,8 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling_conflict )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->function,  0x100);
+        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  1);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
@@ -641,8 +641,8 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_both_activated_enabled_conflict )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->function,  0x100);
+        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  1);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 

@@ -54,8 +54,8 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_rcircuit_tamper )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->function,  0x100);
+        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  1);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
@@ -135,8 +135,8 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_runtime_tamper )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->function,  0x100);
+        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  1);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
@@ -216,8 +216,8 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_both_tamper )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->function,  0x100);
+        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  1);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
     }
@@ -295,8 +295,8 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_neither_tamper )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->function,  0x100);
+        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  1);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
     }
@@ -374,8 +374,8 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_tamper_value_error )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
 
-        BOOST_CHECK_EQUAL(ptr->function,  0x00);
-        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(ptr->function,  0x100);
+        BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  1);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
     }
