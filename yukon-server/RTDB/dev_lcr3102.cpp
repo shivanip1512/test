@@ -1,6 +1,9 @@
 #include "yukon.h"
 
 #include "dev_lcr3102.h"
+#include "ctidate.h"
+#include "date_utility.h"
+#include "ctitokenizer.h"
 
 using Cti::Protocols::EmetconProtocol;
 using namespace Cti::Devices::Commands;
@@ -1204,6 +1207,24 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
         DlcCommandSPtr tamperRead(new Lcr3102DemandResponseSummaryCommand());
 
         found = tryExecuteCommand(*OutMessage, tamperRead);
+
+        function = OutMessage->Sequence;
+    }
+    else if(parse.getFlags() & CMD_FLAG_GV_HOURLY_LOG)
+    {
+        // Grab the info from the parser!
+        CtiDate date = parseDateValue(parse.getsValue("hourly_log_date"));
+
+        CtiTokenizer time_tokenizer(parse.getsValue("hourly_log_time"));
+        int startHour = atoi(time_tokenizer(":").data());
+        int startMin  = atoi(time_tokenizer(":").data());
+        int startSec  = atoi(time_tokenizer(":").data());
+
+        CtiTime executeTime = CtiTime(date, startHour, startMin, startSec);
+
+        DlcCommandSPtr hourlyLogRead(new Lcr3102HourlyDataLogCommand(executeTime.seconds()));
+
+        found = tryExecuteCommand(*OutMessage, hourlyLogRead);
 
         function = OutMessage->Sequence;
     }

@@ -457,6 +457,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     // Expresscom 3-part commands
     static const boost::regex   re_tamper_info      (CtiString("tamper info"));
     static const boost::regex   re_dr_summary       (CtiString("dr summary"));
+    static const boost::regex   re_hourly_data_log  (CtiString("hourly log ") + str_date + CtiString(" ") + str_time);
 
     CtiTokenizer   tok(CmdStr);
 
@@ -597,6 +598,24 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         else if(!(token = CmdStr.match(re_dr_summary)).empty())
         {
             flag |= CMD_FLAG_GV_DR_SUMMARY;
+        }
+        else if(!(token = CmdStr.match(re_hourly_data_log)).empty())
+        {
+            flag |= CMD_FLAG_GV_HOURLY_LOG;
+
+            //  getvalue hourly log dd/mm/yy hh:mm:ss...
+            CtiTokenizer cmdtok(token);
+
+            cmdtok(); // move past "hourly"
+            cmdtok(); // move past "log"
+
+            temp = CtiString(cmdtok()).c_str();
+
+            _cmd["hourly_log_date"] = temp;
+
+            temp = CtiString(cmdtok()).c_str();
+
+            _cmd["hourly_log_time"] = temp;
         }
         else if(CmdStr.contains(" minmax"))
         {

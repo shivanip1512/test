@@ -22,7 +22,6 @@ private:
 
     static std::string describeStatusAndEvents(unsigned char *buf);
 
-    static CtiDate parseDateValue(std::string date_str);
 
     struct daily_read_info_t
     {

@@ -37,6 +37,7 @@ test_resolvers.obj \
 test_rwutil.obj \
 test_readers_writer_lock.obj \
 test_timeperiod.obj \
+test_date_utility.obj \
 test_utility.obj \
 test_xmlobject.obj \
 test_PointAttribute.obj \

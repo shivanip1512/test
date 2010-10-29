@@ -76,6 +76,7 @@ statistics.obj \
 stdexcepthdlr.obj \
 thread.obj \
 ucttime.obj \
+date_utility.obj \
 utility.obj \
 words.obj \
 xfer.obj \

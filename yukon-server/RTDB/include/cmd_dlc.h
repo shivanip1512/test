@@ -49,7 +49,7 @@ public:
 
         virtual Protocols::EmetconProtocol::IO_Bits io() const
         {
-            return (function > 0x100)?
+            return (function >= 0x100)?
                        (Protocols::EmetconProtocol::IO_Function_Read):
                        (Protocols::EmetconProtocol::IO_Read);
         }
@@ -70,7 +70,7 @@ public:
 
         virtual Protocols::EmetconProtocol::IO_Bits io() const
         {
-            return (function > 0x100)?
+            return (function >= 0x100)?
                        (Protocols::EmetconProtocol::IO_Function_Write):
                        (Protocols::EmetconProtocol::IO_Write);
         }
