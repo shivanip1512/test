@@ -415,6 +415,10 @@ LONG CtiCCSubstationBus::getPhaseCId() const
 ---------------------------------------------------------------------------*/
 BOOL CtiCCSubstationBus::getTotalizedControlFlag() const
 {
+    if (_dualBusEnable && _switchOverStatus)
+    {
+        return true;
+    }
     return _totalizedControlFlag;
 }
 
@@ -528,7 +532,7 @@ DOUBLE CtiCCSubstationBus::getCurrentVarLoadPointValue() const
     if ((_dualBusEnable && _switchOverStatus) &&
         !stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) )
     {
-        return _altSubControlValue;
+        return _altSubVarVal;
     }
     if(getPrimaryBusFlag() &&
        (!stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
@@ -2034,32 +2038,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::setVarValueBeforeControl(DOUBLE oldvarva
     }
     _varvaluebeforecontrol = oldvarval;
 
-    if (getPrimaryBusFlag() && originalParentId > 0 &&
-       (!stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
-       !stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ))
-    {
-        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-        CtiCCSubstationBusPtr altBus = store->findSubBusByPAObjectID(originalParentId);
-        if (altBus != NULL)
-        {
-            setPhaseAValueBeforeControl(altBus->getPhaseAValue() );
-            setPhaseBValueBeforeControl(altBus->getPhaseBValue() );
-            setPhaseCValueBeforeControl(altBus->getPhaseCValue() );
-        }
-        else
-        {
-            setPhaseAValueBeforeControl(oldvarval / 3 );
-            setPhaseBValueBeforeControl(oldvarval / 3 );
-            setPhaseCValueBeforeControl(oldvarval / 3 );
-        }
-    }
-    else
-    {
-        setPhaseAValueBeforeControl(getPhaseAValue());
-        setPhaseBValueBeforeControl(getPhaseBValue());
-        setPhaseCValueBeforeControl(getPhaseCValue());
-    }
-
+    setPhaseAValueBeforeControl(getPhaseAValue());
+    setPhaseBValueBeforeControl(getPhaseBValue());
+    setPhaseCValueBeforeControl(getPhaseCValue());
 
     return *this;
 }
@@ -3800,7 +3781,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                     sendRetries = currentFeeder->getStrategy()->getControlSendRetries();
                     failPercent = currentFeeder->getStrategy()->getFailurePercent();
                 }
-                if (getUsePhaseData() && !getTotalizedControlFlag() && !getPrimaryBusFlag())
+                if (getUsePhaseData() && !(getTotalizedControlFlag() || getPrimaryBusFlag()))
                 {
                     returnBoolean = currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
                                                        failPercent, getCurrentVarPointQuality(), getPhaseAValueBeforeControl(),
@@ -3868,7 +3849,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                                                            getPhaseAValue(), getPhaseBValue(), getPhaseCValue(),
                                                            getVarValueBeforeControl(), getCurrentVarLoadPointValue(),
                                                            regression, regressionA, regressionB, regressionC,
-                                                           getUsePhaseData(), getTotalizedControlFlag()  )
+                                                           getUsePhaseData(), (getTotalizedControlFlag() || getPrimaryBusFlag())  )
                             || currentFeeder->isPastMaxConfirmTime(CtiTime(),maxConfirmTime,sendRetries)
                           )
                         {
@@ -3896,7 +3877,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                     }
                     else if( getCurrentVarLoadPointId() > 0 )
                     {
-                        if (getUsePhaseData() && !getTotalizedControlFlag())
+                        if (getUsePhaseData() && !(getTotalizedControlFlag() || getPrimaryBusFlag()))
                         {
                             returnBoolean = currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent,
                                                                failPercent, getCurrentVarPointQuality(), getPhaseAValueBeforeControl(),
@@ -3976,7 +3957,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
 
     if ((stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) &&
          stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::BusOptimizedFeederControlMethod) ) &&
-        getUsePhaseData() && !getTotalizedControlFlag()  )
+        getUsePhaseData() && !(getTotalizedControlFlag() || getPrimaryBusFlag())  )
     {
         returnBoolean = capBankVerificationPerPhaseStatusUpdate(pointChanges, ccEvents);
     }
@@ -5443,7 +5424,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                                            getPhaseBValueBeforeControl(), getPhaseCValueBeforeControl(),
                                            getPhaseAValue(), getPhaseBValue(), getPhaseCValue(),
                                            getVarValueBeforeControl(), getCurrentVarLoadPointValue(), regression, regressionA, regressionB, regressionC,
-                                           getUsePhaseData(), getTotalizedControlFlag()  );
+                                           getUsePhaseData(), (getTotalizedControlFlag() || getPrimaryBusFlag())  );
 
                 break;
             }
@@ -5489,7 +5470,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                                                getPhaseBValueBeforeControl(), getPhaseCValueBeforeControl(),
                                                getPhaseAValue(), getPhaseBValue(), getPhaseCValue(),
                                                getVarValueBeforeControl(), getCurrentVarLoadPointValue(), regression, regressionA, regressionB, regressionC,
-                                               getUsePhaseData(), getTotalizedControlFlag()  ))
+                                               getUsePhaseData(), (getTotalizedControlFlag()||getPrimaryBusFlag())  ))
                     {
                         returnBoolean = TRUE;
                         break;
@@ -6150,7 +6131,7 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
             DOUBLE phaseBValue  = getPhaseBValue();
             DOUBLE phaseCValue  = getPhaseCValue();
             BOOL usePhaseData   = getUsePhaseData();
-            BOOL totalizedControlFlag = getTotalizedControlFlag();
+            BOOL totalizedControlFlag = (getTotalizedControlFlag() || getPrimaryBusFlag());
 
             for(LONG i=0;i<_ccfeeders.size();i++)
             {
@@ -10176,7 +10157,7 @@ bool CtiCCSubstationBus::checkForRateOfChange(const CtiRegression& reg, const Ct
 {
     if(!_RATE_OF_CHANGE)
         return false;
-    if( getUsePhaseData() && !getTotalizedControlFlag() )
+    if( getUsePhaseData() && !(getTotalizedControlFlag() || getPrimaryBusFlag()))
     {
         if( regA.depthMet() && regB.depthMet() && regC.depthMet() )
             return true;

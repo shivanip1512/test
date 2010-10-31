@@ -2430,7 +2430,6 @@ void CtiCapController::adjustAlternateBusModeValues(long pointID, double value, 
                 currentBus->setAllAltSubValues(altSub->getCurrentVoltLoadPointValue(),
                                        altSub->getTotalizedVarLoadPointValue(),
                                        altSub->getRawCurrentWattLoadPointValue());
-
             }
         }
         else
@@ -3226,6 +3225,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                              currentSubstationBus->getCurrentWattLoadPointValue());
                              altSub->setAltSubControlValue(currentSubstationBus->getTotalizedVarLoadPointValue());
                              altSub->setBusUpdatedFlag(TRUE);
+                             altSub->setNewPointDataReceivedFlag(currentSubstationBus->getNewPointDataReceivedFlag());
                         }
                         currentSubstationBus->figureEstimatedVarLoadPointValue();
                         currentSubstationBus->figureAndSetTargetVarValue();
