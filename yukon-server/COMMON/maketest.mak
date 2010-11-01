@@ -204,6 +204,10 @@ database_writer.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		guard.h utility.h queues.h numstr.h sorted_vector.h \
 		cticonnect.h netports.h dsm2err.h words.h sema.h row_writer.h \
 		ctidate.h logger.h thread.h CtiPCPtrQueue.h boost_time.h
+date_utility.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
+		date_utility.h ctidate.h dlldefs.h logger.h thread.h mutex.h \
+		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		numstr.h sorted_vector.h CtiPCPtrQueue.h ctitokenizer.h
 dbaccess.obj:	yukon.h precompiled.h types.h ctidbgmem.h dlldefs.h \
 		dbaccess.h dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h \
 		guard.h utility.h ctitime.h queues.h numstr.h sorted_vector.h \
@@ -365,6 +369,10 @@ test_ctistring.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 test_ctitime.obj:	ctitime.h dlldefs.h ctidate.h logger.h thread.h \
 		mutex.h guard.h utility.h queues.h cticalls.h os2_2w32.h \
 		types.h numstr.h sorted_vector.h CtiPCPtrQueue.h
+test_date_utility.obj:	date_utility.h ctidate.h dlldefs.h logger.h \
+		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h types.h numstr.h sorted_vector.h \
+		CtiPCPtrQueue.h
 test_desolvers.obj:	desolvers.h db_entry_defines.h yukon.h \
 		precompiled.h types.h ctidbgmem.h dlldefs.h pointtypes.h \
 		devicetypes.h boostutil.h utility.h ctitime.h queues.h \

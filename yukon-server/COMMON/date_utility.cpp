@@ -3,6 +3,8 @@
 #include "date_utility.h"
 #include "ctitokenizer.h"
 
+namespace Cti {
+
 CtiDate parseDateValue(string date_str)
 {
     CtiTokenizer date_tokenizer(date_str);
@@ -24,4 +26,6 @@ CtiDate parseDateValue(string date_str)
     //  naive date construction - no range checking, so we count
     //    on CtiDate() resetting itself to 1/1/1970
     return CtiDate(day, month, year);
+}
+
 }

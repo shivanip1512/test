@@ -5,6 +5,8 @@
 #include <boost/test/unit_test.hpp>
 using boost::unit_test_framework::test_suite;
 
+using namespace Cti;
+
 BOOST_AUTO_TEST_CASE(test_parse_date_value)
 {
     {

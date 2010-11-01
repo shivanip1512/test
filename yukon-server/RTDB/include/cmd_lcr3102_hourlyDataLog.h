@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cmd_lcr3102_ThreePart.h"
+#include "cmd_lcr3102.h"
 
 namespace Cti {
 namespace Devices {

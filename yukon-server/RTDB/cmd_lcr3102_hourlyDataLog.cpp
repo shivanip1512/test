@@ -59,7 +59,7 @@ DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::decode(CtiTime now, const u
         if(startTime != _utcSeconds)
         {
             description = "Device did not respond with the correct hourly log start time (" + CtiNumStr(startTime).xhex() + ")";
-            throw CommandException(NOTNORMAL, description);
+            throw CommandException(ErrorInvalidTimestamp, description);
         }
         else
         {

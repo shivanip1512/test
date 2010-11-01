@@ -231,7 +231,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_incorrect_start_time )
         }
         catch(DlcCommand::CommandException &ex)
         {
-            BOOST_CHECK_EQUAL(ex.error_code,        NOTNORMAL);
+            BOOST_CHECK_EQUAL(ex.error_code,        ErrorInvalidTimestamp);
             BOOST_CHECK_EQUAL(ex.error_description, "Device did not respond with the correct hourly log start time (0x509703d2)");
         }
     }
