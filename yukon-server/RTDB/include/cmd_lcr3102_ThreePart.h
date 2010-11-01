@@ -21,6 +21,10 @@ protected:
     // We want the children (and children ONLY) to be able to call this constructor.
     Lcr3102ThreePartCommand(unsigned length, unsigned retries = 2);
 
+    virtual request_ptr decodeReading(const CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points) = 0;
+
+    virtual request_ptr makeRequest(const CtiTime now);
+
 private:
 
     unsigned _retries;
@@ -32,9 +36,6 @@ public:
     virtual request_ptr decode (const CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points);
     virtual request_ptr error  (const CtiTime now, const int error_code, std::string &description);
 
-    virtual request_ptr makeRequest(const CtiTime now);
-
-    virtual request_ptr decodeReading(const CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points) = 0;
 };
 
 }
