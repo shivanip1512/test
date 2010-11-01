@@ -27,9 +27,6 @@ SET ControlUnits = 'MULTI_VOLT'
 WHERE ControlUnits = 'Multi Volt'; 
 UPDATE CapControlStrategy 
 SET ControlUnits = 'KVAR' 
-WHERE ControlUnits = 'kVar'; 
-UPDATE CapControlStrategy 
-SET ControlUnits = 'KVAR' 
 WHERE ControlUnits = 'kVAr'; 
 UPDATE CapControlStrategy 
 SET ControlUnits = 'MULTI_VOLT_VAR' 
@@ -44,6 +41,12 @@ UPDATE CapControlStrategy
 SET ControlUnits = 'INTEGRATED_VOLT_VAR' 
 WHERE ControlUnits = 'Integrated Volt/Var';
 /* End YUK-9213 */ 
+
+/* Start YUK-9160 */
+ALTER TABLE CCSubstationBusToLTC DROP CONSTRAINT FK_CCSubBusToLTC_CapContSubBus;
+ALTER TABLE CCSubstationBusToLTC DROP CONSTRAINT FK_CCSubBusToLTC_YukonPAO;
+DROP TABLE CCSubstationBusToLTC;
+/* End YUK-9160 */ 
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
