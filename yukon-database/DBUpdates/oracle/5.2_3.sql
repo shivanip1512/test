@@ -48,6 +48,15 @@ ALTER TABLE CCSubstationBusToLTC DROP CONSTRAINT FK_CCSubBusToLTC_YukonPAO;
 DROP TABLE CCSubstationBusToLTC;
 /* End YUK-9160 */ 
 
+/* Start YUK-9143 */
+DELETE FROM YukonUserRole 
+WHERE RolePropertyId = -10810;
+DELETE FROM YukonGroupRole 
+WHERE RolePropertyId = -10810;
+DELETE FROM YukonRoleProperty 
+WHERE RolePropertyId = -10810;
+/* End YUK-9143 */ 
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

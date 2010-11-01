@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/1/2010 1:07:00 AM                         */
+/* Created on:     11/1/2010 12:24:10 PM                        */
 /*==============================================================*/
 
 
@@ -8406,7 +8406,6 @@ insert into yukongrouprole values (-405, -302, -108, -10805, '(none)');
 insert into yukongrouprole values (-406, -302, -108, -10806, '(none)');
 insert into yukongrouprole values (-40700, -302, -108, -10807, '(none)');
 insert into yukongrouprole values (-40701, -302, -108, -10808, '(none)');
-insert into yukongrouprole values (-40703, -302, -108, -10810, '(none)');
 insert into yukongrouprole values (-40704, -302, -108, -10811, '(none)');
 
 /* Web Client Customers Commercial Metering role */
@@ -8424,7 +8423,6 @@ insert into yukongrouprole values (-505,-300,-108, -10805,'yukon/DemoHeaderCES.g
 insert into yukongrouprole values (-506,-300,-108,-10806,'(none)');
 insert into yukongrouprole values (-507,-300,-108,-10807,'(none)');
 insert into yukongrouprole values (-508,-300,-108,-10808,'(none)');
-insert into yukongrouprole values (-510,-300,-108,-10810,'(none)');
 insert into yukongrouprole values (-511,-300,-108,-10811,'(none)');
 
 insert into yukongrouprole values (-521,-300,-400,-40001,'true');
@@ -8451,7 +8449,6 @@ insert into yukongrouprole values (-705,-301,-108,-10805,'(none)');
 insert into yukongrouprole values (-706,-301,-108,-10806,'(none)');
 insert into yukongrouprole values (-707,-301,-108,-10807,'(none)');
 insert into yukongrouprole values (-708,-301,-108,-10808,'(none)');
-insert into yukongrouprole values (-710,-301,-108,-10810,'(none)');
 insert into yukongrouprole values (-711,-301,-108,-10811,'(none)');
 
 insert into yukongrouprole values (-722,-301,-201,-20102,'true');
@@ -8562,7 +8559,6 @@ insert into YukonGroupRole values (-1094,-2, -108, -10805, '(none)');
 insert into YukonGroupRole values (-1095,-2, -108, -10806, '(none)');
 insert into YukonGroupRole values (-1096,-2, -108, -10807, '(none)');
 insert into YukonGroupRole values (-1097,-2, -108, -10808, '(none)');
-insert into YukonGroupRole values (-10990,-2, -108, -10810, '(none)');
 insert into YukonGroupRole values (-10991,-2, -108, -10811, '(none)');
 
 /* Give yukon login access to View Logs, */
@@ -8575,7 +8571,6 @@ insert into yukongrouprole values (-2005,-303,-108,-10805,'(none)');
 insert into yukongrouprole values (-2006,-303,-108,-10806,'(none)');
 insert into yukongrouprole values (-2007,-303,-108,-10807,'(none)');
 insert into yukongrouprole values (-2008,-303,-108,-10808,'(none)');
-insert into yukongrouprole values (-2010,-303,-108,-10810,'(none)');
 insert into yukongrouprole values (-2011,-303,-108,-10811,'(none)');
 
 insert into yukongrouprole values (-2022,-303,-201,-20102,'true');
@@ -8634,7 +8629,6 @@ insert into yukongrouprole values (-2205,-304,-108,-10805,'yukon/DemoHeaderCES.g
 insert into yukongrouprole values (-2206,-304,-108,-10806,'(none)');
 insert into yukongrouprole values (-2207,-304,-108,-10807,'(none)');
 insert into yukongrouprole values (-2208,-304,-108,-10808,'(none)');
-insert into yukongrouprole values (-2210,-304,-108,-10810,'(none)');
 insert into yukongrouprole values (-2211,-304,-108,-10811,'(none)');
 
 insert into yukongrouprole values (-2221,-304,-400,-40001,'(none)');
@@ -9468,7 +9462,6 @@ INSERT INTO YukonRoleProperty VALUES(-10805,-108,'header_logo','yukon/DefaultHea
 INSERT INTO YukonRoleProperty VALUES(-10806,-108,'log_in_url','/login.jsp','The url where the user login from. It is used as the url to send the users to when they log off.');
 INSERT INTO YukonRoleProperty VALUES(-10807,-108,'nav_connector_bottom','yukon/BottomConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of the last hardware under each category');
 INSERT INTO YukonRoleProperty VALUES(-10808,-108,'nav_connector_middle','yukon/MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
-INSERT INTO YukonRoleProperty VALUES(-10810,-108, 'pop_up_appear_style','onmouseover', 'Style of the popups appearance when the user selects element in capcontrol.');
 INSERT INTO YukonRoleProperty VALUES(-10811,-108, 'inbound_voice_home_url', '/voice/inboundOptOut.jsp', 'Home URL for inbound voice logins');
 INSERT INTO YukonRoleProperty VALUES(-10812, -108,'Java Web Start Launcher Enabled', 'true', 'Allow access to the Java Web Start Launcher for client applications.');
 INSERT INTO YukonRoleProperty VALUES(-10814, -108,'Suppress Error Page Details', 'true', 'Disable stack traces for this user.');
@@ -9982,7 +9975,6 @@ INSERT INTO YukonUserRole VALUES(-405, -1, -108, -10805, '(none)');
 INSERT INTO YukonUserRole VALUES(-406, -1, -108, -10806, '(none)');
 INSERT INTO YukonUserRole VALUES(-407, -1, -108, -10807, '(none)');
 INSERT INTO YukonUserRole VALUES(-408, -1, -108, -10808, '(none)');
-INSERT INTO YukonUserRole VALUES(-41000,-1, -108, -10810, '(none)');
 INSERT INTO YukonUserRole VALUES(-41001,-1, -108, -10811, '(none)');
 
 /* Give admin login access to View Logs, */
