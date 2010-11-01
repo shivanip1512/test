@@ -19,17 +19,11 @@ DlcCommand::request_ptr Lcr3102LastMessageReceivedCommand::decode(const CtiTime 
 
     std::vector<unsigned> lastMessage = getValueVectorFromBits(payload, 8, 8, messageLength);
 
-    if(lastMessage.empty())
-    {
-        description = "Invalid payload received (" + CtiNumStr(messageLength).xhex(2) + ")";
-        throw CommandException(NOTNORMAL, description);
-    }
-
-    description = "Last message received: 0x";
+    description = "Last message received:";
 
     for each( const unsigned &val in lastMessage )
     {
-        description += CtiNumStr(val).hex(2);
+        description += " " + CtiNumStr(val).hex(2);
     }
 
     description += "\n";

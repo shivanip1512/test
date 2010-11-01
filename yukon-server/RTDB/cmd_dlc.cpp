@@ -45,7 +45,7 @@ vector<unsigned> DlcCommand::getValueVectorFromBits(const payload_t &data, const
 {
     if( start_offset + count * length > data.size() * 8 )
     {
-        return vector<unsigned>();
+        throw CommandException(NOTNORMAL, "Payload too small");
     }
 
     vector<unsigned> values;

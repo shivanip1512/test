@@ -9,8 +9,6 @@ namespace Commands {
 class IM_EX_DEVDB Lcr3102LastMessageReceivedCommand : public Lcr3102Command
 {
 
-private:
-
     enum FunctionReads
     {
         Read_LastMessageReceived = 0x180
@@ -22,8 +20,6 @@ private:
     };
 
 public:
-
-    Lcr3102LastMessageReceivedCommand() {};
 
     virtual request_ptr execute(const CtiTime now);
     virtual request_ptr decode (const CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points);

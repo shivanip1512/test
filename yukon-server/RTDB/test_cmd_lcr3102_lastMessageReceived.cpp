@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_normal )
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(!ptr.get());
 
-        BOOST_CHECK_EQUAL(description, "Last message received: 0x04080f10172a\n");
+        BOOST_CHECK_EQUAL(description, "Last message received: 04 08 0f 10 17 2a\n");
     }
 }
 
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_incorrect_payload_amount )
         catch(DlcCommand::CommandException &ex)
         {
             BOOST_CHECK_EQUAL(ex.error_code,        NOTNORMAL);
-            BOOST_CHECK_EQUAL(ex.error_description, "Invalid payload received (0x07)");
+            BOOST_CHECK_EQUAL(ex.error_description, "Payload too small");
         }
 
     }

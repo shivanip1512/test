@@ -125,3 +125,27 @@ BOOST_AUTO_TEST_CASE(test_getValueVectorFromBits)
         BOOST_CHECK(std::equal(result.begin(), result.end(), check));
     }
 }
+
+BOOST_AUTO_TEST_CASE( test_getValueVectorFromBits_throw )
+{
+    std::vector<unsigned char> init;
+
+    init.push_back(0x01);  //  0 - 0000 0001
+    init.push_back(0xff);  //  8 - 1111 1111
+    init.push_back(0xa5);  // 16 - 1010 0101
+    init.push_back(0xc7);  // 24 - 1100 0111
+
+    const std::vector<unsigned char> data = init;
+
+    try
+    {
+        std::vector<unsigned> result = Test_DlcCommand::getValueVectorFromBits(data, 0, 8, 5);
+
+        BOOST_FAIL("DlcCommand::getValueVectorFromBits() did not throw!");
+    }
+    catch(Test_DlcCommand::CommandException &ex)
+    {
+        BOOST_CHECK_EQUAL(ex.error_code,        NOTNORMAL);
+        BOOST_CHECK_EQUAL(ex.error_description, "Payload too small");
+    }
+}
