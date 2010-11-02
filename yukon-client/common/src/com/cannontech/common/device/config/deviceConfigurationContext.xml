@@ -576,146 +576,167 @@
 					<property name="text" value="All Segments" />
 					<property name="value" value="2" />
 				</bean>
+				<!-- Not supported by the MCT-420CL -->
+				<!--
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="Total kWh" />
+					<property name="text" value="Tamper" />
 					<property name="value" value="3" />
 				</bean>
+				-->
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="Net kWh" />
+					<property name="text" value="Current Local Time" />
 					<property name="value" value="4" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="Delivered kWh" />
+					<property name="text" value="Current Local Date" />
 					<property name="value" value="5" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="Reverse kWh" />
+					<property name="text" value="Total kWh" />
 					<property name="value" value="6" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="Last Interval kW" />
+					<property name="text" value="Net kWh" />
 					<property name="value" value="7" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="Peak kW" />
+					<property name="text" value="Delivered kWh" />
 					<property name="value" value="8" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="Peak kW Date" />
+					<property name="text" value="Reverse kWh" />
 					<property name="value" value="9" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="Peak kW Time" />
+					<property name="text" value="Last Interval kW" />
 					<property name="value" value="10" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="Last Interval Voltage" />
+					<property name="text" value="Peak kW" />
 					<property name="value" value="11" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="Peak Voltage" />
+					<property name="text" value="Peak kW Date" />
 					<property name="value" value="12" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="Peak Voltage Date" />
+					<property name="text" value="Peak kW Time" />
 					<property name="value" value="13" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="Peak Voltage Time" />
+					<property name="text" value="Last Interval Voltage" />
 					<property name="value" value="14" />
 				</bean>
+				<!-- Not supported by the MCT-420CL -->
+				<!-- 
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate A kWh" />
+					<property name="text" value="Peak Voltage" />
 					<property name="value" value="15" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate A Peak kW" />
+					<property name="text" value="Peak Voltage Date" />
 					<property name="value" value="16" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate A Date of Peak Demand" />
+					<property name="text" value="Peak Voltage Time" />
 					<property name="value" value="17" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate A Time of Peak Demand" />
+					<property name="text" value="Minimum Voltage" />
 					<property name="value" value="18" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate B kWh" />
+					<property name="text" value="Minimum Voltage Date" />
 					<property name="value" value="19" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate B Peak kW" />
+					<property name="text" value="Minimum Voltage Time" />
 					<property name="value" value="20" />
 				</bean>
+				-->
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate B Date of Peak kW" />
+					<property name="text" value="TOU Rate A kWh" />
 					<property name="value" value="21" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate B Time of Peak kW" />
+					<property name="text" value="TOU Rate A Peak kW" />
 					<property name="value" value="22" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate C kWh" />
+					<property name="text" value="TOU Rate A Date of Peak Demand" />
 					<property name="value" value="23" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate C Peak kW" />
+					<property name="text" value="TOU Rate A Time of Peak Demand" />
 					<property name="value" value="24" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate C Date of Peak kW" />
+					<property name="text" value="TOU Rate B kWh" />
 					<property name="value" value="25" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate C Time of Peak kW" />
+					<property name="text" value="TOU Rate B Peak kW" />
 					<property name="value" value="26" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate D kWh" />
+					<property name="text" value="TOU Rate B Date of Peak kW" />
 					<property name="value" value="27" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate D Peak kW" />
+					<property name="text" value="TOU Rate B Time of Peak kW" />
 					<property name="value" value="28" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate D Date of Peak kW" />
+					<property name="text" value="TOU Rate C kWh" />
 					<property name="value" value="29" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate D Time of Peak kW" />
+					<property name="text" value="TOU Rate C Peak kW" />
 					<property name="value" value="30" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate E kWh" />
+					<property name="text" value="TOU Rate C Date of Peak kW" />
 					<property name="value" value="31" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate E Peak kW" />
+					<property name="text" value="TOU Rate C Time of Peak kW" />
 					<property name="value" value="32" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate E Date of Peak kW" />
+					<property name="text" value="TOU Rate D kWh" />
 					<property name="value" value="33" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate E Time of Peak kW" />
+					<property name="text" value="TOU Rate D Peak kW" />
 					<property name="value" value="34" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="Tamper" />
+					<property name="text" value="TOU Rate D Date of Peak kW" />
 					<property name="value" value="35" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="Current Local Time" />
+					<property name="text" value="TOU Rate D Time of Peak kW" />
 					<property name="value" value="36" />
 				</bean>
+				<!-- Not supported by the MCT-420CL -->
+				<!-- 
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="Current Local Date" />
+					<property name="text" value="TOU Rate E kWh" />
 					<property name="value" value="37" />
 				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate E Peak kW" />
+					<property name="value" value="38" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate E Date of Peak kW" />
+					<property name="value" value="39" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="text" value="TOU Rate E Time of Peak kW" />
+					<property name="value" value="40" />
+				</bean>
+				-->
 			</list>
 		</property>
 	</bean>
