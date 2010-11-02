@@ -60,6 +60,18 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId = -10810;
 /* End YUK-9143 */ 
 
+/* Start YUK-9233 */
+UPDATE YukonPAObject 
+SET Type = 'LTC', Category = 'CAPCONTROL' 
+WHERE Type = 'Load Tap Changer'; 
+UPDATE YukonPAObject 
+SET Type = 'GO_REGULATOR', Category = 'CAPCONTROL' 
+WHERE Type = 'GANGOPERATED'; 
+UPDATE YukonPAObject 
+SET Type = 'PO_REGULATOR', Category = 'CAPCONTROL' 
+WHERE Type = 'PHASEOPERATED';
+/* End YUK-9233 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
