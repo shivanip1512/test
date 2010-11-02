@@ -45,7 +45,7 @@ public class WidgetInterceptor extends HandlerInterceptorAdapter {
         response.addHeader("X-JSON", object.toString());
    
         // TODO Fix this
-        String beanName = modelAndView.getViewName().split("/")[0]; 
+        String beanName = existingParams.get("shortName");
         MessageScopeHelper.forRequest(request).pushScope("." + beanName, ".widgets." + beanName);
     }
     

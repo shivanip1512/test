@@ -24,6 +24,7 @@
 <c:set var="widgetParameters" value="${cti:combineWidgetParams(widgetParameters,pageScope.widgetAttributes)}" scope="request"/>
 <cti:uniqueIdentifier var="widgetId" prefix="widget_"/>
 <c:set target="${widgetParameters}" property="widgetId" value="${widgetId}"/>
+<c:set target="${widgetParameters}" property="shortName" value="${beanInst.shortName}"/>
 <c:set target="${widgetParameters}" property="jsWidget" value="jsobj_${widgetParameters.widgetId}"/>
 
 <script type="text/javascript">
