@@ -8,6 +8,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <tags:nameValue2 nameKey="${eventLogFilter.key}">
-    <tags:input path="eventLogFilters[${count-1}].filterValue.numberFilterValue" />
+    <tags:input path="eventLogFilters[${count-1}].filterValue.doubleFilterValue" />
 </tags:nameValue2>
 
