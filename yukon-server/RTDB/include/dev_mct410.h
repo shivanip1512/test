@@ -53,6 +53,7 @@ private:
         {
             unsigned channel;
             CtiDate  date;
+            bool     needs_verification;  //  if the date is susceptible to check-bit aliasing and needs to be read from the meter
 
         } interest;
 
@@ -223,6 +224,9 @@ protected:
 
         Memory_Holiday3Pos        = 0xd8,
         Memory_Holiday3Len        =    4,
+
+        Memory_DailyReadInterestPos = 0xf3,
+        Memory_DailyReadInterestLen =    2,
     };
 
     enum Functions
@@ -383,6 +387,9 @@ protected:
     INT decodeGetConfigDisconnect  ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigAddress     ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigPhaseDetect ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    INT decodeGetConfigDailyReadInterest( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+
+    static bool canDailyReadDateAlias(const CtiDate &date, const CtiTime &now);
 
     virtual std::string decodeDisconnectConfig(const DSTRUCT &DSt);
 

@@ -835,6 +835,8 @@ INT Mct410Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 
         case EmetconProtocol::GetValue_DailyRead:           status = decodeGetValueDailyRead(InMessage, TimeNow, vgList, retList, outList);     break;
 
+        case EmetconProtocol::GetConfig_DailyReadInterest:  status = decodeGetConfigDailyReadInterest(InMessage, TimeNow, vgList, retList, outList);  break;
+
         case EmetconProtocol::GetStatus_Internal:           status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);     break;
 
         case EmetconProtocol::GetStatus_LoadProfile:        status = decodeGetStatusLoadProfile(InMessage, TimeNow, vgList, retList, outList);  break;
@@ -1422,6 +1424,61 @@ void Mct410Device::readSspec(const OUTMESS &OutMessage, list<OUTMESS *> &outList
 }
 
 
+bool Mct410Device::canDailyReadDateAlias(const CtiDate &date, const CtiTime &now)
+{
+    //  There are 3 months of daily read slots in the MCT-410.
+    //  There are 2 check bits returned with the reads.
+    //  Not all months have 31 days, so some slots are not overwritten at the end of a particular month.
+    //  There are 5 days that can alias to other days if the meter does not hear the period-of-interest command:
+    //
+    //    01/31 can alias to 05/31 during 06/01-08/31
+    //    11/29 can alias to 03/29 during 03/30-05/28
+    //    11/30 can alias to 03/30 during 03/31-05/29
+    //    08/31 can alias to 12/31 during 01/01-03/31
+    //    03/31 can alias to 07/31 during 08/01-10/31
+
+    const CtiDate nowDate(now.date());
+
+    //  01/31 case
+    if( date.month() == 5 && date.dayOfMonth() == 31 )
+    {
+        return nowDate.month() > 5 &&
+               nowDate.month() < 8;
+    }
+
+    //  11/29 case - only unsafe if this isn't a leap year
+    if( date.month() == 3 && date.dayOfMonth() == 29 && CtiDate::daysInMonthYear(2, date.year()) == 28 )
+    {
+        //  not checking for May 29 and May 30 because the dates should already be invalid by then
+        return nowDate.month() < 6;
+    }
+
+    //  11/30 case
+    if( date.month() == 3 && date.dayOfMonth() == 30 )
+    {
+        //  not checking for May 29 and May 30 because the dates should already be invalid by then
+        //  also, technically, we could check to see if this year is a leap year, in which case 03/29 is safe
+        return nowDate.month() < 6;
+    }
+
+    //  08/31 case
+    if( date.month() == 12 && date.dayOfMonth() == 31 )
+    {
+        return nowDate.month() < 4;
+    }
+
+    //  03/31 case
+    if( date.month() == 7 && date.dayOfMonth() == 31 )
+    {
+        return nowDate.month() > 7 &&
+               nowDate.month() < 11;
+    }
+
+    return false;
+}
+
+
+
 INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                                       CtiCommandParser           &parse,
                                       OUTMESS                   *&OutMessage,
@@ -1724,7 +1781,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                 if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
                 {
                     readSspec(*OutMessage, outList);
-                    }
+                }
 
                 //  we need to set it to the requested interval
                 auto_ptr<CtiOutMessage> interest_om(new CtiOutMessage(*OutMessage));
@@ -1738,17 +1795,37 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
 
                 interest_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
 
-                if( _daily_read_info.request.type == daily_read_info_t::Request_SingleDay &&
-                    _daily_read_info.request.begin != _daily_read_info.interest.date )
+                if( _daily_read_info.request.type == daily_read_info_t::Request_SingleDay )
                 {
-                    _daily_read_info.interest.date = _daily_read_info.request.begin;
+                    if( _daily_read_info.request.begin != _daily_read_info.interest.date )
+                    {
+                        _daily_read_info.interest.date = _daily_read_info.request.begin;
+                        _daily_read_info.interest.needs_verification = canDailyReadDateAlias(_daily_read_info.interest.date, CtiTime());
 
-                    //  single-day request - send the time of interest
-                    interest_om->Buffer.BSt.Message[1] = 0;
-                    interest_om->Buffer.BSt.Message[2] = _daily_read_info.interest.date.dayOfMonth();
-                    interest_om->Buffer.BSt.Message[3] = _daily_read_info.interest.date.month();
+                        //  single-day request - send the time of interest
+                        interest_om->Buffer.BSt.Message[1] = 0;
+                        interest_om->Buffer.BSt.Message[2] = _daily_read_info.interest.date.dayOfMonth();
+                        interest_om->Buffer.BSt.Message[3] = _daily_read_info.interest.date.month();
 
-                    outList.push_back(interest_om.release());
+                        outList.push_back(interest_om.release());
+                    }
+
+                    if( _daily_read_info.interest.needs_verification )
+                    {
+                        //  we need to set it to the requested interval
+                        CtiOutMessage *alias_check_om = new CtiOutMessage(*OutMessage);
+
+                        alias_check_om->Sequence = EmetconProtocol::GetConfig_DailyReadInterest;
+
+                        alias_check_om->Buffer.BSt.Function = Memory_DailyReadInterestPos;
+                        alias_check_om->Buffer.BSt.Length   = Memory_DailyReadInterestLen;
+                        alias_check_om->Buffer.BSt.IO       = EmetconProtocol::IO_Read;
+                        alias_check_om->MessageFlags |= MessageFlag_ExpectMore;
+
+                        alias_check_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+
+                        outList.push_back(alias_check_om);
+                    }
                 }
                 else if( _daily_read_info.request.type == daily_read_info_t::Request_MultiDay &&
                          _daily_read_info.request.channel != _daily_read_info.interest.channel )
@@ -3158,6 +3235,57 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiTime
 }
 
 
+INT Mct410Device::decodeGetConfigDailyReadInterest(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    INT status = NORMAL;
+
+    if( !(status = decodeCheckErrorReturn(InMessage, retList, outList)) )
+    {
+        // No error occured, we must do a real decode!
+
+        const DSTRUCT * const DSt  = &InMessage->Buffer.DSt;
+        CtiReturnMsg    *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        string resultString;
+
+        unsigned interest_day     =   DSt->Message[0] & 0x1f;
+        unsigned interest_month   =  (DSt->Message[1] & 0x0f) + 1;
+        unsigned interest_channel = ((DSt->Message[1] & 0x30) >> 4) + 1;
+
+        resultString = getName() + " / Daily read interest channel: " + CtiNumStr(interest_channel) + "\n";
+        resultString = getName() + " / Daily read interest month: "   + CtiNumStr(interest_month) + "\n";
+        resultString = getName() + " / Daily read interest day: "     + CtiNumStr(interest_day) + "\n";
+
+        const CtiDate DateNow(TimeNow);
+
+        unsigned interest_year = DateNow.year();
+
+        if( DateNow.month() < interest_month )
+        {
+            //  interest month is greater than the current month - must've been last year
+            interest_year--;
+        }
+
+        const CtiDate interest_date(interest_day, interest_month, interest_year);
+
+        if( interest_date == _daily_read_info.interest.date )
+        {
+            _daily_read_info.interest.needs_verification = false;
+        }
+
+        ReturnMsg->setResultString(resultString);
+
+        const bool expectMore = true;
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
+    }
+
+    return status;
+}
+
+
 INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
@@ -3333,6 +3461,14 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, l
                     _daily_read_info.interest.channel = 0;  //  reset it - it doesn't match what the MCT has
 
                     status = ErrorInvalidChannel;
+                }
+                else if( _daily_read_info.interest.needs_verification )
+                {
+                    resultString  = getName() + " / Daily read period of interest date was not verified, try read again";
+
+                    //  when they try the read again, it'll re-read the period of interest from the meter
+
+                    status = ErrorInvalidTimestamp;
                 }
                 else if(  day        !=   _daily_read_info.request.begin.dayOfMonth() ||
                          (month % 4) != ((_daily_read_info.request.begin.month() - 1) % 4) )

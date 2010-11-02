@@ -138,6 +138,7 @@ public:
         GetConfig_PhaseDetectArchive,
         GetConfig_Softspec,
         GetConfig_Addressing,
+        GetConfig_DailyReadInterest,
 
         // PutConfig commands
         PutConfig_Install,
