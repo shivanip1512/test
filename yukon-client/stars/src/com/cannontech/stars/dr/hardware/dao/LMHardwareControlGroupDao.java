@@ -126,10 +126,18 @@ public interface LMHardwareControlGroupDao {
     /**
      * This method retrieves all enrollments that intersect with the supplied interval.  This
      * also includes active enrollments that would intersect with the intersection.
-     * @return
      */
     public List<LMHardwareControlGroup> getIntersectingEnrollments(int accountId,
                                                                    int inventoryId,
                                                                    int loadGroupId,
-                                                                   OpenInterval controlHistoryInterval);
+                                                                   OpenInterval enrollmentInterval);
+
+    /**
+     * This method retrieves all opt outs that intersect with the supplied interval.  This
+     * also includes active opt outs that would intersect with the intersection.
+     */
+    public List<LMHardwareControlGroup> getIntersectingOptOuts(int accountId,
+                                                               int inventoryId,
+                                                               int loadGroupId,
+                                                               OpenInterval optOutInterval);
 }

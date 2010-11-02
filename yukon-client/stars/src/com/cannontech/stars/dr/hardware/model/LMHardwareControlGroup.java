@@ -1,5 +1,6 @@
 package com.cannontech.stars.dr.hardware.model;
 
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.cannontech.common.util.OpenInterval;
@@ -86,11 +87,31 @@ public class LMHardwareControlGroup implements Cloneable{
         }
     }
     
+    public Duration getEnrollmentDuration() {
+        OpenInterval enrollmentInterval = getEnrollmentInterval();
+
+        if (enrollmentInterval.isOpenEnd()) {
+            return enrollmentInterval.withCurrentEnd().toClosedInterval().toDuration();
+        } else {
+            return enrollmentInterval.toClosedInterval().toDuration();
+        }
+    }
+    
     public OpenInterval getOptOutInterval() {
         if (optOutStop != null) {
             return OpenInterval.createClosed(optOutStart, optOutStop);
         } else {
             return OpenInterval.createOpenEnd(optOutStart);
+        }
+    }
+    
+    public Duration getOptOutDuration() {
+        OpenInterval optOutInterval = getOptOutInterval();
+
+        if (optOutInterval.isOpenEnd()) {
+            return optOutInterval.withCurrentEnd().toClosedInterval().toDuration();
+        } else {
+            return optOutInterval.toClosedInterval().toDuration();
         }
     }
     

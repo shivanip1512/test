@@ -9,6 +9,8 @@ import com.cannontech.common.util.OpenInterval;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.stars.dr.controlhistory.model.ObservedControlHistory;
+import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
+import com.cannontech.stars.util.model.CustomerControlTotals;
 import com.cannontech.stars.xml.serialize.ControlHistoryEntry;
 import com.cannontech.stars.xml.serialize.ControlSummary;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
@@ -38,7 +40,6 @@ public interface LmControlHistoryUtilService {
                                                                    ReadableInstant startInstant, ReadableInstant stopInstant,
                                                                    DateTimeZone tz);
 
-    
     /**
      * This method takes an observed control history object and creates a legacy STARS control history
      * object.  
@@ -70,5 +71,17 @@ public interface LmControlHistoryUtilService {
                                                            int accountId,
                                                            int inventoryId,
                                                            int loadGroupId);
+
+
+    // Report Control History Methods.
+    /**
+     * This method should be general enough that it can be used for both the LMControlDetail report
+     * and the LMControlSummary report
+     */
+    public CustomerControlTotals calculateCumulativeCustomerControlValues(StarsLMControlHistory starsCtrlHist, 
+                                                                          ReadableInstant startDateTime, 
+                                                                          ReadableInstant stopDateTime, 
+                                                                          List<LMHardwareControlGroup> enrollments, 
+                                                                          List<LMHardwareControlGroup> optOuts);
 
 }

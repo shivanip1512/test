@@ -23,6 +23,7 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.StarsUtils;
+import com.cannontech.stars.util.model.CustomerControlTotals;
 import com.cannontech.stars.xml.serialize.ControlHistoryEntry;
 import com.cannontech.stars.xml.serialize.ControlSummary;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
@@ -411,6 +412,81 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
         return enrollmentControlHistoryList;
     }
 
+    public CustomerControlTotals calculateCumulativeCustomerControlValues(StarsLMControlHistory starsCtrlHist, 
+                                                                          ReadableInstant startDateTime, 
+                                                                          ReadableInstant stopDateTime, 
+                                                                          List<LMHardwareControlGroup> enrollments, 
+                                                                          List<LMHardwareControlGroup> optOuts) {
+        
+        CustomerControlTotals totals = new CustomerControlTotals();
+        
+        for(int j = 0; j < starsCtrlHist.getControlHistoryCount(); j++) {
+            ControlHistoryEntry controlHistoryEntry = starsCtrlHist.getControlHistory(j);
+            
+            List<ControlHistoryEntry> enrolledControlHistoryEntries = 
+                LmControlHistoryUtilServiceImpl.calculateEnrollmentControlPeriod(controlHistoryEntry, enrollments);
+            
+            CustomerControlTotals calculateOptOutControlHistorySummary = 
+                calculateOptOutControlHistorySummary(enrolledControlHistoryEntries, optOuts);
+            
+            totals = totals.plus(calculateOptOutControlHistorySummary);
+            
+        }
+        
+        return totals;
+    }
+    
+    /**
+     * This method gets the total durations of the actual control, the amount of control 
+     * that avoided due to opt outs, how many opt outs were used, and how many hours the inventory
+     * was opted out for.
+     */
+    private static CustomerControlTotals calculateOptOutControlHistorySummary(List<ControlHistoryEntry> enrolledControlHistoryEntries,
+                                                                              List<LMHardwareControlGroup> optOuts) {
+
+        // Calculates the total control duration for the set of enrolled control history.
+        Duration projectedControlHistoryDuration = Duration.ZERO;
+        for (ControlHistoryEntry enrolledControlHistoryEntry : enrolledControlHistoryEntries) {
+            projectedControlHistoryDuration = projectedControlHistoryDuration.plus(enrolledControlHistoryEntry.getControlDuration());
+        }
+
+        Duration totalOptedOutControlDuration = Duration.ZERO;
+        Duration totalOptedOutDuration = Duration.ZERO;
+        int optOutCount = 0;
+        
+        for (LMHardwareControlGroup optOut : optOuts) {
+
+            optOutCount++;
+            totalOptedOutDuration = totalOptedOutDuration.plus(optOut.getOptOutDuration());
+
+            OpenInterval optOutInterval = optOut.getOptOutInterval();
+            Duration optedOutDuration = Duration.ZERO;
+            
+            for (ControlHistoryEntry enrolledControlHistoryEntry : enrolledControlHistoryEntries) {
+                OpenInterval optedOutControlHistoryInterval = 
+                    optOutInterval.overlap(enrolledControlHistoryEntry.getOpenInterval());
+                
+                if (optedOutControlHistoryInterval != null) {
+                    if (optedOutControlHistoryInterval.isOpenEnd()) {
+                        optedOutDuration = optedOutDuration.plus(optedOutControlHistoryInterval.withCurrentEnd().toClosedInterval().toDuration());
+                    } else {
+                        optedOutDuration = optedOutDuration.plus(optedOutControlHistoryInterval.toClosedInterval().toDuration());
+                    }
+                }
+            }
+            
+            totalOptedOutControlDuration = totalOptedOutControlDuration.plus(optedOutDuration);
+        }
+        
+        CustomerControlTotals customerControlTotals = new CustomerControlTotals();
+        customerControlTotals.setTotalControlTime(projectedControlHistoryDuration.minus(totalOptedOutControlDuration));
+        customerControlTotals.setTotalControlDuringOptOutTime(totalOptedOutControlDuration);
+        customerControlTotals.setTotalOptOutTime(totalOptedOutDuration);
+        customerControlTotals.setTotalOptOutEvents(optOutCount);
+        
+        return customerControlTotals;
+    }
+    
     // DI Setters
     @Autowired
     public void setLmHardwareControlGroupDao(LMHardwareControlGroupDao lmHardwareControlGroupDao) {

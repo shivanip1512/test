@@ -35,5 +35,24 @@ public class CustomerControlTotals {
     public void setTotalOptOutEvents(int totalOptOutEvents) {
         this.totalOptOutEvents = totalOptOutEvents;
     }
+    
+    public CustomerControlTotals plus(CustomerControlTotals customerControlTotals) {
+        CustomerControlTotals result = new CustomerControlTotals();
+        
+        Duration controlDuringOptOutTime = 
+            this.totalControlDuringOptOutTime.plus(customerControlTotals.getTotalControlDuringOptOutTime());
+        result.setTotalControlDuringOptOutTime(controlDuringOptOutTime);
+        
+        Duration controlTime = this.totalControlTime.plus(customerControlTotals.getTotalControlTime());
+        result.setTotalControlTime(controlTime);
+        
+        Duration optOutTime = this.totalOptOutTime.plus(customerControlTotals.getTotalOptOutTime());
+        result.setTotalOptOutTime(optOutTime);
+        
+        int optOutEvents = this.totalOptOutEvents + customerControlTotals.getTotalOptOutEvents();
+        result.setTotalOptOutEvents(optOutEvents);
+        
+        return result;
+    }
 
 }

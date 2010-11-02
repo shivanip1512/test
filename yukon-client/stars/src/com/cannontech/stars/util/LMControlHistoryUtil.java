@@ -617,13 +617,13 @@ public class LMControlHistoryUtil {
         CustomerControlTotals totals = new CustomerControlTotals();
         
         for(int j = 0; j < starsCtrlHist.getControlHistoryCount(); j++) {
-            ControlHistoryEntry cntrlHist = starsCtrlHist.getControlHistory(j);
+            ControlHistoryEntry controlHistoryEntry = starsCtrlHist.getControlHistory(j);
 
-            Instant ctrlHistStartDateTime = cntrlHist.getStartInstant();
+            Instant ctrlHistStartDateTime = controlHistoryEntry.getStartInstant();
             Instant ctrlHistStopDateTime = 
-                cntrlHist.getStartInstant().plus(cntrlHist.getControlDuration());
+                controlHistoryEntry.getStartInstant().plus(controlHistoryEntry.getControlDuration());
 
-            Duration newDuration = cntrlHist.getControlDuration();
+            Duration newDuration = controlHistoryEntry.getControlDuration();
             Duration newOptOutControlTime = Duration.ZERO;
             Duration totalOptOutTime = Duration.ZERO;
             boolean neverEnrolled = true;
@@ -770,7 +770,7 @@ public class LMControlHistoryUtil {
                 
                 if (newDuration.isLongerThan(Duration.ZERO)) {
                     Instant controlEndInstant = 
-                        cntrlHist.getStartInstant().plus(cntrlHist.getControlDuration());
+                        controlHistoryEntry.getStartInstant().plus(controlHistoryEntry.getControlDuration());
                     if (startDateTime.isBefore(controlEndInstant) && 
                         stopDateTime.isAfter(controlEndInstant)) {
 

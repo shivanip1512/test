@@ -719,19 +719,41 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     public List<LMHardwareControlGroup> getIntersectingEnrollments(int accountId,
                                                                    int inventoryId,
                                                                    int loadGroupId,
-                                                                   OpenInterval controlHistoryInterval) {
+                                                                   OpenInterval enrollmentInterval) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(selectSql);
         sql.append("WHERE AccountId").eq(accountId);
         sql.append("  AND InventoryId").eq(inventoryId);
         sql.append("  AND LmGroupId").eq(loadGroupId);
-        if (!controlHistoryInterval.isOpenEnd()) {
-            sql.append("  AND GroupEnrollStart").lte(controlHistoryInterval.getEnd());
+        if (!enrollmentInterval.isOpenEnd()) {
+            sql.append("  AND GroupEnrollStart").lte(enrollmentInterval.getEnd());
         }
         sql.append("  AND (GroupEnrollStop IS NULL");
-        sql.append("       OR GroupEnrollStop").gte(controlHistoryInterval.getStart()).append(")");
+        sql.append("       OR GroupEnrollStop").gte(enrollmentInterval.getStart()).append(")");
         sql.append("  AND Type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
+        
+        List<LMHardwareControlGroup> enrollments = yukonJdbcTemplate.query(sql, createRowMapper());
+        return enrollments;
+    }
+
+    @Override
+    public List<LMHardwareControlGroup> getIntersectingOptOuts(int accountId,
+                                                               int inventoryId,
+                                                               int loadGroupId,
+                                                               OpenInterval optOutInterval) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(selectSql);
+        sql.append("WHERE AccountId").eq(accountId);
+        sql.append("  AND InventoryId").eq(inventoryId);
+        sql.append("  AND LmGroupId").eq(loadGroupId);
+        if (!optOutInterval.isOpenEnd()) {
+            sql.append("  AND OptOutStart").lte(optOutInterval.getEnd());
+        }
+        sql.append("  AND (OptOutStop IS NULL");
+        sql.append("       OR OptOutStop").gte(optOutInterval.getStart()).append(")");
+        sql.append("  AND Type").eq(LMHardwareControlGroup.OPT_OUT_ENTRY);
         
         List<LMHardwareControlGroup> enrollments = yukonJdbcTemplate.query(sql, createRowMapper());
         return enrollments;
