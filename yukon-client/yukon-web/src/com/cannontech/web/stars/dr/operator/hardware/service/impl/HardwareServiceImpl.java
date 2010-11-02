@@ -644,7 +644,7 @@ public class HardwareServiceImpl implements HardwareService {
      * If the energy company uses yukon for meters then type id 
      * will be zero.
      */
-    private HardwareType getHardwareTypeById(int hardwareTypeId) {
+    public HardwareType getHardwareTypeById(int hardwareTypeId) {
         Integer hardwareTypeDefinitionId;
         if(hardwareTypeId > 0) {
             /* This is a stars object that will live in either LMHardwareBase or MeterHardwareBase */
@@ -679,7 +679,7 @@ public class HardwareServiceImpl implements HardwareService {
      * @throws StarsDeviceSerialNumberAlreadyExistsException
      * @throws ObjectInOtherEnergyCompanyException
      */
-    private void checkSerialNumber(HardwareDto hardwareDto) throws ObjectInOtherEnergyCompanyException {
+    public void checkSerialNumber(HardwareDto hardwareDto) throws ObjectInOtherEnergyCompanyException {
         LiteInventoryBase possibleDuplicate = starsSearchDao.searchLMHardwareBySerialNumber(hardwareDto.getSerialNumber(), hardwareDto.getEnergyCompanyId());
         if(possibleDuplicate != null && possibleDuplicate.getInventoryID() != hardwareDto.getInventoryId()){
             throw new StarsDeviceSerialNumberAlreadyExistsException();
