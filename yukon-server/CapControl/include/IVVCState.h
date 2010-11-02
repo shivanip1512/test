@@ -76,11 +76,11 @@ class IVVCState
         void setShowBusDisableMsg(const bool flag);
         bool isShowBusDisableMsg() const;
 
-        void setShowLtcAutoModeMsg(const bool flag);
-        bool isShowLtcAutoModeMsg() const;
+        void setShowRegulatorAutoModeMsg(const bool flag);
+        bool isShowRegulatorAutoModeMsg() const;
 
-        void setShowNoLtcAttachedMsg(const bool flag);
-        bool isShowNoLtcAttachedMsg() const;
+        void setShowNoRegulatorAttachedMsg(const bool flag);
+        bool isShowNoRegulatorAttachedMsg() const;
 
         void setCommsLost(const bool flag);
         bool isCommsLost() const;
@@ -126,8 +126,8 @@ class IVVCState
 
         bool _showVarCheckFailMsg;
         bool _showSubbusDisableMsg;
-        bool _showLtcAutoModeMsg;
-        bool _showNoLtcAttachedMsg;
+        bool _showRegulatorAutoModeMsg;
+        bool _showNoRegulatorAttachedMsg;
         bool _commsLost;
 
         unsigned _consecutiveCapBankOps;

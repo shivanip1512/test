@@ -16,7 +16,7 @@ struct PointValue{
 enum PointRequestType
 {
     CbcRequestType,
-    LtcRequestType,
+    RegulatorRequestType,
     OtherRequestType
 };
 

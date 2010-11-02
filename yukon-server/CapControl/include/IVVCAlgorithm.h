@@ -25,13 +25,17 @@ class IVVCAlgorithm
 
     protected:
 
+        bool checkConfigAllZonesHaveRegulator(IVVCStatePtr state, CtiCCSubstationBusPtr subbus);
+
         virtual bool checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow);
         virtual bool checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, double desiredRatio, PointRequestType pointRequestType);
-        virtual void determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan, std::set<PointRequest>& pointRequests);
+        virtual bool determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan, std::set<PointRequest>& pointRequests);
 
         double calculateTargetPFVars(const double targetPF, const double wattValue);
         double calculateVf(const PointValueMap &voltages);
-        int calculateVte(const PointValueMap &voltages, const double Vmin, const double Vrm, const double Vmax);
+        int calculateVte(const PointValueMap &voltages, IVVCStrategy* strategy,
+                         const std::map<long, CtiCCMonitorPointPtr> & _monitorMap, const bool isPeakTime);
+
         double calculateBusWeight(const double Kv, const double Vf,
                                   const double Kp, const double powerFactor, const double targetPowerFactor);
 
@@ -48,8 +52,6 @@ class IVVCAlgorithm
         virtual bool isVoltageRegulatorInRemoteMode(const long regulatorID) const;
 
         virtual bool busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection);
-
-        int calculateVteIndividualTarget(const PointValueMap &voltages, IVVCStrategy* strategy, const std::map<long, CtiCCMonitorPointPtr> & _monitorMap, const bool isPeakTime);
 
         bool allRegulatorsInRemoteMode(const long subbusId) const;
 

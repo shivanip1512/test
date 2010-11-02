@@ -418,20 +418,18 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_target_power_factor_var_cal
 }
 
 
-BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_ltc_tap_operation_calculation)
+BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_regulator_tap_operation_calculation)
 {
     struct test_IVVCAlgorithm : public IVVCAlgorithm
     {
         test_IVVCAlgorithm() : IVVCAlgorithm( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ) {  }
 
-        int test_calculateVte(const PointValueMap &voltages, const double Vmin, const double Vrm, const double Vmax)
-        {
-            return calculateVte(voltages, Vmin, Vrm, Vmax);
-        }
+        using IVVCAlgorithm::calculateVte;
     };
 
-    std::set<long> ignorePoints;
     test_IVVCAlgorithm  _algorithm;
+    std::map<long, CtiCCMonitorPointPtr>    monitorMap;
+    IVVCStrategy    strategy( PointDataRequestFactoryPtr( new PointDataRequestFactory ) );
 
     PointValue    _value;
     PointValueMap _voltages;
@@ -463,6 +461,9 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_ltc_tap_operation_calculati
     _value.value    = 121.9;
     _voltages[1007] = _value;
 
+    strategy.restoreParameters("Lower Volt Limit", "PEAK", "115.0");
+    strategy.restoreParameters("Voltage Regulation Margin", "PEAK", "4.0");
+    strategy.restoreParameters("Upper Volt Limit", "PEAK", "125.0");
     /*
         The fifth and sixth parameter are point IDs to ignore in the tap operation calculation.  Use this
          feature to generate different test values with the same set of data.
@@ -470,50 +471,51 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_ltc_tap_operation_calculati
 
     // Don't exclude any points - all voltages within limits, on both sides of the margin - no operation
 
-    BOOST_CHECK_EQUAL(  0 , _algorithm.test_calculateVte( _voltages, 115.0, 119.0, 125.0 ) );
+    BOOST_CHECK_EQUAL(  0 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true ) );
 
     // exclude the only point that is below the marginal voltage - should tap down
-
-    //ignorePoints.insert(1006);
     _voltages.erase(1006);
-    BOOST_CHECK_EQUAL( -1 , _algorithm.test_calculateVte( _voltages, 115.0, 119.0, 125.0 ) );
+
+    BOOST_CHECK_EQUAL( -1 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true ) );
 
     // Don't exclude any points - single voltage over limit - should tap down
-    //ignorePoints.clear();
     _value.value    = 118.2;
     _voltages[1006] = _value;
-    BOOST_CHECK_EQUAL( -1 , _algorithm.test_calculateVte( _voltages, 115.0, 119.0, 122.0 ) );
+    strategy.restoreParameters("Upper Volt Limit", "PEAK", "122.0");
+
+    BOOST_CHECK_EQUAL( -1 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true ) );
 
     // exclude the only point that is above the max voltage - no operation
-    //ignorePoints.insert(1002);
     _voltages.erase(1002);
-    BOOST_CHECK_EQUAL(  0 , _algorithm.test_calculateVte( _voltages, 115.0, 119.0, 122.0 ) );
 
+    BOOST_CHECK_EQUAL(  0 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true ) );
 
     // Don't exclude any points - single voltage over limit and single voltage under limit - should tap down
-    //ignorePoints.clear();
     _value.value    = 122.1;
     _voltages[1002] = _value;
-    BOOST_CHECK_EQUAL( -1 , _algorithm.test_calculateVte( _voltages, 119.0, 120.0, 122.0 ) );
+
+    strategy.restoreParameters("Lower Volt Limit", "PEAK", "119.0");
+    strategy.restoreParameters("Voltage Regulation Margin", "PEAK", "1.0");
+
+    BOOST_CHECK_EQUAL( -1 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true ) );
 
     // exclude the point above the max voltage - should tap up
-    //ignorePoints.insert(1002);
     _voltages.erase(1002);
-    BOOST_CHECK_EQUAL(  1 , _algorithm.test_calculateVte( _voltages, 119.0, 120.0, 122.0 ) );
+
+    BOOST_CHECK_EQUAL(  1 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true ) );
 
     // exclude the point below the min voltage - should tap down
-    //ignorePoints.clear();
     _value.value    = 122.1;
     _voltages[1002] = _value;
 
-    //ignorePoints.insert(1006);
     _voltages.erase(1006);
-    BOOST_CHECK_EQUAL( -1 , _algorithm.test_calculateVte( _voltages, 119.0, 120.0, 122.0 ) );
+
+    BOOST_CHECK_EQUAL( -1 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true ) );
 
     // exclude the points above the max voltage and below min - no operation
-    //ignorePoints.insert(1002);
     _voltages.erase(1002);
-    BOOST_CHECK_EQUAL(  0 , _algorithm.test_calculateVte( _voltages, 119.0, 120.0, 122.0 ) );
+
+    BOOST_CHECK_EQUAL(  0 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true ) );
 }
 
 

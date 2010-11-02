@@ -9,8 +9,8 @@ IVVCState::IVVCState() :
     _commsRetryCount(0),
     _showVarCheckFailMsg(true),
     _showSubbusDisableMsg(true),
-    _showLtcAutoModeMsg(true),
-    _showNoLtcAttachedMsg(true),
+    _showRegulatorAutoModeMsg(true),
+    _showNoRegulatorAttachedMsg(true),
     _remoteMode(false),
     _commsLost(false),
     _firstPass(true)
@@ -170,25 +170,25 @@ bool IVVCState::isShowBusDisableMsg() const
 }
 
 
-void IVVCState::setShowLtcAutoModeMsg(const bool flag)
+void IVVCState::setShowRegulatorAutoModeMsg(const bool flag)
 {
-    _showLtcAutoModeMsg = flag;
+    _showRegulatorAutoModeMsg = flag;
 }
 
 
-bool IVVCState::isShowLtcAutoModeMsg() const
+bool IVVCState::isShowRegulatorAutoModeMsg() const
 {
-    return _showLtcAutoModeMsg;
+    return _showRegulatorAutoModeMsg;
 }
 
-void IVVCState::setShowNoLtcAttachedMsg(const bool flag)
+void IVVCState::setShowNoRegulatorAttachedMsg(const bool flag)
 {
-    _showNoLtcAttachedMsg = flag;
+    _showNoRegulatorAttachedMsg = flag;
 }
 
-bool IVVCState::isShowNoLtcAttachedMsg() const
+bool IVVCState::isShowNoRegulatorAttachedMsg() const
 {
-    return _showNoLtcAttachedMsg;
+    return _showNoRegulatorAttachedMsg;
 }
 
 void IVVCState::setReportedControllers(const std::set<long>& reportedControllers)

@@ -175,7 +175,7 @@ struct TestCapControlBusStore_ErrorCase : public CtiCCSubstationBusStore
 };
 
 
-BOOST_AUTO_TEST_CASE(test_scanLtcIntegrity_Success)
+BOOST_AUTO_TEST_CASE(test_scanVolatgeRegulatorIntegrity_Success)
 {
     TestCapControlBusStore * theStore = new TestCapControlBusStore();
     CtiCCSubstationBusStore::setInstance( theStore );
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(test_scanLtcIntegrity_Success)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_scanLtcIntegrity_NoVoltageRegulator_Exception)
+BOOST_AUTO_TEST_CASE(test_scanVolatgeRegulatorIntegrity_NoVoltageRegulator_Exception)
 {
     TestCapControlBusStore * theStore = new TestCapControlBusStore();
     CtiCCSubstationBusStore::setInstance( theStore );
@@ -222,7 +222,7 @@ BOOST_AUTO_TEST_CASE(test_scanLtcIntegrity_NoVoltageRegulator_Exception)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_scanLtcIntegrity_MissingPointAttribute_Exception)
+BOOST_AUTO_TEST_CASE(test_scanVolatgeRegulatorIntegrity_MissingPointAttribute_Exception)
 {
     TestCapControlBusStore_ErrorCase * theStore = new TestCapControlBusStore_ErrorCase();
     CtiCCSubstationBusStore::setInstance( theStore );
@@ -246,7 +246,7 @@ BOOST_AUTO_TEST_CASE(test_scanLtcIntegrity_MissingPointAttribute_Exception)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_sendLtcRemoteControl_Success)
+BOOST_AUTO_TEST_CASE(test_sendVolatgeRegulatorRemoteControl_Success)
 {
     TestCapControlBusStore * theStore = new TestCapControlBusStore();
     CtiCCSubstationBusStore::setInstance( theStore );
@@ -269,7 +269,7 @@ BOOST_AUTO_TEST_CASE(test_sendLtcRemoteControl_Success)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_sendLtcRemoteControl_NoVoltageRegulator_Exception)
+BOOST_AUTO_TEST_CASE(test_sendVolatgeRegulatorRemoteControl_NoVoltageRegulator_Exception)
 {
     TestCapControlBusStore * theStore = new TestCapControlBusStore();
     CtiCCSubstationBusStore::setInstance( theStore );
@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_CASE(test_sendLtcRemoteControl_NoVoltageRegulator_Exception)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_sendLtcRemoteControl_MissingPointAttribute_Exception)
+BOOST_AUTO_TEST_CASE(test_sendVolatgeRegulatorRemoteControl_MissingPointAttribute_Exception)
 {
     TestCapControlBusStore_ErrorCase * theStore = new TestCapControlBusStore_ErrorCase();
     CtiCCSubstationBusStore::setInstance( theStore );
@@ -317,7 +317,7 @@ BOOST_AUTO_TEST_CASE(test_sendLtcRemoteControl_MissingPointAttribute_Exception)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_sendLtcTapPosition_Success)
+BOOST_AUTO_TEST_CASE(test_sendVolatgeRegulatorTapPosition_Success)
 {
     TestCapControlBusStore * theStore = new TestCapControlBusStore();
     CtiCCSubstationBusStore::setInstance( theStore );
@@ -338,7 +338,7 @@ BOOST_AUTO_TEST_CASE(test_sendLtcTapPosition_Success)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_sendLtcTapPosition_NoVoltageRegulator_Exception)
+BOOST_AUTO_TEST_CASE(test_sendVolatgeRegulatorTapPosition_NoVoltageRegulator_Exception)
 {
     TestCapControlBusStore * theStore = new TestCapControlBusStore();
     CtiCCSubstationBusStore::setInstance( theStore );
@@ -360,7 +360,7 @@ BOOST_AUTO_TEST_CASE(test_sendLtcTapPosition_NoVoltageRegulator_Exception)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_sendLtcTapPosition_MissingPointAttribute_Exception)
+BOOST_AUTO_TEST_CASE(test_sendVolatgeRegulatorTapPosition_MissingPointAttribute_Exception)
 {
     TestCapControlBusStore_ErrorCase * theStore = new TestCapControlBusStore_ErrorCase();
     CtiCCSubstationBusStore::setInstance( theStore );
@@ -382,7 +382,7 @@ BOOST_AUTO_TEST_CASE(test_sendLtcTapPosition_MissingPointAttribute_Exception)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_sendLtcKeepAlive_Success)
+BOOST_AUTO_TEST_CASE(test_sendVolatgeRegulatorKeepAlive_Success)
 {
     TestCapControlBusStore * theStore = new TestCapControlBusStore();
     CtiCCSubstationBusStore::setInstance( theStore );
@@ -403,7 +403,7 @@ BOOST_AUTO_TEST_CASE(test_sendLtcKeepAlive_Success)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_sendLtcKeepAlive_NoVoltageRegulator_Exception)
+BOOST_AUTO_TEST_CASE(test_sendVolatgeRegulatorKeepAlive_NoVoltageRegulator_Exception)
 {
     TestCapControlBusStore * theStore = new TestCapControlBusStore();
     CtiCCSubstationBusStore::setInstance( theStore );
@@ -425,7 +425,7 @@ BOOST_AUTO_TEST_CASE(test_sendLtcKeepAlive_NoVoltageRegulator_Exception)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_sendLtcKeepAlive_MissingPointAttribute_Exception)
+BOOST_AUTO_TEST_CASE(test_sendVolatgeRegulatorKeepAlive_MissingPointAttribute_Exception)
 {
     TestCapControlBusStore_ErrorCase * theStore = new TestCapControlBusStore_ErrorCase();
     CtiCCSubstationBusStore::setInstance( theStore );
