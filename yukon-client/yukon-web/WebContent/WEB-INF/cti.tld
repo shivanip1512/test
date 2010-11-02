@@ -292,6 +292,27 @@
   	<tag-class>com.cannontech.web.taglib.IsStarsExistTag</tag-class>
   </tag>
  
+    <tag>
+        <name>standardPopupMsgScope</name>
+        <tag-class>com.cannontech.web.taglib.StandardPopupMsgScopeTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>module</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>pageName</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>popupName</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+ 
    <tag>
     <name>standardPage</name>
     <tag-class>com.cannontech.web.taglib.StandardPageTag</tag-class>
@@ -965,6 +986,22 @@
     <attribute>
         <name>type</name>
         <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>formatObject</name>
+    <tag-class>com.cannontech.web.taglib.FormatObjectTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>value</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue> 
+    </attribute>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
         <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>

@@ -16,8 +16,7 @@
 <%-- VIEW MODE --%>
 <cti:displayForPageEditModes modes="VIEW">
 	<spring:bind path="${path}">
-	    <tags:listItem value="${status.value}" items="${items}" 
-                       itemValue="${itemValue}" itemLabel="${itemLabel}"/>
+	    <tags:listItem value="${status.value}" items="${items}" itemValue="${itemValue}" itemLabel="${itemLabel}"/>
 	</spring:bind>
 </cti:displayForPageEditModes>
 
@@ -37,7 +36,9 @@
             <c:if test="${not empty pageScope.defaultItemLabel}">
                 <form:option value="${pageScope.defaultItemValue}">${pageScope.defaultItemLabel}</form:option>
             </c:if>
-            <form:options items="${items}" itemValue="${itemValue}" itemLabel="${itemLabel}"/>
+            <c:forEach var="item" items="${items}">
+                <form:option value="${item[itemValue]}"><cti:formatObject value="${item[itemLabel]}"/></form:option>
+            </c:forEach>
         </form:select>
     </c:when>
     <c:otherwise>
@@ -45,7 +46,9 @@
             <c:if test="${not empty pageScope.defaultItemLabel}">
                 <form:option value="${pageScope.defaultItemValue}">${pageScope.defaultItemLabel}</form:option>
             </c:if>
-            <form:options items="${items}" itemValue="${itemValue}" itemLabel="${itemLabel}"/>
+            <c:forEach var="item" items="${items}">
+                <form:option value="${item[itemValue]}"><cti:formatObject value="${item[itemLabel]}"/></form:option>
+            </c:forEach>
         </form:select>
     </c:otherwise>
 </c:choose>

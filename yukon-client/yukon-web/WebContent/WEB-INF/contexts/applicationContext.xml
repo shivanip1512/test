@@ -1096,6 +1096,8 @@
     </bean>
     
     <bean id="formatDurationTagPrototype" class="com.cannontech.web.taglib.FormatDurationTag"/>
+    
+    <bean id="formatObjectTagPrototype" class="com.cannontech.web.taglib.FormatObjectTag"/>
 
     <bean id="formatTimePeriodTagPrototype" class="com.cannontech.web.taglib.FormatTimePeriodTag"/>
     

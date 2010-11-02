@@ -13,8 +13,6 @@
 <cti:includeScript link="/JavaScript/widgetObject.js"/>
 <cti:includeScript link="/JavaScript/hideReveal.js"/>
 
-<cti:msgScope paths=".${bean},widgets.${bean}">
-
 <cti:beanLookup bean="${bean}" var="beanInst"/>
 
 <%-- AUTHORIZE VISIBLITY BASED ON ROLE/ROLE PROPERTY --%>
@@ -73,4 +71,3 @@ Event.observe(window,'load', function() {${widgetParameters.jsWidget}.render()})
 </div>
 
 </cti:checkUserChecker>
-</cti:msgScope>

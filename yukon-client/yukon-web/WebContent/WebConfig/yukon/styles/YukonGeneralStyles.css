@@ -6,6 +6,10 @@
     background-color: white;
 }
 
+td.removeColumn, th.removeColumn {
+	text-align:center;
+}
+
 h2 { /*Page Header*/
   margin: 0;
 }
@@ -46,6 +50,16 @@ div.simplePopup {
   background-color: white;
   left: 75px;
   top: 15%;
+}
+
+div.smallSimplePopup {
+	width: auto;
+    min-width: 400px;
+}
+
+div.mediumSimplePopup {
+	width: auto;
+    min-width: 600px;
 }
 
 div.pickerDialog {
@@ -186,6 +200,10 @@ table.resultsTable th {
 table.resultsTable td {
   padding: .4em .5em;
   border: 1px solid #ccc;
+}
+
+table.resultsTable tfoot {
+	background-color:#EEE;
 }
 
 table.resultsTable.smallPadding td {
@@ -462,6 +480,7 @@ div.roundedContainer .bottomBar{
 .widgetColumns td.widgetColumnCell {
   padding: 0;
   width: 50%;
+  vertical-align: top;
 }
 
 .widgetColumns {
@@ -1089,14 +1108,6 @@ div.accountInfoFragment {
 
 	margin-top:8px;
 	font-size:11px;
-}
-
-div.smallSimplePopup {
-    width: 400px;
-}
-
-div.mediumSimplePopup {
-    width: 600px;
 }
 
 span.radioLabel,

@@ -13,7 +13,7 @@
 <c:set var="labelFound" value="false"/>
 <c:forEach var="item" items="${items}">
     <c:if test="${value == item[itemValue]}">
-        ${item[itemLabel]}
+        <cti:formatObject value="${item[itemLabel]}"/>
         <c:set var="labelFound" value="true"/>
     </c:if>
 </c:forEach>

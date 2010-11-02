@@ -78,5 +78,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/ezmorph-1.0.6.jar"/>
+	<classpathentry kind="lib" path="/third-party/easymock.jar" sourcepath="Z:/java/Third-Party Sources/easymock-2.4-src.zip"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

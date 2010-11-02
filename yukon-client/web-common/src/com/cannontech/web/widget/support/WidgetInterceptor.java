@@ -12,6 +12,8 @@ import net.sf.jsonOLD.JSONObject;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.cannontech.web.taglib.MessageScopeHelper;
+
 public class WidgetInterceptor extends HandlerInterceptorAdapter {
 
     @SuppressWarnings("unchecked")
@@ -41,6 +43,18 @@ public class WidgetInterceptor extends HandlerInterceptorAdapter {
         Map<String, String> existingParams = (Map<String, String>) request.getAttribute("widgetParameters");
         JSONObject object = new JSONObject(existingParams);
         response.addHeader("X-JSON", object.toString());
+   
+        // TODO Fix this
+        String beanName = modelAndView.getViewName().split("/")[0]; 
+        MessageScopeHelper.forRequest(request).pushScope("." + beanName, ".widgets." + beanName);
+    }
+    
+    @Override
+    public void afterCompletion(HttpServletRequest request,
+                                HttpServletResponse response, Object handler,
+                                Exception ex) throws Exception {
+        MessageScopeHelper.forRequest(request).popScope();
+        
     }
 
 }

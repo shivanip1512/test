@@ -19,7 +19,7 @@
 		
 			<tr>
 		
-				<td class="widgetColumnCell" valign="top">
+				<td class="widgetColumnCell">
 				
 					<%-- OUTAGE MONITORS WIDGET --%>
 					<ct:widget bean="outageMonitorsWidget"/>
@@ -40,7 +40,7 @@
 					
 				</td>
 				
-				<td class="widgetColumnCell" valign="top">
+				<td class="widgetColumnCell">
 					<ct:widget bean="meterSearchWidget" />
 					<cti:checkRolesAndProperties value="PHASE_DETECT">
                         <ct:widget bean="systemActionsMenuWidget" />
