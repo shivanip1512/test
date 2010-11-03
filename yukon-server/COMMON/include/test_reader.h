@@ -46,7 +46,7 @@ public:
 
     bool setCommandText(const std::string &command) { return true; }
     bool isValid() { return true; }
-    bool execute(bool displayErrors = true) { return true; }
+    bool execute() { return true; }
 
     bool isNull()
     {

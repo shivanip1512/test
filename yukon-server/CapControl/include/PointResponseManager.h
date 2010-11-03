@@ -25,16 +25,18 @@ class PointResponseManager
         bool addPointResponse(PointResponse pointResponse);
 
         /**
-         * Sets a new delta value Point Response with pointId.
+         * Sets new delta value and static flag in Point Response by
+         * point Id.
          *
          * throws NotFoundException
          *
          * @param pointId
          * @param newDelta
+         * @param staticDelta
          *
          * @return bool
          */
-        bool handlePointResponseDeltaChange(long pointId, double newDelta);
+        bool handlePointResponseDeltaChange(long pointId, double newDelta, bool staticDelta);
 
         /**
          * Updates the Delta value for the monitor point with the update

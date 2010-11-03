@@ -61,15 +61,15 @@ VoltageRegulator & VoltageRegulator::operator=(const VoltageRegulator & rhs)
     if ( this != &rhs )
     {
         CapControlPao::operator=(rhs);
-    
+
         _updated    = rhs._updated;
         _mode       = rhs._mode;
-    
+
         _lastTapOperation       = rhs._lastTapOperation;
         _lastTapOperationTime   = rhs._lastTapOperationTime;
-    
+
         _attributes = rhs._attributes;
-    
+
         _pointValues = rhs._pointValues;
     }
 
@@ -81,6 +81,10 @@ void VoltageRegulator::saveGuts(RWvostream& ostrm) const
 {
     RWCollectable::saveGuts(ostrm);
     CapControlPao::saveGuts(ostrm);
+
+    ostrm << 0//parentId Must be here for clients...
+          << _lastTapOperation
+          << _lastTapOperationTime;
 }
 
 
@@ -99,7 +103,7 @@ VoltageRegulator::IDSet VoltageRegulator::getRegistrationPoints()
     {
         IDs.insert( attribute.second.getPointId() );
     }
-    
+
     return IDs;
 }
 

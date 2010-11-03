@@ -1799,9 +1799,9 @@ CtiCCCapBank& CtiCCCapBank::initVerificationControlStatus()
    return *this;
 }
 
-bool CtiCCCapBank::handlePointResponseDeltaChange(long pointId, double newDelta)
+bool CtiCCCapBank::handlePointResponseDeltaChange(long pointId, double newDelta, bool staticDelta)
 {
-    return _pointResponseManager.handlePointResponseDeltaChange(pointId,newDelta);
+    return _pointResponseManager.handlePointResponseDeltaChange(pointId,newDelta,staticDelta);
 }
 
 bool CtiCCCapBank::updatePointResponseDelta(CtiCCMonitorPoint* point)
@@ -2004,7 +2004,7 @@ void CtiCCCapBank::addPointResponse(Cti::CapControl::PointResponse pointResponse
     bool inserted = _pointResponseManager.addPointResponse(pointResponse);
     if ( ! inserted)
     {
-        _pointResponseManager.handlePointResponseDeltaChange(pointResponse.getPointId(),pointResponse.getDelta());
+        _pointResponseManager.handlePointResponseDeltaChange(pointResponse.getPointId(),pointResponse.getDelta(),pointResponse.getStaticDelta());
         _pointResponseManager.updatePointResponsePreOpValue(pointResponse.getPointId(),pointResponse.getPreOpValue());
     }
 }

@@ -33,8 +33,7 @@ public:
 
 protected:
 
-    bool _lowerTap;
-    bool _raiseTap;
+    bool _recentOperation;
     bool _autoRemote;
 };
 

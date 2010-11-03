@@ -13,9 +13,8 @@ RWDEFINE_COLLECTABLE( GangOperatedVoltageRegulator, CTIVOLTAGEREGULATOR_ID )
 
 GangOperatedVoltageRegulator::GangOperatedVoltageRegulator()
     : VoltageRegulator(),
-    _lowerTap(false),
-    _raiseTap(false),
-    _autoRemote(false)
+    _autoRemote(false),
+    _recentOperation(false)
 {
     // empty...
 }
@@ -23,9 +22,8 @@ GangOperatedVoltageRegulator::GangOperatedVoltageRegulator()
 
 GangOperatedVoltageRegulator::GangOperatedVoltageRegulator(Cti::RowReader & rdr)
     : VoltageRegulator(rdr),
-    _lowerTap(false),
-    _raiseTap(false),
-    _autoRemote(false)
+    _autoRemote(false),
+    _recentOperation(false)
 {
     // empty...
 }
@@ -33,9 +31,8 @@ GangOperatedVoltageRegulator::GangOperatedVoltageRegulator(Cti::RowReader & rdr)
 
 GangOperatedVoltageRegulator::GangOperatedVoltageRegulator(const GangOperatedVoltageRegulator & toCopy)
     : VoltageRegulator(),
-    _lowerTap(false),
-    _raiseTap(false),
-    _autoRemote(false)
+    _autoRemote(false),
+    _recentOperation(false)
 {
     operator=(toCopy);
 }
@@ -46,9 +43,7 @@ GangOperatedVoltageRegulator & GangOperatedVoltageRegulator::operator=(const Gan
     if ( this != &rhs )
     {
         VoltageRegulator::operator=(rhs);
-    
-        _lowerTap   = rhs._lowerTap;
-        _raiseTap   = rhs._raiseTap;
+
         _autoRemote = rhs._autoRemote;
     }
 
@@ -60,18 +55,15 @@ void GangOperatedVoltageRegulator::saveGuts(RWvostream & ostrm) const
 {
     VoltageRegulator::saveGuts(ostrm);
 
-    ostrm
-        << 0                //Parent Id.
-        << _lowerTap
-        << _raiseTap
-        << _autoRemote
-        << getOperatingMode();
+    ostrm << _recentOperation
+          << _autoRemote
+          << getOperatingMode();
 }
 
 
 void GangOperatedVoltageRegulator::loadAttributes(AttributeService * service)
 {
-    const PointAttribute attributes[] = 
+    const PointAttribute attributes[] =
     {
         PointAttribute::Voltage,
         PointAttribute::TapDown,
@@ -92,30 +84,16 @@ void GangOperatedVoltageRegulator::updateFlags(const unsigned tapDelay)
 {
     CtiTime now;
 
-    bool raiseTap = false;
-    bool lowerTap = false;
+    bool recentOperation = false;
 
-    if ((_lastTapOperationTime + tapDelay) > now)
+    if ((_lastTapOperationTime + 30) > now)
     {
-        if (_lastTapOperation == VoltageRegulator::RaiseTap)
-        {
-            raiseTap = true;
-        }
-        else if (_lastTapOperation == VoltageRegulator::LowerTap)
-        {
-            lowerTap = true;
-        }
+        recentOperation = true;
     }
 
-    if (_raiseTap != raiseTap)
+    if (_recentOperation != recentOperation)
     {
-        _raiseTap = raiseTap;
-        setUpdated(true);
-    }
-
-    if (_lowerTap != lowerTap)
-    {
-        _lowerTap = lowerTap;
+        _recentOperation = recentOperation;
         setUpdated(true);
     }
 

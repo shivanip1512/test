@@ -23,7 +23,7 @@ public:
     ~RowReader(){};
 
     virtual bool isValid() = 0;
-    virtual bool execute(bool displayErrors = true) = 0;
+    virtual bool execute() = 0;
 
     // Checks if the current index is null.
     // For example: rdr["test"].isNull();

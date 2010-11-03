@@ -16,7 +16,7 @@ namespace Cti {
 namespace CapControl {
 namespace Database {
 
-const string PointResponseDatabaseDao::_selectSql = "select BankID,PointID,PreOpValue,Delta from dynamicccmonitorpointresponse ";
+const string PointResponseDatabaseDao::_selectSql = "select BankID,PointID,PreOpValue,Delta,StaticDelta from dynamicccmonitorpointresponse ";
 
 PointResponseDatabaseDao::PointResponseDatabaseDao()
 {
@@ -67,20 +67,36 @@ vector<PointResponse> PointResponseDatabaseDao::getAllPointResponses()
 bool PointResponseDatabaseDao::update(PointResponse pointResponse)
 {
     DatabaseConnection databaseConnection;
-    static const string sql = "update dynamicccmonitorpointresponse "
-                                    " set preopvalue = ?,delta = ? "
-                                    " where bankid = ? AND pointid = ? ";
+    static const string sql = "UPDATE dynamicccmonitorpointresponse "
+                                    " SET PreOpValue = ?,Delta = ?,StaticDelta = ? "
+                                    " WHERE BankId = ? AND PointId = ? ";
 
     DatabaseWriter dbUpdater(databaseConnection, sql);
 
+    string tempString = "N";
+
+    if (pointResponse.getStaticDelta())
+    {
+        tempString = "Y";
+    }
+
     dbUpdater << pointResponse.getPreOpValue()
               << pointResponse.getDelta()
+              << tempString
               << pointResponse.getBankId()
               << pointResponse.getPointId();
 
-
-
     bool success = executeDbCommand(dbUpdater,(_CC_DEBUG & CC_DEBUG_DATABASE));
+
+    if (success)
+    {
+        int rowsAffected = dbUpdater.rowsAffected();
+        if (rowsAffected == 0)
+        {
+            //Nothing to update. Quietly return false;
+            return false;
+        }
+    }
 
     return success;
 }
@@ -88,14 +104,22 @@ bool PointResponseDatabaseDao::update(PointResponse pointResponse)
 bool PointResponseDatabaseDao::insert(PointResponse pointResponse)
 {
     DatabaseConnection databaseConnection;
-    static const string sql = "insert into dynamicccmonitorpointresponse values(?, ?, ?, ?)";
+    static const string sql = "INSERT INTO dynamicccmonitorpointresponse values(?, ?, ?, ?, ?)";
 
     DatabaseWriter dbInserter(databaseConnection, sql);
+
+    string tempString = "N";
+
+    if (pointResponse.getStaticDelta())
+    {
+        tempString = "Y";
+    }
 
     dbInserter << pointResponse.getBankId()
                << pointResponse.getPointId()
                << pointResponse.getPreOpValue()
-               << pointResponse.getDelta();
+               << pointResponse.getDelta()
+               << tempString;
 
     bool success = executeDbCommand(dbInserter,(_CC_DEBUG & CC_DEBUG_DATABASE));
 
@@ -105,11 +129,11 @@ bool PointResponseDatabaseDao::insert(PointResponse pointResponse)
 bool PointResponseDatabaseDao::save(PointResponse pointResponse)
 {
     //Attempt to insert first, if that fails. update it.
-    bool ret = insert(pointResponse);
+    bool ret = update(pointResponse);
 
     if (ret == false)
     {
-        ret = update(pointResponse);
+        ret = insert(pointResponse);
     }
 
     return ret;
@@ -133,13 +157,18 @@ void PointResponseDatabaseDao::buildPointResponseFromReader(DatabaseReader& read
     {
         long bankId,pointId;
         double preOpValue,delta;
+        bool staticDelta;
+        string tempString;
 
         reader["BankID"] >> bankId;
         reader["PointID"] >> pointId;
         reader["PreOpValue"] >> preOpValue;
         reader["Delta"] >> delta;
+        reader["StaticDelta"] >> tempString;
 
-        PointResponse pointResponse(pointId,bankId,preOpValue,delta);
+        staticDelta = (tempString=="Y"?true:false);
+
+        PointResponse pointResponse(pointId,bankId,preOpValue,delta,staticDelta);
 
         pointResponses.push_back(pointResponse);
     }

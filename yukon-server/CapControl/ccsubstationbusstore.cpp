@@ -930,7 +930,7 @@ bool CtiCCSubstationBusStore::handlePointDataByPaoId(int paoId, CtiPointDataMsg*
                     try
                     {
                         VoltageRegulatorManager::SharedPtr  regulator = _voltageRegulatorManager->getVoltageRegulator(paoId);
-                        
+
                         regulator->handlePointData( message );
                         handled = true;
                     }
@@ -7574,7 +7574,7 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, ma
                     for each(CtiCCCapBankPtr bankPtr in monitorBanks)
                     {
                         //Set default point delta
-                        PointResponse defaultPointResponse(currentMonPoint->getPointId(),bankPtr->getPaoId(),0,_IVVC_DEFAULT_DELTA);
+                        PointResponse defaultPointResponse(currentMonPoint->getPointId(),bankPtr->getPaoId(),0,_IVVC_DEFAULT_DELTA, false);
                         bankPtr->addPointResponse(defaultPointResponse);
                     }
                 }

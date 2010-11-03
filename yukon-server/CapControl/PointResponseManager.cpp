@@ -27,7 +27,7 @@ bool PointResponseManager::addPointResponse(PointResponse pointResponse)
     return ret.second;
 }
 
-bool PointResponseManager::handlePointResponseDeltaChange(long pointId, double newDelta)
+bool PointResponseManager::handlePointResponseDeltaChange(long pointId, double newDelta, bool staticDelta)
 {
     PointResponseMap::iterator itr = _pointResponses.find(pointId);
 
@@ -38,6 +38,7 @@ bool PointResponseManager::handlePointResponseDeltaChange(long pointId, double n
     }
 
     itr->second.setDelta(newDelta);
+    itr->second.setStaticDelta(staticDelta);
 
     return true;
 }

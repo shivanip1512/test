@@ -9,9 +9,6 @@ namespace Database {
 /**
  * This is to execute a database command whether write or read.
  *
- * Note that it will not print out any expection information to
- * the querys, only return false. Error handling is the
- * responsibility of the calling code.
  *
  * @param databaseCommand
  * @param printDebug
@@ -31,7 +28,7 @@ bool executeDbCommand(T& databaseCommand, bool printDebug = false)
     }
 
     //False to squelch printing insert errors. The calling code is responsible for displaying them.
-    if (databaseCommand.execute(false))
+    if (databaseCommand.execute())
     {
         //No Error occurred
         return true;

@@ -28,7 +28,7 @@ public:
 
     bool setCommandText(const std::string &command);
     bool isValid();
-    bool execute(bool displayErrors = true);
+    bool execute();
 
     // Checks if the current index is null.
     // For example: rdr["test"].isNull();

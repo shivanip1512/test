@@ -57,13 +57,14 @@ bool DynamicCommandExecutor::executePointResponseDeltaUpdate()
         return false;
     }
 
-    long bankId,pointId;
+    long bankId,pointId,staticDelta;
     double newDelta;
 
     //already tested that these are in the command.
     _dynamicCommand->getParameter(DynamicCommand::DEVICE_ID,bankId);
     _dynamicCommand->getParameter(DynamicCommand::POINT_ID,pointId);
     _dynamicCommand->getParameter(DynamicCommand::POINT_RESPONSE_DELTA,newDelta);
+    _dynamicCommand->getParameter(DynamicCommand::POINT_RESPONSE_STATIC_DELTA,staticDelta);
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     {
@@ -82,7 +83,7 @@ bool DynamicCommandExecutor::executePointResponseDeltaUpdate()
 
         try
         {
-            bankPtr->handlePointResponseDeltaChange(pointId,newDelta);
+            bankPtr->handlePointResponseDeltaChange(pointId,newDelta,(bool)staticDelta);
         }
         catch (NotFoundException& e)
         {
@@ -105,13 +106,14 @@ bool DynamicCommandExecutor::executePointResponseDeltaUpdate()
 
 bool DynamicCommandExecutor::validatePointResponseDeltaUpdate()
 {
-    long bankId,pointId;
+    long bankId,pointId,staticDelta;
     double newDelta;
 
     //Check to make sure we have the bankId pointId and delta value
     if (_dynamicCommand->getParameter(DynamicCommand::DEVICE_ID,bankId) &&
         _dynamicCommand->getParameter(DynamicCommand::POINT_ID,pointId) &&
-        _dynamicCommand->getParameter(DynamicCommand::POINT_RESPONSE_DELTA,newDelta))
+        _dynamicCommand->getParameter(DynamicCommand::POINT_RESPONSE_DELTA,newDelta) &&
+        _dynamicCommand->getParameter(DynamicCommand::POINT_RESPONSE_STATIC_DELTA,staticDelta))
     {
         return true;
     }

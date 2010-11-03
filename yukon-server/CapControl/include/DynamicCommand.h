@@ -20,7 +20,8 @@ class DynamicCommand : public RWCollectable
        enum Parameter {
            DEVICE_ID,
            POINT_ID,
-           POINT_RESPONSE_DELTA
+           POINT_RESPONSE_DELTA,
+           POINT_RESPONSE_STATIC_DELTA
        };
 
        DynamicCommand();

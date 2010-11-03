@@ -23,7 +23,7 @@ public:
     ~DatabaseWriter();
 
     RowWriter &setCommandText(const std::string &command);
-    bool execute(bool displayErrors = true);
+    bool execute();
 
     RowWriter &operator<<(const SpecialValues operand);
     RowWriter &operator<<(const bool operand);

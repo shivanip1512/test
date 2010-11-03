@@ -53,7 +53,7 @@ bool DatabaseReader::isValid()
     return _isValid;
 }
 
-bool DatabaseReader::execute(bool displayErrors)
+bool DatabaseReader::execute()
 {
     _executeCalled = true;
     try
@@ -64,7 +64,6 @@ bool DatabaseReader::execute(bool displayErrors)
     catch(SAException &x)
     {
         _isValid = false;
-        if(displayErrors)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** ERROR **** DB EXCEPTION " << (string)x.ErrText() << " Class "
