@@ -60,13 +60,15 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.substationBus">Substation Bus</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.regulator">Regulator</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.parentZone">Parent Zone</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.graphStartPosition">Graph Start Position</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.picker">Add</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.updateButton">Update</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.createButton">Create</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.remove">Remove</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.bank.name">Cap Bank Name</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.bank.device">CBC Name</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.order">Order</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.position">Position</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.distance">Distance</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.name">Point Name</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.device">Device</entry>	
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.picker.imageUrl">/WebConfig/yukon/Icons/folder_edit.gif</entry>

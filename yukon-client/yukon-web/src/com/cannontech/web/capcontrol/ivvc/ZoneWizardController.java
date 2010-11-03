@@ -25,7 +25,8 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.PageEditMode;
-import com.cannontech.web.capcontrol.ivvc.models.ZoneAssignmentRow;
+import com.cannontech.web.capcontrol.ivvc.models.ZoneAssignmentCapBankRow;
+import com.cannontech.web.capcontrol.ivvc.models.ZoneAssignmentPointRow;
 import com.cannontech.web.capcontrol.ivvc.models.ZoneDto;
 import com.cannontech.web.capcontrol.ivvc.service.ZoneService;
 import com.cannontech.web.capcontrol.ivvc.validators.ZoneDtoValidator;
@@ -129,6 +130,7 @@ public class ZoneWizardController {
         zoneDto.setName(zone.getName());
         zoneDto.setSubstationBusId(substationBusId);
         zoneDto.setRegulatorId(zone.getRegulatorId());
+        zoneDto.setGraphStartPosition(zone.getGraphStartPosition());
         
         Integer parentId = zone.getParentId();
         String parentName = "---";
@@ -140,11 +142,11 @@ public class ZoneWizardController {
         model.addAttribute("parentZoneName", parentName);
         
         //Add Bank Assignments
-        List<ZoneAssignmentRow> bankAssignments = buildBankAssignmentList(zone,cache);
+        List<ZoneAssignmentCapBankRow> bankAssignments = buildBankAssignmentList(zone,cache);
         zoneDto.setBankAssignments(bankAssignments);
 
         //Add Point Assignments
-        List<ZoneAssignmentRow> pointAssignments = buildPointAssignmentList(zone);
+        List<ZoneAssignmentPointRow> pointAssignments = buildPointAssignmentList(zone);
         zoneDto.setPointAssignments(pointAssignments);
         
         model.addAttribute("zoneDto", zoneDto);
@@ -209,7 +211,10 @@ public class ZoneWizardController {
     public String addCapBank(ModelMap modelMap, LiteYukonUser user, int id) {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
 
-        ZoneAssignmentRow row = buildBankAssignment(id, 0, cache);        
+        CapBankToZoneMapping bankToZone = new CapBankToZoneMapping();
+        bankToZone.setDeviceId(id);
+        bankToZone.setPosition(0);
+        ZoneAssignmentCapBankRow row = buildBankAssignment(bankToZone, cache);        
         modelMap.addAttribute("row",row);
         
         return "ivvc/addZoneTableRow.jsp";
@@ -217,61 +222,67 @@ public class ZoneWizardController {
     
     @RequestMapping
     public String addVoltagePoint(ModelMap modelMap, LiteYukonUser user, int id) {
-        
-        ZoneAssignmentRow row = buildPointAssignment(id, 0);        
+    	PointToZoneMapping pointToZone = new PointToZoneMapping();
+    	pointToZone.setPointId(id);
+    	pointToZone.setPosition(0);
+        ZoneAssignmentPointRow row = buildPointAssignment(pointToZone);        
         modelMap.addAttribute("row",row);
         
         return "ivvc/addZoneTableRow.jsp";
     }
 
-    private List<ZoneAssignmentRow> buildPointAssignmentList(Zone zone) {
+    private List<ZoneAssignmentPointRow> buildPointAssignmentList(Zone zone) {
     	List<PointToZoneMapping> pointsToZone = zoneService.getPointToZoneMapping(zone.getId());
         
-        List<ZoneAssignmentRow> rows = Lists.newArrayList();
+        List<ZoneAssignmentPointRow> rows = Lists.newArrayList();
         for (PointToZoneMapping pointToZone : pointsToZone) {
-            ZoneAssignmentRow row = buildPointAssignment(pointToZone.getPointId(), pointToZone.getZoneOrder());
+        	ZoneAssignmentPointRow row = buildPointAssignment(pointToZone);
             rows.add(row);
         }
         
         return rows;
     }
     
-    private ZoneAssignmentRow buildPointAssignment(Integer pointId, double zoneOrder) {
+    private ZoneAssignmentPointRow buildPointAssignment(PointToZoneMapping pointToZone) {
+    	Integer pointId = pointToZone.getPointId();
         LitePoint point = pointDao.getLitePoint(pointId);
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(point.getPaobjectID());
 
-        ZoneAssignmentRow row = new ZoneAssignmentRow();
+        ZoneAssignmentPointRow row = new ZoneAssignmentPointRow();
         row.setType("point");
         row.setId(pointId);        
         row.setName(point.getPointName());
         row.setDevice(pao.getPaoName());
-        row.setOrder(zoneOrder);
+        row.setPosition(pointToZone.getPosition());
+        row.setDistance(pointToZone.getDistance());
         
         return row;
     }
     
-    private List<ZoneAssignmentRow> buildBankAssignmentList(Zone zone, CapControlCache cache) {
-        List<ZoneAssignmentRow> rows = Lists.newArrayList();
+    private List<ZoneAssignmentCapBankRow> buildBankAssignmentList(Zone zone, CapControlCache cache) {
+        List<ZoneAssignmentCapBankRow> rows = Lists.newArrayList();
         List<CapBankToZoneMapping> banksToZone = zoneService.getCapBankToZoneMapping(zone.getId());
         
         for (CapBankToZoneMapping bankToZone : banksToZone) {
-            ZoneAssignmentRow row = buildBankAssignment(bankToZone.getDeviceId(), bankToZone.getZoneOrder(), cache);
+        	ZoneAssignmentCapBankRow row = buildBankAssignment(bankToZone, cache);
             rows.add(row);
         }
         
         return rows;
     }
     
-    private ZoneAssignmentRow buildBankAssignment(Integer bankId, double zoneOrder, CapControlCache cache) {
-        CapBankDevice bank = cache.getCapBankDevice(bankId);
+    private ZoneAssignmentCapBankRow buildBankAssignment(CapBankToZoneMapping bankToZone, CapControlCache cache) {
+        Integer bankId = bankToZone.getDeviceId();
+		CapBankDevice bank = cache.getCapBankDevice(bankId);
         LiteYukonPAObject controller = paoDao.getLiteYukonPAO(bank.getControlDeviceID());
 
-        ZoneAssignmentRow row = new ZoneAssignmentRow();
+        ZoneAssignmentCapBankRow row = new ZoneAssignmentCapBankRow();
         row.setType("bank");
         row.setId(bankId);        
         row.setName(bank.getCcName());
         row.setDevice(controller.getPaoName());
-        row.setOrder(zoneOrder);
+        row.setPosition(bankToZone.getPosition());
+        row.setDistance(bankToZone.getDistance());
         
         return row;
     }

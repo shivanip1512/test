@@ -13,12 +13,13 @@ public class ZoneDto {
     private Integer parentZoneId = null;
     private int substationBusId = -1;
     private int regulatorId = -1;
+    private double graphStartPosition;
     
-    private List<ZoneAssignmentRow> bankAssignments = new LazyList<ZoneAssignmentRow>(new ArrayList<ZoneAssignmentRow>(), 
-			new SimpleSupplier<ZoneAssignmentRow>(ZoneAssignmentRow.class));
+    private List<ZoneAssignmentCapBankRow> bankAssignments = new LazyList<ZoneAssignmentCapBankRow>(new ArrayList<ZoneAssignmentCapBankRow>(), 
+			new SimpleSupplier<ZoneAssignmentCapBankRow>(ZoneAssignmentCapBankRow.class));
     
-    private List<ZoneAssignmentRow> pointAssignments = new LazyList<ZoneAssignmentRow>(new ArrayList<ZoneAssignmentRow>(), 
-            										new SimpleSupplier<ZoneAssignmentRow>(ZoneAssignmentRow.class));
+    private List<ZoneAssignmentPointRow> pointAssignments = new LazyList<ZoneAssignmentPointRow>(new ArrayList<ZoneAssignmentPointRow>(), 
+            										new SimpleSupplier<ZoneAssignmentPointRow>(ZoneAssignmentPointRow.class));
 
     public Integer getZoneId() {
         return zoneId;
@@ -60,19 +61,27 @@ public class ZoneDto {
         this.regulatorId = regulatorId;
     }
 
-	public List<ZoneAssignmentRow> getBankAssignments() {
+	public double getGraphStartPosition() {
+		return graphStartPosition;
+	}
+
+	public void setGraphStartPosition(double graphStartPosition) {
+		this.graphStartPosition = graphStartPosition;
+	}
+
+	public List<ZoneAssignmentCapBankRow> getBankAssignments() {
 		return bankAssignments;
 	}
 
-	public void setBankAssignments(List<ZoneAssignmentRow> bankAssignments) {
+	public void setBankAssignments(List<ZoneAssignmentCapBankRow> bankAssignments) {
 		this.bankAssignments = bankAssignments;
 	}
 
-	public List<ZoneAssignmentRow> getPointAssignments() {
+	public List<ZoneAssignmentPointRow> getPointAssignments() {
 		return pointAssignments;
 	}
 
-	public void setPointAssignments(List<ZoneAssignmentRow> pointAssignments) {
+	public void setPointAssignments(List<ZoneAssignmentPointRow> pointAssignments) {
 		this.pointAssignments = pointAssignments;
 	}
 }

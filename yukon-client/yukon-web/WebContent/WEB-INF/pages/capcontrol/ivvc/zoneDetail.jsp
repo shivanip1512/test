@@ -222,7 +222,7 @@
 		<cti:dataGridCell>
 			<tags:boxContainer2 nameKey="voltageProfile" hideEnabled="true" showInitially="true">
 				<!--Chart -->
-		        <c:set var="amChartsProduct" value="amline"/>
+		        <c:set var="amChartsProduct" value="amxy"/>
 		        <c:url var="amDataFile" scope="page" value="/spring/capcontrol/ivvc/zone/chart">
 		        	<cti:param name="zoneId" value="${zoneId}"/>
 		        </c:url>

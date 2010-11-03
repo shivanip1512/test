@@ -1,12 +1,13 @@
 package com.cannontech.web.capcontrol.ivvc.models;
 
-public class ZoneAssignmentRow {
+public class ZoneAssignmentPointRow {
     
     private String type;
     private int id;
     private String name;
     private String device;
-    private double order;
+    private double position;
+    private double distance;
     
     public String getType() {
         return type;
@@ -40,11 +41,19 @@ public class ZoneAssignmentRow {
         this.device = device;
     }
 
-	public double getOrder() {
-		return order;
+	public double getPosition() {
+		return position;
 	}
 
-	public void setOrder(double order) {
-		this.order = order;
+	public void setPosition(double position) {
+		this.position = position;
+	}
+
+	public double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(double distance) {
+		this.distance = distance;
 	}
 }

@@ -15,7 +15,8 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.web.capcontrol.ivvc.models.ZoneAssignmentRow;
+import com.cannontech.web.capcontrol.ivvc.models.ZoneAssignmentCapBankRow;
+import com.cannontech.web.capcontrol.ivvc.models.ZoneAssignmentPointRow;
 import com.cannontech.web.capcontrol.ivvc.models.ZoneDto;
 import com.cannontech.web.capcontrol.ivvc.service.ZoneService;
 import com.google.common.collect.ArrayListMultimap;
@@ -51,6 +52,7 @@ public class ZoneServiceImpl implements ZoneService {
         zone.setParentId(zoneDto.getParentZoneId());
         zone.setRegulatorId(zoneDto.getRegulatorId());
         zone.setSubstationBusId(zoneDto.getSubstationBusId());
+        zone.setGraphStartPosition(zoneDto.getGraphStartPosition());
         
         List<CapBankToZoneMapping> banksToZone = getCapBankToZoneMappingByDto(zoneDto);
         List<PointToZoneMapping> pointsToZone = getPointToZoneMappingByDto(zoneDto);
@@ -76,11 +78,12 @@ public class ZoneServiceImpl implements ZoneService {
     
     private List<CapBankToZoneMapping> getCapBankToZoneMappingByDto(ZoneDto zoneDto) {
     	List<CapBankToZoneMapping> banks = Lists.newArrayList();
-        for (ZoneAssignmentRow bankRow : zoneDto.getBankAssignments()) {
+        for (ZoneAssignmentCapBankRow bankRow : zoneDto.getBankAssignments()) {
         	int bankId = bankRow.getId();
         	int zoneId = zoneDto.getZoneId();
-        	double order = bankRow.getOrder();
-        	CapBankToZoneMapping bank = new CapBankToZoneMapping(bankId, zoneId, order);
+        	double position = bankRow.getPosition();
+        	double dist = bankRow.getDistance();
+        	CapBankToZoneMapping bank = new CapBankToZoneMapping(bankId, zoneId, position, dist);
         	banks.add(bank);
         }
         return banks;
@@ -88,11 +91,12 @@ public class ZoneServiceImpl implements ZoneService {
     
     private List<PointToZoneMapping> getPointToZoneMappingByDto(ZoneDto zoneDto) {
     	List<PointToZoneMapping> points = Lists.newArrayList();
-        for (ZoneAssignmentRow pointRow : zoneDto.getPointAssignments()) {
+        for (ZoneAssignmentPointRow pointRow : zoneDto.getPointAssignments()) {
         	int pointId = pointRow.getId();
         	int zoneId = zoneDto.getZoneId();
-        	double order = pointRow.getOrder();
-        	PointToZoneMapping point = new PointToZoneMapping(pointId, zoneId, order);
+        	double position = pointRow.getPosition();
+        	double dist = pointRow.getDistance();
+        	PointToZoneMapping point = new PointToZoneMapping(pointId, zoneId, position, dist);
         	points.add(point);
         }
         return points;

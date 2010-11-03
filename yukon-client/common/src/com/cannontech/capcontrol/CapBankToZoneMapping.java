@@ -3,16 +3,18 @@ package com.cannontech.capcontrol;
 public class CapBankToZoneMapping {
 	private Integer deviceId;
 	private Integer zoneId;
-	private double zoneOrder;
+	private double position;
+	private double distance;
 	
 	public CapBankToZoneMapping() {
 		
 	}
 	
-	public CapBankToZoneMapping(Integer deviceId, Integer zoneId, double zoneOrder) {
+	public CapBankToZoneMapping(Integer deviceId, Integer zoneId, double position, double distance) {
 		this.deviceId = deviceId;
 		this.zoneId = zoneId;
-		this.zoneOrder = zoneOrder;
+		this.position = position;
+		this.distance = distance;
 	}
 	
 	public Integer getDeviceId() {
@@ -31,11 +33,19 @@ public class CapBankToZoneMapping {
 		this.zoneId = zoneId;
 	}
 
-	public double getZoneOrder() {
-		return zoneOrder;
+	public double getPosition() {
+		return position;
 	}
 
-	public void setZoneOrder(double zoneOrder) {
-		this.zoneOrder = zoneOrder;
+	public void setPosition(double position) {
+		this.position = position;
+	}
+
+	public double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(double distance) {
+		this.distance = distance;
 	}
 }

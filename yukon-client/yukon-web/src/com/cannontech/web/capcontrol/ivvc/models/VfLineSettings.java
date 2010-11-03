@@ -4,18 +4,20 @@ public class VfLineSettings {
     
     private String color;
     private int fillAlpha = 0;
-    private String bullet;
+    private String bullet = null;
     private boolean minMax = true;
     private boolean showBullet = true;
-    private boolean verticalLines = false;
+    private boolean showBalloon = true;
+    private boolean visibleInLegend = false;
     
-    public VfLineSettings(String color, int fillAlpha, String bullet, boolean minMax, boolean showLine, boolean verticalLines) {
+    public VfLineSettings(String color, int fillAlpha, String bullet, boolean minMax, boolean showBullet, boolean showBalloon, boolean visibleInLegend) {
         this.color = color;
         this.fillAlpha = fillAlpha;
         this.bullet = bullet;
         this.minMax = minMax;
-        this.showBullet = showLine;
-        this.verticalLines = verticalLines;
+        this.showBullet = showBullet;
+        this.showBalloon = showBalloon;
+        this.visibleInLegend = visibleInLegend;
     }
     
     public String getColor() {
@@ -45,13 +47,13 @@ public class VfLineSettings {
         this.fillAlpha = fillAlpha;
     }
 
-    public boolean isMinMax() {
-        return minMax;
-    }
+	public boolean isMinMax() {
+		return minMax;
+	}
 
-    public void setMinMax(boolean minMax) {
-        this.minMax = minMax;
-    }
+	public void setMinMax(boolean minMax) {
+		this.minMax = minMax;
+	}
 
 	public boolean isShowBullet() {
 		return showBullet;
@@ -61,19 +63,27 @@ public class VfLineSettings {
 		this.showBullet = showBullet;
 	}
 
+	public boolean isShowBalloon() {
+		return showBalloon;
+	}
+
+	public void setShowBalloon(boolean showBalloon) {
+		this.showBalloon = showBalloon;
+	}
+
+	public boolean isVisibleInLegend() {
+		return visibleInLegend;
+	}
+
+	public void setVisibleInLegend(boolean visibleInLegend) {
+		this.visibleInLegend = visibleInLegend;
+	}
+
 	public String getBullet() {
 		return bullet;
 	}
 
 	public void setBullet(String bullet) {
 		this.bullet = bullet;
-	}
-
-	public boolean isVerticalLines() {
-		return verticalLines;
-	}
-
-	public void setVerticalLines(boolean verticalLines) {
-		this.verticalLines = verticalLines;
 	}
 }

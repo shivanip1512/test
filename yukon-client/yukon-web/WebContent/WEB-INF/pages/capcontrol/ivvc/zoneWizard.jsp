@@ -123,6 +123,9 @@
 				</span>
 			</tags:nameValue2>
 		</cti:displayForPageEditModes>
+		
+		<%-- Graph Start Position --%>
+		<tags:inputNameValue path="graphStartPosition" nameKey=".label.graphStartPosition" size="2"/>
 	</tags:nameValueContainer2>
 	
 	<cti:dataGrid tableStyle="width:100%;" cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;width:30%">
@@ -139,7 +142,8 @@
 							<tr>
 								<th><i:inline key=".table.bank.name"/></th>
 								<th><i:inline key=".table.bank.device"/></th>
-								<th><i:inline key=".table.order"/></th>
+								<th><i:inline key=".table.position"/></th>
+								<th><i:inline key=".table.distance"/></th>
 								<th><i:inline key=".table.remove"/></th>
 							</tr>
 						</thead>
@@ -154,7 +158,10 @@
 										<spring:escapeBody htmlEscape="true">${row.device}</spring:escapeBody>
 									</td>
 									<td>
-										<tags:input path="bankAssignments[${status.index}].order" size="1"/>
+										<tags:input path="bankAssignments[${status.index}].position" size="1"/>
+									</td>
+									<td>
+										<tags:input path="bankAssignments[${status.index}].distance" size="3"/>
 									</td>
 									<td>
 										<cti:img key="delete" href="javascript:removeTableRow('${row.type}_${row.id}')"/>
@@ -183,7 +190,8 @@
 							<tr>
 								<th><i:inline key=".table.point.name"/></th>
 								<th><i:inline key=".table.point.device"/></th>
-								<th><i:inline key=".table.order"/></th>
+								<th><i:inline key=".table.position"/></th>
+								<th><i:inline key=".table.distance"/></th>
 								<th><i:inline key=".table.remove"/></th>
 							</tr>
 						</thead>
@@ -198,7 +206,10 @@
 										<spring:escapeBody htmlEscape="true">${row.device}</spring:escapeBody>
 									</td>
 									<td>
-										<tags:input path="pointAssignments[${status.index}].order" size="1"/>
+										<tags:input path="pointAssignments[${status.index}].position" size="1"/>
+									</td>
+									<td>
+										<tags:input path="pointAssignments[${status.index}].distance" size="3"/>
 									</td>
 									<td>
 										<cti:img key="delete" href="javascript:removeTableRow('${row.type}_${row.id}')"/>
