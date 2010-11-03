@@ -49,6 +49,7 @@ import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 /**
@@ -314,6 +315,28 @@ public class ThermostatServiceImpl implements ThermostatService {
 
     }
 
+    @Override
+    public void addMissingScheduleEntries(AccountThermostatSchedule schedule){
+        for(TimeOfWeek timeOfWeek : schedule.getThermostatScheduleMode().getAssociatedTimeOfWeeks()){
+            List<AccountThermostatScheduleEntry> entries = schedule.getEntriesByTimeOfWeekMultimap().get(timeOfWeek);
+            if(entries.size() == 0){
+                //No entries for this time of week on this schedule.
+                //Copy entries from WEEKDAY, which is used in all modes.
+                List<AccountThermostatScheduleEntry> weekdayEntries = schedule.getEntriesByTimeOfWeekMultimap().get(TimeOfWeek.WEEKDAY);
+                List<AccountThermostatScheduleEntry> newEntries = Lists.newArrayList();
+                for(AccountThermostatScheduleEntry weekdayEntry : weekdayEntries){
+                    AccountThermostatScheduleEntry copiedEntry = new AccountThermostatScheduleEntry();
+                    copiedEntry.setTimeOfWeek(timeOfWeek);
+                    copiedEntry.setCoolTemp(weekdayEntry.getCoolTemp());
+                    copiedEntry.setHeatTemp(weekdayEntry.getHeatTemp());
+                    copiedEntry.setStartTime(weekdayEntry.getStartTime());
+                    newEntries.add(copiedEntry);
+                }
+                schedule.addScheduleEntries(newEntries);
+            }
+        }
+    }
+    
     /**
      * Helper method to build a command string for the manual event
      * @param thermostat - Thermostat to send command to
@@ -533,4 +556,5 @@ public class ThermostatServiceImpl implements ThermostatService {
                                 ActivityLogActions.THERMOSTAT_SCHEDULE_ACTION,
                                 logMessage.toString());
     }
+    
 }

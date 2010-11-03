@@ -34,9 +34,17 @@ public interface ThermostatService {
             ThermostatScheduleMode scheduleMode, YukonUserContext userContext);
 
     /**
-     * Gets an AccountThermostatSchedule based off the energy comany default schdule for the given type.
+     * Gets an AccountThermostatSchedule based off the energy company default schedule for the given type.
      * The AccountThermostatSchedule is set to -1 (so it is ready to be inserted when it is saved). Do not set this.
      * The AccountThermostatSchedule accountId and name are also blank and should be set before saving.
      */
     public AccountThermostatSchedule getAccountThermostatScheduleTemplate(int accountId, SchedulableThermostatType type);
+    
+    /**
+     * Checks the AccountThermostatSchedule to see if it contains AccountThermostatScheduleEntries 
+     * for all times of week associated with its schedule mode.  If entries are missing for any 
+     * TimeOfWeek, entries are copied from TimeOfWeek.WEEKDAY and added to the schedule for that 
+     * TimeOfWeek.
+     */
+    public void addMissingScheduleEntries(AccountThermostatSchedule schedule);
 }

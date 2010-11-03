@@ -42,7 +42,6 @@ import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
-import com.google.common.collect.Lists;
 
 /**
  * Controller for Consumer-side Thermostat schedule operations
@@ -104,24 +103,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         }
         
         //make sure the schedule has entries for each time of week associated with its current mode
-        for(TimeOfWeek timeOfWeek : schedule.getThermostatScheduleMode().getAssociatedTimeOfWeeks()){
-            List<AccountThermostatScheduleEntry> entries = schedule.getEntriesByTimeOfWeekMultimap().get(timeOfWeek);
-            if(entries.size()==0){
-                //No entries for this time of week on this schedule.  Copy entries from Weekday,
-                //which is used in all modes
-                List<AccountThermostatScheduleEntry> weekdayEntries = schedule.getEntriesByTimeOfWeekMultimap().get(TimeOfWeek.WEEKDAY);
-                List<AccountThermostatScheduleEntry> newEntries = Lists.newArrayList();
-                for(AccountThermostatScheduleEntry weekdayEntry : weekdayEntries){
-                    AccountThermostatScheduleEntry copiedEntry = new AccountThermostatScheduleEntry();
-                    copiedEntry.setTimeOfWeek(timeOfWeek);
-                    copiedEntry.setCoolTemp(weekdayEntry.getCoolTemp());
-                    copiedEntry.setHeatTemp(weekdayEntry.getHeatTemp());
-                    copiedEntry.setStartTime(weekdayEntry.getStartTime());
-                    newEntries.add(copiedEntry);
-                }
-                schedule.addScheduleEntries(newEntries);
-            }
-        }
+        thermostatService.addMissingScheduleEntries(schedule);
         
         String useScheduleName = operatorThermostatHelper.generateDefaultNameForUnnamedSchdule(schedule, thermostatIds.size() == 1 ? thermostat.getLabel() : null, yukonUserContext);
         schedule.setScheduleName(useScheduleName);
