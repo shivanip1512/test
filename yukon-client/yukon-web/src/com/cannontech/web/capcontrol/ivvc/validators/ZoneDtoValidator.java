@@ -15,14 +15,14 @@ public class ZoneDtoValidator extends SimpleValidator<ZoneDto>{
     @Override
     protected void doValidation(ZoneDto target, Errors errors) {
         
-        YukonValidationUtils.rejectIfEmpty(errors,"name","yukon.web.modules.capcontrol.ivvc.zoneEditor.error.required");
+        YukonValidationUtils.rejectIfEmpty(errors,"name","yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.zoneName");
         
         if (target.getRegulatorId() == -1) {
-            errors.rejectValue("regulator", "yukon.web.modules.capcontrol.ivvc.zoneEditor.error.required");
+            errors.rejectValue("regulatorId", "yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.regulatorId");
         }
         
         if (target.getSubstationBusId() == -1) {
-            errors.rejectValue("substationBus", "yukon.web.modules.capcontrol.ivvc.zoneEditor.error.required");
+            errors.rejectValue("substationBusId", "yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.substationBusId");
         }
         
     }

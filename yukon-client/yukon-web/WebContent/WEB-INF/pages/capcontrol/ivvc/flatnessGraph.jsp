@@ -39,8 +39,8 @@
 			<frequency>1</frequency>
 		</x>
 		<y_left>
-			<min>${graphSettings.YLowerBound-15}</min>
-			<max>${graphSettings.YUpperBound+15}</max>
+			<min>${graphSettings.YLowerBound-5}</min>
+			<max>${graphSettings.YUpperBound+5}</max>
 			<strict_min_max>true</strict_min_max>
 		</y_left>
 	</values>
@@ -67,7 +67,7 @@
     	</label>
     	<label>
       		<x>0</x>
-      		<y>250</y>
+      		<y>175</y>
       		<rotate>90</rotate>
 			<align>left</align>  
       		<text>
@@ -76,7 +76,7 @@
     	</label>
     	<label>
       		<x>0</x>
-      		<y>430</y>
+      		<y>301</y>
 			<align>center</align>  
       		<text>
         		<![CDATA[<b>${graphSettings.XAxisLabel}</b>]]>
@@ -86,7 +86,7 @@
 
 	<legend>                                                    <!-- LEGEND -->
 	    <enabled>true</enabled>                                   <!-- [true] (true / false) -->
-	    <y>450</y>                                                   <!-- [] (Number / Number% / !Number) if empty, will be 20px below x axis values -->
+	    <y>315</y>                                                   <!-- [] (Number / Number% / !Number) if empty, will be 20px below x axis values -->
 	    <color>#FFFFFF</color>                                    <!-- [#FFFFFF] (hex color code) background color -->
 	    <alpha>0</alpha>                                          <!-- [0] (0 - 100) background alpha -->
 	    <border_color>#000000</border_color>                      <!-- [#000000] (hex color code) border color -->

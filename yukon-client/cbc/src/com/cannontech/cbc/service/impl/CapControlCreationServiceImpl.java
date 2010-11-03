@@ -28,7 +28,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.VoltageRegulatorType;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -154,20 +153,20 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
         
         switch (type) {
         	case CapControlTypes.CAP_CONTROL_LTC:
-        		regulator.setType(VoltageRegulatorType.LOAD_TAP_CHANGER);
+        		regulator.setType(PaoType.LOAD_TAP_CHANGER);
         		break;
         	case CapControlTypes.GANG_OPERATED_REGULATOR:
-        		regulator.setType(VoltageRegulatorType.GANG_OPERATED);
+        		regulator.setType(PaoType.GANG_OPERATED);
         		break;
         	case CapControlTypes.PHASE_OPERATED_REGULATOR:
-        		regulator.setType(VoltageRegulatorType.PHASE_OPERATED);
+        		regulator.setType(PaoType.PHASE_OPERATED);
         		break;
         	//default can't be reached b/c of how createRegulator is called above
         }
         
 	    int newRegId = voltageRegulatorDao.add(regulator);
 
-        sendDeviceDBChangeMessage(newRegId, DbChangeType.ADD, regulator.getType().getDbValue());
+        sendDeviceDBChangeMessage(newRegId, DbChangeType.ADD, regulator.getType().getDbString());
         
         return newRegId;
     }

@@ -5,25 +5,26 @@ import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.ExtraPaoPointMapping;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Lists;
 
-public class VoltageRegulator extends CapControlYukonPAOBase {
+public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDevice{
     private List<VoltageRegulatorPointMapping> pointMappings;
 
     public VoltageRegulator() {
         super();
         setPAOCategory( PAOGroups.STRING_CAT_CAPCONTROL );
-        setPAOClass( DeviceClasses.STRING_CLASS_VOLTAGEREGULATOR );
+        setPAOClass( PaoClass.CAPCONTROL.getDbString() );
     }
 
     public VoltageRegulator(Integer regulatorId) {
@@ -94,6 +95,11 @@ public class VoltageRegulator extends CapControlYukonPAOBase {
             }
         }
         return pointMappings;
+    }
+    
+    @Override
+    public PaoIdentifier getPaoIdentifier() {
+        return new PaoIdentifier(getPAObjectID(),PaoType.getForDbString(getPAOType()));
     }
 
 }

@@ -41,12 +41,13 @@ public class CapControlCommandExecutor
 	    this.user = user;
 	}
 	
-	public void executeDeltaUpdate(int bankId, int pointId, double delta) {
+	public void executeDeltaUpdate(int bankId, int pointId, double delta, boolean staticDelta) {
 	    DynamicCommand command = new DynamicCommand(CommandType.DELTA);
 	    
 	    command.addParameter(Parameter.DEVICE_ID, bankId);
 	    command.addParameter(Parameter.POINT_ID, pointId);
 	    command.addParameter(Parameter.POINT_RESPONSE_DELTA, delta);
+	    command.addParameter(Parameter.POINT_RESPONSE_STATIC_DELTA, staticDelta?1:0);
 	    
 	    capControlCache.getConnection().sendCommand(command);
 	}

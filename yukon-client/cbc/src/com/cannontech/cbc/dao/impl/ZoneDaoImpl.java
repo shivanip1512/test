@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
@@ -134,6 +135,26 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     }
     
     @Override
+    public Zone getParentZoneByBusId(int subBusId) {
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("SELECT ZoneId,ZoneName,RegulatorId,SubstationBusId,ParentId");
+        sqlBuilder.append("FROM Zone");
+        sqlBuilder.append("WHERE SubstationBusId");
+        sqlBuilder.eq(subBusId);
+        sqlBuilder.append("AND ParentId IS NULL");
+        
+        Zone zone = null;
+        
+        try {
+            zone = yukonJdbcTemplate.queryForObject(sqlBuilder, zoneRowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            //Eating the exception and returning null.
+            zone = null;
+        }
+        return zone;
+    }
+    
+    @Override
     public void save(Zone zone) {
         template.save(zone);
     }
@@ -212,7 +233,6 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
             p.addValue("RegulatorId", zone.getRegulatorId());
             p.addValue("SubstationBusId", zone.getSubstationBusId());
             p.addValue("ParentId", zone.getParentId());
-            
         }
         public Number getPrimaryKey(Zone zone) {
             return zone.getId();
@@ -228,7 +248,6 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         template.withTableName("Zone");
         template.withPrimaryKeyField("ZoneId");
         template.withFieldMapper(zoneFieldMapper);
-        template.withPrimaryKeyValidOver(-1);
     }
     
     @Autowired

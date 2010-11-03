@@ -17,7 +17,6 @@ public final class DeviceClasses
    public final static int GRID              = 1010;
    public final static int INVALID           = 1011;
    public final static int RFMESH            = 1012;
-   public final static int VOLTAGEREGULATOR  = 1013;
    
    public static final String STRING_CLASS_RTU = "RTU";
    public static final String STRING_CLASS_TRANSMITTER = "TRANSMITTER";
@@ -30,7 +29,7 @@ public final class DeviceClasses
    public static final String STRING_CLASS_VIRTUAL = "VIRTUAL";
    public static final String STRING_CLASS_LOADMANAGER = "LOADMANAGEMENT";
    public static final String STRING_CLASS_GRID = "GRIDADVISOR";
-   public static final String STRING_CLASS_VOLTAGEREGULATOR = "VOLTAGEREGULATOR";
+  
    
    public static final Integer[] IN_DEVICEDIRECTCOMMSETTINGS_TABLE = 
    {
@@ -75,8 +74,6 @@ public final static int getClass(String classString) {
 		return LOADMANAGEMENT;
     else if( compareString.equals(STRING_CLASS_GRID) )
         return GRID;
-    else if(compareString.equals(STRING_CLASS_VOLTAGEREGULATOR))
-        return VOLTAGEREGULATOR;
 	else
 		return INVALID;
 }
@@ -122,8 +119,6 @@ public final static String getClass(int classInt)
 
         case GRID:
             return STRING_CLASS_GRID;
-        case VOLTAGEREGULATOR:
-            return STRING_CLASS_VOLTAGEREGULATOR;
         case PAOGroups.CAT_CAPCONTROL:
             return PAOGroups.STRING_CAT_CAPCONTROL;
 			

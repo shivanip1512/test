@@ -10,7 +10,8 @@ public class DynamicCommand extends Message {
     public enum Parameter implements SerializableByIdentifier {
         DEVICE_ID(0),
         POINT_ID(1),
-        POINT_RESPONSE_DELTA(2);
+        POINT_RESPONSE_DELTA(2),
+        POINT_RESPONSE_STATIC_DELTA(3);
         
         private int parameterId;
         

@@ -28,8 +28,11 @@
 
 		function saveDelta(id) {
             var newDelta = $('editDelta_' + id).down().value;
+            var newStaticValue = $('staticDelta_' + id).checked;
+            
             if(newDelta.length != 0) {
                 $('delta').value = newDelta.escapeHTML();
+                $('staticDelta').value = newStaticValue;
                 $('bankId').value = id.split('_')[0]; 
                	$('pointId').value = id.split('_')[1];
                 $('deltaForm').submit();
@@ -141,43 +144,6 @@
                         </td>
 					</tr>
 				</table>
-				<br>
-				<tags:alternateRowReset/>	
-				
-				<tags:sectionContainer2 nameKey="details.points">
-					<tags:nameValueContainer2>
-						<tags:nameValue2 nameKey="modules.capcontrol.attributes.voltage">
-							<c:choose>
-	                            <c:when test="${voltageMapping.pointId > 0}">
-	                                <cti:pointValue pointId="${voltageMapping.pointId}" format="VALUE"/>
-	                            </c:when>
-	                            <c:otherwise>
-	                                ---
-	                            </c:otherwise>
-	                        </c:choose>
-						</tags:nameValue2>
-						<tags:nameValue2 nameKey="modules.capcontrol.attributes.tapPosition">
-							<c:choose>
-	                            <c:when test="${tapPositionMapping.pointId > 0}">
-	                                <cti:pointValue pointId="${tapPositionMapping.pointId}" format="VALUE"/>
-	                            </c:when>
-	                            <c:otherwise>
-	                                ---
-	                            </c:otherwise>
-	                        </c:choose>
-						</tags:nameValue2>
-						<tags:nameValue2 nameKey="modules.capcontrol.attributes.controlMode">
-							<c:choose>
-	                            <c:when test="${localAutoMapping.pointId > 0}">
-	                                <cti:pointValue pointId="${localAutoMapping.pointId}" format="VALUE"/>
-	                            </c:when>
-	                            <c:otherwise>
-	                                ---
-	                            </c:otherwise>
-	                        </c:choose>
-						</tags:nameValue2>
-					</tags:nameValueContainer2>
-				</tags:sectionContainer2>
 			</tags:boxContainer2>
 			<br>
 			<tags:boxContainer2 nameKey="attributes" hideEnabled="true" showInitially="true">
@@ -290,7 +256,7 @@
 		        <c:set var="swfWidth" value="100%"/>
 		        
 		        <script type="text/javascript">
-		           var so = new SWFObject("${amSrc}", "amline", "${swfWidth}", "500", "8", "#FFFFFF");
+		           var so = new SWFObject("${amSrc}", "amline", "${swfWidth}", "350", "8", "#FFFFFF");
 		           so.useExpressInstall('${expressInstallSrc}');
 		           so.write("${uniqueId}");
 		        </script>
@@ -311,6 +277,7 @@
 						<form id="deltaForm" action="/spring/capcontrol/ivvc/zone/deltaUpdate">
 						    <input type="hidden" name="bankId" id="bankId">
 				            <input type="hidden" name="pointId" id="pointId">
+				            <input type="hidden" name="staticDelta" id="staticDelta">
 				            <input type="hidden" name="delta" id="delta">
 				            <input type="hidden" name="zoneId" id="zoneId" value="${zoneId}">
 
@@ -331,7 +298,14 @@
 										<td style="width:13%"><spring:escapeBody htmlEscape="true">${pointDelta.affectedDeviceName}</spring:escapeBody></td>
 										<td style="width:15%"><spring:escapeBody htmlEscape="true">${pointDelta.affectedPointName}</spring:escapeBody></td>
 										<td style="width:10%"><spring:escapeBody htmlEscape="true">${pointDelta.preOpValue}</spring:escapeBody></td>
-										<td style="width:8%"><input type="checkbox" id="static"></td>
+										<td style="width:8%"><input type="checkbox" id="staticDelta_${pointDelta.bankId}_${pointDelta.pointId}"
+											onclick="saveDelta('${pointDelta.bankId}_${pointDelta.pointId}')" 
+											<c:choose>
+							                	<c:when test="${pointDelta.staticDelta}">
+					                                checked="checked"
+					                            </c:when>
+					                        </c:choose> 
+		                        		></td>
 										<td class="editable" style="width:100%">
 											<div id="viewDelta_${pointDelta.bankId}_${pointDelta.pointId}" title="Click to edit."
 											     onclick="editDelta('${pointDelta.bankId}_${pointDelta.pointId}')">

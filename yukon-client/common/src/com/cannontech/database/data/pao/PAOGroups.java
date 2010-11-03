@@ -66,11 +66,11 @@ public final static int getCapControlType(String typeString)
         return CAP_CONTROL_SPECIAL_AREA;
     else if (typeString.equalsIgnoreCase(STRING_CAPCONTROL_SUBSTATION))
         return CAP_CONTROL_SUBSTATION;
-    else if (typeString.equalsIgnoreCase(VoltageRegulatorType.LOAD_TAP_CHANGER.getDbValue()))
+    else if (typeString.equalsIgnoreCase(PaoType.LOAD_TAP_CHANGER.getDbString()))
         return CAP_CONTROL_LTC;
-    else if (typeString.equalsIgnoreCase(VoltageRegulatorType.GANG_OPERATED.getDbValue()))
+    else if (typeString.equalsIgnoreCase(PaoType.GANG_OPERATED.getDbString()))
         return GANG_OPERATED_REGULATOR;
-    else if (typeString.equalsIgnoreCase(VoltageRegulatorType.PHASE_OPERATED.getDbValue()))
+    else if (typeString.equalsIgnoreCase(PaoType.PHASE_OPERATED.getDbString()))
         return PHASE_OPERATED_REGULATOR;
     else
 		return INVALID;

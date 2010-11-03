@@ -11,7 +11,6 @@ import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.pao.RouteTypes;
-import com.cannontech.database.data.pao.VoltageRegulatorType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
@@ -160,9 +159,9 @@ public enum PaoType implements DatabaseRepresentationSource {
     CAP_CONTROL_AREA(CapControlTypes.CAP_CONTROL_AREA, CapControlType.AREA.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
     CAP_CONTROL_SPECIAL_AREA(CapControlTypes.CAP_CONTROL_SPECIAL_AREA, CapControlType.SPECIAL_AREA.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
     CAP_CONTROL_SUBSTATION(CapControlTypes.CAP_CONTROL_SUBSTATION, CapControlType.SUBSTATION.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
-    LOAD_TAP_CHANGER(CapControlTypes.CAP_CONTROL_LTC, VoltageRegulatorType.LOAD_TAP_CHANGER.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.VOLTAGEREGULATOR),
-    GANG_OPERATED(CapControlTypes.GANG_OPERATED_REGULATOR, VoltageRegulatorType.GANG_OPERATED.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.VOLTAGEREGULATOR),
-    PHASE_OPERATED(CapControlTypes.PHASE_OPERATED_REGULATOR, VoltageRegulatorType.PHASE_OPERATED.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.VOLTAGEREGULATOR),
+    LOAD_TAP_CHANGER(CapControlTypes.CAP_CONTROL_LTC, "LTC", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
+    GANG_OPERATED(CapControlTypes.GANG_OPERATED_REGULATOR, "GO_REGULATOR", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
+    PHASE_OPERATED(CapControlTypes.PHASE_OPERATED_REGULATOR, "PO_REGULATOR", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
     RFN410FL(DeviceTypes.RFN410FL, "RFN-410fL", PaoCategory.DEVICE, PaoClass.RFMESH), 
     RFN410FX(DeviceTypes.RFN410FX, "RFN-410fX", PaoCategory.DEVICE, PaoClass.RFMESH), 
     RFN410FD(DeviceTypes.RFN410FD, "RFN-410fD", PaoCategory.DEVICE, PaoClass.RFMESH), 

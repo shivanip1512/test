@@ -8,7 +8,7 @@ import javax.servlet.jsp.JspWriter;
 
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.cannontech.cbc.model.NavigableHierarchy;
+import com.cannontech.common.util.NavigableHierarchy;
 import com.cannontech.web.taglib.YukonTagSupport;
 import com.google.common.collect.Lists;
 

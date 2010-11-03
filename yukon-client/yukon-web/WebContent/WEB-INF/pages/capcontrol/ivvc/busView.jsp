@@ -7,7 +7,7 @@
 
 <cti:msgScope paths="modules.capcontrol.ivvc.busView">
 
-<cti:standardPage title="${title}" module="capcontrol">
+<cti:standardPage title="${title}" module="capcontrol" >
 	
 	<cti:includeScript link="/JavaScript/itemPicker.js" />
 	<cti:includeScript link="/JavaScript/tableCreation.js" />
@@ -39,7 +39,7 @@
 
 		}
  	</script>
- 	   
+
     <cti:standardMenu/>
     
     <cti:url value="/spring/capcontrol/tier/substations" var="substationAddress">
@@ -103,6 +103,21 @@
 			<br>
 
 			<tags:boxContainer2 nameKey="zoneList" hideEnabled="true" showInitially="true">
+				<div class="zoneHierarchy">
+					<ul>
+						<li>
+							<div style="font-weight: bold">
+								<i:inline key=".zoneList.name"/>
+								<div>
+									<i:inline key="modules.capcontrol.actions"/>
+									<div class="nonwrapping">
+										<i:inline key="modules.capcontrol.lastOperation"/>
+									</div>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
 				<cti:navigableHierarchy hierarchy="${zones}" 
 					styleClass="zoneHierarchy"
 					var="zone">
@@ -116,16 +131,21 @@
 					<cti:url var="zoneDeleteUrl" value="/spring/capcontrol/ivvc/wizard/deleteZone">
    						<cti:param name="zoneId" value="${zone.id}"/>
 				    </cti:url> 
-					<div class="selectable">
+					<div>
+						<capTags:regulatorModeIndicator paoId="${zone.regulatorId}" type="VOLTAGE_REGULATOR"/>
 						<a href="${zoneDetailUrl}">${zone.name}</a>
 						<div>
 							<a href="javascript:showZoneWizard('${zoneEditorUrl}');"><cti:img key="edit"/></a> 
 							<a href="${zoneDeleteUrl}"><cti:img key="delete"/></a>
+							<div class="nonwrapping">
+								<capTags:regulatorTapIndicator paoId="${zone.regulatorId}" type="VOLTAGE_REGULATOR"/>
+							</div>
 						</div>
 					</div>
 				</cti:navigableHierarchy>
-				<br>
-				<cti:button key="add" onclick="javascript:showZoneWizard('${zoneCreatorUrl}');"/>
+				<div class="actionArea">
+					<cti:button key="add" onclick="javascript:showZoneWizard('${zoneCreatorUrl}');"/>
+				</div>
 			</tags:boxContainer2>
 			<br>
 			<tags:boxContainer2 nameKey="busDetail" hideEnabled="true" showInitially="true">
@@ -140,7 +160,7 @@
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 						<td><i:inline key=".busDetail.table.volts"/>: </td>
 						<td>
-						    <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="VOLTS" styleClass="tierImg"/>
+						    <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="VOLTS"/>
 						    <cti:classUpdater type="SUBBUS" identifier="${subBusId}/VOLT_QUALITY">
 						    	<img class="tierImg" src="/WebConfig/yukon/Icons/bullet_red.gif">
 						    </cti:classUpdater>
@@ -149,7 +169,7 @@
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 						<td><i:inline key=".busDetail.table.kvar"/>: </td>
 						<td>
-							<cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KVAR_LOAD" styleClass="tierImg"/>
+							<cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KVAR_LOAD"/>
 							<cti:classUpdater type="SUBBUS" identifier="${subBusId}/KVAR_LOAD_QUALITY">
 								<img class="tierImg"  src="/WebConfig/yukon/Icons/bullet_red.gif">
 							</cti:classUpdater>
@@ -158,7 +178,7 @@
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 						<td><i:inline key=".busDetail.table.kw"/>: </td>
 						<td>
-							<cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KW" styleClass="tierImg"/>
+							<cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KW"/>
                         	<cti:classUpdater type="SUBBUS" identifier="${subBusId}/WATT_QUALITY">
                         		<img class="tierImg"  src="/WebConfig/yukon/Icons/bullet_red.gif">
                         	</cti:classUpdater>
@@ -204,7 +224,7 @@
 		        <c:set var="swfWidth" value="100%"/>
 		        
 		        <script type="text/javascript">
-		           var so = new SWFObject("${amSrc}", "amline", "${swfWidth}", "500", "8", "#FFFFFF");
+		           var so = new SWFObject("${amSrc}", "amline", "${swfWidth}", "350", "8", "#FFFFFF");
 		           so.useExpressInstall('${expressInstallSrc}');
 		           so.write("${uniqueId}");
 		        </script>

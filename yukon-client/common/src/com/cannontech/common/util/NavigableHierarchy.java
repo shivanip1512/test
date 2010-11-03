@@ -1,4 +1,4 @@
-package com.cannontech.cbc.model;
+package com.cannontech.common.util;
 
 import java.util.List;
 

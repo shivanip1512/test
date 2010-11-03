@@ -1,8 +1,10 @@
 package com.cannontech.yukon.cbc;
 
+import com.cannontech.capcontrol.TapOperation;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.VirtualInputStream;
+import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefineCollectableVoltageRegulator extends DefineCollectableStreamableCapObject {
 
@@ -37,9 +39,16 @@ public class DefineCollectableVoltageRegulator extends DefineCollectableStreamab
         
         VoltageRegulatorFlags regulator = (VoltageRegulatorFlags)obj;
 
-        regulator.setLowerTap(((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
-        regulator.setRaiseTap(((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
+        int tapOperationId = (int)vstr.extractUnsignedInt();
+        TapOperation operation = TapOperation.getForTapOperationId(tapOperationId);
+        regulator.setLastOperation(operation);
+        
+        java.util.Date timeStamp = (java.util.Date) vstr.restoreObject( SimpleMappings.Time );
+        regulator.setLastOperationTime(timeStamp);
+
+        regulator.setRecentOperation(((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
         regulator.setAutoRemote(((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
         regulator.setAutoRemoteManual(((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
+        
     }
 }

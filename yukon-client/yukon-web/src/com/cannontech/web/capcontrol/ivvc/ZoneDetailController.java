@@ -3,7 +3,6 @@ package com.cannontech.web.capcontrol.ivvc;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,11 +79,11 @@ public class ZoneDetailController {
     }
     
     @RequestMapping
-    public String deltaUpdate(ModelMap model, int bankId, int pointId, double delta, int zoneId, Boolean isSpecialArea, LiteYukonUser user, HttpServletRequest request) {
+    public String deltaUpdate(ModelMap model, boolean staticDelta, int bankId, int pointId, double delta, int zoneId, Boolean isSpecialArea, LiteYukonUser user, HttpServletRequest request) {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         CapControlCommandExecutor exec = new CapControlCommandExecutor(cache, user);
         
-        exec.executeDeltaUpdate(bankId,pointId,delta);
+        exec.executeDeltaUpdate(bankId,pointId,delta,staticDelta);
         
         if(isSpecialArea == null) {
             isSpecialArea = false;
@@ -108,14 +107,6 @@ public class ZoneDetailController {
     private void setupDetails(ModelMap model, VoltageRegulatorFlags regulatorFlags) {
         model.addAttribute("regulatorId",regulatorFlags.getCcId());
         model.addAttribute("regulatorName",regulatorFlags.getCcName());
-        
-        VoltageRegulatorPointMapping voltage = voltageRegulatorService.getPointMapping(regulatorFlags.getCcId(), BuiltInAttribute.VOLTAGE);
-        VoltageRegulatorPointMapping tapPosition = voltageRegulatorService.getPointMapping(regulatorFlags.getCcId(), BuiltInAttribute.TAP_POSITION);
-        VoltageRegulatorPointMapping localAuto = voltageRegulatorService.getPointMapping(regulatorFlags.getCcId(), BuiltInAttribute.AUTO_REMOTE_CONTROL);
-        
-        model.addAttribute("voltageMapping", voltage);
-        model.addAttribute("tapPositionMapping", tapPosition);
-        model.addAttribute("localAutoMapping", localAuto);
     }
     
     private void setupIvvcEvents(ModelMap model) {

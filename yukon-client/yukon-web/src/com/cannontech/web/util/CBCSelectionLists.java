@@ -10,6 +10,7 @@ import javax.faces.model.SelectItem;
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -22,7 +23,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.VoltageRegulatorType;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.PointAlarming;
@@ -290,8 +290,8 @@ public class CBCSelectionLists {
 	
 	private static final SelectItem[] wizardVoltageRegulatorTypes =  {
 		//value, label
-		new SelectItem(new Integer(PAOGroups.CAP_CONTROL_LTC), VoltageRegulatorType.LOAD_TAP_CHANGER.getDisplayValue() ),
-		new SelectItem(new Integer(PAOGroups.GANG_OPERATED_REGULATOR), VoltageRegulatorType.GANG_OPERATED.getDisplayValue() ),
+		new SelectItem(new Integer(PAOGroups.CAP_CONTROL_LTC), PaoType.LOAD_TAP_CHANGER.getDbString() ),
+		new SelectItem(new Integer(PAOGroups.GANG_OPERATED_REGULATOR), PaoType.GANG_OPERATED.getDbString() ),
 	};
     
 	/**

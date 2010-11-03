@@ -1,30 +1,27 @@
 package com.cannontech.yukon.cbc;
 
+import java.util.Date;
+
+import com.cannontech.capcontrol.TapOperation;
+
 public class VoltageRegulatorFlags extends StreamableCapObject {
     
-    private boolean lowerTap;
-    private boolean raiseTap;
+    private TapOperation lastOperation;
     private boolean autoRemote;
     private boolean autoRemoteManual;
+    private boolean recentOperation;
+    private Date lastOperationTime;
     
     public VoltageRegulatorFlags() {
         
     }
 
-    public boolean isLowerTap() {
-        return lowerTap;
+    public TapOperation getLastOperation() {
+        return lastOperation;
     }
 
-    public void setLowerTap(boolean lowerTap) {
-        this.lowerTap = lowerTap;
-    }
-
-    public boolean isRaiseTap() {
-        return raiseTap;
-    }
-
-    public void setRaiseTap(boolean raiseTap) {
-        this.raiseTap = raiseTap;
+    public void setLastOperation(TapOperation lastOperation) {
+        this.lastOperation = lastOperation;
     }
 
     public boolean isAutoRemote() {
@@ -43,7 +40,23 @@ public class VoltageRegulatorFlags extends StreamableCapObject {
         this.autoRemoteManual = autoRemoteManual;
     }
     
-	@Override
+	public boolean isRecentOperation() {
+        return recentOperation;
+    }
+
+    public void setRecentOperation(boolean recentOperation) {
+        this.recentOperation = recentOperation;
+    }
+
+    public Date getLastOperationTime() {
+        return lastOperationTime;
+    }
+
+    public void setLastOperationTime(Date lastOperationTime) {
+        this.lastOperationTime = lastOperationTime;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof VoltageRegulatorFlags) {
             VoltageRegulatorFlags regulator = (VoltageRegulatorFlags) obj;

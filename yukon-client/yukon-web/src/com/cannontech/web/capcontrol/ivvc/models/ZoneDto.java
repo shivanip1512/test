@@ -9,8 +9,8 @@ import com.cannontech.common.util.SimpleSupplier;
 public class ZoneDto {
     
     private String name;
-    private int zoneId = -1;
-    private int parentZoneId = -1;
+    private Integer zoneId = null;
+    private Integer parentZoneId = null;
     private int substationBusId = -1;
     private int regulatorId = -1;
     
@@ -20,11 +20,11 @@ public class ZoneDto {
     private List<ZoneAssignmentRow> pointAssignments = new LazyList<ZoneAssignmentRow>(new ArrayList<ZoneAssignmentRow>(), 
             										new SimpleSupplier<ZoneAssignmentRow>(ZoneAssignmentRow.class));
 
-    public int getZoneId() {
+    public Integer getZoneId() {
         return zoneId;
     }
 
-    public void setZoneId(int zoneId) {
+    public void setZoneId(Integer zoneId) {
         this.zoneId = zoneId;
     }
 
@@ -36,11 +36,11 @@ public class ZoneDto {
         this.name = name;
     }
 
-    public int getParentZoneId() {
+    public Integer getParentZoneId() {
         return parentZoneId;
     }
 
-    public void setParentZoneId(int parentZoneId) {
+    public void setParentZoneId(Integer parentZoneId) {
         this.parentZoneId = parentZoneId;
     }
 

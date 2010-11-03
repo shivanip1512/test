@@ -2,7 +2,7 @@ package com.cannontech.cbc.model;
 
 public class Zone {
 
-    private int id = -1;
+    private Integer id = null;//Can be null
     private String name;
     private int regulatorId;
     private int substationBusId;
@@ -12,11 +12,11 @@ public class Zone {
         
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

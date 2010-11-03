@@ -2,15 +2,15 @@ package com.cannontech.common.search.criteria;
 
 import org.apache.lucene.search.BooleanClause;
 
-import com.cannontech.database.data.pao.VoltageRegulatorType;
+import com.cannontech.common.pao.PaoType;
 
 public class VoltageRegulatorTypeCriteria extends YukonObjectCriteriaHelper {
 
     public VoltageRegulatorTypeCriteria() {
         super();
-        addCriteria("type", VoltageRegulatorType.LOAD_TAP_CHANGER.getDbValue(), BooleanClause.Occur.SHOULD);
-        addCriteria("type", VoltageRegulatorType.GANG_OPERATED.getDbValue(), BooleanClause.Occur.SHOULD);
-        addCriteria("type", VoltageRegulatorType.PHASE_OPERATED.getDbValue(), BooleanClause.Occur.SHOULD);
+        addCriteria("type", PaoType.LOAD_TAP_CHANGER.getDbString(), BooleanClause.Occur.SHOULD);
+        addCriteria("type", PaoType.GANG_OPERATED.getDbString(), BooleanClause.Occur.SHOULD);
+        addCriteria("type", PaoType.PHASE_OPERATED.getDbString(), BooleanClause.Occur.SHOULD);
     }
 
 }

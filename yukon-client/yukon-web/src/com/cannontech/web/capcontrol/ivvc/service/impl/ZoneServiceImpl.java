@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.cbc.dao.ZoneDao;
+import com.cannontech.cbc.exceptions.RootZoneExistsException;
 import com.cannontech.cbc.model.Zone;
 import com.cannontech.cbc.model.ZoneHierarchy;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -28,69 +29,40 @@ public class ZoneServiceImpl implements ZoneService {
     
     @Override
     @Transactional
-    public boolean createZone(ZoneDto zoneDto) {
-        String name = zoneDto.getName();
-        int parentId = zoneDto.getParentZoneId();
-        int regulatorId = zoneDto.getRegulatorId();
-        int substationBusId = zoneDto.getSubstationBusId();
+    public boolean saveZone(ZoneDto zoneDto) {
+        DbChangeType dbChangeType = DbChangeType.UPDATE;
         
-        Zone zone = new Zone();
-        zone.setName(name);
-        
-        if (parentId == -1) {
-            zone.setParentId(null);
-        } else {
-            zone.setParentId(parentId);
+        if(zoneDto.getZoneId() == null) {
+            //We are creating a new zone.
+            dbChangeType = DbChangeType.ADD;
+            
+            //If we are creating this as the root. Make sure one is not already on the subbus.
+            if (zoneDto.getParentZoneId() == null) {
+                Zone rootZone = zoneDao.getParentZoneByBusId(zoneDto.getSubstationBusId());
+                if (rootZone != null) {
+                    throw new RootZoneExistsException();
+                }
+            }
         }
         
-        zone.setRegulatorId(regulatorId);
-        zone.setSubstationBusId(substationBusId);
+        Zone zone = new Zone();
+        zone.setId(zoneDto.getZoneId());
+        zone.setName(zoneDto.getName());
+        zone.setParentId(zoneDto.getParentZoneId());
+        zone.setRegulatorId(zoneDto.getRegulatorId());
+        zone.setSubstationBusId(zoneDto.getSubstationBusId());
+        
+        List<CapBankToZoneMapping> banksToZone = getCapBankToZoneMappingByDto(zoneDto);
+        List<PointToZoneMapping> pointsToZone = getPointToZoneMappingByDto(zoneDto);
+        
         
         zoneDao.save(zone);
+        //Sets the new Id if this was an insert.
         zoneDto.setZoneId(zone.getId());
-        
-        List<CapBankToZoneMapping> banksToZone = getCapBankToZoneMappingByDto(zoneDto);
-        List<PointToZoneMapping> pointsToZone = getPointToZoneMappingByDto(zoneDto);
-        
-        zoneDao.updateCapBankToZoneMapping(zoneDto.getZoneId(), banksToZone);
-        zoneDao.updatePointToZoneMapping(zoneDto.getZoneId(), pointsToZone);
-
-        sendZoneChangeDbMessage(zone.getId(), DbChangeType.ADD);
-        
-        return true;
-    }
-    
-    @Override
-    @Transactional
-    public boolean updateZone(ZoneDto zoneDto) {
-        int id = zoneDto.getZoneId();
-        String name = zoneDto.getName();
-        int parentId = zoneDto.getParentZoneId();
-        int regulatorId = zoneDto.getRegulatorId();
-        int substationBusId = zoneDto.getSubstationBusId();
-        
-        Zone zone = new Zone();
-        zone.setId(id);
-        zone.setName(name);
-        
-        if (parentId == -1) {
-            zone.setParentId(null);
-        } else {
-            zone.setParentId(parentId);
-        }
-        
-        zone.setRegulatorId(regulatorId);
-        zone.setSubstationBusId(substationBusId);
-        
-        List<CapBankToZoneMapping> banksToZone = getCapBankToZoneMappingByDto(zoneDto);
-        List<PointToZoneMapping> pointsToZone = getPointToZoneMappingByDto(zoneDto);
-        
-        zoneDao.save(zone);
         zoneDao.updateCapBankToZoneMapping(zoneDto.getZoneId(), banksToZone);
         zoneDao.updatePointToZoneMapping(zoneDto.getZoneId(), pointsToZone);
         
-        sendZoneChangeDbMessage(zone.getId(), DbChangeType.UPDATE);
-        
+        sendZoneChangeDbMessage(zone.getId(),dbChangeType);
         return true;
     }
     

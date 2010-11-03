@@ -53,6 +53,16 @@ public interface ZoneDao {
      * @return List<Zone>
      */
     public List<Zone> getZonesBySubBusId(int subBusId);
+
+    /**
+     * Returns Parent Zone for Substation Id.
+     * 
+     * Returns null if there is no parent on the Substation bus.
+     * 
+     * @param subBusId
+     * @return
+     */
+    public Zone getParentZoneByBusId(int subBusId);
     
     /**
      * Return all Cap Banks attached to a zoneId.

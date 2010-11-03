@@ -34,10 +34,6 @@ public class LiteBaseResults {
             final List<LiteYukonPAObject> paoListCC = DaoFactory.getPaoDao().searchByName(getCriteria(), PaoClass.CAPCONTROL.getDbString());
             final List<LitePoint> pointListCC = DaoFactory.getPointDao().searchByName(getCriteria(), PaoClass.CAPCONTROL.getDbString());
             
-            //Objects of Class VOLTAGEREGULATOR
-            //We aren't searching for VOLTAGEREGULATOR points since there are none... there are only attributes
-            final List<LiteYukonPAObject> paoListVR = DaoFactory.getPaoDao().searchByName(getCriteria(), PaoClass.VOLTAGEREGULATOR.getDbString());
-            
             final Function<LiteBase, LiteWrapper> toLiteWrapper = new Function<LiteBase, LiteWrapper>() {
                 public LiteWrapper apply(LiteBase liteBase) {
                     return new LiteWrapper(liteBase);
@@ -45,11 +41,9 @@ public class LiteBaseResults {
             
             List<LiteWrapper> foundCCPaoWrappers = Lists.transform(paoListCC, toLiteWrapper);
             List<LiteWrapper> foundCCPointWrappers = Lists.transform(pointListCC, toLiteWrapper);
-            List<LiteWrapper> foundVRPaoWrappers = Lists.transform(paoListVR, toLiteWrapper);
             
             foundItems.addAll(foundCCPaoWrappers);
             foundItems.addAll(foundCCPointWrappers);
-            foundItems.addAll(foundVRPaoWrappers);
             
             Collections.sort(foundItems, LiteComparators.liteNameComparator);
 		}

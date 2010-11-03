@@ -24,7 +24,7 @@ public class DynamicDataDaoImpl implements DynamicDataDao {
         
         sqlBuilder.append("SELECT DMPR.BankId, DMPR.PointId, PAO.PAOName AS BankName,");
         sqlBuilder.append(       "PAOC.PAOName AS CbcName, PAO2.PAOName AS AffectedDeviceName,");
-        sqlBuilder.append(       "P.PointName AS AffectedPointName, DMPR.PreOpValue, DMPR.Delta");
+        sqlBuilder.append(       "P.PointName AS AffectedPointName, DMPR.PreOpValue, DMPR.Delta, DMPR.StaticDelta");
         sqlBuilder.append("FROM DynamicCCMonitorPointResponse DMPR");
         sqlBuilder.append("JOIN Point P ON P.PointId = DMPR.PointId");
         sqlBuilder.append("JOIN YukonPAObject PAO ON DMPR.BankId = PAO.PAObjectId");
@@ -71,6 +71,9 @@ public class DynamicDataDaoImpl implements DynamicDataDao {
             capBankPointDelta.setAffectedPointName(rs.getString("AffectedPointName"));
             capBankPointDelta.setPreOpValue(rs.getDouble("PreOpValue"));
             capBankPointDelta.setDelta(rs.getDouble("Delta"));
+            
+            String staticDelta = rs.getString("StaticDelta").trim().intern();
+            capBankPointDelta.setStaticDelta("Y".equals(staticDelta));
             
             return capBankPointDelta;
         }

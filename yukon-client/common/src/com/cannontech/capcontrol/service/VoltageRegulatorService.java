@@ -24,12 +24,6 @@ public class VoltageRegulatorService {
     private AttributeService attributeService;
     private PaoDao paoDao;
     private PointDao pointDao;
-
-    public VoltageRegulatorPointMapping getPointMapping(int regulatorId, BuiltInAttribute attribute) {
-        YukonPao regulator = paoDao.getYukonPao(regulatorId);
-        MappableAttribute mappableAttribute = new MappableAttribute(attribute, null);
-        return generatePointMapping(regulator,mappableAttribute);
-    }
     
     public List<VoltageRegulatorPointMapping> getPointMappings(int regulatorId) {
         List<VoltageRegulatorPointMapping> pointMappings = Lists.newArrayList();

@@ -99,8 +99,8 @@
             
                 <td id="anc_${thisSubStationId}">
                     <span><spring:escapeBody>${substation.ccName}</spring:escapeBody></span>
-                    <span class="errorRed textFieldLabel">
-                        <cti:capControlValue paoId="${substation.ccId}" type="SUBSTATION" format="SA_ENABLED" styleClass="updatingSpan"/>
+                    <span class="errorRed textFieldLabel updatingSpan">
+                        <cti:capControlValue paoId="${substation.ccId}" type="SUBSTATION" format="SA_ENABLED"/>
                     </span>
                 </td>
                 
@@ -115,7 +115,7 @@
                 <td>
                 	<capTags:warningImg paoId="${substation.ccId}" type="SUBSTATION"/>
                     <a id="substation_state_${substation.ccId}" <c:if test="${hasSubstationControl}">href="javascript:void(0);" onclick="getSubstationMenu('${substation.ccId}', event);"</c:if>>
-                        <cti:capControlValue paoId="${substation.ccId}" type="SUBSTATION" format="STATE" styleClass="updatingSpan"/>
+						<cti:capControlValue paoId="${substation.ccId}" type="SUBSTATION" format="STATE"/>
                     </a>
                     <cti:dataUpdaterCallback function="updateStateColorGenerator('substation_state_${substation.ccId}')" initialize="true" value="SUBSTATION/${substation.ccId}/STATE"/>
                 </td>
@@ -202,7 +202,7 @@
     				<td>
                         <capTags:warningImg paoId="${thisSubBusId}" type="SUBBUS"/>
     					<a id="subbus_state_${thisSubBusId}"<c:if test="${hasSubBusControl}">href="javascript:void(0);" onclick="getSubBusMenu('${thisSubBusId}', event);"</c:if>>
-                            <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="STATE" styleClass="updatingSpan"/>
+                            <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="STATE"/>
     					</a>
                         <cti:dataUpdaterCallback function="updateStateColorGenerator('subbus_state_${thisSubBusId}')" initialize="true" value="SUBBUS/${thisSubBusId}/STATE"/>
     				</td>
@@ -216,75 +216,83 @@
 									<c:choose>
 										<c:when test="${viewableSubBus.ivvcControlled}">
 			                            	<span style='font-weight:bold;font-size:11px;'>U:</span>
-			                            	<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_PEAKLEAD" styleClass="updatingSpan"/>
+			                            	<span class="updatingSpan"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_PEAKLEAD"/></span>
 			                            	<span style='font-weight:bold;font-size:11px;'> L:</span>
-			                            	<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_PEAKLAG" styleClass="updatingSpan"/>
+			                            	<span class="updatingSpan"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_PEAKLAG"/></span>
 			                            	<span style='font-weight:bold;font-size:11px;'> PF:</span>
-			                            	<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_CLOSEOPENPERCENT" styleClass="updatingSpan"/>
+			                            	<span class="updatingSpan"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_CLOSEOPENPERCENT"/></span>
 			                            </c:when>
 			                            <c:otherwise>
-	    									<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET" styleClass="updatingSpan"/>
+	    									<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET"/>
 	    								</c:otherwise>
     								</c:choose>
     							</a>
                             </c:when>
                             <c:otherwise>
-                                <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET" styleClass="updatingSpan"/>
+                            	<span class="updatingSpan">
+                                	<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET"/>
+                                </span>
                             </c:otherwise>
     					</c:choose>
     					<div class="ccPFPopup" id="subPFPopup_${thisSubBusId}_${isPowerFactorControlled}" style="display: none;" >
-                            <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_MESSAGE" styleClass="updatingSpan"/>     
+                            <span class="updatingSpan">
+                            	<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_MESSAGE"/>
+                            </span>     
     					</div>
     				</td>
     				<td>
     					<c:choose>
     						<c:when test="${viewableSubBus.subBus.usePhaseData}">
     							<a onmouseover="showDynamicPopup($('subVarLoadPopup_${thisSubBusId}'));" 
-    							onmouseout="nd();">
-									<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD" styleClass="updatingSpan"/>
+    							   onmouseout="nd();">
+									<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD"/>
 			                        <cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/KVAR_LOAD_QUALITY">
                                         <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
                                     </cti:classUpdater>
 			                        <span> / </span> 
-			                        <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD_EST" styleClass="updatingSpan"/> 
+			                        <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD_EST"/>
     		                    </a>
     						</c:when>
     						<c:otherwise>
     							<a>
-									<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD" styleClass="updatingSpan"/>
+									<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD"/>
 			                        <cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/KVAR_LOAD_QUALITY">
                                         <img src="/WebConfig/yukon/Icons/bullet_red.gif" class="tierImg" title="Questionable Quality">
                                     </cti:classUpdater>
 			                        <span> / </span> 
-			                        <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD_EST" styleClass="updatingSpan"/>
+			                        <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD_EST"/>
     		                    </a>
     						</c:otherwise>
     					</c:choose>
     				    <div class="ccVarLoadPopup" id="subVarLoadPopup_${thisSubBusId}" style="display: none;" > 
-                            <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD_MESSAGE" styleClass="updatingSpan"/>
+                            <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD_MESSAGE"/>
     				    </div>
     				</td>
     				<td>
-                        <a id="dateTime_${thisSubBusId}"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="DATE_TIME" styleClass="updatingSpan"/></a>
+                        <a id="dateTime_${thisSubBusId}"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="DATE_TIME"/></a>
     				</td>
     				<td>
-                        <a id="pFactor_${thisSubBusId}"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="PFACTOR" styleClass="updatingSpan"/></a>
+                        <a id="pFactor_${thisSubBusId}"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="PFACTOR"/></a>
     				</td>
     				<td>
                         <a id="kwVolts_${thisSubBusId}">
-                            <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KW" styleClass="updatingSpan"/>
+                        	<span class="updatingSpan">
+                            	<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KW"/>
+                            </span>
                         	<cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/WATT_QUALITY">
                                 <img src="/WebConfig/yukon/Icons/bullet_red.gif" title="Questionable Quality">
                             </cti:classUpdater>
                         	<span style="vertical-align:top"> / </span>
-                        	<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="VOLTS" styleClass="updatingSpan"/>
+                        	<span class="updatingSpan">
+                        		<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="VOLTS"/>
+                        	</span>
                         	<cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/VOLT_QUALITY">
                                 <img src="/WebConfig/yukon/Icons/bullet_red.gif" title="Questionable Quality">
                             </cti:classUpdater>
                         </a>
     				</td>
     				<td>
-                        <a id="dailyMaxOps_${thisSubBusId}"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="DAILY_MAX_OPS" styleClass="updatingSpan"/></a>
+                        <a id="dailyMaxOps_${thisSubBusId}"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="DAILY_MAX_OPS"/></a>
     				</td>
                     
     			</tr>
@@ -302,7 +310,7 @@
         				        <td><span class="smallIndent">Area: </span></td>
         	                    <td>
                                     <span class="smallIndent">${areaName}</span>
-        		                    <span class="errorRed"><cti:capControlValue paoId="${substation.ccId}" type="SUBSTATION" format="SA_ENABLED" styleClass="updatingSpan"/></span>
+        		                    <span class="errorRed"><cti:capControlValue paoId="${substation.ccId}" type="SUBSTATION" format="SA_ENABLED"/></span>
         				        </td>
         					</tr>
         			        <tr class="tableCellSnapShot" style="display: none;">
@@ -415,9 +423,9 @@
 					<td>
                         <capTags:warningImg paoId="${thisFeederId}" type="FEEDER"/>
                         <a id="feeder_state_${thisFeederId}"<c:if test="${hasFeederControl}">href="javascript:void(0);" onclick="getFeederMenu('${thisFeederId}', event);"</c:if>>
-                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="STATE" styleClass="updatingSpan"/>    
+                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="STATE"/>    
 						</a>
-                        <cti:dataUpdaterCallback function="updateStateColorGenerator('feeder_state_${thisFeederId}')"initialize="true" value="FEEDER/${thisFeederId}/STATE"/>
+                        <cti:dataUpdaterCallback function="updateStateColorGenerator('feeder_state_${thisFeederId}')" initialize="true" value="FEEDER/${thisFeederId}/STATE"/>
 					</td>
                     
 					<td>
@@ -429,24 +437,30 @@
 								   	<c:choose>
 										<c:when test="${viewfeeder.ivvcControlled}">
 			                            	<span style='font-weight:bold;font-size:11px;'>U:</span>
-			                            	<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_PEAKLEAD" styleClass="updatingSpan"/>
+			                            	<span class="updatingSpan">
+			                            		<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_PEAKLEAD"/>
+			                            	</span>
 			                            	<span style='font-weight:bold;font-size:11px;'> L:</span>
-			                            	<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_PEAKLAG" styleClass="updatingSpan"/>
+			                            	<span class="updatingSpan">
+			                            		<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_PEAKLAG"/>
+											</span>
 			                            	<span style='font-weight:bold;font-size:11px;'> PF:</span>
-			                            	<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_CLOSEOPENPERCENT" styleClass="updatingSpan"/>
+			                            	<span class="updatingSpan">
+			                            		<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_CLOSEOPENPERCENT"/>
+			                            	</span>
 			                            </c:when>
 			                            <c:otherwise>
-	    									<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET" styleClass="updatingSpan"/>
+	    									<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET" />
 	    								</c:otherwise>
     								</c:choose>
 		                        </a>
 	                        </c:when>
 	                        <c:otherwise>
-	                           <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET" styleClass="updatingSpan"/>
+	                           <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET"/>
 	                        </c:otherwise>
                         </c:choose>
                         <div class="ccPFPopup" id="feederPFPopup_${thisFeederId}_${isPowerFactorControlled}" style="display: none;">
-                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_MESSAGE" styleClass="updatingSpan"/>    
+                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_MESSAGE"/>    
 					   </div>
 					</td>
                     
@@ -454,51 +468,51 @@
 						<c:choose>
 							<c:when test="${viewfeeder.feeder.usePhaseData}">
 		                        <a onmouseover="showDynamicPopupAbove($('feederVarLoadPopup_${thisFeederId}'));" onmouseout="nd();">
-			                        <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD" styleClass="updatingSpan"/>
+			                        <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD"/>
 			                    	<cti:classUpdater type="FEEDER" identifier="${thisFeederId}/KVAR_LOAD_QUALITY">
                                         <img src="/WebConfig/yukon/Icons/bullet_red.gif" title="Questionable Quality">
                                     </cti:classUpdater>    
 			                        <span> / </span> 
-			                        <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD_EST" styleClass="updatingSpan"/>
+			                        <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD_EST"/>
 		                        </a>
 						  	</c:when>
 						  	<c:otherwise>
 								<a>
-									<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD" styleClass="updatingSpan"/>
+									<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD"/>
 			                        <cti:classUpdater type="FEEDER" identifier="${thisFeederId}/KVAR_LOAD_QUALITY">
                                         <img src="/WebConfig/yukon/Icons/bullet_red.gif" title="Questionable Quality">
                                      </cti:classUpdater>
 			                        <span> / </span> 
-			                        <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD_EST" styleClass="updatingSpan"/>
+			                        <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD_EST"/>
 		                        </a>
 						  	</c:otherwise>
 						</c:choose>
                         <div class="ccVarLoadPopup" id="feederVarLoadPopup_${thisFeederId}" style="display: none;">
-                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD_MESSAGE" styleClass="updatingSpan"/> 
+                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD_MESSAGE"/> 
                         </div>
 					</td>
                     
 					<td>
-                        <a id="dateTime_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="DATE_TIME" styleClass="updatingSpan"/></a>
+                        <a id="dateTime_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="DATE_TIME"/></a>
 					</td>
 					<td>
-                        <a id="pFactor_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="PFACTOR" styleClass="updatingSpan"/></a>
+                        <a id="pFactor_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="PFACTOR"/></a>
 					</td>
 					<td>
                         <a id="kwVolts_${thisFeederId}">
-                        	<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KW" styleClass="updatingSpan"/> 
+                        	<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KW"/> 
                         	<cti:classUpdater type="FEEDER" identifier="${thisFeederId}/WATT_QUALITY">
                                 <img src="/WebConfig/yukon/Icons/bullet_red.gif" title="Questionable Quality">
                             </cti:classUpdater>
                         	/
-                        	<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="VOLTS" styleClass="updatingSpan"/>
+                        	<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="VOLTS"/>
                         	<cti:classUpdater type="FEEDER" identifier="${thisFeederId}/VOLT_QUALITY">
                                 <img src="/WebConfig/yukon/Icons/bullet_red.gif" title="Questionable Quality">
                             </cti:classUpdater>
                         </a>
 					</td>
 					<td>
-                        <a id="dailyMaxOps_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="DAILY_MAX_OPS" styleClass="updatingSpan"/></a>
+                        <a id="dailyMaxOps_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="DAILY_MAX_OPS"/></a>
 					</td>
 				</tr>
 			</c:forEach>
@@ -588,7 +602,7 @@
                     
                     <td>
                         <c:if test="${hasCapbankControl}"><a href="javascript:void(0);" onclick="getCapBankMenu('${thisCapBankId}', event);"></c:if>
-                            <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME" styleClass="updatingSpan"/>
+                            <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
                         <c:if test="${hasCapbankControl}"></a></c:if>
     				</td>
                     
@@ -613,7 +627,7 @@
                                     href="javascript:void(0);" onclick ="getCapBankSystemMenu('${thisCapBankId}', event);"
                                 </c:if> 
                             >
-    					       <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_STATUS" styleClass="updatingSpan"/>
+    					       <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_STATUS"/>
                             </a>
                         </cti:capBankStateColor>
                         
@@ -632,24 +646,24 @@
                             	</tr>
                             	<tr>
 	                            	<td>Before:</td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEA_BEFORE" styleClass="updatingSpan"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEB_BEFORE" styleClass="updatingSpan"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEC_BEFORE" styleClass="updatingSpan"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_BEFORE_TOTAL" styleClass="updatingSpan"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEA_BEFORE"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEB_BEFORE"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEC_BEFORE"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_BEFORE_TOTAL"/></td>
                             	</tr>
                             	<tr>
 	                            	<td>After:</td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEA_AFTER" styleClass="updatingSpan"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEB_AFTER" styleClass="updatingSpan"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEC_AFTER" styleClass="updatingSpan"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_AFTER_TOTAL" styleClass="updatingSpan"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEA_AFTER"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEB_AFTER"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEC_AFTER"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_AFTER_TOTAL"/></td>
                             	</tr>
                             	<tr>
 	                            	<td>Change:</td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEA_PERCENTCHANGE" styleClass="updatingSpan"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEB_PERCENTCHANGE" styleClass="updatingSpan"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEC_PERCENTCHANGE" styleClass="updatingSpan"/></td>
-	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PERCENTCHANGE_TOTAL" styleClass="updatingSpan"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEA_PERCENTCHANGE"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEB_PERCENTCHANGE"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEC_PERCENTCHANGE"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PERCENTCHANGE_TOTAL"/></td>
                             	</tr>
                             </table>
     					</div>
@@ -659,12 +673,12 @@
                         <a id="dateTime_${thisCapBankId}"
     				       onmouseover = "showDynamicPopupAbove($('capBankStatusPopup_${thisCapBankId}'), 250)"
     				       onmouseout="nd()">
-                            <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="DATE_TIME" styleClass="updatingSpan"/> 
+                            <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="DATE_TIME"/> 
                         </a>
     				</td>
                     
     				<td>
-                        <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_SIZE" styleClass="updatingSpan"/>
+                        <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_SIZE"/>
                     </td>
                     
                     <td>
@@ -683,12 +697,12 @@
     		                    </c:choose>
     		                </c:if>
                         >
-                            <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PARENT" styleClass="updatingSpan"/>
+                            <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PARENT"/>
                     	</a>                    
                     </td>
 					<td>
 						<a>
-						  <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="DAILY_MAX_OPS" styleClass="updatingSpan"/>
+						  <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="DAILY_MAX_OPS"/>
                         </a>
 					</td>
 				</tr>

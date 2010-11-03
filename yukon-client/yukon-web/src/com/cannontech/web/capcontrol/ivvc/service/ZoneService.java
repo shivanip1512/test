@@ -10,8 +10,15 @@ import com.cannontech.web.capcontrol.ivvc.models.ZoneDto;
 
 public interface ZoneService {
     
-    public boolean createZone(ZoneDto zoneDto);
-    public boolean updateZone(ZoneDto zoneDto);
+    /**
+     * Inserts or Updates the passed in Zone. if the Zone Id is null it will insert, otherwise attempt to update.
+     * 
+     * Throws ParentZoneExistsException if a parent already exists on the Substation Bus.
+     * 
+     * @param zoneDto
+     * @return
+     */
+    public boolean saveZone(ZoneDto zoneDto);
     public boolean deleteZone(int zoneId);
     
     public List<Zone> getZonesBySubBusId(int subbusId);

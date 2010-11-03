@@ -3,6 +3,7 @@ package com.cannontech.web.capcontrol.ivvc;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -13,20 +14,23 @@ import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
+import com.cannontech.cbc.exceptions.RootZoneExistsException;
 import com.cannontech.cbc.model.Zone;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.ivvc.models.ZoneAssignmentRow;
 import com.cannontech.web.capcontrol.ivvc.models.ZoneDto;
 import com.cannontech.web.capcontrol.ivvc.service.ZoneService;
 import com.cannontech.web.capcontrol.ivvc.validators.ZoneDtoValidator;
-import com.cannontech.web.capcontrol.models.ViewableCapBank;
-import com.cannontech.web.capcontrol.util.CapControlWebUtils;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.cbc.VoltageRegulatorFlags;
@@ -45,14 +49,18 @@ public class ZoneWizardController {
     
     @RequestMapping
     public String zoneCreation(ModelMap model, LiteYukonUser user, int subBusId) {
+        
+        setupZoneCreation(model,user,subBusId);
+        
+        return "ivvc/zoneWizard.jsp";
+    }
+    
+    private void setupZoneCreation(ModelMap model, LiteYukonUser user, int subBusId) {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         SubBus subBus = cache.getSubBus(subBusId);
         
         List<Zone> zones = zoneService.getZonesBySubBusId(subBusId);
         model.addAttribute("zones",zones);
-
-        List<ViewableCapBank> capBanks = CapControlWebUtils.createViewableCapBank(cache.getCapBanksBySubBus(subBusId));
-        model.addAttribute("capBanks",capBanks);
 
         ZoneDto zoneDto = new ZoneDto();
         zoneDto.setSubstationBusId(subBusId);
@@ -62,26 +70,49 @@ public class ZoneWizardController {
         model.addAttribute("subBusName", subBus.getCcName());
         
         model.addAttribute("mode", PageEditMode.CREATE.name());
-        return "ivvc/zoneWizard.jsp";
     }
     
     @RequestMapping
     public String createZone(@ModelAttribute("zoneDto") ZoneDto zoneDto, BindingResult bindingResult,
-                             ModelMap modelMap) {
-
-        zoneDtoValidator.validate(zoneDto, bindingResult);
+                             ModelMap model, FlashScope flashScope, LiteYukonUser user) {
         
-        if (!bindingResult.hasErrors()) {
-            zoneService.createZone(zoneDto);
+        boolean errors = false;
+        try {
+            errors = saveZone(zoneDto,bindingResult,flashScope);
+        } catch (RootZoneExistsException e) {
+            errors = true;
+            flashScope.setMessage(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.rootZoneExists"), FlashScopeMessageType.ERROR);
         }
-        
-        modelMap.addAttribute("subBusId", zoneDto.getSubstationBusId());
-        
-        return "redirect:/spring/capcontrol/ivvc/bus/detail";
+
+        if (errors) {
+            setupZoneCreation(model,user,zoneDto.getSubstationBusId());
+            model.addAttribute("zoneDto", zoneDto);
+            
+            if (zoneDto.getRegulatorId() != -1) {
+                CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
+                VoltageRegulatorFlags regulatorFlags = cache.getVoltageRegulatorFlags(zoneDto.getRegulatorId());
+                model.addAttribute("regulatorName", regulatorFlags.getCcName());
+                flashScope.setMessage(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.problemSavingZone"), FlashScopeMessageType.ERROR);
+            } else {
+                flashScope.setMessage(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.regulatorId"), FlashScopeMessageType.ERROR);
+            }
+        } else {
+            //Close normally
+            return closeDialog(model);                
+        }
+
+        return "ivvc/zoneWizard.jsp";   
     }
     
     @RequestMapping
     public String zoneEditor(ModelMap model, LiteYukonUser user, int zoneId) {
+
+        setupZoneEditor(model,user,zoneId);
+        
+        return "ivvc/zoneWizard.jsp";
+    }
+    
+    private void setupZoneEditor(ModelMap model, LiteYukonUser user, int zoneId) {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         
         Zone zone = zoneService.getZoneById(zoneId);
@@ -101,14 +132,11 @@ public class ZoneWizardController {
         
         Integer parentId = zone.getParentId();
         String parentName = "---";
-        if (parentId == null) {
-            zoneDto.setParentZoneId(-1);
-        } else {
+        if (parentId != null) {
             zoneDto.setParentZoneId(parentId);
             Zone parentZone = zoneService.getZoneById(parentId);
             parentName = parentZone.getName();
         }
-
         model.addAttribute("parentZoneName", parentName);
         
         //Add Bank Assignments
@@ -123,23 +151,47 @@ public class ZoneWizardController {
         model.addAttribute("regulatorName", regulatorFlags.getCcName());
         model.addAttribute("subBusName", subBus.getCcName());
         model.addAttribute("mode", PageEditMode.EDIT.name());
-
-        return "ivvc/zoneWizard.jsp";
     }
     
     @RequestMapping
     public String updateZone(@ModelAttribute("zoneDto") ZoneDto zoneDto, BindingResult bindingResult,
-                             ModelMap modelMap) {
-
-        zoneDtoValidator.validate(zoneDto, bindingResult);
-        
-        if (!bindingResult.hasErrors()) {
-            zoneService.updateZone(zoneDto);
+                             ModelMap model, FlashScope flashScope, LiteYukonUser user) {
+        boolean errors = false;
+        try {
+            errors = saveZone(zoneDto,bindingResult,flashScope);
+        } catch (RootZoneExistsException e) {
+            errors = true;
+            flashScope.setMessage(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.rootZoneExists"), FlashScopeMessageType.ERROR);
         }
         
-        modelMap.addAttribute("subBusId", zoneDto.getSubstationBusId());
-        
-        return "redirect:/spring/capcontrol/ivvc/bus/detail";
+        if (errors) {
+            flashScope.setMessage(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.problemSavingZone"), FlashScopeMessageType.ERROR);
+            setupZoneEditor(model,user,zoneDto.getSubstationBusId());
+            model.addAttribute("zoneDto", zoneDto);
+            return "ivvc/zoneWizard.jsp";   
+        } else {
+            //Close normally
+            return closeDialog(model);                
+        }        
+    }
+    
+    private boolean saveZone(ZoneDto zoneDto, BindingResult bindingResult, FlashScope flashScope) {
+        zoneDtoValidator.validate(zoneDto, bindingResult);
+        if (bindingResult.hasErrors()) {
+            //Add Errors to flash scope
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            return true;
+        } else {
+            zoneService.saveZone(zoneDto);
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.success.saved"));
+        }
+        return false;
+    }
+    
+    private String closeDialog(ModelMap modelMap) {
+        modelMap.addAttribute("popupId", "tierContentPopup");
+        return "ivvc/closePopup.jsp";
     }
     
     @RequestMapping

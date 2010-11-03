@@ -78,6 +78,22 @@
 	<entry key="yukon.web.components.image.down.hoverText">Move Down</entry>
 	<entry key="yukon.web.components.image.down.disabled.imageUrl">/WebConfig/yukon/Icons/green_arrow_down_disabled.gif</entry>
 
+	<entry key="yukon.web.components.image.flashingGreenUpArrow.imageUrl">/WebConfig/yukon/Icons/arrow_up_green_anim.gif</entry>
+	<entry key="yukon.web.components.image.flashingGreenUpArrow.hoverUrl">/WebConfig/yukon/Icons/arrow_up_green_anim.gif</entry>
+	<entry key="yukon.web.components.image.flashingGreenUpArrow.hoverText"></entry>
+
+	<entry key="yukon.web.components.image.flashingGreenDownArrow.imageUrl">/WebConfig/yukon/Icons/arrow_down_green_anim.gif</entry>
+	<entry key="yukon.web.components.image.flashingGreenDownArrow.hoverUrl">/WebConfig/yukon/Icons/arrow_down_green_anim.gif</entry>
+	<entry key="yukon.web.components.image.flashingGreenDownArrow.hoverText"></entry>
+
+	<entry key="yukon.web.components.image.greenUpArrow.imageUrl">/WebConfig/yukon/Icons/arrow_up_green.gif</entry>
+	<entry key="yukon.web.components.image.greenUpArrow.hoverUrl">/WebConfig/yukon/Icons/arrow_up_green.gif</entry>
+	<entry key="yukon.web.components.image.greenUpArrow.hoverText"></entry>
+
+	<entry key="yukon.web.components.image.greenDownArrow.imageUrl">/WebConfig/yukon/Icons/arrow_down_green.gif</entry>
+	<entry key="yukon.web.components.image.greenDownArrow.hoverUrl">/WebConfig/yukon/Icons/arrow_down_green.gif</entry>
+	<entry key="yukon.web.components.image.greenDownArrow.hoverText"></entry>
+
     <entry key="yukon.web.components.tokenRequest.passwordPrompt">Password</entry>
 
     <entry key="yukon.web.components.button.ok.label">OK</entry>

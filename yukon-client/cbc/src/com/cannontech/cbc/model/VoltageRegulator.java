@@ -1,14 +1,16 @@
 package com.cannontech.cbc.model;
 
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.pao.VoltageRegulatorType;
 
-public class VoltageRegulator {
+public class VoltageRegulator implements YukonDevice{
     private String name;
     private String description = CtiUtilities.STRING_NONE;
     private int id;
     private boolean disabled = false;
-    private VoltageRegulatorType type = VoltageRegulatorType.LOAD_TAP_CHANGER;
+    private PaoType type = PaoType.LOAD_TAP_CHANGER;
     
     
     public String getName() {
@@ -39,12 +41,18 @@ public class VoltageRegulator {
         this.id = id;
     }
 
-    public VoltageRegulatorType getType() {
+    public PaoType getType() {
 		return type;
 	}
-	public void setType(VoltageRegulatorType type) {
+    public void setType(PaoType type) {
 		this.type = type;
 	}
+	
+    @Override
+    public PaoIdentifier getPaoIdentifier() {
+        return new PaoIdentifier(id,type);
+    }
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

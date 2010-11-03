@@ -41,6 +41,14 @@ div.zoneHierarchy li div {
 div.zoneHierarchy li div div {
 	position: absolute;
 	top: 0;
-	right: 50px;
+	right: 2%;
+	border: none;
+}
+
+div.zoneHierarchy li div div div {
+	position: absolute;
+	top: 0;
+	text-align:left;
+	right: 200%;
 	border: none;
 }

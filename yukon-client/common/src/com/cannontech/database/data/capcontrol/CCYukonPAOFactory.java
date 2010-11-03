@@ -3,9 +3,9 @@ package com.cannontech.database.data.capcontrol;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.pao.CapControlTypes;
-import com.cannontech.database.data.pao.VoltageRegulatorType;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 
@@ -44,17 +44,17 @@ public final static YukonPAObject createCapControlPAO( int type )
 			
 		case CapControlTypes.CAP_CONTROL_LTC:
 		    retBase = new VoltageRegulator();
-            ((CapControlYukonPAOBase)retBase).setCapControlType( VoltageRegulatorType.LOAD_TAP_CHANGER.getDbValue() );
+            ((CapControlYukonPAOBase)retBase).setCapControlType( PaoType.LOAD_TAP_CHANGER.getDbString() );
             break;
         
 		case CapControlTypes.GANG_OPERATED_REGULATOR:
 		    retBase = new VoltageRegulator();
-            ((CapControlYukonPAOBase)retBase).setCapControlType( VoltageRegulatorType.GANG_OPERATED.getDbValue() );
+            ((CapControlYukonPAOBase)retBase).setCapControlType( PaoType.GANG_OPERATED.getDbString() );
             break;
         
 		case CapControlTypes.PHASE_OPERATED_REGULATOR:
 		    retBase = new VoltageRegulator();
-            ((CapControlYukonPAOBase)retBase).setCapControlType( VoltageRegulatorType.PHASE_OPERATED.getDbValue() );
+            ((CapControlYukonPAOBase)retBase).setCapControlType( PaoType.PHASE_OPERATED.getDbString() );
             break;
 
 		default:

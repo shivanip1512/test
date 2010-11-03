@@ -22,7 +22,6 @@ public class CapControlValueTag extends YukonTagSupport {
     private String format;
     private String type;
     private boolean isTypeSet;
-    private String styleClass = "";
     
     @Override
     public void doTag() throws JspException, IOException {
@@ -40,13 +39,9 @@ public class CapControlValueTag extends YukonTagSupport {
         UpdateValue value = updaterService.getFirstValue(id, getUserContext());
 
         JspWriter out = getJspContext().getOut();
-        out.print("<span class=\"" + styleClass + "\" cannonUpdater=\"" + StringEscapeUtils.escapeHtml(value.getFullIdentifier()) + "\">");
+        out.print("<span cannonUpdater=\"" + StringEscapeUtils.escapeHtml(value.getFullIdentifier()) + "\">");
         out.print(value.getValue());
         out.print("</span>");
-    }
-    
-    public void setStyleClass(String styleClass) {
-        this.styleClass = styleClass;
     }
     
     public void setPaoId(int paoId) {

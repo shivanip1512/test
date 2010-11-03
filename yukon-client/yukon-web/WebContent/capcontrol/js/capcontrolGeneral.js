@@ -348,18 +348,35 @@ function updateRegulatorTapIndicator(id){
 	return function(data) {
         var lowerTapSpan = $(id + '_lower');
         var raiseTapSpan = $(id + '_raise');
+        var lowerTapSpanRecent = $(id + '_lower_recent');
+        var raiseTapSpanRecent = $(id + '_raise_recent');
+        var timeSpan = $(id + '_time');
+        var defaultSpan = $(id + '_default');
         
         var icon = data.value;
         
+        //Hide all
+    	lowerTapSpan.hide();
+    	raiseTapSpan.hide();
+    	lowerTapSpanRecent.hide();
+    	raiseTapSpanRecent.hide();
+    	timeSpan.hide();
+    	defaultSpan.hide();
+        
         if (icon == 'none') {
-        	lowerTapSpan.hide();
-        	raiseTapSpan.hide();
-        } else if (icon == 'RaiseTap'){
-        	lowerTapSpan.hide();
+        	defaultSpan.show();
+        } else if (icon == 'RaiseTap') {
         	raiseTapSpan.show();
-        } else if (icon == 'LowerTap'){
+        	timeSpan.show();
+        } else if (icon == 'LowerTap') {
         	lowerTapSpan.show();
-        	raiseTapSpan.hide();
+        	timeSpan.show();
+        } else if (icon == 'LowerTapRecent') {
+        	lowerTapSpanRecent.show();
+        	timeSpan.show();
+        } else if (icon == 'RaiseTapRecent') {
+        	raiseTapSpanRecent.show();
+        	timeSpan.show();
         }
 	}
 }

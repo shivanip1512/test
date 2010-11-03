@@ -37,7 +37,6 @@ import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.VoltageRegulatorType;
 import com.cannontech.database.db.capcontrol.CCEventLog;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
@@ -220,8 +219,8 @@ public class ResultsController {
     private String getDisplayableType(SearchType searchType, String dbType) throws MissingSearchType {
     	
     	if (searchType == SearchType.REGULATOR) {
-    		VoltageRegulatorType regType = VoltageRegulatorType.getForDbString(dbType);
-			String returnValue = regType.getDisplayValue();
+    		PaoType regType = PaoType.getForDbString(dbType);
+			String returnValue = regType.getDbString();
 			return returnValue;
     	} else if (searchType == SearchType.CAPCONTROL) {
     		CapControlType ccType = CapControlType.getCapControlType(dbType);

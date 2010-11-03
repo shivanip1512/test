@@ -2,6 +2,7 @@ package com.cannontech.cbc.model;
 
 import java.util.List;
 
+import com.cannontech.common.util.NavigableHierarchy;
 import com.google.common.collect.Lists;
 
 /**

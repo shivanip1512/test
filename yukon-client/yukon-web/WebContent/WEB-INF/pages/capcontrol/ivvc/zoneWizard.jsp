@@ -5,20 +5,12 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<script type="text/javascript">
+<tags:standardPopup pageName="ivvc" module="capcontrol" popupName="zoneWizard">
 
-	cleanupExistingRows = function (type) {
-		var existingRows = $(type+'TableBody').getElementsBySelector('tr');
-		for (var i = 0; i < existingRows.size(); i++) {
-			existingRows[i].remove();
-		}
-		return true;
-	}
+<script type="text/javascript">
 
 	addBankHandler = function (selectedPaoInfo) {
 		var url = '/spring/capcontrol/ivvc/wizard/addCapBank';
-
-		cleanupExistingRows('bank');
 	    
 		for(var i = 0; i < selectedPaoInfo.size(); i++) {
 			var paoId = selectedPaoInfo[i].paoId;
@@ -30,8 +22,6 @@
 
 	addPointHandler = function (selectedPointInfo) {
 		var url = '/spring/capcontrol/ivvc/wizard/addVoltagePoint';
-
-		cleanupExistingRows('point');
 		
 		for(var i = 0; i < selectedPointInfo.size(); i++) {
 	    	var pointId = selectedPointInfo[i].pointId;		
@@ -60,29 +50,17 @@
 	}
 
 	removeTableRow = function (rowId) {
-		var rowType = rowId.split('_')[0];
-		var inputValue = rowId.split('_')[1];
+		//Remove the table row
+		$(rowId).remove();
+	}
 
-		//Remove the hidden input with the bankId
-		var span = $('picker_'+rowType+'Picker_inputArea');
-
-		if (span != null) {
-			var inputs = span.getElementsBySelector('input');
-			for (var i = 0; i < inputs.size();i++) {
-				if (inputs[i].value == inputValue) {
-					inputs[i].remove()
-					break;
-				}
-			}
-		}
-
-		//Now remove the table row
-		$(rowId).remove();	
+	zoneSubmit = function() {
+		submitFormViaAjax('tierContentPopup', 'zoneForm', null);
 	}
 </script>
 
 
-<cti:msgScope paths="modules.capcontrol.ivvc.zoneWizard">
+
 
 <tags:setFormEditMode mode="${mode}"/>
 
@@ -93,9 +71,9 @@
 	<cti:url var="action" value="/spring/capcontrol/ivvc/wizard/createZone"/>
 </cti:displayForPageEditModes>
 
-<form:form commandName="zoneDto" action="${action}" >
+<form:form id="zoneForm" commandName="zoneDto" action="${action}" >
 	<form:hidden path="zoneId" id="zoneId"/>
-
+	
 	<span id="errorOnPage" style="display:none" class="errorIndicator">Missing fields are marked in red.</span>
 
 	<tags:nameValueContainer2 style="border-collapse:separate;border-spacing:5px;">
@@ -109,7 +87,7 @@
 				<spring:escapeBody htmlEscape="true">${regulatorName}</spring:escapeBody>
 			</span>
 			<tags:pickerDialog 	id="voltageRegulatorPicker" 
-				type="voltageRegulatorPicker" 
+				type="availableVoltageRegulatorPicker" 
 				destinationFieldId="selectedRegulatorId"
 				extraDestinationFields="paoName:selectedRegulatorName;" 
 				multiSelectMode="false"
@@ -134,8 +112,8 @@
 				nameKey=".label.parentZone" 
 				path="parentZoneId" 
 				itemValue="id" 
-				defaultItemLabel="Choose Parent Zone"
-				defaultItemValue="-1"/>
+				defaultItemLabel="Create as Parent"
+				defaultItemValue=""/>
 		</cti:displayForPageEditModes>
 		<cti:displayForPageEditModes modes="EDIT,VIEW">
 			<tags:nameValue2 nameKey=".label.parentZone">
@@ -148,7 +126,6 @@
 	</tags:nameValueContainer2>
 	
 	<cti:dataGrid tableStyle="width:100%;" cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;width:30%">
-		<cti:msg2 var="pickerText" key=".label.picker"/>
 		<table style="display:none">
 			<tr id="defaultRow">
 				<td colspan="3" style="text-align: center"><img src="/WebConfig/yukon/Icons/indicator_arrows.gif"></td>
@@ -187,12 +164,14 @@
 						</tbody>
 					</table>
 				</div>
-				<br>
-				<tags:pickerDialog 	id="bankPicker" 
-					type="capBankPicker"
-					multiSelectMode="true"
-					endAction="addBankHandler"
-					linkType="button">${pickerText}</tags:pickerDialog>
+				<div class="actionArea">
+					<tags:pickerDialog 	id="bankPicker" 
+						type="availableCapBankPicker"
+						multiSelectMode="true"
+						endAction="addBankHandler"
+						linkType="none" extraArgs="${zoneDto.substationBusId}"/>
+					<cti:button key="add" onclick="javascript:bankPicker.show();"/>
+				</div>
 			</tags:boxContainer2>
 		</cti:dataGridCell>
 		<br>
@@ -229,27 +208,29 @@
 						</tbody>
 					</table>
 				</div>
-				<br>
-				<tags:pickerDialog 	id="pointPicker" 
-					type="voltPointPicker"
-					multiSelectMode="true"
-					endAction="addPointHandler"
-					linkType="button">${pickerText}</tags:pickerDialog>
+				<div class="actionArea">
+					<tags:pickerDialog 	id="pointPicker" 
+						type="voltPointPicker"
+						multiSelectMode="true"
+						endAction="addPointHandler"
+						linkType="none"/>
+					<cti:button key="add" onclick="javascript:pointPicker.show();"/>
+				</div>
 			</tags:boxContainer2>
 		</cti:dataGridCell>
 	</cti:dataGrid>
 	
 	<div class="pageActionArea">
 		<cti:displayForPageEditModes modes="EDIT">
-			<input type="submit" value="Update" class="formSubmit">
+			<cti:msg2 var="submitButtonText" key=".label.updateButton"/>
 		</cti:displayForPageEditModes>
 		<cti:displayForPageEditModes modes="CREATE">
-			<input type="submit" value="Create" class="formSubmit">
+			<cti:msg2 var="submitButtonText" key=".label.createButton"/>
 		</cti:displayForPageEditModes>
+		<input type="button" value="${submitButtonText}" onclick="zoneSubmit();">
 	</div>
 
     
 </form:form>
 
-</cti:msgScope>
-
+</tags:standardPopup>
