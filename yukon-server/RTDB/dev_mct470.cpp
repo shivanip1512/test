@@ -3387,15 +3387,6 @@ int Mct470Device::sendDNPConfigMessages(int startMCTID, list< OUTMESS * > &outLi
 INT Mct470Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
-    int tags;
-
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
-
-    CtiTime pointTime;
-    point_info  pi, pi_freezecount;
-    bool freeze_info_valid = true;
-
-    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
@@ -3412,43 +3403,58 @@ INT Mct470Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< C
     {
         // No error occured, we must do a real decode!
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
+        CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        CtiTime pointTime;
+        DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
         if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
         {
             string freeze_error;
 
-            pi_freezecount = Mct4xxDevice::getData(DSt->Message + 3, 1, ValueType_Raw);
+            point_info pi_freezecount = Mct4xxDevice::getData(DSt->Message + 3, 1, ValueType_Raw);
 
             if( status = checkFreezeLogic(TimeNow, pi_freezecount.value, freeze_error) )
             {
                 ReturnMsg->setResultString(freeze_error);
             }
+
+            pointTime  = getLastFreezeTimestamp(TimeNow);
+            pointTime -= pointTime.seconds() % 60;
+        }
+        else
+        {
+            pointTime -= pointTime.seconds() % 300;
         }
 
         if( !status )
         {
+            std::bitset<ChannelCount> points;
+
+            for( int i = 0; i < ChannelCount; i++ )
+            {
+                if( getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType) )
+                {
+                    points.set(i);
+                }
+            }
+
             for( int i = 0; i < ChannelCount; i++ )
             {
                 int offset = (i * 3);
 
-                if( !i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType) )
+                //  if we have a point for this offset OR it's the first index and we have no points defined
+                if( points.test(i) || (i == 0 && points.none()) )
                 {
+                    point_info pi;
+
                     if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::Scan_Accum ||
                         InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_KWH )
                     {
                         //  normal KWH read, nothing too special
                         pi = Mct4xxDevice::getData(DSt->Message + offset, 3, ValueType_Accumulator);
-
-                        pointTime -= pointTime.seconds() % 300;
                     }
                     else if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
                     {
@@ -3475,25 +3481,18 @@ INT Mct470Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< C
                             ReturnMsg->setResultString("Invalid freeze parity; last recorded freeze sent at " + getLastFreezeTimestamp(TimeNow).asString());
                             status = ErrorInvalidFrozenReadingParity;
                         }
-                        else
-                        {
-                            pointTime  = getLastFreezeTimestamp(TimeNow);
-                            pointTime -= pointTime.seconds() % 60;
-                        }
                     }
 
                     string point_name;
-                    bool reported = false;
 
-                    if( !i )    point_name = "KYZ 1";
+                    if( i == 0 )  point_name = "KYZ 1";
 
                     insertPointDataReport(PulseAccumulatorPointType, i + 1,
                                           ReturnMsg, pi, point_name, pointTime, 1.0, TAG_POINT_MUST_ARCHIVE);
 
-                    //  if the quality's invalid, throw the status to abnormal if it's the first channel OR there's a point defined
-                    if( pi.quality == InvalidQuality && !status && (!i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType)) )
+                    //  if the quality's invalid, throw the status to abnormal
+                    if( pi.quality == InvalidQuality && !status )
                     {
-                        ReturnMsg->setResultString("Invalid data returned for channel " + CtiNumStr(i + 1) + "\n" + ReturnMsg->ResultString());
                         status = ErrorInvalidData;
                     }
                 }
