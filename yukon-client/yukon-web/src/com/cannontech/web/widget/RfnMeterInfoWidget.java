@@ -82,7 +82,7 @@ public class RfnMeterInfoWidget extends WidgetControllerBase {
             }
         });
         
-        rfnMeterReadService.send(meter.getMeterIdentifier(), waitableCallback);
+        rfnMeterReadService.send(meter, waitableCallback);
         
         try {
             waitableCallback.waitForStatusResponse();

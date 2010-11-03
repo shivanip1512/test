@@ -1,7 +1,6 @@
 package com.cannontech.amr.rfn.service;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
@@ -9,56 +8,43 @@ import javax.jms.ConnectionFactory;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.support.TransactionTemplate;
 
-import com.cannontech.amr.rfn.dao.RfnMeterDao;
 import com.cannontech.amr.rfn.message.read.ChannelData;
 import com.cannontech.amr.rfn.message.read.ChannelDataStatus;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadDataReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadRequest;
-import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
-import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.amr.rfn.model.RfnMeter;
-import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
+import com.cannontech.amr.rfn.model.RfnMeterPlusReadingData;
+import com.cannontech.amr.rfn.service.pointmapping.PointValueHandler;
+import com.cannontech.amr.rfn.service.pointmapping.UnitOfMeasureToPointMapper;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.device.creation.DeviceCreationException;
-import com.cannontech.common.device.creation.DeviceCreationService;
-import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
-import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.database.TransactionTemplateHelper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Lists;
 
 public class RfnMeterReadService {
     
-    private RfnMeterDao rfnMeterDao;
-    private DeviceDao deviceDao;
-    private RfnAttributeLookupService rfnAttributeLookupService;
-    private AttributeService attributeService;
-    private DeviceCreationService deviceCreationService;
     private ConfigurationSource configurationSource;
-    private String meterTemplatePrefix;
-    private TransactionTemplate transactionTemplate;
     private ConnectionFactory connectionFactory;
     private RequestReplyReplyTemplate rrrTemplate;
+    private UnitOfMeasureToPointMapper unitOfMeasureToPointMapper;
+    private PointDao pointDao;
     
     private static final Logger log = YukonLogManager.getLogger(RfnMeterReadService.class);
     
     /**
-     * Attempts to send a read request for a RFN meter.  Will use a separate thread to make the request.
+     * Attempts to send a read request for a RFN meter. Will use a separate thread to make the request.
      * Will expect two responses. 
      * 
      * The first is a status message indicating this is a known meter and a read
@@ -75,10 +61,10 @@ public class RfnMeterReadService {
      *  
      *  If not provided they default to 10 seconds and 15 minutes.
      *  
-     * @param meter The meter to read.
+     * @param rfnMeter The meter to read.
      * @param callback The callback to use for updating status, errors and read data.
      */
-    public void send(final RfnMeterIdentifier meter, final RfnMeterReadCompletionCallback callback) {
+    public void send(final RfnMeter rfnMeter, final RfnMeterReadCompletionCallback callback) {
         JmsReplyReplyHandler<RfnMeterReadReply, RfnMeterReadDataReply> handler = new JmsReplyReplyHandler<RfnMeterReadReply, RfnMeterReadDataReply>() {
 
             @Override
@@ -122,7 +108,7 @@ public class RfnMeterReadService {
                 } else {
                     /* Data response successful, process point data */
                     List<PointValueHolder> pointDatas = Lists.newArrayList();
-                    processMeterReadingDataMessage(dataReplyMessage.getData(), RfnMeterReadingType.CURRENT, pointDatas);
+                    processMeterReadingDataMessage(new RfnMeterPlusReadingData(rfnMeter, dataReplyMessage.getData()), pointDatas);
 
                     for (PointValueHolder pointValueHolder : pointDatas) {
                         callback.receivedData(pointValueHolder);
@@ -141,51 +127,31 @@ public class RfnMeterReadService {
             }
         };
         
-        rrrTemplate.send(new RfnMeterReadRequest(meter), handler);
+        rrrTemplate.send(new RfnMeterReadRequest(rfnMeter.getMeterIdentifier()), handler);
     }
     
-    public void processMeterReadingDataMessage(RfnMeterReadingData meterReadingDataNotification, RfnMeterReadingType readingType, List<? super PointData> pointDatas) {
-        Instant readingInstant = new Instant(meterReadingDataNotification.getTimeStamp());
+    public void processMeterReadingDataMessage(RfnMeterPlusReadingData meterReadingData, List<? super PointData> pointDatas) {
+        Instant readingInstant = new Instant(meterReadingData.getRfnMeterReadingData().getTimeStamp());
         
-        RfnMeterIdentifier meterIdentifier = getMeterIdentifier(meterReadingDataNotification);
-        RfnMeter rfnMeter;
-        try {
-            rfnMeter = rfnMeterDao.getMeter(meterIdentifier);
-            LogHelper.debug(log, "Found matching meter: %s", rfnMeter);
-        } catch (NotFoundException e) {
-            try {
-                rfnMeter = createMeter(meterIdentifier);
-                LogHelper.debug(log, "Created new meter: %s", rfnMeter);
-            } catch (DeviceCreationException e1) {
-                LogHelper.debug(log, "Unable to create meter for %s, trying to find again: %s", meterIdentifier, e1.toString());
-                if (log.isTraceEnabled()) {
-                    log.trace("stack dump of creation failure", e1);
-                }
-                rfnMeter = rfnMeterDao.getMeter(meterIdentifier);
-                LogHelper.debug(log, "Found matching meter (2nd try): %s", rfnMeter);
-            }
-        }
-        
-        for (ChannelData channelData : meterReadingDataNotification.getChannelDataList()) {
-            log.debug("Processing channelData: " + channelData);
+        for (ChannelData channelData : meterReadingData.getRfnMeterReadingData().getChannelDataList()) {
+            LogHelper.debug(log, "Processing %s for %s", channelData, meterReadingData.getRfnMeter());
             ChannelDataStatus status = channelData.getStatus();
             if (!status.isOk()) {
                 LogHelper.debug(log, "Received status of %s for channelData", status);
                 continue;
             }
             
-            // this call should be a simple hash lookup
-            AttributeConverter attributeConverter = rfnAttributeLookupService.findMatch(rfnMeter.getPaoIdentifier().getPaoType(), readingType, channelData.getUnitOfMeasure(), channelData.getUnitOfMeasureModifiers());
-            if (attributeConverter == null) {
-                log.debug("No AttributeConverter for this channelData");
+            PointValueHandler pointValueHandler = unitOfMeasureToPointMapper.findMatch(meterReadingData.getRfnMeter(), channelData.getUnitOfMeasure(), channelData.getUnitOfMeasureModifiers());
+            if (pointValueHandler == null) {
+                log.debug("No PointValueHandler for this channelData");
                 continue;
             }
-            log.debug("Got AttributeConverter " + attributeConverter);
+            LogHelper.debug(log, "Got PointValueHandler %s", pointValueHandler);
             
             LitePoint point;
             try {
                 // this call is probably a little heavy considering how little of the LitePoint is actually needed
-                point = attributeService.getPointForAttribute(rfnMeter, attributeConverter.getAttribute());
+                point = pointDao.getLitePoint(pointValueHandler.getPaoPointIdentifier());
             } catch (IllegalUseOfAttribute e) {
                 LogHelper.debug(log, "Unable to find point for channelData: %s", channelData);
                 continue;
@@ -194,7 +160,7 @@ public class RfnMeterReadService {
             PointData pointData = new PointData();
             pointData.setId(point.getLiteID());
             pointData.setPointQuality(PointQuality.Normal);
-            double value = attributeConverter.convertValue(channelData.getValue());
+            double value = pointValueHandler.convert(channelData.getValue());
             pointData.setValue(value);
             pointData.setTime(readingInstant.toDate());
             pointData.setType(point.getPointType());
@@ -206,56 +172,9 @@ public class RfnMeterReadService {
         }
     }
     
-    private RfnMeter createMeter(final RfnMeterIdentifier meterIdentifier) {
-        RfnMeter result = TransactionTemplateHelper.execute(transactionTemplate, new Callable<RfnMeter>() {
-
-            @Override
-            public RfnMeter call() {
-                String templateName = meterTemplatePrefix + meterIdentifier.getSensorManufacturer() + "_" + meterIdentifier.getSensorModel();
-                String deviceName = meterIdentifier.getSensorSerialNumber().trim();
-                YukonDevice newDevice = deviceCreationService.createDeviceByTemplate(templateName, deviceName, true);
-                RfnMeter meter = new RfnMeter(newDevice.getPaoIdentifier(), meterIdentifier);
-                rfnMeterDao.updateMeter(meter);
-                deviceDao.changeMeterNumber(meter, deviceName);
-                return meter;
-            }
-        });
-        
-        return result;
-    }
-
-    private RfnMeterIdentifier getMeterIdentifier(RfnMeterReadingData meterReadingDataNotification) {
-        return new RfnMeterIdentifier(meterReadingDataNotification.getSensorSerialNumber(), meterReadingDataNotification.getSensorManufacturer(), meterReadingDataNotification.getSensorModel());
-    }
-    
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-    
     @Autowired
     public void setConfigurationSource(ConfigurationSource configurationSource) {
         this.configurationSource = configurationSource;
-    }
-    
-    @Autowired
-    public void setRfnAttributeLookupService(RfnAttributeLookupService rfnAttributeLookupService) {
-        this.rfnAttributeLookupService = rfnAttributeLookupService;
-    }
-    
-    @Autowired
-    public void setRfnMeterDao(RfnMeterDao rfnMeterDao) {
-        this.rfnMeterDao = rfnMeterDao;
-    }
-    
-    @Autowired
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-    
-    @Autowired
-    public void setDeviceCreationService(DeviceCreationService deviceCreationService) {
-        this.deviceCreationService = deviceCreationService;
     }
     
     @Autowired
@@ -264,13 +183,18 @@ public class RfnMeterReadService {
     }
     
     @Autowired
-    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
-        this.transactionTemplate = transactionTemplate;
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
     }
-
+    
+    @Autowired
+    public void setUnitOfMeasureToPointMapper(UnitOfMeasureToPointMapper unitOfMeasureToPointMapper) {
+        this.unitOfMeasureToPointMapper = unitOfMeasureToPointMapper;
+    }
+    
     @PostConstruct
     public void initialize() {
-        meterTemplatePrefix = configurationSource.getString("RFN_METER_TEMPLATE_PREFIX", "*RfnTemplate_");
+        
         
         rrrTemplate = new RequestReplyReplyTemplate();
         rrrTemplate.setConfigurationName("RFN_METER_READ");

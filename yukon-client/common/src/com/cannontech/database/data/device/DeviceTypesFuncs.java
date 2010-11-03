@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -861,9 +862,11 @@ public final static boolean isMeter(int deviceType)
 		case FOCUS:
 		case ALPHA_A3:
 		case DAVISWEATHER:
-		case RFN_AL:
-        case RFN_AX:
-        case RFN_AXSD:
+		case RFN410FL:
+		case RFN410FX:
+        case RFN410FD:
+        case RFN430A3:
+        case RFN430KV:
 			return true;
 	
 		default:
@@ -1596,14 +1599,11 @@ public static Object changeType (String newType,
     }
     
     public static boolean isRfn(int deviceType) {
-        switch (deviceType) {
-            case RFN_AL:
-            case RFN_AX:
-            case RFN_AXSD:
-                return true;
-                
-            default :
-                return false;
+        try {
+            return PaoType.getForId(deviceType).getPaoClass() == PaoClass.RFMESH;
+        } catch (IllegalArgumentException e) {
+            // shouldn't happen, but we'll mimic old behavior just in case
+            return false;
         }
     }
 }

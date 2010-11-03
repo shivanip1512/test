@@ -1,4 +1,8 @@
 package com.cannontech.database.data.pao;
+
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
+
 /**
  * Insert the type's description here.
  * Creation date: (10/2/2001 1:45:23 PM)
@@ -145,17 +149,22 @@ public interface DeviceTypes extends TypeBase
     public final static int REPEATER_850     = DEVICE_OFFSET + 111;
 
     
-    public final static int RFN_AX    = DEVICE_OFFSET + 112;
-    public final static int RFN_AL    = DEVICE_OFFSET + 113;
+    //public final static int RFN_AX    = DEVICE_OFFSET + 112;
+    //public final static int RFN_AL    = DEVICE_OFFSET + 113;
     public final static int RDS_TERMINAL    = DEVICE_OFFSET + 114;
     public final static int MCT420FL        = DEVICE_OFFSET + 115;
     public final static int MCT420FLD        = DEVICE_OFFSET + 116;
     public final static int MCT420CL        = DEVICE_OFFSET + 117;
     public final static int MCT420CLD        = DEVICE_OFFSET + 118;
-    public final static int RFN_AXSD    = DEVICE_OFFSET + 119;
+    //public final static int RFN_AXSD    = DEVICE_OFFSET + 119;
+    public final static int RFN410FL = DEVICE_OFFSET + 120;
+    public final static int RFN410FX = DEVICE_OFFSET + 121;
+    public final static int RFN410FD = DEVICE_OFFSET + 122;
+    public final static int RFN430A3 = DEVICE_OFFSET + 123;
+    public final static int RFN430KV = DEVICE_OFFSET + 124;
     
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 119;
+	public final static int DEVICE_TYPES_COUNT = 124;
 	
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]

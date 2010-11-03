@@ -70,16 +70,12 @@ public class BillableDeviceFactory {
             device = new Focus();
             break;
 
-        case DeviceTypes.RFN_AL:
-            device = new RFN_AL();
-            break;
-        
-        case DeviceTypes.RFN_AX:
-            device = new RFN_AX();
-            break;
-            
-        case DeviceTypes.RFN_AXSD:
-            device = new RFN_AX();
+        case DeviceTypes.RFN410FL:
+        case DeviceTypes.RFN410FX:
+        case DeviceTypes.RFN410FD:
+        case DeviceTypes.RFN430A3:
+        case DeviceTypes.RFN430KV:
+            device = new RFN410();
             break;
 
         default:

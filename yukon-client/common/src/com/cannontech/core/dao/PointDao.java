@@ -110,6 +110,11 @@ public interface PointDao {
             int pointOffset, int pointType);
     
     /**
+     * Delegates to getPointIDByDeviceID_Offset_PointType.
+     */
+    public LitePoint getLitePoint(PaoPointIdentifier paoPointIdentifier);
+    
+    /**
      * Similar to getPointIDByDeviceID_Offset_PointType, but will returns the actual LitePoint
      * and throws a NotFoundException if the point doesn't exist (instead of returning 0).
      * @param deviceId
@@ -156,4 +161,6 @@ public interface PointDao {
     public double getPointMultiplier(LitePoint litePoint) throws NotFoundException;
     
     public List<LitePoint> searchByName(String name, String paoClass);
+
+    
 }

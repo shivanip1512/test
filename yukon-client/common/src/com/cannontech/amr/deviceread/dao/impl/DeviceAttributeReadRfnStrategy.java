@@ -133,7 +133,7 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
                 }
             };
 
-            rfnMeterReadService.send(rfnMeter.getMeterIdentifier(), callback);
+            rfnMeterReadService.send(rfnMeter, callback);
         }
     }
     

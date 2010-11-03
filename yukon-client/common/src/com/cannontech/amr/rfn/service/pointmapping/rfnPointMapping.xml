@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pointMappings>
+    <pointGroup>
+        <paoType value="RFN410FL"/>
+        <paoType value="RFN410FX"/>
+        <paoType value="RFN410FD"/>
+        <point name="Delivered kWh"> 
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="none">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
+        <point name="Voltage Primary">
+            <uom>V</uom>
+            <parseSiPrefix/> 
+            <modifiers match="all"> 
+                <modifier>Primary</modifier>
+            </modifiers>
+        </point>
+        <point name="Voltage Primary">
+            <uom>V</uom>
+            <parseSiPrefix/> 
+            <modifiers match="all"> 
+                <modifier>Secondary</modifier>
+            </modifiers>
+        </point>
+        <point name="Blink Count">
+            <uom>Outage Count</uom>
+            <modifiers match="equal"/> 
+        </point>
+        <point name="Delivered kW"> 
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="all">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+            <modifiers match="none">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
+    </pointGroup>
+</pointMappings>

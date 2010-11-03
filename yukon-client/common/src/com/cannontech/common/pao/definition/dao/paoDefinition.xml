@@ -4394,17 +4394,46 @@
 	
 	<pao id="RFN_BASE" abstract="true">
         <displayGroup>RFMESH</displayGroup>
+        <changeGroup>rfn</changeGroup>
         <points>
             <point type="Analog" offset="1">
                 <init>true</init>
-                <name>Total kWh</name>
+                <name>Delivered kWh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="2">
+                <init>false</init>
+                <name>Received kWh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="3">
+                <init>false</init>
+                <name>Sum kWh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="4">
+                <init>false</init>
+                <name>Net kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="5">
                 <init>true</init>
-                <name>Voltage</name>
+                <name>Voltage Primary</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="6">
+                <init>false</init>
+                <name>Voltage Secondary</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
@@ -4419,10 +4448,10 @@
         </points>
         <attributes>
             <attribute name="USAGE">
-                <basicLookup point="Total kWh" />
+                <basicLookup point="Delivered kWh" />
             </attribute>
             <attribute name="VOLTAGE">
-                <basicLookup point="Voltage" />
+                <basicLookup point="Voltage Primary" />
             </attribute>
             <attribute name="BLINK_COUNT">
                 <basicLookup point="Blink Count" />
@@ -4441,24 +4470,45 @@
         </tags>
     </pao>
     
-    <pao id="RFN_AL" inherits="RFN_BASE">
-        <displayName>RFN-AL</displayName>
+    <pao id="RFN410FL" inherits="RFN_BASE">
+        <displayName>RFN-410fL</displayName>
     </pao>
     
-    <pao id="RFN_AX" inherits="RFN_BASE">
-        <displayName>RFN-AX</displayName>
+    <pao id="RFN_EXTENDED_BASE" inherits="RFN_BASE" abstract="true">
         <points>
-            <point type="Analog" offset="11">
+            <point type="Analog" offset="101">
                 <init>true</init>
-                <name>Peak kW</name>
+                <name>Delivered kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="15">
-                <name>Min Volts</name>
+            <point type="Analog" offset="102">
+                <init>false</init>
+                <name>Received kW</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="103">
+                <init>false</init>
+                <name>Sum kW</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="104">
+                <init>false</init>
+                <name>Net kW</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="105">
+                <init>false</init>
+                <name>Peak kW</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="14">
@@ -4468,8 +4518,17 @@
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
+            <point type="Analog" offset="15">
+                <name>Min Volts</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
         </points>
         <attributes>
+            <attribute name="DEMAND">
+                <basicLookup point="Delivered kW" />
+            </attribute>
             <attribute name="PEAK_DEMAND">
                 <basicLookup point="Peak kW" />
             </attribute>
@@ -4482,8 +4541,12 @@
         </attributes>
     </pao>
     
-    <pao id="RFN_AXSD" inherits="RFN_AX">
-        <displayName>RFN-AXSD</displayName>
+    <pao id="RFN410FX" inherits="RFN_EXTENDED_BASE">
+        <displayName>RFN-410fX</displayName>
+    </pao>
+    
+    <pao id="RFN410FD" inherits="RFN410FX">
+        <displayName>RFN-410fD</displayName>
         <points>
             <point type="Status" offset="1">
                 <init>true</init>
@@ -4503,6 +4566,14 @@
         </tags>
     </pao>
 	
+    <pao id="RFN430A3" inherits="RFN_EXTENDED_BASE">
+        <displayName>RFN-430A3</displayName>
+    </pao>
+    
+    <pao id="RFN430KV" inherits="RFN_EXTENDED_BASE">
+        <displayName>RFN-430KV</displayName>
+    </pao>
+    
 	<pao id="TRANSDATA_MARKV">
         <displayName>TRANSDATA MARK-V</displayName>
         <displayGroup>Electronic Meters</displayGroup>

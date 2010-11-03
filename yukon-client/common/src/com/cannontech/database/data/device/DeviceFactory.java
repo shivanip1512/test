@@ -1,5 +1,6 @@
 package com.cannontech.database.data.device;
 
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.database.data.capcontrol.CapBankController701x;
@@ -126,11 +127,13 @@ public final class DeviceFactory {
         case TRANSDATA_MARKV:
             returnDevice = new TransdataMarkV();
             break;
-        case RFN_AX:
-        case RFN_AL:
-        case RFN_AXSD:
+        case RFN410FL:
+        case RFN410FX:
+        case RFN410FD:
+        case RFN430A3:
+        case RFN430KV:
             returnDevice = new RfnBase();
-            returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RFMESH);
+            returnDevice.setDeviceClass(PaoClass.RFMESH.getDbString());
             returnDevice.setDeviceType(paoType.getDbString());
             break;
 

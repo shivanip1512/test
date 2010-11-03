@@ -32,6 +32,7 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
@@ -261,6 +262,14 @@ public final class PointDaoImpl implements PointDao {
      */
 	public LiteStateGroup getStateGroup( int stateGroupID ) {
 		return databaseCache.getAllStateGroupMap().get( new Integer(stateGroupID) );
+	}
+	
+	@Override
+	public LitePoint getLitePoint(PaoPointIdentifier paoPointIdentifier) {
+	    int paoId = paoPointIdentifier.getPaoIdentifier().getPaoId();
+	    int offset = paoPointIdentifier.getPointIdentifier().getOffset();
+        PointType pointType = paoPointIdentifier.getPointIdentifier().getPointType();
+        return getLitePointIdByDeviceId_Offset_PointType(paoId, offset, pointType.getPointTypeId());
 	}
 
 	/* (non-Javadoc)

@@ -148,6 +148,11 @@ public class YukonLogManager {
         return  tempLogger; 
     }
     
+    public static LogHelper getLogHelper(Class c) {
+        Logger logger = getLogger(c);
+        return LogHelper.getInstance(logger);
+    }
+    
     /**
      * Get an existing logger by class name. Creates a new logger
      * if it does not already exist. (Loggers are typically named

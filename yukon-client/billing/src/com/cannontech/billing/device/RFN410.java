@@ -11,7 +11,7 @@ import com.cannontech.common.dynamicBilling.model.BillableField;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.database.data.point.PointType;
 
-public class RFN_AX extends BillingDeviceBase {
+public class RFN410 extends BillingDeviceBase {
     
     public void populate(PointIdentifier pointIdentifier, Timestamp timestamp, double value, int unitOfMeasure, String pointName, DeviceData deviceData) {
         addMeterData(Channel.ONE, deviceData);
@@ -36,7 +36,7 @@ public class RFN_AX extends BillingDeviceBase {
                 addData(Channel.ONE, readingType, BillableField.totalConsumption, data);
                 break;
                 
-            case 11: // Peak kW
+            case 105: // Peak kW
                 addData(Channel.ONE, readingType, BillableField.totalPeakDemand, data);
                 break;
             }

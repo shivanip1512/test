@@ -104,7 +104,7 @@
     <bean id="rfnMeterReadService" class="com.cannontech.amr.rfn.service.RfnMeterReadService"/>
 
     <bean id="rfnMeterDao" class="com.cannontech.amr.rfn.dao.impl.RfnMeterDaoImpl"/>
-    <bean class="com.cannontech.amr.rfn.service.RfnAttributeLookupService"/>
+    <bean class="com.cannontech.amr.rfn.service.pointmapping.UnitOfMeasureToPointMappingParser"/>
     
     <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadServiceImpl"/>
     <bean class="com.cannontech.amr.deviceread.dao.impl.DeviceAttributeReadRfnStrategy"/>

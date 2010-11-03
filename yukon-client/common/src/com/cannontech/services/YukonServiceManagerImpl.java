@@ -55,6 +55,7 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
         serviceName = serviceName.trim();
 
         // try as bean name
+        Exception e1, e2, e3;
         try {
             Object service = null;
             service = applicationContext.getBean(serviceName);
@@ -63,7 +64,8 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
             log.debug("loaded as bean: " + service);
             return true;
         } catch (Exception e) {
-            log.debug("unable to load as bean: " + serviceName + ": " + e.getMessage());
+            e1 = e;
+            log.trace("unable to load as bean: " + serviceName, e);
         }
 
         // try as context file
@@ -73,7 +75,8 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
             contexts.add(context2);
             return true;
         } catch (Exception e) {
-            log.debug("unable to load as context: " + serviceName + ": " + e.getMessage());
+            e2 = e;
+            log.trace("unable to load as context: " + serviceName, e);
         }
 
         try {
@@ -85,9 +88,16 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
             log.debug("loaded as class: " + service);
             return true;
         } catch (Exception e) {
-            log.debug("unable to load as class: " + serviceName + ": " + e.getMessage());
+            e3 = e;
+            log.trace("unable to load as class: " + serviceName, e);
         }
-
+        
+        // if we got here, something bad happened and one of the three exceptions holds the answer
+        log.warn("service was unable to load (only one of the three following exceptions is meaningful)");
+        log.warn("...as bean", e1);
+        log.warn("...as context", e2);
+        log.warn("...as class", e3);
+        
         return false;
     }
     

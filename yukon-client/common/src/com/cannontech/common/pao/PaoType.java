@@ -9,7 +9,6 @@ import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.pao.VoltageRegulatorType;
@@ -164,9 +163,11 @@ public enum PaoType implements DatabaseRepresentationSource {
     LOAD_TAP_CHANGER(CapControlTypes.CAP_CONTROL_LTC, VoltageRegulatorType.LOAD_TAP_CHANGER.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.VOLTAGEREGULATOR),
     GANG_OPERATED(CapControlTypes.GANG_OPERATED_REGULATOR, VoltageRegulatorType.GANG_OPERATED.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.VOLTAGEREGULATOR),
     PHASE_OPERATED(CapControlTypes.PHASE_OPERATED_REGULATOR, VoltageRegulatorType.PHASE_OPERATED.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.VOLTAGEREGULATOR),
-    RFN_AX(DeviceTypes.RFN_AX, "RFN-AX", PaoCategory.DEVICE, PaoClass.RFMESH),
-    RFN_AL(DeviceTypes.RFN_AL, "RFN-AL", PaoCategory.DEVICE, PaoClass.RFMESH),
-    RFN_AXSD(DeviceTypes.RFN_AXSD, "RFN-AXSD", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN410FL(DeviceTypes.RFN410FL, "RFN-410fL", PaoCategory.DEVICE, PaoClass.RFMESH), 
+    RFN410FX(DeviceTypes.RFN410FX, "RFN-410fX", PaoCategory.DEVICE, PaoClass.RFMESH), 
+    RFN410FD(DeviceTypes.RFN410FD, "RFN-410fD", PaoCategory.DEVICE, PaoClass.RFMESH), 
+    RFN430A3(DeviceTypes.RFN430A3, "RFN-430A3", PaoCategory.DEVICE, PaoClass.RFMESH), 
+    RFN430KV(DeviceTypes.RFN430KV, "RFN-430KV", PaoCategory.DEVICE, PaoClass.RFMESH),
     MCT420FL(DeviceTypes.MCT420FL, "MCT-420FL", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT420FLD(DeviceTypes.MCT420FLD, "MCT-420FLD", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT420CL(DeviceTypes.MCT420CL, "MCT-420CL", PaoCategory.DEVICE, PaoClass.CARRIER),
@@ -254,7 +255,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     }
 
     public String getPaoTypeName() {
-    	return PAOGroups.getPAOTypeString(this.deviceTypeId);
+    	return getDbString();
     }
     
 }
