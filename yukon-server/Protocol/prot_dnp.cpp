@@ -899,7 +899,6 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
             case Command_Class123Read:
             {
                 getApplicationLayer().setCommand(ApplicationLayer::ResponseResponse);
-                getApplicationLayer().setOptions(0x40);
                    ObjectBlock         *dob1;
                    ObjectBlock         *dob2;
                    ObjectBlock         *dob3;
@@ -1061,6 +1060,11 @@ void DNPSlaveInterface::addObjectBlock(DNP::ObjectBlock *objBlock)
     {
         delete objBlock;
     }
+}
+void DNPSlaveInterface::setOptions( int options, int seqNumber )
+{
+    Inherited::setOptions(options);
+    getApplicationLayer().setSequenceNumber(seqNumber);
 }
 
 const char * const DNPInterface::ControlResultStr_RequestAccepted      = "Request accepted";

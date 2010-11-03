@@ -211,6 +211,11 @@ void ApplicationLayer::initForOutput( void )
     _request_buf_len = pos;
 }
 
+void ApplicationLayer::setSequenceNumber(int seqNbr)
+{
+    _seqno = seqNbr;
+}
+
 void ApplicationLayer::initForSlaveOutput( void )
 {
     unsigned pos = 0;

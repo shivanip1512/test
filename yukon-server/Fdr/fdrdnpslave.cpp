@@ -457,6 +457,7 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
     dest.ch[1] = data[5];
     src.ch[0] = data[6];
     src.ch[1] = data[7];
+    int seqnumber = (data[11] & 0x0F);
 
 
     std::map<CtiFDRDestination, CtiDnpId> sendMap = _helper->getSendMappings();
@@ -504,7 +505,7 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
 
     _dnpData.setAddresses(src.sh, dest.sh);
     _dnpData.setSlaveCommand(DNPSlaveInterface::Command_Class1230Read);
-
+    _dnpData.setOptions(DNPSlaveInterface::Options_SlaveResponse, seqnumber);
 
     if (_dnpData.slaveGenerate(xfer) == 0)
     {

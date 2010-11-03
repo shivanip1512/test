@@ -207,6 +207,7 @@ class IM_EX_PROT DNPSlaveInterface : public DNPInterface, boost::noncopyable
 
 private:
 
+    typedef DNPInterface Inherited;
     vector<input_point> _input_point_list;
     void addObjectBlock(DNP::ObjectBlock *objBlock);
 
@@ -221,6 +222,7 @@ public:
 
     bool setSlaveCommand( Command command );
     bool setSlaveCommand( Command command, input_point &point );
+    void setOptions( int options, int seqNumber=0 );
 
     int slaveGenerate( CtiXfer &xfer );
     void slaveTransactionComplete();

@@ -168,6 +168,7 @@ public:
     void addObjectBlock( const ObjectBlock *obj );
     void initForOutput( void );
     void initForSlaveOutput( void );
+    void setSequenceNumber(int seqNbr);
     void completeSlave( void );
     void initUnsolicited( void );
 
