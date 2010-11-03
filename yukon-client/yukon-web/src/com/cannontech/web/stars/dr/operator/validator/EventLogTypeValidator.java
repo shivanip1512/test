@@ -30,7 +30,7 @@ public class EventLogTypeValidator extends SimpleValidator<EventLogTypeBackingBe
             EventLogFilter eventLogFilter = eventLogFilters.get(i);
         
             FilterValue filterValue = eventLogFilter.getFilterValue();
-            errors.pushNestedPath("eventLogFilters["+i+"].filterValueFactoryBean");
+            errors.pushNestedPath("eventLogFilters["+i+"].filterValue");
             validateFilterValue(filterValue, errors);
             errors.popNestedPath();
         }
@@ -51,16 +51,11 @@ public class EventLogTypeValidator extends SimpleValidator<EventLogTypeBackingBe
         if (filterValue instanceof StringFilterValue) {
             StringFilterValue stringFilterValue = (StringFilterValue) filterValue;
 
-            YukonValidationUtils.checkExceedsMaxLength(errors, "stringFilterValue", 
+            YukonValidationUtils.checkExceedsMaxLength(errors, "filterValue", 
                                                        stringFilterValue.getFilterValue(), 2000);
 
         } else if (filterValue instanceof NumberFilterValue) {
-            NumberFilterValue numberFilterValue = (NumberFilterValue) filterValue;
-            String doubleNumberStr = String.valueOf(numberFilterValue.getDoubleFilterValue()); 
-                        
-            YukonValidationUtils.checkExceedsMaxLength(errors, "doublefilterValue", 
-                                                       doubleNumberStr, 38);
-
+            // consider anything to be valid
         } else if (filterValue instanceof DateFilterValue) {
             DateFilterValue dateFilterValue = (DateFilterValue) filterValue;
             
@@ -69,8 +64,8 @@ public class EventLogTypeValidator extends SimpleValidator<EventLogTypeBackingBe
             if (startDate != null && stopDate != null && startDate.isAfter(stopDate)) {
                 YukonValidationUtils.rejectValues(errors,
                                                   "yukon.web.modules.support.startDateMustBeBeforeStopDate",
-                                                  "dateStartDate",
-                                                  "dateStopDate");
+                                                  "startDate",
+                                                  "stopDate");
             }
 
         }

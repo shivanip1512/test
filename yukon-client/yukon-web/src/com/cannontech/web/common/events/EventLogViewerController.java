@@ -178,7 +178,7 @@ public class EventLogViewerController {
         EventLogTypeBackingBean eventLogTypeBackingBean = (EventLogTypeBackingBean)session.getAttribute("eventLogTypeBackingBean");
         if (eventLogTypeBackingBean == null ||
             !eventLogType.equalsIgnoreCase(eventLogTypeBackingBean.getEventLogType())) {
-            List<EventLogFilter> eventLogFilters = getEveltLogFilter(eventLogType, userContext);
+            List<EventLogFilter> eventLogFilters = getEventLogFilter(eventLogType, userContext);
             eventLogTypeBackingBean = 
                 new EventLogTypeBackingBean(eventLogType,
                                             userContext,
@@ -390,7 +390,7 @@ public class EventLogViewerController {
      * This method builds up the event log filters portion of the eventLogTypeBackingBean.
      * This also handles the creation of the i18n keys.
      */
-    private List<EventLogFilter> getEveltLogFilter(String eventLogType, YukonUserContext userContext) {
+    private List<EventLogFilter> getEventLogFilter(String eventLogType, YukonUserContext userContext) {
         List<EventLogFilter> eventLogFilters = Lists.newArrayList();
         final MessageSourceAccessor messageSourceAccessor = 
             messageSourceResolver.getMessageSourceAccessor(userContext);
