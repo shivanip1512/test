@@ -4,7 +4,12 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import com.cannontech.cbc.dao.CapbankDao;
+import com.cannontech.cbc.dao.ZoneDao;
+import com.cannontech.cbc.model.Zone;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -24,10 +29,13 @@ public class ParentStringPrinter {
     private static final String FEEDER_URL = "/spring/capcontrol/tier/feeders";
     private static final String AREA_URL = "/spring/capcontrol/tier/areas";
     private static final String SPECIAL_AREA_URL = "/spring/capcontrol/tier/areas?isSpecialArea=true";
+    private static final String ZONE_DETAIL_URL = "/spring/capcontrol/ivvc/zone/detail";
+    
     private CapbankDao capbankDao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
     private PointDao pointDao;
     private PaoDao paoDao;
-
+    private ZoneDao zoneDao;
+    
     public ParentStringPrinter(final HttpServletRequest request) {
         this.request = request;
     }
@@ -35,9 +43,36 @@ public class ParentStringPrinter {
     public String printPAO(final Integer paoId) {
         LiteYukonPAObject lite = paoDao.getLiteYukonPAO(paoId);
         int type = lite.getType();
-        if(type == CapControlTypes.CAP_CONTROL_AREA || type == CapControlTypes.CAP_CONTROL_SPECIAL_AREA) {
+
+        if (type == PaoType.LOAD_TAP_CHANGER.getDeviceTypeId() || 
+            type == PaoType.PHASE_OPERATED.getDeviceTypeId() ||
+            type == PaoType.GANG_OPERATED.getDeviceTypeId()) {
+            
+            Zone zone = null;
+            
+            try {
+                zone = zoneDao.getZoneByRegulatorId(paoId);
+            } catch (EmptyResultDataAccessException e) {
+                return ORPH_STRING;
+            }
+            
+            //This is not cool, but ok...
+            String url = ZONE_DETAIL_URL + "?isSpecialArea=false&zoneId=" + zone.getId();
+
+            final StringBuilder sb = new StringBuilder();
+            sb.append("<a href=\"");
+            sb.append(url);
+            sb.append("\">");
+            sb.append(zone.getName());
+            sb.append("</a>");
+            
+            String result = sb.toString();
+            return result;
+        }
+        else if (type == CapControlTypes.CAP_CONTROL_AREA || 
+            type == CapControlTypes.CAP_CONTROL_SPECIAL_AREA) {
             return ORPH_STRING;
-        }else if (type == CapControlTypes.CAP_CONTROL_SUBSTATION ){
+        } else if (type == CapControlTypes.CAP_CONTROL_SUBSTATION) {
             Integer areaId = CCSubAreaAssignment.getAreaIDForSubStation(paoId);
             List<Integer> specialAreaIdList = CCSubSpecialAreaAssignment.getAreaIdsForSubstation(paoId);
             if (areaId > -1) {
@@ -184,4 +219,7 @@ public class ParentStringPrinter {
         this.pointDao = pointDao;
     }
     
+    public void setZoneDao(ZoneDao zoneDao) {
+        this.zoneDao = zoneDao;
+    }
 }

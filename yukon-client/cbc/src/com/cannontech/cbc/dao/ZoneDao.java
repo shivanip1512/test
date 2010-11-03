@@ -55,6 +55,14 @@ public interface ZoneDao {
     public List<Zone> getZonesBySubBusId(int subBusId);
 
     /**
+     * Returns the zone with the regulatorId attached to it.
+     * 
+     * @param regulatorId
+     * @return
+     */
+    public Zone getZoneByRegulatorId(int regulatorId);
+    
+    /**
      * Returns Parent Zone for Substation Id.
      * 
      * Returns null if there is no parent on the Substation bus.

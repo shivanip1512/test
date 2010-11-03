@@ -51,6 +51,7 @@
   <bean id="parentStringPrinterFactory" class="com.cannontech.cbc.web.ParentStringPrinterFactory">
     <property name="paoDao" ref="paoDao"/>
     <property name="pointDao" ref="pointDao"/>
+    <property name="zoneDao" ref="zoneDao"/>
   </bean> 
 
 	<bean id="capControlCreationService"

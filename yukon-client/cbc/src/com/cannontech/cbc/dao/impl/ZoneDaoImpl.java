@@ -108,6 +108,19 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     }
     
     @Override
+    public Zone getZoneByRegulatorId(int regulatorId) {
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("SELECT ZoneId,ZoneName,RegulatorId,SubstationBusId,ParentId");
+        sqlBuilder.append("FROM Zone");
+        sqlBuilder.append("WHERE RegulatorId");
+        sqlBuilder.eq(regulatorId);
+        
+        Zone zone = yukonJdbcTemplate.queryForObject(sqlBuilder, zoneRowMapper);
+        
+        return zone;
+    }
+    
+    @Override
     public List<PointToZoneMapping> getPointToZoneMappingById(int zoneId) {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT PointId, ZoneId, ZoneOrder");
