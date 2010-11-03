@@ -68,7 +68,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
                 if (compareToIgnoreCase == 0) {
                 	if (modelOne.serialNumber == null) {
                 		if (modelTwo.serialNumber == null) {
-                			return 1;	//modelOne
+                			return 0;
                 		} else {
                 			return -1;	//modelTwo
                 		}
