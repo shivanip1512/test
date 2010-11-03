@@ -663,11 +663,11 @@
 					<property name="value" value="22" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate A Date of Peak Demand" />
+					<property name="text" value="TOU Rate A Date of Peak kW" />
 					<property name="value" value="23" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
-					<property name="text" value="TOU Rate A Time of Peak Demand" />
+					<property name="text" value="TOU Rate A Time of Peak kW" />
 					<property name="value" value="24" />
 				</bean>
 				<bean class="com.cannontech.web.input.type.InputOption">
