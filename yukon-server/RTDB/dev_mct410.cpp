@@ -1431,7 +1431,7 @@ bool Mct410Device::canDailyReadDateAlias(const CtiDate &date, const CtiTime &now
     //  Not all months have 31 days, so some slots are not overwritten at the end of a particular month.
     //  There are 5 days that can alias to other days if the meter does not hear the period-of-interest command:
     //
-    //    01/31 can alias to 05/31 during 06/01-08/31
+    //    01/31 can alias to 05/31 during 06/01-07/30
     //    11/29 can alias to 03/29 during 03/30-05/28
     //    11/30 can alias to 03/30 during 03/31-05/29
     //    08/31 can alias to 12/31 during 01/01-03/31
@@ -1442,36 +1442,36 @@ bool Mct410Device::canDailyReadDateAlias(const CtiDate &date, const CtiTime &now
     //  01/31 case
     if( date.month() == 5 && date.dayOfMonth() == 31 )
     {
-        return nowDate.month() > 5 &&
-               nowDate.month() < 8;
+        //  overwritten on 7/31
+        return nowDate.month() < 7 || nowDate.month() == 7 && nowDate.dayOfMonth() < 31;
     }
 
     //  11/29 case - only unsafe if this isn't a leap year
     if( date.month() == 3 && date.dayOfMonth() == 29 && CtiDate::daysInMonthYear(2, date.year()) == 28 )
     {
-        //  not checking for May 29 and May 30 because the dates should already be invalid by then
-        return nowDate.month() < 6;
+        //  overwritten on 5/29
+        return nowDate.month() < 5 || nowDate.month() == 5 && nowDate.dayOfMonth() < 29;
     }
 
     //  11/30 case
     if( date.month() == 3 && date.dayOfMonth() == 30 )
     {
-        //  not checking for May 29 and May 30 because the dates should already be invalid by then
-        //  also, technically, we could check to see if this year is a leap year, in which case 03/29 is safe
-        return nowDate.month() < 6;
+        //  overwritten on 5/30
+        return nowDate.month() < 5 || nowDate.month() == 5 && nowDate.dayOfMonth() < 30;
     }
 
     //  08/31 case
     if( date.month() == 12 && date.dayOfMonth() == 31 )
     {
-        return nowDate.month() < 4;
+        //  alias possible the whole time 12/31 is valid
+        return true;
     }
 
     //  03/31 case
     if( date.month() == 7 && date.dayOfMonth() == 31 )
     {
-        return nowDate.month() > 7 &&
-               nowDate.month() < 11;
+        //  alias possible the whole time 7/31 is valid
+        return true;
     }
 
     return false;
