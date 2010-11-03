@@ -117,7 +117,7 @@ public class OutageJmsMessageListener implements MessageListener {
         
         for (MultispeakVendor mspVendor : vendorsToSendOutageMsg) {
             String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.OA_Server_STR);
-            log.info("Sending ODEventNotification ("+ endpointURL + "): ObjectID: " + outageDetectionEvent.getObjectID());
+            log.info("Sending ODEventNotification ("+ endpointURL + "): ObjectID: " + outageDetectionEvent.getObjectID() + " Type: " + outageDetectionEvent.getOutageEventType());
             
             try {
                 OutageDetectionEvent[] odEvents = new OutageDetectionEvent[1];
