@@ -301,29 +301,29 @@ create table UserPaoPermission  (
 alter table UserPaoPermission
    add constraint PK_USERPAOPERMISSION primary key (UserPaoPermissionID);
 
-/**********************USERPAOOWNER MIGRATION*****************************/
-/* @start-block */
-declare
-v_userid number;
-v_paoid number;
-v_counterid number := 1;
-cursor c_userpaoowner is select userid, paoid from userpaoowner;
+/**********************USERPAOOWNER MIGRATION*****************************/ 
+/* @start-block */ 
+declare 
+v_userid number; 
+v_paoid number; 
+v_counterid number := 1; 
+cursor c_userpaoowner is select userid, paoid from userpaoowner; 
 
-begin
-     open c_userpaoowner;
-     
-     while(c_userpaoowner%found)
-     loop
-          fetch c_userpaoowner into v_userid, v_paoid;
-          insert into userpaopermission values (v_counterid, v_userid, v_paoid, 'LM_VISIBLE');
-	  v_counterid := v_counterid + 1; 
-     end loop;
+begin 
+    open c_userpaoowner; 
+    fetch c_userpaoowner into v_userid, v_paoid; 
 
-     close c_userpaoowner;
+    while(c_userpaoowner%found) 
+    loop 
+        insert into userpaopermission values (v_counterid, v_userid, v_paoid, 'LM_VISIBLE'); 
+        v_counterid := v_counterid + 1; 
+        fetch c_userpaoowner into v_userid, v_paoid; 
+    end loop; 
 
-end;
-/* @end-block */
-/*commit;*/
+    close c_userpaoowner; 
+end; 
+/* @end-block */ 
+/*commit;*/ 
 /*************************************************************************/
 
 alter table UserPaoPermission
