@@ -37,14 +37,13 @@ public class WidgetInterceptor extends HandlerInterceptorAdapter {
         return true;
     }
     
-    
+    @SuppressWarnings("unchecked")
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         Map<String, String> existingParams = (Map<String, String>) request.getAttribute("widgetParameters");
         JSONObject object = new JSONObject(existingParams);
         response.addHeader("X-JSON", object.toString());
    
-        // TODO Fix this
         String beanName = existingParams.get("shortName");
         MessageScopeHelper.forRequest(request).pushScope("." + beanName, ".widgets." + beanName);
     }
