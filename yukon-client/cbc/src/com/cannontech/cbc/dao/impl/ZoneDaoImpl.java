@@ -25,7 +25,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
 
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
-    private SimpleTableAccessTemplate<Zone> template;
+    private SimpleTableAccessTemplate<Zone> zoneTemplate;
     
     private static final YukonRowMapper<Zone> zoneRowMapper = ZoneDaoImpl.createZoneRowMapper();
     private static final YukonRowMapper<CapBankToZoneMapping> bankToZoneRowMapper = ZoneDaoImpl.createBankToZoneRowMapper();
@@ -172,7 +172,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     
     @Override
     public void save(Zone zone) {
-        template.save(zone);
+        zoneTemplate.save(zone);
     }
     
     @Override
@@ -220,7 +220,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         for (CapBankToZoneMapping bankToZone : banksToZone) {
             sqlBuilder = new SqlStatementBuilder();
             sqlBuilder.append("INSERT INTO CapBankToZoneMapping (DeviceId, ZoneId, Position, Distance)");
-            sqlBuilder.values(bankToZone.getDeviceId(), bankToZone.getZoneId(), bankToZone.getPosition(), bankToZone.getDistance());
+            sqlBuilder.values(bankToZone.getDeviceId(), zoneId, bankToZone.getPosition(), bankToZone.getDistance());
             
             yukonJdbcTemplate.update(sqlBuilder);
     	}
@@ -237,7 +237,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         for (PointToZoneMapping pointToZone : pointsToZone) {
             sqlBuilder = new SqlStatementBuilder();
             sqlBuilder.append("INSERT INTO PointToZoneMapping (PointId, ZoneId, Position, Distance)");
-            sqlBuilder.values(pointToZone.getPointId(), pointToZone.getZoneId(), pointToZone.getPosition(), pointToZone.getDistance());
+            sqlBuilder.values(pointToZone.getPointId(), zoneId, pointToZone.getPosition(), pointToZone.getDistance());
             
             yukonJdbcTemplate.update(sqlBuilder);
         }
@@ -261,10 +261,10 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        template = new SimpleTableAccessTemplate<Zone>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("Zone");
-        template.withPrimaryKeyField("ZoneId");
-        template.withFieldMapper(zoneFieldMapper);
+        zoneTemplate = new SimpleTableAccessTemplate<Zone>(yukonJdbcTemplate, nextValueHelper);
+        zoneTemplate.withTableName("Zone");
+        zoneTemplate.withPrimaryKeyField("ZoneId");
+        zoneTemplate.withFieldMapper(zoneFieldMapper);
     }
     
     @Autowired

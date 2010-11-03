@@ -79,8 +79,8 @@ public class ZoneServiceImpl implements ZoneService {
     private List<CapBankToZoneMapping> getCapBankToZoneMappingByDto(ZoneDto zoneDto) {
     	List<CapBankToZoneMapping> banks = Lists.newArrayList();
         for (ZoneAssignmentCapBankRow bankRow : zoneDto.getBankAssignments()) {
-        	int bankId = bankRow.getId();
-        	int zoneId = zoneDto.getZoneId();
+        	Integer bankId = bankRow.getId();
+        	Integer zoneId = zoneDto.getZoneId();
         	double position = bankRow.getPosition();
         	double dist = bankRow.getDistance();
         	CapBankToZoneMapping bank = new CapBankToZoneMapping(bankId, zoneId, position, dist);
@@ -92,8 +92,8 @@ public class ZoneServiceImpl implements ZoneService {
     private List<PointToZoneMapping> getPointToZoneMappingByDto(ZoneDto zoneDto) {
     	List<PointToZoneMapping> points = Lists.newArrayList();
         for (ZoneAssignmentPointRow pointRow : zoneDto.getPointAssignments()) {
-        	int pointId = pointRow.getId();
-        	int zoneId = zoneDto.getZoneId();
+        	Integer pointId = pointRow.getId();
+        	Integer zoneId = zoneDto.getZoneId();
         	double position = pointRow.getPosition();
         	double dist = pointRow.getDistance();
         	PointToZoneMapping point = new PointToZoneMapping(pointId, zoneId, position, dist);

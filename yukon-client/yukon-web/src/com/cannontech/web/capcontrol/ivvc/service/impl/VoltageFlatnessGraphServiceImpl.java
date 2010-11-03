@@ -339,7 +339,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         LitePoint regulatorPoint = attributeService.getPointForAttribute(regulatorPao, BuiltInAttribute.VOLTAGE);
         PointValueQualityHolder regulatorPointValue = dynamicDataSource.getPointValue(regulatorPoint.getLiteID());
         String regTimestamp = dateFormattingService.format(regulatorPointValue.getPointDataTimeStamp(), DateFormatEnum.BOTH, userContext);
-        String regDescription = pointFormattingService.getValueString(regulatorPointValue, Format.SHORT, userContext) + 
+        String regDescription = pointFormattingService.getValueString(regulatorPointValue, Format.VALUE, userContext) + 
         						"\n" + displayablePao.getName() + "\n" + regTimestamp + "\n" + zone.getName();
         
         setMaxXPosition(graphStartPosition);
@@ -355,7 +355,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 		LitePoint litePoint = pointDao.getLitePoint(pointId);
 		YukonPao yukonPao = paoDao.getYukonPao(litePoint.getPaobjectID());
         DisplayablePao displayablePointPao = paoLoadingService.getDisplayablePao(yukonPao);
-		String pointDescription = pointFormattingService.getValueString(pointValue, Format.SHORT, userContext) +
+		String pointDescription = pointFormattingService.getValueString(pointValue, Format.VALUE, userContext) +
 								  "\n" + litePoint.getPointName() + "\n" + displayablePointPao.getName() + "\n" + pointTimestamp + "\n" + zone.getName();
 		
 		if (pointToZone.getDistance() != 0) {
@@ -374,7 +374,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         DisplayablePao displayablePointPao = paoLoadingService.getDisplayablePao(yukonPao);
 		PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(pointId);
 		String pointTimestamp = dateFormattingService.format(pointValue.getPointDataTimeStamp(), DateFormatEnum.BOTH, userContext);
-		String pointDescription = pointFormattingService.getValueString(pointValue, Format.SHORT, userContext) + 
+		String pointDescription = pointFormattingService.getValueString(pointValue, Format.VALUE, userContext) + 
 								  "\n" + displayablePointPao.getName() + "\n" + pointTimestamp + "\n" + zone.getName();
 		
 		if (bankToZone.getDistance() != 0) {
