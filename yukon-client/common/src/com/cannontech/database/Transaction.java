@@ -1,9 +1,7 @@
 package com.cannontech.database;
 
 import com.cannontech.database.db.DBPersistent;
-
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.yukon.DbPersistentBeanFactory;
 import com.cannontech.yukon.IDBPersistent;
 
 @Deprecated
@@ -16,6 +14,7 @@ public class Transaction<E extends DBPersistent> {
     public static final int ADD_PARTIAL = 6;
 
     private TransactionType transactionType;
+    private IDBPersistent db = null;
     private E object;
 
     private Transaction(TransactionType transactionType, E obj) {
@@ -44,9 +43,15 @@ public class Transaction<E extends DBPersistent> {
         return new Transaction<R>(transactionType, obj, databaseAlias);
     }
 
+    private IDBPersistent getDB() {
+       if (db == null) { 
+          db = YukonSpringHook.getBean(IDBPersistent.class);
+       }
+       return db;
+    }
+    
     @SuppressWarnings("unchecked")
     public E execute() throws TransactionException {
-    	IDBPersistent db = YukonSpringHook.getBean("dbPersistentBeanFactory", DbPersistentBeanFactory.class).createNewDbPersistentBean();
-        return (E) db.execute(this.transactionType, this.object );
+    	return (E) getDB().execute(this.transactionType, this.object );
     }
 }

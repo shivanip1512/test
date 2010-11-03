@@ -21,11 +21,5 @@
     
     <bean id="dbPersistentBean" class="com.cannontech.ejb.DBPersistentBean" singleton="false"/>
 
-    <bean id="sqlStatementBeanFactory"
-        class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
-        <property name="serviceLocatorInterface"
-            value="com.cannontech.yukon.SqlStatementBeanFactory" />
-    </bean>
-    
     <bean id="sqlStatementBean" class="com.cannontech.ejb.SqlStatementBean" singleton="false"/>
 </beans>

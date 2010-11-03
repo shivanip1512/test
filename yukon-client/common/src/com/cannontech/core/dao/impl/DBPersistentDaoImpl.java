@@ -81,7 +81,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
             // Generate and process db change messages when not of type NONE
             DbChangeType dbChangeType = transactionType.getDbChangeType();
             if (dbChangeType != DbChangeType.NONE) {
-                DBChangeMsg[] dbChangeMsgs = getDBChangeMsgs(item, transactionType.getDbChangeType());
+                DBChangeMsg[] dbChangeMsgs = getDBChangeMsgs(item, dbChangeType);
                 if (dbChangeMsgs != null) {
                     for (DBChangeMsg changeMsg : dbChangeMsgs) {
                         processDBChange(changeMsg);

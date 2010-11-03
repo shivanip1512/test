@@ -2,7 +2,6 @@ package com.cannontech.database;
 
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.ISQLStatement;
-import com.cannontech.yukon.SqlStatementBeanFactory;
 
 /**
  * This type was created in VisualAge.
@@ -13,7 +12,7 @@ public class SqlStatement implements com.cannontech.common.util.Command, ISQLSta
 	
 	private synchronized ISQLStatement getSqlStatement() {
 		if (sqlStatement == null) {
-			sqlStatement = YukonSpringHook.getBean("sqlStatementBeanFactory", SqlStatementBeanFactory.class).createNewSqlStatementBean();
+			sqlStatement = YukonSpringHook.getBean(ISQLStatement.class);
 		}
 
 		return sqlStatement;

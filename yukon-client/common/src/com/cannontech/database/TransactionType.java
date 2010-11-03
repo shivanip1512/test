@@ -12,8 +12,8 @@ public enum TransactionType {
     UPDATE (Transaction.UPDATE, DbChangeType.UPDATE),
     RETRIEVE (Transaction.RETRIEVE, DbChangeType.NONE),
     DELETE (Transaction.DELETE, DbChangeType.DELETE),
-    DELETE_PARTIAL (Transaction.DELETE_PARTIAL, DbChangeType.NONE),     //dbChangeType correct here?
-    ADD_PARTIAL (Transaction.ADD_PARTIAL, DbChangeType.NONE)    //dbChangeType correct here?
+    DELETE_PARTIAL (Transaction.DELETE_PARTIAL, DbChangeType.NONE),
+    ADD_PARTIAL (Transaction.ADD_PARTIAL, DbChangeType.NONE),
     ;
     
     private final int operation;

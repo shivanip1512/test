@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.GregorianCalendar;
 
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.yukon.DbPersistentBeanFactory;
+import com.cannontech.yukon.IDBPersistent;
  
 public abstract class DBPersistent implements java.io.Serializable 
 {
@@ -171,7 +171,7 @@ private static String prepareObjectForSQLStatement( Object o )
 private synchronized com.cannontech.yukon.IDBPersistent getDB()
 {
    if (db == null) { 
-      db = YukonSpringHook.getBean("dbPersistentBeanFactory", DbPersistentBeanFactory.class).createNewDbPersistentBean();
+      db = YukonSpringHook.getBean(IDBPersistent.class);
    }
 
    return db;
