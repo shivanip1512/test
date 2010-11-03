@@ -18,7 +18,7 @@ public class LMControlSummaryReport extends SingleGroupYukonReportBase {
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
         new ColumnLayoutData("", "total", 50),
         new ColumnLayoutData("Number of Enrolled Participants", "enrolledCustomers", 120),
-        new ColumnLayoutData("Number of Enrolled Inventory", "enrolledInventories", 120),
+        new ColumnLayoutData("Number of Enrolled Inventory", "enrolledInventory", 120),
         new ColumnLayoutData("Total Customer Control Hours", "controlHours", 120),
         new ColumnLayoutData("Total Customer Opt Out Control Hours", "totalOptOutHoursDuringControl", 130),
         new ColumnLayoutData("Total Customer Opt Out Hours", "totalOptOutHours", 120),

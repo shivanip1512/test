@@ -41,7 +41,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
     private YukonUserContext userContext;
     
     private final int ENROLLED_CUSTOMERS = 0;
-    private final int ENROLLED_INVENTORIES = 1;
+    private final int ENROLLED_INVENTORY = 1;
     private final int TOTAL_CONTROL_HOURS = 2;
     private final int TOTAL_OPT_OUT_HOURS_DURING_CONTROL = 3;
     private final int TOTAL_OPT_OUT_HOURS = 4;
@@ -63,7 +63,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
     	public String total = "";
         public String program;
         public Integer enrolledCustomers = 0;
-        public Integer enrolledInventories = 0;
+        public Integer enrolledInventory = 0;
         public Double controlHours;
         public Double totalOptOutHoursDuringControl;
         public Double totalOptOutHours;
@@ -150,7 +150,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                             if(totals == null) {
                                 totals = new Double[6];
                                 totals[ENROLLED_CUSTOMERS] = 0.0;
-                                totals[ENROLLED_INVENTORIES] = 0.0;
+                                totals[ENROLLED_INVENTORY] = 0.0;
                                 totals[TOTAL_CONTROL_HOURS] = 0.0;
                                 totals[TOTAL_OPT_OUT_HOURS_DURING_CONTROL] = 0.0;
                                 totals[TOTAL_OPT_OUT_HOURS] = 0.0;
@@ -218,7 +218,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                                 for(LMHardwareControlGroup enrollment : enrollments) {
                                     if(enrollment.isActiveEnrollment() ||
                                        enrollment.getGroupEnrollStop().isAfter(new Instant(getStartDate()))) {
-                                        totals[ENROLLED_INVENTORIES] = totals[ENROLLED_INVENTORIES] + 1;
+                                        totals[ENROLLED_INVENTORY] = totals[ENROLLED_INVENTORY] + 1;
                                         break;
                                     }
                                 }
@@ -245,14 +245,14 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                     if(totals == null) {
                         row.controlHours = 0.0;
                         row.enrolledCustomers = 0;
-                        row.enrolledInventories = 0;
+                        row.enrolledInventory = 0;
                         row.optOutEvents = 0;
                         row.totalOptOutHours = 0.0;
                         row.totalOptOutHoursDuringControl = 0.0;
                     } else {
                         row.controlHours = totals[TOTAL_CONTROL_HOURS];
                         row.enrolledCustomers = (int)totals[ENROLLED_CUSTOMERS].doubleValue();
-                        row.enrolledInventories = (int)totals[ENROLLED_INVENTORIES].doubleValue();
+                        row.enrolledInventory = (int)totals[ENROLLED_INVENTORY].doubleValue();
                         row.optOutEvents = (int)totals[TOTAL_OPT_OUT_EVENTS].doubleValue();
                         row.totalOptOutHours = totals[TOTAL_OPT_OUT_HOURS];
                         row.totalOptOutHoursDuringControl = totals[TOTAL_OPT_OUT_HOURS_DURING_CONTROL];
