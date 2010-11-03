@@ -2192,6 +2192,10 @@ void CtiCapController::parseMessage(RWCollectable *message)
                         {
                             objType =  Feeder;
                         }
+                        else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_VOLTAGEREGULATOR)
+                        {
+                            objType =  VoltageRegulatorType;
+                        }
                         else if (dbChange->getDatabase() == ChangePAOScheduleDB)
                         {
                             CtiPAOScheduleManager::getInstance()->setValid(false);

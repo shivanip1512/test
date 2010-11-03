@@ -804,6 +804,10 @@ INT resolveCapControlType(const string& _rwsTemp)
     {
         nRet = TYPE_CC_SPECIALAREA;
     }
+    else if(rwsTemp == "ltc" || rwsTemp == "go_regulator" || rwsTemp == "po_regulator")
+    {
+        nRet = TYPE_CC_VOLTAGEREGULATOR;
+    }
     else
     {
         {

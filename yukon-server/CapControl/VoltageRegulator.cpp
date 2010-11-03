@@ -22,6 +22,7 @@ const char * MissingPointAttribute::what( ) const
 }
 
 
+// If these strings change, remember to update them in resolveCapControlType()
 const std::string VoltageRegulator::LoadTapChanger                  = "LTC";
 const std::string VoltageRegulator::GangOperatedVoltageRegulator    = "GO_REGULATOR";
 const std::string VoltageRegulator::PhaseOperatedVoltageRegulator   = "PO_REGULATOR";

@@ -9381,8 +9381,14 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                     }
                     case ZoneType:
                     {
-                        forceFullReload = true;
-                        _reloadList.clear();
+                        handleZoneDBChange(reloadTemp.objectId, reloadTemp.action,  msgBitMask, msgSubsBitMask,
+                                                 modifiedSubsSet,  modifiedStationsSet, capMessages );
+                        break;
+                    }
+                    case VoltageRegulatorType:
+                    {
+                        handleVoltageRegulatorDBChange(reloadTemp.objectId, reloadTemp.action,  msgBitMask, msgSubsBitMask,
+                                                 modifiedSubsSet,  modifiedStationsSet, capMessages );
                         break;
                     }
                     default:
@@ -11226,6 +11232,34 @@ bool CtiCCSubstationBusStore::reloadVoltageRegulatorFromDatabase(const long regu
     }
 
     return true;
+}
+
+
+void CtiCCSubstationBusStore::handleZoneDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
+                                                 CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages )
+{
+    if (reloadAction != ChangeTypeDelete)
+    {
+        reloadZoneFromDatabase(reloadId);
+    }
+    else
+    {
+        _zoneManager.unload(reloadId);
+    }
+}
+
+
+void CtiCCSubstationBusStore::handleVoltageRegulatorDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
+                                                 CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages )
+{
+    if (reloadAction != ChangeTypeDelete)
+    {
+        reloadVoltageRegulatorFromDatabase(reloadId);
+    }
+    else
+    {
+        _voltageRegulatorManager->unload(reloadId);
+    }
 }
 
 
