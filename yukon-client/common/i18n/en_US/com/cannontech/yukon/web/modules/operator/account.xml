@@ -35,7 +35,8 @@
 	
 	<!-- account.jsp -->
 	<entry key="yukon.web.modules.operator.account.CREATE.pageName">Create Account</entry>
-    <entry key="yukon.web.modules.operator.account.EDIT.pageName">Account</entry>
+    <entry key="yukon.web.modules.operator.account.EDIT.pageName">Edit Account</entry>
+    <entry key="yukon.web.modules.operator.account.EDIT.contextualPageName">Edit</entry>
     <entry key="yukon.web.modules.operator.account.EDIT.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.operator.account.VIEW.pageName">Account</entry>
     <entry key="yukon.web.modules.operator.account.VIEW.pageDescription">{0}</entry>

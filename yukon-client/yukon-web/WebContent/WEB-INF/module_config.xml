@@ -1050,10 +1050,10 @@
                         <labelArgument>${accountNumber}</labelArgument>
                         <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
                         <pages>
-                            <page name="account.EDIT" type="DETAIL_WITH_INFO">
+                            <page name="account.EDIT" type="DETAIL_CHILD_WITH_INFO">
                                 <menu>account|accounts</menu>
                                 <link>/spring/stars/operator/account/accountEdit?accountId=${accountId}</link>
-                                <labelArgument>Edit</labelArgument>
+                                <labelArgument>${accountNumber}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
                             </page>
                             <page name="contactList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
@@ -1254,11 +1254,11 @@
                             </page>
                         </pages>
                     </page>
-                            <page name="accountLog" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/account/accountLog?accountId=${accountId}</link>
-                                <labelArgument>${accountNumber}</labelArgument>
-                            </page>
+                    <page name="accountLog" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                        <menu>account|accounts</menu>
+                        <link>/spring/stars/operator/account/accountLog?accountId=${accountId}</link>
+                        <labelArgument>${accountNumber}</labelArgument>
+                    </page>
                         </pages>
                     </page>
                 </pages>
