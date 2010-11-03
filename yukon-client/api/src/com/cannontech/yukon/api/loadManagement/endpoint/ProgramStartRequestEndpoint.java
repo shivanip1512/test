@@ -91,7 +91,7 @@ public class ProgramStartRequestEndpoint {
             resp.addContent(fe);
             return resp;
         } catch (NotAuthorizedException e) {
-            Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "UserNotAuthorized", "The program is not visible to the user.");
+            Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "UserNotAuthorized", "The user is not authorized to start program.");
             resp.addContent(fe);
             return resp;
         }

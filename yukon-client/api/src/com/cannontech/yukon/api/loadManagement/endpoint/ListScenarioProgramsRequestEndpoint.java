@@ -67,7 +67,7 @@ public class ListScenarioProgramsRequestEndpoint {
             resp.addContent(fe);
             return resp;
         } catch (NotAuthorizedException e) {
-            Element fe = XMLFailureGenerator.generateFailure(listScenarioProgramsRequest, e, "UserNotAuthorized", "The scenario is not visible to the user.");
+            Element fe = XMLFailureGenerator.generateFailure(listScenarioProgramsRequest, e, "UserNotAuthorized", "The user is not authorized to request programs for a scenario.");
             resp.addContent(fe);
             return resp;
         }

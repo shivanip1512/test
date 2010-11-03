@@ -79,7 +79,7 @@ public class CurrentlyActiveProgramsRequestEndpoint {
             programStatuses = XMLFailureGenerator.generateFailure(currentlyActiveProgramsRequest,
                                                                 e,
                                                                 "UserNotAuthorized",
-                                                                "The user is not authorized to cancel all current overrides.");
+                                                                "The user is not authorized to request currently active programs.");
         }
         
         resp.addContent(programStatuses);

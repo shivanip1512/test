@@ -72,7 +72,7 @@ public class ProgramControlHistoryRequestEndpoint {
             resp.addContent(fe);
             return resp;
         } catch (NotAuthorizedException e) {
-            Element fe = XMLFailureGenerator.generateFailure(programControlHistoryRequest, e, "UserNotAuthorized", e.getMessage());
+            Element fe = XMLFailureGenerator.generateFailure(programControlHistoryRequest, e, "UserNotAuthorized", "The user is not authorized to request program control history.");
             resp.addContent(fe);
             return resp;
         }

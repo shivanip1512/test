@@ -72,7 +72,7 @@ public class OverrideHistoryRequestEndpoint {
             resultElement = XMLFailureGenerator.generateFailure(overrideHistoryByAccountNumberRequest,
                                                                 e,
                                                                 "UserNotAuthorized",
-                                                                "The user is not authorized to view override history.");
+                                                                "The user is not authorized to request override history.");
         } catch (AccountNotFoundException e) {
             resultElement = XMLFailureGenerator.generateFailure(overrideHistoryByAccountNumberRequest,
                                                                 e,

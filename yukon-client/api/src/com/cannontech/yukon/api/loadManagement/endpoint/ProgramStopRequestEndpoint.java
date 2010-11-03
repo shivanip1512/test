@@ -71,7 +71,7 @@ public class ProgramStopRequestEndpoint {
             resp.addContent(fe);
             return resp;
         } catch (NotAuthorizedException e) {
-            Element fe = XMLFailureGenerator.generateFailure(programStopRequest, e, "UserNotAuthorized", "The program is not visible to the user.");
+            Element fe = XMLFailureGenerator.generateFailure(programStopRequest, e, "UserNotAuthorized", "The user is not authorized to stop program.");
             resp.addContent(fe);
             return resp;
         }

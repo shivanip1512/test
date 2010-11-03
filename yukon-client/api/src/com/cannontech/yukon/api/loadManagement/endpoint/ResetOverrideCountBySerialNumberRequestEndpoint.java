@@ -62,7 +62,7 @@ public class ResetOverrideCountBySerialNumberRequestEndpoint {
             resultElement = XmlUtils.createStringElement("success", ns, "");
             
 		} catch (NotAuthorizedException e) {
-			resultElement = XMLFailureGenerator.generateFailure(resetOverrideCountBySerialNumberRequest, e, "UserNotAuthorized", "The user is not authorized reset overrides by serial number.");
+			resultElement = XMLFailureGenerator.generateFailure(resetOverrideCountBySerialNumberRequest, e, "UserNotAuthorized", "The user is not authorized to reset overrides by serial number.");
 		} catch (AccountNotFoundException e) {
 			resultElement = XMLFailureGenerator.generateFailure(resetOverrideCountBySerialNumberRequest, e, "InvalidAccountNumber", "No account with account number: " + accountNumber);
 		} catch (InventoryNotFoundException e) {

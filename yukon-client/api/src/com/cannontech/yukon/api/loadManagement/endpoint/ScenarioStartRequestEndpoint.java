@@ -79,7 +79,7 @@ public class ScenarioStartRequestEndpoint {
             resp.addContent(fe);
             return resp;
         } catch (NotAuthorizedException e) {
-            Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "UserNotAuthorized", "A program in the scenario is not visible to the user.");
+            Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "UserNotAuthorized", "The user is not authorized to start scenario.");
             resp.addContent(fe);
             return resp;
         }

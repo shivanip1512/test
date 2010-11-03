@@ -77,7 +77,7 @@ public class ScenarioStopRequestEndpoint {
             resp.addContent(fe);
             return resp;
         } catch (NotAuthorizedException e) {
-            Element fe = XMLFailureGenerator.generateFailure(scenarioStopRequest, e, "UserNotAuthorized", "A program in the scenario is not visible to the user.");
+            Element fe = XMLFailureGenerator.generateFailure(scenarioStopRequest, e, "UserNotAuthorized", "The user is not authorized to stop scenario.");
             resp.addContent(fe);
             return resp;
         }

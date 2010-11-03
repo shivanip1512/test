@@ -74,7 +74,7 @@ public class TotalOverriddenDevicesRequestEndpoint {
             resultElement = XMLFailureGenerator.generateFailure(totalOverriddenDevicesByAccountNumberRequest,
                                                                 e,
                                                                 "UserNotAuthorized",
-                                                                "The user is not authorized to get total devices overriden.");
+                                                                "The user is not authorized to request total devices overriden.");
         } catch (AccountNotFoundException e) {
             resultElement = XMLFailureGenerator.generateFailure(totalOverriddenDevicesByAccountNumberRequest,
                                                                 e,
@@ -134,7 +134,7 @@ public class TotalOverriddenDevicesRequestEndpoint {
             resultElement = XMLFailureGenerator.generateFailure(totalOverriddenDevicesByProgramNameRequest,
                                                                 e,
                                                                 "UserNotAuthorized",
-                                                                "The user is not authorized to get total devices overriden.");
+                                                                "The user is not authorized to request total devices overriden.");
         } catch (ProgramNotFoundException e) {
             resultElement = XMLFailureGenerator.generateFailure(totalOverriddenDevicesByProgramNameRequest,
                                                                 e,

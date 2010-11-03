@@ -65,7 +65,7 @@ public class ProgramStatusRequestEndpoint {
             resp.addContent(fe);
             return resp;
         } catch (NotAuthorizedException e) {
-            Element fe = XMLFailureGenerator.generateFailure(programStatusRequest, e, "UserNotAuthorized", "The program is not visible to the user.");
+            Element fe = XMLFailureGenerator.generateFailure(programStatusRequest, e, "UserNotAuthorized", "The user is not authorized to request program status.");
             resp.addContent(fe);
             return resp;
         }
