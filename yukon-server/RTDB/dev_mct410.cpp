@@ -3254,9 +3254,9 @@ INT Mct410Device::decodeGetConfigDailyReadInterest(INMESS *InMessage, CtiTime &T
         unsigned interest_month   =  (DSt->Message[1] & 0x0f) + 1;
         unsigned interest_channel = ((DSt->Message[1] & 0x30) >> 4) + 1;
 
-        resultString = getName() + " / Daily read interest channel: " + CtiNumStr(interest_channel) + "\n";
-        resultString = getName() + " / Daily read interest month: "   + CtiNumStr(interest_month) + "\n";
-        resultString = getName() + " / Daily read interest day: "     + CtiNumStr(interest_day) + "\n";
+        resultString  = getName() + " / Daily read interest channel: " + CtiNumStr(interest_channel) + "\n";
+        resultString += getName() + " / Daily read interest month: "   + CtiNumStr(interest_month) + "\n";
+        resultString += getName() + " / Daily read interest day: "     + CtiNumStr(interest_day) + "\n";
 
         const CtiDate DateNow(TimeNow);
 
