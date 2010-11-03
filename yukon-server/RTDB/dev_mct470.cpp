@@ -4461,7 +4461,7 @@ INT Mct470Device::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, list< 
         {
             case EmetconProtocol::GetConfig_IEDTime:
             {
-                point_info  pi_time  = Mct4xxDevice::getData(DSt->Message, 4, ValueType_Raw);
+                point_info  pi_time  = Mct470Device::getData(DSt->Message, 4, ValueType_IED);
 
                 _iedTime = CtiTime::fromLocalSeconds(pi_time.value);
 
@@ -4473,59 +4473,68 @@ INT Mct470Device::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, list< 
                 }
                 else
                 {
-                    int rate;
+                    point_info  pi_rate  = Mct470Device::getData(DSt->Message + 4, 1, ValueType_IED);
 
-                    switch( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) & 0xf0) >> 4 )
+                    int rate = pi_rate.value;
+
+                    if( pi_rate.quality == InvalidQuality )
                     {
-                        case IED_Type_LG_S4:
+                        resultString += getName() + " / current TOU rate: (invalid data)\n";
+                    }
+                    else
+                    {
+                        switch( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) & 0xf0) >> 4 )
                         {
-                            rate = (DSt->Message[4] & 0x0f);
+                            case IED_Type_LG_S4:
+                            {
+                                rate = rate & 0x0f;
 
-                            resultString += getName() + " / current TOU rate: " + string(1, 'A' + rate) + "\n";
+                                resultString += getName() + " / current TOU rate: " + string(1, 'A' + rate) + "\n";
 
-                            break;
-                        }
+                                break;
+                            }
 
-                        case IED_Type_Alpha_A3:
-                        {
-                            rate = DSt->Message[4] & 0x07;
+                            case IED_Type_Alpha_A3:
+                            {
+                                rate = rate & 0x07;
 
-                            resultString += getName() + " / current TOU rate: " + string(1, 'A' + rate) + "\n";
+                                resultString += getName() + " / current TOU rate: " + string(1, 'A' + rate) + "\n";
 
-                            break;
-                        }
+                                break;
+                            }
 
-                        case IED_Type_Alpha_PP:
-                        {
-                            rate = (DSt->Message[4] >> 2) & 0x03;
+                            case IED_Type_Alpha_PP:
+                            {
+                                rate = (rate >> 2) & 0x03;
 
-                            resultString += getName() + " / current TOU rate: " + string(1, 'A' + rate) + "\n";
+                                resultString += getName() + " / current TOU rate: " + string(1, 'A' + rate) + "\n";
 
-                            break;
-                        }
+                                break;
+                            }
 
-                        case IED_Type_GE_kV2c:
-                        {
-                            rate = DSt->Message[4] & 0x07;
+                            case IED_Type_GE_kV2c:
+                            {
+                                rate = rate & 0x07;
 
-                            resultString += getName() + " / current TOU rate: ";
+                                resultString += getName() + " / current TOU rate: ";
 
-                            if( rate )  resultString += string(1, 'A' + rate - 1) + "\n";
-                            else        resultString += "demand only\n";
+                                if( rate )  resultString += string(1, 'A' + rate - 1) + "\n";
+                                else        resultString += "demand only\n";
 
-                            break;
-                        }
+                                break;
+                            }
 
-                        case IED_Type_Sentinel:
-                        {
-                            //  doesn't support TOU rate reporting
-                            break;
-                        }
+                            case IED_Type_Sentinel:
+                            {
+                                //  doesn't support TOU rate reporting
+                                break;
+                            }
 
-                        default:
-                        {
-                            resultString += getName() + " / current TOU rate: (unhandled IED type (" + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) + "), cannot decode)\n";
-                            break;
+                            default:
+                            {
+                                resultString += getName() + " / current TOU rate: (unhandled IED type (" + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) + "), cannot decode)\n";
+                                break;
+                            }
                         }
                     }
                 }
@@ -4569,7 +4578,7 @@ INT Mct470Device::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, list< 
 
                 pi = Mct470Device::getData(DSt->Message + 5, 2, ValueType_IED);
 
-                pi_time  = Mct4xxDevice::getData(DSt->Message + 7, 4, ValueType_Raw);
+                pi_time  = Mct470Device::getData(DSt->Message + 7, 4, ValueType_IED);
 
                 CtiTime lastReset = CtiTime::fromLocalSeconds(pi_time.value);
 
