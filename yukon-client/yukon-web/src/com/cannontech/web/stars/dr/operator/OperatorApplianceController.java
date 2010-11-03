@@ -347,7 +347,7 @@ public class OperatorApplianceController {
             programName = program != null ? program.getProgramName() : "";
         }
 
-        accountEventLogService.applianceAdditionAttemptedByOperator(userContext.getYukonUser(), 
+        accountEventLogService.applianceDeletionAttemptedByOperator(userContext.getYukonUser(), 
                                                                     accountInfoFragment.getAccountNumber(), 
                                                                     liteStarsAppliance.getApplianceCategory().getName(), 
                                                                     serialNumber, 
