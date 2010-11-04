@@ -153,14 +153,16 @@ public class ZoneDetailController {
         int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 10);
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
         int startIndex = (currentPage - 1) * itemsPerPage;
-        int toIndex = startIndex + itemsPerPage;
-        int numberOfResults = pointDeltas.size();
-        
-        if(numberOfResults < toIndex) toIndex = numberOfResults;
-        pointDeltas = pointDeltas.subList(startIndex, toIndex);
         
         SearchResult<CapBankPointDelta> searchResults = new SearchResult<CapBankPointDelta>();
-        searchResults.setResultList(pointDeltas);
+        List<CapBankPointDelta> trimmedPointDeltas = Lists.newArrayList();
+        
+        if (startIndex < pointDeltas.size()) {
+        	trimmedPointDeltas = pointDeltas.subList(startIndex, startIndex + itemsPerPage > pointDeltas.size() ? pointDeltas.size() : startIndex + itemsPerPage);
+        }
+        
+        searchResults.setResultList(trimmedPointDeltas);
+        searchResults.setBounds(startIndex, itemsPerPage, pointDeltas.size());
         
         model.addAttribute("zoneId", zone.getId());
         model.addAttribute("searchResults", searchResults);
