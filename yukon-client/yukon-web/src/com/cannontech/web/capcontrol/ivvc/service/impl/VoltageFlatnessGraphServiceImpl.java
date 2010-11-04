@@ -66,7 +66,6 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     private final String graphLabel = "Voltage Profile";
     private final String yAxisLabel = "Volts";
     
-    private double maxXPosition = 0;
     private final String bulletRoundOutlined = "round_outlined";
     
     //Every Graph must have a unique id
@@ -75,6 +74,21 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     private int getGraphIdAndIncrement() {
     	return graphId++;
     }
+    
+    //Used for generating the Lower and Upper gray areas on the graph
+    public static double getMaxXPosition(List<VfLine> lines) {
+    	double maxXPosition = 0;
+    	
+    	for (VfLine line : lines) {
+    		for (VfPoint point : line.getPoints()) {
+	    		if (maxXPosition < point.getX()) {
+	    			maxXPosition = point.getX();
+	    		}
+    		}
+    	}
+    	
+    	return maxXPosition;
+	}
     
     @Override
     public VfGraph getSubBusGraph(YukonUserContext userContext, int subBusId) {
@@ -128,8 +142,10 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         	index++;
         }
         
-        VfLine lowerGray = getLowerGrayArea(subBusId, cache);
-        VfLine upperGray = getUpperGrayArea(subBusId, cache);
+        double maxXPosition = getMaxXPosition(lines);
+        
+        VfLine lowerGray = getLowerGrayArea(lowerLimit, maxXPosition, cache);
+        VfLine upperGray = getUpperGrayArea(upperLimit, maxXPosition, cache);
         lines.add(lowerGray);
         lines.add(upperGray);
 
@@ -144,13 +160,16 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     
 	private VfGraph buildZoneGraph(YukonUserContext userContext, int zoneId, CapControlCache cache) {
         List<VfLine> lines = Lists.newArrayList();
-        
         Zone zone = zoneService.getZoneById(zoneId);
+        double upperLimit = getUpperVoltLimitForSubBus(cache, zone.getSubstationBusId());
+        double lowerLimit = getLowerVoltLimitForSubBus(cache, zone.getSubstationBusId());
+        
         VfLine line = buildLineDataForZone(userContext, cache, zone);
         lines.add(line);
         
-        VfLine lowerGray = getLowerGrayArea(zone.getSubstationBusId(), cache);
-        VfLine upperGray = getUpperGrayArea(zone.getSubstationBusId(), cache);
+        double maxXPosition = getMaxXPosition(lines);
+        VfLine lowerGray = getLowerGrayArea(lowerLimit, maxXPosition, cache);
+        VfLine upperGray = getUpperGrayArea(upperLimit, maxXPosition, cache);
         lines.add(lowerGray);
         lines.add(upperGray);
         
@@ -199,9 +218,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         return graphSettings;
     }
 	
-	private VfLine getUpperGrayArea(int subBusId, CapControlCache cache) {
-    	double upperVoltLimit = getUpperVoltLimitForSubBus(cache, subBusId);
-		
+	private VfLine getUpperGrayArea(double upperVoltLimit, double maxXPosition, CapControlCache cache) {
     	VfPoint point1 = new VfPoint(-10, upperVoltLimit);
 		VfPoint point2 = new VfPoint(-10, 300);
 		VfPoint point3 = new VfPoint(maxXPosition+100, 300);
@@ -223,10 +240,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 		return grayAreaLine;
 	}
 
-	private VfLine getLowerGrayArea(int subBusId, CapControlCache cache) {
-    	
-    	double lowerVoltLimit = getLowerVoltLimitForSubBus(cache, subBusId);
-		
+	private VfLine getLowerGrayArea(double lowerVoltLimit, double maxXPosition, CapControlCache cache) {
 		VfPoint point1 = new VfPoint(-10, -10);
 		VfPoint point2 = new VfPoint(-10, lowerVoltLimit);
 		VfPoint point3 = new VfPoint(maxXPosition+100, lowerVoltLimit);
@@ -319,10 +333,10 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 	
 	private PointToZoneMapping getNextPointToZone(CapBankToZoneMapping bankToZone, List<PointToZoneMapping> pointsToZone) {
 		
-		double bankOrder = bankToZone.getPosition();
+		double bankOrder = bankToZone.getGraphPositionOffset();
 		
 		for (PointToZoneMapping pointToZone : pointsToZone) {
-			double pointOrder = pointToZone.getPosition();
+			double pointOrder = pointToZone.getGraphPositionOffset();
 			if (pointOrder < bankOrder) {
 				pointsToZone.remove(pointToZone);
 				return pointToZone; 
@@ -332,67 +346,59 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 		return null;
 	}
 	
+	private String getDescription(PointValueQualityHolder pointValue, LitePoint litePoint, DisplayablePao displayablePao, Zone zone, double distance, YukonUserContext userContext) {
+		String timestamp = dateFormattingService.format(pointValue.getPointDataTimeStamp(), DateFormatEnum.BOTH, userContext);
+		String description = pointFormattingService.getValueString(pointValue, Format.SHORT, userContext);
+		
+		if (litePoint != null) {
+			description += "\n" + litePoint.getPointName();
+		}
+		description += "\n" + displayablePao.getName() + "\n" + timestamp + "\n" + zone.getName();
+		
+		if (distance != 0) {
+			description +=  "\nDist: " + distance; 
+		}
+		
+		return description;
+	}
+	
 	private VfPoint getRegulatorVfPoint(YukonUserContext userContext, Zone zone, double graphStartPosition) {
 		int regulatorId = zone.getRegulatorId();
         YukonPao regulatorPao = paoDao.getYukonPao(regulatorId);
         DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(regulatorPao);
         LitePoint regulatorPoint = attributeService.getPointForAttribute(regulatorPao, BuiltInAttribute.VOLTAGE);
-        PointValueQualityHolder regulatorPointValue = dynamicDataSource.getPointValue(regulatorPoint.getLiteID());
-        String regTimestamp = dateFormattingService.format(regulatorPointValue.getPointDataTimeStamp(), DateFormatEnum.BOTH, userContext);
-        String regDescription = pointFormattingService.getValueString(regulatorPointValue, Format.VALUE, userContext) + 
-        						"\n" + displayablePao.getName() + "\n" + regTimestamp + "\n" + zone.getName();
+        PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(regulatorPoint.getLiteID());
+        String description = getDescription(pointValue, null, displayablePao, zone, 0, userContext);
         
-        setMaxXPosition(graphStartPosition);
-        double pointValue = regulatorPointValue.getValue();
-        VfPoint regulatorGraphPoint = new VfPoint(regDescription, graphStartPosition, pointValue);
+        VfPoint regulatorGraphPoint = new VfPoint(description, graphStartPosition, pointValue.getValue());
         return regulatorGraphPoint;
 	}
 	
 	private VfPoint getPointToZoneVfPoint(YukonUserContext userContext, PointToZoneMapping pointToZone, Zone zone, double graphStartPosition) {
 		int pointId = pointToZone.getPointId();
-		PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(pointId);
-		String pointTimestamp = dateFormattingService.format(pointValue.getPointDataTimeStamp(), DateFormatEnum.BOTH, userContext);
 		LitePoint litePoint = pointDao.getLitePoint(pointId);
 		YukonPao yukonPao = paoDao.getYukonPao(litePoint.getPaobjectID());
-        DisplayablePao displayablePointPao = paoLoadingService.getDisplayablePao(yukonPao);
-		String pointDescription = pointFormattingService.getValueString(pointValue, Format.VALUE, userContext) +
-								  "\n" + litePoint.getPointName() + "\n" + displayablePointPao.getName() + "\n" + pointTimestamp + "\n" + zone.getName();
+		DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(yukonPao);
+		PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(pointId);
+		String description = getDescription(pointValue, litePoint, displayablePao, zone, pointToZone.getDistance(), userContext);
 		
-		if (pointToZone.getDistance() != 0) {
-			pointDescription +=  "\nDist: " + pointToZone.getDistance(); 
-		}
-		
-		double xPosition = graphStartPosition + pointToZone.getPosition();
-		setMaxXPosition(xPosition);
-		VfPoint graphPoint = new VfPoint(pointDescription, xPosition, pointValue.getValue());
+		double xPosition = graphStartPosition + pointToZone.getGraphPositionOffset();
+		VfPoint graphPoint = new VfPoint(description, xPosition, pointValue.getValue());
 		return graphPoint;
 	}
 	
 	private VfPoint getCapBankToZoneVfPoint(YukonUserContext userContext, CapControlCache cache, CapBankToZoneMapping bankToZone, Integer pointId, Zone zone, double graphStartPosition) {
 		CapBankDevice bank = cache.getCapBankDevice(bankToZone.getDeviceId());
 		YukonPao yukonPao = paoDao.getYukonPao(bank.getControlDeviceID());
-        DisplayablePao displayablePointPao = paoLoadingService.getDisplayablePao(yukonPao);
+        DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(yukonPao);
 		PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(pointId);
-		String pointTimestamp = dateFormattingService.format(pointValue.getPointDataTimeStamp(), DateFormatEnum.BOTH, userContext);
-		String pointDescription = pointFormattingService.getValueString(pointValue, Format.VALUE, userContext) + 
-								  "\n" + displayablePointPao.getName() + "\n" + pointTimestamp + "\n" + zone.getName();
+		String description = getDescription(pointValue, null, displayablePao, zone, bankToZone.getDistance(), userContext);
 		
-		if (bankToZone.getDistance() != 0) {
-			pointDescription +=  "\nDist: " + bankToZone.getDistance(); 
-		}
-		
-		double xPosition = graphStartPosition + bankToZone.getPosition();
-		setMaxXPosition(xPosition);
-		VfPoint graphPoint = new VfPoint(pointDescription, xPosition, pointValue.getValue());
+		double xPosition = graphStartPosition + bankToZone.getGraphPositionOffset();
+		VfPoint graphPoint = new VfPoint(description, xPosition, pointValue.getValue());
 		return graphPoint;
 	}
 	
-    private void setMaxXPosition(double xPosition) {
-    	if (maxXPosition < xPosition) {
-    		maxXPosition = xPosition;
-    	}
-	}
-
 	public double getUpperVoltLimitForSubBus(CapControlCache cache, int subBusId) {
     	CapControlStrategy strategy = strategyDao.getForId(cache.getSubBus(subBusId).getStrategyId());
         //Default Upper value

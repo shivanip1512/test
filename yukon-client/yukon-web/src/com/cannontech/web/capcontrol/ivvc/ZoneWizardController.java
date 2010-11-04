@@ -213,7 +213,7 @@ public class ZoneWizardController {
 
         CapBankToZoneMapping bankToZone = new CapBankToZoneMapping();
         bankToZone.setDeviceId(id);
-        bankToZone.setPosition(0);
+        bankToZone.setGraphPositionOffset(0);
         ZoneAssignmentCapBankRow row = buildBankAssignment(bankToZone, cache);        
         modelMap.addAttribute("row",row);
         
@@ -224,7 +224,7 @@ public class ZoneWizardController {
     public String addVoltagePoint(ModelMap modelMap, LiteYukonUser user, int id) {
     	PointToZoneMapping pointToZone = new PointToZoneMapping();
     	pointToZone.setPointId(id);
-    	pointToZone.setPosition(0);
+    	pointToZone.setGraphPositionOffset(0);
         ZoneAssignmentPointRow row = buildPointAssignment(pointToZone);        
         modelMap.addAttribute("row",row);
         
@@ -253,7 +253,7 @@ public class ZoneWizardController {
         row.setId(pointId);        
         row.setName(point.getPointName());
         row.setDevice(pao.getPaoName());
-        row.setPosition(pointToZone.getPosition());
+        row.setGraphPositionOffset(pointToZone.getGraphPositionOffset());
         row.setDistance(pointToZone.getDistance());
         
         return row;
@@ -281,7 +281,7 @@ public class ZoneWizardController {
         row.setId(bankId);        
         row.setName(bank.getCcName());
         row.setDevice(controller.getPaoName());
-        row.setPosition(bankToZone.getPosition());
+        row.setGraphPositionOffset(bankToZone.getGraphPositionOffset());
         row.setDistance(bankToZone.getDistance());
         
         return row;

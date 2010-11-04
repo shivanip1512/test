@@ -158,7 +158,7 @@
 										<spring:escapeBody htmlEscape="true">${row.device}</spring:escapeBody>
 									</td>
 									<td>
-										<tags:input path="bankAssignments[${status.index}].position" size="1"/>
+										<tags:input path="bankAssignments[${status.index}].graphPositionOffset" size="1"/>
 									</td>
 									<td>
 										<tags:input path="bankAssignments[${status.index}].distance" size="3"/>
@@ -206,7 +206,7 @@
 										<spring:escapeBody htmlEscape="true">${row.device}</spring:escapeBody>
 									</td>
 									<td>
-										<tags:input path="pointAssignments[${status.index}].position" size="1"/>
+										<tags:input path="pointAssignments[${status.index}].graphPositionOffset" size="1"/>
 									</td>
 									<td>
 										<tags:input path="pointAssignments[${status.index}].distance" size="3"/>

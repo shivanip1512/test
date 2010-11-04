@@ -81,7 +81,7 @@ public class ZoneServiceImpl implements ZoneService {
         for (ZoneAssignmentCapBankRow bankRow : zoneDto.getBankAssignments()) {
         	Integer bankId = bankRow.getId();
         	Integer zoneId = zoneDto.getZoneId();
-        	double position = bankRow.getPosition();
+        	double position = bankRow.getGraphPositionOffset();
         	double dist = bankRow.getDistance();
         	CapBankToZoneMapping bank = new CapBankToZoneMapping(bankId, zoneId, position, dist);
         	banks.add(bank);
@@ -94,7 +94,7 @@ public class ZoneServiceImpl implements ZoneService {
         for (ZoneAssignmentPointRow pointRow : zoneDto.getPointAssignments()) {
         	Integer pointId = pointRow.getId();
         	Integer zoneId = zoneDto.getZoneId();
-        	double position = pointRow.getPosition();
+        	double position = pointRow.getGraphPositionOffset();
         	double dist = pointRow.getDistance();
         	PointToZoneMapping point = new PointToZoneMapping(pointId, zoneId, position, dist);
         	points.add(point);

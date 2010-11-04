@@ -6,7 +6,7 @@ public class ZoneAssignmentCapBankRow {
     private int id;
     private String name;
     private String device;
-    private double position;
+    private double graphPositionOffset;
     private double distance;
     
     public String getType() {
@@ -41,12 +41,12 @@ public class ZoneAssignmentCapBankRow {
         this.device = device;
     }
 
-	public double getPosition() {
-		return position;
+	public double getGraphPositionOffset() {
+		return graphPositionOffset;
 	}
 
-	public void setPosition(double position) {
-		this.position = position;
+	public void setGraphPositionOffset(double graphPositionOffset) {
+		this.graphPositionOffset = graphPositionOffset;
 	}
 
 	public double getDistance() {
