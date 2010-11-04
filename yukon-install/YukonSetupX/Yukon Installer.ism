@@ -133,7 +133,7 @@
 		<row><td>Tomcat</td><td>{0340C09C-1CA8-4C44-BA53-53138D1F8DD1}</td><td>WEB</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Tomcat XML Config</td><td>{6F55A1F8-D6A1-46D4-9B10-F0CE4ABD4633}</td><td>CONF</td><td>16</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Trending</td><td>{8D2982AF-094C-49E2-86FD-CD8CB9F33208}</td><td>CLIENT</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Web Deployment</td><td>{4DEA3DA8-40AC-43FF-90FF-EB6B8649160F}</td><td>WEBAPPS</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Web Deployment</td><td>{4DEA3DA8-40AC-43FF-90FF-EB6B8649160F}</td><td>WEBAPPS</td><td>0</td><td/><td/><td>529</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>WebStart JRE</td><td>{3C821777-81A3-491F-B232-7CCCE49AE6CC}</td><td>JRE</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
 
@@ -1335,7 +1335,7 @@
 		<row><td>ID_STRING11</td><td>1033</td><td>Runs demand response operations based on data gathered by the system.</td><td>0</td><td/><td>-1516384245</td></row>
 		<row><td>ID_STRING12</td><td>1033</td><td>Yukon web server.</td><td>0</td><td/><td>-1516435413</td></row>
 		<row><td>ID_STRING13</td><td>1033</td><td>Schedules and sends email and voice notifications.</td><td>0</td><td/><td>-1516400597</td></row>
-		<row><td>ID_STRING14</td><td>1033</td><td>Controls the MCT Bulk Importer and other background services.</td><td>0</td><td/><td>-1516388277</td></row>
+		<row><td>ID_STRING14</td><td>1033</td><td>Runs general Yukon services. Required to utilize the Java Messaging service, monitors, validation processing, and other utilities.</td><td>0</td><td/><td>631142411</td></row>
 		<row><td>ID_STRING15</td><td>1033</td><td>The Yukon clients are interfaces between the user and the Yukon system.  These selections affect which clients are available on the local machine and do not affect clients launched through the Yukon webpage.</td><td>0</td><td/><td>1176325225</td></row>
 		<row><td>ID_STRING16</td><td>1033</td><td>View, create or modify objects in the Yukon database.</td><td>0</td><td/><td>-1516416789</td></row>
 		<row><td>ID_STRING17</td><td>1033</td><td>Send real-time commands to field devices.</td><td>0</td><td/><td>-1516386069</td></row>
