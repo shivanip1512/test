@@ -72,6 +72,18 @@ SET Type = 'PO_REGULATOR', Category = 'CAPCONTROL'
 WHERE Type = 'PHASEOPERATED';
 /* End YUK-9233 */
 
+/* Start YUK-9235 */
+UPDATE YukonPAObject 
+SET Type = 'RFN-410fL' 
+WHERE Type = 'RFN-AL'; 
+UPDATE YukonPAObject 
+SET Type = 'RFN-410fX' 
+WHERE Type = 'RFN-AX'; 
+UPDATE YukonPAObject 
+SET Type = 'RFN-410fD' 
+WHERE Type = 'RFN-AXSD';
+/* End YUK-9235 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
