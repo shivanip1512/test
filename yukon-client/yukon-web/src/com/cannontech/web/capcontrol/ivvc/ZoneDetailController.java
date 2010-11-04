@@ -1,6 +1,5 @@
 package com.cannontech.web.capcontrol.ivvc;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -12,10 +11,11 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.capcontrol.model.CapBankPointDelta;
+import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
+import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
-import com.cannontech.cbc.model.Zone;
 import com.cannontech.cbc.web.CapControlCommandExecutor;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -29,7 +29,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
-import com.cannontech.web.capcontrol.ivvc.service.ZoneService;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.util.CapControlWebUtils;
 import com.cannontech.yukon.cbc.CapBankDevice;
@@ -116,6 +115,10 @@ public class ZoneDetailController {
     
     private void setupCapBanks(ModelMap model, CapControlCache cache, Zone zone) {
         List<Integer> capBankIdList = zoneService.getCapBankIdsForZoneId(zone.getId());
+        List<Integer> unassignedBankIds = zoneService.getUnassignedCapBankIdsForSubBusId(zone.getSubstationBusId());
+        
+        //Add unassigned banks to main list, we want to display them.
+        capBankIdList.addAll(unassignedBankIds);
         
         List<CapBankDevice> capBankList = Lists.newArrayList();
         for (Integer bankId : capBankIdList) {
@@ -126,10 +129,16 @@ public class ZoneDetailController {
         List<ViewableCapBank> viewableCapBankList = CapControlWebUtils.createViewableCapBank(capBankList);
         for (ViewableCapBank bank:viewableCapBankList) {
             LitePoint point = attributeService.getPointForAttribute(bank.getControlDevice(), BuiltInAttribute.VOLTAGE);
-            
             bank.setVoltagePointId(point.getLiteID());
+            
+            if (unassignedBankIds.contains(bank.getCapBankDevice().getCcId())) {
+                bank.setNotAssignedToZone(true);
+            } else {
+                bank.setNotAssignedToZone(false);
+            }
         }
-        
+
+        model.addAttribute("unassignedBanksExist",unassignedBankIds.size()>0);
         model.addAttribute("capBankList", viewableCapBankList);
     }
     
@@ -140,13 +149,7 @@ public class ZoneDetailController {
     }
     
     private void setupDeltas(ModelMap model, HttpServletRequest request, CapControlCache cache, Zone zone) {
-        List<Integer> bankIds = new ArrayList<Integer>();
-        
-        List<CapBankDevice> capBanks = cache.getCapBanksBySubBus(zone.getSubstationBusId());
-        
-        for (CapBankDevice bank : capBanks) {
-            bankIds.add(bank.getCcId());
-        }
+        List<Integer> bankIds = zoneService.getCapBankIdsForSubBusId(zone.getSubstationBusId());
         
         List<CapBankPointDelta> pointDeltas = dynamicDataDao.getAllPointDeltasForBankIds(bankIds);
         

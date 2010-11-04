@@ -1,4 +1,4 @@
-package com.cannontech.cbc.exceptions;
+package com.cannontech.capcontrol;
 
 public class RootZoneExistsException extends RuntimeException {
 

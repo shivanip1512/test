@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -12,6 +13,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -24,6 +26,7 @@ public class CapControlFeeder extends CapControlYukonPAOBase implements com.cann
     public static final String DISABLE_OVUVSTATE = "feederOVUVDisabled";
     private com.cannontech.database.db.capcontrol.CapControlFeeder capControlFeeder;
     private List<CCFeederBankList> ccBankListVector;
+    private ZoneService zoneService = YukonSpringHook.getBean("zoneService", ZoneService.class);
 
     public CapControlFeeder() {
         super();
@@ -54,9 +57,12 @@ public class CapControlFeeder extends CapControlYukonPAOBase implements com.cann
 
     @Override
     public void delete() throws SQLException {
+        //Must happen before CCFeederBankList.deleteCapBanksFromFeederList call
+        zoneService.unassignBanksByFeeder(getCapControlPAOID());
+
         //remove all the associations of CapBanks to this Feeder
         CCFeederBankList.deleteCapBanksFromFeederList(getCapControlPAOID(), null, getDbConnection());
-
+        
         //remove all the associations of this Feeder to any SubBus
         CCFeederSubAssignment.deleteCCFeedersFromSubList(null, getCapControlPAOID(), getDbConnection());
 
@@ -136,8 +142,11 @@ public class CapControlFeeder extends CapControlYukonPAOBase implements com.cann
 
         CCFeederBankList.deleteCapBanksFromFeederList(getCapControlPAOID(), null, getDbConnection());
 
-        for( int i = 0; i < getChildList().size(); i++ )
+        for( int i = 0; i < getChildList().size(); i++ ) {
             getChildList().get(i).add();
+        }
+        
+        zoneService.handleFeederUpdate(getCapControlPAOID());
     }
 
 }

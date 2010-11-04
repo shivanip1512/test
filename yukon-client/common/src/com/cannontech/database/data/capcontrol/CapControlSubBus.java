@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
@@ -13,6 +14,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
 import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
+import com.cannontech.spring.YukonSpringHook;
 
 public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPanel {
     public static final String ENABLE_OPSTATE = "subEnabled";
@@ -21,7 +23,8 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
     public static final String DISABLE_OVUVSTATE = "subOVUVDisabled";
     private CapControlSubstationBus capControlSubstationBus = null;
     private List<CCFeederSubAssignment> ccFeederList = null;
-
+    private ZoneService zoneService = YukonSpringHook.getBean("zoneService",ZoneService.class);
+    
     public CapControlSubBus() {
         super();
         setPAOCategory( PAOGroups.STRING_CAT_CAPCONTROL );
@@ -133,8 +136,11 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
 
         CCFeederSubAssignment.deleteCCFeedersFromSubList(getCapControlPAOID(), null, getDbConnection());
 
-        for( int i = 0; i < getChildList().size(); i++ )
+        for( int i = 0; i < getChildList().size(); i++ ) {
             getChildList().get(i).add();
+        }
+        
+        zoneService.handleSubstationBusUpdate(getCapControlPAOID());
     }
 
 }

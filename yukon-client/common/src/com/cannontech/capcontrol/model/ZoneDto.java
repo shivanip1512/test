@@ -1,4 +1,4 @@
-package com.cannontech.web.capcontrol.ivvc.models;
+package com.cannontech.capcontrol.model;
 
 import java.util.ArrayList;
 import java.util.List;

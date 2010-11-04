@@ -1,6 +1,6 @@
-package com.cannontech.web.capcontrol.ivvc.models;
+package com.cannontech.capcontrol.model;
 
-public class ZoneAssignmentCapBankRow {
+public class ZoneAssignmentPointRow {
     
     private String type;
     private int id;

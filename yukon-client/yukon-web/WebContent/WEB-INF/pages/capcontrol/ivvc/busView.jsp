@@ -55,7 +55,7 @@
     
 	<cti:breadCrumbs>
 	    <cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home"/>
-		    	<c:choose>
+		<c:choose>
     		<c:when test="${isSpecialArea}">
     		  	<cti:crumbLink url="/spring/capcontrol/tier/areas?isSpecialArea=${isSpecialArea}" title="Special Substation Areas" />
     		</c:when>
@@ -146,6 +146,10 @@
 				<div class="actionArea">
 					<cti:button key="add" onclick="javascript:showZoneWizard('${zoneCreatorUrl}');"/>
 				</div>
+				<c:if test="${unassignedBanksExist}">
+					<div class="warningMessageBold"><i:inline key=".zoneList.unassignedBanks"/></div>
+				</c:if>
+				
 			</tags:boxContainer2>
 			<br>
 			<tags:boxContainer2 nameKey="busDetail" hideEnabled="true" showInitially="true">

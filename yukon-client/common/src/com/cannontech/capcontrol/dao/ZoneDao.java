@@ -1,10 +1,10 @@
-package com.cannontech.cbc.dao;
+package com.cannontech.capcontrol.dao;
 
 import java.util.List;
 
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
-import com.cannontech.cbc.model.Zone;
+import com.cannontech.capcontrol.model.Zone;
 
 public interface ZoneDao {
     
@@ -71,6 +71,20 @@ public interface ZoneDao {
      * @return
      */
     public Zone getParentZoneByBusId(int subBusId);
+ 
+    /**
+     * Returns a list of all unassigned capBankIds on the subBusId.
+     * @param subBusId
+     * @return
+     */
+    public List<Integer> getUnassignedCapBankIdsBySubBusId(int subBusId);
+    
+    /**
+     * Returns a list of all assigned capBankIds on the subBusId.
+     * @param subBusId
+     * @return
+     */
+    public List<Integer> getCapBankIdsBySubBusId(int subBusId);
     
     /**
      * Return all Cap Banks attached to a zoneId.
@@ -99,4 +113,30 @@ public interface ZoneDao {
      * @return
      */
 	public List<PointToZoneMapping> getPointToZoneMappingById(int zoneId);
+	
+	/**
+	 * Finds all Cap Banks on the feeder and compares the Banks assigned to zones. 
+	 * Removes any assignments that are missing.
+	 * @param feederId
+	 */
+	public void cleanUpBanksByFeeder(int feederId);
+	
+	/**
+     * Finds all Cap Banks on the Sub Bus and compares the Banks assigned to zones. 
+     * Removes any assignments that are missing.
+     * @param subBusId
+     */
+	public void cleanUpBanksBySubBus(int subBusId);
+	
+	/**
+	 * Removes to all bankIds on Feeder with the Id passed in from the Bank to Zone Mapping Table.
+	 * @param feederId
+	 */
+	public void removeBankToZoneMappingByFeederId(int feederId);
+	
+	/**
+	 * Removes any mapping to the passed in bankId from the Bank to Zone Mapping Table.
+	 * @param bankId
+	 */
+	public void removeBankToZoneMapping(int bankId);
 }

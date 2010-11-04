@@ -2,7 +2,7 @@ package com.cannontech.cbc.web;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.cannontech.cbc.dao.ZoneDao;
+import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 

@@ -6,9 +6,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.capcontrol.dao.ZoneDao;
+import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.cbc.dao.CapbankDao;
-import com.cannontech.cbc.dao.ZoneDao;
-import com.cannontech.cbc.model.Zone;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;

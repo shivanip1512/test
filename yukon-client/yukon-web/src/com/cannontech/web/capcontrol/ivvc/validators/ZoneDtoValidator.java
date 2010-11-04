@@ -2,9 +2,9 @@ package com.cannontech.web.capcontrol.ivvc.validators;
 
 import org.springframework.validation.Errors;
 
+import com.cannontech.capcontrol.model.ZoneDto;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.web.capcontrol.ivvc.models.ZoneDto;
 
 public class ZoneDtoValidator extends SimpleValidator<ZoneDto>{
 

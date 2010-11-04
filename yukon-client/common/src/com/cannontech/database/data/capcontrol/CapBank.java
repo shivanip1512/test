@@ -6,7 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.cannontech.capcontrol.CapBankOperationalState;
+import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -47,7 +49,8 @@ public class CapBank extends CapControlDeviceBase {
 
     private com.cannontech.database.db.capcontrol.CapBank capBank = null;
     private List<CCMonitorBankList> ccMonitorBankList = new ArrayList<CCMonitorBankList>();
-
+    private ZoneService zoneService = YukonSpringHook.getBean("zoneService",ZoneService.class);
+    
     /**
      */
     public CapBank() {
@@ -75,6 +78,8 @@ public class CapBank extends CapControlDeviceBase {
         com.cannontech.database.db.capcontrol.CCFeederBankList.deleteCapBanksFromFeederList(null,
                                                                                             getCapBank().getDeviceID(),
                                                                                             getDbConnection());
+        zoneService.unassignBank(getPAObjectID());
+        
         // Delete from all dynamic CabBank tables here
         deleteMonitorPoints();
         delete("DynamicCCOperationStatistics", "PaobjectId", getPAObjectID());

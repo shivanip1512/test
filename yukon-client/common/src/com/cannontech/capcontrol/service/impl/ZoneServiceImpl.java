@@ -1,4 +1,4 @@
-package com.cannontech.web.capcontrol.ivvc.service.impl;
+package com.cannontech.capcontrol.service.impl;
 
 import java.util.List;
 
@@ -7,18 +7,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
-import com.cannontech.cbc.dao.ZoneDao;
-import com.cannontech.cbc.exceptions.RootZoneExistsException;
-import com.cannontech.cbc.model.Zone;
-import com.cannontech.cbc.model.ZoneHierarchy;
+import com.cannontech.capcontrol.dao.ZoneDao;
+import com.cannontech.capcontrol.model.Zone;
+import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
+import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
+import com.cannontech.capcontrol.model.ZoneDto;
+import com.cannontech.capcontrol.RootZoneExistsException;
+import com.cannontech.capcontrol.model.ZoneHierarchy;
+import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.web.capcontrol.ivvc.models.ZoneAssignmentCapBankRow;
-import com.cannontech.web.capcontrol.ivvc.models.ZoneAssignmentPointRow;
-import com.cannontech.web.capcontrol.ivvc.models.ZoneDto;
-import com.cannontech.web.capcontrol.ivvc.service.ZoneService;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -154,10 +154,22 @@ public class ZoneServiceImpl implements ZoneService {
         return zoneDao.getZoneById(zoneId);
     }
     
+    @Override
+    public List<Integer> getUnassignedCapBankIdsForSubBusId(int subBusId) {
+        return zoneDao.getUnassignedCapBankIdsBySubBusId(subBusId);
+    }
+    
+    @Override
+    public List<Integer> getCapBankIdsForSubBusId(int subBusId) {
+        return zoneDao.getCapBankIdsBySubBusId(subBusId);
+    }
+    
+    @Override
     public List<Integer> getCapBankIdsForZoneId(int zoneId) {        
         return zoneDao.getCapBankIdsByZone(zoneId);
     }
     
+    @Override
     public List<Integer> getPointIdsForZoneId(int zoneId) {        
         return zoneDao.getPointIdsByZone(zoneId);
     }
@@ -172,7 +184,27 @@ public class ZoneServiceImpl implements ZoneService {
     	return zoneDao.getPointToZoneMappingById(zoneId);
     }
     
-     private void sendZoneChangeDbMessage(int zoneId, DbChangeType dbChangeType) {
+    @Override
+    public void handleFeederUpdate(int feederId) {
+        zoneDao.cleanUpBanksByFeeder(feederId);
+    }
+    
+    @Override
+    public void handleSubstationBusUpdate(int subBusId) {
+        zoneDao.cleanUpBanksBySubBus(subBusId);
+    }
+    
+    @Override
+    public void unassignBanksByFeeder(int feederId) {
+        zoneDao.removeBankToZoneMappingByFeederId(feederId);
+    }
+    
+    @Override
+    public void unassignBank(int bankId) {
+        zoneDao.removeBankToZoneMapping(bankId);
+    }
+    
+    private void sendZoneChangeDbMessage(int zoneId, DbChangeType dbChangeType) {
         DBChangeMsg msg = new DBChangeMsg(zoneId,
                                           DBChangeMsg.CHANGE_IVVC_ZONE,
                                           PAOGroups.STRING_CAT_CAPCONTROL,

@@ -1,14 +1,17 @@
 package com.cannontech.web.capcontrol.ivvc;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.capcontrol.dao.StrategyDao;
+import com.cannontech.capcontrol.model.ZoneHierarchy;
+import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
-import com.cannontech.cbc.model.ZoneHierarchy;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -16,7 +19,6 @@ import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
-import com.cannontech.web.capcontrol.ivvc.service.ZoneService;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubStation;
 
@@ -46,7 +48,7 @@ public class BusViewController {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         
         setupBreadCrumbs(model,cache,subBusId,isSpecialArea);
-        setupZoneList(model,subBusId);
+        setupZoneList(model,cache,subBusId);
         setupStrategyDetails(model,cache,subBusId);
         
         return "ivvc/busView.jsp";
@@ -93,9 +95,14 @@ public class BusViewController {
         model.addAttribute("subBusName", subBusName);
     }
     
-    private void setupZoneList(ModelMap model, int subBusId) {
+    private void setupZoneList(ModelMap model, CapControlCache cache, int subBusId) {
         ZoneHierarchy hierarchy = zoneService.getZoneHierarchyBySubBusId(subBusId);
         model.addAttribute("zones",hierarchy);
+        
+        //Check for any unassigned banks and flag it
+        List<Integer> unassignedBankIds = zoneService.getUnassignedCapBankIdsForSubBusId(subBusId);
+        
+        model.addAttribute("unassignedBanksExist",unassignedBankIds.size()>0);
     }
 
     @Autowired

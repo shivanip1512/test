@@ -10,6 +10,7 @@ public class ViewableCapBank {
 	private boolean twoWayCbc = false;
 	private boolean device701x = false;
 	private int voltagePointId = 0;
+	private boolean notAssignedToZone = true;
 	
 	public ViewableCapBank(){
 		
@@ -53,5 +54,13 @@ public class ViewableCapBank {
 
     public void setVoltagePointId(int voltagePointId) {
         this.voltagePointId = voltagePointId;
+    }
+
+    public boolean isNotAssignedToZone() {
+        return notAssignedToZone;
+    }
+
+    public void setNotAssignedToZone(boolean notAssignedToZone) {
+        this.notAssignedToZone = notAssignedToZone;
     }
 }
