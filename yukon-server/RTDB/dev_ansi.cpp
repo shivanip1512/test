@@ -53,7 +53,7 @@ INT CtiDeviceAnsi::executeLoopback( CtiRequestMsg *pReq, CtiCommandParser &parse
          CtiReturnMsg *retMsg = NULL;
          retMsg = CTIDBG_new CtiReturnMsg(getID(),
                              pReq->CommandString(),
-                             string(getName() + " / scan general in progress"),
+                             string(getName() + " / loopback in progress"),
                              NORMAL,//EventCode & 0x7fff
                              pReq->RouteId(),
                              pReq->MacroOffset(),
