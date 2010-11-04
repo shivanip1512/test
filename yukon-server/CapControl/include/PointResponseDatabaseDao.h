@@ -25,6 +25,9 @@ class PointResponseDatabaseDao : public PointResponseDao
         virtual bool insert(PointResponse pointResponse);
         virtual bool save(PointResponse pointResponse);
 
+        virtual bool save(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse);
+        virtual bool update(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse);
+        virtual bool insert(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse);
     private:
         bool performDatabaseOperation(Cti::Database::DatabaseReader& reader, std::vector<PointResponse>& pointResponses);
         void buildPointResponseFromReader(Cti::Database::DatabaseReader& reader, std::vector<PointResponse>& pointResponses);

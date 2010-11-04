@@ -2541,6 +2541,23 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
     }
 }
 
+void CtiCCCapBank::dumpDynamicPointResponseData(Cti::Database::DatabaseConnection& conn)
+{
+    //Building Dao manually here because this updating should be handled in the store anyways.
+    PointResponseDaoPtr pointResponseDao = DatabaseDaoFactory().getPointResponseDao();
+
+    for each (PointResponse pointResponse in getPointResponses())
+    {
+        bool ret = pointResponseDao->save(conn,pointResponse);
+
+        if( (ret == false) && (_CC_DEBUG & CC_DEBUG_DATABASE) )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Point Response save failed. " << endl;
+        }
+    }
+}
+
 void CtiCCCapBank::dumpDynamicPointResponseData()
 {
     //Building Dao manually here because this updating should be handled in the store anyways.
@@ -2557,6 +2574,7 @@ void CtiCCCapBank::dumpDynamicPointResponseData()
         }
     }
 }
+
 
 const string& CtiCCCapBank::convertOperationalState( int num )
 {

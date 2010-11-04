@@ -1142,7 +1142,7 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                                         }
                                     }
                                     //Update Point Responses
-                                    currentCapBank->dumpDynamicPointResponseData();
+                                    currentCapBank->dumpDynamicPointResponseData(conn);
                                 }
                             }
                         }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PointResponse.h"
+#include "database_connection.h"
 #include <boost/shared_ptr.hpp>
 
 namespace Cti {
@@ -17,6 +18,10 @@ class PointResponseDao
         virtual bool update(PointResponse pointResponse)=0;
         virtual bool insert(PointResponse pointResponse)=0;
         virtual bool save(PointResponse pointResponse)=0;
+
+        virtual bool update(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse)=0;
+        virtual bool insert(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse)=0;
+        virtual bool save(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse)=0;
 };
 
 typedef boost::shared_ptr<PointResponseDao> PointResponseDaoPtr;

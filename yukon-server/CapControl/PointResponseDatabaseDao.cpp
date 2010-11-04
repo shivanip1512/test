@@ -67,6 +67,11 @@ vector<PointResponse> PointResponseDatabaseDao::getAllPointResponses()
 bool PointResponseDatabaseDao::update(PointResponse pointResponse)
 {
     DatabaseConnection databaseConnection;
+    return update(databaseConnection,pointResponse);
+}
+
+bool PointResponseDatabaseDao::update(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse)
+{
     static const string sql = "UPDATE dynamicccmonitorpointresponse "
                                     " SET PreOpValue = ?,Delta = ?,StaticDelta = ? "
                                     " WHERE BankId = ? AND PointId = ? ";
@@ -104,6 +109,11 @@ bool PointResponseDatabaseDao::update(PointResponse pointResponse)
 bool PointResponseDatabaseDao::insert(PointResponse pointResponse)
 {
     DatabaseConnection databaseConnection;
+    return insert(databaseConnection,pointResponse);
+}
+
+bool PointResponseDatabaseDao::insert(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse)
+{
     static const string sql = "INSERT INTO dynamicccmonitorpointresponse values(?, ?, ?, ?, ?)";
 
     DatabaseWriter dbInserter(databaseConnection, sql);
@@ -134,6 +144,19 @@ bool PointResponseDatabaseDao::save(PointResponse pointResponse)
     if (ret == false)
     {
         ret = insert(pointResponse);
+    }
+
+    return ret;
+}
+
+bool PointResponseDatabaseDao::save(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse)
+{
+    //Attempt to insert first, if that fails. update it.
+    bool ret = update(databaseConnection,pointResponse);
+
+    if (ret == false)
+    {
+        ret = insert(databaseConnection,pointResponse);
     }
 
     return ret;

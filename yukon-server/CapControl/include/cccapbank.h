@@ -263,6 +263,16 @@ public:
     BOOL isDirty() const;
     BOOL getInsertDynamicDataFlag() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
+
+    /**
+     * Uses the passed in connection to dump the data.
+    */
+    void dumpDynamicPointResponseData(Cti::Database::DatabaseConnection& conn);
+    /**
+     * This will create its own connections to the db to update and
+     * insert.
+     *
+     */
     void dumpDynamicPointResponseData();
 
     void setDynamicData(Cti::RowReader& rdr);
