@@ -11,7 +11,10 @@ public enum CapControlType implements DatabaseRepresentationSource {
     CAPBANK("CAP BANK", "Cap Bank"),
     CBC("CBC", "CBC"),
     SCHEDULE("SCHEDULE", "Schedule"),
-    STRATEGY("STRATEGY", "Strategy");
+    STRATEGY("STRATEGY", "Strategy"),
+    LTC("LTC","Load Tap Changer"),
+    GO_REGULATOR("GO_REGULATOR","Gang Operated Regulator"),
+    PO_REGULATOR("PO_REGULATOR","Phase Operated Regulator");
 
     private final String dbValue;
 	private final String displayValue;

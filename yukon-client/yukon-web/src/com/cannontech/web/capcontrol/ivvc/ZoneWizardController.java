@@ -168,7 +168,7 @@ public class ZoneWizardController {
         
         if (errors) {
             flashScope.setMessage(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.problemSavingZone"), FlashScopeMessageType.ERROR);
-            setupZoneEditor(model,user,zoneDto.getSubstationBusId());
+            setupZoneEditor(model,user,zoneDto.getZoneId());
             model.addAttribute("zoneDto", zoneDto);
             return "ivvc/zoneWizard.jsp";   
         } else {

@@ -103,6 +103,11 @@ public class CapControlCommandExecutor
                 executeCBCCommand(paoId, optParams);
                 break;
             }
+            case LTC: {
+                rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
+                executeCommand(paoId, cmdId);
+                break;
+            }
             default : throw new UnsupportedOperationException("Unsupported ControlType: " + controlType +
                                                               "cannot execute command: " + cmdId +
                                                               " for pao: " + paoId );

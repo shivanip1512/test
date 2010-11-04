@@ -15,4 +15,9 @@
     <img src="/capcontrol/images/yellow_local.png" class="tierImg"  alt="">
 </span>
 
+<%-- Regulator is in Remote Mode and ready for control. --%>
+<span id="regulator_mode_${paoId}_normal" style="display: none;">
+    <img src="/capcontrol/images/green.png" class="tierImg"  alt="">
+</span>
+
 <cti:dataUpdaterCallback function="updateRegulatorModeIndicator('regulator_mode_${paoId}')" initialize="true" value="${type}/${paoId}/MODE"/>

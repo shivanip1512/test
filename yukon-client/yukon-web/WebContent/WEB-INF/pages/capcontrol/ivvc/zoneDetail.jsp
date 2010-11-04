@@ -126,7 +126,9 @@
 					</tr>
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 						<td><B><i:inline key=".details.table.zone"/></B></td>
-						<td><spring:escapeBody htmlEscape="true">${zoneName}</spring:escapeBody></td>
+						<td>
+							<spring:escapeBody htmlEscape="true">${zoneName}</spring:escapeBody>
+						</td>
 						<td>
 							<a title="Edit" href="javascript:showZoneEditor('${zoneEditorUrl}');" class="tierIconLink">
                             	<img alt="Edit" class="tierImg" src="${editInfoImage}">
@@ -136,7 +138,10 @@
 				
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 						<td><B><i:inline key=".details.table.regulator"/></B></td>
-						<td><spring:escapeBody htmlEscape="true">${regulatorName}</spring:escapeBody></td>
+						<td>
+							<capTags:regulatorModeIndicator paoId="${regulatorId}" type="VOLTAGE_REGULATOR"/>
+							<spring:escapeBody htmlEscape="true">${regulatorName}</spring:escapeBody>
+						</td>
 						<td>
 							<a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorId}" class="tierIconLink">
                             	<img alt="Edit" class="tierImg" src="${editInfoImage}">
@@ -144,6 +149,44 @@
                         </td>
 					</tr>
 				</table>
+			</tags:boxContainer2>
+			<br>
+			<tags:boxContainer2 nameKey="actions" hideEnabled="true" showInitially="true">			
+				<div>
+					<cti:labeledImg key="scan" href="javascript:executeCommand('${regulatorId}',
+													'${scanCommandHolder.cmdId}',
+													'${scanCommandHolder.commandName}',
+													'${regulatorType}',
+													'false');"/>
+				</div>
+				<div>
+					<cti:labeledImg key="up" href="javascript:executeCommand('${regulatorId}',
+													'${tapUpCommandHolder.cmdId}',
+													'${tapUpCommandHolder.commandName}',
+													'${regulatorType}',
+													'false');"/>
+				</div>
+				<div>
+					<cti:labeledImg key="down" href="javascript:executeCommand('${regulatorId}',
+													'${tapDownCommandHolder.cmdId}',
+													'${tapDownCommandHolder.commandName}',
+													'${regulatorType}',
+													'false');"/>
+				</div>
+				<div>
+					<cti:labeledImg key="enable" href="javascript:executeCommand('${regulatorId}',
+													'${enableRemoteCommandHolder.cmdId}',
+													'${enableRemoteCommandHolder.commandName}',
+													'${regulatorType}',
+													'false');"/>
+				</div>
+				<div>
+					<cti:labeledImg key="disable" href="javascript:executeCommand('${regulatorId}',
+													'${enableRemoteCommandHolder.cmdId}',
+													'${enableRemoteCommandHolder.commandName}',
+													'${regulatorType}',
+													'false');"/>
+				</div>
 			</tags:boxContainer2>
 			<br>
 			<tags:boxContainer2 nameKey="attributes" hideEnabled="true" showInitially="true">

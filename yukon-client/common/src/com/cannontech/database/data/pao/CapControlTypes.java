@@ -1,7 +1,5 @@
 package com.cannontech.database.data.pao;
 
-import com.cannontech.common.pao.PaoType;
-
 
 /**
  * Insert the type's description here.
@@ -30,8 +28,8 @@ public interface CapControlTypes extends TypeBase
     public static final String STRING_CAPCONTROL_CAPBANK = DeviceTypes.STRING_CAP_BANK[0];
     public static final String STRING_CAPCONTROL_STRATEGY = CapControlType.STRATEGY.getDbValue();
     public static final String STRING_CAPCONTROL_SCHEDULE = CapControlType.SCHEDULE.getDbValue();
-    public static final String STRING_CAPCONTROL_LTC = PaoType.LOAD_TAP_CHANGER.getDbString();
-    public static final String STRING_GANG_OPERATED_REGULATOR = PaoType.GANG_OPERATED.getDbString();
-    public static final String STRING_PHASE_OPERATED_REGULATOR = PaoType.PHASE_OPERATED.getDbString();
+    public static final String STRING_CAPCONTROL_LTC = CapControlType.LTC.getDbValue();
+    public static final String STRING_GANG_OPERATED_REGULATOR = CapControlType.GO_REGULATOR.getDbValue();
+    public static final String STRING_PHASE_OPERATED_REGULATOR = CapControlType.PO_REGULATOR.getDbValue();
 
 }

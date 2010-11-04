@@ -328,18 +328,22 @@ function updateRegulatorModeIndicator(id){
 	return function(data) {
         var yellowLocalSpan = $(id + '_local_warning');
         var greenLocalSpan = $(id + '_local_normal');
+        var greenNormalSpan = $(id + '_normal');
         
         var icon = data.value;
         
         if (icon == 'none') {
             yellowLocalSpan.hide();
             greenLocalSpan.hide();
+            greenNormalSpan.show();
         } else if (icon == 'NormalLocal'){
             yellowLocalSpan.hide();
             greenLocalSpan.show();
+            greenNormalSpan.hide();
         } else if (icon == 'WarningLocal'){
             yellowLocalSpan.show();
             greenLocalSpan.hide();
+            greenNormalSpan.hide();
         }
 	}
 }

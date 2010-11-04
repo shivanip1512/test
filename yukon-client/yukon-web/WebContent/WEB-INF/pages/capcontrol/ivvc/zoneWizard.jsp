@@ -144,7 +144,7 @@
 								<th><i:inline key=".table.bank.device"/></th>
 								<th><i:inline key=".table.position"/></th>
 								<th><i:inline key=".table.distance"/></th>
-								<th><i:inline key=".table.remove"/></th>
+								<th class="removeColumn"><i:inline key=".table.remove"/></th>
 							</tr>
 						</thead>
 						<tbody id="bankTableBody">
@@ -163,7 +163,7 @@
 									<td>
 										<tags:input path="bankAssignments[${status.index}].distance" size="3"/>
 									</td>
-									<td>
+									<td class="removeColumn" >
 										<cti:img key="delete" href="javascript:removeTableRow('${row.type}_${row.id}')"/>
 									</td>
 								</tr>
@@ -192,7 +192,7 @@
 								<th><i:inline key=".table.point.device"/></th>
 								<th><i:inline key=".table.position"/></th>
 								<th><i:inline key=".table.distance"/></th>
-								<th><i:inline key=".table.remove"/></th>
+								<th class="removeColumn"><i:inline key=".table.remove"/></th>
 							</tr>
 						</thead>
 						<tbody id="pointTableBody">
@@ -211,7 +211,7 @@
 									<td>
 										<tags:input path="pointAssignments[${status.index}].distance" size="3"/>
 									</td>
-									<td>
+									<td class="removeColumn">
 										<cti:img key="delete" href="javascript:removeTableRow('${row.type}_${row.id}')"/>
 									</td>
 								</tr>

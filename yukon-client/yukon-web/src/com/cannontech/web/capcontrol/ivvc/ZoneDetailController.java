@@ -26,7 +26,9 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.capcontrol.VoltageRegulatorPointMapping;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.capcontrol.CommandHolder;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
@@ -71,6 +73,7 @@ public class ZoneDetailController {
         setupBreadCrumbs(model, cache, zone, isSpecialArea);
         setupDeltas(model,request,cache,zone);
         setupRegulatorPointList(model,regulatorFlags.getCcId());
+        setupRegulatorCommands(model);
         
         model.addAttribute("subBusId", zone.getSubstationBusId());
         
@@ -106,6 +109,17 @@ public class ZoneDetailController {
     private void setupDetails(ModelMap model, VoltageRegulatorFlags regulatorFlags) {
         model.addAttribute("regulatorId",regulatorFlags.getCcId());
         model.addAttribute("regulatorName",regulatorFlags.getCcName());
+    }
+    
+    private void setupRegulatorCommands(ModelMap model) {
+        //This will need to change when we differentiate between phase operated and gang operated Regulators
+        model.addAttribute("regulatorType",CapControlType.LTC);
+        
+        model.addAttribute("scanCommandHolder",CommandHolder.LTC_SCAN_INTEGRITY);
+        model.addAttribute("tapDownCommandHolder",CommandHolder.LTC_TAP_POSITION_LOWER);
+        model.addAttribute("tapUpCommandHolder",CommandHolder.LTC_TAP_POSITION_RAISE);
+        model.addAttribute("enableRemoteCommandHolder",CommandHolder.LTC_REMOTE_ENABLE);
+        model.addAttribute("disableRemoteCommandHolder",CommandHolder.LTC_REMOTE_DISABLE);
     }
     
     private void setupIvvcEvents(ModelMap model) {
