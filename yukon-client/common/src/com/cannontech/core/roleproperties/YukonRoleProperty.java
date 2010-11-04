@@ -273,8 +273,6 @@ public enum YukonRoleProperty {
     OPERATOR_OPT_OUT_PERIOD(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.OPT_OUT_PERIOD, stringType()),
     OPERATOR_DISABLE_SWITCH_SENDING(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.DISABLE_SWITCH_SENDING, booleanType()),
     OPERATOR_METER_SWITCH_ASSIGNMENT(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.METER_SWITCH_ASSIGNMENT, stringType()),
-    OPERATOR_ACCOUNT_NUMBER_LENGTH(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH, stringType()),
-    OPERATOR_ROTATION_DIGIT_LENGTH(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ROTATION_DIGIT_LENGTH, stringType()),
     OPERATOR_ALLOW_ACCOUNT_EDITING(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ALLOW_ACCOUNT_EDITING, booleanType()),
     OPERATOR_WEB_LINK_FAQ(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.WEB_LINK_FAQ, stringType()),
     OPERATOR_WEB_LINK_THERM_INSTRUCTIONS(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.WEB_LINK_THERM_INSTRUCTIONS, stringType()),
@@ -394,6 +392,8 @@ public enum YukonRoleProperty {
     APPLICABLE_POINT_TYPE_KEY(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.APPLICABLE_POINT_TYPE_KEY, stringType()),
     INHERIT_PARENT_APP_CATS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.INHERIT_PARENT_APP_CATS, booleanType()),
     AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS, booleanType()),
+    ACCOUNT_NUMBER_LENGTH(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.ACCOUNT_NUMBER_LENGTH, integerType()),
+    ROTATION_DIGIT_LENGTH(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.ROTATION_DIGIT_LENGTH, integerType()),
     
     MSP_PAONAME_ALIAS(MULTISPEAK, com.cannontech.roles.yukon.MultispeakRole.MSP_PAONAME_ALIAS, InputTypeFactory.enumType(MspPaoNameAliasEnum.class)),
     MSP_PRIMARY_CB_VENDORID(MULTISPEAK, com.cannontech.roles.yukon.MultispeakRole.MSP_PRIMARY_CB_VENDORID, integerType()),

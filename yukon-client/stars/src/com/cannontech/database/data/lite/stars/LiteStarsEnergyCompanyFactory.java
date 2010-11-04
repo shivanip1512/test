@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
@@ -21,7 +21,7 @@ public class LiteStarsEnergyCompanyFactory {
     private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
     private SimpleJdbcTemplate simpleJdbcTemplate;
 	private YukonListDao yukonListDao;
-	private RolePropertyDao rolePropertyDao;
+	private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
 	private SystemDateFormattingService systemDateFormattingService;
 	private WarehouseDao warehouseDao;
 	private YukonGroupDao yukonGroupDao;
@@ -45,7 +45,7 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setStarsWorkOrderBaseDao(starsWorkOrderBaseDao);
         energyCompany.setSimpleJdbcTemplate(simpleJdbcTemplate);
         energyCompany.setYukonListDao(yukonListDao);
-        energyCompany.setRolePropertyDao(rolePropertyDao);
+        energyCompany.setEnergyCompanyRolePropertyDao(energyCompanyRolePropertyDao);
         energyCompany.setSystemDateFormattingService(systemDateFormattingService);
         energyCompany.setWarehouseDao(warehouseDao);
         energyCompany.setYukonGroupDao(yukonGroupDao);
@@ -87,9 +87,10 @@ public class LiteStarsEnergyCompanyFactory {
 	}
     
     @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
+    public void setEnergyCompanyRolePropertyDao(
+            EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
+        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
+    }
     
     @Autowired
     public void setSystemDateFormattingService(

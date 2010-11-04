@@ -37,7 +37,7 @@ import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PoolManager;
@@ -61,7 +61,6 @@ import com.cannontech.database.db.stars.appliance.ApplianceCategory;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.database.db.user.YukonGroup;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
@@ -190,7 +189,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private YukonListDao yukonListDao;
-    private RolePropertyDao rolePropertyDao;
+    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     private YukonGroupDao yukonGroupDao;
     private SystemDateFormattingService systemDateFormattingService;
     
@@ -369,7 +368,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     
     public TimeZone getDefaultTimeZone() {
         TimeZone timeZone;
-        String timeZoneStr = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.ENERGY_COMPANY_DEFAULT_TIME_ZONE, user);
+        String timeZoneStr = energyCompanyRolePropertyDao.getPropertyStringValue(YukonRoleProperty.ENERGY_COMPANY_DEFAULT_TIME_ZONE, this);
         
         if (StringUtils.isNotBlank(timeZoneStr)) {
             try {
@@ -495,7 +494,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     	Iterable<LiteApplianceCategory> allApplianceCategories = getApplianceCategories();
         
         boolean inheritCats = 
-        	rolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, getUser());
+        	energyCompanyRolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, this);
         
         if (getParent() != null && inheritCats) {
             Iterable<LiteApplianceCategory> parentCategories = 
@@ -1299,23 +1298,25 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     public LiteStarsCustAccountInformation searchAccountByAccountNo(String accountNo) 
     {
     	List<Object> accounts = searchAccountByAccountNumber(accountNo, false, true);
-        String comparableDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(user, ConsumerInfoRole.ACCOUNT_NUMBER_LENGTH);
-        int comparableDigitEndIndex = 0;
-        String rotationDigitProperty = DaoFactory.getAuthDao().getRolePropertyValue(user, ConsumerInfoRole.ROTATION_DIGIT_LENGTH);
+    	int accountNumberLength = 
+    	    energyCompanyRolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.ACCOUNT_NUMBER_LENGTH, this);
+    	int rotationDigitLength = 
+    	    energyCompanyRolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.ROTATION_DIGIT_LENGTH, this);
         int accountNumSansRotationDigitsIndex = accountNo.length();
-        boolean adjustForRotationDigits = false, adjustForAccountLength = false;
-        if(StringUtils.isNotBlank(rotationDigitProperty) && Integer.parseInt(rotationDigitProperty) > 0
-                && Integer.parseInt(rotationDigitProperty) < accountNo.length())
-        {
-            accountNumSansRotationDigitsIndex = accountNo.length() - Integer.parseInt(rotationDigitProperty);
+        boolean adjustForRotationDigits = false;
+        boolean adjustForAccountLength = false;
+        if (rotationDigitLength > 0 && rotationDigitLength < accountNo.length()) {
+            accountNumSansRotationDigitsIndex = accountNo.length() - rotationDigitLength;
             accountNo = accountNo.substring(0, accountNumSansRotationDigitsIndex);
             adjustForRotationDigits = true;
         }
-        if(StringUtils.isNotBlank(comparableDigitProperty) && Integer.parseInt(comparableDigitProperty) > 0)
-        {
-            comparableDigitEndIndex = Integer.parseInt(comparableDigitProperty);
-            if(accountNo.length() >= comparableDigitEndIndex)
+        
+        int comparableDigitEndIndex = 0;
+        if (accountNumberLength > 0) {
+            comparableDigitEndIndex = accountNumberLength;
+            if (accountNo.length() >= comparableDigitEndIndex) {
                 accountNo = accountNo.substring(0, comparableDigitEndIndex);
+            }
             adjustForAccountLength = true;
         }
 
@@ -2081,9 +2082,10 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
 		this.yukonListDao = yukonListDao;
 	}
     
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
+    public void setEnergyCompanyRolePropertyDao(
+            EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
+        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
+    }
     
     public void setSystemDateFormattingService(
 			SystemDateFormattingService systemDateFormattingService) {

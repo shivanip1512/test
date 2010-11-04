@@ -19,4 +19,6 @@ public interface EnergyCompanyRole {
     public static final int APPLICABLE_POINT_TYPE_KEY = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 12;
 	public static final int INHERIT_PARENT_APP_CATS = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 14;
 	public static final int AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 15;
+    public static final int ACCOUNT_NUMBER_LENGTH = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 16;
+    public static final int ROTATION_DIGIT_LENGTH = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 17;
 }
