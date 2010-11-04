@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/1/2010 12:24:10 PM                        */
+/* Created on:     11/4/2010 5:22:40 PM                         */
 /*==============================================================*/
 
 
@@ -4716,6 +4716,7 @@ create table DynamicCCMonitorPointResponse  (
    PointID              NUMBER                          not null,
    PreOpValue           FLOAT                           not null,
    Delta                FLOAT                           not null,
+   StaticDelta          CHAR(1)                         not null,
    constraint PK_DYNAMICCCMONITORPOINTRESPON primary key (BankID, PointID)
 );
 

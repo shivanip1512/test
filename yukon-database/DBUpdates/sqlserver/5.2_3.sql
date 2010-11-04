@@ -81,6 +81,17 @@ SET Type = 'RFN-410fD'
 WHERE Type = 'RFN-AXSD';
 /* End YUK-9235 */
 
+/* Start YUK-9229 */
+ALTER TABLE DynamicCCMonitorPointResponse 
+ADD StaticDelta CHAR(1); 
+
+UPDATE DynamicCCMonitorPointResponse 
+SET StaticDelta = 'N'; 
+
+ALTER TABLE DynamicCCMonitorPointResponse 
+ALTER COLUMN StaticDelta CHAR(1) NOT NULL; 
+/* End YUK-9229 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

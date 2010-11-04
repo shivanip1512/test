@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/1/2010 12:14:46 PM                        */
+/* Created on:     11/4/2010 5:24:37 PM                         */
 /*==============================================================*/
 
 
@@ -7586,6 +7586,7 @@ create table DynamicCCMonitorPointResponse (
    PointID              numeric              not null,
    PreOpValue           float                not null,
    Delta                float                not null,
+   StaticDelta          char(1)              not null,
    constraint PK_DYNAMICCCMONITORPOINTRESPON primary key (BankID, PointID)
 )
 go
