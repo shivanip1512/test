@@ -39,6 +39,7 @@ public:
 
    int buildScannerTableRequest (BYTE *ptr, UINT flags);
    int buildCommanderTableRequest (BYTE *ptr, UINT flags);
+   int buildSingleTableRequest(BYTE *ptr, UINT tableId);
 
 
 private:

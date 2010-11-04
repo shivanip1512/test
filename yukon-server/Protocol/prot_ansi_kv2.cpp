@@ -164,8 +164,8 @@ bool CtiProtocolANSI_kv2::snapshotData()
 {
     //setWriteProcedureInProgress(true);
 
-    setCurrentAnsiWantsTableValues(7,0,1,ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
-    getApplicationLayer().initializeTableRequest (7, 0, 1, ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
+    setCurrentAnsiWantsTableValues(Ansi::ProcedureInitiate,0,1,ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
+    getApplicationLayer().initializeTableRequest (Ansi::ProcedureInitiate, 0, 1, ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
 
     REQ_DATA_RCD reqData;
     reqData.proc.tbl_proc_nbr = 84;

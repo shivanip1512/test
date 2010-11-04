@@ -294,6 +294,51 @@ struct TIME
       };
    };
 };
+typedef enum
+{
+      Configuration                       = 0,
+      GeneralManufacturerIdentification   = 1,
+      ProcedureInitiate                   = 7,
+      ProcedureResponse                   = 8,
+      DataSource                          = 10,
+      ActualSourcesLimiting               = 11,
+      UnitOfMeasureEntry                  = 12,
+      DemandControl                       = 13,
+      DataControl                         = 14,
+      Constants                           = 15,
+      SourceDefinition                    = 16,
+      Register                            = 20,
+      ActualRegister                      = 21,
+      DataSelection                       = 22,
+      CurrentRegisterData                 = 23,
+      PreviousSeasonData                  = 24,
+      FrozenRegisterData                  = 25,
+      PresentRegisterSelection            = 27,
+      PresentRegisterData                 = 28,
+      ActualDisplay                       = 31,
+      DisplaySource                       = 32,
+      PrimaryDisplayList                  = 33,
+      SecondaryDisplayList                = 34,
+      ActualTimeAndTOU                    = 51,
+      Clock                               = 52,
+      ActualLoadProfile                   = 61,
+      LoadProfileControl                  = 62,
+      LoadProfileStatus                   = 63,
+      LoadProfileDataSet1                 = 64,
+      LoadProfileDataSet2                 = 65,
+      LoadProfileDataSet3                 = 66,
+      LoadProfileDataSet4                 = 67,
+      Undefined                           = -1
+} Tables;
+
+typedef enum
+{
+    Sentinel_BatteryLifeRequest           = 2049,
+    Sentinel_BatteryLifeResponse          = 2050,
+    Focus_SetLpReadControl                = 2082,
+} MfgTables;
+
+
 
 #pragma pack( pop )
 
@@ -316,23 +361,25 @@ class IM_EX_PROT CtiProtocolANSI
       bool generate( CtiXfer &xfer );
       bool decode  ( CtiXfer &xfer, int status );
 
-      bool CtiProtocolANSI::handleWriteOperations();
-      bool CtiProtocolANSI::createWriteOperations();
+      void printResults();
+      bool handleWriteOperations();
+      bool createWriteOperations();
 
       bool isTransactionComplete( void ) const;
       bool isTransactionFailed( void );
       int recvOutbound( OUTMESS  *OutMessage );
 
       void convertToTable();
-      bool setLoadProfileVariables();
+
 
       int sendCommResult( INMESS *InMessage );
-        void receiveCommResult( INMESS *InMessage );
-    void buildWantedTableList( BYTE *aPtr);
+      void receiveCommResult( INMESS *InMessage );
+      void buildWantedTableList( BYTE *aPtr);
 
 
     CtiANSIApplication &getApplicationLayer( void );
     void updateBytesExpected( );
+    void updateMfgBytesExpected( );
     int sizeOfNonIntegerFormat( int aFormat );
 
     int sizeOfSTimeDate( void );
@@ -379,14 +426,6 @@ class IM_EX_PROT CtiProtocolANSI
 
     unsigned short getTotalWantedLPBlockInts();
 
-    int getNbrValidIntvls();
-    int getNbrValidBlks();
-    int getMaxIntervalTime();
-    int getNbrIntervalsPerBlock();
-    int getLastBlockIndex();
-    int getNbrBlksSet();
-    bool isDataBlockOrderDecreasing();
-
     const string& getAnsiDeviceName() const;
     void setAnsiDeviceName(const string& devName);
 
@@ -398,28 +437,34 @@ class IM_EX_PROT CtiProtocolANSI
     int getWriteSequenceNbr( void );
 
     unsigned long getlastLoadProfileTime(void);
-
-
-    void setTablesAvailable(unsigned char * stdTblsUsed, int dimStdTblsUsed,
-                            unsigned char * mfgTblsUsed, int dimMfgTblsUsed);
-
-
-    list< short > getStdTblsAvailable(void);
-    list < short > getMfgTblsAvailable(void);
-    bool isStdTableAvailableInMeter(short tableNbr);
-    bool isMfgTableAvailableInMeter(short tableNbr);
-
     int getScanOperation(void);
     UINT getParseFlags(void);
 
     bool forceProcessDispatchMsg();
     bool isTimeUninitialized(double time);
-
+    bool isDataBlockOrderDecreasing();
+    int getLastBlockIndex();
     static const CHAR * METER_TIME_TOLERANCE;
 
    protected:
+      bool setLoadProfileVariables();
+      void setLoadProfileFullBlocks(long fullBlocks);
+      int getNbrValidIntvls();
+      int getNbrValidBlks();
+      int getMaxIntervalTime();
+      int getNbrIntervalsPerBlock();
+      int getNbrBlksSet();
+
+
 
    private:
+       void prepareApplicationLayer();
+       void setTablesAvailable(unsigned char * stdTblsUsed, int dimStdTblsUsed,
+       unsigned char * mfgTblsUsed, int dimMfgTblsUsed);
+       list< short > getStdTblsAvailable(void);
+       list < short > getMfgTblsAvailable(void);
+       bool isStdTableAvailableInMeter(short tableNbr);
+       bool isMfgTableAvailableInMeter(short tableNbr);
 
       int                              _index;
 

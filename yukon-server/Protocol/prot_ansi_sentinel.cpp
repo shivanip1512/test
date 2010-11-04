@@ -127,17 +127,7 @@ void CtiProtocolANSI_sentinel::convertToManufacturerTable( BYTE *data, BYTE numB
           break;
       }
 
-        case 110:
-            {
-                {
-                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << CtiTime() << " Creating Sentinel table 110" << endl;
-                }
-
-//                _table_110 = new CtiKV2AnsiTable_110( data );
-                break;
-            }
-        default:
+    default:
             break;
       
     }
@@ -147,8 +137,8 @@ int CtiProtocolANSI_sentinel::calculateLPDataBlockStartIndex(ULONG lastLPTime)
 {
     //setWriteProcedureInProgress(true);
 
-    setCurrentAnsiWantsTableValues(7,0,1,ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
-    getApplicationLayer().initializeTableRequest (7, 0, 1, ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
+    setCurrentAnsiWantsTableValues(Ansi::ProcedureInitiate,0,1,ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
+    getApplicationLayer().initializeTableRequest (Ansi::ProcedureInitiate, 0, 1, ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
 
     REQ_DATA_RCD reqData;
     reqData.proc.tbl_proc_nbr = 22;
@@ -184,8 +174,8 @@ bool CtiProtocolANSI_sentinel::batteryLifeData()
 {
     //setWriteProcedureInProgress(true);
 
-    setCurrentAnsiWantsTableValues(2049,0,1,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
-    getApplicationLayer().initializeTableRequest (2049, 0, 1, ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
+    setCurrentAnsiWantsTableValues(Ansi::Sentinel_BatteryLifeRequest,0,1,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
+    getApplicationLayer().initializeTableRequest (Ansi::Sentinel_BatteryLifeRequest, 0, 1, ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
 
     //Bogus - not used for this...just populating with dummy zeros.
     REQ_DATA_RCD reqData;

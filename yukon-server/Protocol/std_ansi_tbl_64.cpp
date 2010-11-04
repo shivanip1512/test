@@ -563,14 +563,7 @@ void CtiAnsiTable64::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTi
             if (blkIntvl <= totIntvls)
             {
 
-                if (blockOrderDecreasing)
-                {
-                    blkIntvlTime = blkEndTime - (blkIntvl * _maxIntvlTime * 60); //likely need to change to time, then convert to seconds.
-                }
-                else
-                {
-                    blkIntvlTime = blkEndTime - ((totIntvls - (blkIntvl+1)) * _maxIntvlTime * 60); //likely need to change to time, then convert to seconds.
-                }
+                blkIntvlTime = blkEndTime - ((totIntvls - (blkIntvl+1)) * _maxIntvlTime * 60); //likely need to change to time, then convert to seconds.
             }
             else
             {
@@ -582,27 +575,13 @@ void CtiAnsiTable64::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTi
             //if (blkSet == (_nbrBlksSet1-1) && blkIntvl < _nbrValidInts)
             if (blkSet == (_nbrBlksSet1 -1) && blkIntvl < _nbrValidInts)
             {
-                if (blockOrderDecreasing)
-                {
-                    blkIntvlTime = blkEndTime - (blkIntvl * _maxIntvlTime * 60);
-                }
-                else
-                {
-                    blkIntvlTime = blkEndTime - ((_nbrValidInts - (blkIntvl+1)) * _maxIntvlTime * 60);
-                }
+               blkIntvlTime = blkEndTime - ((_nbrValidInts - (blkIntvl+1)) * _maxIntvlTime * 60);
             }
             else
             {
                 if (blkIntvl < _nbrBlkIntsSet1)
                 {
-                    if (blockOrderDecreasing)
-                    {
-                        blkIntvlTime = blkEndTime - (blkIntvl * _maxIntvlTime * 60);
-                    }
-                    else
-                    {    
-                        blkIntvlTime = blkEndTime - ((_nbrBlkIntsSet1 - (blkIntvl+1)) * _maxIntvlTime * 60);
-                    }
+                    blkIntvlTime = blkEndTime - ((_nbrBlkIntsSet1 - (blkIntvl+1)) * _maxIntvlTime * 60);
                 }
                 else
                 {

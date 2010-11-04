@@ -22,8 +22,6 @@
 #include <windows.h>
 #include "prot_ansi.h"
 
-#define FOCUS_SET_LP_READ_CTRL_TBL 2082
-
 using namespace Ansi;
 class IM_EX_PROT  CtiProtocolANSI_focus: public CtiProtocolANSI
 {

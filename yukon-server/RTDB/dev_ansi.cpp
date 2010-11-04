@@ -3,8 +3,6 @@
 #include "logger.h"
 #include "dev_ansi.h"
 #include "utility.h"
-#include "pt_analog.h"
-#include "pt_status.h"
 #include "cmdparse.h"
 #include "numstr.h"
 #include "ctidate.h"
@@ -24,6 +22,57 @@ CtiDeviceAnsi::CtiDeviceAnsi() :
 
 CtiDeviceAnsi::~CtiDeviceAnsi()
 {
+}
+int CtiDeviceAnsi::buildSingleTableRequest(BYTE *ptr, UINT tableId)
+{
+    return 0;
+}
+INT CtiDeviceAnsi::executeLoopback( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList,
+                                    list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    if( OutMessage != NULL )
+    {
+         setCurrentCommand( CmdScanData );
+         
+         // Load all the other stuff that is needed
+         OutMessage->DeviceID  = getID();
+         OutMessage->TargetID  = getID();
+         OutMessage->Port      = getPortID();
+         OutMessage->Remote    = getAddress();
+         OutMessage->TimeOut   = 2;
+         OutMessage->EventCode = RESULT | ENCODED;
+         OutMessage->Sequence  = 0;
+         OutMessage->Retry     = 3;
+         EstablishOutMessagePriority( OutMessage, MAXPRIORITY );
+         
+         //let's populate this list with the tables we want for a general scan...
+         BYTE *ptr = OutMessage->Buffer.OutMessage;
+         
+         
+         buildSingleTableRequest (ptr, 0);
+         CtiReturnMsg *retMsg = NULL;
+         retMsg = CTIDBG_new CtiReturnMsg(getID(),
+                             pReq->CommandString(),
+                             string(getName() + " / scan general in progress"),
+                             NORMAL,//EventCode & 0x7fff
+                             pReq->RouteId(),
+                             pReq->MacroOffset(),
+                             1, //pReq->Attempt(),
+                             pReq->GroupMessageId(),
+                             pReq->UserMessageId());
+          retMsg->setExpectMore(1);
+          retList.push_back(retMsg);
+         
+          retMsg = 0;
+         
+          outList.push_back( OutMessage );
+          OutMessage = 0;
+   }
+   else
+   {
+      return MEMORY;
+   }
+   return NoError;
 }
 
 //=========================================================================================================================================
@@ -205,65 +254,28 @@ INT CtiDeviceAnsi::ExecuteRequest( CtiRequestMsg         *pReq,
 
     switch( parse.getCommand( ) )
     {
-
-
-        /*case LoopbackRequest:
+        case LoopbackRequest:
         {
             nRet = executeLoopback( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
         }
-        */
         case ScanRequest:
         {
-            //nRet = GeneralScan( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             nRet = GeneralScan( pReq, parse, OutMessage, vgList, retList, outList );
-            //nRet = executeScan( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
         }
-        /*case GetValueRequest:
-        {
-            nRet = executeGetValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            break;
-        } */
         case PutValueRequest:
         {
-            //nRet = DemandReset( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             nRet = DemandReset( pReq, parse, OutMessage, vgList, retList, outList );
-           // nRet = executePutValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
         }
-       /* case ControlRequest:
-        {
-            nRet = executeControl( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            break;
-        }
-        case GetStatusRequest:
-        {
-            nRet = executeGetStatus( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            break;
-        }
-        case PutStatusRequest:
-        {
-            nRet = executePutStatus( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            break;
-        }
-        case GetConfigRequest:
-        {
-            nRet = executeGetConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            break;
-        }
-        case PutConfigRequest:
-        {
-            nRet = executePutConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
-            break;
-        }
-        */
+      
         default:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unsupported command on EMETCON route. Command = " << parse.getCommand( ) << endl;
+                dout << "Unsupported command on Ansi Device route. Command = " << parse.getCommand( ) << endl;
             }
             nRet = NoMethod;
 
@@ -512,18 +524,13 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
 {
 
     CtiReturnMsg *msgPtr;
-    CtiPointDataMsg                  *pData = NULL;
     CtiPointAnalogSPtr pPoint;
-    CtiPointStatusSPtr pStatusPoint;
     double value = 0;
     double timestamp = 0;
-    double lpValue = 0;
-    int    qual = 0;
     bool gotValue = false;
     bool gotLPValues = false;
     int x =  OFFSET_TOTAL_KWH;
-    int y, z;
-    CtiTime lastLoadProfileTime;
+    int z;
     string resultString = "";
 
     _result_string = "";
@@ -539,7 +546,6 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
           CtiLockGuard<CtiLogger> doubt_guard(dout);
           dout << CtiTime() << " ----Process Dispatch Message In Progress For " << getName() << "----" << endl;
         }
-        lastLoadProfileTime = CtiTime(getANSIProtocol().getlastLoadProfileTime());
 
         while (x <= OFFSET_METER_TIME_STATUS)
         {
@@ -680,116 +686,17 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
                     {
                         timestamp = 0;
                     }
-
-                    pData = CTIDBG_new CtiPointDataMsg();
-                    pData->setId( pPoint->getID() );
-
-                    if (pPoint->getMultiplier() != NULL)
-                    {
-                        value = value * pPoint->getMultiplier();
-                    }
-                    if (pPoint->getDataOffset() != NULL)
-                    {
-                        value += pPoint->getDataOffset();
-                    }
-
-                    resultString = getName() + " / " + pPoint->getName() + ": " + CtiNumStr(value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
-
-                    pData->setValue( value );
-                    pData->setQuality( NormalQuality );
-                    if (archiveFlag & CMD_FLAG_UPDATE)
-                    {
-                        pData->setTags(TAG_POINT_MUST_ARCHIVE);
-                    }
-                    if (timestamp != 0)
-                    {
-                        pData->setTime(CtiTime(timestamp));
-                    }
-                    else
-                    {
-                        pData->setTime( CtiTime() );
-                    }
-                    pData->setType( pPoint->getType() );
-
-                    msgPtr = CTIDBG_new CtiReturnMsg();
-
-                    msgPtr->insert(pData);
-                    retList.push_back(msgPtr);
-                    pData = NULL;
-                    msgPtr = NULL;
+                    createPointData(pPoint, value, timestamp, archiveFlag, retList);
                 }
                 else if (gotLPValues)
                 {
-                    int ptMultiplier = pPoint->getMultiplier();
-                    int ptOffset = pPoint->getDataOffset();
-
-                    qual = NormalQuality;
-                    int msgCntr = 0;
-                    msgPtr = CTIDBG_new CtiReturnMsg();
-
-                    for (y = getANSIProtocol().getTotalWantedLPBlockInts()-1; y >= 0; y--)
-                    {
-                        if (getANSIProtocol().getLPTime(y) > lastLoadProfileTime.seconds())
-                        {
-                            lpValue = getANSIProtocol().getLPValue(y);
-                            lpValue *= (ptMultiplier != NULL ? ptMultiplier : 1);
-                            lpValue += (ptOffset != NULL ? ptOffset : 0) ;
-                            
-                            pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), lpValue, (int) getANSIProtocol().getLPQuality(y), pPoint->getType());
-                            pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
-                            pData->setTime( CtiTime(getANSIProtocol().getLPTime(y)) );
-
-                            msgPtr->insert(pData);
-
-                            if (msgCntr >= 400 || y <= 0 )
-                            {
-                                msgCntr = 0;
-                                retList.push_back(msgPtr);
-                                msgPtr = NULL;
-                                if (y > 0)
-                                    msgPtr = CTIDBG_new CtiReturnMsg();
-                            }
-                            else
-                                msgCntr++;
-
-                            pData = NULL;
-
-                        }
-                        else
-                        {
-                            y = -1;
-                            if (msgPtr->getCount() > 0)
-                            {
-                                retList.push_back(msgPtr);
-                                msgPtr = NULL;
-                            }
-                        }
-
-
-                    }
-                    _lastLPTime = getANSIProtocol().getLPTime(getANSIProtocol().getTotalWantedLPBlockInts()-1);
-                    getANSIProtocol().setLastLoadProfileTime(_lastLPTime);
-                    if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << endl << CtiTime() << " " << getName() <<" Last LP Time "<<CtiTime(getANSIProtocol().getLPTime(getANSIProtocol().getTotalWantedLPBlockInts()-1))<< endl;
-                    }
-                    if (pData != NULL)
-                    {
-                        delete []pData;
-                        pData = NULL;
-                    }
-
-                    if (msgPtr != NULL)
-                    {
-                        msgPtr = NULL;
-                    }
+                    createLoadProfilePointData(pPoint, retList);
                 }
-                pPoint;
+                pPoint.reset();
             }
             else //try pPoint as a StatusPoint
             {
-                pStatusPoint = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual(x, StatusPointType));
+                CtiPointStatusSPtr pStatusPoint = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual(x, StatusPointType));
                 if (pStatusPoint)
                 {
                     {
@@ -801,9 +708,9 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
                         gotValue = getANSIProtocol().retreiveMeterTimeDiffStatus(x, &value);
                         if (gotValue)
                         {
-                            pData = CTIDBG_new CtiPointDataMsg();
+                            CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg();
                             pData->setId( pStatusPoint->getID() );
-
+                    
                             pData->setValue( value );
                             pData->setQuality( NormalQuality );
                             if (archiveFlag & CMD_FLAG_UPDATE)
@@ -812,18 +719,17 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
                             }
                             pData->setTime( CtiTime() );
                             pData->setType( pStatusPoint->getType() );
-
+                    
                             msgPtr = CTIDBG_new CtiReturnMsg();
                             msgPtr->insert(pData);
-
+                    
                             retList.push_back(msgPtr);
-
+                    
                             resultString  = getName() + " / " + pStatusPoint->getName() + ": " + ResolveStateName(pStatusPoint->getStateGroupID(), value);
                             pData = NULL;
                             msgPtr = NULL;
                         }
-                    }
-                    pStatusPoint.reset();
+                    }pStatusPoint.reset();
                 }
             }
             if (resultString != "")
@@ -845,6 +751,120 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+}
+void CtiDeviceAnsi::createPointData(CtiPointAnalogSPtr pPoint, double value, double timestamp, unsigned int archiveFlag, list< CtiReturnMsg* > &retList)
+{
+    CtiReturnMsg *msgPtr = CTIDBG_new CtiReturnMsg();
+    CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg();
+    
+    pData->setId( pPoint->getID() );
+    value *= (pPoint->getMultiplier() != NULL ? pPoint->getMultiplier() : 1);
+    value += (pPoint->getDataOffset() != NULL ? pPoint->getDataOffset() : 0) ;
+    
+    _result_string += getName() + " / " + pPoint->getName() + ": " + CtiNumStr(value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
+
+    pData->setValue( value );
+    pData->setQuality( NormalQuality );
+    if (archiveFlag & CMD_FLAG_UPDATE)
+    {
+        pData->setTags(TAG_POINT_MUST_ARCHIVE);
+    }
+    if (timestamp != 0)
+    {
+        pData->setTime(CtiTime(timestamp));
+    }
+    else
+    {
+        pData->setTime( CtiTime() );
+    }
+    pData->setType( pPoint->getType() );
+
+    msgPtr->insert(pData);
+    retList.push_back(msgPtr);
+    if (pData != NULL)
+    {
+        delete pData;
+        pData = NULL;
+    }
+    if (msgPtr != NULL)
+    {
+        delete msgPtr;
+        msgPtr = NULL;
+    }
+}
+void CtiDeviceAnsi::createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< CtiReturnMsg* > &retList)
+{
+    double value = 0;
+    double timestamp = 0;
+    double lpValue = 0;
+    int    qual = NormalQuality;
+    int ptMultiplier = pPoint->getMultiplier();
+    int ptOffset = pPoint->getDataOffset();
+    CtiPointDataMsg *pData = NULL;
+    CtiReturnMsg *msgPtr = CTIDBG_new CtiReturnMsg();
+    int msgCntr = 0;
+    CtiTime lastLoadProfileTime = CtiTime(getANSIProtocol().getlastLoadProfileTime());
+
+
+
+    for (int y = getANSIProtocol().getTotalWantedLPBlockInts()-1; y >= 0; y--)
+    {
+        if (getANSIProtocol().getLPTime(y) > lastLoadProfileTime.seconds())
+        {
+            lpValue = getANSIProtocol().getLPValue(y);
+            lpValue *= (ptMultiplier != NULL ? ptMultiplier : 1);
+            lpValue += (ptOffset != NULL ? ptOffset : 0) ;
+            
+            pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), lpValue, (int) getANSIProtocol().getLPQuality(y), pPoint->getType());
+            pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
+            pData->setTime( CtiTime(getANSIProtocol().getLPTime(y)) );
+
+            msgPtr->insert(pData);
+
+            if (msgCntr >= 400 || y <= 0 )
+            {
+                msgCntr = 0;
+                retList.push_back(msgPtr);
+                msgPtr = NULL;
+                if (y > 0)
+                    msgPtr = CTIDBG_new CtiReturnMsg();
+            }
+            else
+                msgCntr++;
+
+            pData = NULL;
+        }
+    }
+    if (msgPtr->getCount() > 0)
+    {
+        retList.push_back(msgPtr);
+        msgPtr = NULL;
+    }
+    if (getANSIProtocol().isDataBlockOrderDecreasing())
+    {
+        _lastLPTime = getANSIProtocol().getLPTime(0);
+    }
+    else
+    {
+        _lastLPTime = getANSIProtocol().getLPTime(getANSIProtocol().getTotalWantedLPBlockInts()-1);
+    }
+    getANSIProtocol().setLastLoadProfileTime(_lastLPTime);
+    if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << endl << CtiTime() << " " << getName() <<" Last LP Time "<<CtiTime(_lastLPTime)<< endl;
+    }
+    if (pData != NULL)
+    {
+        delete []pData;
+        pData = NULL;
+    }
+
+    if (msgPtr != NULL)
+    {
+        delete msgPtr;
+        msgPtr = NULL;
     }
 }
 

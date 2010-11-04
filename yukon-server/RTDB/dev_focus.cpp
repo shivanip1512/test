@@ -37,6 +37,30 @@ CtiDeviceFocus::~CtiDeviceFocus()
 }
 
 
+int CtiDeviceFocus::buildSingleTableRequest(BYTE *aMsg, UINT tableId)
+{
+    WANTS_HEADER   header = {0, 1, 0};
+
+    //here is the password for the sentinel (should be changed to a cparm, I think)
+    BYTE        password[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    ANSI_TABLE_WANTS    table[1] = {tableId, 0, 60,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ};
+    BYTE scanOperation = 0; //0 = general scan
+    UINT flags = 0;
+    // put the stuff in the buffer
+    memcpy( aMsg, &header, sizeof (header));
+    memcpy( (aMsg+sizeof(header)), &password, sizeof (password));
+    memcpy ((aMsg+sizeof(header)+sizeof(password)),
+            &table,
+            (header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)));
+    memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS))),
+            &scanOperation, sizeof(BYTE));
+    memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)) +sizeof(BYTE)),
+            &flags, sizeof(UINT));
+
+
+    return NORMAL;
+
+}
 /*************************************************************************************
 * build the list of tables and header requested in the device as each ansi device may need a few
 * different tables
@@ -63,6 +87,7 @@ int CtiDeviceFocus::buildScannerTableRequest (BYTE *aMsg, UINT flags)
         { 23,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 27,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 28,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 52,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 61,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 62,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 63,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
@@ -236,9 +261,5 @@ CtiProtocolANSI& CtiDeviceFocus::getANSIProtocol( void )
 //=========================================================================================================================================
 //
 //=========================================================================================================================================
-
-
-
-
 
 

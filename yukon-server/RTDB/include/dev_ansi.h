@@ -11,6 +11,8 @@
 
 #include "types.h"
 #include "dllyukon.h"
+#include "pt_analog.h"
+#include "pt_status.h"
 using namespace Ansi;
 
 
@@ -28,6 +30,13 @@ public:
                            list< CtiMessage* >  &retList,
                            list< OUTMESS* >     &outList,
                            INT                        ScanPriority=MAXPRIORITY-4);
+
+   virtual INT executeLoopback(CtiRequestMsg *pReq, 
+                           CtiCommandParser &parse, 
+                           OUTMESS *&OutMessage, 
+                           list<CtiMessage*>&vgList, 
+                           list<CtiMessage*>&retList, 
+                           list<OUTMESS*>&outList);
    virtual INT DemandReset( CtiRequestMsg *pReq,
                     CtiCommandParser &parse,
                     OUTMESS *&OutMessage,
@@ -55,6 +64,7 @@ public:
    virtual void processDispatchReturnMessage( list< CtiReturnMsg* > &retList, UINT archiveFlag );
    virtual int buildScannerTableRequest (BYTE *ptr, UINT flags) = 0;
    virtual int buildCommanderTableRequest (BYTE *ptr, UINT flags) = 0;
+   virtual int buildSingleTableRequest(BYTE *ptr, UINT tableId = 0);
    INT sendCommResult( INMESS *InMessage);
 
    struct WANTS_HEADER
@@ -66,6 +76,9 @@ public:
 
 
 private:
+
+    void createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< CtiReturnMsg* > &retList);
+    void createPointData(CtiPointAnalogSPtr pPoint, double value, double timestamp,unsigned int archiveFlag, list< CtiReturnMsg* > &retList);
 
     //UINT _parseFlags;
     string _result_string;

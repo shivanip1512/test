@@ -173,29 +173,29 @@ class IM_EX_PROT CtiANSIApplication
        waitState
       } ANSI_STATES;
 
-      void init( void );
-      void destroyMe( void );
-      void reinitialize( void );
-      bool generate( CtiXfer &xfer );
-      void initializeTableRequest( short aID, int aOffset, unsigned int aBytesExpected, BYTE aType, BYTE aOperation );
-      BYTE* getCurrentTable( void );
+    void init( void );
+    void destroyMe( void );
+    void reinitialize( void );
+    bool generate( CtiXfer &xfer );
+    void initializeTableRequest( short aID, int aOffset, unsigned int aBytesExpected, BYTE aType, BYTE aOperation );
+    BYTE* getCurrentTable( void );
 
 
-      bool decode( CtiXfer &xfer, int aCommStatus  );
+    bool decode( CtiXfer &xfer, int aCommStatus  );
     void terminateSession( void );
     bool analyzePacket();
     ANSI_STATES getNextState( ANSI_STATES current );
     bool checkResponse( BYTE aResponseByte);
     void identificationData(BYTE * );
     bool areThereMorePackets( void );
-
+    
     bool isReadComplete( void ) const;
     bool isReadFailed( void )   const;
 
-      CtiANSIDatalink &getDatalinkLayer( void );
+    CtiANSIDatalink &getDatalinkLayer( void );
 
-        bool isTableComplete( void );
-        CtiANSIApplication &setTableComplete( bool aFlag );
+    bool isTableComplete( void );
+    CtiANSIApplication &setTableComplete( bool aFlag );
 
     CtiANSIApplication &setRetries( int trysLeft );
     int getRetries( void );

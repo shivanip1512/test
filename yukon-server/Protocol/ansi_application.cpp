@@ -368,7 +368,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 pktSize = _maxPktSize.sh;
             }
 
-            if (_currentTableID == 64)
+            if (_currentTableID == Ansi::LoadProfileDataSet1)
             {
                 // make this generic
                 getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset, _currentType, pktSize, _maxNbrPkts );
@@ -382,7 +382,6 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 _requestedState = _currentState;
                 getDatalinkLayer().initializeForNewPacket();
             }
-            //else if (_currentTableID != 7 && _currentTableID != 2049 && _currentTableID != 2082)
             else if ( _currentOperation == ANSI_OPERATION_READ )
             {
                 // make this generic
@@ -390,7 +389,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 // sentinel likes full reads, kv2 likes partial read offsets
                 if  (getAnsiDeviceType() == focus)
                 {
-                    if (_currentTableID == 64)
+                    if (_currentTableID == Ansi::LoadProfileDataSet1)
                     {
                         operation =  pread_offset;
                     }
@@ -399,7 +398,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 }
                 else if  (getAnsiDeviceType() == sentinel)
                 {
-                    if (_currentBytesExpected < (_maxPktSize.sh) || (_currentTableID == 23 && (int)getFWVersionNumber() < 3)) //FW Version 5
+                    if (_currentBytesExpected < (_maxPktSize.sh) || (_currentTableID == Ansi::CurrentRegisterData && (int)getFWVersionNumber() < 3)) //FW Version 5
                         operation =  full_read;
                     else
                         operation = pread_offset;
@@ -539,10 +538,9 @@ void CtiANSIApplication::initializeTableRequest( short aID, int aOffset, unsigne
     if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << CtiTime::now() << " ** DEBUG ****  _currentTableID  " <<(int)_currentTableID<< endl;
-        dout << CtiTime::now() << " ** DEBUG ****  _currentTableOffset  " <<(int)_currentTableOffset<< endl;
-        dout << CtiTime::now() << " ** DEBUG ****  _currentBytesExpected  " <<(int)_currentBytesExpected<< endl;
-        dout << CtiTime::now() << " ** DEBUG ****  _initialOffset  " <<(int)_initialOffset<< endl;
+        dout << CtiTime::now() << " "<<getAnsiDeviceName()<< "   Initializing Request For Table ID  " <<(int)_currentTableID<< endl;
+        dout << CtiTime::now() << " "<<getAnsiDeviceName()<< "   Initializing Table Offset  " <<(int)_currentTableOffset<< endl;
+        dout << CtiTime::now() << " "<<getAnsiDeviceName()<< "   Initializing Bytes Expected  " <<(int)_currentBytesExpected<< endl;
     }
 }
 
@@ -582,7 +580,7 @@ bool CtiANSIApplication::decode( CtiXfer &xfer, int aCommStatus )
                     else
                     {
                         // retries exhausted, figure out how to get from here (terminate session?)
-                        if (_currentTableID == 64 && _totalBytesInTable >= _LPBlockSize)
+                        if (_currentTableID == Ansi::LoadProfileDataSet1 && _totalBytesInTable >= _LPBlockSize)
                         {
                             _partialProcessLPDataFlag = true;
                             setTableComplete (true);
@@ -621,7 +619,7 @@ bool CtiANSIApplication::decode( CtiXfer &xfer, int aCommStatus )
         else
         {
             // retries exhausted, figure out how to get from here (terminate session?)
-            if (_currentTableID == 64 && _totalBytesInTable >= _LPBlockSize)
+            if (_currentTableID == Ansi::LoadProfileDataSet1 && _totalBytesInTable >= _LPBlockSize)
             {
                 _partialProcessLPDataFlag = true;
                 setTableComplete (true);
@@ -865,6 +863,7 @@ bool CtiANSIApplication::analyzePacket()
 bool CtiANSIApplication::areThereMorePackets()
 {
     bool retVal;
+    
     if (getDatalinkLayer().getPacketPart() )
     {
         if(getDatalinkLayer().getSequence() == 0 )
@@ -880,7 +879,7 @@ bool CtiANSIApplication::areThereMorePackets()
         }
         else
         {
-            retVal = true;
+             retVal = true;
         }
     }
     else
@@ -893,6 +892,14 @@ bool CtiANSIApplication::areThereMorePackets()
         {
             retVal = false;
         }
+    }
+    if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
+    {
+        string temp = getDatalinkLayer().getPacketPart() ? " Partial " : " ";
+        string retString = retVal ? "true":"false";
+         CtiLockGuard< CtiLogger > doubt_guard( dout );
+         dout << CtiTime::now() << " "<<getAnsiDeviceName()<< temp << "** Sequence " << getDatalinkLayer().getSequence();
+         dout << " return "<< retString<< endl;
     }
     return retVal;
 }
@@ -1008,6 +1015,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
 
          msg = isss;
          _currentState = loggedOff;
+         getDatalinkLayer().toggleToggle();
       }
       break;
    }
@@ -1135,7 +1143,7 @@ CtiANSIApplication::ANSI_STATES CtiANSIApplication::getNextState( ANSI_STATES cu
       break;
    case waitState:
       //next = loggedOff;
-       if (_currentTableID == -1)
+       if (_currentTableID == Ansi::Undefined)
        {
            next = terminated;
        }

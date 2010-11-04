@@ -62,16 +62,15 @@ int CtiProtocolANSI_focus::calculateLPDataBlockStartIndex(ULONG lastLPTime)
     {
         nbrReadBlocks.sh = getNbrValidBlks() - 1;
     }
+    setLoadProfileFullBlocks(nbrIntervals / getNbrIntervalsPerBlock() );
     if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** Last Load Profile Time  " <<CtiTime(getlastLoadProfileTime()) << endl;
         dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** Nbr of Requested Intervals  " <<nbrIntervals << endl;
     }
-    
-
-
-    setCurrentAnsiWantsTableValues(FOCUS_SET_LP_READ_CTRL_TBL,0,1,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
-    getApplicationLayer().initializeTableRequest (FOCUS_SET_LP_READ_CTRL_TBL, 0, 1, ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
+    setCurrentAnsiWantsTableValues(Ansi::Focus_SetLpReadControl,0,1,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
+    getApplicationLayer().initializeTableRequest (Ansi::Focus_SetLpReadControl, 0, 1, ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
 
     //Bogus - not used for this...just populating with dummy zeros.
     REQ_DATA_RCD reqData;
