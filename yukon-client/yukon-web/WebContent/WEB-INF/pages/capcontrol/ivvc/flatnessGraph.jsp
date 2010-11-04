@@ -82,6 +82,12 @@
   		<sequenced_grow>true</sequenced_grow>
   	</bullets>
   	
+  	<balloon>
+  		<color>#FFCC00</color>
+  		<alpha>45</alpha>
+  		<text_color>#000000</text_color>
+  	</balloon>
+  	
   	<legend>
   		<enabled>false</enabled>
   	</legend>
