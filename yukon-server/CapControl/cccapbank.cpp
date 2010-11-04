@@ -101,7 +101,8 @@ _dirty(true)
     _ovuvSituationFlag = false;
 }
 
-CtiCCCapBank::CtiCCCapBank(Cti::RowReader& rdr)
+CtiCCCapBank::CtiCCCapBank(Cti::RowReader& rdr) :
+_parentId(0)
 {
     restore(rdr);
      _monitorPoint.clear();

@@ -7534,6 +7534,12 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, ma
                     pointid_capbank_map->insert(make_pair(currentMonPoint->getPointId(),currentBankPtr));
 
                     //The following is to setup the defaults for dynamic tables.
+                    if (currentBankPtr->getParentId() <= 0)
+                    {
+                        //This is an orphaned Bank
+                        break;
+                    }
+
                     CtiCCFeederPtr feederPtr = paobject_feeder_map->find(currentBankPtr->getParentId())->second;
                     if(feederPtr == NULL)
                     {
