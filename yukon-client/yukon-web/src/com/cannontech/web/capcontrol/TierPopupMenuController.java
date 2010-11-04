@@ -187,9 +187,6 @@ public class TierPopupMenuController extends MultiActionController {
         list.add(CommandHolder.LTC_REMOTE_DISABLE);
         
         mav.addObject("list", list);
-        
-//        mav.addObject("controlType", CapControlType.LTC);
-        
         mav.addObject("hideRecentCommands", true);
         mav.addObject("hideComments",true);
         
