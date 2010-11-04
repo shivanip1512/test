@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/4/2010 5:22:40 PM                         */
+/* Created on:     11/4/2010 5:48:54 PM                         */
 /*==============================================================*/
 
 
@@ -2148,6 +2148,8 @@ create table CallReportBase  (
 create table CapBankToZoneMapping  (
    DeviceId             NUMBER                          not null,
    ZoneId               NUMBER                          not null,
+   GraphPositionOffset  FLOAT,
+   Distance             FLOAT,
    constraint PK_CapBankZoneMap primary key (DeviceId)
 );
 
@@ -7348,6 +7350,8 @@ FROM Point;
 create table PointToZoneMapping  (
    PointId              NUMBER                          not null,
    ZoneId               NUMBER                          not null,
+   GraphPositionOffset  FLOAT,
+   Distance             FLOAT,
    constraint PK_PointZoneMap primary key (PointId)
 );
 
@@ -10041,6 +10045,7 @@ create table Zone  (
    RegulatorId          NUMBER                          not null,
    SubstationBusId      NUMBER                          not null,
    ParentId             NUMBER,
+   GraphStartPosition   FLOAT,
    constraint PK_Zone primary key (ZoneId)
 );
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/4/2010 5:24:37 PM                         */
+/* Created on:     11/4/2010 5:46:27 PM                         */
 /*==============================================================*/
 
 
@@ -4927,6 +4927,8 @@ go
 create table CapBankToZoneMapping (
    DeviceId             numeric              not null,
    ZoneId               numeric              not null,
+   GraphPositionOffset  float                null,
+   Distance             float                null,
    constraint PK_CapBankZoneMap primary key (DeviceId)
 )
 go
@@ -10429,6 +10431,8 @@ FROM Point;
 create table PointToZoneMapping (
    PointId              numeric              not null,
    ZoneId               numeric              not null,
+   GraphPositionOffset  float                null,
+   Distance             float                null,
    constraint PK_PointZoneMap primary key (PointId)
 )
 go
@@ -13205,6 +13209,7 @@ create table Zone (
    RegulatorId          numeric              not null,
    SubstationBusId      numeric              not null,
    ParentId             numeric              null,
+   GraphStartPosition   float                null,
    constraint PK_Zone primary key (ZoneId)
 )
 go

@@ -95,6 +95,21 @@ ALTER TABLE DynamicCCMonitorPointResponse
 MODIFY StaticDelta CHAR(1) NOT NULL;
 /* End YUK-9229 */
 
+/* Start YUK-9214 */
+ALTER TABLE CapBankToZoneMapping 
+ADD GraphPositionOffset FLOAT; 
+ALTER TABLE CapBankToZoneMapping 
+ADD Distance FLOAT; 
+
+ALTER TABLE PointToZoneMapping 
+ADD GraphPositionOffset FLOAT; 
+ALTER TABLE PointToZoneMapping 
+ADD Distance FLOAT; 
+
+ALTER TABLE Zone 
+ADD GraphStartPosition FLOAT;
+/* End YUK-9214 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
