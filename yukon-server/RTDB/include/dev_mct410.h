@@ -389,7 +389,7 @@ protected:
     INT decodeGetConfigPhaseDetect ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     INT decodeGetConfigDailyReadInterest( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
-    static bool canDailyReadDateAlias(const CtiDate &date, const CtiTime &now);
+    static bool isDailyReadVulnerableToAliasing(const CtiDate &date, const CtiTime &now);
 
     virtual std::string decodeDisconnectConfig(const DSTRUCT &DSt);
 

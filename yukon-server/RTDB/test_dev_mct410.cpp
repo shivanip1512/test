@@ -31,7 +31,7 @@ struct test_Mct410Device : Mct410Device
     using Mct410Device::decodeDisconnectDemandLimitConfig;
     using Mct410Device::decodeDisconnectCyclingConfig;
 
-    using Mct410Device::canDailyReadDateAlias;
+    using Mct410Device::isDailyReadVulnerableToAliasing;
 
     virtual LONG getDemandInterval()
     {
@@ -886,61 +886,61 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_canDailyReadDateAlias)
 {
     //  test case 1/31 (aliases to 5/31 from 6/01 to 7/30)
     //    we don't need to check dates prior to 6/01, since it's not possible to request 5/31 before then
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(31,  5, 2001), CtiDate( 1,  6, 2001)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(31,  5, 2001), CtiDate( 1,  7, 2001)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(31,  5, 2001), CtiDate(30,  7, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate( 1,  6, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate( 1,  7, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate(30,  7, 2001)));
 
-    BOOST_CHECK( ! test_Mct410Device::canDailyReadDateAlias(CtiDate(31,  5, 2001), CtiDate(31,  7, 2001)));
-    BOOST_CHECK( ! test_Mct410Device::canDailyReadDateAlias(CtiDate(31,  5, 2001), CtiDate( 1,  8, 2001)));
-    BOOST_CHECK( ! test_Mct410Device::canDailyReadDateAlias(CtiDate(31,  5, 2001), CtiDate( 2,  8, 2001)));
+    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate(31,  7, 2001)));
+    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate( 1,  8, 2001)));
+    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  5, 2001), CtiDate( 2,  8, 2001)));
 
     //  test case 11/29 (aliases to 3/29 from 3/30 to 5/28)
     //    we don't need to check dates prior to 3/30, since it's not possible to request 3/29 before then
     //  non-leap-year case
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(29,  3, 2001), CtiDate(30,  3, 2001)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(29,  3, 2001), CtiDate( 1,  4, 2001)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(29,  3, 2001), CtiDate( 1,  5, 2001)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(29,  3, 2001), CtiDate(28,  5, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate(30,  3, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate( 1,  4, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate( 1,  5, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate(28,  5, 2001)));
 
-    BOOST_CHECK( ! test_Mct410Device::canDailyReadDateAlias(CtiDate(29,  3, 2001), CtiDate(29,  5, 2001)));
-    BOOST_CHECK( ! test_Mct410Device::canDailyReadDateAlias(CtiDate(29,  3, 2001), CtiDate( 1,  6, 2001)));
+    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate(29,  5, 2001)));
+    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2001), CtiDate( 1,  6, 2001)));
 
     //  leap-year case
-    BOOST_CHECK( ! test_Mct410Device::canDailyReadDateAlias(CtiDate(29,  3, 2004), CtiDate(30,  3, 2004)));
-    BOOST_CHECK( ! test_Mct410Device::canDailyReadDateAlias(CtiDate(29,  3, 2004), CtiDate( 1,  4, 2004)));
-    BOOST_CHECK( ! test_Mct410Device::canDailyReadDateAlias(CtiDate(29,  3, 2004), CtiDate( 1,  5, 2004)));
-    BOOST_CHECK( ! test_Mct410Device::canDailyReadDateAlias(CtiDate(29,  3, 2004), CtiDate(28,  5, 2004)));
+    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate(30,  3, 2004)));
+    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate( 1,  4, 2004)));
+    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate( 1,  5, 2004)));
+    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate(28,  5, 2004)));
 
-    BOOST_CHECK( ! test_Mct410Device::canDailyReadDateAlias(CtiDate(29,  3, 2004), CtiDate(29,  5, 2004)));
-    BOOST_CHECK( ! test_Mct410Device::canDailyReadDateAlias(CtiDate(29,  3, 2004), CtiDate( 1,  6, 2004)));
+    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate(29,  5, 2004)));
+    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(29,  3, 2004), CtiDate( 1,  6, 2004)));
 
     //  test case 11/30 (aliases to 3/30 from 3/31 to 5/29)
     //    we don't need to check dates prior to 3/31, since it's not possible to request 3/30 before then
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(30,  3, 2001), CtiDate(31,  3, 2001)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(30,  3, 2001), CtiDate( 1,  4, 2001)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(30,  3, 2001), CtiDate( 2,  4, 2001)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(30,  3, 2001), CtiDate(30,  4, 2001)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(30,  3, 2001), CtiDate( 1,  5, 2001)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(30,  3, 2001), CtiDate( 2,  5, 2001)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(30,  3, 2001), CtiDate(27,  5, 2001)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(30,  3, 2001), CtiDate(28,  5, 2001)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(30,  3, 2001), CtiDate(29,  5, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(31,  3, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 1,  4, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 2,  4, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(30,  4, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 1,  5, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 2,  5, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(27,  5, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(28,  5, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(29,  5, 2001)));
 
-    BOOST_CHECK( ! test_Mct410Device::canDailyReadDateAlias(CtiDate(30,  3, 2001), CtiDate(30,  5, 2001)));
-    BOOST_CHECK( ! test_Mct410Device::canDailyReadDateAlias(CtiDate(30,  3, 2001), CtiDate(31,  5, 2001)));
-    BOOST_CHECK( ! test_Mct410Device::canDailyReadDateAlias(CtiDate(30,  3, 2001), CtiDate( 1,  6, 2001)));
-    BOOST_CHECK( ! test_Mct410Device::canDailyReadDateAlias(CtiDate(30,  3, 2001), CtiDate( 2,  6, 2001)));
+    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(30,  5, 2001)));
+    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate(31,  5, 2001)));
+    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 1,  6, 2001)));
+    BOOST_CHECK( ! test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(30,  3, 2001), CtiDate( 2,  6, 2001)));
 
     //  test case 8/31 (aliases to 12/31 from 1/1 to 3/31)
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(31, 12, 2001), CtiDate( 1,  1, 2002)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(31, 12, 2001), CtiDate( 1,  2, 2002)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(31, 12, 2001), CtiDate( 1,  3, 2002)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(31, 12, 2001), CtiDate(31,  3, 2002)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31, 12, 2001), CtiDate( 1,  1, 2002)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31, 12, 2001), CtiDate( 1,  2, 2002)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31, 12, 2001), CtiDate( 1,  3, 2002)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31, 12, 2001), CtiDate(31,  3, 2002)));
 
     //  test case 3/31 (aliases to 7/31 from 8/1 to 10/31)
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(31,  7, 2001), CtiDate( 1,  8, 2001)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(31,  7, 2001), CtiDate( 1,  9, 2001)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(31,  7, 2001), CtiDate( 1, 10, 2001)));
-    BOOST_CHECK(test_Mct410Device::canDailyReadDateAlias(CtiDate(31,  7, 2001), CtiDate(31, 10, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  7, 2001), CtiDate( 1,  8, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  7, 2001), CtiDate( 1,  9, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  7, 2001), CtiDate( 1, 10, 2001)));
+    BOOST_CHECK(test_Mct410Device::isDailyReadVulnerableToAliasing(CtiDate(31,  7, 2001), CtiDate(31, 10, 2001)));
 }
 

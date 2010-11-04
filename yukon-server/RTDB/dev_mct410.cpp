@@ -422,6 +422,7 @@ Mct410Device::CommandSet Mct410Device::initCommandStore()
     cs.insert(CommandStore(EmetconProtocol::GetConfig_Intervals,        EmetconProtocol::IO_Read,           Memory_IntervalsPos,            Memory_IntervalsLen));
     cs.insert(CommandStore(EmetconProtocol::PutConfig_OutageThreshold,  EmetconProtocol::IO_Write,          Memory_OutageCyclesPos,         Memory_OutageCyclesLen));
     cs.insert(CommandStore(EmetconProtocol::GetConfig_Thresholds,       EmetconProtocol::IO_Read,           Memory_ThresholdsPos,           Memory_ThresholdsLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_DailyReadInterest,EmetconProtocol::IO_Read,           Memory_DailyReadInterestPos,    Memory_DailyReadInterestLen));
     cs.insert(CommandStore(EmetconProtocol::GetValue_PFCount,           EmetconProtocol::IO_Read,           Memory_PowerfailCountPos,       Memory_PowerfailCountLen));
     cs.insert(CommandStore(EmetconProtocol::PutStatus_Reset,            EmetconProtocol::IO_Write,          Command_Reset,                  0));
     cs.insert(CommandStore(EmetconProtocol::PutStatus_ResetAlarms,      EmetconProtocol::IO_Write,          Memory_MeterAlarmsPos,          Memory_MeterAlarmsLen));
@@ -1424,18 +1425,23 @@ void Mct410Device::readSspec(const OUTMESS &OutMessage, list<OUTMESS *> &outList
 }
 
 
-bool Mct410Device::canDailyReadDateAlias(const CtiDate &date, const CtiTime &now)
+// There are 3 months of daily read slots in the MCT-410.
+// There are 2 check bits returned with the detail reads
+// that tell which of the last 3 months the read is for.
+// However, not all months have 31 days, so some slots
+// are roll over from month to month.
+// Also, the old period of interest pointer can remain in
+// the meter if it doesn't hear the new period-of-interest command.
+// Because of that, an old pointer of January 31 can look like May 31 (1 % 4 == 5 % 4).
+bool Mct410Device::isDailyReadVulnerableToAliasing(const CtiDate &date, const CtiTime &now)
 {
-    //  There are 3 months of daily read slots in the MCT-410.
-    //  There are 2 check bits returned with the reads.
-    //  Not all months have 31 days, so some slots are not overwritten at the end of a particular month.
-    //  There are 5 days that can alias to other days if the meter does not hear the period-of-interest command:
+    // There are 5 days that can alias:
     //
-    //    01/31 can alias to 05/31 during 06/01-07/30
-    //    11/29 can alias to 03/29 during 03/30-05/28
-    //    11/30 can alias to 03/30 during 03/31-05/29
-    //    08/31 can alias to 12/31 during 01/01-03/31
-    //    03/31 can alias to 07/31 during 08/01-10/31
+    //   01/31 can alias to 05/31 during 06/01-07/30
+    //   11/29 can alias to 03/29 during 03/30-05/28
+    //   11/30 can alias to 03/30 during 03/31-05/29
+    //   08/31 can alias to 12/31 during 01/01-03/31
+    //   03/31 can alias to 07/31 during 08/01-10/31
 
     const CtiDate nowDate(now.date());
 
@@ -1800,7 +1806,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                     if( _daily_read_info.request.begin != _daily_read_info.interest.date )
                     {
                         _daily_read_info.interest.date = _daily_read_info.request.begin;
-                        _daily_read_info.interest.needs_verification = canDailyReadDateAlias(_daily_read_info.interest.date, CtiTime());
+                        _daily_read_info.interest.needs_verification = isDailyReadVulnerableToAliasing(_daily_read_info.request.begin, CtiTime());
 
                         //  single-day request - send the time of interest
                         interest_om->Buffer.BSt.Message[1] = 0;
@@ -1817,12 +1823,9 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
 
                         alias_check_om->Sequence = EmetconProtocol::GetConfig_DailyReadInterest;
 
-                        alias_check_om->Buffer.BSt.Function = Memory_DailyReadInterestPos;
-                        alias_check_om->Buffer.BSt.Length   = Memory_DailyReadInterestLen;
-                        alias_check_om->Buffer.BSt.IO       = EmetconProtocol::IO_Read;
-                        alias_check_om->MessageFlags |= MessageFlag_ExpectMore;
+                        getOperation(EmetconProtocol::GetConfig_DailyReadInterest, alias_check_om->Buffer.BSt);
 
-                        alias_check_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+                        alias_check_om->MessageFlags |= MessageFlag_ExpectMore;
 
                         outList.push_back(alias_check_om);
                     }
