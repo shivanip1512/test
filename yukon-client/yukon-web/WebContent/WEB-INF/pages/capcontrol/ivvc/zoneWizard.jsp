@@ -11,10 +11,12 @@
 
 	addBankHandler = function (selectedPaoInfo) {
 		var url = '/spring/capcontrol/ivvc/wizard/addCapBank';
+
+		var index = $$('.bankRowCounter').length;
 	    
 		for(var i = 0; i < selectedPaoInfo.size(); i++) {
 			var paoId = selectedPaoInfo[i].paoId;
-			addRow(url,paoId,i,'bank');	
+			addRow(url,paoId,index++,'bank');	
 		}
 	    
 	    return true;
@@ -149,7 +151,7 @@
 						</thead>
 						<tbody id="bankTableBody">
 							<c:forEach var="row" varStatus="status" items="${zoneDto.bankAssignments}">
-								<tr id="${row.type}_${row.id}">
+								<tr id="${row.type}_${row.id}" class="bankRowCounter">
 									<td>
 										<form:hidden path="bankAssignments[${status.index}].id" id="bankAssignments[${status.index}].id"/>
 										<spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
@@ -197,7 +199,7 @@
 						</thead>
 						<tbody id="pointTableBody">
 							<c:forEach var="row" varStatus="status" items="${zoneDto.pointAssignments}">
-								<tr id="${row.type}_${row.id}">
+								<tr id="${row.type}_${row.id}" class="pointRowCounter">
 									<td>
 										<form:hidden path="pointAssignments[${status.index}].id" id="pointAssignments[${status.index}].id"/>
 										<spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>

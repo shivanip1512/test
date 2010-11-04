@@ -208,7 +208,7 @@ public class ZoneWizardController {
     }
     
     @RequestMapping
-    public String addCapBank(ModelMap modelMap, LiteYukonUser user, int id) {
+    public String addCapBank(ModelMap modelMap, LiteYukonUser user, int id, int index) {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
 
         CapBankToZoneMapping bankToZone = new CapBankToZoneMapping();
@@ -216,6 +216,7 @@ public class ZoneWizardController {
         bankToZone.setGraphPositionOffset(0);
         ZoneAssignmentCapBankRow row = buildBankAssignment(bankToZone, cache);        
         modelMap.addAttribute("row",row);
+        modelMap.addAttribute("index", index);
         
         return "ivvc/addZoneTableRow.jsp";
     }
