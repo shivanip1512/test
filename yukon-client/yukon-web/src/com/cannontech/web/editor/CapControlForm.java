@@ -2049,13 +2049,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         currentControlMethod = newMethod;
         
         /* Set new control algorithm */
-        if(currentControlMethod == ControlMethod.TIME_OF_DAY) {
-            getStrategy().setControlUnits(ControlAlgorithm.TIME_OF_DAY);
-            currentControlAlgorithm = ControlAlgorithm.TIME_OF_DAY;
-        } else {
-            getStrategy().setControlUnits(ControlAlgorithm.KVAR);
-            currentControlAlgorithm = ControlAlgorithm.KVAR;
-        }
+        getStrategy().setControlUnits(currentControlMethod.getDefaultAlgorithm());
         
         /* Set new target settings */
         List<PeakTargetSetting> newTargetSettings = determineCorrectDefaultTargetSettings(currentControlMethod, currentControlAlgorithm); 

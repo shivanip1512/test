@@ -82,9 +82,4 @@ public class ViewableSubBus {
         this.ivvcControlled = ivvcControlled;
     }
     
-    public boolean isBusControlled() {
-        ControlMethod method = getSubBus().getControlMethod();
-    	return method == ControlMethod.BUSOPTIMIZED_FEEDER
-    		|| method == ControlMethod.SUBSTATION_BUS;
-    }
 }

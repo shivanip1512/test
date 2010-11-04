@@ -2,11 +2,14 @@ package com.cannontech.capcontrol.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +17,12 @@ import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.model.ViewableStrategy;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.SqlStringStatementBuilder;
 import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.core.service.durationFormatter.DurationFormat;
+import com.cannontech.database.FieldMapper;
+import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.StringRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -35,48 +39,85 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
-public class StrategyDaoImpl implements StrategyDao{
+public class StrategyDaoImpl implements StrategyDao, InitializingBean {
     
     private final ParameterizedRowMapper<CapControlStrategy> rowMapper = new StrategyRowMapper();
+    private SimpleTableAccessTemplate<CapControlStrategy> strategyTemplate;
     private NextValueHelper nextValueHelper;
     private YukonJdbcTemplate yukonJdbcTemplate;
     private DurationFormattingService durationFormattingService;
     
+    private FieldMapper<CapControlStrategy> strategyFieldMapper = new FieldMapper<CapControlStrategy>() {
+
+        @Override
+        public void extractValues(MapSqlParameterSource p, CapControlStrategy o) {
+            p.addValue("StrategyName", o.getStrategyName());
+            p.addValue("ControlMethod", o.getControlMethod());
+            p.addValue("MaxDailyOperation", o.getMaxDailyOperation());
+            p.addValue("MaxOperationDisableFlag", o.getMaxOperationDisableFlag(), Types.VARCHAR);
+            p.addValue("PeakStartTime", o.getPeakStartTime());
+            p.addValue("PeakStopTime", o.getPeakStopTime());
+            p.addValue("ControlInterval", o.getControlInterval());
+            p.addValue("MinResponseTime", o.getMinResponseTime());
+            p.addValue("MinConfirmPercent", o.getMinConfirmPercent());
+            p.addValue("FailurePercent", o.getFailurePercent());
+            p.addValue("DaysOfWeek", o.getDaysOfWeek());
+            p.addValue("ControlUnits", o.getControlUnits());
+            p.addValue("ControlDelayTime", o.getControlDelayTime());
+            p.addValue("ControlSendRetries", o.getControlSendRetries());
+            p.addValue("IntegrateFlag", o.getIntegrateFlag());
+            p.addValue("IntegratePeriod", o.getIntegratePeriod());
+            p.addValue("LikeDayFallBack", o.getLikeDayFallBack());
+            p.addValue("EndDaySettings", o.getEndDaySettings());
+        }
+
+        @Override
+        public Number getPrimaryKey(CapControlStrategy strategy) {
+            return strategy.getStrategyID();
+        }
+
+        @Override
+        public void setPrimaryKey(CapControlStrategy object, int strategyId) {
+            object.setStrategyID(strategyId);
+        }
+    };
+    
     @Override
+    @Transactional
     public int add(String name) {
-        int strategyId =  nextValueHelper.getNextValue("CapControlStrategy"); // StrategyId
-        Object[] values = new Object[] {
-            name,  // Strategy Name
-            ControlMethod.INDIVIDUAL_FEEDER, // Control Method
-            0, // Max Daily Operations
-            "N", // Max Operation Disable Flag
-            0, // Peak Start Time
-            86400,  // Peak Stop Time (24:00)
-            900, // Control Interval
-            900, // Min Response Time
-            75, // Min Confirm Percent
-            25, // Failure Percent
-            "NYYYYYNN", // Days of the Week
-            ControlAlgorithm.KVAR, // Control Units
-            0, // Control Delay Time
-            0, // Control Send Retries
-            "N", // Integrate Flag
-            0, // Integrate Period
-            "N", // Like Day Fall Back
-            CtiUtilities.STRING_NONE // End Day Settings
-        };
         
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("INSERT INTO CapControlStrategy");
-        sql.values(strategyId, values);
+        CapControlStrategy strategy = new CapControlStrategy();
+        strategy.setStrategyName(name);
         
         try {
-            yukonJdbcTemplate.update(sql);
+            strategyTemplate.insert(strategy);
+            savePeakSettings(strategy);
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityViolationException("Strategy name already in use.");
         }
         
-        return strategyId;
+        return strategy.getStrategyID();
+    }
+    
+    @Override
+    @Transactional
+    public void update(CapControlStrategy strategy) {
+        try {
+            strategyTemplate.update(strategy);
+            savePeakSettings(strategy);
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException("Strategy name already in use.");
+        }
+    }
+    
+    @Override
+    @Transactional(readOnly = false)
+    public boolean delete(int strategyId) {
+        deleteStrategyAssignmentsByStrategyId(strategyId);
+        String deleteStrategy = "DELETE FROM CapControlStrategy WHERE StrategyId = ?";
+        int rowsAffected = yukonJdbcTemplate.update(deleteStrategy, strategyId);
+        
+        return rowsAffected == 1;
     }
     
     @Override
@@ -248,16 +289,6 @@ public class StrategyDaoImpl implements StrategyDao{
     }
     
     @Override
-    @Transactional(readOnly = false)
-    public boolean delete(int strategyId) {
-        deleteStrategyAssignmentsByStrategyId(strategyId);
-        String deleteStrategy = "DELETE FROM CapControlStrategy WHERE StrategyId = ?";
-        int rowsAffected = yukonJdbcTemplate.update(deleteStrategy, strategyId);
-        
-        return rowsAffected == 1;
-    }
-    
-    @Override
     public void savePeakSettings(CapControlStrategy strategy) {
         List<PeakTargetSetting> targetSettings = strategy.getTargetSettings();
         int strategyId = strategy.getStrategyID();
@@ -344,5 +375,12 @@ public class StrategyDaoImpl implements StrategyDao{
     @Autowired
     public void setDurationFormattingService(DurationFormattingService durationFormattingService) {
         this.durationFormattingService = durationFormattingService;
+    }
+    
+    public void afterPropertiesSet() throws Exception {
+        strategyTemplate = new SimpleTableAccessTemplate<CapControlStrategy>(yukonJdbcTemplate, nextValueHelper);
+        strategyTemplate.withTableName("CapControlStrategy");
+        strategyTemplate.withPrimaryKeyField("StrategyId");
+        strategyTemplate.withFieldMapper(strategyFieldMapper); 
     }
 }

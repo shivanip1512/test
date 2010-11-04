@@ -39,7 +39,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
     private Integer integratePeriod = new Integer (0);
     private String likeDayFallBack = "N";
     private String endDaySettings = CtiUtilities.STRING_NONE;
-    private List<PeakTargetSetting> targetSettings;
+    private List<PeakTargetSetting> targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.KVAR);
 	public static final String SETTER_COLUMNS[] = { 
 		"StrategyName", "ControlMethod", "MaxDailyOperation",
 		"MaxOperationDisableFlag",

@@ -210,7 +210,7 @@
     				<td>
                         <c:set var="isPowerFactorControlled" value="${viewableSubBus.subBus.powerFactorControlled}"/>
                         <c:choose>
-                            <c:when test="${viewableSubBus.busControlled}">
+                            <c:when test="${viewableSubBus.subBus.controlMethod.busControlled}">
     		                    <a onmouseover="showDynamicPopupAbove($('subPFPopup_${thisSubBusId}_${isPowerFactorControlled}'))"
     								onmouseout="nd();">
 									<c:choose>

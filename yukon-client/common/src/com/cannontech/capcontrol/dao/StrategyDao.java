@@ -38,4 +38,6 @@ public interface StrategyDao {
 
     public CapControlStrategy getForId(int strategyId);
 
+    public void update(CapControlStrategy strategy);
+
 }
