@@ -46,7 +46,7 @@ public class DynamicDataDaoImpl implements DynamicDataDao {
         
         sqlBuilder.append("SELECT PointID");
         sqlBuilder.append("FROM CCMonitorBankList");
-        sqlBuilder.append("WHERE BankID = ").appendArgument(bankId);;
+        sqlBuilder.append("WHERE BankID").eq(bankId);
         sqlBuilder.append("ORDER BY DisplayOrder");
         
         List<Integer> points = yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());

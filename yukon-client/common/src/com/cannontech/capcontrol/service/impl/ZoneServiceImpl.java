@@ -54,13 +54,13 @@ public class ZoneServiceImpl implements ZoneService {
         zone.setSubstationBusId(zoneDto.getSubstationBusId());
         zone.setGraphStartPosition(zoneDto.getGraphStartPosition());
         
-        List<CapBankToZoneMapping> banksToZone = getCapBankToZoneMappingByDto(zoneDto);
-        List<PointToZoneMapping> pointsToZone = getPointToZoneMappingByDto(zoneDto);
-        
-        
         zoneDao.save(zone);
         //Sets the new Id if this was an insert.
         zoneDto.setZoneId(zone.getId());
+        
+        List<CapBankToZoneMapping> banksToZone = getCapBankToZoneMappingByDto(zoneDto);
+        List<PointToZoneMapping> pointsToZone = getPointToZoneMappingByDto(zoneDto);
+        
         zoneDao.updateCapBankToZoneMapping(zoneDto.getZoneId(), banksToZone);
         zoneDao.updatePointToZoneMapping(zoneDto.getZoneId(), pointsToZone);
         
@@ -79,8 +79,8 @@ public class ZoneServiceImpl implements ZoneService {
     private List<CapBankToZoneMapping> getCapBankToZoneMappingByDto(ZoneDto zoneDto) {
     	List<CapBankToZoneMapping> banks = Lists.newArrayList();
         for (ZoneAssignmentCapBankRow bankRow : zoneDto.getBankAssignments()) {
-        	Integer bankId = bankRow.getId();
-        	Integer zoneId = zoneDto.getZoneId();
+        	int bankId = bankRow.getId();
+        	int zoneId = zoneDto.getZoneId();
         	double position = bankRow.getGraphPositionOffset();
         	double dist = bankRow.getDistance();
         	CapBankToZoneMapping bank = new CapBankToZoneMapping(bankId, zoneId, position, dist);
@@ -92,8 +92,8 @@ public class ZoneServiceImpl implements ZoneService {
     private List<PointToZoneMapping> getPointToZoneMappingByDto(ZoneDto zoneDto) {
     	List<PointToZoneMapping> points = Lists.newArrayList();
         for (ZoneAssignmentPointRow pointRow : zoneDto.getPointAssignments()) {
-        	Integer pointId = pointRow.getId();
-        	Integer zoneId = zoneDto.getZoneId();
+        	int  pointId = pointRow.getId();
+        	int zoneId = zoneDto.getZoneId();
         	double position = pointRow.getGraphPositionOffset();
         	double dist = pointRow.getDistance();
         	PointToZoneMapping point = new PointToZoneMapping(pointId, zoneId, position, dist);
@@ -176,12 +176,12 @@ public class ZoneServiceImpl implements ZoneService {
     
     @Override
     public List<CapBankToZoneMapping> getCapBankToZoneMapping(int zoneId) {
-    	return zoneDao.getBankToZoneMappingById(zoneId);
+    	return zoneDao.getBankToZoneMappingByZoneId(zoneId);
     }
     
     @Override
     public List<PointToZoneMapping> getPointToZoneMapping(int zoneId) {
-    	return zoneDao.getPointToZoneMappingById(zoneId);
+    	return zoneDao.getPointToZoneMappingByZoneId(zoneId);
     }
     
     @Override

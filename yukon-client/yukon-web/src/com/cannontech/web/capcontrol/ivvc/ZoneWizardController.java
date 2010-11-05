@@ -245,7 +245,7 @@ public class ZoneWizardController {
     }
     
     private ZoneAssignmentPointRow buildPointAssignment(PointToZoneMapping pointToZone) {
-    	Integer pointId = pointToZone.getPointId();
+    	int pointId = pointToZone.getPointId();
         LitePoint point = pointDao.getLitePoint(pointId);
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(point.getPaobjectID());
 
@@ -273,7 +273,7 @@ public class ZoneWizardController {
     }
     
     private ZoneAssignmentCapBankRow buildBankAssignment(CapBankToZoneMapping bankToZone, CapControlCache cache) {
-        Integer bankId = bankToZone.getDeviceId();
+        int bankId = bankToZone.getDeviceId();
 		CapBankDevice bank = cache.getCapBankDevice(bankId);
         LiteYukonPAObject controller = paoDao.getLiteYukonPAO(bank.getControlDeviceID());
 

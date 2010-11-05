@@ -90,8 +90,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT ZoneId, ZoneName, RegulatorId, SubstationBusId, ParentId, GraphStartPosition");
         sqlBuilder.append("FROM Zone");
-        sqlBuilder.append("WHERE ZoneId");
-        sqlBuilder.eq(zoneId);
+        sqlBuilder.append("WHERE ZoneId").eq(zoneId);
         
         Zone zone = yukonJdbcTemplate.queryForObject(sqlBuilder, zoneRowMapper);
         
@@ -99,12 +98,11 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     }
     
     @Override
-    public List<CapBankToZoneMapping> getBankToZoneMappingById(int zoneId) {
+    public List<CapBankToZoneMapping> getBankToZoneMappingByZoneId(int zoneId) {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT DeviceId, ZoneId, GraphPositionOffset, Distance");
         sqlBuilder.append("FROM CapBankToZoneMapping");
-        sqlBuilder.append("WHERE ZoneId");
-        sqlBuilder.eq(zoneId);
+        sqlBuilder.append("WHERE ZoneId").eq(zoneId);
         sqlBuilder.append("ORDER BY GraphPositionOffset");
         
         List<CapBankToZoneMapping> capBankToZone = yukonJdbcTemplate.query(sqlBuilder, bankToZoneRowMapper);
@@ -117,8 +115,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT ZoneId, ZoneName, RegulatorId, SubstationBusId, ParentId, GraphStartPosition");
         sqlBuilder.append("FROM Zone");
-        sqlBuilder.append("WHERE RegulatorId");
-        sqlBuilder.eq(regulatorId);
+        sqlBuilder.append("WHERE RegulatorId").eq(regulatorId);
         
         Zone zone = yukonJdbcTemplate.queryForObject(sqlBuilder, zoneRowMapper);
         
@@ -126,12 +123,11 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     }
     
     @Override
-    public List<PointToZoneMapping> getPointToZoneMappingById(int zoneId) {
+    public List<PointToZoneMapping> getPointToZoneMappingByZoneId(int zoneId) {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT PointId, ZoneId, GraphPositionOffset, Distance");
         sqlBuilder.append("FROM PointToZoneMapping");
-        sqlBuilder.append("WHERE ZoneId");
-        sqlBuilder.eq(zoneId);
+        sqlBuilder.append("WHERE ZoneId").eq(zoneId);
         sqlBuilder.append("ORDER BY GraphPositionOffset");
         
         List<PointToZoneMapping> pointToZone = yukonJdbcTemplate.query(sqlBuilder, pointToZoneRowMapper);
@@ -144,8 +140,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT ZoneId, ZoneName, RegulatorId, SubstationBusId, ParentId, GraphStartPosition");
         sqlBuilder.append("FROM Zone");
-        sqlBuilder.append("WHERE SubstationBusId");
-        sqlBuilder.eq(subBusId);
+        sqlBuilder.append("WHERE SubstationBusId").eq(subBusId);
         
         List<Zone> zones = yukonJdbcTemplate.query(sqlBuilder, zoneRowMapper);
         
@@ -157,8 +152,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT ZoneId,ZoneName,RegulatorId,SubstationBusId,ParentId,GraphStartPosition");
         sqlBuilder.append("FROM Zone");
-        sqlBuilder.append("WHERE SubstationBusId");
-        sqlBuilder.eq(subBusId);
+        sqlBuilder.append("WHERE SubstationBusId").eq(subBusId);
         sqlBuilder.append("AND ParentId IS NULL");
         
         Zone zone = null;
@@ -230,8 +224,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT DeviceId");
         sqlBuilder.append("FROM CapBankToZoneMapping");
-        sqlBuilder.append("WHERE ZoneId");
-        sqlBuilder.eq(zoneId);
+        sqlBuilder.append("WHERE ZoneId").eq(zoneId);
 
         return yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
     }
@@ -249,35 +242,35 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     
     @Override
     public void updateCapBankToZoneMapping(int zoneId, List<CapBankToZoneMapping> banksToZone) {
-        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        sqlBuilder.append("DELETE FROM CapBankToZoneMapping");
-        sqlBuilder.append("Where ZoneId").eq(zoneId);
+        SqlStatementBuilder sqlBuilderDelete = new SqlStatementBuilder();
+        sqlBuilderDelete.append("DELETE FROM CapBankToZoneMapping");
+        sqlBuilderDelete.append("Where ZoneId").eq(zoneId);
         
-        yukonJdbcTemplate.update(sqlBuilder);
+        yukonJdbcTemplate.update(sqlBuilderDelete);
         
         for (CapBankToZoneMapping bankToZone : banksToZone) {
-            sqlBuilder = new SqlStatementBuilder();
-            sqlBuilder.append("INSERT INTO CapBankToZoneMapping (DeviceId, ZoneId, GraphPositionOffset, Distance)");
-            sqlBuilder.values(bankToZone.getDeviceId(), zoneId, bankToZone.getGraphPositionOffset(), bankToZone.getDistance());
+        	SqlStatementBuilder sqlBuilderInsert = new SqlStatementBuilder();
+        	sqlBuilderInsert.append("INSERT INTO CapBankToZoneMapping (DeviceId, ZoneId, GraphPositionOffset, Distance)");
+        	sqlBuilderInsert.values(bankToZone.getDeviceId(), zoneId, bankToZone.getGraphPositionOffset(), bankToZone.getDistance());
             
-            yukonJdbcTemplate.update(sqlBuilder);
+            yukonJdbcTemplate.update(sqlBuilderInsert);
     	}
     }
 
     @Override
     public void updatePointToZoneMapping(int zoneId, List<PointToZoneMapping> pointsToZone) {
-    	SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-		sqlBuilder.append("DELETE FROM PointToZoneMapping");
-        sqlBuilder.append("Where ZoneId").eq(zoneId);
+    	SqlStatementBuilder sqlBuilderDelete = new SqlStatementBuilder();
+		sqlBuilderDelete.append("DELETE FROM PointToZoneMapping");
+        sqlBuilderDelete.append("Where ZoneId").eq(zoneId);
         
-        yukonJdbcTemplate.update(sqlBuilder);
+        yukonJdbcTemplate.update(sqlBuilderDelete);
         
         for (PointToZoneMapping pointToZone : pointsToZone) {
-            sqlBuilder = new SqlStatementBuilder();
-            sqlBuilder.append("INSERT INTO PointToZoneMapping (PointId, ZoneId, GraphPositionOffset, Distance)");
-            sqlBuilder.values(pointToZone.getPointId(), zoneId, pointToZone.getGraphPositionOffset(), pointToZone.getDistance());
+        	SqlStatementBuilder sqlBuilderInsert = new SqlStatementBuilder();
+        	sqlBuilderInsert.append("INSERT INTO PointToZoneMapping (PointId, ZoneId, GraphPositionOffset, Distance)");
+        	sqlBuilderInsert.values(pointToZone.getPointId(), zoneId, pointToZone.getGraphPositionOffset(), pointToZone.getDistance());
             
-            yukonJdbcTemplate.update(sqlBuilder);
+            yukonJdbcTemplate.update(sqlBuilderInsert);
         }
     }
     

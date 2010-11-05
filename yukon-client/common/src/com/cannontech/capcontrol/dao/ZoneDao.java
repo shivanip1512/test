@@ -105,14 +105,14 @@ public interface ZoneDao {
      * @param zoneId
      * @return
      */
-	public List<CapBankToZoneMapping> getBankToZoneMappingById(int zoneId);
+	public List<CapBankToZoneMapping> getBankToZoneMappingByZoneId(int zoneId);
 	
 	/**
      * Return the PointToZoneMapping object for a zone.
      * @param zoneId
      * @return
      */
-	public List<PointToZoneMapping> getPointToZoneMappingById(int zoneId);
+	public List<PointToZoneMapping> getPointToZoneMappingByZoneId(int zoneId);
 	
 	/**
 	 * Finds all Cap Banks on the feeder and compares the Banks assigned to zones. 

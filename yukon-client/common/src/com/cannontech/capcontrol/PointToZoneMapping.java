@@ -1,8 +1,8 @@
 package com.cannontech.capcontrol;
 
 public class PointToZoneMapping {
-	private Integer pointId;
-	private Integer zoneId;
+	private int pointId;
+	private int zoneId;
 	private double graphPositionOffset;
 	private double distance;
 	
@@ -10,26 +10,26 @@ public class PointToZoneMapping {
 		
 	}
 	
-	public PointToZoneMapping(Integer pointId, Integer zoneId, double graphPositionOffset, double distance) {
+	public PointToZoneMapping(int pointId, int zoneId, double graphPositionOffset, double distance) {
 		this.pointId = pointId;
 		this.zoneId = zoneId;
 		this.graphPositionOffset = graphPositionOffset;
 		this.distance = distance;
 	}
 	
-	public Integer getPointId() {
+	public int getPointId() {
 		return pointId;
 	}
 
-	public void setPointId(Integer pointId) {
+	public void setPointId(int pointId) {
 		this.pointId = pointId;
 	}
 
-	public Integer getZoneId() {
+	public int getZoneId() {
 		return zoneId;
 	}
 
-	public void setZoneId(Integer zoneId) {
+	public void setZoneId(int zoneId) {
 		this.zoneId = zoneId;
 	}
 
