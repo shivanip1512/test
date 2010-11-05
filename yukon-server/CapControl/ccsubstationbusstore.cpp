@@ -1361,6 +1361,7 @@ void CtiCCSubstationBusStore::reset()
             **************************************************************/
             if ( ! reloadVoltageRegulatorFromDatabase( -1 ) )
             {
+                _isvalid = FALSE;
                 return;
             }
 
@@ -1369,6 +1370,7 @@ void CtiCCSubstationBusStore::reset()
             **************************************************************/
             if ( ! reloadZoneFromDatabase( -1 ) )
             {
+                _isvalid = FALSE;
                 return;
             }
 

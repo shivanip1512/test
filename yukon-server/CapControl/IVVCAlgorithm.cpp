@@ -181,7 +181,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             std::set<PointRequest> pointRequests;
 
             bool shouldScan = allowScanning && state->isScannedRequest();
-            if ( determineWatchPoints( subbus, dispatchConnection, shouldScan, pointRequests ) )
+            if ( ! determineWatchPoints( subbus, dispatchConnection, shouldScan, pointRequests ) )
             {
                 // Configuration Error
                 // Disable the bus so we don't try to run again. User Intervention required.
@@ -420,7 +420,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             std::set<PointRequest> pointRequests;
 
-            if ( determineWatchPoints( subbus, dispatchConnection, allowScanning, pointRequests ) )
+            if ( ! determineWatchPoints( subbus, dispatchConnection, allowScanning, pointRequests ) )
             {
                 // Do we want to bail here?
             }
@@ -588,6 +588,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             {
                 state->_tapOpDelay = timeNow;
 
+                CtiMultiMsg* ccEvents = new CtiMultiMsg();
+
                 for each ( const IVVCState::TapOperationZoneMap::value_type & operation in state->_tapOps )
                 {
                     long zoneID     = operation.first;
@@ -606,6 +608,26 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                         {
                             CtiCCExecutorFactory::createExecutor( 
                                 new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER, regulatorId ) )->execute();
+                            
+                            {   // Write to the event log.
+                                LONG stationId, areaId, spAreaId;
+                                store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
+
+                                ccEvents->insert(
+                                    new CtiCCEventLogMsg(
+                                            0,
+                                            regulatorId,
+                                            spAreaId,
+                                            areaId,
+                                            stationId,
+                                            subbus->getPaoId(),
+                                            0,
+                                            capControlIvvcTapOperation,
+                                            0,
+                                            0,
+                                            "IVVC Lower Tap Operation",
+                                            "cap control") );
+                            }
 
                             if (_CC_DEBUG & CC_DEBUG_IVVC)
                             {
@@ -626,6 +648,26 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                             CtiCCExecutorFactory::createExecutor( 
                                 new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE, regulatorId ) )->execute();
 
+                            {   // Write to the event log.
+                                LONG stationId, areaId, spAreaId;
+                                store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
+
+                                ccEvents->insert(
+                                    new CtiCCEventLogMsg(
+                                            0,
+                                            regulatorId,
+                                            spAreaId,
+                                            areaId,
+                                            stationId,
+                                            subbus->getPaoId(),
+                                            0,
+                                            capControlIvvcTapOperation,
+                                            0,
+                                            0,
+                                            "IVVC Raise Tap Operation",
+                                            "cap control") );
+                            }
+
                             if (_CC_DEBUG & CC_DEBUG_IVVC)
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -642,6 +684,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     state->setLastTapOpTime( timeNow );
                     state->setState(IVVCState::IVVC_WAIT);
                 }
+
+                sendEvents(dispatchConnection, ccEvents);
             }
             break;
         }
@@ -869,7 +913,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
         }
     }
 
-    return configurationError;
+    return ( ! configurationError );
 }
 
 
