@@ -126,3 +126,4 @@ INSERT INTO YukonRoleProperty VALUES(-1117,-2,'Rotation Digit Length',' ','Speci
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.2', 'Matt K', '04-NOV-2010', 'Latest Update', 3);
