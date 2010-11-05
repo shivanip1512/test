@@ -7,6 +7,6 @@
 
 namespace Cti {
 
-IM_EX_CTIBASE CtiDate parseDateValue(string date_str);
+IM_EX_CTIBASE CtiDate parseDateValue(stdd::string date_str);
 
 }

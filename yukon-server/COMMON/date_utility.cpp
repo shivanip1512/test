@@ -5,7 +5,7 @@
 
 namespace Cti {
 
-CtiDate parseDateValue(string date_str)
+CtiDate parseDateValue(std::string date_str)
 {
     CtiTokenizer date_tokenizer(date_str);
 
