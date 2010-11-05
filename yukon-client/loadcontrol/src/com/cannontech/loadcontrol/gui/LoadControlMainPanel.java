@@ -196,6 +196,7 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 		getViewComboBox().addItem( d4 );
 
 		getViewComboBox().addActionListener( getControlAreaActionListener() );
+		setCurrentDisplay((LCDisplayItem)getViewComboBox().getSelectedItem());
 	}
 	
 }
