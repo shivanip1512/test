@@ -107,6 +107,18 @@ ALTER TABLE Zone
 ADD GraphStartPosition FLOAT; 
 /* End YUK-9214 */
 
+/* Start YUK-9244 */
+DELETE FROM YukonGroupRole 
+WHERE RolePropertyID IN (-20161, -20162); 
+DELETE FROM YukonUserRole 
+WHERE RolePropertyID IN (-20161, -20162); 
+DELETE FROM YukonRoleProperty 
+WHERE RolePropertyID IN (-20161, -20162);
+
+INSERT INTO YukonRoleProperty VALUES(-1116,-2,'Account Number Length',' ','Specifies the number of account number characters to consider for comparison purposes during the customer account import process.'); 
+INSERT INTO YukonRoleProperty VALUES(-1117,-2,'Rotation Digit Length',' ','Specifies the number of rotation digit characters to ignore during the customer account import process.'); 
+/* End YUK-9244 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

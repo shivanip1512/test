@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/4/2010 5:46:27 PM                         */
+/* Created on:     11/4/2010 7:17:01 PM                         */
 /*==============================================================*/
 
 
@@ -11631,7 +11631,6 @@ insert into yukongrouprole values (-757,-301,-201,-20157,'(none)');
 insert into yukongrouprole values (-758,-301,-201,-20158,'(none)');
 insert into yukongrouprole values (-759,-301,-201,-20159,'(none)');
 insert into yukongrouprole values (-760,-301,-201,-20160,'(none)');
-insert into yukongrouprole values (-761,-301,-201,-20161,'(none)');
 
 insert into yukongrouprole values (-765,-301,-210,-21000,'(none)');
 insert into yukongrouprole values (-766,-301,-210,-21001,'(none)');
@@ -11753,7 +11752,6 @@ insert into yukongrouprole values (-2057,-303,-201,-20157,'(none)');
 insert into yukongrouprole values (-2058,-303,-201,-20158,'(none)');
 insert into yukongrouprole values (-2059,-303,-201,-20159,'(none)');
 insert into yukongrouprole values (-2060,-303,-201,-20160,'(none)');
-insert into yukongrouprole values (-2061,-303,-201,-20161,'(none)');
 
 insert into yukongrouprole values (-2070,-303,-210,-21000,'(none)');
 insert into yukongrouprole values (-2071,-303,-210,-21001,'(none)');
@@ -12501,6 +12499,8 @@ INSERT INTO YukonRoleProperty VALUES(-1111,-2,'z_meter_mct_base_desig','yukon','
 INSERT INTO YukonRoleProperty VALUES(-1112,-2,'applicable_point_type_key',' ','The name of the set of CICustomerPointData TYPES that should be set for customers.');
 INSERT INTO YukonRoleProperty VALUES(-1114,-2,'Inherit Parent App Cats','true','If part of a member structure, should appliance categories be inherited from the parent.');
 INSERT INTO YukonRoleProperty VALUES(-1115,-2,'Auto Create Login For Additional Contacts','true','Automatically create a default login for each additional contact created on a STARS account.');
+INSERT INTO YukonRoleProperty VALUES(-1116,-2,'Account Number Length',' ','Specifies the number of account number characters to consider for comparison purposes during the customer account import process.'); 
+INSERT INTO YukonRoleProperty VALUES(-1117,-2,'Rotation Digit Length',' ','Specifies the number of rotation digit characters to ignore during the customer account import process.'); 
 
 INSERT INTO YukonRoleProperty VALUES(-1300,-4,'server_address','127.0.0.1','Authentication server machine address');
 INSERT INTO YukonRoleProperty VALUES(-1301,-4,'auth_port','1812','Authentication port.');
@@ -12677,8 +12677,6 @@ INSERT INTO YukonRoleProperty VALUES(-20157,-201,'Opt Out Period','(none)','The 
 INSERT INTO YukonRoleProperty VALUES(-20158,-201,'Disable Switch Sending','false','Disables the ability to send configs and connects/disconnects to switches.');
 INSERT INTO YukonRoleProperty VALUES(-20159,-201,'Switches to Meter','(none)','Allow switches to be assigned under meters for an account.');
 INSERT INTO YukonRoleProperty VALUES(-20160,-201,'Create Login With Account','false','Require that a login is created with every new customer account.');
-INSERT INTO YukonRoleProperty VALUES(-20161,-201,'Account Number Length','(none)','Specifies the number of account number characters to consider for comparison purposes during the customer account import process.');
-INSERT INTO YukonRoleProperty VALUES(-20162,-201,'Rotation Digit Length','(none)','Specifies the number of rotation digit characters to ignore during the customer account import process.');
 INSERT INTO YukonRoleProperty VALUES(-20163,-201,'Allow Account Editing','true','Can be used to disable the ability to edit and delete customer account information.');
 INSERT INTO YukonRoleProperty VALUES(-20164,-201,'Enroll Multiple Programs per Category','false','Enables you to enroll in multiple programs within an appliance category.');
 INSERT INTO YukonRoleProperty VALUES(-20165,-201,'Account Search','true','Enables you to use account searching.');
