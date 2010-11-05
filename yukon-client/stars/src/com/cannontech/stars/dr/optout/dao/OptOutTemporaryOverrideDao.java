@@ -7,20 +7,20 @@ import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.optout.exception.NoTemporaryOverrideException;
 import com.cannontech.stars.dr.optout.model.OptOutCountsDto;
+import com.cannontech.stars.dr.optout.model.OptOutTemporaryOverride;
 
 /**
- * Dao class for persisting Opt out events
+ * Dao class for persisting OptOutEvents and OptOutTemporaryOverrides
  * 
  */
 public interface OptOutTemporaryOverrideDao {
 
 	/**
-	 * Method to determine if Opt Outs are currently enabled
-	 * @param energyCompany - Energy company to check
-	 * @return True if opt outs are temporarily enabled, False if temporarily disabled
-	 * @throws NoTemporaryOverrideException if there is no temporary override value
+	 * The method returns all of the current OptOutTemporaryOverrides for a given energy company id.
+	 * These OptOutTemporaryOverride objects can be used to figure out if a user has access to opt out 
+	 * a device or not.
 	 */
-	public boolean getOptOutEnabled(LiteEnergyCompany energyCompany) throws NoTemporaryOverrideException;
+	public List<OptOutTemporaryOverride> getCurrentOptOutTemporaryOverrides(int energyCompanyId);
 	
 	/**
 	 * Method to determine if Opt Outs currently count against the limit
@@ -39,6 +39,16 @@ public interface OptOutTemporaryOverrideDao {
 	 */
 	public void setTemporaryOptOutEnabled(LiteYukonUser user, Date startDate, Date stopDate, boolean enabled);
 
+    /**
+     * Method used to set the opt out enabled state to a given value for the time period supplied
+     * @param user - User requesting the change - change will only affect this user's energy company
+     * @param startDate - Date to start temporary change
+     * @param stopDate - Date to stop temporary change
+     * @param enabled - True if temp enable opt outs
+     */
+	public void setTemporaryOptOutEnabled(LiteYukonUser user, Date startDate, Date stopDate, 
+                                          boolean enabled, int webpublishingProgramId);
+	
 	/**
 	 * Method used to set the opt out counts state to a given value for the time period supplied
 	 * @param user - User requesting the change - change will only affect this user's energy company

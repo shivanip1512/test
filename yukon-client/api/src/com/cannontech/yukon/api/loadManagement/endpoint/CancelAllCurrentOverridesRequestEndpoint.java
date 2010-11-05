@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -23,6 +24,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 public class CancelAllCurrentOverridesRequestEndpoint {
 
 	private OptOutService optOutService;
+	private StarsEventLogService starsEventLogService;
     private Namespace ns = YukonXml.getYukonNamespace();
 	private RolePropertyDao rolePropertyDao;
 	
@@ -37,9 +39,15 @@ public class CancelAllCurrentOverridesRequestEndpoint {
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(cancelAllCurrentOverridesRequest);
         String programName = requestTemplate.evaluateAsString(programNameExpressionStr);
         
-    	// init response
+        // init response
         Element resp = new Element("cancelAllCurrentOverridesResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, version);
+        
+        if (StringUtils.isBlank(programName)) {
+            starsEventLogService.cancelCurrentOptOutsAttemptedByApi(user);
+        } else {
+            starsEventLogService.cancelCurrentOptOutsByProgramAttemptedByApi(user, programName);
+        }
         
         // run service
         Element resultElement;
@@ -78,6 +86,11 @@ public class CancelAllCurrentOverridesRequestEndpoint {
     public void setOptOutService(OptOutService optOutService) {
 		this.optOutService = optOutService;
 	}
+    
+    @Autowired
+    public void setStarsEventLogService(StarsEventLogService starsEventLogService) {
+        this.starsEventLogService = starsEventLogService;
+    }
     
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {

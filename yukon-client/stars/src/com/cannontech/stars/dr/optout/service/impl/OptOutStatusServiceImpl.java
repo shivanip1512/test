@@ -1,7 +1,10 @@
 package com.cannontech.stars.dr.optout.service.impl;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,24 +19,35 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideDao;
 import com.cannontech.stars.dr.optout.exception.NoTemporaryOverrideException;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.model.OptOutCountsDto;
+import com.cannontech.stars.dr.optout.model.OptOutEnabled;
+import com.cannontech.stars.dr.optout.model.OptOutTemporaryOverride;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.util.StarsUtils;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * Implementation class for OptOutStatusService
  */
 public class OptOutStatusServiceImpl implements OptOutStatusService {
 
+    private CustomerAccountDao customerAccountDao;
+    private LMHardwareControlGroupDao lmHardwareControlGroupDao;
 	private OptOutTemporaryOverrideDao optOutTemporaryOverrideDao;
 	private EnergyCompanyDao energyCompanyDao;
 	private StarsDatabaseCache starsDatabaseCache;
 	private RoleDao roleDao;
 	private RolePropertyDao rolePropertyDao;
+	
+	private static int ENERGY_COMPANY_WIDE_ASSIGNED_PROGRAM_ID = -1; 
 	
 	@Override
 	public OptOutCountsDto getDefaultOptOutCounts(LiteYukonUser user) {
@@ -60,75 +74,196 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 		return nullProgramIdSetting == null ? rolePropSetting : nullProgramIdSetting;
 	}
 	
-	@Override
-	public List<OptOutCountsDto> getProgramSpecificOptOutCounts(LiteYukonUser user) {
+    @Override
+    public List<OptOutCountsDto> getProgramSpecificOptOutCounts(LiteYukonUser user) {
 
-		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
-		
-		List<OptOutCountsDto> settings = Lists.newArrayList();
-		try {
-			
-			List<OptOutCountsDto> allSettings = optOutTemporaryOverrideDao.getAllOptOutCounts(energyCompany);
-			for (OptOutCountsDto setting : allSettings) {
-				if (setting.getProgramId() != null) {
-					settings.add(setting);
-				}
-			}
-			
-		} catch (NoTemporaryOverrideException e) {
-			// ok, no program specific setting are in effect, return empty list
-		}
-		
-		return settings;
-	}
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+        
+        List<OptOutCountsDto> settings = Lists.newArrayList();
+        try {
+            
+            List<OptOutCountsDto> allSettings = optOutTemporaryOverrideDao.getAllOptOutCounts(energyCompany);
+            for (OptOutCountsDto setting : allSettings) {
+                if (setting.getProgramId() != null) {
+                    settings.add(setting);
+                }
+            }
+            
+        } catch (NoTemporaryOverrideException e) {
+            // ok, no program specific setting are in effect, return empty list
+        }
+        
+        return settings;
+    }
+
+    @Override
+    public OptOutEnabled getDefaultOptOutEnabled(LiteYukonUser user) {
+        // Get the default value for the system without taking into effect temporary overrides.
+        OptOutEnabled optOutEnabled = OptOutEnabled.valueOf(isSystemOptOutEnabledForOperator(user));
+
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+        Map<Integer, OptOutTemporaryOverride> programIdOptOutTemporaryOverrideMap = 
+            getProgramIdOptOutTemporaryOverrideMap(energyCompany.getEnergyCompanyID());
+        
+        // Check if a system wide temporary override has occurred for this time frame and use that
+        // value if it exists.
+        if (programIdOptOutTemporaryOverrideMap.size() > 0) {
+            for (OptOutTemporaryOverride optOutTemporaryOverride : programIdOptOutTemporaryOverrideMap.values()) {
+                if (optOutTemporaryOverride.getAssignedProgramId() == null ) {
+                    optOutEnabled = OptOutEnabled.valueOf(optOutTemporaryOverride.getOptOutValue());
+                }
+            }
+        }
+        
+        return optOutEnabled;
+    }
 	
 	@Override
 	public boolean getOptOutEnabled(LiteYukonUser user) {
 
 		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
 
-		boolean optOutEnabled = false;
-		try {
-			optOutEnabled = optOutTemporaryOverrideDao.getOptOutEnabled(energyCompany);
-		} catch (NoTemporaryOverrideException e) {
-			// Opt outs enabled is not temporarily overridden today - get role
-			// property value
+		// Getting the enrollments for the given user
+		List<CustomerAccount> customerAccounts = customerAccountDao.getByUser(user);
+		List<LMHardwareControlGroup> lmHardwareControlGroups = Collections.emptyList();
+		if (customerAccounts.size() > 0) {
+		    lmHardwareControlGroups = 
+		        lmHardwareControlGroupDao.getCurrentEnrollmentByAccountId(customerAccounts.get(0).getAccountId());
+		}
 
+		Map<Integer, OptOutTemporaryOverride> programIdOptOutTemporaryOverrideMap = 
+		    getProgramIdOptOutTemporaryOverrideMap(energyCompany.getEnergyCompanyID());
+		Set<Integer> optOutOverrideAssignedProgramIds = programIdOptOutTemporaryOverrideMap.keySet();
+		
+		if (programIdOptOutTemporaryOverrideMap.size() > 0) {
+		    for (LMHardwareControlGroup lmHardwareControlGroup : lmHardwareControlGroups) {
+		        
+		        // Check to see if the program id is in the override list.
+		        if (optOutOverrideAssignedProgramIds.contains(lmHardwareControlGroup.getProgramId())) {
+		            OptOutTemporaryOverride optOutTemporaryOverride = 
+		                programIdOptOutTemporaryOverrideMap.get(lmHardwareControlGroup.getProgramId());
+		            
+		            // Opt Outs are disabled for this account.
+		            OptOutEnabled optOutEnabled = OptOutEnabled.valueOf(optOutTemporaryOverride.getOptOutValue());
+		            if (optOutEnabled == OptOutEnabled.DISABLED) {
+		                return false;
+		            }
+		            
+		        // The program was not found in the override list. Now check the global entry.  
+		        } else {
+		            OptOutTemporaryOverride optOutTemporaryOverride =
+		                programIdOptOutTemporaryOverrideMap.get(ENERGY_COMPANY_WIDE_ASSIGNED_PROGRAM_ID);
+
+		            // Opt Outs are disabled energy company wide and therefore are disabled for this account.
+		            OptOutEnabled optOutEnabled = OptOutEnabled.valueOf(optOutTemporaryOverride.getOptOutValue());
+		            if (optOutEnabled == OptOutEnabled.DISABLED) {
+		                return false;
+		            }
+		        }
+		    } 
+		    
+		    return true;
+		    
+		// There were no temporary opt out overrides.  Use the role property value.
+		} else {
+
+		    boolean optOutEnabled = false;
 			boolean isOperator = StarsUtils.isOperator(user);
 
 			if (isOperator) {
-				// If user is operator - there is no way to determine the 'master' optout enabled
-				// state if there are multiple residential customer groups, so just grab the
-				// first one in the list and use that as the default current state
-				LiteStarsEnergyCompany operatorEnergyCompany = starsDatabaseCache
-						.getEnergyCompanyByUser(user);
-
-				LiteYukonGroup[] residentialCustomerGroups = operatorEnergyCompany
-						.getResidentialCustomerGroups();
-
-				if (residentialCustomerGroups.length > 0) {
-					LiteYukonGroup group = residentialCustomerGroups[0];
-
-					String enabled = roleDao.getRolePropValueGroup(
-							group,
-							ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT,
-							new Boolean(false).toString());
-
-					optOutEnabled = !CtiUtilities.isFalse(enabled);
-				}
-
+			    optOutEnabled = isSystemOptOutEnabledForOperator(user);
 			} else {
 				// Residential user - check role prop value
 				optOutEnabled = rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
 			}
+
+			return optOutEnabled;
 		}
-		
-		return optOutEnabled;
+	}
+
+	@Override
+	public Map<Integer, OptOutEnabled> getProgramSpecificEnabledOptOuts(LiteYukonUser user) {
+	    Map<Integer, OptOutEnabled> programIdOptOutEnabledMap = Maps.newHashMap();
+
+	    LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+        List<OptOutTemporaryOverride> optOutTemporaryOverrides = 
+            optOutTemporaryOverrideDao.getCurrentOptOutTemporaryOverrides(energyCompany.getEnergyCompanyID());
+	    
+	    for (OptOutTemporaryOverride optOutTemporaryOverride : optOutTemporaryOverrides) {
+	        if (optOutTemporaryOverride.getAssignedProgramId() != null) {
+	            int assignedProgramId = optOutTemporaryOverride.getAssignedProgramId();
+	            OptOutEnabled optOutEnabled = OptOutEnabled.valueOf(optOutTemporaryOverride.getOptOutValue());
+	            
+	            programIdOptOutEnabledMap.put(assignedProgramId, optOutEnabled);
+	        }
+        }
+	    
+	    return programIdOptOutEnabledMap;
+	}
+
+	/**
+     * This method checks to see if opt outs are enabled for an energy company
+     * through an operator user.
+     */
+	private boolean isSystemOptOutEnabledForOperator(LiteYukonUser user) {
+	    boolean optOutEnabled = false;
+	    
+        // If user is operator - there is no way to determine the 'master' optout enabled
+        // state if there are multiple residential customer groups, so just grab the
+        // first one in the list and use that as the default current state
+        LiteStarsEnergyCompany operatorEnergyCompany = starsDatabaseCache
+                .getEnergyCompanyByUser(user);
+
+        LiteYukonGroup[] residentialCustomerGroups = operatorEnergyCompany
+                .getResidentialCustomerGroups();
+
+        if (residentialCustomerGroups.length > 0) {
+            LiteYukonGroup group = residentialCustomerGroups[0];
+
+            String enabled = 
+                roleDao.getRolePropValueGroup(group, ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT,
+                                              new Boolean(false).toString());
+
+            optOutEnabled = !CtiUtilities.isFalse(enabled);
+        }
+        
+        return optOutEnabled;
 	}
 	
+	/**
+     * This method creates a map of programIds to optOutTemporaryOverrides of the current
+     * optOutTemporaryOverrides.
+     */
+	private Map<Integer, OptOutTemporaryOverride> getProgramIdOptOutTemporaryOverrideMap(int energyCompanyId) {
+	    Map<Integer, OptOutTemporaryOverride> programIdOptOutTemporaryOverrideMap = Maps.newHashMap();
+	    
+        List<OptOutTemporaryOverride> optOutTemporaryOverrides = optOutTemporaryOverrideDao.getCurrentOptOutTemporaryOverrides(energyCompanyId);
+
+        for (OptOutTemporaryOverride optOutTemporaryOverride : optOutTemporaryOverrides) {
+            Integer assignedProgramId = optOutTemporaryOverride.getAssignedProgramId();
+            if (assignedProgramId == null) {
+                assignedProgramId = ENERGY_COMPANY_WIDE_ASSIGNED_PROGRAM_ID;
+            }
+            
+            programIdOptOutTemporaryOverrideMap.put(assignedProgramId, optOutTemporaryOverride);
+        }
+        
+	    return programIdOptOutTemporaryOverrideMap;
+	}
+	
+	// DI Setters
 	@Autowired
-	public void setOptOutTemporaryOverrideDao(
-			OptOutTemporaryOverrideDao optOutTemporaryOverrideDao) {
+	public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
+        this.customerAccountDao = customerAccountDao;
+    }
+	
+	@Autowired
+	public void setLmHardwareControlGroupDao(LMHardwareControlGroupDao lmHardwareControlGroupDao) {
+        this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
+    }
+	
+	@Autowired
+	public void setOptOutTemporaryOverrideDao(OptOutTemporaryOverrideDao optOutTemporaryOverrideDao) {
 		this.optOutTemporaryOverrideDao = optOutTemporaryOverrideDao;
 	}
 	

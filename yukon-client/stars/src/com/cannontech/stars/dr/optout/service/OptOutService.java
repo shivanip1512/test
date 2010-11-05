@@ -101,6 +101,18 @@ public interface OptOutService {
 	 */
 	public void changeOptOutEnabledStateForToday(LiteYukonUser user, boolean optOutsEnabled);
 	
+
+    /**
+     * Method to temporarily change whether Opt Outs are allowed by end users for the given program 
+     * name.  The change will take effect now and last through the end of today, and does not
+     * affect any currently active or scheduled opt outs.
+     * @param user - User making change
+     * @param optOutsEnabled - True if opt outs should be allowed for the rest of the day.
+     * @param programName
+     * @throws ProgramNotFoundException if program name isn't found
+     */
+    public void changeOptOutEnabledStateForTodayByProgramName(LiteYukonUser user, boolean optOutsEnabled, String programName) throws ProgramNotFoundException;
+	
 	/**
 	 * Method to get the opt out counts for the given inventory/account pair
 	 * @param inventoryId - Inventory to get opt out counts 

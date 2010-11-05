@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -20,6 +21,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 public class ProhibitConsumerOverridesRequestEndpoint {
 
     private OptOutService optOutService;
+    private StarsEventLogService starsEventLogService;
     private Namespace ns = YukonXml.getYukonNamespace();
 	private RolePropertyDao rolePropertyDao;
     
@@ -31,6 +33,8 @@ public class ProhibitConsumerOverridesRequestEndpoint {
         // init response
         Element resp = new Element("prohibitConsumerOverridesResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        
+        starsEventLogService.disablingOptOutUsageForTodayAttemptedByApi(user);
         
         // run service
         Element resultElement;
@@ -58,6 +62,11 @@ public class ProhibitConsumerOverridesRequestEndpoint {
     public void setOptOutService(OptOutService optOutService) {
 		this.optOutService = optOutService;
 	}
+    
+    @Autowired
+    public void setStarsEventLogService(StarsEventLogService starsEventLogService) {
+        this.starsEventLogService = starsEventLogService;
+    }
     
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {

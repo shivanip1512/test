@@ -6,15 +6,15 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.EnergyCompanyDao;
-import com.cannontech.database.BooleanRowMapper;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -23,6 +23,7 @@ import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideType;
 import com.cannontech.stars.dr.optout.exception.NoTemporaryOverrideException;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.model.OptOutCountsDto;
+import com.cannontech.stars.dr.optout.model.OptOutTemporaryOverride;
 
 /**
  * Implementation class for OptOutEventDao
@@ -60,46 +61,25 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 		
 		return settings;
 	}
-	
-	private final class OptOutCountsDtoRowMapper implements ParameterizedRowMapper<OptOutCountsDto> {
 
-	    @Override
-	    public final OptOutCountsDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-	    	
-	    	OptOutCounts optOutCounts = OptOutCounts.valueOf(rs.getBoolean("OptOutValue"));
-	    	Integer programId = SqlUtils.getNullableInt(rs, "ProgramId");
-	    	Date startDate = rs.getTimestamp("StartDate");
-	    	OptOutCountsDto setting = new OptOutCountsDto(optOutCounts, programId, startDate);
-	        return setting;
-	    }
-	}
 	
 	@Override
-	public boolean getOptOutEnabled(LiteEnergyCompany energyCompany) throws NoTemporaryOverrideException {
+	public List<OptOutTemporaryOverride> getCurrentOptOutTemporaryOverrides(int energyCompanyId) {
 		
 		Date now = new Date();
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT OptOutValue");
+		sql.append("SELECT *");
 		sql.append("FROM OptOutTemporaryOverride");
-		sql.append("WHERE OptOutType = ?");
-		sql.append("	AND StartDate <= ?");
-		sql.append("	AND StopDate > ?");
-		sql.append("	AND EnergyCompanyId = ?");
+		sql.append("WHERE OptOutType").eq(OptOutTemporaryOverrideType.ENABLED.toString());
+		sql.append("  AND StartDate").lte(now);
+		sql.append("  AND StopDate").gt(now);
+		sql.append("  AND EnergyCompanyId").eq(energyCompanyId);
 		
-		Boolean value;
-		try {
-			value = yukonJdbcTemplate.queryForObject(sql.toString(), new BooleanRowMapper(), 
-					OptOutTemporaryOverrideType.ENABLED.toString(),
-					now,
-					now,
-					energyCompany.getEnergyCompanyID());
-		} catch (EmptyResultDataAccessException e) {
-			// Opt out counts has not been temporarily overridden for this energy company
-			throw new NoTemporaryOverrideException();
-		}
+		List<OptOutTemporaryOverride> optOutTemporaryOverrides = 
+		    yukonJdbcTemplate.query(sql, new OptOutTemporaryOverrideRowMapper());
 		
-		return value;
+		return optOutTemporaryOverrides;
 	}
 	
 
@@ -141,6 +121,20 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 		
 	}
 	
+    @Override
+    @Transactional
+    public void setTemporaryOptOutEnabled(LiteYukonUser user, Date startDate, Date stopDate, 
+                                          boolean enabled, int webpublishingProgramId) {
+
+        this.setTemporaryOverrideValue(OptOutTemporaryOverrideType.ENABLED, 
+                                       user, 
+                                       startDate, 
+                                       stopDate, 
+                                       enabled,
+                                       webpublishingProgramId);
+        
+    }
+	
 	/**
 	 * Helper method to temporarily override an opt out value
 	 * @param type - Type of value to override
@@ -179,7 +173,41 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 		yukonJdbcTemplate.update(sql.toString(), id, user.getUserID(), energyCompanyID, typeString, startDate, stopDate, value, webpublishingProgramId);
 	}
 	
+	// Row Mappers
+	private final class OptOutCountsDtoRowMapper implements ParameterizedRowMapper<OptOutCountsDto> {
+
+        @Override
+        public final OptOutCountsDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+            
+            OptOutCounts optOutCounts = OptOutCounts.valueOf(rs.getBoolean("OptOutValue"));
+            Integer programId = SqlUtils.getNullableInt(rs, "ProgramId");
+            Date startDate = rs.getTimestamp("StartDate");
+            OptOutCountsDto setting = new OptOutCountsDto(optOutCounts, programId, startDate);
+            return setting;
+        }
+    }
+    
+	private final class OptOutTemporaryOverrideRowMapper implements YukonRowMapper<OptOutTemporaryOverride> {
+
+        @Override
+        public OptOutTemporaryOverride mapRow(YukonResultSet rs) throws SQLException {
+            
+            OptOutTemporaryOverride result = new OptOutTemporaryOverride();
+            
+            result.setOptOutTemporaryOverrideId(rs.getInt("OptOutTemporaryOverrideId"));
+            result.setUserId(rs.getInt("UserId"));
+            result.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
+            result.setOptOutType(OptOutTemporaryOverrideType.valueOf(rs.getString("OptOutType")));
+            result.setStartDate(rs.getInstant("StartDate"));
+            result.setStopDate(rs.getInstant("StopDate"));
+            result.setOptOutValue(rs.getInt("OptOutValue"));
+            result.setAssignedProgramId(SqlUtils.getNullableInt(rs.getResultSet(), "ProgramId"));
+            
+            return result;
+        }
+    }
 	
+	// DI Setters
 	@Autowired
 	public void setNextValueHelper(NextValueHelper nextValueHelper) {
 		this.nextValueHelper = nextValueHelper;

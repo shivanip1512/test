@@ -46,27 +46,65 @@
 		        </cti:checkProperty>
 		        <br/>
 
-			    <!-- Disable Opt Outs today -->
-			    <cti:checkProperty property="ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_ENABLE">
-				    <cti:msg var="disableOptOuts" key="yukon.web.modules.dr.optOut.disableOptOutsTitle" />
-				    <tags:boxContainer title="${disableOptOuts}" hideEnabled="false">
-				        <c:choose>
-				            <c:when test="${optOutsEnabled}">
-						        <cti:msg key="yukon.web.modules.dr.optOut.optOutEnabled" /><br><br>
-						        <form action="/spring/stars/operator/optOut/admin/disable" method="post">
-				                    <input type="submit" name="enable" value="<cti:msg key="yukon.web.modules.dr.optOut.disableOptOuts" />" class="formSubmit">
-						        </form>
-				            </c:when>
-				            <c:otherwise>
-						        <cti:msg key="yukon.web.modules.dr.optOut.optOutDisabled" /><br><br>
-						        <form action="/spring/stars/operator/optOut/admin/enable" method="post">
-				                    <input type="submit" name="disable" value="<cti:msg key="yukon.web.modules.dr.optOut.enableOptOuts" />" class="formSubmit">
-						        </form>
-				            </c:otherwise>
-				        </c:choose>
-				    </tags:boxContainer>
-			    </cti:checkProperty>
-			    <br/>
+                <!-- Disable Consumer Opt Out Ability for Today -->
+                <cti:checkProperty property="ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_ENABLE">
+                    <cti:msg var="disableOptOuts" key="yukon.web.modules.dr.optOut.disableOptOutsTitle" />
+                    <tags:boxContainer title="${disableOptOuts}" hideEnabled="false">
+                        
+                        <div style="font-size:11px;"><b><cti:msg key="yukon.web.modules.dr.optOut.disableOptOuts.note.label"/></b> <cti:msg key="yukon.web.modules.dr.optOut.disableOptOuts.note.text"/></div>
+                        <br>
+                        
+                        <b><cti:msg key="yukon.web.modules.dr.optOut.disableOptOuts.currentDisabledPrograms"/></b>
+                        <br><br>
+                        <table class="compactResultsTable">
+                            <tr>
+                                <th><cti:msg key="yukon.web.modules.dr.optOut.disableOptOuts.currentDisabledPrograms.header.programName"/></th>
+                                <th><cti:msg key="yukon.web.modules.dr.optOut.disableOptOuts.currentDisabledPrograms.header.enabled"/></th>
+                            </tr>
+                            
+                            <c:forEach var="program" items="${programNameEnabledMap}">
+                                <tr>
+                                    <td>${program.key}</td>
+                                    <td><cti:msg key="${program.value.formatKey}"/></td>
+                                </tr>
+                            </c:forEach>
+                        
+                        </table>
+                        <br>
+                    
+                        <form action="/spring/stars/operator/optOut/admin/setDisabled" method="post">
+                                
+                            <table style="padding:10px;background-color:#EEE;width:100%;">
+                                <tr><td>
+                                    <b><cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.byProgramName.label"/></b> <cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.byProgramName.instruction"/>
+                                </td></tr>
+                                <tr><td style="padding-top:10px;">
+                                    
+                                    <%-- PROGRAM PICKER --%>
+                                    <input type="hidden" id="disabledProgramPaoId"> <%-- dummy destination for selected programId, unused. We actually want to submit the program name to do a lookup for webpublishingProgramId --%>
+                                    <input type="hidden" id="disabledProgramName" name="programName" value="">
+                                    
+                                    <tags:pickerDialog  type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
+                                                         id="disabledProgramPicker" 
+                                                         destinationFieldId="disabledProgramPaoId"
+                                                         styleClass="simpleLink"
+                                                         immediateSelectMode="true"
+                                                         extraDestinationFields="paoName:disabledProgramName;paoName:disabledProgramNameDisplaySpan"
+                                                         extraArgs="${energyCompanyId}">
+                                        <cti:img key="add"/> <cti:msg key="yukon.web.modules.dr.chooseProgram"/>
+                                     </tags:pickerDialog>
+                                     
+                                     <span id="disabledProgramNameDisplaySpan" style="font-weight:bold;"></span>
+                                     
+                                </td></tr>
+                            </table>
+                            <br>
+                            
+                            <input type="submit" name="disable" value="<cti:msg key="yukon.web.modules.dr.optOut.disableOptOuts.currentDisabl1edPrograms.disableOptOutsButton" />" class="formSubmit">
+                            <input type="submit" name="enable" value="<cti:msg key="yukon.web.modules.dr.optOut.disableOptOuts.currentDisabl1edPrograms.enableOptOutsButton" />" class="formSubmit">
+                        </form>       
+                    </tags:boxContainer>
+                </cti:checkProperty>
 
 			    <!-- Cancel Current Opt Outs -->
 			    <cti:checkProperty property="ConsumerInfoRole.OPT_OUT_ADMIN_CANCEL_CURRENT">

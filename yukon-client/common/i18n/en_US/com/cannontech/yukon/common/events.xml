@@ -46,26 +46,17 @@
     <entry key="yukon.web.modules.support.byType.csvExport.label">CSV</entry>
     <entry key="yukon.web.modules.support.byType.csvExport.imageUrl">/WebConfig/yukon/Icons/excel.gif</entry>
     <entry key="yukon.web.modules.support.byType.csvExport.hoverText">Export results to a CSV formatted file.</entry>
-
-<!--
-    <entry key="yukon.web.modules.operator.optOut.main.allowOneIconText">Adds an extra opt out to the device. This is not restricted by the system opt out limit.</entry>
-    <entry key="yukon.web.modules.operator.optOut.main.allowOne.successText">Opt Out Added</entry>
- -->
-    
-    
     
     <entry key="yukon.web.modules.support.byType.title">Title</entry>
     <entry key="yukon.web.modules.support.byType.turnOnEventLog">Turn on event logging for this category.</entry>
     <entry key="yukon.web.modules.support.byType.turnOffEventLog">Turn off event logging for this category.</entry>
     <entry key="yukon.web.modules.support.byType.viewEventLog">View event log</entry>
-<!-- <entry key="yukon.common.events.byType.modifyCategory">Modify Category</entry> -->
     <entry key="yukon.web.modules.support.byType.categoryOptions">Category Options</entry>
     <entry key="yukon.web.modules.support.byType.enableCategory">Enable Category</entry>
     <entry key="yukon.web.modules.support.byType.disableCategory">Disable Category</entry>
     <entry key="yukon.web.modules.support.byType.viewCategory">View Category</entry>
     <entry key="yukon.web.modules.support.byType.selectEventLog">Select Event Log</entry>
     <entry key="yukon.web.modules.support.byType.noEventLogSelected">No event log was selected</entry>
-    
 
     <!-- Event Log Arg Annotation i18n keys -->
     <entry key="yukon.common.events.accountNumber">Account Number</entry>
@@ -366,6 +357,39 @@
     <entry key="yukon.common.events.system.rphValidation.helper.validationEngineReset">The Validation Engine has been reset to reprocess all rows</entry>
     <entry key="yukon.common.events.system.rphValidation.helper.validationEnginePartialReset">The Validation Engine has been reset to reprocess all rows since {11}</entry>
     
+    <!-- Stars -->
+    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsAttemptedByOperator">The user {1} is attempting to cancel all the opt outs in the system.  They are attempting this through the operator pages.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsAttemptedByApi">The user {1} is attempting to cancel all the opt outs in the system.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgramAttemptedByOperator">The user {1} is attempting to cancel all the opt outs in the system for the program {2}.  They are attempting this through the operator pages.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgramAttemptedByApi">The user {1} is attempting to cancel all the opt outs in the system for the program {2}.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayAttemptedByOperator">The user {1} is attempting to enable the ability for customers to opt out.  They are attempting this through the operator pages.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayAttemptedByApi">The user {1} is attempting to enable the ability for customers to opt out.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayByProgramAttemptedByOperator">The user {1} is attempting to enable the ability for customers to opt out of the program {2}.  They are attempting this through the operator pages.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayByProgramAttemptedByApi">The user {1} is attempting to enable the ability for customers to opt out of the program {2}.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayAttemptedByOperator">The user {1} is attempting to disable the ability for customers to opt out.  They are attempting this through the operator pages.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayAttemptedByApi">The user {1} is attempting to disable the ability for customers to opt out.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayByProgramAttemptedByOperator">The user {1} is attempting to disable the ability for customers to opt out of the program {2}.  They are attempting this through the operator pages.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayByProgramAttemptedByApi">The user {1} is attempting to disable the ability for customers to opt out of the program {2}.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayAttemptedByOperator">The user {1} is attempting to change the system to count opt outs for today.  They are attempting this through the operator pages.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayAttemptedByApi">The user {1} is attempting to change the system to count opt outs for today.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayByProgramAttemptedByOperator">The user {1} is attempting to change the system to count opt outs for the program {2} today.  They are attempting this through the operator pages.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayByProgramAttemptedByApi">The user {1} is attempting to change the system to count opt outs for the program {2} today.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayAttemptedByOperator">The user {1} is attempting to change the system to not count opt outs for today.  They are attempting this through the operator pages.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayAttemptedByApi">The user {1} is attempting to change the system to not count opt outs for today.  They are attempting this through the Api.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayByProgramAttemptedByOperator">The user {1} is attempting to change the system to not count opt outs for the program {2} today.  They are attempting this through the operator pages.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayByProgramAttemptedByApi">The user {1} is attempting to change the system to not count opt outs for the program {2} today.  They are attempting this through the Api.</entry>
+
+    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOuts">The user {1} canceled all the opt outs in the system.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgram">The user {1} canceled all the opt outs for the program {2}.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForToday">The user {1} enabled the ability for customers to opt out today.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayByProgram">The user {1} enabled the ability for customers to opt out of the {2} program today.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForToday">The user {1} disabled the ability for customers to opt out today.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayByProgram">The user {1} disabled the ability for customers to opt out of the {2} program today.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitToday">The user {1} changed the system to count opt outs for today.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayByProgram">The user {1} changed the system to count opt outs for the program {2} today.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitToday">The user {1} changed the system to not count opt outs today.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayByProgram">The user {1} changed the system to not count opt outs for the program {2} today.</entry>
+
     <!-- System -->
     <entry key="yukon.common.events.system.login.loginWeb">User {1} logged in via Web from remote address {2}</entry>
 

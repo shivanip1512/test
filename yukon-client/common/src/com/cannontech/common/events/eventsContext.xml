@@ -48,6 +48,10 @@
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.VeeReviewEventLogService"/>
     </bean>
     
+    <bean id="starsEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.StarsEventLogService"/>
+    </bean>
+    
     <bean id="systemEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.SystemEventLogService"/>
     </bean>

@@ -35,6 +35,7 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Result;
 import com.cannontech.common.util.TimeUtil;
@@ -125,6 +126,7 @@ public class OptOutServiceImpl implements OptOutService {
 	private CustomerDao customerDao;
 	private ProgramService programService;
 	private EnrollmentDao enrollmentDao;
+	private StarsEventLogService starsEventLogService;
 	private StarsSearchDao starsSearchDao;
 	private DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao;
 	private SystemDateFormattingService systemDateFormattingService;
@@ -458,6 +460,13 @@ public class OptOutServiceImpl implements OptOutService {
 		for (OptOutEvent ooe : currentOptOuts) {
 			cancelOptOutEvent(ooe, energyCompany, user);
 		}
+		
+        // Log the successful cancellation of opt outs.
+		if (StringUtils.isNotBlank(programName)) {
+            starsEventLogService.cancelCurrentOptOutsByProgram(user, programName);
+        } else {
+            starsEventLogService.cancelCurrentOptOuts(user);
+        }
 	}
 	
 	private void cancelOptOutEvent(OptOutEvent ooe, LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
@@ -539,6 +548,21 @@ public class OptOutServiceImpl implements OptOutService {
 	    	// Update any currently active opt outs
 			optOutEventDao.changeCurrentOptOutCountStateForProgramId(energyCompany, OptOutCounts.valueOf(optOutCounts), webpublishingProgramId);
     	}
+    	
+    	// Log the successful change in opt out counting.
+    	if (StringUtils.isNotBlank(programName)) {
+            if (optOutCounts) {
+                starsEventLogService.countTowardOptOutLimitTodayByProgram(user, programName);
+            } else {
+                starsEventLogService.doNotCountTowardOptOutLimitTodayByProgram(user, programName);
+            }
+        } else {
+            if (optOutCounts) {
+                starsEventLogService.countTowardOptOutLimitToday(user);
+            } else {
+                starsEventLogService.doNotCountTowardOptOutLimitToday(user);
+            }
+        }
 	}
 	
 	@Override
@@ -548,9 +572,58 @@ public class OptOutServiceImpl implements OptOutService {
 		Date now = new Date();
     	Date stopDate = TimeUtil.getMidnightTonight(systemTimeZone);
 		optOutTemporaryOverrideDao.setTemporaryOptOutEnabled(user, now, stopDate, optOutsEnabled);
-		
-	}
 	
+	    // Log the successful enabled state change
+		if (optOutsEnabled) {
+		    starsEventLogService.enablingOptOutUsageForToday(user);
+		} else {
+		    starsEventLogService.disablingOptOutUsageForToday(user);
+		}
+	}
+
+    @Override
+    public void changeOptOutEnabledStateForTodayByProgramName(LiteYukonUser user, boolean optOutsEnabled,
+                                                              String programName) throws ProgramNotFoundException {
+
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+        Integer webpublishingProgramId = null;
+        
+        if (!StringUtils.isBlank(programName)) {
+            Program program = programService.getByProgramName(programName, energyCompany);
+            webpublishingProgramId = program.getProgramId();
+        }
+        
+        TimeZone systemTimeZone = systemDateFormattingService.getSystemTimeZone();
+        Date now = new Date();
+        Date stopDate = TimeUtil.getMidnightTonight(systemTimeZone);
+        
+        if (webpublishingProgramId == null) {
+
+            // Temporarily update enabled state
+            optOutTemporaryOverrideDao.setTemporaryOptOutEnabled(user, now, stopDate, optOutsEnabled);
+        
+        } else {
+
+            // Temporarily update enabled state
+            optOutTemporaryOverrideDao.setTemporaryOptOutEnabled(user, now, stopDate, optOutsEnabled, webpublishingProgramId);
+        }
+        
+        // Log the successful enabled state change
+        if (StringUtils.isNotBlank(programName)) {
+            if (optOutsEnabled) {
+                starsEventLogService.enablingOptOutUsageForTodayByProgram(user, programName);
+            } else {
+                starsEventLogService.disablingOptOutUsageForTodayByProgram(user, programName);
+            }
+        } else {
+            if (optOutsEnabled) {
+                starsEventLogService.enablingOptOutUsageForToday(user);
+            } else {
+                starsEventLogService.disablingOptOutUsageForToday(user);
+            }
+        }
+    }
+    
 	@Override
 	public OptOutCountHolder getCurrentOptOutCount(int inventoryId, int customerAccountId) {
 
@@ -714,7 +787,9 @@ public class OptOutServiceImpl implements OptOutService {
 				Integer inventoryId = history.getInventoryId();
 				
 				List<Program> programList = 
-					enrollmentDao.getEnrolledProgramIdsByInventory(inventoryId, startTime, stopTime);
+                  enrollmentDao.getEnrolledProgramIdsByInventory(inventoryId, history.getStartDate(), 
+                                                                 history.getStopDate());
+
 				
 				// Create a history entry for each enrolled program
 				for(Program program : programList) {
@@ -1215,7 +1290,8 @@ public class OptOutServiceImpl implements OptOutService {
         
         return null;
     }
-	
+    
+    // DI Setters
 	@Autowired
 	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
         this.accountEventLogService = accountEventLogService;
@@ -1312,6 +1388,11 @@ public class OptOutServiceImpl implements OptOutService {
 	}
 	
 	@Autowired
+	public void setStarsEventLogService(StarsEventLogService starsEventLogService) {
+        this.starsEventLogService = starsEventLogService;
+    }
+	
+	@Autowired
 	public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
 		this.starsSearchDao = starsSearchDao;
 	}
@@ -1343,8 +1424,8 @@ public class OptOutServiceImpl implements OptOutService {
 		this.executor = executor;
 	}
 
-	@Autowired
-	public void setSurveyDao(SurveyDao surveyDao) {
+    @Autowired
+    public void setSurveyDao(SurveyDao surveyDao) {
         this.surveyDao = surveyDao;
     }
 
@@ -1352,4 +1433,5 @@ public class OptOutServiceImpl implements OptOutService {
     public void setOptOutSurveyDao(OptOutSurveyDao optOutSurveyDao) {
         this.optOutSurveyDao = optOutSurveyDao;
     }
+
 }

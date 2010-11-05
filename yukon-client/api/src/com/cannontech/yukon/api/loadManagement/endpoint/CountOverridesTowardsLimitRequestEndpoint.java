@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -23,6 +24,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 public class CountOverridesTowardsLimitRequestEndpoint {
 
 	private OptOutService optOutService;
+	private StarsEventLogService starsEventLogService;
     private Namespace ns = YukonXml.getYukonNamespace();
 	private RolePropertyDao rolePropertyDao;
 
@@ -39,6 +41,12 @@ public class CountOverridesTowardsLimitRequestEndpoint {
         Element resp = new Element("countOverridesTowardsLimitResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, version);
         
+        if (StringUtils.isBlank(programName)) {
+            starsEventLogService.countTowardOptOutLimitTodayAttemptedByApi(user);
+        } else {
+            starsEventLogService.countTowardOptOutLimitTodayByProgramAttemptedByApi(user, programName);
+        }
+
         // run service
         Element resultElement;
         try {
@@ -48,11 +56,8 @@ public class CountOverridesTowardsLimitRequestEndpoint {
         	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_DATA_ACCESS, user);
         	
         	if (StringUtils.isBlank(programName)) {
-        		
         		optOutService.changeOptOutCountStateForToday(user, true);
-        	
         	} else {
-        		
         		optOutService.changeOptOutCountStateForTodayByProgramName(user, true, programName);
         	}
             
@@ -73,6 +78,11 @@ public class CountOverridesTowardsLimitRequestEndpoint {
     public void setOptOutService(OptOutService optOutService) {
 		this.optOutService = optOutService;
 	}
+    
+    @Autowired
+    public void setStarsEventLogService(StarsEventLogService starsEventLogService) {
+        this.starsEventLogService = starsEventLogService;
+    }
     
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
