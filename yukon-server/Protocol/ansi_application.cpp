@@ -893,14 +893,6 @@ bool CtiANSIApplication::areThereMorePackets()
             retVal = false;
         }
     }
-    if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
-    {
-        string temp = getDatalinkLayer().getPacketPart() ? " Partial " : " ";
-        string retString = retVal ? "true":"false";
-         CtiLockGuard< CtiLogger > doubt_guard( dout );
-         dout << CtiTime::now() << " "<<getAnsiDeviceName()<< temp << "** Sequence " << getDatalinkLayer().getSequence();
-         dout << " return "<< retString<< endl;
-    }
     return retVal;
 }
 
