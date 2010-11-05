@@ -1228,14 +1228,6 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
 
         function = OutMessage->Sequence;
     }
-    else if(parse.getFlags() & CMD_FLAG_GV_LAST_MSG_REC)
-    {
-        DlcCommandSPtr lastMessageReceivedRead(new Lcr3102LastMessageReceivedCommand());
-
-        found = tryExecuteCommand(*OutMessage, lastMessageReceivedRead);
-
-        function = OutMessage->Sequence;
-    }
     else if(parse.getFlags() & CMD_FLAG_GV_RUNTIME || parse.getFlags() & CMD_FLAG_GV_SHEDTIME)
     {
         if(parse.getFlags() & CMD_FLAG_GV_RUNTIME)

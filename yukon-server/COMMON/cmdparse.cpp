@@ -459,8 +459,6 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     static const boost::regex   re_dr_summary       (CtiString("dr summary"));
     static const boost::regex   re_hourly_data_log  (CtiString("hourly log ") + str_date + CtiString(" ") + str_time);
 
-    static const boost::regex   re_last_message_rec ("last message");
-
     CtiTokenizer   tok(CmdStr);
 
     token = tok(); // Get the first one into the hopper....
@@ -618,10 +616,6 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
             temp = CtiString(cmdtok()).c_str();
 
             _cmd["hourly_log_time"] = temp;
-        }
-        else if(!(token = CmdStr.match(re_last_message_rec)).empty())
-        {
-            flag |= CMD_FLAG_GV_LAST_MSG_REC;
         }
         else if(CmdStr.contains(" minmax"))
         {
