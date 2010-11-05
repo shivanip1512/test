@@ -787,11 +787,6 @@ void CtiDeviceAnsi::createPointData(CtiPointAnalogSPtr pPoint, double value, dou
         delete pData;
         pData = NULL;
     }
-    if (msgPtr != NULL)
-    {
-        delete msgPtr;
-        msgPtr = NULL;
-    }
 }
 void CtiDeviceAnsi::createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< CtiReturnMsg* > &retList)
 {
@@ -836,19 +831,12 @@ void CtiDeviceAnsi::createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< 
             pData = NULL;
         }
     }
-    if (msgPtr->getCount() > 0)
+    if (msgPtr != NULL && msgPtr->getCount() > 0)
     {
         retList.push_back(msgPtr);
         msgPtr = NULL;
     }
-    if (getANSIProtocol().isDataBlockOrderDecreasing())
-    {
-        _lastLPTime = getANSIProtocol().getLPTime(0);
-    }
-    else
-    {
-        _lastLPTime = getANSIProtocol().getLPTime(getANSIProtocol().getTotalWantedLPBlockInts()-1);
-    }
+    _lastLPTime = getANSIProtocol().getLPTime(getANSIProtocol().getTotalWantedLPBlockInts()-1);
     getANSIProtocol().setLastLoadProfileTime(_lastLPTime);
     if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
     {
@@ -859,12 +847,6 @@ void CtiDeviceAnsi::createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< 
     {
         delete []pData;
         pData = NULL;
-    }
-
-    if (msgPtr != NULL)
-    {
-        delete msgPtr;
-        msgPtr = NULL;
     }
 }
 
