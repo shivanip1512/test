@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_controlled_only )
 
         BOOST_CHECK_EQUAL(ptr->function,  0x100);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  1);
+        BOOST_CHECK_EQUAL(ptr->length(),  7);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
@@ -55,6 +55,12 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_controlled_only )
     {
         DlcCommand::payload_t payload;
 
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
         payload.push_back(0x01);
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -113,7 +119,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_cold_load_pickup )
 
         BOOST_CHECK_EQUAL(ptr->function,  0x100);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  1);
+        BOOST_CHECK_EQUAL(ptr->length(),  7);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
@@ -122,6 +128,12 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_cold_load_pickup )
     {
         DlcCommand::payload_t payload;
 
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
         payload.push_back(0x02);
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -179,7 +191,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling )
 
         BOOST_CHECK_EQUAL(ptr->function,  0x100);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  1);
+        BOOST_CHECK_EQUAL(ptr->length(),  7);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
@@ -188,6 +200,12 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling )
     {
         DlcCommand::payload_t payload;
 
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
         payload.push_back(0x04);
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -246,7 +264,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling )
 
         BOOST_CHECK_EQUAL(ptr->function,  0x100);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  1);
+        BOOST_CHECK_EQUAL(ptr->length(),  7);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
@@ -255,6 +273,12 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling )
     {
         DlcCommand::payload_t payload;
 
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
         payload.push_back(0x09);
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -313,7 +337,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_voltage_event )
 
         BOOST_CHECK_EQUAL(ptr->function,  0x100);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  1);
+        BOOST_CHECK_EQUAL(ptr->length(),  7);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
@@ -322,6 +346,12 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_voltage_event )
     {
         DlcCommand::payload_t payload;
 
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
         payload.push_back(0x10);
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -379,7 +409,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_frequency_event )
 
         BOOST_CHECK_EQUAL(ptr->function,  0x100);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  1);
+        BOOST_CHECK_EQUAL(ptr->length(),  7);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
@@ -388,6 +418,12 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_under_frequency_event )
     {
         DlcCommand::payload_t payload;
 
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
         payload.push_back(0x20);
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -445,7 +481,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_out_of_service )
 
         BOOST_CHECK_EQUAL(ptr->function,  0x100);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  1);
+        BOOST_CHECK_EQUAL(ptr->length(),  7);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
@@ -454,6 +490,12 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_out_of_service )
     {
         DlcCommand::payload_t payload;
 
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
         payload.push_back(0x40);
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -511,7 +553,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling_conflict )
 
         BOOST_CHECK_EQUAL(ptr->function,  0x100);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  1);
+        BOOST_CHECK_EQUAL(ptr->length(),  7);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
@@ -520,6 +562,12 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_not_controlling_conflict )
     {
         DlcCommand::payload_t payload;
 
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
         payload.push_back(0x05);
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -577,7 +625,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling_conflict )
 
         BOOST_CHECK_EQUAL(ptr->function,  0x100);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  1);
+        BOOST_CHECK_EQUAL(ptr->length(),  7);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
@@ -586,6 +634,12 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_activated_controlling_conflict )
     {
         DlcCommand::payload_t payload;
 
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
         payload.push_back(0x08);
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -643,7 +697,7 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_both_activated_enabled_conflict )
 
         BOOST_CHECK_EQUAL(ptr->function,  0x100);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(ptr->length(),  1);
+        BOOST_CHECK_EQUAL(ptr->length(),  7);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
 
         BOOST_CHECK_EQUAL(points.size(), 0);
@@ -652,6 +706,12 @@ BOOST_AUTO_TEST_CASE( test_execute_summary_both_activated_enabled_conflict )
     {
         DlcCommand::payload_t payload;
 
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
+        payload.push_back(0x00);
         payload.push_back(0x0c);
         payload.push_back(0x00);
         payload.push_back(0x00);

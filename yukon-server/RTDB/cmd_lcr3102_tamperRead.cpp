@@ -16,7 +16,7 @@ Lcr3102TamperReadCommand::Lcr3102TamperReadCommand() :
 //  throws CommandException
 DlcCommand::request_ptr Lcr3102TamperReadCommand::decodeReading(CtiTime now, const unsigned function, const payload_t &payload, string &description, vector<point_data> &points)
 {
-    const unsigned char tamper_info = getValueFromBits(payload, 0, 8);
+    const unsigned char tamper_info = getValueFromBits(payload, 48, 8);
 
     if (tamper_info > 3 || tamper_info < 0)
     {

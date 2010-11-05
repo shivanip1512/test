@@ -12,7 +12,7 @@ private:
 
     enum ReadLengths
     {
-        ReadLength_DemandResponseSummary = 1
+        ReadLength_DemandResponseSummary = 7
     };
 
     enum SummaryBits

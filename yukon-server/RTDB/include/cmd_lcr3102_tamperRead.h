@@ -12,7 +12,7 @@ private:
 
     enum ReadLengths
     {
-        ReadLength_Tamper = 1
+        ReadLength_Tamper = 7
     };
 
 public:

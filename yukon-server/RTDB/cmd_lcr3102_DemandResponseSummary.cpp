@@ -15,7 +15,7 @@ Lcr3102DemandResponseSummaryCommand::Lcr3102DemandResponseSummaryCommand() :
 
 DlcCommand::request_ptr Lcr3102DemandResponseSummaryCommand::decodeReading(CtiTime now, const unsigned function, const payload_t &payload, string &description, vector<point_data> &points)
 {
-    const unsigned char drSummary_info = getValueFromBits(payload, 0, 8);
+    const unsigned char drSummary_info = getValueFromBits(payload, 48, 8);
   
     decodeResponseByte(drSummary_info, description);
 
