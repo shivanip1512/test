@@ -4445,6 +4445,27 @@
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="0"/>
             </point>
+            <point type="Analog" offset="21">
+                <init>true</init>
+                <name>Blink Restore Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="22">
+                <init>true</init>
+                <name>Outage Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="23">
+                <init>true</init>
+                <name>Outage Restore Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="0"/>
+            </point>
         </points>
         <attributes>
             <attribute name="USAGE">
@@ -4476,6 +4497,90 @@
     
     <pao id="RFN_EXTENDED_BASE" inherits="RFN_BASE" abstract="true">
         <points>
+            <point type="Analog" offset="50">
+                <init>true</init>
+                <name>Delivered kvarh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="30">
+                <init>true</init>
+                <name>Delivered pulse</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="40">
+                <init>true</init>
+                <name>Delivered kvar</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVAr"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="70">
+                <init>true</init>
+                <name>Volts Phase A</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="71">
+                <init>true</init>
+                <name>Volts Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="72">
+                <init>true</init>
+                <name>Volts Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="73">
+                <init>true</init>
+                <name>Amps Phase A</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="74">
+                <init>true</init>
+                <name>Amps Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="75">
+                <init>true</init>
+                <name>Amps Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="76">
+                <init>true</init>
+                <name>Volt Degrees Phase A</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="77">
+                <init>true</init>
+                <name>Volt Degrees Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="78">
+                <init>true</init>
+                <name>Volt Degrees Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+                <decimalplaces value="1"/>
+            </point>
             <point type="Analog" offset="101">
                 <init>true</init>
                 <name>Delivered kW</name>

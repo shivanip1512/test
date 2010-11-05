@@ -8,9 +8,124 @@
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
+            <modifiers match="all">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
             <modifiers match="none">
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
+        <point name="Received kWh"> 
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="all">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+            <modifiers match="none">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered kvarh"> 
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="all">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+            <modifiers match="none">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered pulse"> 
+            <uom>Pulse</uom>
+            <parseSiPrefix/>
+            <modifiers match="all">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+            <modifiers match="none">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered kvar"> 
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="all">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+            <modifiers match="none">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
+        <point name="Volts Phase A"> 
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="all">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
+        <point name="Volts Phase B"> 
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="all">
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+        <point name="Volts Phase C"> 
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="all">
+                <modifier>Phase C</modifier>
+            </modifiers>
+        </point>
+        <point name="Amps Phase A"> 
+            <uom>A</uom>
+            <parseSiPrefix/>
+            <modifiers match="all">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
+        <point name="Amps Phase B"> 
+            <uom>A</uom>
+            <parseSiPrefix/>
+            <modifiers match="all">
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+        <point name="Amps Phase C"> 
+            <uom>A</uom>
+            <parseSiPrefix/>
+            <modifiers match="all">
+                <modifier>Phase C</modifier>
+            </modifiers>
+        </point>
+        <point name="Volt Degrees Phase A"> 
+            <uom>V degree</uom>
+            <modifiers match="all">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
+        <point name="Volt Degrees Phase B"> 
+            <uom>V degree</uom>
+            <modifiers match="all">
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+        <point name="Volt Degrees Phase C"> 
+            <uom>V degree</uom>
+            <modifiers match="all">
+                <modifier>Phase C</modifier>
             </modifiers>
         </point>
         <point name="Voltage Primary">
@@ -27,8 +142,20 @@
                 <modifier>Secondary</modifier>
             </modifiers>
         </point>
-        <point name="Blink Count">
+        <point name="Outage Count">
             <uom>Outage Count</uom>
+            <modifiers match="equal"/> 
+        </point>
+        <point name="Outage Restore Count">
+            <uom>Restore Count</uom>
+            <modifiers match="equal"/> 
+        </point>
+        <point name="Blink Count">
+            <uom>Outage Blink Count</uom>
+            <modifiers match="equal"/> 
+        </point>
+        <point name="Blink Restore Count">
+            <uom>Restore Blink Count</uom>
             <modifiers match="equal"/> 
         </point>
         <point name="Delivered kW"> 
@@ -42,6 +169,19 @@
             <modifiers match="none">
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
+        <point name="Received kW"> 
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="all">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+            <modifiers match="none">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
     </pointGroup>

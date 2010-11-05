@@ -27,6 +27,7 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
@@ -152,7 +153,7 @@ public class RfnMeterReadService {
             try {
                 // this call is probably a little heavy considering how little of the LitePoint is actually needed
                 point = pointDao.getLitePoint(pointValueHandler.getPaoPointIdentifier());
-            } catch (IllegalUseOfAttribute e) {
+            } catch (NotFoundException e) {
                 LogHelper.debug(log, "Unable to find point for channelData: %s", channelData);
                 continue;
             }
