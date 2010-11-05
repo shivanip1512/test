@@ -36,7 +36,6 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
     private ControlHistoryEventDao controlHistoryEventDao;
     private ControlHistorySummaryService controlHistorySummaryService;
     private InventoryBaseDao inventoryBaseDao;
-//    private ProgramDao programDao;
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     
     @Override
@@ -48,7 +47,6 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
         for (DistinctEnrollment enrollment : enrollments) {
             
             // Any groupId that does *not* belong in supportedGroupIdList will not used.
-//            final List<Integer> supportedGroups = programDao.getGroupIdsByProgramId(enrollment.getProgramId());
             final List<Integer> supportedGroups = Collections.singletonList(enrollment.getGroupId());
             
             final List<Holder> holderList = Lists.newArrayList();
