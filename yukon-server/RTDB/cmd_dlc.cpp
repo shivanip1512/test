@@ -43,11 +43,6 @@ unsigned DlcCommand::getValueFromBits(const payload_t &data, const unsigned star
 //  throws CommandException
 vector<unsigned> DlcCommand::getValueVectorFromBits(const payload_t &data, const unsigned start_offset, const unsigned length, const unsigned count)
 {
-    if( start_offset + count * length > data.size() * 8 )
-    {
-        throw CommandException(NOTNORMAL, "Payload too small");
-    }
-
     vector<unsigned> values;
 
     for( unsigned i = 0; i < count; ++i )
