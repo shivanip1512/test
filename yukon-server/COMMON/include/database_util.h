@@ -27,16 +27,7 @@ bool executeDbCommand(T& databaseCommand, bool printDebug = false)
         }
     }
 
-    //False to squelch printing insert errors. The calling code is responsible for displaying them.
-    if (databaseCommand.execute())
-    {
-        //No Error occurred
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return databaseCommand.execute();
 }
 
 }

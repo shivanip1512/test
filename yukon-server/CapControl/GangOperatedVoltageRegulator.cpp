@@ -44,6 +44,7 @@ GangOperatedVoltageRegulator & GangOperatedVoltageRegulator::operator=(const Gan
     {
         VoltageRegulator::operator=(rhs);
 
+        _recentOperation = rhs._recentOperation;
         _autoRemote = rhs._autoRemote;
     }
 

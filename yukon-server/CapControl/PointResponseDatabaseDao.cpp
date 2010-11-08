@@ -138,20 +138,13 @@ bool PointResponseDatabaseDao::insert(Cti::Database::DatabaseConnection& databas
 
 bool PointResponseDatabaseDao::save(PointResponse pointResponse)
 {
-    //Attempt to insert first, if that fails. update it.
-    bool ret = update(pointResponse);
-
-    if (ret == false)
-    {
-        ret = insert(pointResponse);
-    }
-
-    return ret;
+    DatabaseConnection databaseConnection;
+    return save(databaseConnection,pointResponse);
 }
 
 bool PointResponseDatabaseDao::save(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse)
 {
-    //Attempt to insert first, if that fails. update it.
+    //Attempt to update, if false insert it.
     bool ret = update(databaseConnection,pointResponse);
 
     if (ret == false)
