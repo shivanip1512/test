@@ -52,6 +52,7 @@
     <property name="paoDao" ref="paoDao"/>
     <property name="pointDao" ref="pointDao"/>
     <property name="zoneDao" ref="zoneDao"/>
+    <property name="paoDefinitionDao" ref="paoDefinitionDao"/>
   </bean> 
 
 	<bean id="capControlCreationService"

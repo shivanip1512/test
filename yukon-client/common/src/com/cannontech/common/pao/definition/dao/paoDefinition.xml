@@ -5588,6 +5588,11 @@
                 </mappedLookup>
             </attribute>
         </attributes>
+        <tags>
+        	<tag name="VOLTAGE_REGULATOR">
+        		<value>true</value>
+        	</tag>
+        </tags>
     </pao>
     
     <pao id="LOAD_TAP_CHANGER" inherits="VOLTAGE_REGULATOR">

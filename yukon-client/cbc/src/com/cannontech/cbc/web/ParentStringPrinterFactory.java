@@ -3,6 +3,7 @@ package com.cannontech.cbc.web;
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.capcontrol.dao.ZoneDao;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 
@@ -10,12 +11,14 @@ public class ParentStringPrinterFactory {
     private PointDao pointDao;
     private PaoDao paoDao;
     private ZoneDao zoneDao;
+    private PaoDefinitionDao paoDefinitionDao;
     
     public ParentStringPrinter createParentStringPrinter(final HttpServletRequest request) {
         final ParentStringPrinter printer = new ParentStringPrinter(request);
         printer.setPointDao(pointDao);
         printer.setPaoDao(paoDao);
         printer.setZoneDao(zoneDao);
+        printer.setPaoDefinitionDao(paoDefinitionDao);
         return printer;
     }    
 
@@ -31,4 +34,7 @@ public class ParentStringPrinterFactory {
         this.zoneDao = zoneDao;
     }
     
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
+    }
 }

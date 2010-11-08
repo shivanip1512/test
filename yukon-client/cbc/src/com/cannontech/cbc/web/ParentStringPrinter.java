@@ -11,6 +11,8 @@ import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -36,6 +38,7 @@ public class ParentStringPrinter {
     private PointDao pointDao;
     private PaoDao paoDao;
     private ZoneDao zoneDao;
+    private PaoDefinitionDao paoDefinitionDao; 
     
     public ParentStringPrinter(final HttpServletRequest request) {
         this.request = request;
@@ -44,11 +47,8 @@ public class ParentStringPrinter {
     public String printPAO(final Integer paoId) {
         LiteYukonPAObject lite = paoDao.getLiteYukonPAO(paoId);
         int type = lite.getType();
-
-        if (type == PaoType.LOAD_TAP_CHANGER.getDeviceTypeId() || 
-            type == PaoType.PHASE_OPERATED.getDeviceTypeId() ||
-            type == PaoType.GANG_OPERATED.getDeviceTypeId()) {
-            
+        
+        if (paoDefinitionDao.isTagSupported(PaoType.getForId(type), PaoTag.VOLTAGE_REGULATOR)) {
             Zone zone = null;
             
             try {
@@ -222,5 +222,9 @@ public class ParentStringPrinter {
     
     public void setZoneDao(ZoneDao zoneDao) {
         this.zoneDao = zoneDao;
+    }
+    
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
     }
 }

@@ -26,7 +26,8 @@ public enum PaoTag {
 	NETWORK_MANAGER_ATTRIBUTE_READS("Network Manager Attribute Reads"),
 	MCT_200_SERIES("MCT 200 Series"),
 	MCT_300_SERIES("MCT 300 Series"),
-	USES_METER_NUMBER_FOR_MSP("Uses meter number for Msp")
+	USES_METER_NUMBER_FOR_MSP("Uses meter number for Msp"),
+	VOLTAGE_REGULATOR("Voltage Regulator")
 	;
 
 	private String description;
