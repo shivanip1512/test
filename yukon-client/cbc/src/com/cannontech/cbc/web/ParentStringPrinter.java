@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.model.Zone;
@@ -63,7 +64,7 @@ public class ParentStringPrinter {
             sb.append("<a href=\"");
             sb.append(url);
             sb.append("\">");
-            sb.append(zone.getName());
+            sb.append( HtmlUtils.htmlEscape(zone.getName()));
             sb.append("</a>");
             
             String result = sb.toString();
@@ -200,7 +201,7 @@ public class ParentStringPrinter {
         sb.append("<a href=\"");
         sb.append(safeUrl);
         sb.append("\">");
-        sb.append(paoName);
+        sb.append(HtmlUtils.htmlEscape(paoName));
         sb.append("</a>");
         String result = sb.toString();
         return result;
