@@ -1,99 +1,4 @@
 #include "yukon.h"
-
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   ansi_application
-*
-* Date:   6/20/2002
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_application.cpp-arc  $
-* REVISION     :  $Revision: 1.17.6.1 $
-* DATE         :  $Date: 2008/11/17 23:06:31 $
-*    History:
-      $Log: ansi_application.cpp,v $
-      Revision 1.17.6.1  2008/11/17 23:06:31  jmarks
-      YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
-      **************************************************************************************************************
-      Removed "CTITYPES.H" from every file in the project, so far there were no
-      known side-effects or even compile errors, however, they could still happen.
-
-      Also, made many other changes for compiling.
-
-      The project now apparently compiles until reching the database
-      subdirectory, however, I have seen cases where there is apparent
-      regressing and need to re-work things.
-
-      However, enough changes have happened, that I felt it was good to
-      committ.
-      **************************************************************************************************************
-      Possibly other misc. changes since last commit.
-      *******************************************************
-      Revision 1.17  2008/04/25 21:45:14  mfisher
-      YUK-5743 isTransactionComplete() changes not propagated to all protocols
-      changed isTransactionComplete() to const
-
-      Revision 1.16  2006/04/06 17:00:30  jrichter
-      BUG FIX:  memory leak in porter...cleared out stdTablesAvailable/mfgTablesAvailable list.  since, prot_ansi object was not being destructed...it kept adding each time through connecting to device.  hopefully this is the root of all sentinel evil.
-
-      Revision 1.15  2005/12/20 17:19:53  tspar
-      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-
-      Revision 1.14  2005/12/12 20:34:28  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.13.2.1  2005/12/12 19:50:39  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.13  2005/09/29 21:18:24  jrichter
-      Merged latest 3.1 changes to head.
-
-      Revision 1.11.2.4  2005/08/12 19:54:01  jliu
-      Date Time Replaced
-
-      Revision 1.11.2.3  2005/07/28 21:38:28  jliu
-      string done after merge 1
-
-      Revision 1.11.2.2  2005/07/27 19:28:00  alauinger
-      merged from the head 20050720
-
-
-      Revision 1.11.2.1  2005/07/14 22:27:01  jliu
-      RWCStringRemoved
-
-      Revision 1.12  2005/06/16 19:17:59  jrichter
-      Sync ANSI code with 3.1 branch!
-
-      Revision 1.11  2005/03/14 21:44:16  jrichter
-      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
-
-      Revision 1.10  2005/02/10 23:23:55  alauinger
-      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-
-      Revision 1.9  2005/01/25 18:33:51  jrichter
-      added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
-
-      Revision 1.8  2005/01/03 23:07:14  jrichter
-      checking into 3.1, for use at columbia to test sentinel
-
-      Revision 1.7  2004/12/10 21:58:40  jrichter
-      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
-
-      Revision 1.6  2004/09/30 21:37:16  jrichter
-      Ansi protocol checkpoint.  Good point to check in as a base point.
-
-      Revision 1.5  2003/04/25 15:13:45  dsutton
-      Update of the base protocol pieces taking into account the manufacturer
-      tables, etc.  New starting point
-
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-
 #include "guard.h"
 #include "logger.h"
 #include "configparms.h"
@@ -101,7 +6,6 @@
 #include "prot_ansi.h"
 
 using namespace std;
-
 
 const CHAR * CtiANSIApplication::ANSI_DEBUGLEVEL = "ANSI_DEBUGLEVEL";
 //=========================================================================================================================================
@@ -368,7 +272,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 pktSize = _maxPktSize.sh;
             }
 
-            if (_currentTableID == Ansi::LoadProfileDataSet1)
+            if (_currentTableID == Cti::Protocols::Ansi::LoadProfileDataSet1)
             {
                 // make this generic
                 getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset, _currentType, pktSize, _maxNbrPkts );
@@ -389,7 +293,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 // sentinel likes full reads, kv2 likes partial read offsets
                 if  (getAnsiDeviceType() == focus)
                 {
-                    if (_currentTableID == Ansi::LoadProfileDataSet1)
+                    if (_currentTableID == Cti::Protocols::Ansi::LoadProfileDataSet1)
                     {
                         operation =  pread_offset;
                     }
@@ -398,7 +302,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 }
                 else if  (getAnsiDeviceType() == sentinel)
                 {
-                    if (_currentBytesExpected < (_maxPktSize.sh) || (_currentTableID == Ansi::CurrentRegisterData && (int)getFWVersionNumber() < 3)) //FW Version 5
+                    if (_currentBytesExpected < (_maxPktSize.sh) || (_currentTableID == Cti::Protocols::Ansi::CurrentRegisterData && (int)getFWVersionNumber() < 3)) //FW Version 5
                         operation =  full_read;
                     else
                         operation = pread_offset;
@@ -580,7 +484,7 @@ bool CtiANSIApplication::decode( CtiXfer &xfer, int aCommStatus )
                     else
                     {
                         // retries exhausted, figure out how to get from here (terminate session?)
-                        if (_currentTableID == Ansi::LoadProfileDataSet1 && _totalBytesInTable >= _LPBlockSize)
+                        if (_currentTableID == Cti::Protocols::Ansi::LoadProfileDataSet1 && _totalBytesInTable >= _LPBlockSize)
                         {
                             _partialProcessLPDataFlag = true;
                             setTableComplete (true);
@@ -619,7 +523,7 @@ bool CtiANSIApplication::decode( CtiXfer &xfer, int aCommStatus )
         else
         {
             // retries exhausted, figure out how to get from here (terminate session?)
-            if (_currentTableID == Ansi::LoadProfileDataSet1 && _totalBytesInTable >= _LPBlockSize)
+            if (_currentTableID == Cti::Protocols::Ansi::LoadProfileDataSet1 && _totalBytesInTable >= _LPBlockSize)
             {
                 _partialProcessLPDataFlag = true;
                 setTableComplete (true);
@@ -1135,7 +1039,7 @@ CtiANSIApplication::ANSI_STATES CtiANSIApplication::getNextState( ANSI_STATES cu
       break;
    case waitState:
       //next = loggedOff;
-       if (_currentTableID == Ansi::Undefined)
+       if (_currentTableID == Cti::Protocols::Ansi::Undefined)
        {
            next = terminated;
        }

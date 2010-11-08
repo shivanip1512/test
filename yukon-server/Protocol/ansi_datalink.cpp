@@ -1,60 +1,4 @@
 #include "yukon.h"
-
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   ansi_datalink
-*
-* Date:   6/20/2002
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_datalink.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $                                                198
-* DATE         :  $Date: 2007/05/31 21:30:23 $
-*    History:
-      $Log: ansi_datalink.cpp,v $
-      Revision 1.15  2007/05/31 21:30:23  mfisher
-      Reverted text in comments from "CTIDBG_new" back to "new"
-
-      Revision 1.14  2006/04/06 17:00:30  jrichter
-      BUG FIX:  memory leak in porter...cleared out stdTablesAvailable/mfgTablesAvailable list.  since, prot_ansi object was not being destructed...it kept adding each time through connecting to device.  hopefully this is the root of all sentinel evil.
-
-      Revision 1.13  2005/12/20 17:19:53  tspar
-      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-
-      Revision 1.12  2005/09/29 21:18:24  jrichter
-      Merged latest 3.1 changes to head.
-
-      Revision 1.11.2.2  2005/08/12 19:54:01  jliu
-      Date Time Replaced
-
-      Revision 1.11.2.1  2005/07/14 22:27:01  jliu
-      RWCStringRemoved
-
-      Revision 1.11  2005/03/14 21:44:16  jrichter
-      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
-
-      Revision 1.10  2005/02/10 23:23:55  alauinger
-      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-
-      Revision 1.9  2005/01/03 23:07:14  jrichter
-      checking into 3.1, for use at columbia to test sentinel
-
-      Revision 1.8  2004/12/10 21:58:40  jrichter
-      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
-
-      Revision 1.7  2004/09/30 21:37:16  jrichter
-      Ansi protocol checkpoint.  Good point to check in as a base point.
-
-      Revision 1.6  2003/04/25 15:13:45  dsutton
-      Update of the base protocol pieces taking into account the manufacturer
-      tables, etc.  New starting point
-
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "prot_ansi.h"
 #include "ansi_datalink.h"
 #include "ansi_application.h"
@@ -708,7 +652,8 @@ void CtiANSIDatalink::buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, short 
    data[3] = dataCount.ch[1];
    data[4] = dataCount.ch[0];
 
-   if (aTableID == Ansi::Focus_SetLpReadControl || aTableID == Ansi::Sentinel_BatteryLifeRequest) //batteryLifeInfo Request
+   if (aTableID == Cti::Protocols::Ansi::Focus_SetLpReadControl || 
+       aTableID == Cti::Protocols::Ansi::Sentinel_BatteryLifeRequest)
    {
        //BYTEULONG lid;
        for (int i = 0; i < dataSize; i++)

@@ -1,28 +1,11 @@
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_focus.h
-*
-* Class:
-* Date:   4/08/2010
-*
-* Author: Julie Richter
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-#ifndef __DEV_FOCUS_H__
-#define __DEV_FOCUS_H__
-
-
+#pragma once
 #include "dev_meter.h"
 #include "dlldefs.h"
 #include "dev_ansi.h"
-
 #include "prot_ansi_focus.h"
 #include "prot_ansi_sentinel.h"
 #include "dsm2.h"
-
 #include "types.h"
 #include "dllyukon.h"
 
@@ -35,7 +18,7 @@ public:
 
    CtiDeviceFocus();
    virtual ~CtiDeviceFocus();
-   virtual CtiProtocolANSI& getANSIProtocol( void );
+   virtual Cti::Protocols::Ansi::CtiProtocolANSI& getANSIProtocol( void );
 
    int buildScannerTableRequest (BYTE *ptr, UINT flags);
    int buildCommanderTableRequest (BYTE *ptr, UINT flags);
@@ -48,4 +31,4 @@ private:
 };
 
 
-#endif // #ifndef __DEV_FOCUS_H__
+

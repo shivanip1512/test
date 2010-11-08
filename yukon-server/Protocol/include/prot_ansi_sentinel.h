@@ -1,27 +1,6 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_ansi_sentinel.h
-*
-* Class:
-* Date:   8/27/2004
-*
-* Author: Julie Richter
-*
-*
-*-----------------------------------------------------------------------------*/
-#ifndef __PROT_ANSI_SENTINEL_H__
-#define __PROT_ANSI_SENTINEL_H__
-#pragma warning( disable : 4786)
+#pragma once
 
-
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
-#include <windows.h>
 #include "prot_ansi.h"
-//#include "prot_ansi_base.h"
-
 
 #define DAYS_SINCE_DEMAND_RESET    0x1c030008
 #define DAYS_SINCE_LAST_TEST       0x94000010
@@ -32,10 +11,9 @@
 #define GOOD_BATTERY_READING       0x9400000c
 #define DST_CONFIGURED             0x6c000008
 
-using namespace Ansi;
-class IM_EX_PROT CtiProtocolANSI_sentinel: public CtiProtocolANSI
+class IM_EX_PROT CtiProtocolANSI_sentinel: public Cti::Protocols::Ansi::CtiProtocolANSI
 {
-    typedef CtiProtocolANSI Inherited;
+    typedef Cti::Protocols::Ansi::CtiProtocolANSI Inherited;
 
    public:
 
@@ -66,5 +44,4 @@ class IM_EX_PROT CtiProtocolANSI_sentinel: public CtiProtocolANSI
 };
 
 
-#endif // #ifndef __PROT_ANSI_SENTINEL_H__
 

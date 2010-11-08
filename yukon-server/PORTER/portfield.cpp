@@ -1420,7 +1420,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         ULONG bytesReceived = 0;
 
                         CtiDeviceAnsi *ansiDev = (CtiDeviceAnsi*)Device.get();
-                        CtiProtocolANSI &ansi   = ansiDev->getANSIProtocol();
+                        Cti::Protocols::Ansi::CtiProtocolANSI &ansi   = ansiDev->getANSIProtocol();
 
                         ansi.setAnsiDeviceName(ansiDev->getName());
                         ansi.setAnsiDeviceType();

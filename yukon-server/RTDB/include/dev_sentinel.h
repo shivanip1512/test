@@ -1,9 +1,5 @@
 
-#pragma warning( disable : 4786)
-#ifndef __DEV_SENTINEL_H__
-#define __DEV_SENTINEL_H__
-
-
+#pragma once
 #include "dev_meter.h"
 #include "dev_ansi.h"
 #include "dlldefs.h"
@@ -50,7 +46,7 @@ public:
                        list< CtiMessage* >  &retList,
                        list< OUTMESS* >     &outList );
 
-   virtual CtiProtocolANSI& getANSIProtocol( void );
+   virtual Cti::Protocols::Ansi::CtiProtocolANSI& getANSIProtocol( void );
    int buildScannerTableRequest (BYTE *ptr, UINT flags);
    int buildCommanderTableRequest (BYTE *ptr, UINT flags);
    INT sendCommResult( INMESS *InMessage);
@@ -66,11 +62,10 @@ public:
 private:
     CtiProtocolANSI_sentinel   _ansiProtocol;
 
-    //UINT _parseFlags;
     string _result_string;
 
     unsigned long _lastLPTime;
 };
 
 
-#endif // #ifndef __DEV_SENTINEL_H__
+

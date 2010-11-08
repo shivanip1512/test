@@ -1,74 +1,9 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_ansi_kv2
-*
-* Date:   2/7/2002
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi_kv2.cpp-arc  $
-* REVISION     :  $Revision: 1.10.2.1 $
-* DATE         :  $Date: 2008/11/17 23:06:31 $
-*    History:
-      $Log: prot_ansi_kv2.cpp,v $
-      Revision 1.10.2.1  2008/11/17 23:06:31  jmarks
-      YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
-      **************************************************************************************************************
-      Removed "CTITYPES.H" from every file in the project, so far there were no
-      known side-effects or even compile errors, however, they could still happen.
 
-      Also, made many other changes for compiling.
-
-      The project now apparently compiles until reching the database
-      subdirectory, however, I have seen cases where there is apparent
-      regressing and need to re-work things.
-
-      However, enough changes have happened, that I felt it was good to
-      committ.
-      **************************************************************************************************************
-      Possibly other misc. changes since last commit.
-      *******************************************************
- 
-      Revision 1.10  2008/10/21 16:30:31  mfisher
-      YUK-6615 ANSI table class names and filenames are difficult to read
-      Renamed classes and filenames
-
-      Revision 1.9  2005/12/20 17:19:55  tspar
-      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-
-      Revision 1.8  2005/03/14 21:44:16  jrichter
-      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
-
-      Revision 1.7  2005/02/17 19:02:58  mfisher
-      Removed space before CVS comment header, moved #include "yukon.h" after CVS header
-
-      Revision 1.6  2005/02/10 23:23:57  alauinger
-      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-
-      Revision 1.5  2005/01/25 18:33:51  jrichter
-      added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
-
-      Revision 1.4  2005/01/03 23:07:14  jrichter
-      checking into 3.1, for use at columbia to test sentinel
-
-      Revision 1.3  2004/12/10 21:58:40  jrichter
-      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
-
-      Revision 1.2  2004/09/30 21:37:17  jrichter
-      Ansi protocol checkpoint.  Good point to check in as a base point.
-
-      Revision 1.1  2003/04/25 15:13:05  dsutton
-      Manufacturer additions to the base ansi protocol for the kv2
-
-
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-
 #include "guard.h"
 #include "logger.h"
 #include "prot_ansi_kv2.h"
+
 
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -162,12 +97,11 @@ void CtiProtocolANSI_kv2::setAnsiDeviceType()
 
 bool CtiProtocolANSI_kv2::snapshotData()
 {
-    //setWriteProcedureInProgress(true);
 
-    setCurrentAnsiWantsTableValues(Ansi::ProcedureInitiate,0,1,ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
-    getApplicationLayer().initializeTableRequest (Ansi::ProcedureInitiate, 0, 1, ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
+    setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::ProcedureInitiate,0,1,ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
+    getApplicationLayer().initializeTableRequest (Cti::Protocols::Ansi::ProcedureInitiate, 0, 1, ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
 
-    REQ_DATA_RCD reqData;
+    Cti::Protocols::Ansi::REQ_DATA_RCD reqData;
     reqData.proc.tbl_proc_nbr = 84;
     reqData.proc.std_vs_mfg_flag = 1;
     reqData.proc.selector = 0;

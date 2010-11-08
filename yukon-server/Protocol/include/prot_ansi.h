@@ -1,76 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_ansi
-*
-* Class:
-* Date:   6/13/2002
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi.h-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2008/10/21 16:30:31 $
-*    History:
-      $Log: prot_ansi.h,v $
-      Revision 1.19  2008/10/21 16:30:31  mfisher
-      YUK-6615 ANSI table class names and filenames are difficult to read
-      Renamed classes and filenames
+#pragma once
 
-      Revision 1.18  2008/08/13 22:40:57  jrichter
-      YUK-6310
-      Sentinel dial up meter reads causing exceptions when scanner reads in future or year(S) old lastLpTime dates.
-
-      Revision 1.17  2008/04/25 21:45:14  mfisher
-      YUK-5743 isTransactionComplete() changes not propagated to all protocols
-      changed isTransactionComplete() to const
-
-      Revision 1.16  2007/03/15 17:46:36  jrichter
-      Last Interval Quadrant KVar readings reporting back correctly from present value table 28.
-
-      Revision 1.15  2006/03/31 16:18:32  jrichter
-      BUG FIX & ENHANCEMENT:  fixed a memory leak (multiple allocations of lpBlocks, but only one deallocation), added quality retrieval.
-
-      Revision 1.14  2005/12/20 17:19:58  tspar
-      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-
-      Revision 1.13  2005/12/12 20:34:30  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.12  2005/09/29 21:19:24  jrichter
-      Merged latest 3.1 changes to head.
-
-      Revision 1.11  2005/06/16 19:18:00  jrichter
-      Sync ANSI code with 3.1 branch!
-
-      Revision 1.10  2005/03/14 21:44:16  jrichter
-      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
-
-      Revision 1.9  2005/02/10 23:23:58  alauinger
-      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-
-      Revision 1.8  2005/01/25 18:33:51  jrichter
-      added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
-
-      Revision 1.7  2004/12/10 21:58:42  jrichter
-      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
-
-      Revision 1.6  2004/09/30 21:37:19  jrichter
-      Ansi protocol checkpoint.  Good point to check in as a base point.
-
-      Revision 1.5  2004/04/22 21:12:54  dsutton
-      Last known revision DLS
-
-      Revision 1.4  2003/04/25 15:12:29  dsutton
-      This is now base protocol class for every ansi type meter
-
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PROT_ANSI_H__
-#define __PROT_ANSI_H__
-#pragma warning( disable : 4786)
-
-#include <windows.h>
 #include <rw/ordcltn.h>
 #include <list>
 
@@ -104,7 +33,7 @@
 #include "std_ansi_tbl_62.h"
 #include "std_ansi_tbl_63.h"
 #include "std_ansi_tbl_64.h"
-//#include "std_ansi_tbl_55.h"
+
 
 #define UINT64             __int64 //FIXME - figure out how to get a uint64
 #define BCD                unsigned char
@@ -117,6 +46,8 @@ using std::endl;
 //converters
 //these aren't needed anymore
 
+namespace Cti {
+namespace Protocols {
 namespace Ansi {
 
 typedef union
@@ -247,13 +178,6 @@ struct REQ_DATA_RCD
 //tables defined by the ansi standard
 //=========================================================================================================================================
 #pragma pack( push, 1)
-/*
-struct TABLE_27_PRESENT_REGISTER_SELECTION
-{
-   unsigned char        present_demand_select[255];
-   unsigned char        present_value_select[255];
-};
-*/
 
 //this one's usable on both sides
 struct ANSI_TABLE_WANTS
@@ -548,6 +472,6 @@ class IM_EX_PROT CtiProtocolANSI
      ANSI_SCAN_OPERATION _scanOperation;  //General Scan, Demand Reset,
      UINT _parseFlags;
 };
-}
+}}}
 
-#endif // #ifndef __PROT_ANSI_H__
+

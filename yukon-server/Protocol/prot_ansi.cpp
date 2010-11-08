@@ -105,7 +105,7 @@
 #include "ctidate.h"
 
 
-using namespace Ansi;
+using namespace Cti::Protocols::Ansi;
 const CHAR * CtiProtocolANSI::METER_TIME_TOLERANCE = "PORTER_SENTINEL_TIME_TOLERANCE";
 //const CHAR * CtiProtocolANSI::ANSI_DEBUGLEVEL = "ANSI_DEBUGLEVEL";
 //========================================================================================================================================

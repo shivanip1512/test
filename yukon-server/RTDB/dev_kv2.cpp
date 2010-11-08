@@ -21,6 +21,8 @@
 #include "cmdparse.h"
 #include "numstr.h"
 
+using namespace Cti::Protocols::Ansi;
+
 //=========================================================================================================================================
 
 CtiDeviceKV2::CtiDeviceKV2() :

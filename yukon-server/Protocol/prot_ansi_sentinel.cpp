@@ -135,12 +135,11 @@ void CtiProtocolANSI_sentinel::convertToManufacturerTable( BYTE *data, BYTE numB
 
 int CtiProtocolANSI_sentinel::calculateLPDataBlockStartIndex(ULONG lastLPTime)
 {
-    //setWriteProcedureInProgress(true);
 
-    setCurrentAnsiWantsTableValues(Ansi::ProcedureInitiate,0,1,ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
-    getApplicationLayer().initializeTableRequest (Ansi::ProcedureInitiate, 0, 1, ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
+    setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::ProcedureInitiate,0,1,ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
+    getApplicationLayer().initializeTableRequest (Cti::Protocols::Ansi::ProcedureInitiate, 0, 1, ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
 
-    REQ_DATA_RCD reqData;
+    Cti::Protocols::Ansi::REQ_DATA_RCD reqData;
     reqData.proc.tbl_proc_nbr = 22;
     reqData.proc.std_vs_mfg_flag = 1;
     reqData.proc.selector = 3;   
@@ -172,13 +171,11 @@ void CtiProtocolANSI_sentinel::setAnsiDeviceType()
 
 bool CtiProtocolANSI_sentinel::batteryLifeData()
 {
-    //setWriteProcedureInProgress(true);
-
-    setCurrentAnsiWantsTableValues(Ansi::Sentinel_BatteryLifeRequest,0,1,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
-    getApplicationLayer().initializeTableRequest (Ansi::Sentinel_BatteryLifeRequest, 0, 1, ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
+    setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::Sentinel_BatteryLifeRequest,0,1,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
+    getApplicationLayer().initializeTableRequest (Cti::Protocols::Ansi::Sentinel_BatteryLifeRequest, 0, 1, ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
 
     //Bogus - not used for this...just populating with dummy zeros.
-    REQ_DATA_RCD reqData;
+    Cti::Protocols::Ansi::REQ_DATA_RCD reqData;
     reqData.proc.tbl_proc_nbr = 0;
     reqData.proc.std_vs_mfg_flag = 0;
     reqData.proc.selector = 0;   

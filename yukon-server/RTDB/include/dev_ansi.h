@@ -1,9 +1,5 @@
 
-#pragma warning( disable : 4786)
-#ifndef __DEV_ANSI_H__
-#define __DEV_ANSI_H__
-
-
+#pragma once
 #include "dev_meter.h"
 #include "dlldefs.h"
 #include "prot_ansi.h"
@@ -13,7 +9,6 @@
 #include "dllyukon.h"
 #include "pt_analog.h"
 #include "pt_status.h"
-using namespace Ansi;
 
 
 class IM_EX_DEVDB CtiDeviceAnsi : public CtiDeviceMeter
@@ -60,7 +55,7 @@ public:
                        list< OUTMESS* >     &outList );
 
    
-   virtual CtiProtocolANSI& getANSIProtocol( void ) = 0;
+   virtual Cti::Protocols::Ansi::CtiProtocolANSI& getANSIProtocol( void ) = 0;
    virtual void processDispatchReturnMessage( list< CtiReturnMsg* > &retList, UINT archiveFlag );
    virtual int buildScannerTableRequest (BYTE *ptr, UINT flags) = 0;
    virtual int buildCommanderTableRequest (BYTE *ptr, UINT flags) = 0;
@@ -80,11 +75,10 @@ private:
     void createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< CtiReturnMsg* > &retList);
     void createPointData(CtiPointAnalogSPtr pPoint, double value, double timestamp,unsigned int archiveFlag, list< CtiReturnMsg* > &retList);
 
-    //UINT _parseFlags;
     string _result_string;
 
     unsigned long _lastLPTime;
 };
 
 
-#endif // #ifndef 
+
