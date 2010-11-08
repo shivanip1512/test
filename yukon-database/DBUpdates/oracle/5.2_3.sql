@@ -27,10 +27,7 @@ SET ControlUnits = 'MULTI_VOLT'
 WHERE ControlUnits = 'Multi Volt'; 
 UPDATE CapControlStrategy 
 SET ControlUnits = 'KVAR' 
-WHERE ControlUnits = 'kVar';
-UPDATE CapControlStrategy 
-SET ControlUnits = 'KVAR' 
-WHERE ControlUnits = 'kVAr'; 
+WHERE LOWER(ControlUnits) = 'kvar';
 UPDATE CapControlStrategy 
 SET ControlUnits = 'MULTI_VOLT_VAR' 
 WHERE ControlUnits = 'Multi Volt/VAR'; 
