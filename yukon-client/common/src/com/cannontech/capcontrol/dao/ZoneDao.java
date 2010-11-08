@@ -57,6 +57,8 @@ public interface ZoneDao {
     /**
      * Returns the zone with the regulatorId attached to it.
      * 
+     * throws OrphanedRegulatorException if there is no zone associtated with this regulator.
+     * 
      * @param regulatorId
      * @return
      */

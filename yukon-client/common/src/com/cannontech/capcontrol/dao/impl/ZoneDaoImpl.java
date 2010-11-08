@@ -10,6 +10,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.capcontrol.CapBankToZoneMapping;
+import com.cannontech.capcontrol.OrphanedRegulatorException;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.model.Zone;
@@ -117,7 +118,13 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sqlBuilder.append("FROM Zone");
         sqlBuilder.append("WHERE RegulatorId").eq(regulatorId);
         
-        Zone zone = yukonJdbcTemplate.queryForObject(sqlBuilder, zoneRowMapper);
+        Zone zone = null;
+        
+        try{
+            zone = yukonJdbcTemplate.queryForObject(sqlBuilder, zoneRowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            throw new OrphanedRegulatorException();
+        }
         
         return zone;
     }
