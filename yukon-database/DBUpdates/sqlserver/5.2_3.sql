@@ -108,6 +108,22 @@ ADD GraphStartPosition FLOAT;
 /* End YUK-9214 */
 
 /* Start YUK-9244 */
+IF 0 < (SELECT COUNT(*)
+        FROM YukonGroup YG 
+        JOIN YukonGroupRole YGR ON YG.GroupId = YGR.GroupId 
+        WHERE YGR.RolePropertyId = -20161 
+        AND YGR.Value NOT IN ('(none)', ' ', '0'))
+            RAISERROR('The database update requires manual interaction to continue. Please refer to YUK-9051 for more information on updating the ACCOUNT_NUMBER_LENGTH role property.', 16, 1);
+GO
+
+IF 0 < (SELECT COUNT(*)
+        FROM YukonGroup YG 
+        JOIN YukonGroupRole YGR ON YG.GroupId = YGR.GroupId 
+        WHERE YGR.RolePropertyId = -20162
+        AND YGR.Value NOT IN ('(none)', ' ', '0'))
+               RAISERROR('The database update requires manual interaction to continue. Please refer to YUK-9051 for more information on updating the ROTATION_DIGIT_LENGTH role property.', 16, 1);
+GO 
+
 DELETE FROM YukonGroupRole 
 WHERE RolePropertyID IN (-20161, -20162); 
 DELETE FROM YukonUserRole 

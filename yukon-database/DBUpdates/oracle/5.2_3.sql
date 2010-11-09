@@ -108,6 +108,36 @@ ADD GraphStartPosition FLOAT;
 /* End YUK-9214 */
 
 /* Start YUK-9244 */
+/* @start-block */
+DECLARE
+    errorFlagCount int;
+BEGIN
+    SELECT COUNT(*) INTO errorFlagCount 
+    FROM YukonGroup YG JOIN YukonGroupRole YGR ON YG.GroupId = YGR.GroupId 
+    WHERE YGR.RolePropertyId = -20161 
+    AND YGR.VALUE NOT IN ('(none)', ' ', '0');
+    IF 0 < errorFlagCount THEN
+        RAISE_APPLICATION_ERROR(-20001,'The database update requires manual interaction to continue. Please refer to YUK-9051 for more information on updating the ACCOUNT_NUMBER_LENGTH role property.');
+    END IF;
+END;
+/
+/* @end-block */
+
+/* @start-block */
+DECLARE
+    errorFlagCount int;
+BEGIN
+     SELECT COUNT(*) INTO errorFlagCount 
+     FROM YukonGroup YG JOIN YukonGroupRole YGR ON YG.GroupId = YGR.GroupId 
+     WHERE YGR.RolePropertyId = -20162 
+     AND YGR.VALUE NOT IN ('(none)', ' ', '0');
+     IF 0 < errorFlagCount THEN
+          RAISE_APPLICATION_ERROR(-20001,'The database update requires manual interaction to continue. Please refer to YUK-9051 for more information on updating the ROTATION_DIGIT_LENGTH role property.');
+     END IF;
+END;
+/
+/* @end-block */
+
 DELETE FROM YukonGroupRole 
 WHERE RolePropertyID IN (-20161, -20162); 
 DELETE FROM YukonUserRole 
