@@ -58,7 +58,7 @@
                             <c:if test="${fn:length(loadGroups) > 0}">
                                 <tags:selectWithItems path="programEnrollments[${status.index}].loadGroupId"
                                     items="${loadGroups}" itemLabel="name"
-                                    itemValue="paoIdentifier.paoId"/>
+                                    itemValue="loadGroupId"/>
                             </c:if>
                         </td>
                     </cti:checkRolesAndProperties>
