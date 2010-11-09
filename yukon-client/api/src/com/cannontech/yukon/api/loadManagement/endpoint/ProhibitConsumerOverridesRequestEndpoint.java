@@ -1,5 +1,6 @@
 package com.cannontech.yukon.api.loadManagement.endpoint;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.optout.service.OptOutService;
+import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
@@ -25,10 +27,15 @@ public class ProhibitConsumerOverridesRequestEndpoint {
     private Namespace ns = YukonXml.getYukonNamespace();
 	private RolePropertyDao rolePropertyDao;
     
+	private String programNameExpressionStr = "/y:prohibitConsumerOverridesRequest/y:programName";
+	
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="prohibitConsumerOverridesRequest")
     public Element invoke(Element prohibitConsumerOverridesRequest, LiteYukonUser user) throws Exception {
         
-        XmlVersionUtils.verifyYukonMessageVersion(prohibitConsumerOverridesRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        XmlVersionUtils.verifyYukonMessageVersion(prohibitConsumerOverridesRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
+        
+        SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(prohibitConsumerOverridesRequest);
+        String programName = requestTemplate.evaluateAsString(programNameExpressionStr);
         
         // init response
         Element resp = new Element("prohibitConsumerOverridesResponse", ns);
@@ -43,7 +50,16 @@ public class ProhibitConsumerOverridesRequestEndpoint {
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS, user);
             
-            optOutService.changeOptOutEnabledStateForToday(user, false);
+            if (StringUtils.isBlank(programName)) {
+                starsEventLogService.disablingOptOutUsageForTodayAttemptedByApi(user);
+                optOutService.changeOptOutEnabledStateForToday(user, false);
+
+                
+            } else {
+                starsEventLogService.disablingOptOutUsageForTodayByProgramAttemptedByApi(user, programName);
+                optOutService.changeOptOutEnabledStateForTodayByProgramName(user, false, programName);
+            }
+            
             resultElement = XmlUtils.createStringElement("success", ns, "");
             
         } catch (NotAuthorizedException e) {

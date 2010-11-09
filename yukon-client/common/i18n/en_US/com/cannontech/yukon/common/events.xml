@@ -381,14 +381,14 @@
 
     <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOuts">The user {1} canceled all the opt outs in the system.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgram">The user {1} canceled all the opt outs for the program {2}.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForToday">The user {1} enabled the ability for customers to opt out today.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayByProgram">The user {1} enabled the ability for customers to opt out of the {2} program today.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForToday">The user {1} disabled the ability for customers to opt out today.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayByProgram">The user {1} disabled the ability for customers to opt out of the {2} program today.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.optOutUsageEnabledToday">The user {1} enabled the ability for customers to opt out today.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.optOutUsageEnabledToday.2">Opt Out Enabled</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.optOutUsageEnabledTodayForProgram">The user {1} enabled the ability for customers to opt out of the {2} program today.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.optOutUsageEnabledTodayForProgram.3">Opt Out Enabled</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitToday">The user {1} changed the system to count opt outs for today.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayByProgram">The user {1} changed the system to count opt outs for the program {2} today.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitToday">The user {1} changed the system to not count opt outs today.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayByProgram">The user {1} changed the system to not count opt outs for the program {2} today.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitToday.2">Opt Out Counts</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayForProgram">The user {1} changed the system to count opt outs for the program {2} today.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayForProgram.3">Opt Out Counts</entry>
 
     <!-- System -->
     <entry key="yukon.common.events.system.login.loginWeb">User {1} logged in via Web from remote address {2}</entry>

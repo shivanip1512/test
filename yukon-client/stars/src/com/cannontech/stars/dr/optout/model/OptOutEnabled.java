@@ -41,7 +41,7 @@ public enum OptOutEnabled implements DisplayableEnum {
 	
 	public abstract boolean isEnabled();
 	
-	private final static String keyPrefix = "yukon.web.modules.dr.optOut.optOutEnabledEnum.";
+	private final static String keyPrefix = "yukon.web.modules.dr.optOutAdmin.optOutEnabledEnum.";
 
 	@Override
     public String getFormatKey() {

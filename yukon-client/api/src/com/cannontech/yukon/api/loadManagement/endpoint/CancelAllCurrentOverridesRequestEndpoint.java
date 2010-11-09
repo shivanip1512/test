@@ -43,12 +43,6 @@ public class CancelAllCurrentOverridesRequestEndpoint {
         Element resp = new Element("cancelAllCurrentOverridesResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, version);
         
-        if (StringUtils.isBlank(programName)) {
-            starsEventLogService.cancelCurrentOptOutsAttemptedByApi(user);
-        } else {
-            starsEventLogService.cancelCurrentOptOutsByProgramAttemptedByApi(user, programName);
-        }
-        
         // run service
         Element resultElement;
         try {
@@ -58,8 +52,10 @@ public class CancelAllCurrentOverridesRequestEndpoint {
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS, user);
             
             if (StringUtils.isBlank(programName)) {
+                starsEventLogService.cancelCurrentOptOutsAttemptedByApi(user);
             	optOutService.cancelAllOptOuts(user);
             } else {
+                starsEventLogService.cancelCurrentOptOutsByProgramAttemptedByApi(user, programName);
             	optOutService.cancelAllOptOutsByProgramName(programName, user);
             }
             

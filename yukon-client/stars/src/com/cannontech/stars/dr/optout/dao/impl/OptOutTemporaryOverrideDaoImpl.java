@@ -1,17 +1,15 @@
 package com.cannontech.stars.dr.optout.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.EnergyCompanyDao;
-import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -43,16 +41,12 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT OptOutValue, ProgramId, StartDate");
 		sql.append("FROM OptOutTemporaryOverride");
-		sql.append("WHERE OptOutType = ?");
-		sql.append("	AND StartDate <= ?");
-		sql.append("	AND StopDate > ?");
-		sql.append("	AND EnergyCompanyId = ?");
+		sql.append("WHERE OptOutType").eq(OptOutTemporaryOverrideType.COUNTS);
+		sql.append("	AND StartDate").lte(now);
+		sql.append("	AND StopDate").gt(now);
+		sql.append("	AND EnergyCompanyId").eq(energyCompany.getEnergyCompanyID());
 		
-		List<OptOutCountsDto> settings = yukonJdbcTemplate.query(sql.toString(), new OptOutCountsDtoRowMapper(), 
-				OptOutTemporaryOverrideType.COUNTS.toString(),
-				now,
-				now,
-				energyCompany.getEnergyCompanyID());
+		List<OptOutCountsDto> settings = yukonJdbcTemplate.query(sql, new OptOutCountsDtoRowMapper());
 			
 		if (settings.size() == 0) {
 			// Opt out counts has not been temporarily overridden for this energy company
@@ -64,24 +58,45 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 
 	
 	@Override
-	public List<OptOutTemporaryOverride> getCurrentOptOutTemporaryOverrides(int energyCompanyId) {
+	public OptOutTemporaryOverride findCurrentSystemOptOutTemporaryOverrides(int energyCompanyId) {
 		
 		Date now = new Date();
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT *");
 		sql.append("FROM OptOutTemporaryOverride");
-		sql.append("WHERE OptOutType").eq(OptOutTemporaryOverrideType.ENABLED.toString());
+		sql.append("WHERE OptOutType").eq(OptOutTemporaryOverrideType.ENABLED);
 		sql.append("  AND StartDate").lte(now);
 		sql.append("  AND StopDate").gt(now);
 		sql.append("  AND EnergyCompanyId").eq(energyCompanyId);
+		sql.append("  AND ProgramId IS NULL");
 		
-		List<OptOutTemporaryOverride> optOutTemporaryOverrides = 
-		    yukonJdbcTemplate.query(sql, new OptOutTemporaryOverrideRowMapper());
-		
-		return optOutTemporaryOverrides;
+		try {
+    		return yukonJdbcTemplate.queryForObject(sql, new OptOutTemporaryOverrideRowMapper());
+		} catch (EmptyResultDataAccessException e) {
+		    return null;
+        }
 	}
-	
+
+    @Override
+    public List<OptOutTemporaryOverride> getCurrentProgramOptOutTemporaryOverrides(int energyCompanyId) {
+        
+        Date now = new Date();
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT *");
+        sql.append("FROM OptOutTemporaryOverride");
+        sql.append("WHERE OptOutType").eq(OptOutTemporaryOverrideType.ENABLED);
+        sql.append("  AND StartDate").lte(now);
+        sql.append("  AND StopDate").gt(now);
+        sql.append("  AND EnergyCompanyId").eq(energyCompanyId);
+        sql.append("  AND ProgramId IS NOT NULL");
+        
+        List<OptOutTemporaryOverride> optOutTemporaryOverrides = 
+            yukonJdbcTemplate.query(sql, new OptOutTemporaryOverrideRowMapper());
+        
+        return optOutTemporaryOverrides;
+    }
 
 	@Override
 	@Transactional
@@ -174,17 +189,18 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 	}
 	
 	// Row Mappers
-	private final class OptOutCountsDtoRowMapper implements ParameterizedRowMapper<OptOutCountsDto> {
+	private final class OptOutCountsDtoRowMapper implements YukonRowMapper<OptOutCountsDto> {
 
         @Override
-        public final OptOutCountsDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public final OptOutCountsDto mapRow(YukonResultSet rs) throws SQLException {
             
-            OptOutCounts optOutCounts = OptOutCounts.valueOf(rs.getBoolean("OptOutValue"));
-            Integer programId = SqlUtils.getNullableInt(rs, "ProgramId");
-            Date startDate = rs.getTimestamp("StartDate");
+            OptOutCounts optOutCounts = rs.getEnum("OptOutValue", OptOutCounts.class);
+            Integer programId = rs.getNullableInt("ProgramId");
+            Date startDate = rs.getInstant("StartDate").toDate();
             OptOutCountsDto setting = new OptOutCountsDto(optOutCounts, programId, startDate);
             return setting;
         }
+
     }
     
 	private final class OptOutTemporaryOverrideRowMapper implements YukonRowMapper<OptOutTemporaryOverride> {
@@ -197,11 +213,11 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
             result.setOptOutTemporaryOverrideId(rs.getInt("OptOutTemporaryOverrideId"));
             result.setUserId(rs.getInt("UserId"));
             result.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
-            result.setOptOutType(OptOutTemporaryOverrideType.valueOf(rs.getString("OptOutType")));
+            result.setOptOutType(rs.getEnum("OptOutType", OptOutTemporaryOverrideType.class));
             result.setStartDate(rs.getInstant("StartDate"));
             result.setStopDate(rs.getInstant("StopDate"));
             result.setOptOutValue(rs.getInt("OptOutValue"));
-            result.setAssignedProgramId(SqlUtils.getNullableInt(rs.getResultSet(), "ProgramId"));
+            result.setAssignedProgramId(rs.getNullableInt("ProgramId"));
             
             return result;
         }

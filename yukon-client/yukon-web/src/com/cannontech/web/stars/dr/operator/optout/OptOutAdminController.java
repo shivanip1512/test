@@ -90,7 +90,7 @@ public class OptOutAdminController {
     	// programNameEnabledMap
     	OptOutEnabled defaultOptOutEnabledSetting = optOutStatusService.getDefaultOptOutEnabled(userContext.getYukonUser());
     	Map<Integer, OptOutEnabled> programSpecificEnabledOptOuts = 
-    	    optOutStatusService.getProgramSpecificEnabledOptOuts(userContext.getYukonUser()); 
+    	    optOutStatusService.getProgramSpecificEnabledOptOuts(energyCompany.getEnergyCompanyID()); 
 
         Map<String, OptOutEnabled> programNameEnabledMap = Maps.newLinkedHashMap();
         for (Entry<Integer, OptOutEnabled> programOptOutEnabledEntry : programSpecificEnabledOptOuts.entrySet()) {

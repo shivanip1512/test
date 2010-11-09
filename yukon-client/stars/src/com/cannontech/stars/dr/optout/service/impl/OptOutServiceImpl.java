@@ -523,12 +523,12 @@ public class OptOutServiceImpl implements OptOutService {
 		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
 		Integer webpublishingProgramId = null;
 		
-		if (!StringUtils.isBlank(programName)) {
+		if (StringUtils.isNotBlank(programName)) {
 			Program program = programService.getByProgramName(programName, energyCompany);
 			webpublishingProgramId = program.getProgramId();
 		}
 		
-		TimeZone systemTimeZone = systemDateFormattingService.getSystemTimeZone();
+		TimeZone systemTimeZone = energyCompany.getDefaultTimeZone();
 		Date now = new Date();
     	Date stopDate = TimeUtil.getMidnightTonight(systemTimeZone);
 		
@@ -539,7 +539,8 @@ public class OptOutServiceImpl implements OptOutService {
 	    	
 	    	// Update any currently active opt outs
 			optOutEventDao.changeCurrentOptOutCountState(energyCompany, OptOutCounts.valueOf(optOutCounts));
-    	
+			starsEventLogService.countTowardOptOutLimitToday(user, optOutCounts);
+			
     	} else {
     		
     		// Temporarily update count state
@@ -547,22 +548,8 @@ public class OptOutServiceImpl implements OptOutService {
 	    	
 	    	// Update any currently active opt outs
 			optOutEventDao.changeCurrentOptOutCountStateForProgramId(energyCompany, OptOutCounts.valueOf(optOutCounts), webpublishingProgramId);
+			starsEventLogService.countTowardOptOutLimitTodayForProgram(user, programName, optOutCounts);
     	}
-    	
-    	// Log the successful change in opt out counting.
-    	if (StringUtils.isNotBlank(programName)) {
-            if (optOutCounts) {
-                starsEventLogService.countTowardOptOutLimitTodayByProgram(user, programName);
-            } else {
-                starsEventLogService.doNotCountTowardOptOutLimitTodayByProgram(user, programName);
-            }
-        } else {
-            if (optOutCounts) {
-                starsEventLogService.countTowardOptOutLimitToday(user);
-            } else {
-                starsEventLogService.doNotCountTowardOptOutLimitToday(user);
-            }
-        }
 	}
 	
 	@Override
@@ -571,14 +558,9 @@ public class OptOutServiceImpl implements OptOutService {
 		TimeZone systemTimeZone = systemDateFormattingService.getSystemTimeZone();
 		Date now = new Date();
     	Date stopDate = TimeUtil.getMidnightTonight(systemTimeZone);
-		optOutTemporaryOverrideDao.setTemporaryOptOutEnabled(user, now, stopDate, optOutsEnabled);
-	
-	    // Log the successful enabled state change
-		if (optOutsEnabled) {
-		    starsEventLogService.enablingOptOutUsageForToday(user);
-		} else {
-		    starsEventLogService.disablingOptOutUsageForToday(user);
-		}
+
+    	optOutTemporaryOverrideDao.setTemporaryOptOutEnabled(user, now, stopDate, optOutsEnabled);
+        starsEventLogService.optOutUsageEnabledToday(user, optOutsEnabled);
 	}
 
     @Override
@@ -588,7 +570,7 @@ public class OptOutServiceImpl implements OptOutService {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
         Integer webpublishingProgramId = null;
         
-        if (!StringUtils.isBlank(programName)) {
+        if (StringUtils.isNotBlank(programName)) {
             Program program = programService.getByProgramName(programName, energyCompany);
             webpublishingProgramId = program.getProgramId();
         }
@@ -601,27 +583,14 @@ public class OptOutServiceImpl implements OptOutService {
 
             // Temporarily update enabled state
             optOutTemporaryOverrideDao.setTemporaryOptOutEnabled(user, now, stopDate, optOutsEnabled);
-        
+            starsEventLogService.optOutUsageEnabledToday(user, optOutsEnabled);
         } else {
 
             // Temporarily update enabled state
             optOutTemporaryOverrideDao.setTemporaryOptOutEnabled(user, now, stopDate, optOutsEnabled, webpublishingProgramId);
+            starsEventLogService.optOutUsageEnabledTodayForProgram(user, programName, optOutsEnabled);
         }
         
-        // Log the successful enabled state change
-        if (StringUtils.isNotBlank(programName)) {
-            if (optOutsEnabled) {
-                starsEventLogService.enablingOptOutUsageForTodayByProgram(user, programName);
-            } else {
-                starsEventLogService.disablingOptOutUsageForTodayByProgram(user, programName);
-            }
-        } else {
-            if (optOutsEnabled) {
-                starsEventLogService.enablingOptOutUsageForToday(user);
-            } else {
-                starsEventLogService.disablingOptOutUsageForToday(user);
-            }
-        }
     }
     
 	@Override

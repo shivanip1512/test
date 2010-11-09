@@ -40,12 +40,6 @@ public class CountOverridesTowardsLimitRequestEndpoint {
     	// init response
         Element resp = new Element("countOverridesTowardsLimitResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, version);
-        
-        if (StringUtils.isBlank(programName)) {
-            starsEventLogService.countTowardOptOutLimitTodayAttemptedByApi(user);
-        } else {
-            starsEventLogService.countTowardOptOutLimitTodayByProgramAttemptedByApi(user, programName);
-        }
 
         // run service
         Element resultElement;
@@ -56,8 +50,10 @@ public class CountOverridesTowardsLimitRequestEndpoint {
         	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_DATA_ACCESS, user);
         	
         	if (StringUtils.isBlank(programName)) {
+        	    starsEventLogService.countTowardOptOutLimitTodayAttemptedByApi(user);
         		optOutService.changeOptOutCountStateForToday(user, true);
         	} else {
+        	    starsEventLogService.countTowardOptOutLimitTodayByProgramAttemptedByApi(user, programName);
         		optOutService.changeOptOutCountStateForTodayByProgramName(user, true, programName);
         	}
             

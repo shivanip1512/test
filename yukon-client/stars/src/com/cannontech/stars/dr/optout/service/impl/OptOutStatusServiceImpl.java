@@ -47,8 +47,6 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 	private RoleDao roleDao;
 	private RolePropertyDao rolePropertyDao;
 	
-	private static int ENERGY_COMPANY_WIDE_ASSIGNED_PROGRAM_ID = -1; 
-	
 	@Override
 	public OptOutCountsDto getDefaultOptOutCounts(LiteYukonUser user) {
 
@@ -102,17 +100,13 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
         OptOutEnabled optOutEnabled = OptOutEnabled.valueOf(isSystemOptOutEnabledForOperator(user));
 
         LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
-        Map<Integer, OptOutTemporaryOverride> programIdOptOutTemporaryOverrideMap = 
-            getProgramIdOptOutTemporaryOverrideMap(energyCompany.getEnergyCompanyID());
+        OptOutTemporaryOverride energyCompanyOptOutTemporaryOverride = 
+            optOutTemporaryOverrideDao.findCurrentSystemOptOutTemporaryOverrides(energyCompany.getEnergyCompanyID());
         
         // Check if a system wide temporary override has occurred for this time frame and use that
         // value if it exists.
-        if (programIdOptOutTemporaryOverrideMap.size() > 0) {
-            for (OptOutTemporaryOverride optOutTemporaryOverride : programIdOptOutTemporaryOverrideMap.values()) {
-                if (optOutTemporaryOverride.getAssignedProgramId() == null ) {
-                    optOutEnabled = OptOutEnabled.valueOf(optOutTemporaryOverride.getOptOutValue());
-                }
-            }
+        if (energyCompanyOptOutTemporaryOverride != null) {
+            optOutEnabled = OptOutEnabled.valueOf(energyCompanyOptOutTemporaryOverride.getOptOutValue());
         }
         
         return optOutEnabled;
@@ -133,9 +127,11 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 
 		Map<Integer, OptOutTemporaryOverride> programIdOptOutTemporaryOverrideMap = 
 		    getProgramIdOptOutTemporaryOverrideMap(energyCompany.getEnergyCompanyID());
-		Set<Integer> optOutOverrideAssignedProgramIds = programIdOptOutTemporaryOverrideMap.keySet();
+		OptOutTemporaryOverride energyCompanyOptOutTemporaryOverride =
+		    optOutTemporaryOverrideDao.findCurrentSystemOptOutTemporaryOverrides(energyCompany.getEnergyCompanyID());
 		
 		if (programIdOptOutTemporaryOverrideMap.size() > 0) {
+		    Set<Integer> optOutOverrideAssignedProgramIds = programIdOptOutTemporaryOverrideMap.keySet();
 		    for (LMHardwareControlGroup lmHardwareControlGroup : lmHardwareControlGroups) {
 		        
 		        // Check to see if the program id is in the override list.
@@ -151,13 +147,12 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 		            
 		        // The program was not found in the override list. Now check the global entry.  
 		        } else {
-		            OptOutTemporaryOverride optOutTemporaryOverride =
-		                programIdOptOutTemporaryOverrideMap.get(ENERGY_COMPANY_WIDE_ASSIGNED_PROGRAM_ID);
-
-		            // Opt Outs are disabled energy company wide and therefore are disabled for this account.
-		            OptOutEnabled optOutEnabled = OptOutEnabled.valueOf(optOutTemporaryOverride.getOptOutValue());
-		            if (optOutEnabled == OptOutEnabled.DISABLED) {
-		                return false;
+		            if (energyCompanyOptOutTemporaryOverride != null) {
+    		            // Opt Outs are disabled energy company wide and therefore are disabled for this account.
+    		            OptOutEnabled optOutEnabled = OptOutEnabled.valueOf(energyCompanyOptOutTemporaryOverride.getOptOutValue());
+    		            if (optOutEnabled == OptOutEnabled.DISABLED) {
+    		                return false;
+    		            } 
 		            }
 		        }
 		    } 
@@ -182,12 +177,11 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 	}
 
 	@Override
-	public Map<Integer, OptOutEnabled> getProgramSpecificEnabledOptOuts(LiteYukonUser user) {
+	public Map<Integer, OptOutEnabled> getProgramSpecificEnabledOptOuts(int energyCompanyId) {
 	    Map<Integer, OptOutEnabled> programIdOptOutEnabledMap = Maps.newHashMap();
 
-	    LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
         List<OptOutTemporaryOverride> optOutTemporaryOverrides = 
-            optOutTemporaryOverrideDao.getCurrentOptOutTemporaryOverrides(energyCompany.getEnergyCompanyID());
+            optOutTemporaryOverrideDao.getCurrentProgramOptOutTemporaryOverrides(energyCompanyId);
 	    
 	    for (OptOutTemporaryOverride optOutTemporaryOverride : optOutTemporaryOverrides) {
 	        if (optOutTemporaryOverride.getAssignedProgramId() != null) {
@@ -237,14 +231,10 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 	private Map<Integer, OptOutTemporaryOverride> getProgramIdOptOutTemporaryOverrideMap(int energyCompanyId) {
 	    Map<Integer, OptOutTemporaryOverride> programIdOptOutTemporaryOverrideMap = Maps.newHashMap();
 	    
-        List<OptOutTemporaryOverride> optOutTemporaryOverrides = optOutTemporaryOverrideDao.getCurrentOptOutTemporaryOverrides(energyCompanyId);
+        List<OptOutTemporaryOverride> optOutTemporaryOverrides = optOutTemporaryOverrideDao.getCurrentProgramOptOutTemporaryOverrides(energyCompanyId);
 
         for (OptOutTemporaryOverride optOutTemporaryOverride : optOutTemporaryOverrides) {
             Integer assignedProgramId = optOutTemporaryOverride.getAssignedProgramId();
-            if (assignedProgramId == null) {
-                assignedProgramId = ENERGY_COMPANY_WIDE_ASSIGNED_PROGRAM_ID;
-            }
-            
             programIdOptOutTemporaryOverrideMap.put(assignedProgramId, optOutTemporaryOverride);
         }
         

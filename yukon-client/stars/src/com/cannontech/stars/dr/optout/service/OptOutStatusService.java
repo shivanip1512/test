@@ -30,10 +30,10 @@ public interface OptOutStatusService {
 
     /**
      * Return all OptOutTemporaryOverride settings where programId != null (and OptOutType==ENABLED).
-     * @param user
+     * @param energyCompanyId
      * @return
      */
-	public Map<Integer, OptOutEnabled> getProgramSpecificEnabledOptOuts(LiteYukonUser user);
+	public Map<Integer, OptOutEnabled> getProgramSpecificEnabledOptOuts(int energyCompanyId);
 
 	/**
 	 * Gets opt out counts setting for the "null programId" case.

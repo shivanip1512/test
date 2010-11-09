@@ -16,13 +16,20 @@ import com.cannontech.stars.dr.optout.model.OptOutTemporaryOverride;
 public interface OptOutTemporaryOverrideDao {
 
 	/**
-	 * The method returns all of the current OptOutTemporaryOverrides for a given energy company id.
-	 * These OptOutTemporaryOverride objects can be used to figure out if a user has access to opt out 
-	 * a device or not.
+	 * The method returns the current system level OptOutTemporaryOverride for a given energy company id.
+	 * This OptOutTemporaryOverride object can be used with getCurrentProgramOptOutTemporaryOverrides
+	 * to figure out if a user has access to opt out a device or not.
 	 */
-	public List<OptOutTemporaryOverride> getCurrentOptOutTemporaryOverrides(int energyCompanyId);
+	public OptOutTemporaryOverride findCurrentSystemOptOutTemporaryOverrides(int energyCompanyId);
 	
-	/**
+    /**
+     * The method returns all of the current program level OptOutTemporaryOverrides for a given energy company id.
+     * These OptOutTemporaryOverride objects can be used with getCurrentSystemOptOutTemporaryOverrides
+     * to figure out if a user has access to opt out a device or not.
+     */
+    public List<OptOutTemporaryOverride> getCurrentProgramOptOutTemporaryOverrides(int energyCompanyId);
+
+    /**
 	 * Method to determine if Opt Outs currently count against the limit
 	 * @param energyCompany - Energy company to check
 	 * @return True if opt outs temporarily count, False if temporarily don't count
@@ -66,6 +73,7 @@ public interface OptOutTemporaryOverrideDao {
 	 * @param stopDate - Date to stop temporary change
 	 * @param counts - True if temp count opt outs
 	 */
-	public void setTemporaryOptOutCountsForProgramId(LiteYukonUser user, Date startDate, Date stopDate, boolean counts, int webpublishingProgramId);
+	public void setTemporaryOptOutCountsForProgramId(LiteYukonUser user, Date startDate, Date stopDate, 
+	                                                 boolean counts, int webpublishingProgramId);
 
 }
