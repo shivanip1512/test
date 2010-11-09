@@ -3,6 +3,7 @@ package com.cannontech.web.taglib;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
@@ -15,19 +16,29 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessage;
 
 public class FlashScopeMessagesTag extends YukonTagSupport {
+    private final static String REQUEST_ATTR_NAME = "com.cannontech.web.taglib.FlashScopeMessagesTag.flashScopeMessages";
 
 	private boolean htmlEscape = true;
 	
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
     public void doTag() throws JspException, IOException {
     	
 		PageContext pageContext = (PageContext) getJspContext();
 		JspWriter out = getJspContext().getOut();
 		HttpSession session = pageContext.getSession();
-		
+		ServletRequest request = pageContext.getRequest();
+
 		FlashScope flashScope = new FlashScope(session);
 		List<FlashScopeMessage> flashScopeMessages = flashScope.pullMessages();
-		for (FlashScopeMessage flashScopeMessage : flashScopeMessages) {
+		List<FlashScopeMessage> requestMessages = (List<FlashScopeMessage>) request.getAttribute(REQUEST_ATTR_NAME);
+		if (requestMessages == null) {
+		    requestMessages = flashScopeMessages;
+		    request.setAttribute(REQUEST_ATTR_NAME, requestMessages);
+		} else if (!flashScopeMessages.isEmpty()) {
+		    requestMessages.addAll(flashScopeMessages);
+		}
+		for (FlashScopeMessage flashScopeMessage : requestMessages) {
 			
 			if (flashScopeMessage.getMessages().size() > 0) {
 			

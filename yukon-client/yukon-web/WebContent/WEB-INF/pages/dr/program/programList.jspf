@@ -37,6 +37,8 @@
 <cti:msg var="filterLabel"
 	key="yukon.web.modules.dr.programList.filters" />
 <tags:simplePopup id="filterPopup" title="${filterLabel}">
+    <cti:flashScopeMessages/>
+
 	<form:form action="${submitUrl}" commandName="backingBean" method="get">
 		<c:if test="${!empty param.controlAreaId}">
 			<input type="hidden" name="controlAreaId"

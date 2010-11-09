@@ -39,6 +39,8 @@
 	<cti:msg var="filterLabel"
 		key="yukon.web.modules.dr.controlAreaList.filters" />
 	<tags:simplePopup id="filterPopup" title="${filterLabel}">
+        <cti:flashScopeMessages/>
+
 		<form:form action="${submitUrl}" commandName="backingBean"
 			method="get">
 			<tags:sortFields backingBean="${backingBean}" />
