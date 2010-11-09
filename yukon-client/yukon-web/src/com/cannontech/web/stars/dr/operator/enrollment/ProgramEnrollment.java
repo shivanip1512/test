@@ -1,10 +1,8 @@
 package com.cannontech.web.stars.dr.operator.enrollment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.common.util.LazyList;
-import com.cannontech.common.util.SimpleSupplier;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentInventory;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentProgram;
 import com.google.common.collect.Lists;
@@ -54,9 +52,7 @@ public class ProgramEnrollment {
     private List<InventoryEnrollment> inventoryEnrollments;
 
     public ProgramEnrollment() {
-        inventoryEnrollments =
-            new LazyList<InventoryEnrollment>(new ArrayList<InventoryEnrollment>(),
-                    new SimpleSupplier<InventoryEnrollment>(InventoryEnrollment.class));
+        inventoryEnrollments = LazyList.instanceOf(InventoryEnrollment.class);
     }
 
     public ProgramEnrollment(

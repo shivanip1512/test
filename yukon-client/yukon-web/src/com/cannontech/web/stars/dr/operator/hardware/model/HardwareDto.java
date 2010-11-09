@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.dr.operator.hardware.model;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -8,7 +7,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.LazyList;
-import com.cannontech.common.util.SimpleSupplier;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
 import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareServiceImpl.HardwareHistory;
@@ -40,8 +38,8 @@ public class HardwareDto {
     private HardwareType hardwareType;
     private int hardwareTypeEntryId;
     private String meterNumber;
-    private List<SwitchAssignment> switchAssignments = new LazyList<SwitchAssignment>(new ArrayList<SwitchAssignment>(), new SimpleSupplier<SwitchAssignment>(SwitchAssignment.class));
-    
+    private List<SwitchAssignment> switchAssignments = LazyList.instanceOf(SwitchAssignment.class);
+
     public Integer getDeviceStatusEntryId() {
         return deviceStatusEntryId;
     }

@@ -1,10 +1,8 @@
 package com.cannontech.capcontrol.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.common.util.LazyList;
-import com.cannontech.common.util.SimpleSupplier;
 
 public class ZoneDto {
     
@@ -15,11 +13,9 @@ public class ZoneDto {
     private int regulatorId = -1;
     private double graphStartPosition;
     
-    private List<ZoneAssignmentCapBankRow> bankAssignments = new LazyList<ZoneAssignmentCapBankRow>(new ArrayList<ZoneAssignmentCapBankRow>(), 
-			new SimpleSupplier<ZoneAssignmentCapBankRow>(ZoneAssignmentCapBankRow.class));
+    private List<ZoneAssignmentCapBankRow> bankAssignments = LazyList.instanceOf(ZoneAssignmentCapBankRow.class);
     
-    private List<ZoneAssignmentPointRow> pointAssignments = new LazyList<ZoneAssignmentPointRow>(new ArrayList<ZoneAssignmentPointRow>(), 
-            										new SimpleSupplier<ZoneAssignmentPointRow>(ZoneAssignmentPointRow.class));
+    private List<ZoneAssignmentPointRow> pointAssignments = LazyList.instanceOf(ZoneAssignmentPointRow.class);
 
     public Integer getZoneId() {
         return zoneId;

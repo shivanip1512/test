@@ -1,12 +1,10 @@
 package com.cannontech.web.stars.dr.operator.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.LocalDate;
 
 import com.cannontech.common.util.LazyList;
-import com.cannontech.common.util.SimpleSupplier;
 import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
 import com.google.common.collect.Lists;
 
@@ -16,11 +14,9 @@ public class OptOutBackingBean {
     private Integer[] inventoryIds;
     private Integer currentSurveyIndex;
     private List<SurveyResult> surveyResults =
-        new LazyList<SurveyResult>(new ArrayList<SurveyResult>(),
-                new SimpleSupplier<SurveyResult>(SurveyResult.class));
+        LazyList.instanceOf(SurveyResult.class);
     private List<ScheduledOptOutQuestion> legacyQuestions =
-        new LazyList<ScheduledOptOutQuestion>(new ArrayList<ScheduledOptOutQuestion>(),
-                new SimpleSupplier<ScheduledOptOutQuestion>(ScheduledOptOutQuestion.class));
+        LazyList.instanceOf(ScheduledOptOutQuestion.class);
 
     public static class SurveyResultAnswer {
         private int questionId;
@@ -61,8 +57,7 @@ public class OptOutBackingBean {
         private int surveyId;
         private boolean answered;
         private List<SurveyResultAnswer> answers =
-            new LazyList<SurveyResultAnswer>(new ArrayList<SurveyResultAnswer>(),
-                    new SimpleSupplier<SurveyResultAnswer>(SurveyResultAnswer.class));
+            LazyList.instanceOf(SurveyResultAnswer.class);
 
         public SurveyResult() {
         }

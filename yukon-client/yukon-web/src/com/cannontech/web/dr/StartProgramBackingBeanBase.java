@@ -1,15 +1,10 @@
-/**
- * 
- */
 package com.cannontech.web.dr;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LazyList;
-import com.cannontech.common.util.SimpleSupplier;
 import com.cannontech.dr.program.model.GearAdjustment;
 
 public abstract class StartProgramBackingBeanBase {
@@ -25,8 +20,7 @@ public abstract class StartProgramBackingBeanBase {
     // only used for target cycle gears
     private boolean addAdjustments;
     private List<GearAdjustment> gearAdjustments =
-        new LazyList<GearAdjustment>(new ArrayList<GearAdjustment>(),
-                new SimpleSupplier<GearAdjustment>(GearAdjustment.class));
+        LazyList.instanceOf(GearAdjustment.class);
 
     public boolean isStartNow() {
         return startNow;

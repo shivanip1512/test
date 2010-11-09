@@ -1,13 +1,11 @@
 package com.cannontech.web.stars.dr.operator.hardware.model;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.common.util.LazyList;
-import com.cannontech.common.util.SimpleSupplier;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigType;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
@@ -17,8 +15,7 @@ public class HardwareConfigurationDto {
     private int inventoryId;
     private String action;
     private List<ProgramEnrollmentDto> programEnrollments =
-        new LazyList<ProgramEnrollmentDto>(new ArrayList<ProgramEnrollmentDto>(),
-                new SimpleSupplier<ProgramEnrollmentDto>(ProgramEnrollmentDto.class));
+        LazyList.instanceOf(ProgramEnrollmentDto.class);
 
     // hardware addressing fields (used only when TRACK_HARDWARE_ADDRESSING
     // role property is true)
