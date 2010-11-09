@@ -182,8 +182,8 @@
 				</div>
 				<div>
 					<cti:labeledImg key="disable" href="javascript:executeCommand('${regulatorId}',
-													'${enableRemoteCommandHolder.cmdId}',
-													'${enableRemoteCommandHolder.commandName}',
+													'${disableRemoteCommandHolder.cmdId}',
+													'${disableRemoteCommandHolder.commandName}',
 													'${regulatorType}',
 													'false');"/>
 				</div>
