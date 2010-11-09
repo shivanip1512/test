@@ -7,8 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.web.util.HtmlUtils;
 
-import com.cannontech.capcontrol.OrphanedRegulatorException;
 import com.cannontech.capcontrol.dao.ZoneDao;
+import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.common.pao.PaoType;

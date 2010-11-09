@@ -8,11 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.dao.ZoneDao;
+import com.cannontech.capcontrol.exception.RootZoneExistsException;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
 import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
 import com.cannontech.capcontrol.model.ZoneDto;
-import com.cannontech.capcontrol.RootZoneExistsException;
 import com.cannontech.capcontrol.model.ZoneHierarchy;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -39,7 +39,7 @@ public class ZoneServiceImpl implements ZoneService {
             
             //If we are creating this as the root. Make sure one is not already on the subbus.
             if (zoneDto.getParentZoneId() == null) {
-                Zone rootZone = zoneDao.getParentZoneByBusId(zoneDto.getSubstationBusId());
+                Zone rootZone = zoneDao.findParentZoneByBusId(zoneDto.getSubstationBusId());
                 if (rootZone != null) {
                     throw new RootZoneExistsException();
                 }

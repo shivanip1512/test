@@ -103,6 +103,7 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.substationBusId">A Substation Bus is required.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.regulatorId">A Voltage Regulator is required, please select a Regulator.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.success.saved">Zone was successfully saved.</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.zoneDeleteError">Error deleting Zone, delete any child Zones first.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.rootZoneExists">Error creating Zone. A root Zone already exists on this Substation bus, please select a Parent Zone.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.problemSavingZone">There was an error saving the Zone.</entry>
 	

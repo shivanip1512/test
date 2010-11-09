@@ -367,18 +367,18 @@ function updateRegulatorTapIndicator(id){
     	timeSpan.hide();
     	defaultSpan.hide();
         
-        if (icon == 'none') {
+        if (icon == 'NONE') {
         	defaultSpan.show();
-        } else if (icon == 'RaiseTap') {
+        } else if (icon == 'RAISE_TAP') {
         	raiseTapSpan.show();
         	timeSpan.show();
-        } else if (icon == 'LowerTap') {
+        } else if (icon == 'LOWER_TAP') {
         	lowerTapSpan.show();
         	timeSpan.show();
-        } else if (icon == 'LowerTapRecent') {
+        } else if (icon == 'LOWER_TAP_RECENT') {
         	lowerTapSpanRecent.show();
         	timeSpan.show();
-        } else if (icon == 'RaiseTapRecent') {
+        } else if (icon == 'RAISE_TAP_RECENT') {
         	raiseTapSpanRecent.show();
         	timeSpan.show();
         }

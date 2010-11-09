@@ -1,24 +1,18 @@
 package com.cannontech.capcontrol;
 
 public enum TapOperation {
-    NONE(0,"none"),
-    LOWER_TAP(1,"LowerTap"),
-    RAISE_TAP(2,"RaiseTap");
+    NONE(0),
+    LOWER_TAP(1),
+    RAISE_TAP(2);
 
     private int tapOperationId;
-    private String displayValue;
     
-    private TapOperation(int tapOperationId, String displayValue) {
+    private TapOperation(int tapOperationId) {
         this.tapOperationId = tapOperationId;
-        this.displayValue = displayValue;
     }
     
     public int getTapOperationId() {
         return tapOperationId;
-    }
-    
-    public String getDisplayValue() {
-        return displayValue;
     }
     
     static public TapOperation getForTapOperationId(int tapOperationId) {

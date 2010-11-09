@@ -23,9 +23,9 @@ public class VoltageRegulatorTapHandler implements VoltageRegulatorUpdaterHandle
         try {
             VoltageRegulatorFlags regulatorFlags = capControlCache.getVoltageRegulatorFlags(id);
             TapOperation tapOp = regulatorFlags.getLastOperation();
-            String retStr = tapOp.getDisplayValue(); 
+            String retStr = tapOp.name(); 
             if (regulatorFlags.isRecentOperation()) {
-                return retStr+"Recent";
+                return retStr+"_RECENT";
             } else {
                 return retStr;                    
             }

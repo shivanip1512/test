@@ -10,9 +10,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.capcontrol.CapBankToZoneMapping;
-import com.cannontech.capcontrol.OrphanedRegulatorException;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.dao.ZoneDao;
+import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
@@ -155,14 +155,14 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     }
     
     @Override
-    public Zone getParentZoneByBusId(int subBusId) {
+    public Zone findParentZoneByBusId(int subBusId) {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT ZoneId,ZoneName,RegulatorId,SubstationBusId,ParentId,GraphStartPosition");
         sqlBuilder.append("FROM Zone");
         sqlBuilder.append("WHERE SubstationBusId").eq(subBusId);
         sqlBuilder.append("AND ParentId IS NULL");
         
-        Zone zone = null;
+        Zone zone;
         
         try {
             zone = yukonJdbcTemplate.queryForObject(sqlBuilder, zoneRowMapper);
@@ -199,7 +199,8 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sqlBuilder.append("  FROM CCFeederSubAssignment");
         sqlBuilder.append("  WHERE SubstationBusId").eq(subBusId);
         sqlBuilder.append("  )");
-        sqlBuilder.append("  AND DeviceId NOT IN (SELECT DeviceId");
+        sqlBuilder.append("  AND DeviceId NOT IN (");
+        sqlBuilder.append("    SELECT DeviceId");
         sqlBuilder.append("    FROM CapBankToZoneMapping");
         sqlBuilder.append("    WHERE ZoneId IN (");
         sqlBuilder.append("      SELECT ZoneId");
@@ -220,7 +221,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT DeviceId");
         sqlBuilder.append("FROM CapBankToZoneMapping");
-        sqlBuilder.append("WHERE ZoneId IN (SELECT ZoneId");
+        sqlBuilder.append("WHERE ZoneId IN (");
         sqlBuilder.append("  SELECT ZoneId");
         sqlBuilder.append("  FROM Zone");
         sqlBuilder.append("  WHERE SubstationBusId").eq(subBusId);

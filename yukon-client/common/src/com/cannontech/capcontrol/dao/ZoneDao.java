@@ -72,7 +72,7 @@ public interface ZoneDao {
      * @param subBusId
      * @return
      */
-    public Zone getParentZoneByBusId(int subBusId);
+    public Zone findParentZoneByBusId(int subBusId);
  
     /**
      * Returns a list of all unassigned capBankIds on the subBusId.
