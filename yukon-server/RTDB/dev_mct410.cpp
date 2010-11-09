@@ -4187,7 +4187,7 @@ string Mct410Device::decodeDisconnectConfig(const DSTRUCT &DSt)
 
     resultStr += "Disconnect load limit connect delay: " + CtiNumStr(DSt.Message[7]) + string(" minutes\n");
 
-    int config_byte = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
+    boost::optional<int> config_byte;
 
     if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_Disconnect_ConfigReadEnhanced
         && DSt.Length >= 13 )
@@ -4200,6 +4200,10 @@ string Mct410Device::decodeDisconnectConfig(const DSTRUCT &DSt)
         //  threshhold is in units of Wh/minute, so we convert it into kW
         resultStr += "Disconnect verification threshhold: " + CtiNumStr((float)DSt.Message[12] / 16.667, 3) + string(" kW (" + CtiNumStr(DSt.Message[12]) + " Wh/minute)\n");
     }
+    else if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
+    {
+        config_byte = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
+    }
 
     point_info demand_threshhold = getData(DSt.Message + 5, 2, ValueType_DynamicDemand);
 
@@ -4211,7 +4215,7 @@ string Mct410Device::decodeDisconnectConfig(const DSTRUCT &DSt)
     //  no need to check if it's not supported
     if( isSupported(Feature_DisconnectCollar) )
     {
-        if( config_byte >= 0 && config_byte & 0x04 )
+        if( config_byte && *config_byte & 0x04 )
         {
             resultStr += "Autoreconnect enabled\n";
         }
@@ -4229,62 +4233,49 @@ string Mct410Device::decodeDisconnectConfig(const DSTRUCT &DSt)
 }
 
 
-string Mct410Device::decodeDisconnectDemandLimitConfig(const int config_byte, double demand_threshhold)
+string Mct410Device::decodeDisconnectDemandLimitConfig(const boost::optional<int> config_byte, double demand_threshold)
 {
     string resultStr;
 
-    //  only the config byte tells us if demand limit mode is really enabled
-    if( config_byte >= 0 )
+    //  only the config byte tells us if demand limit mode is really enabled, so punt otherwise
+    const bool demand_enabled  = config_byte && (*config_byte & 0x08);
+
+    if( demand_threshold && (demand_enabled || !config_byte) )
     {
-        if( config_byte & 0x08 && demand_threshhold )
+        if( demand_enabled  )
         {
             resultStr += "Demand limit mode enabled\n";
-            resultStr += "Disconnect demand threshold: ";
-            resultStr += CtiNumStr(demand_threshhold) + string(" kW\n");
         }
-        else
-        {
-            resultStr += "Disconnect demand threshold disabled\n";
-        }
+
+        resultStr += "Disconnect demand threshold: ";
+        resultStr += CtiNumStr(demand_threshold) + string(" kW\n");
     }
     else
     {
-        if( demand_threshhold )
-        {
-            resultStr += "Disconnect demand threshold: ";
-            resultStr += CtiNumStr(demand_threshhold) + string(" kW\n");
-        }
-        else
-        {
-            resultStr += "Disconnect demand threshold disabled\n";
-        }
+        resultStr += "Disconnect demand threshold disabled\n";
     }
 
     return resultStr;
 }
 
 
-string Mct410Device::decodeDisconnectCyclingConfig(const int config_byte, const int disconnect_minutes, const int connect_minutes)
+string Mct410Device::decodeDisconnectCyclingConfig(const boost::optional<int> config_byte, const int disconnect_minutes, const int connect_minutes)
 {
     string resultStr;
 
-    if( config_byte >= 0 )
+    //  cycling only - demand limit mode takes precedence, if it's set
+    const bool cycling_enabled = config_byte && (*config_byte & 0x18) == 0x10;
+
+    const bool has_minutes = disconnect_minutes && connect_minutes;
+
+    //  if we don't have the config byte, we report the cycling minutes if they're set
+    if( cycling_enabled || (!config_byte && has_minutes) )
     {
-        //  cycling only - demand limit mode takes precedence, if it's set
-        if( (config_byte & 0x18) == 0x10 )
+        if( cycling_enabled )
         {
             resultStr += "Disconnect cycling mode enabled\n";
+        }
 
-            resultStr += "Cycling mode - disconnect minutes: " + CtiNumStr(disconnect_minutes)  + string("\n");
-            resultStr += "Cycling mode - connect minutes   : " + CtiNumStr(connect_minutes) + string("\n");
-        }
-        else
-        {
-            resultStr += "Disconnect cycling mode disabled\n";
-        }
-    }
-    else if( disconnect_minutes && connect_minutes )
-    {
         resultStr += "Cycling mode - disconnect minutes: " + CtiNumStr(disconnect_minutes)  + string("\n");
         resultStr += "Cycling mode - connect minutes   : " + CtiNumStr(connect_minutes) + string("\n");
     }

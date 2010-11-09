@@ -393,8 +393,8 @@ protected:
 
     virtual std::string decodeDisconnectConfig(const DSTRUCT &DSt);
 
-    static std::string decodeDisconnectDemandLimitConfig(const int config_byte, double demand_threshhold);
-    static std::string decodeDisconnectCyclingConfig    (const int config_byte, const int disconnect_minutes, const int connect_minutes);
+    static std::string decodeDisconnectDemandLimitConfig(const boost::optional<int> config_byte, double demand_threshold);
+    static std::string decodeDisconnectCyclingConfig    (const boost::optional<int> config_byte, const int disconnect_minutes, const int connect_minutes);
 
     virtual std::string decodeDisconnectStatus(const DSTRUCT &DSt);
 

@@ -661,19 +661,19 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectDemandLimitConfig)
     //  Possibilities:  Has config.  Has demand limit bit.  Has demand threshold.
     struct
     {
-        const int config;
+        const boost::optional<int> config;
         const double demand_threshold;
         const string expected;
     }
     tc[] =
     {
-        {-1,   0.00, "Disconnect demand threshold disabled\n"},
-        {-1,   0.18, "Disconnect demand threshold: 0.180 kW\n"},
-        {0x00, 0.00, "Disconnect demand threshold disabled\n"},
-        {0x00, 0.19, "Disconnect demand threshold disabled\n"},
-        {0x08, 0.00, "Disconnect demand threshold disabled\n"},
-        {0x08, 0.20, "Demand limit mode enabled\n"
-                     "Disconnect demand threshold: 0.200 kW\n"}
+        {boost::none, 0.00, "Disconnect demand threshold disabled\n"},
+        {boost::none, 0.18, "Disconnect demand threshold: 0.180 kW\n"},
+        {0x00,        0.00, "Disconnect demand threshold disabled\n"},
+        {0x00,        0.19, "Disconnect demand threshold disabled\n"},
+        {0x08,        0.00, "Disconnect demand threshold disabled\n"},
+        {0x08,        0.20, "Demand limit mode enabled\n"
+                            "Disconnect demand threshold: 0.200 kW\n"}
     };
 
     BOOST_CHECK_EQUAL(tc[0].expected, test_Mct410Device::decodeDisconnectDemandLimitConfig(tc[0].config, tc[0].demand_threshold));
@@ -689,42 +689,42 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectCyclingConfig)
 {
     struct
     {
-        const int config;
+        const boost::optional<int> config;
         const unsigned disconnect_minutes;
         const unsigned connect_minutes;
         const string expected;
     }
     tc[] =
     {
-        {-1,   0, 0, "Disconnect cycling mode disabled\n"},
-        {-1,   0, 1, "Disconnect cycling mode disabled\n"},
-        {-1,   2, 0, "Disconnect cycling mode disabled\n"},
-        {-1,   3, 4, "Cycling mode - disconnect minutes: 3\n"
-                     "Cycling mode - connect minutes   : 4\n"},
-        {0x00, 0, 0, "Disconnect cycling mode disabled\n"},
-        {0x00, 0, 1, "Disconnect cycling mode disabled\n"},
-        {0x00, 2, 0, "Disconnect cycling mode disabled\n"},
-        {0x00, 3, 4, "Disconnect cycling mode disabled\n"},
-        {0x08, 0, 0, "Disconnect cycling mode disabled\n"},
-        {0x08, 0, 1, "Disconnect cycling mode disabled\n"},
-        {0x08, 2, 0, "Disconnect cycling mode disabled\n"},
-        {0x08, 3, 4, "Disconnect cycling mode disabled\n"},
-        {0x10, 0, 0, "Disconnect cycling mode enabled\n"
-                     "Cycling mode - disconnect minutes: 0\n"
-                     "Cycling mode - connect minutes   : 0\n"},
-        {0x10, 0, 1, "Disconnect cycling mode enabled\n"
-                     "Cycling mode - disconnect minutes: 0\n"
-                     "Cycling mode - connect minutes   : 1\n"},
-        {0x10, 2, 0, "Disconnect cycling mode enabled\n"
-                     "Cycling mode - disconnect minutes: 2\n"
-                     "Cycling mode - connect minutes   : 0\n"},
-        {0x10, 3, 4, "Disconnect cycling mode enabled\n"
-                     "Cycling mode - disconnect minutes: 3\n"
-                     "Cycling mode - connect minutes   : 4\n"},
-        {0x18, 0, 0, "Disconnect cycling mode disabled\n"},
-        {0x18, 0, 1, "Disconnect cycling mode disabled\n"},
-        {0x18, 2, 0, "Disconnect cycling mode disabled\n"},
-        {0x18, 3, 4, "Disconnect cycling mode disabled\n"}
+        {boost::none, 0, 0, "Disconnect cycling mode disabled\n"},
+        {boost::none, 0, 1, "Disconnect cycling mode disabled\n"},
+        {boost::none, 2, 0, "Disconnect cycling mode disabled\n"},
+        {boost::none, 3, 4, "Cycling mode - disconnect minutes: 3\n"
+                            "Cycling mode - connect minutes   : 4\n"},
+        {0x00,        0, 0, "Disconnect cycling mode disabled\n"},
+        {0x00,        0, 1, "Disconnect cycling mode disabled\n"},
+        {0x00,        2, 0, "Disconnect cycling mode disabled\n"},
+        {0x00,        3, 4, "Disconnect cycling mode disabled\n"},
+        {0x08,        0, 0, "Disconnect cycling mode disabled\n"},
+        {0x08,        0, 1, "Disconnect cycling mode disabled\n"},
+        {0x08,        2, 0, "Disconnect cycling mode disabled\n"},
+        {0x08,        3, 4, "Disconnect cycling mode disabled\n"},
+        {0x10,        0, 0, "Disconnect cycling mode enabled\n"
+                            "Cycling mode - disconnect minutes: 0\n"
+                            "Cycling mode - connect minutes   : 0\n"},
+        {0x10,        0, 1, "Disconnect cycling mode enabled\n"
+                            "Cycling mode - disconnect minutes: 0\n"
+                            "Cycling mode - connect minutes   : 1\n"},
+        {0x10,        2, 0, "Disconnect cycling mode enabled\n"
+                            "Cycling mode - disconnect minutes: 2\n"
+                            "Cycling mode - connect minutes   : 0\n"},
+        {0x10,        3, 4, "Disconnect cycling mode enabled\n"
+                            "Cycling mode - disconnect minutes: 3\n"
+                            "Cycling mode - connect minutes   : 4\n"},
+        {0x18,        0, 0, "Disconnect cycling mode disabled\n"},
+        {0x18,        0, 1, "Disconnect cycling mode disabled\n"},
+        {0x18,        2, 0, "Disconnect cycling mode disabled\n"},
+        {0x18,        3, 4, "Disconnect cycling mode disabled\n"}
     };
 
     BOOST_CHECK_EQUAL(tc[ 0].expected, test_Mct410Device::decodeDisconnectCyclingConfig(tc[ 0].config, tc[ 0].disconnect_minutes, tc[ 0].connect_minutes));
@@ -761,84 +761,84 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectConfig)
     {
         const int sspec_revision;
         const int dst_length;
-        const int config_byte;
+        const boost::optional<int> config_byte;
         const string expected;
     }
     test_cases[] =
     {
         //  sspec_revision < Mct410Device::SspecRev_Disconnect_Cycling
-        {11, 12,   -1, "Disconnect receiver address: 131844\n"
-                       "Disconnect load limit connect delay: 34 minutes\n"
-                       "Disconnect demand threshold: 0.129 kW\n"},
-        {11, 12, 0x00, "Disconnect receiver address: 131844\n"
-                       "Disconnect load limit connect delay: 34 minutes\n"
-                       "Disconnect demand threshold disabled\n"},
-        {11, 12, 0x04, "Disconnect receiver address: 131844\n"
-                       "Disconnect load limit connect delay: 34 minutes\n"
-                       "Autoreconnect enabled\n"
-                       "Disconnect demand threshold disabled\n"},
+        {11, 12, boost::none, "Disconnect receiver address: 131844\n"
+                              "Disconnect load limit connect delay: 34 minutes\n"
+                              "Disconnect demand threshold: 0.129 kW\n"},
+        {11, 12, 0x00,        "Disconnect receiver address: 131844\n"
+                              "Disconnect load limit connect delay: 34 minutes\n"
+                              "Disconnect demand threshold disabled\n"},
+        {11, 12, 0x04,        "Disconnect receiver address: 131844\n"
+                              "Disconnect load limit connect delay: 34 minutes\n"
+                              "Autoreconnect enabled\n"
+                              "Disconnect demand threshold disabled\n"},
         //  if the message length is >= 13, the config byte is in the message
-        {11, 13, 0x00, "Disconnect receiver address: 131844\n"
-                       "Disconnect load limit connect delay: 34 minutes\n"
-                       "Disconnect demand threshold disabled\n"},
-        {11, 13, 0x04, "Disconnect receiver address: 131844\n"
-                       "Disconnect load limit connect delay: 34 minutes\n"
-                       "Autoreconnect enabled\n"
-                       "Disconnect demand threshold disabled\n"},
+        {11, 13, 0x00,        "Disconnect receiver address: 131844\n"
+                              "Disconnect load limit connect delay: 34 minutes\n"
+                              "Disconnect demand threshold disabled\n"},
+        {11, 13, 0x04,        "Disconnect receiver address: 131844\n"
+                              "Disconnect load limit connect delay: 34 minutes\n"
+                              "Autoreconnect enabled\n"
+                              "Disconnect demand threshold disabled\n"},
 
         //  sspec_revision < Mct410Device::SspecRev_Disconnect_ConfigReadEnhanced
-        {19, 12,   -1, "Disconnect receiver address: 131844\n"
-                       "Disconnect load limit connect delay: 34 minutes\n"
-                       "Disconnect demand threshold: 0.129 kW\n"
-                       "Cycling mode - disconnect minutes: 10\n"
-                       "Cycling mode - connect minutes   : 11\n"},
-        {19, 12, 0x00, "Disconnect receiver address: 131844\n"
-                       "Disconnect load limit connect delay: 34 minutes\n"
-                       "Disconnect demand threshold disabled\n"
-                       "Disconnect cycling mode disabled\n"},
-        {19, 12, 0x04, "Disconnect receiver address: 131844\n"
-                       "Disconnect load limit connect delay: 34 minutes\n"
-                       "Autoreconnect enabled\n"
-                       "Disconnect demand threshold disabled\n"
-                       "Disconnect cycling mode disabled\n"},
+        {19, 12, boost::none, "Disconnect receiver address: 131844\n"
+                              "Disconnect load limit connect delay: 34 minutes\n"
+                              "Disconnect demand threshold: 0.129 kW\n"
+                              "Cycling mode - disconnect minutes: 10\n"
+                              "Cycling mode - connect minutes   : 11\n"},
+        {19, 12, 0x00,        "Disconnect receiver address: 131844\n"
+                              "Disconnect load limit connect delay: 34 minutes\n"
+                              "Disconnect demand threshold disabled\n"
+                              "Disconnect cycling mode disabled\n"},
+        {19, 12, 0x04,        "Disconnect receiver address: 131844\n"
+                              "Disconnect load limit connect delay: 34 minutes\n"
+                              "Autoreconnect enabled\n"
+                              "Disconnect demand threshold disabled\n"
+                              "Disconnect cycling mode disabled\n"},
         //  if the message length is >= 13, the config byte is in the message
-        {19, 13, 0x00, "Disconnect receiver address: 131844\n"
-                       "Disconnect load limit connect delay: 34 minutes\n"
-                       "Disconnect demand threshold disabled\n"
-                       "Disconnect cycling mode disabled\n"},
-        {19, 13, 0x04, "Disconnect receiver address: 131844\n"
-                       "Disconnect load limit connect delay: 34 minutes\n"
-                       "Autoreconnect enabled\n"
-                       "Disconnect demand threshold disabled\n"
-                       "Disconnect cycling mode disabled\n"},
+        {19, 13, 0x00,        "Disconnect receiver address: 131844\n"
+                              "Disconnect load limit connect delay: 34 minutes\n"
+                              "Disconnect demand threshold disabled\n"
+                              "Disconnect cycling mode disabled\n"},
+        {19, 13, 0x04,        "Disconnect receiver address: 131844\n"
+                              "Disconnect load limit connect delay: 34 minutes\n"
+                              "Autoreconnect enabled\n"
+                              "Disconnect demand threshold disabled\n"
+                              "Disconnect cycling mode disabled\n"},
 
         //  sspec_revision == Mct410Device::SspecRev_Disconnect_ConfigReadEnhanced
-        {20, 12,   -1, "Disconnect receiver address: 131844\n"
-                       "Disconnect load limit connect delay: 34 minutes\n"
-                       "Disconnect demand threshold: 0.129 kW\n"
-                       "Cycling mode - disconnect minutes: 10\n"
-                       "Cycling mode - connect minutes   : 11\n"},
-        {20, 12, 0x00, "Disconnect receiver address: 131844\n"
-                       "Disconnect load limit connect delay: 34 minutes\n"
-                       "Disconnect demand threshold disabled\n"
-                       "Disconnect cycling mode disabled\n"},
-        {20, 12, 0x04, "Disconnect receiver address: 131844\n"
-                       "Disconnect load limit connect delay: 34 minutes\n"
-                       "Autoreconnect enabled\n"
-                       "Disconnect demand threshold disabled\n"
-                       "Disconnect cycling mode disabled\n"},
+        {20, 12, boost::none, "Disconnect receiver address: 131844\n"
+                              "Disconnect load limit connect delay: 34 minutes\n"
+                              "Disconnect demand threshold: 0.129 kW\n"
+                              "Cycling mode - disconnect minutes: 10\n"
+                              "Cycling mode - connect minutes   : 11\n"},
+        {20, 12, 0x00,        "Disconnect receiver address: 131844\n"
+                              "Disconnect load limit connect delay: 34 minutes\n"
+                              "Disconnect demand threshold disabled\n"
+                              "Disconnect cycling mode disabled\n"},
+        {20, 12, 0x04,        "Disconnect receiver address: 131844\n"
+                              "Disconnect load limit connect delay: 34 minutes\n"
+                              "Autoreconnect enabled\n"
+                              "Disconnect demand threshold disabled\n"
+                              "Disconnect cycling mode disabled\n"},
         //  if the message length is >= 13, the config byte is in the message
-        {20, 13, 0x00, "Disconnect receiver address: 131844\n"
-                       "Disconnect load limit connect delay: 34 minutes\n"
-                       "Disconnect verification threshhold: 12.300 kW (205 Wh/minute)\n"
-                       "Disconnect demand threshold disabled\n"
-                       "Disconnect cycling mode disabled\n"},
-        {20, 13, 0x04, "Disconnect receiver address: 131844\n"
-                       "Disconnect load limit connect delay: 34 minutes\n"
-                       "Disconnect verification threshhold: 12.300 kW (205 Wh/minute)\n"
-                       "Autoreconnect enabled\n"
-                       "Disconnect demand threshold disabled\n"
-                       "Disconnect cycling mode disabled\n"},
+        {20, 13, 0x00,        "Disconnect receiver address: 131844\n"
+                              "Disconnect load limit connect delay: 34 minutes\n"
+                              "Disconnect verification threshhold: 12.300 kW (205 Wh/minute)\n"
+                              "Disconnect demand threshold disabled\n"
+                              "Disconnect cycling mode disabled\n"},
+        {20, 13, 0x04,        "Disconnect receiver address: 131844\n"
+                              "Disconnect load limit connect delay: 34 minutes\n"
+                              "Disconnect verification threshhold: 12.300 kW (205 Wh/minute)\n"
+                              "Autoreconnect enabled\n"
+                              "Disconnect demand threshold disabled\n"
+                              "Disconnect cycling mode disabled\n"},
     };
 
     const unsigned count = sizeof(test_cases) / sizeof(*test_cases);
@@ -862,7 +862,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectConfig)
             DSt.Message[9]  = 10;
             DSt.Message[10] = 11;
 
-            DSt.Message[11] = tc.config_byte;
+            DSt.Message[11] = tc.config_byte ? *tc.config_byte : 0xff;
             DSt.Message[12] = 205;
 
             DSt.Length      = tc.dst_length;
@@ -870,7 +870,11 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectConfig)
             test_Mct410Device mct410;
 
             mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, tc.sspec_revision);
-            mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, tc.config_byte);
+
+            if( tc.config_byte )
+            {
+                mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, *tc.config_byte);
+            }
 
             return mct410.decodeDisconnectConfig(DSt);
         }
