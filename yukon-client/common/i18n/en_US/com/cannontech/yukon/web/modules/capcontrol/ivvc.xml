@@ -45,6 +45,7 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.preOp">Pre Op Value</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.delta">Delta</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.static">Static</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.emptyTable">No items to display.</entry>
 	
 	<entry key="yukon.web.modules.capcontrol.ivvc.busView.edit.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.busView.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.gif</entry>

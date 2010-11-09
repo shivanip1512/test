@@ -183,7 +183,6 @@ public class ZoneDetailController {
         
         model.addAttribute("zoneId", zone.getId());
         model.addAttribute("searchResults", searchResults);
-        model.addAttribute("pointDeltas", searchResults.getResultList());
     }
     
     private void setupBreadCrumbs(ModelMap model, CapControlCache cache, Zone zone, boolean isSpecialArea) {

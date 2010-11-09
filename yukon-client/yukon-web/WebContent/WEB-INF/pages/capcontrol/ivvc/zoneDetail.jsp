@@ -338,11 +338,11 @@
 						
 						<c:if test="${searchResults.hitCount == 0}">
 							<tr>
-								<td>No items to display.</td>
+								<td><i:inline key=".deltas.emptyTable"/></td>
 							</tr>
 						</c:if>
 						
-						<c:forEach var="pointDelta" items="${pointDeltas}">
+						<c:forEach var="pointDelta" items="${searchResults.resultList}">
 							<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 								<td style="width:13%"><spring:escapeBody htmlEscape="true">${pointDelta.bankName}</spring:escapeBody></td>
 								<td style="width:13%"><spring:escapeBody htmlEscape="true">${pointDelta.cbcName}</spring:escapeBody></td>
