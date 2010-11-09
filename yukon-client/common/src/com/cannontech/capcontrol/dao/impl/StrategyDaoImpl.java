@@ -310,12 +310,12 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         for(PeakTargetSetting setting : targetSettings) {
             sql = new SqlStatementBuilder();
             sql.append("INSERT INTO CCStrategyTargetSettings");
-            sql.values(strategyId, setting.getName(), setting.getPeakValue(), peak);
+            sql.values(strategyId, setting.getType(), setting.getPeakValue(), peak);
             yukonJdbcTemplate.update(sql);
             
             sql = new SqlStatementBuilder();
             sql.append("INSERT INTO CCStrategyTargetSettings");
-            sql.values(strategyId, setting.getName(), setting.getOffPeakValue(), offpeak);
+            sql.values(strategyId, setting.getType(), setting.getOffPeakValue(), offpeak);
             yukonJdbcTemplate.update(sql);
         }
     }
@@ -348,7 +348,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
                 String offPeakValue = rs.getString("offPeakValue");
                 
                 TargetSettingType targetSetting = TargetSettingType.getByDisplayName(name);
-                PeakTargetSetting setting = new PeakTargetSetting(name, peakValue, offPeakValue, targetSetting.getUnits());
+                PeakTargetSetting setting = new PeakTargetSetting(targetSetting, peakValue, offPeakValue, targetSetting.getUnits());
                 
                 return setting;
             }

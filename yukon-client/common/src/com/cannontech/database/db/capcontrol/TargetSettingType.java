@@ -59,7 +59,8 @@ public enum TargetSettingType {
     }
     
     public PeakTargetSetting getPeakTargetSetting(){
-        PeakTargetSetting setting = new PeakTargetSetting(displayName, defaultValue, defaultValue, units);
+        TargetSettingType targetSettingType = getByDisplayName(displayName);
+		PeakTargetSetting setting = new PeakTargetSetting(targetSettingType, defaultValue, defaultValue, units);
         return setting;
     }
     

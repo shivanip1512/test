@@ -84,7 +84,7 @@
 					<c:forEach var="setting" items="${strategySettings}">
 						<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 							<td>
-								<spring:escapeBody htmlEscape="true">${setting.name}</spring:escapeBody>
+								<spring:escapeBody htmlEscape="true">${setting.type}</spring:escapeBody>
 							</td>
 							<td>
 								<spring:escapeBody htmlEscape="true">${setting.peakValue}</spring:escapeBody>
@@ -204,7 +204,6 @@
 		            <c:param name="${amChartsProduct}_flashHeight" value="100%" />
 		            <c:param name="${amChartsProduct}_preloaderColor" value="#000000" />
 		            <c:param name="${amChartsProduct}_settingsFile" value="${amChartFile}" />
-		            <c:param name="${amChartsProduct}_dataFile" value="${amChartFile}" />
 		        </c:url>
 		        
 		        <c:url var="expressInstallSrc" scope="page" value="/JavaScript/expressinstall.swf" />

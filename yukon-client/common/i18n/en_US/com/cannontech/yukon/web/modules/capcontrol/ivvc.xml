@@ -82,6 +82,7 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.substationBus">Substation Bus</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.regulator">Regulator</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.parentZone">Parent Zone</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.createAsParentZone">Create as Parent</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.graphStartPosition">Graph Start Position</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.picker">Add</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.updateButton">Update</entry>
@@ -107,6 +108,11 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.rootZoneExists">Error creating Zone. A root Zone already exists on this Substation bus, please select a Parent Zone.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.problemSavingZone">There was an error saving the Zone.</entry>
 	
+	<!-- Text used on both BusView and ZoneDetail Voltage Profile graphs -->
+	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndDist"><![CDATA[{0}<br>{1}<br>{2}<br>{3}<br>{4}<br>Dist:{5}]]></entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndNoDist"><![CDATA[{0}<br>{1}<br>{2}<br>{3}<br>{4}]]></entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndDist"><![CDATA[{0}<br>{1}<br>{2}<br>{3}<br>Dist:{4}]]></entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndNoDist"><![CDATA[{0}<br>{1}<br>{2}<br>{3}]]></entry>
 	
 	
 </properties>

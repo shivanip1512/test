@@ -30,61 +30,47 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<Zone> zoneTemplate;
     
-    private static final YukonRowMapper<Zone> zoneRowMapper = ZoneDaoImpl.createZoneRowMapper();
-    private static final YukonRowMapper<CapBankToZoneMapping> bankToZoneRowMapper = ZoneDaoImpl.createBankToZoneRowMapper();
-    private static final YukonRowMapper<PointToZoneMapping> pointToZoneRowMapper = ZoneDaoImpl.createPointToZoneRowMapper();
-    
-    private static final YukonRowMapper<Zone> createZoneRowMapper() {
-    	YukonRowMapper<Zone> rowMapper = new YukonRowMapper<Zone>() {
-            public Zone mapRow(YukonResultSet rs) throws SQLException {
-                
-                Zone zone = new Zone();
-                zone.setId(rs.getInt("ZoneId"));
-                zone.setName(rs.getString("ZoneName"));
-                zone.setRegulatorId(rs.getInt("RegulatorId"));
-                zone.setSubstationBusId(rs.getInt("SubstationBusId"));
-                zone.setGraphStartPosition(rs.getDouble("GraphStartPosition"));
-                
-                //This gets set to Zero by the RS call if the value is NULL
-                zone.setParentId(rs.getInt("ParentId"));
-                //If it was null, set it as such
-                if (rs.wasNull()) {
-                    zone.setParentId(null);
-                }
+    private static YukonRowMapper<Zone> zoneRowMapper = 
+    	new YukonRowMapper<Zone>() {
+		@Override
+        public Zone mapRow(YukonResultSet rs) throws SQLException {
+            
+            Zone zone = new Zone();
+            zone.setId(rs.getInt("ZoneId"));
+            zone.setName(rs.getString("ZoneName"));
+            zone.setRegulatorId(rs.getInt("RegulatorId"));
+            zone.setSubstationBusId(rs.getInt("SubstationBusId"));
+            zone.setGraphStartPosition(rs.getDouble("GraphStartPosition"));
+            zone.setParentId(rs.getNullableInt("ParentId"));
 
-                return zone;
-            }
-        };
-        return rowMapper;
-    }
+            return zone;
+        }
+    };
     
-    private static final YukonRowMapper<CapBankToZoneMapping> createBankToZoneRowMapper() {
-    	YukonRowMapper<CapBankToZoneMapping> rowMapper = new YukonRowMapper<CapBankToZoneMapping>() {
-            public CapBankToZoneMapping mapRow(YukonResultSet rs) throws SQLException {
-            	CapBankToZoneMapping bankToZone = new CapBankToZoneMapping();
-            	bankToZone.setDeviceId(rs.getInt("DeviceId"));
-            	bankToZone.setZoneId(rs.getInt("ZoneId"));
-            	bankToZone.setGraphPositionOffset(rs.getDouble("GraphPositionOffset"));
-            	bankToZone.setDistance(rs.getDouble("Distance"));
-                return bankToZone;
-            }
-        };
-        return rowMapper;
-    }
+    private static YukonRowMapper<CapBankToZoneMapping> bankToZoneRowMapper = 
+		new YukonRowMapper<CapBankToZoneMapping>() {
+		@Override
+        public CapBankToZoneMapping mapRow(YukonResultSet rs) throws SQLException {
+        	CapBankToZoneMapping bankToZone = new CapBankToZoneMapping();
+        	bankToZone.setDeviceId(rs.getInt("DeviceId"));
+        	bankToZone.setZoneId(rs.getInt("ZoneId"));
+        	bankToZone.setGraphPositionOffset(rs.getDouble("GraphPositionOffset"));
+        	bankToZone.setDistance(rs.getDouble("Distance"));
+            return bankToZone;
+        }
+    };
     
-    private static final YukonRowMapper<PointToZoneMapping> createPointToZoneRowMapper() {
-    	YukonRowMapper<PointToZoneMapping> rowMapper = new YukonRowMapper<PointToZoneMapping>() {
-            public PointToZoneMapping mapRow(YukonResultSet rs) throws SQLException {
-            	PointToZoneMapping pointToZone = new PointToZoneMapping();
-            	pointToZone.setPointId(rs.getInt("PointId"));
-            	pointToZone.setZoneId(rs.getInt("ZoneId"));
-            	pointToZone.setGraphPositionOffset(rs.getDouble("GraphPositionOffset"));
-            	pointToZone.setDistance(rs.getDouble("Distance"));
-                return pointToZone;
-            }
-        };
-        return rowMapper;
-    }
+    private static YukonRowMapper<PointToZoneMapping> pointToZoneRowMapper = 
+    	new YukonRowMapper<PointToZoneMapping>() {
+        public PointToZoneMapping mapRow(YukonResultSet rs) throws SQLException {
+        	PointToZoneMapping pointToZone = new PointToZoneMapping();
+        	pointToZone.setPointId(rs.getInt("PointId"));
+        	pointToZone.setZoneId(rs.getInt("ZoneId"));
+        	pointToZone.setGraphPositionOffset(rs.getDouble("GraphPositionOffset"));
+        	pointToZone.setDistance(rs.getDouble("Distance"));
+            return pointToZone;
+        }
+    };
     
     @Override
     public Zone getZoneById(int zoneId) {

@@ -4,12 +4,8 @@
 
 <%@ attribute name="module" required="true" type="java.lang.String"%>
 <%@ attribute name="pageName" required="true" type="java.lang.String"%>
-<%@ attribute name="popupName" required="true" type="java.lang.String"%>
+<%@ attribute name="fragmentName" required="true" type="java.lang.String"%>
 
-<cti:flashScopeMessages/>
-
-<cti:standardMsgScopeHelper module="${module}" pageName="${pageName}" fragmentName="${popupName}">
-    <div id="${popupName}_ContentWrapper">
-        <jsp:doBody/>
-    </div>
+<cti:standardMsgScopeHelper module="${module}" pageName="${pageName}" fragmentName="${fragmentName}">
+	<jsp:doBody/>
 </cti:standardMsgScopeHelper>

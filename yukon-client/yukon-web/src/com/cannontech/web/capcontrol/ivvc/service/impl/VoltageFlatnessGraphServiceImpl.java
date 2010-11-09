@@ -1,6 +1,8 @@
 package com.cannontech.web.capcontrol.ivvc.service.impl;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,6 +13,7 @@ import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -30,6 +33,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.TargetSettingType;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraphSettings;
@@ -39,7 +43,9 @@ import com.cannontech.web.capcontrol.ivvc.models.VfPoint;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.SubBus;
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 
 public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphService {
     
@@ -54,11 +60,12 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     private FilterCacheFactory filterCacheFactory;
     private PointFormattingService pointFormattingService;
     private PaoLoadingService paoLoadingService;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     //Change these to alter the color on the chart.
     private final String zoneLineColor = "#047D08";
     private final String zoneTransitionColor = "#E32222";
-    private final String grayAreaColor = "#000000";
+    private final String blackAreaColor = "#000000";
     
     private final int grayAreaId = -2;
     private final int zoneTransitionId = -3;
@@ -69,11 +76,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     private final String bulletRoundOutlined = "round_outlined";
     
     //Every Graph must have a unique id
-    private int graphId = 0;
-    
-    private int getGraphIdAndIncrement() {
-    	return graphId++;
-    }
+    private AtomicInteger graphId = new AtomicInteger();
     
     //Used for generating the Lower and Upper gray areas on the graph
     public static double getMaxXPosition(List<VfLine> lines) {
@@ -112,34 +115,26 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         double upperLimit = getUpperVoltLimitForSubBus(cache, subBusId);
         double lowerLimit = getLowerVoltLimitForSubBus(cache, subBusId);
 
-        double graphStartPosition = 0.0;
-        int index = 0;
         //Build A line for each zone on the bus.
         for (Zone zone : zones) {
-        	graphStartPosition += zone.getGraphStartPosition();
             VfLine line = buildLineDataForZone(userContext, cache, zone);
-            //subtract 1 so the next zone's first point is on the same vertical axis as the last point of the previous zone
             lines.add(line);
             
-            //Vertical Zone Border line
-        	if (index < zones.size()-1) {
-        		VfLine zoneLine = new VfLine();
-        		List<VfPoint> points = Lists.newArrayList();
-        		
-        		//Y-Axis value of the zone transition point is the next zone's regulator point value
-        		double xRegPosition = getGraphStartPositionForZone(zones.get(index+1));
+            //Vertical Zone Border line - Colored Red (don't add this if the zone starts on the Y-Axis)
+    		double xRegPosition = getGraphStartPositionForZone(zone);
+    		if (xRegPosition != 0) {
         		VfPoint pointHigh = new VfPoint(xRegPosition, upperLimit);
         		VfPoint pointLow = new VfPoint(xRegPosition, lowerLimit);
+        		List<VfPoint> points = Lists.newArrayList();
         		points.add(pointHigh);
         		points.add(pointLow);
+        		VfLine zoneLine = new VfLine();
         		zoneLine.setId(zoneTransitionId);
-        		zoneLine.setZoneName("Zone Transition");
         		zoneLine.setPoints(points);
         		VfLineSettings lineSetting = new VfLineSettings(zoneTransitionColor, 0, null, false, false, false, true);
         		zoneLine.setSettings(lineSetting);
         		lines.add(zoneLine);
         	}
-        	index++;
         }
         
         double maxXPosition = getMaxXPosition(lines);
@@ -224,7 +219,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 		VfPoint point3 = new VfPoint(maxXPosition+100, 300);
 		VfPoint point4 = new VfPoint(maxXPosition+100, upperVoltLimit);
 		
-		List<VfPoint> points = Lists.newArrayList();
+		List<VfPoint> points = Lists.newArrayListWithCapacity(4);
 		points.add(point1);
 		points.add(point2);
 		points.add(point3);
@@ -234,7 +229,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 		grayAreaLine.setId(grayAreaId);
 		grayAreaLine.setPoints(points);
 		
-		VfLineSettings lineSettings = new VfLineSettings(grayAreaColor, 10, null, false, false, false, false);
+		VfLineSettings lineSettings = new VfLineSettings(blackAreaColor, 10, null, false, false, false, false);
 		grayAreaLine.setSettings(lineSettings);
 		
 		return grayAreaLine;
@@ -246,7 +241,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 		VfPoint point3 = new VfPoint(maxXPosition+100, lowerVoltLimit);
 		VfPoint point4 = new VfPoint(maxXPosition+100, -10);
 		
-		List<VfPoint> points = Lists.newArrayList();
+		List<VfPoint> points = Lists.newArrayListWithCapacity(4);
 		points.add(point1);
 		points.add(point2);
 		points.add(point3);
@@ -256,26 +251,19 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 		grayAreaLine.setId(grayAreaId);
 		grayAreaLine.setPoints(points);
 		
-		VfLineSettings lineSettings = new VfLineSettings(grayAreaColor, 10, null, false, false, false, false);
+		VfLineSettings lineSettings = new VfLineSettings(blackAreaColor, 10, null, false, false, false, false);
 		grayAreaLine.setSettings(lineSettings);
 		
 		return grayAreaLine;
 	}
 	
 	private double getGraphStartPositionForZone(Zone zone) {
-		double startingPos = zone.getGraphStartPosition();
-		Zone parent = null;
-		if (zone.getParentId() != null) {
-			parent = zoneService.getZoneById(zone.getParentId());
-		}
+		double startingPos = 0;
+		startingPos = zone.getGraphStartPosition();
 		
-		while(parent != null) {
-			startingPos += parent.getGraphStartPosition();
-			if (parent.getParentId() != null) {
-				parent = zoneService.getZoneById(parent.getParentId());
-			} else {
-				parent = null;
-			}
+		if (zone.getParentId() != null) {
+			Zone parent = zoneService.getZoneById(zone.getParentId());
+			startingPos += getGraphStartPositionForZone(parent);
 		}
 		
 		return startingPos;
@@ -292,38 +280,33 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         VfPoint regulatorGraphPoint = getRegulatorVfPoint(userContext, zone, graphStartPosition);
         points.add(regulatorGraphPoint);
         
-        //Add a point on the line for each bank in the zone
+        //Add the cap banks
         for (CapBankToZoneMapping bankToZone : banksToZone) {
             List<Integer> bankPoints = dynamicDataDao.getMonitorPointsForBank(bankToZone.getDeviceId());
-            
-            //Is there a point with an order less than this Bank? If so add that first
-            PointToZoneMapping pointToZone = getNextPointToZone(bankToZone, pointsToZone);
-            while (pointToZone != null ) {
-            	VfPoint graphPoint = getPointToZoneVfPoint(userContext, pointToZone, zone, graphStartPosition);
-                points.add(graphPoint);
-                pointToZone = getNextPointToZone(bankToZone, pointsToZone);
-            }
-            
             for (Integer pointId : bankPoints) {
-            	LitePoint litePoint = pointDao.getLitePoint(pointId);
-            	String pointName = litePoint.getPointName();
-            	
-            	if (pointName.equals("Voltage")) {
-            		VfPoint graphPoint = getCapBankToZoneVfPoint(userContext, cache, bankToZone, pointId, zone, graphStartPosition);
-                    points.add(graphPoint);
-            	}
+        		VfPoint graphPoint = getCapBankToZoneVfPoint(userContext, cache, bankToZone, pointId, zone, graphStartPosition);
+                points.add(graphPoint);
             }
         }
         
-        //Add the rest of the points onto the graph if there are any left
+        //Add the additional points
         for (PointToZoneMapping pointToZone : pointsToZone) {
         	VfPoint graphPoint = getPointToZoneVfPoint(userContext, pointToZone, zone, graphStartPosition);
             points.add(graphPoint);
         }
         
+        Ordering<VfPoint> positionOrderer = Ordering.natural().onResultOf(new Function<VfPoint, Double>() {
+            @Override
+            public Double apply(VfPoint from) {
+                return from.getX();
+            }
+        });
+        
+        Collections.sort(points, positionOrderer);
+        
         line.setZoneName(zone.getName());
         line.setPoints(points);
-        line.setId(getGraphIdAndIncrement());
+        line.setId(graphId.getAndIncrement());
         
         VfLineSettings lineSetting = new VfLineSettings(zoneLineColor, 0, bulletRoundOutlined, true, true, true, false);
         line.setSettings(lineSetting);
@@ -331,32 +314,30 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         return line;
     }
 	
-	private PointToZoneMapping getNextPointToZone(CapBankToZoneMapping bankToZone, List<PointToZoneMapping> pointsToZone) {
-		
-		double bankOrder = bankToZone.getGraphPositionOffset();
-		
-		for (PointToZoneMapping pointToZone : pointsToZone) {
-			double pointOrder = pointToZone.getGraphPositionOffset();
-			if (pointOrder < bankOrder) {
-				pointsToZone.remove(pointToZone);
-				return pointToZone; 
-			}
-		}
-		
-		return null;
-	}
-	
 	private String getDescription(PointValueQualityHolder pointValue, LitePoint litePoint, DisplayablePao displayablePao, Zone zone, double distance, YukonUserContext userContext) {
+		MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+		
+		String description = "";
+		String pointValueString = pointFormattingService.getValueString(pointValue, Format.SHORT, userContext);
 		String timestamp = dateFormattingService.format(pointValue.getPointDataTimeStamp(), DateFormatEnum.BOTH, userContext);
-		String description = pointFormattingService.getValueString(pointValue, Format.SHORT, userContext);
 		
 		if (litePoint != null) {
-			description += "\n" + litePoint.getPointName();
-		}
-		description += "\n" + displayablePao.getName() + "\n" + timestamp + "\n" + zone.getName();
-		
-		if (distance != 0) {
-			description +=  "\nDist: " + distance; 
+			String litePointString = litePoint.getPointName();
+			if (distance != 0) {
+				description = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndDist", 
+						pointValueString, litePointString, displayablePao.getName(), timestamp, zone.getName(), distance);
+			} else {
+				description = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndNoDist", 
+						pointValueString, litePointString, displayablePao.getName(), timestamp, zone.getName());
+			}
+		} else {
+			if (distance != 0) {
+				description = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndDist", 
+						pointValueString, displayablePao.getName(), timestamp, zone.getName(), distance);
+			} else {
+				description = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndNoDist", 
+						pointValueString, displayablePao.getName(), timestamp, zone.getName());
+			}
 		}
 		
 		return description;
@@ -404,7 +385,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         //Default Upper value
         double yUpper = Double.parseDouble(TargetSettingType.UPPER_VOLT_LIMIT.getDefaultValue());
         for ( PeakTargetSetting setting : strategy.getTargetSettings()) {
-            if ( TargetSettingType.UPPER_VOLT_LIMIT.getDisplayName().equals((setting.getName())) ) {
+            if (setting.getType() == TargetSettingType.UPPER_VOLT_LIMIT) {
                 yUpper = Double.parseDouble(setting.getPeakValue());
             }
         }
@@ -417,7 +398,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         //Default lower value
         double yLower = Double.parseDouble(TargetSettingType.LOWER_VOLT_LIMIT.getDefaultValue());;
         for ( PeakTargetSetting setting : strategy.getTargetSettings()) {
-            if ( TargetSettingType.LOWER_VOLT_LIMIT.getDisplayName().equals((setting.getName())) ) {
+            if (setting.getType() == TargetSettingType.LOWER_VOLT_LIMIT) {
                 yLower = Double.parseDouble(setting.getPeakValue());
             }
         }
@@ -477,5 +458,10 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     @Autowired
     public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
 		this.paoLoadingService = paoLoadingService;
+	}
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+		this.messageSourceResolver = messageSourceResolver;
 	}
 }

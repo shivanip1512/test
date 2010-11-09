@@ -11,11 +11,11 @@ import org.apache.commons.lang.StringUtils;
 import com.cannontech.web.taglib.MessageScopeHelper.MessageScope;
 import com.google.common.collect.Lists;
 
-public class StandardPopupMsgScopeTag extends BodyTagSupport {
+public class StandardMsgScopeHelperTag extends BodyTagSupport {
 
     private String module;
     private String pageName;
-    private String popupName;
+    private String fragmentName;
     
     @Override
     public int doStartTag() throws JspException {
@@ -31,7 +31,7 @@ public class StandardPopupMsgScopeTag extends BodyTagSupport {
         for (int i = 0; i < pageNameParts.length; i++) {
             baseSearchPath = baseSearchPath + "." + pageNameParts[i];
             finalPaths.add(baseSearchPath); // Add scope for the pageName or pageName part.
-            popupPaths.add(baseSearchPath + "." + popupName); // Add scope for the pageName/part.popupName
+            popupPaths.add(baseSearchPath + "." + fragmentName); // Add scope for the pageName/part.popupName
         }
         
         messageScope.pushScope(finalPaths.toArray(new String[finalPaths.size()]));
@@ -61,12 +61,12 @@ public class StandardPopupMsgScopeTag extends BodyTagSupport {
         this.pageName = pageName;
     }
 
-    public String getPopupName() {
-        return popupName;
+    public String getFragmentName() {
+        return fragmentName;
     }
 
-    public void setPopupName(String popupName) {
-        this.popupName = popupName;
+    public void setFragmentName(String fragmentName) {
+        this.fragmentName = fragmentName;
     }
     
 }

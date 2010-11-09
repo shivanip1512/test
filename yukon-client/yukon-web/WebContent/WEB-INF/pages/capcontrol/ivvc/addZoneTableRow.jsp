@@ -1,6 +1,7 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:msgScope paths="modules.capcontrol.ivvc.zoneWizard">
+<tags:standardPageFragment pageName="ivvc" module="capcontrol" fragmentName="zoneWizard">
 
 <table class="compactResultsTable">
 
@@ -13,4 +14,4 @@
 </tr>
 </table>
 
-</cti:msgScope>
+</tags:standardPageFragment>

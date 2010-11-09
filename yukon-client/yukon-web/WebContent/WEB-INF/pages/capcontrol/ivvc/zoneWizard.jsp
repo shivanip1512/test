@@ -124,13 +124,14 @@
 		</tags:nameValue2>
 		
 		<%-- Parent Zone Selection --%>
+		<cti:msg2 var="createAsParentLabel" key=".label.createAsParentZone"/>
 		<cti:displayForPageEditModes modes="CREATE">
 			<tags:selectNameValue items="${zones}" 
 				itemLabel="name" 
 				nameKey=".label.parentZone" 
 				path="parentZoneId" 
 				itemValue="id" 
-				defaultItemLabel="Create as Parent"
+				defaultItemLabel="${createAsParentLabel}"
 				defaultItemValue=""/>
 		</cti:displayForPageEditModes>
 		<cti:displayForPageEditModes modes="EDIT,VIEW">

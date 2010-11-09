@@ -107,7 +107,7 @@
 						visible_in_legend="${line.settings.visibleInLegend}">
 						
 						<c:forEach var="point" items="${line.points}">
-							<point x="${point.x}" y="${point.y}" value="${point.y}">${point.description}</point>
+							<point x="${point.x}" y="${point.y}" value="${point.y}"><![CDATA[${point.description}]]></point>
 						</c:forEach>
 					</graph>
 				</c:forEach>
