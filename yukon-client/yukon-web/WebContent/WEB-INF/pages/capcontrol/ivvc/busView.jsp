@@ -147,7 +147,7 @@
 					<cti:button key="add" onclick="javascript:showZoneWizard('${zoneCreatorUrl}');"/>
 				</div>
 				<c:if test="${unassignedBanksExist}">
-					<div class="warningMessageBold"><i:inline key=".zoneList.unassignedBanks"/></div>
+					<div class="strongWarningMessage"><i:inline key=".zoneList.unassignedBanks"/></div>
 				</c:if>
 				
 			</tags:boxContainer2>

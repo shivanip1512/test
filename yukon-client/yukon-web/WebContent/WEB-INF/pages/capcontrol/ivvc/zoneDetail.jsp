@@ -230,7 +230,7 @@
 			<tags:boxContainer2 nameKey="capBanks" hideEnabled="true" showInitially="true">
 				<tags:alternateRowReset/>
 				<c:if test="${unassignedBanksExist}">
-					<div class="warningMessageBold"><i:inline key=".capBanks.unassignedBanks"/></div>
+					<div class="strongWarningMessage"><i:inline key=".capBanks.unassignedBanks"/></div>
 				</c:if>
 				<table class="compactResultsTable ">
 					<tr>
@@ -242,7 +242,7 @@
 		            <c:forEach var="capBank" items="${capBankList}">
 		                <tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 		                    <td>
-		                    	<c:if test="${capBank.notAssignedToZone}"><span class="warningMessageBold">*</span></c:if>
+		                    	<c:if test="${capBank.notAssignedToZone}"><span class="strongWarningMessage">*</span></c:if>
 		                    	<spring:escapeBody htmlEscape="true">${capBank.controlDevice.paoName}</spring:escapeBody>
 		                    </td>
 		                    <td><spring:escapeBody htmlEscape="true">${capBank.capBankDevice.ccName}</spring:escapeBody></td>
