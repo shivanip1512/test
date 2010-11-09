@@ -49,7 +49,6 @@ public class CapBank extends CapControlDeviceBase {
 
     private com.cannontech.database.db.capcontrol.CapBank capBank = null;
     private List<CCMonitorBankList> ccMonitorBankList = new ArrayList<CCMonitorBankList>();
-    private ZoneService zoneService = YukonSpringHook.getBean("zoneService",ZoneService.class);
     
     /**
      */
@@ -78,6 +77,7 @@ public class CapBank extends CapControlDeviceBase {
         com.cannontech.database.db.capcontrol.CCFeederBankList.deleteCapBanksFromFeederList(null,
                                                                                             getCapBank().getDeviceID(),
                                                                                             getDbConnection());
+        ZoneService zoneService = YukonSpringHook.getBean("zoneService",ZoneService.class);
         zoneService.unassignBank(getPAObjectID());
         
         // Delete from all dynamic CabBank tables here

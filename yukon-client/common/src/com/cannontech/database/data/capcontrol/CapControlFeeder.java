@@ -26,7 +26,6 @@ public class CapControlFeeder extends CapControlYukonPAOBase implements com.cann
     public static final String DISABLE_OVUVSTATE = "feederOVUVDisabled";
     private com.cannontech.database.db.capcontrol.CapControlFeeder capControlFeeder;
     private List<CCFeederBankList> ccBankListVector;
-    private ZoneService zoneService = YukonSpringHook.getBean("zoneService", ZoneService.class);
 
     public CapControlFeeder() {
         super();
@@ -57,6 +56,7 @@ public class CapControlFeeder extends CapControlYukonPAOBase implements com.cann
 
     @Override
     public void delete() throws SQLException {
+        ZoneService zoneService = YukonSpringHook.getBean("zoneService", ZoneService.class);
         //Must happen before CCFeederBankList.deleteCapBanksFromFeederList call
         zoneService.unassignBanksByFeeder(getCapControlPAOID());
 
@@ -146,6 +146,7 @@ public class CapControlFeeder extends CapControlYukonPAOBase implements com.cann
             getChildList().get(i).add();
         }
         
+        ZoneService zoneService = YukonSpringHook.getBean("zoneService", ZoneService.class);
         zoneService.handleFeederUpdate(getCapControlPAOID());
     }
 

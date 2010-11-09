@@ -118,7 +118,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sqlBuilder.append("FROM Zone");
         sqlBuilder.append("WHERE RegulatorId").eq(regulatorId);
         
-        Zone zone = null;
+        Zone zone;
         
         try{
             zone = yukonJdbcTemplate.queryForObject(sqlBuilder, zoneRowMapper);
@@ -194,17 +194,19 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT DeviceId");
         sqlBuilder.append("FROM CCFeederBankList");
-        sqlBuilder.append("WHERE FeederId IN (SELECT FeederId");
-        sqlBuilder.append("                   FROM CCFeederSubAssignment");
-        sqlBuilder.append("                   WHERE SubstationBusId").eq(subBusId);
-        sqlBuilder.append("                   )");
-        sqlBuilder.append("               AND DeviceId NOT IN (SELECT DeviceId");
-        sqlBuilder.append("                                    FROM CapBankToZoneMapping");
-        sqlBuilder.append("                                    WHERE ZoneId IN (SELECT ZoneId");
-        sqlBuilder.append("                                                     FROM Zone");
-        sqlBuilder.append("                                                     WHERE SubstationBusId").eq(subBusId);
-        sqlBuilder.append("                                                     )");
-        sqlBuilder.append("                                    )");
+        sqlBuilder.append("WHERE FeederId IN (");
+        sqlBuilder.append("  SELECT FeederId");
+        sqlBuilder.append("  FROM CCFeederSubAssignment");
+        sqlBuilder.append("  WHERE SubstationBusId").eq(subBusId);
+        sqlBuilder.append("  )");
+        sqlBuilder.append("  AND DeviceId NOT IN (SELECT DeviceId");
+        sqlBuilder.append("    FROM CapBankToZoneMapping");
+        sqlBuilder.append("    WHERE ZoneId IN (");
+        sqlBuilder.append("      SELECT ZoneId");
+        sqlBuilder.append("      FROM Zone");
+        sqlBuilder.append("      WHERE SubstationBusId").eq(subBusId);
+        sqlBuilder.append("      )");
+        sqlBuilder.append("    )");
 
         try {
             return yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
@@ -219,9 +221,10 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sqlBuilder.append("SELECT DeviceId");
         sqlBuilder.append("FROM CapBankToZoneMapping");
         sqlBuilder.append("WHERE ZoneId IN (SELECT ZoneId");
-        sqlBuilder.append("                 FROM Zone");
-        sqlBuilder.append("                 WHERE SubstationBusId");
-        sqlBuilder.eq(subBusId).append(")");
+        sqlBuilder.append("  SELECT ZoneId");
+        sqlBuilder.append("  FROM Zone");
+        sqlBuilder.append("  WHERE SubstationBusId").eq(subBusId);
+        sqlBuilder.append(")");
 
         return yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
     }
@@ -289,7 +292,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sqlBuilder.append("FROM CCFeederSubAssignment ");
         sqlBuilder.append("WHERE FeederId").eq(feederId);
         
-        int subBusId = 0;
+        int subBusId;
         try {
             subBusId = yukonJdbcTemplate.queryForInt(sqlBuilder);
         } catch (EmptyResultDataAccessException e) {
@@ -307,17 +310,20 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT DeviceId");
         sqlBuilder.append("FROM CapBankToZoneMapping");
-        sqlBuilder.append("WHERE ZoneId IN (SELECT ZoneId");
-        sqlBuilder.append("                   FROM Zone");
-        sqlBuilder.append("                   WHERE SubstationBusId").eq(subBusId);
-        sqlBuilder.append("                   )");
-        sqlBuilder.append("               AND DeviceId NOT IN (SELECT DeviceId");
-        sqlBuilder.append("                                    FROM CCFeederBankList");
-        sqlBuilder.append("                                    WHERE FeederId IN (SELECT FeederId");
-        sqlBuilder.append("                                                     FROM CCFeederSubAssignment");
-        sqlBuilder.append("                                                     WHERE SubstationBusId").eq(subBusId);
-        sqlBuilder.append("                                                     )");
-        sqlBuilder.append("                                    )");
+        sqlBuilder.append("WHERE ZoneId IN (");
+        sqlBuilder.append("  SELECT ZoneId");
+        sqlBuilder.append("  FROM Zone");
+        sqlBuilder.append("  WHERE SubstationBusId").eq(subBusId);
+        sqlBuilder.append("  )");
+        sqlBuilder.append("AND DeviceId NOT IN (");
+        sqlBuilder.append("  SELECT DeviceId");
+        sqlBuilder.append("  FROM CCFeederBankList");
+        sqlBuilder.append("  WHERE FeederId IN (");
+        sqlBuilder.append("    SELECT FeederId");
+        sqlBuilder.append("    FROM CCFeederSubAssignment");
+        sqlBuilder.append("    WHERE SubstationBusId").eq(subBusId);
+        sqlBuilder.append("    )");
+        sqlBuilder.append("  )");
         
         try {
             banksToRemove = yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
@@ -335,7 +341,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sqlBuilder.append("FROM CCFeederBankList ");
         sqlBuilder.append("WHERE FeederId").eq(feederId);
         
-        List<Integer> banksToRemove = null;
+        List<Integer> banksToRemove;
         try {
             banksToRemove = yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
         } catch (EmptyResultDataAccessException e) {

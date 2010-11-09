@@ -23,7 +23,6 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
     public static final String DISABLE_OVUVSTATE = "subOVUVDisabled";
     private CapControlSubstationBus capControlSubstationBus = null;
     private List<CCFeederSubAssignment> ccFeederList = null;
-    private ZoneService zoneService = YukonSpringHook.getBean("zoneService",ZoneService.class);
     
     public CapControlSubBus() {
         super();
@@ -140,6 +139,7 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
             getChildList().get(i).add();
         }
         
+        ZoneService zoneService = YukonSpringHook.getBean("zoneService",ZoneService.class);
         zoneService.handleSubstationBusUpdate(getCapControlPAOID());
     }
 
