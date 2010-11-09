@@ -112,6 +112,7 @@ begin
 	//where we just installed Yukon
 	sName = "YUKON_BASE";
 	sKey = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
+	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
 	nResult = RegDBSetKeyValueEx(sKey, sName, REGDB_STRING, TARGETDIR, -1);
 	if(nResult != 0) then
 		MessageBox("Unable to set YUKON_BASE environment variable.", WARNING);
