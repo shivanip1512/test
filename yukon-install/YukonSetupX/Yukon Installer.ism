@@ -1335,7 +1335,7 @@
 		<row><td>ID_STRING11</td><td>1033</td><td>Runs demand response operations based on data gathered by the system.</td><td>0</td><td/><td>-1516384245</td></row>
 		<row><td>ID_STRING12</td><td>1033</td><td>Yukon web server.</td><td>0</td><td/><td>-1516435413</td></row>
 		<row><td>ID_STRING13</td><td>1033</td><td>Schedules and sends email and voice notifications.</td><td>0</td><td/><td>-1516400597</td></row>
-		<row><td>ID_STRING14</td><td>1033</td><td>Runs general Yukon services. Required to utilize the Java Messaging service, monitors, validation processing, and other utilities.</td><td>0</td><td/><td>631142411</td></row>
+		<row><td>ID_STRING14</td><td>1033</td><td>Runs general Yukon services including the primary message broker, monitors, validation processing, and other utilities.</td><td>0</td><td/><td>1302257129</td></row>
 		<row><td>ID_STRING15</td><td>1033</td><td>The Yukon clients are interfaces between the user and the Yukon system.  These selections affect which clients are available on the local machine and do not affect clients launched through the Yukon webpage.</td><td>0</td><td/><td>1176325225</td></row>
 		<row><td>ID_STRING16</td><td>1033</td><td>View, create or modify objects in the Yukon database.</td><td>0</td><td/><td>-1516416789</td></row>
 		<row><td>ID_STRING17</td><td>1033</td><td>Send real-time commands to field devices.</td><td>0</td><td/><td>-1516386069</td></row>
