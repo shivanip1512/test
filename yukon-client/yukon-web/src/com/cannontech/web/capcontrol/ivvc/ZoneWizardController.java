@@ -1,5 +1,7 @@
 package com.cannontech.web.capcontrol.ivvc;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -155,11 +157,55 @@ public class ZoneWizardController {
         model.addAttribute("mode", PageEditMode.EDIT.name());
     }
     
+    private List<ZoneAssignmentCapBankRow> getRemainingBankAssignments(List<ZoneAssignmentCapBankRow> bankAssignments, Integer[] removedBanks) {
+    	if (removedBanks == null) {
+    		return bankAssignments;
+    	}
+    	
+    	List<ZoneAssignmentCapBankRow> remainingBankAssignments = new ArrayList<ZoneAssignmentCapBankRow>(bankAssignments); 
+    	Collections.copy(remainingBankAssignments, bankAssignments);
+    	
+    	for (Integer removedBank : removedBanks) {
+    		for (ZoneAssignmentCapBankRow bankRow : bankAssignments) {
+    			if (removedBank.intValue() == bankRow.getId()) {
+    				remainingBankAssignments.remove(bankRow);
+    			}
+    		}
+    	}
+    	
+    	return remainingBankAssignments;
+    }
+    
+    private List<ZoneAssignmentPointRow> getRemainingPointAssignments(List<ZoneAssignmentPointRow> pointAssignments, Integer[] removedPoints) {
+    	if (removedPoints == null) {
+    		return pointAssignments;
+    	}
+    	
+    	List<ZoneAssignmentPointRow> remainingPointAssignments = new ArrayList<ZoneAssignmentPointRow>(pointAssignments); 
+    	Collections.copy(remainingPointAssignments, pointAssignments);
+    	
+    	for (Integer removedPoint : removedPoints) {
+    		for (ZoneAssignmentPointRow pointRow : pointAssignments) {
+    			if (removedPoint.intValue() == pointRow.getId()) {
+    				remainingPointAssignments.remove(pointRow);
+    			}
+    		}
+    	}
+    	
+    	return remainingPointAssignments;
+    }
+    
     @RequestMapping
     public String updateZone(@ModelAttribute("zoneDto") ZoneDto zoneDto, BindingResult bindingResult,
+    						 Integer[] banksToRemove, Integer[] pointsToRemove,
                              ModelMap model, FlashScope flashScope, LiteYukonUser user) {
         boolean errors = false;
         try {
+        	List<ZoneAssignmentCapBankRow> bankAssignments = getRemainingBankAssignments(zoneDto.getBankAssignments(), banksToRemove);
+        	List<ZoneAssignmentPointRow> pointAssignments = getRemainingPointAssignments(zoneDto.getPointAssignments(), pointsToRemove);
+        	zoneDto.setBankAssignments(bankAssignments);
+        	zoneDto.setPointAssignments(pointAssignments);
+        	
             errors = saveZone(zoneDto,bindingResult,flashScope);
         } catch (RootZoneExistsException e) {
             errors = true;
@@ -222,12 +268,13 @@ public class ZoneWizardController {
     }
     
     @RequestMapping
-    public String addVoltagePoint(ModelMap modelMap, LiteYukonUser user, int id) {
+    public String addVoltagePoint(ModelMap modelMap, LiteYukonUser user, int id, int index) {
     	PointToZoneMapping pointToZone = new PointToZoneMapping();
     	pointToZone.setPointId(id);
     	pointToZone.setGraphPositionOffset(0);
         ZoneAssignmentPointRow row = buildPointAssignment(pointToZone);        
         modelMap.addAttribute("row",row);
+        modelMap.addAttribute("index", index);
         
         return "ivvc/addZoneTableRow.jsp";
     }

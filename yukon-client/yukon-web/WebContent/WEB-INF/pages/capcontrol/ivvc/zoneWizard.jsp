@@ -24,10 +24,11 @@
 
 	addPointHandler = function (selectedPointInfo) {
 		var url = '/spring/capcontrol/ivvc/wizard/addVoltagePoint';
+		var index = $$('.pointRowCounter').length;
 		
 		for(var i = 0; i < selectedPointInfo.size(); i++) {
 	    	var pointId = selectedPointInfo[i].pointId;		
-	    	addRow(url,pointId,i,'point');
+	    	addRow(url,pointId,index++,'point');
 		}
 		
 	    return true;
@@ -51,9 +52,24 @@
 	    });
 	}
 
-	removeTableRow = function (rowId) {
+	removeTableRow = function (rowType, rowId) {
 		//Remove the table row
-		$(rowId).remove();
+		var rowToDelete = document.createElement('input');
+		rowToDelete.type = 'hidden';
+
+		//rowType will be "bank" or "point"
+		rowToDelete.name = rowType + 'sToRemove';
+		rowToDelete.value = rowId;
+		rowToDelete.id =  'deleteInput_' + rowId;
+		$('zoneForm').appendChild(rowToDelete);
+		$(rowType +'_'+ rowId).hide();
+		$(rowType +'_'+ rowId + '_undo').show();
+	}
+
+	undoRemoveTableRow = function (rowType, rowId) {
+		$('deleteInput_' + rowId).remove();
+		$(rowType +'_'+ rowId).show();
+		$(rowType +'_'+ rowId + '_undo').hide();
 	}
 
 	zoneSubmit = function() {
@@ -166,7 +182,15 @@
 										<tags:input path="bankAssignments[${status.index}].distance" size="3"/>
 									</td>
 									<td class="removeColumn" >
-										<cti:img key="delete" href="javascript:removeTableRow('${row.type}_${row.id}')"/>
+										<cti:img key="delete" href="javascript:removeTableRow('${row.type}','${row.id}')"/>
+									</td>
+								</tr>
+								<tr style="display: none" id="${row.type}_${row.id}_undo">
+									<td colspan="4" align="center">
+										${row.name} will be removed
+									</td>
+									<td colspan="1" align="center">
+										<a href="javascript:undoRemoveTableRow('${row.type}','${row.id}')">Undo</a>
 									</td>
 								</tr>
 							</c:forEach>
@@ -214,7 +238,15 @@
 										<tags:input path="pointAssignments[${status.index}].distance" size="3"/>
 									</td>
 									<td class="removeColumn">
-										<cti:img key="delete" href="javascript:removeTableRow('${row.type}_${row.id}')"/>
+										<cti:img key="delete" href="javascript:removeTableRow('${row.type}','${row.id}')"/>
+									</td>
+								</tr>
+								<tr style="display: none" id="${row.type}_${row.id}_undo">
+									<td colspan="4" align="center">
+										${row.name} will be removed
+									</td>
+									<td colspan="1" align="center">
+										<a href="javascript:undoRemoveTableRow('${row.type}','${row.id}')">Undo</a>
 									</td>
 								</tr>
 							</c:forEach>

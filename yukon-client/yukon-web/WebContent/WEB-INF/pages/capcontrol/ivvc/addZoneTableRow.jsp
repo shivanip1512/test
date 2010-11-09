@@ -9,7 +9,7 @@
 	<td>${row.device}</td>
 	<td><input name="${row.type}Assignments[${index}].graphPositionOffset" size="1" value="${index+1}"/></td>
 	<td><input name="${row.type}Assignments[${index}].distance" size="3" value="0"/></td>
-	<td class="removeColumn"><cti:img key="delete" href="javascript:removeTableRow('${row.type}_${row.id}')"/></td>
+	<td class="removeColumn"><cti:img key="delete" href="javascript:removeTableRow('${row.type}', '${row.id}')"/></td>
 </tr>
 </table>
 
