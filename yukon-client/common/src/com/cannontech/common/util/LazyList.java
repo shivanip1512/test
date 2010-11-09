@@ -48,7 +48,7 @@ public class LazyList<T> extends ForwardingList<T> {
 		return backingList.get(index);
 	}
 
-	public static <U> LazyList<U> instanceOf(Class<U> instanceClass) {
+	public static <U> LazyList<U> ofInstance(Class<U> instanceClass) {
         return new LazyList<U>(new ArrayList<U>(), new SimpleSupplier<U>(instanceClass));
 	}
 }

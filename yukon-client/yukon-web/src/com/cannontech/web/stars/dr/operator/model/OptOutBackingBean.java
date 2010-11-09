@@ -14,9 +14,9 @@ public class OptOutBackingBean {
     private Integer[] inventoryIds;
     private Integer currentSurveyIndex;
     private List<SurveyResult> surveyResults =
-        LazyList.instanceOf(SurveyResult.class);
+        LazyList.ofInstance(SurveyResult.class);
     private List<ScheduledOptOutQuestion> legacyQuestions =
-        LazyList.instanceOf(ScheduledOptOutQuestion.class);
+        LazyList.ofInstance(ScheduledOptOutQuestion.class);
 
     public static class SurveyResultAnswer {
         private int questionId;
@@ -57,7 +57,7 @@ public class OptOutBackingBean {
         private int surveyId;
         private boolean answered;
         private List<SurveyResultAnswer> answers =
-            LazyList.instanceOf(SurveyResultAnswer.class);
+            LazyList.ofInstance(SurveyResultAnswer.class);
 
         public SurveyResult() {
         }

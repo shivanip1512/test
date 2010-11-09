@@ -38,7 +38,7 @@ public class HardwareDto {
     private HardwareType hardwareType;
     private int hardwareTypeEntryId;
     private String meterNumber;
-    private List<SwitchAssignment> switchAssignments = LazyList.instanceOf(SwitchAssignment.class);
+    private List<SwitchAssignment> switchAssignments = LazyList.ofInstance(SwitchAssignment.class);
 
     public Integer getDeviceStatusEntryId() {
         return deviceStatusEntryId;

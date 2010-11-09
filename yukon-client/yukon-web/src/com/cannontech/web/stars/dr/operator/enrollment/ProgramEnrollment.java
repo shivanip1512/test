@@ -52,7 +52,7 @@ public class ProgramEnrollment {
     private List<InventoryEnrollment> inventoryEnrollments;
 
     public ProgramEnrollment() {
-        inventoryEnrollments = LazyList.instanceOf(InventoryEnrollment.class);
+        inventoryEnrollments = LazyList.ofInstance(InventoryEnrollment.class);
     }
 
     public ProgramEnrollment(

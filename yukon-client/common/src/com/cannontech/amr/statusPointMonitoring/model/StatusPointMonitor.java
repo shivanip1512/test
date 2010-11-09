@@ -18,7 +18,7 @@ public class StatusPointMonitor implements PointMonitor, Comparable<StatusPointM
 	private Attribute attribute;
 	private LiteStateGroup stateGroup;
 	private MonitorEvaluatorStatus evaluatorStatus;
-	private List<StatusPointMonitorProcessor> processors = LazyList.instanceOf(StatusPointMonitorProcessor.class);
+	private List<StatusPointMonitorProcessor> processors = LazyList.ofInstance(StatusPointMonitorProcessor.class);
 	
 	public StatusPointMonitor() {
 	    setGroupName(SystemGroupEnum.ROOT.getFullPath());

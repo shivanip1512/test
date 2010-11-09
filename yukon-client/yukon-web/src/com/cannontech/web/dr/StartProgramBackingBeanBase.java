@@ -20,7 +20,7 @@ public abstract class StartProgramBackingBeanBase {
     // only used for target cycle gears
     private boolean addAdjustments;
     private List<GearAdjustment> gearAdjustments =
-        LazyList.instanceOf(GearAdjustment.class);
+        LazyList.ofInstance(GearAdjustment.class);
 
     public boolean isStartNow() {
         return startNow;

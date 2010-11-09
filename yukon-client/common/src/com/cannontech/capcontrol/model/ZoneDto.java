@@ -13,9 +13,9 @@ public class ZoneDto {
     private int regulatorId = -1;
     private double graphStartPosition;
     
-    private List<ZoneAssignmentCapBankRow> bankAssignments = LazyList.instanceOf(ZoneAssignmentCapBankRow.class);
+    private List<ZoneAssignmentCapBankRow> bankAssignments = LazyList.ofInstance(ZoneAssignmentCapBankRow.class);
     
-    private List<ZoneAssignmentPointRow> pointAssignments = LazyList.instanceOf(ZoneAssignmentPointRow.class);
+    private List<ZoneAssignmentPointRow> pointAssignments = LazyList.ofInstance(ZoneAssignmentPointRow.class);
 
     public Integer getZoneId() {
         return zoneId;

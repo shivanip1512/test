@@ -15,7 +15,7 @@ public class HardwareConfigurationDto {
     private int inventoryId;
     private String action;
     private List<ProgramEnrollmentDto> programEnrollments =
-        LazyList.instanceOf(ProgramEnrollmentDto.class);
+        LazyList.ofInstance(ProgramEnrollmentDto.class);
 
     // hardware addressing fields (used only when TRACK_HARDWARE_ADDRESSING
     // role property is true)
