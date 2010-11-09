@@ -1240,6 +1240,12 @@
                                 <link>/spring/stars/operator/workOrder/workOrderList?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                             <pages>
+                            <page name="workOrder.VIEW" type="DETAIL">
+                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
+                                <menu>account|accounts</menu>
+                                <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>
+                                <labelArgument>${workOrderNumber}</labelArgument>
+                            </page>
                             <page name="workOrder.EDIT" type="DETAIL">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
                                 <menu>account|accounts</menu>

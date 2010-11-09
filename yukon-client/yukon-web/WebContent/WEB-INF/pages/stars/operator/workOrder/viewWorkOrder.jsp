@@ -12,25 +12,33 @@
     <script type="text/javascript">
 
         Event.observe(window, "load", function() {
-            var initialState = $F('workOrderBase.currentStateId');
-            Event.observe('workOrderBase.currentStateId', "change", function() {
-                var newState = $F('workOrderBase.currentStateId');
-                var enabled = initialState != newState;
-                $("eventDateDatePart").disabled = !enabled;
-                $("eventDateTimePart").disabled = !enabled;
-            });
+
+            if ( $('workOrderBase.currentStateId') != null) {
+                var initialState = $F('workOrderBase.currentStateId');
+                Event.observe('workOrderBase.currentStateId', "change", function() {
+                    var newState = $F('workOrderBase.currentStateId');
+                    var enabled = initialState != newState;
+    
+                    if ($("eventDateDatePart") != null && 
+                        $("eventDateTimePart") != null) {
+    
+                    	$("eventDateDatePart").disabled = !enabled;
+                        $("eventDateTimePart").disabled = !enabled;
+                    }
+                });
+            }
+            
         });
     
         var assignedServiceCompanyChanged = function() {
             $('workOrderBase.currentStateId').value = ${assignedEntryId};
             $("eventDateDatePart").disabled = false;
             $("eventDateTimePart").disabled = false;
-        
         }
     
         var combineDateAndTimeFieldsAndSubmit = function() {
         	var dateReported = $("eventDateDatePart");
-            if (dateReported != null) {
+        	if (dateReported != null) {
                 combineDateAndTimeFields('eventDate');
             }
 
@@ -66,7 +74,7 @@
                                 </tags:nameValue2>
                             </c:if>
                         </cti:displayForPageEditModes>
-                        <cti:displayForPageEditModes modes="EDIT">
+                        <cti:displayForPageEditModes modes="EDIT,VIEW">
                             <form:hidden path="workOrderBase.orderNumber"/>
                             <tags:nameValue2 nameKey=".workOrderNumber">
                                 <spring:escapeBody htmlEscape="true">${workOrderDto.workOrderBase.orderNumber}</spring:escapeBody>
@@ -156,10 +164,13 @@
         <br>
         
         <%-- buttons --%>
-        <tags:slowInput2 formId="workOrderUpdateForm" key="save" onsubmit="combineDateAndTimeFieldsAndSubmit"/>
+        <cti:displayForPageEditModes modes="CREATE,EDIT">
+           <tags:slowInput2 formId="workOrderUpdateForm" key="save" onsubmit="combineDateAndTimeFieldsAndSubmit"/>
+        </cti:displayForPageEditModes>
+       
         <tags:slowInput2 formId="viewAllForm" key="cancel"/>
         
-        <cti:displayForPageEditModes modes="EDIT">
+        <cti:displayForPageEditModes modes="CREATE,EDIT">
             <tags:slowInput2 formId="deleteForm" key="delete"/>
         </cti:displayForPageEditModes>
         

@@ -89,7 +89,9 @@ public class OperatorWorkOrderController {
                                 YukonUserContext userContext,
                                 AccountInfoFragment accountInfoFragment) {
         
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+        boolean allowAccountEditing = 
+            rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+
         setupViewWorkOrderModelMap(accountInfoFragment, modelMap, userContext, workOrderId);
         
         // Getting the assigned entry id to help with the change service company java script
@@ -106,8 +108,17 @@ public class OperatorWorkOrderController {
             modelMap.addAttribute("mode", PageEditMode.CREATE);
         } else {
             workOrderDto = workOrderService.getWorkOrder(workOrderId);
-            modelMap.addAttribute("mode", PageEditMode.EDIT);
+            
+            if (!allowAccountEditing) {
+                modelMap.addAttribute("mode", PageEditMode.VIEW);
+            } else {
+                modelMap.addAttribute("mode", PageEditMode.EDIT);
+            }
+        
         }
+        
+        
+
         modelMap.addAttribute("workOrderDto", workOrderDto);
 
         boolean showWorkOrderNumberField = 
@@ -210,11 +221,7 @@ public class OperatorWorkOrderController {
         workOrderReport.setData(workOrderJReport.getModel());
         
         // Write out work order report
-        response.setContentType("Application/pdf");
-        response.setContentType("application/force-download");
-        response.setHeader("Content-Disposition",
-                           "filename=\"" + ServletUtil.makeWindowsSafeFileName(workOrderJReport.getModel().getTitleString()+
-                                                                               workOrder.getWorkOrderBase().getOrderNumber() + ".pdf"));
+        response.setContentType("application/pdf");
         OutputStream outputStream = response.getOutputStream();
         
         ReportFuncs.outputYukonReport(workOrderReport, "pdf", outputStream);

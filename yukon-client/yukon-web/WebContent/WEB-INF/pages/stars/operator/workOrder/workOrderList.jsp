@@ -48,19 +48,11 @@
         <c:forEach var="workOrder" items="${workOrders}">
             <tr>
                 <td>
-                    <%-- orderNumber with edit link --%>
-                    <cti:displayForPageEditModes modes="EDIT,CREATE">
-                        <cti:url var="viewWorkOrderUrl" value="/spring/stars/operator/workOrder/viewWorkOrder">
-                            <cti:param name="accountId">${accountId}</cti:param>
-                            <cti:param name="workOrderId">${workOrder.workOrderBase.orderId}</cti:param>
-                        </cti:url>
-                        <a href="${viewWorkOrderUrl}"><spring:escapeBody htmlEscape="true">${workOrder.workOrderBase.orderNumber}</spring:escapeBody></a>
-                    </cti:displayForPageEditModes>
-                    
-                    <%-- orderNumber without edit link --%>
-                    <cti:displayForPageEditModes modes="VIEW">
-                        <spring:escapeBody htmlEscape="true">${workOrder.workOrderBase.orderNumber}</spring:escapeBody>
-                    </cti:displayForPageEditModes>
+                    <cti:url var="viewWorkOrderUrl" value="/spring/stars/operator/workOrder/viewWorkOrder">
+                        <cti:param name="accountId">${accountId}</cti:param>
+                        <cti:param name="workOrderId">${workOrder.workOrderBase.orderId}</cti:param>
+                    </cti:url>
+                    <a href="${viewWorkOrderUrl}"><spring:escapeBody htmlEscape="true">${workOrder.workOrderBase.orderNumber}</spring:escapeBody></a>
                 </td>
                 <td><cti:formatDate value="${workOrder.eventDate}" type="BOTH"/></td>
                 <td><tags:yukonListEntry value="${workOrder.workOrderBase.workTypeId}" energyCompanyId="${energyCompanyId}" listName="SERVICE_TYPE"/></td>

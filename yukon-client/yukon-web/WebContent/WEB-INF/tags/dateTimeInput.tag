@@ -32,10 +32,16 @@
 	
 		<table>
 		    <tr>
-		        <td><cti:msg key="yukon.common.calendarcontrol.date"/></td>
-		        <td><tags:dateInputCalendar fieldId="${fieldId}DatePart"
-		            fieldName="${fieldId}DatePart" fieldValue="${datePart}"
-		            disabled="${pageScope.disabled}"/></td>
+                <cti:displayForPageEditModes modes="VIEW">
+                    <td>${datePart}</td>
+                </cti:displayForPageEditModes>
+                <cti:displayForPageEditModes modes="EDIT,CREATE">
+                    <td><cti:msg key="yukon.common.calendarcontrol.date"/></td>
+                    <td><tags:dateInputCalendar fieldId="${fieldId}DatePart"
+                                                fieldName="${fieldId}DatePart" 
+                                                fieldValue="${datePart}"
+		                                        disabled="${pageScope.disabled}"/></td>
+                </cti:displayForPageEditModes>
 		    </tr>
 		    <tr>
 		        <td><cti:msg key="yukon.common.calendarcontrol.time"/></td>
@@ -55,14 +61,13 @@
 	
 	<c:otherwise>
 	
-		<tags:dateInputCalendar fieldId="${fieldId}DatePart"
-		            fieldName="${fieldId}DatePart" fieldValue="${datePart}"
-		            disabled="${pageScope.disabled}"/>
-		&nbsp;-&nbsp;
 		<cti:displayForPageEditModes modes="VIEW">
-      		${timePart}
+      		${datePart} ${timePart}
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="EDIT,CREATE">
+            <tags:dateInputCalendar fieldId="${fieldId}DatePart" fieldName="${fieldId}DatePart" 
+                                    fieldValue="${datePart}" disabled="${pageScope.disabled}"/>
+    		&nbsp;-&nbsp;
 			<input id="${fieldId}TimePart" name="${fieldId}TimePart" type="text" maxlength="5" size="10" style="width:70px;" value="${timePart}"${disabledStr}/>
 		</cti:displayForPageEditModes>
 	
