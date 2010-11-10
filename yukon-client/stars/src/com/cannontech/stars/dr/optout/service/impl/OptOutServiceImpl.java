@@ -567,6 +567,11 @@ public class OptOutServiceImpl implements OptOutService {
     public void changeOptOutEnabledStateForTodayByProgramName(LiteYukonUser user, boolean optOutsEnabled,
                                                               String programName) throws ProgramNotFoundException {
 
+        if (StringUtils.isBlank(programName)) {
+            changeOptOutEnabledStateForToday(user, optOutsEnabled);
+            return;
+        }
+        
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
         Integer webpublishingProgramId = null;
         
@@ -579,17 +584,9 @@ public class OptOutServiceImpl implements OptOutService {
         Date now = new Date();
         Date stopDate = TimeUtil.getMidnightTonight(systemTimeZone);
         
-        if (webpublishingProgramId == null) {
-
-            // Temporarily update enabled state
-            optOutTemporaryOverrideDao.setTemporaryOptOutEnabled(user, now, stopDate, optOutsEnabled);
-            starsEventLogService.optOutUsageEnabledToday(user, optOutsEnabled);
-        } else {
-
-            // Temporarily update enabled state
-            optOutTemporaryOverrideDao.setTemporaryOptOutEnabled(user, now, stopDate, optOutsEnabled, webpublishingProgramId);
-            starsEventLogService.optOutUsageEnabledTodayForProgram(user, programName, optOutsEnabled);
-        }
+        // Temporarily update enabled state
+        optOutTemporaryOverrideDao.setTemporaryOptOutEnabled(user, now, stopDate, optOutsEnabled, webpublishingProgramId);
+        starsEventLogService.optOutUsageEnabledTodayForProgram(user, programName, optOutsEnabled);
         
     }
     
