@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
 import org.joda.time.ReadableInstant;
@@ -315,6 +316,50 @@ public class OpenInterval {
         }
     }
     
+    public Duration getCurrentDurationUsingNowForOpenIntervals(){
+        Instant now = new Instant();
+        
+        if (isOpenStart()) {
+            throw new UnsupportedOperationException("We currently do not support open started durations.");
+        }
+        
+        // The duration is for the future and is open ended.  
+        // Returning zero since we do not want to return a negative duration.
+        if (isOpenEnd() && now.isBefore(start)) {
+            return Duration.ZERO;
+        }
+        
+        if (isOpenEnd()) {
+            return withCurrentEnd().toClosedInterval().toDuration();
+        } else {
+            return toClosedInterval().toDuration();
+        }
+    }
+    
+    public Duration getCurrentDurationToNow(){
+        Instant now = new Instant();
+        
+        if (isOpenStart()) {
+            throw new UnsupportedOperationException("We currently do not support open started durations.");
+        }
+        
+        // The duration is for the future.
+        // Returning zero since we do not want to return a negative duration.
+        if (now.isBefore(start)) {
+            return Duration.ZERO;
+        }
+        
+        if (isOpenEnd()) {
+            return withCurrentEnd().toClosedInterval().toDuration();
+        } else {
+            if (end.isBefore(now)) {
+                return toClosedInterval().toDuration();
+            } else {
+                return withCurrentEnd().toClosedInterval().toDuration();
+            }
+        }
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

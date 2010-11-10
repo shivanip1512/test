@@ -429,7 +429,7 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
             CustomerControlTotals calculateOptOutControlHistorySummary = 
                 calculateOptOutControlHistorySummary(enrolledControlHistoryEntries, optOuts);
             
-            totals = totals.plus(calculateOptOutControlHistorySummary);
+            totals.plus(calculateOptOutControlHistorySummary);
             
         }
         
@@ -467,11 +467,7 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
                     optOutInterval.overlap(enrolledControlHistoryEntry.getOpenInterval());
                 
                 if (optedOutControlHistoryInterval != null) {
-                    if (optedOutControlHistoryInterval.isOpenEnd()) {
-                        optedOutDuration = optedOutDuration.plus(optedOutControlHistoryInterval.withCurrentEnd().toClosedInterval().toDuration());
-                    } else {
-                        optedOutDuration = optedOutDuration.plus(optedOutControlHistoryInterval.toClosedInterval().toDuration());
-                    }
+                    optedOutDuration = optedOutDuration.plus(optedOutControlHistoryInterval.getCurrentDurationToNow());
                 }
             }
             

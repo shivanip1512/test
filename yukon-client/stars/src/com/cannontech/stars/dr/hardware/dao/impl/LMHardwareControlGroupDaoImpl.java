@@ -727,10 +727,13 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         sql.append("  AND InventoryId").eq(inventoryId);
         sql.append("  AND LmGroupId").eq(loadGroupId);
         if (!enrollmentInterval.isOpenEnd()) {
-            sql.append("  AND GroupEnrollStart").lte(enrollmentInterval.getEnd());
+            sql.append("  AND GroupEnrollStart").lt(enrollmentInterval.getEnd());
         }
         sql.append("  AND (GroupEnrollStop IS NULL");
-        sql.append("       OR GroupEnrollStop").gte(enrollmentInterval.getStart()).append(")");
+        if (!enrollmentInterval.isOpenStart()) {
+            sql.append("       OR GroupEnrollStop").gte(enrollmentInterval.getStart());
+        }
+        sql.append(")");
         sql.append("  AND Type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
         
         List<LMHardwareControlGroup> enrollments = yukonJdbcTemplate.query(sql, createRowMapper());
@@ -749,10 +752,12 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         sql.append("  AND InventoryId").eq(inventoryId);
         sql.append("  AND LmGroupId").eq(loadGroupId);
         if (!optOutInterval.isOpenEnd()) {
-            sql.append("  AND OptOutStart").lte(optOutInterval.getEnd());
+            sql.append("  AND OptOutStart").lt(optOutInterval.getEnd());
         }
         sql.append("  AND (OptOutStop IS NULL");
-        sql.append("       OR OptOutStop").gte(optOutInterval.getStart()).append(")");
+        if (!optOutInterval.isOpenStart()) {
+            sql.append("       OR OptOutStop").gte(optOutInterval.getStart()).append(")");
+        }
         sql.append("  AND Type").eq(LMHardwareControlGroup.OPT_OUT_ENTRY);
         
         List<LMHardwareControlGroup> enrollments = yukonJdbcTemplate.query(sql, createRowMapper());
