@@ -4497,11 +4497,17 @@
     
     <pao id="RFN_EXTENDED_BASE" inherits="RFN_BASE" abstract="true">
         <points>
-            <point type="Analog" offset="50">
+            <point type="Analog" offset="14">
                 <init>true</init>
-                <name>Delivered kvarh</name>
+                <name>Max Volts</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="kVArh"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="15">
+                <name>Min Volts</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="30">
@@ -4516,6 +4522,13 @@
                 <name>Delivered kvar</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="50">
+                <init>true</init>
+                <name>Delivered kvarh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="70">
@@ -4614,19 +4627,6 @@
                 <name>Peak kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="14">
-                <init>true</init>
-                <name>Max Volts</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="15">
-                <name>Min Volts</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
         </points>
