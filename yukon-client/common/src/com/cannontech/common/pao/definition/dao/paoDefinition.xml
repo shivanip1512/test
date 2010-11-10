@@ -4512,21 +4512,21 @@
             </point>
             <point type="Analog" offset="30">
                 <init>true</init>
-                <name>Delivered pulse</name>
+                <name>Delivered Pulse</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="40">
                 <init>true</init>
-                <name>Delivered kvar</name>
+                <name>Delivered kVAr</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="50">
                 <init>true</init>
-                <name>Delivered kvarh</name>
+                <name>Delivered kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>

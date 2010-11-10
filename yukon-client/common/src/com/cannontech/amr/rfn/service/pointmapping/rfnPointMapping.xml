@@ -30,7 +30,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Delivered kvarh"> 
+        <point name="Delivered kVArh"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -43,7 +43,7 @@
                 <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
-        <point name="Delivered pulse"> 
+        <point name="Delivered Pulse"> 
             <uom>Pulse</uom>
             <parseSiPrefix/>
             <modifiers match="all">
@@ -55,7 +55,7 @@
                 <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
-        <point name="Delivered kvar"> 
+        <point name="Delivered kVAr"> 
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
