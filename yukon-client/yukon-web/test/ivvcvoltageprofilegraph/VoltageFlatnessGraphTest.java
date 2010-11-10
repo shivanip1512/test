@@ -1,4 +1,4 @@
-package com.cannontech.web.capcontrol.ivvc.service.impl;
+package ivvcvoltageprofilegraph;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import com.cannontech.web.capcontrol.ivvc.models.VfLine;
 import com.cannontech.web.capcontrol.ivvc.models.VfPoint;
+import com.cannontech.web.capcontrol.ivvc.service.impl.VoltageFlatnessGraphServiceImpl;
 import com.google.common.collect.Lists;
 
 public class VoltageFlatnessGraphTest {

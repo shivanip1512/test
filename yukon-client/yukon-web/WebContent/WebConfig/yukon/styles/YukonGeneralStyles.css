@@ -860,6 +860,10 @@ ul.errorMessage {
     color:#777777;
 }
 
+.removed {
+    background-color:#EFEFEF;
+}
+
 table.collectionActionAlignment > tbody > tr > td {
     vertical-align: top;
 } 

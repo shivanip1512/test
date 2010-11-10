@@ -186,7 +186,7 @@
 										<cti:img key="delete" href="javascript:removeTableRow('${row.type}','${row.id}')"/>
 									</td>
 								</tr>
-								<tr style="display: none" id="${row.type}_${row.id}_undo">
+								<tr style="display: none" id="${row.type}_${row.id}_undo" class="removed">
 									<td colspan="4" align="center">
 										${row.name} will be removed
 									</td>
@@ -242,7 +242,7 @@
 										<cti:img key="delete" href="javascript:removeTableRow('${row.type}','${row.id}')"/>
 									</td>
 								</tr>
-								<tr style="display: none" id="${row.type}_${row.id}_undo">
+								<tr style="display: none" id="${row.type}_${row.id}_undo" class="removed">
 									<td colspan="4" align="center">
 										${row.name} will be removed
 									</td>

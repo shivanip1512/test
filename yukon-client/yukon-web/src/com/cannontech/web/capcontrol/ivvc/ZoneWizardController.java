@@ -1,7 +1,6 @@
 package com.cannontech.web.capcontrol.ivvc;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,14 +158,12 @@ public class ZoneWizardController {
     		return bankAssignments;
     	}
     	
-    	List<ZoneAssignmentCapBankRow> remainingBankAssignments = new ArrayList<ZoneAssignmentCapBankRow>(bankAssignments); 
-    	Collections.copy(remainingBankAssignments, bankAssignments);
+    	List<ZoneAssignmentCapBankRow> remainingBankAssignments = Lists.newArrayList(); 
     	
-    	for (Integer removedBank : removedBanks) {
-    		for (ZoneAssignmentCapBankRow bankRow : bankAssignments) {
-    			if (removedBank.intValue() == bankRow.getId()) {
-    				remainingBankAssignments.remove(bankRow);
-    			}
+    	for (ZoneAssignmentCapBankRow bankRow : bankAssignments) {
+    		boolean isRemoved = Arrays.asList(removedBanks).contains(bankRow.getId());
+    		if (!isRemoved) {
+    			remainingBankAssignments.add(bankRow);
     		}
     	}
     	
@@ -178,14 +175,12 @@ public class ZoneWizardController {
     		return pointAssignments;
     	}
     	
-    	List<ZoneAssignmentPointRow> remainingPointAssignments = new ArrayList<ZoneAssignmentPointRow>(pointAssignments); 
-    	Collections.copy(remainingPointAssignments, pointAssignments);
+    	List<ZoneAssignmentPointRow> remainingPointAssignments = Lists.newArrayList();
     	
-    	for (Integer removedPoint : removedPoints) {
-    		for (ZoneAssignmentPointRow pointRow : pointAssignments) {
-    			if (removedPoint.intValue() == pointRow.getId()) {
-    				remainingPointAssignments.remove(pointRow);
-    			}
+    	for (ZoneAssignmentPointRow pointRow : pointAssignments) {
+    		boolean isRemoved = Arrays.asList(removedPoints).contains(pointRow.getId());
+    		if (!isRemoved) {
+    			remainingPointAssignments.add(pointRow);
     		}
     	}
     	
