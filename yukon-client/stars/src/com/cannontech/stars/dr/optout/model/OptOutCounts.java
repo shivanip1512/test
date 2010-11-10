@@ -28,6 +28,21 @@ public enum OptOutCounts implements DisplayableEnum {
 		}
 	}
 	
+   /**
+     * This method takes the optOutValue of an optOutTemporaryOverride object and creates a 
+     * OptOutCounts enum value.
+     */
+    public static OptOutCounts valueOf(int counts) {
+        if (counts == 1) {
+            return COUNT;
+        } else if (counts == 0) {
+            return DONT_COUNT;
+        } else {
+            throw new IllegalArgumentException("Invalid opt out counts value: "+counts);
+        }
+    }
+
+	
 	public abstract boolean isCounts();
 	
 	private final static String keyPrefix = "yukon.web.modules.dr.optOut.optOutCountsEnum.";

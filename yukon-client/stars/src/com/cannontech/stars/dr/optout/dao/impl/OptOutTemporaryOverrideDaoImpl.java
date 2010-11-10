@@ -194,7 +194,8 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
         @Override
         public final OptOutCountsDto mapRow(YukonResultSet rs) throws SQLException {
             
-            OptOutCounts optOutCounts = rs.getEnum("OptOutValue", OptOutCounts.class);
+            int optOutValue = rs.getInt("OptOutValue");
+            OptOutCounts optOutCounts = OptOutCounts.valueOf(optOutValue);
             Integer programId = rs.getNullableInt("ProgramId");
             Date startDate = rs.getInstant("StartDate").toDate();
             OptOutCountsDto setting = new OptOutCountsDto(optOutCounts, programId, startDate);

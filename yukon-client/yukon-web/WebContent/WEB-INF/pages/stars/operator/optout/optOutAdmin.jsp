@@ -63,6 +63,18 @@
                                     <td><cti:msg key="${program.value.formatKey}"/></td>
                                 </tr>
                             </c:forEach>
+                            
+                            <tr>
+                                <c:choose>
+                                    <c:when test="${fn:length(programNameEnabledMap) > 0}">
+                                        <td><i:inline key=".otherPrograms" /></td>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <td><i:inline key=".allPrograms" /></td>
+                                    </c:otherwise>
+                                </c:choose>
+                                <td><cti:msg key="${energyCompanyOptOutEnabledSetting}"/></td>
+                            </tr>
                         
                         </table>
                         <br>
@@ -167,6 +179,18 @@
 			        			</tr>
 			        		</c:forEach>
 			        	
+                            <tr>
+                                <c:choose>
+                                    <c:when test="${fn:length(programNameCountsMap) > 0}">
+                                        <td><i:inline key=".otherPrograms" /></td>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <td><i:inline key=".allPrograms" /></td>
+                                    </c:otherwise>
+                                </c:choose>
+                                <td><cti:msg key="${energyCompanyOptOutCountsSetting}"/></td>
+                            </tr>
+                        
 			        	</table>
 			        	<br>
 			        

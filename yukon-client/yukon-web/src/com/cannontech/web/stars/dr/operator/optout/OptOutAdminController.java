@@ -99,14 +99,10 @@ public class OptOutAdminController {
             Program program = programDao.getByProgramId(programId);
             programNameEnabledMap.put(program.getProgramName(), programOptOutEnabledEntry.getValue());
         }
-        if (programNameEnabledMap.size() == 0) {
-            programNameEnabledMap.put(messageSourceAccessor.getMessage("yukon.web.modules.dr.optOut.allPrograms"), defaultOptOutEnabledSetting);
-        } else {
-            programNameEnabledMap.put(messageSourceAccessor.getMessage("yukon.web.modules.dr.optOut.otherPrograms"), defaultOptOutEnabledSetting);
-        }
         map.addAttribute("programNameEnabledMap", programNameEnabledMap);
-        
-    	// programNameCountsMap
+        map.addAttribute("energyCompanyOptOutEnabledSetting", defaultOptOutEnabledSetting);
+
+        // programNameCountsMap
     	OptOutCountsDto defaultOptOutCountsSetting = optOutStatusService.getDefaultOptOutCounts(userContext.getYukonUser());
 		List<OptOutCountsDto> programSpecificOptOutCounts = optOutStatusService.getProgramSpecificOptOutCounts(userContext.getYukonUser());
 		
@@ -117,12 +113,8 @@ public class OptOutAdminController {
 			Program program = programDao.getByProgramId(programId);
 			programNameCountsMap.put(program.getProgramName(), setting.getOptOutCounts());
 		}
-		if (programSpecificOptOutCounts.size() == 0) {
-			programNameCountsMap.put(messageSourceAccessor.getMessage("yukon.web.modules.dr.optOut.allPrograms"), defaultOptOutCountsSetting.getOptOutCounts());
-		} else {
-			programNameCountsMap.put(messageSourceAccessor.getMessage("yukon.web.modules.dr.optOut.otherPrograms"), defaultOptOutCountsSetting.getOptOutCounts());
-		}
     	map.addAttribute("programNameCountsMap", programNameCountsMap);
+        map.addAttribute("energyCompanyOptOutCountsSetting", defaultOptOutCountsSetting.getOptOutCounts());
     	
     	// optOutsEnabled
     	boolean optOutsEnabled = optOutStatusService.getOptOutEnabled(userContext.getYukonUser());

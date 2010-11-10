@@ -36,23 +36,13 @@ public class CustomerControlTotals {
         this.totalOptOutEvents = totalOptOutEvents;
     }
     
-    public CustomerControlTotals plus(CustomerControlTotals customerControlTotals) {
-        CustomerControlTotals result = new CustomerControlTotals();
+    public void plus(CustomerControlTotals customerControlTotals) {
         
-        Duration controlDuringOptOutTime = 
-            this.totalControlDuringOptOutTime.plus(customerControlTotals.getTotalControlDuringOptOutTime());
-        result.setTotalControlDuringOptOutTime(controlDuringOptOutTime);
+        this.totalControlDuringOptOutTime = this.totalControlDuringOptOutTime.plus(customerControlTotals.getTotalControlDuringOptOutTime());
+        this.totalControlTime = this.totalControlTime.plus(customerControlTotals.getTotalControlTime());
+        this.totalOptOutTime = this.totalOptOutTime.plus(customerControlTotals.getTotalOptOutTime());
+        this.totalOptOutEvents = this.totalOptOutEvents + customerControlTotals.getTotalOptOutEvents();
         
-        Duration controlTime = this.totalControlTime.plus(customerControlTotals.getTotalControlTime());
-        result.setTotalControlTime(controlTime);
-        
-        Duration optOutTime = this.totalOptOutTime.plus(customerControlTotals.getTotalOptOutTime());
-        result.setTotalOptOutTime(optOutTime);
-        
-        int optOutEvents = this.totalOptOutEvents + customerControlTotals.getTotalOptOutEvents();
-        result.setTotalOptOutEvents(optOutEvents);
-        
-        return result;
     }
 
 }

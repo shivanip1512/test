@@ -33,13 +33,14 @@ public class ProhibitConsumerOverridesRequestEndpoint {
     public Element invoke(Element prohibitConsumerOverridesRequest, LiteYukonUser user) throws Exception {
         
         XmlVersionUtils.verifyYukonMessageVersion(prohibitConsumerOverridesRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
+        String version = XmlVersionUtils.getYukonMessageVersion(prohibitConsumerOverridesRequest);
         
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(prohibitConsumerOverridesRequest);
         String programName = requestTemplate.evaluateAsString(programNameExpressionStr);
         
         // init response
         Element resp = new Element("prohibitConsumerOverridesResponse", ns);
-        XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        XmlVersionUtils.addVersionAttribute(resp, version);
         
         starsEventLogService.disablingOptOutUsageForTodayAttemptedByApi(user);
         
@@ -54,7 +55,6 @@ public class ProhibitConsumerOverridesRequestEndpoint {
                 starsEventLogService.disablingOptOutUsageForTodayAttemptedByApi(user);
                 optOutService.changeOptOutEnabledStateForToday(user, false);
 
-                
             } else {
                 starsEventLogService.disablingOptOutUsageForTodayByProgramAttemptedByApi(user, programName);
                 optOutService.changeOptOutEnabledStateForTodayByProgramName(user, false, programName);
