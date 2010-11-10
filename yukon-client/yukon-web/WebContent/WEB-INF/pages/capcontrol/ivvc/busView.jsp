@@ -84,7 +84,7 @@
 					<c:forEach var="setting" items="${strategySettings}">
 						<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 							<td>
-								<spring:escapeBody htmlEscape="true">${setting.type}</spring:escapeBody>
+								<spring:escapeBody htmlEscape="true">${setting.type.displayName}</spring:escapeBody>
 							</td>
 							<td>
 								<spring:escapeBody htmlEscape="true">${setting.peakValue}</spring:escapeBody>
