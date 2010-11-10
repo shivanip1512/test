@@ -336,31 +336,30 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         sql.append("FROM CCStrategyTargetSettings peaks, CCStrategyTargetSettings offpeaks");
         sql.append("WHERE peaks.SettingName = offpeaks.SettingName");
         sql.append("  AND peaks.strategyid = offpeaks.strategyid");
-        sql.append("  AND peaks.SettingType = ").appendArgument(peak);
-        sql.append("  AND offpeaks.SettingType = ").appendArgument(offpeak);
-        sql.append("  AND peaks.strategyid = ").appendArgument(strategy.getStrategyID());
+        sql.append("  AND peaks.SettingType").eq(peak);
+        sql.append("  AND offpeaks.SettingType").eq(offpeak);
+        sql.append("  AND peaks.strategyid").eq(strategy.getStrategyID());
         
-        ParameterizedRowMapper<PeakTargetSetting> mapper = new ParameterizedRowMapper<PeakTargetSetting>() {
-            
-            public PeakTargetSetting mapRow(ResultSet rs, int rowNum) throws SQLException {
-                String name = rs.getString("name");
-                String peakValue = rs.getString("peakValue");
-                String offPeakValue = rs.getString("offPeakValue");
-                
-                TargetSettingType targetSetting = TargetSettingType.getByDisplayName(name);
-                PeakTargetSetting setting = new PeakTargetSetting(targetSetting, peakValue, offPeakValue, targetSetting.getUnits());
-                
-                return setting;
-            }
-        };
-
-        List<PeakTargetSetting> settings = yukonJdbcTemplate.query(sql.getSql(), mapper, sql.getArguments());
+        List<PeakTargetSetting> settings = yukonJdbcTemplate.query(sql, peakTargetSettingMapper);
         if(settings.isEmpty()) {
             settings = StrategyPeakSettingsHelper.getSettingDefaults(strategy.getControlUnits());
         }
         
         return settings;
     }
+    
+    private static YukonRowMapper<PeakTargetSetting> peakTargetSettingMapper = 
+		new YukonRowMapper<PeakTargetSetting>() {
+		@Override
+        public PeakTargetSetting mapRow(YukonResultSet rs) throws SQLException {
+			TargetSettingType targetSettingType = rs.getEnum("name", TargetSettingType.class);
+            String peakValue = rs.getString("peakValue");
+            String offPeakValue = rs.getString("offPeakValue");
+            
+            PeakTargetSetting setting = new PeakTargetSetting(targetSettingType, peakValue, offPeakValue, targetSettingType.getUnits());
+            return setting;
+        }
+    };
     
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {

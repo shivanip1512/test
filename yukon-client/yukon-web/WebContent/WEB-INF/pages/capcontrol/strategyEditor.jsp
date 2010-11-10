@@ -181,7 +181,7 @@
                         <f:facet name="header">
                             <x:outputText value="Week Day" rendered="#{capControlForm.timeOfDay}"/>
                         </f:facet>
-                        <h:outputText value="#{setting.name}" style="padding-left:50px;"/>
+                        <h:outputText value="#{setting.type.displayName}" style="padding-left:50px;"/>
                         <h:outputText value=":" />
                     </h:column>
 
@@ -205,7 +205,7 @@
                         <f:facet name="header">
                             <x:outputText value="Weekend" />
                         </f:facet>
-                        <h:outputText value="#{setting.name}" style="padding-left:50px;"/>
+                        <h:outputText value="#{setting.type.displayName}" style="padding-left:50px;"/>
                     </h:column>
                     
                     <h:column>
