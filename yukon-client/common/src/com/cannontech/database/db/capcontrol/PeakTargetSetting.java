@@ -4,15 +4,13 @@ public class PeakTargetSetting {
     private TargetSettingType type;
     private String peakValue;
     private String offPeakValue;
-    private String units;
     private final static String PEAK_TYPE = "PEAK";
     private final static String OFFPEAK_TYPE = "OFFPEAK";
     
-    public PeakTargetSetting(TargetSettingType type, String peakValue, String offPeakValue, String units){
+    public PeakTargetSetting(TargetSettingType type, String peakValue, String offPeakValue){
         this.type = type;
         this.peakValue = peakValue;
         this.offPeakValue = offPeakValue;
-        this.units = units;
     }
 
     public TargetSettingType getType() {
@@ -39,12 +37,8 @@ public class PeakTargetSetting {
         this.offPeakValue = offPeakValue;
     }
 
-    public void setUnits(String units) {
-        this.units = units;
-    }
-
     public String getUnits() {
-        return units;
+        return type.getUnits();
     }
 
     public static String getPeakType() {

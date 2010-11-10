@@ -1,7 +1,9 @@
 package com.cannontech.database.db.capcontrol;
 
+import com.cannontech.common.util.DatabaseRepresentationSource;
 
-public enum TargetSettingType {
+
+public enum TargetSettingType implements DatabaseRepresentationSource {
     UPPER_VOLT_LIMIT("Upper Volt Limit", "130.0", "Volts"),
     LOWER_VOLT_LIMIT("Lower Volt Limit", "110.0", "Volts"),
     KVAR_LEADING("KVAR Leading", "-600.0", "KVARs"),
@@ -58,11 +60,16 @@ public enum TargetSettingType {
     }
     
     public PeakTargetSetting getPeakTargetSetting(){
-		PeakTargetSetting setting = new PeakTargetSetting(this, defaultValue, defaultValue, units);
+		PeakTargetSetting setting = new PeakTargetSetting(this, defaultValue, defaultValue);
         return setting;
     }
     
     public String getUnits() {
         return units;
     }
+
+	@Override
+	public Object getDatabaseRepresentation() {
+		return getDisplayName();
+	}
 }

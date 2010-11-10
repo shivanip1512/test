@@ -356,7 +356,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
             String peakValue = rs.getString("peakValue");
             String offPeakValue = rs.getString("offPeakValue");
             
-            PeakTargetSetting setting = new PeakTargetSetting(targetSettingType, peakValue, offPeakValue, targetSettingType.getUnits());
+            PeakTargetSetting setting = new PeakTargetSetting(targetSettingType, peakValue, offPeakValue);
             return setting;
         }
     };

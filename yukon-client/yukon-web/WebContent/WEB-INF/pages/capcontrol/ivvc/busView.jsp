@@ -93,7 +93,7 @@
 								<spring:escapeBody htmlEscape="true">${setting.offPeakValue}</spring:escapeBody>
 							</td>
 							<td>
-								<spring:escapeBody htmlEscape="true">${setting.units}</spring:escapeBody>
+								<spring:escapeBody htmlEscape="true">${setting.type.units}</spring:escapeBody>
 							</td>
 						</tr>
 					</c:forEach>

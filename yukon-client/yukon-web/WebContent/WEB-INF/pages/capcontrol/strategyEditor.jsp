@@ -190,7 +190,7 @@
                             <x:outputText value="#{capControlForm.peakHeader}"/>
                         </f:facet>
                         <x:inputText styleClass="char8Label" required="true" value="#{setting.peakValue}" />
-                        <x:outputText value="#{setting.units}" styleClass="padUnitsLabel"/>
+                        <x:outputText value="#{setting.type.units}" styleClass="padUnitsLabel"/>
                     </h:column>
                     
                     <h:column rendered="#{capControlForm.timeOfDay}">
@@ -213,7 +213,7 @@
                             <x:outputText value="#{capControlForm.offPeakHeader}"/>
                         </f:facet>
                         <x:inputText styleClass="char8Label" required="true" value="#{setting.offPeakValue}" />
-                        <x:outputText value="#{setting.units}" styleClass="padUnitsLabel"/>
+                        <x:outputText value="#{setting.type.units}" styleClass="padUnitsLabel"/>
                     </h:column>
                     
                     <h:column rendered="#{capControlForm.timeOfDay}">
