@@ -52,7 +52,7 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
     	//==========================================================================================
     	Element requestElement = LoadManagementTestUtils.createProhibitOverridesRequestElement(
     			XmlVersionUtils.YUKON_MSG_VERSION_1_0, null, reqSchemaResource);
-        LiteYukonUser user = MockAuthDao.getUnAuthorizedUser();
+        LiteYukonUser user = MockRolePropertyDao.getUnAuthorizedUser();
         Element respElement = impl.invoke(requestElement, user);
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
