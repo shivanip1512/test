@@ -8,6 +8,8 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import com.cannontech.common.events.loggers.StarsEventLogService;
+import com.cannontech.common.events.service.EventLogMockServiceFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.api.loadManagement.endpoint.CountOverridesTowardsLimitRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -20,7 +22,8 @@ import com.cannontech.yukon.api.utils.TestUtils;
 public class CountOverridesTowardsLimitRequestEndpointTest {
 
     private CountOverridesTowardsLimitRequestEndpoint impl;
-    private MockOptOutService mockOptOutService; 
+    private MockOptOutService mockOptOutService;
+    private StarsEventLogService mockStarsEventLogService;
     
     private static final String RESP_ELEMENT_NAME = "countOverridesTowardsLimitResponse";
     private Namespace ns = YukonXml.getYukonNamespace();
@@ -29,9 +32,11 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
     public void setUp() throws Exception {
         
         mockOptOutService = new MockOptOutService();
-        
+        mockStarsEventLogService = EventLogMockServiceFactory.getEventLogMockService(StarsEventLogService.class);
+
         impl = new CountOverridesTowardsLimitRequestEndpoint();
         impl.setOptOutService(mockOptOutService);
+        impl.setStarsEventLogService(mockStarsEventLogService);
         impl.setRolePropertyDao(new MockRolePropertyDao());
     }
     

@@ -67,8 +67,7 @@ public class OptOutServiceAdapter implements OptOutService {
 	
     @Override
     public void changeOptOutEnabledStateForTodayByProgramName(LiteYukonUser user, boolean optOutsEnabled,
-                                                              String programName)
-            throws ProgramNotFoundException {
+                                                              String programName) throws ProgramNotFoundException {
         throw new UnsupportedOperationException("not implemented");
     }
 

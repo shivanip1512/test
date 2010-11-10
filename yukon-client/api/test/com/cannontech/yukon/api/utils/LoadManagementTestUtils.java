@@ -342,6 +342,7 @@ public class LoadManagementTestUtils {
     // Prohibit OVERRIDES REQUEST
     public static Element createProhibitOverridesRequestElement(
     		String version,
+    		String programName,
     		Resource requestSchemaResource) {
     	
     	Element requestElement = null;
@@ -350,6 +351,11 @@ public class LoadManagementTestUtils {
     	requestElement = new Element("prohibitConsumerOverridesRequest", ns);
     	versionAttribute = new Attribute("version", version);
     	requestElement.setAttribute(versionAttribute);
+
+        if (programName != null) {
+            Element tmpElement = XmlUtils.createStringElement("programName", ns, programName);
+            requestElement.addContent(tmpElement);
+        }
     	
     	// validate request
     	TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);

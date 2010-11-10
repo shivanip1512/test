@@ -7,6 +7,9 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import com.cannontech.common.events.loggers.StarsEventLogService;
+import com.cannontech.common.events.service.EventLogMockServiceFactory;
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.api.loadManagement.endpoint.ProhibitConsumerOverridesRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -18,7 +21,8 @@ import com.cannontech.yukon.api.utils.TestUtils;
 public class ProhibitConsumerOverridesRequestEndpointTest {
 
     private ProhibitConsumerOverridesRequestEndpoint impl;
-    private MockOptOutService mockOptOutService; 
+    private MockOptOutService mockOptOutService;
+    private StarsEventLogService mockStarsEventLogService;
     
     private static final String RESP_ELEMENT_NAME = "prohibitConsumerOverridesResponse";
     
@@ -26,9 +30,11 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
     public void setUp() throws Exception {
         
         mockOptOutService = new MockOptOutService();
+        mockStarsEventLogService = EventLogMockServiceFactory.getEventLogMockService(StarsEventLogService.class);
         
         impl = new ProhibitConsumerOverridesRequestEndpoint();
         impl.setOptOutService(mockOptOutService);
+        impl.setStarsEventLogService(mockStarsEventLogService);
         impl.setRolePropertyDao(new MockRolePropertyDao());
     }
     
@@ -45,7 +51,7 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
     	// test with unauthorized user
     	//==========================================================================================
     	Element requestElement = LoadManagementTestUtils.createProhibitOverridesRequestElement(
-    			XmlVersionUtils.YUKON_MSG_VERSION_1_0, reqSchemaResource);
+    			XmlVersionUtils.YUKON_MSG_VERSION_1_0, null, reqSchemaResource);
         LiteYukonUser user = MockAuthDao.getUnAuthorizedUser();
         Element respElement = impl.invoke(requestElement, user);
 
@@ -69,23 +75,54 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
         
         Assert.assertFalse("changeProhibitStateForToday called with true, expected false", 
         		mockOptOutService.getLastValueCalled());
+
         
+        // test with program name
+        //==========================================================================================
+        requestElement = LoadManagementTestUtils.createProhibitOverridesRequestElement(
+                XmlVersionUtils.YUKON_MSG_VERSION_1_1, "Program1", reqSchemaResource);
+        user = new LiteYukonUser();
+        respElement = impl.invoke(requestElement, user);
+        
+        // verify the respElement is valid according to schema
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+
+        Assert.assertFalse("changeProhibitStateForToday called with true, expected false", 
+                           mockOptOutService.getLastValueCalled());
+
+        // create template and parse response data
+        template = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runVersionAssertion(template, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
+        TestUtils.runSuccessAssertion(template, RESP_ELEMENT_NAME);
+        Assert.assertEquals("Wrong program name", "Program1", mockOptOutService.getProgramName());
+
     }
     
     private class MockOptOutService extends OptOutServiceAdapter {
-        
+
     	private Boolean lastValueCalled = null;
-    	
+    	private String programName = null;
+
     	public Boolean getLastValueCalled() {
 			return lastValueCalled;
 		}
-    	
-    	@Override
-    	public void changeOptOutEnabledStateForToday(LiteYukonUser user,
-    			boolean optOutsEnabled) {
 
+    	public String getProgramName() {
+    	    return programName;
+    	}
+
+    	@Override
+    	public void changeOptOutEnabledStateForToday(LiteYukonUser user, boolean optOutsEnabled) {
     		this.lastValueCalled = optOutsEnabled;
     	}
+    	
+    	@Override
+        public void changeOptOutEnabledStateForTodayByProgramName(LiteYukonUser user, boolean optOutsEnabled,
+                                                                  String programName) throws ProgramNotFoundException {
+    	    this.lastValueCalled = optOutsEnabled;
+    	    this.programName = programName;
+    	}
+
     }
 
 }

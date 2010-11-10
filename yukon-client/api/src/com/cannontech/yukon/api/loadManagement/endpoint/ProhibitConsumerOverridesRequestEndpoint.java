@@ -42,8 +42,6 @@ public class ProhibitConsumerOverridesRequestEndpoint {
         Element resp = new Element("prohibitConsumerOverridesResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, version);
         
-        starsEventLogService.disablingOptOutUsageForTodayAttemptedByApi(user);
-        
         // run service
         Element resultElement;
         try {
