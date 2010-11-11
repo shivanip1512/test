@@ -20,9 +20,6 @@ public class Range<T extends Comparable<T>> {
      * max less than min
      */
     public Range(T min, T max) {
-        if (min != null && max != null && min.compareTo(max) > 0) {
-            throw new IllegalArgumentException("min value must not be greater than max value");
-        }
         this.min = min;
         this.max = max;
     }
@@ -106,5 +103,47 @@ public class Range<T extends Comparable<T>> {
     public String toString() {
         return min + " " + (includesMinValue ? "inclusive" : "exclusive")
             + " to " + max + " " + (includesMaxValue ? "inclusive" : "exclusive");
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (includesMaxValue ? 1231 : 1237);
+        result = prime * result + (includesMinValue ? 1231 : 1237);
+        result = prime * result + ((max == null) ? 0 : max.hashCode());
+        result = prime * result + ((min == null) ? 0 : min.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Range<?> other = (Range<?>) obj;
+
+        if (max == null) {
+            if (other.max != null)
+                return false;
+        } else if (!max.equals(other.max))
+            return false;
+        if (min == null) {
+            if (other.min != null)
+                return false;
+        } else if (!min.equals(other.min))
+            return false;
+
+        // If max is null, it doesn't matter if the includesMaxValues don't
+        // match since they're both unbounded at the top.
+        if (max != null && includesMaxValue != other.includesMaxValue)
+            return false;
+        if (min != null && includesMinValue != other.includesMinValue)
+            return false;
+
+        return true;
     }
 }
