@@ -164,10 +164,12 @@ public class OptOutServiceImpl implements OptOutService {
 		}
 
 		Map<Integer, Integer> surveyResultIdsBySurveyId = Maps.newHashMap();
-        for (Result result : request.getSurveyResults()) {
-            surveyDao.saveResult(result);
-            surveyResultIdsBySurveyId.put(result.getSurveyId(), result.getSurveyResultId());
-        }
+		if (request.getSurveyResults() != null) {
+            for (Result result : request.getSurveyResults()) {
+                surveyDao.saveResult(result);
+                surveyResultIdsBySurveyId.put(result.getSurveyId(), result.getSurveyResultId());
+            }
+		}
 
         // Send opt out command immediately for each inventory
     	for(Integer inventoryId : inventoryIdList) { 
@@ -260,7 +262,8 @@ public class OptOutServiceImpl implements OptOutService {
 				lmHardwareControlInformationService.startOptOut(inventoryId, customerAccountId, user, event.getStartDate());
 			}
 
-			if (request.getSurveyIdsByInventoryId().get(inventoryId) != null) {
+			if (request.getSurveyIdsByInventoryId() != null &&
+			    request.getSurveyIdsByInventoryId().get(inventoryId) != null) {
 	            for (Integer surveyId : request.getSurveyIdsByInventoryId().get(inventoryId)) {
 	                int surveyResultId = surveyResultIdsBySurveyId.get(surveyId);
 	                optOutSurveyDao.saveResult(surveyResultId, optOutEventLog.getLogId());
