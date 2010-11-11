@@ -13,7 +13,7 @@
 <%@ attribute name="extraDestinationFields" description="used when a selection has been made and the picker is closed.  It's a semicolon separated list of: [property]:[fieldId]"%>
 <%@ attribute name="buttonStyleClass" description="Class to style the button with"%>
 <%@ attribute name="anchorStyleClass" description="Class to style the anchor with"%>
-<%@ attribute name="selectionProperty" description="With a linkType of 'selection', determine property to fill label with."%>
+<%@ attribute name="selectionProperty" description="Required with a linkType of 'selection', used to determine name of property from selected item to display in label."%>
 <%@ attribute name="allowEmptySelection" description="Allow an empty selection.  This also adds a 'clear' button."%>
 <%@ attribute name="initialIds" type="java.lang.Object" description="Ids of items selected at the start." rtexprvalue="true"%>
 
@@ -27,8 +27,9 @@
 <cti:includeScript link="/JavaScript/tableCreation.js"/>
 
 <script type="text/javascript">
-    // Only create picker if not already created.  (This tag "used" more than
-    // once if it's used inside a widget and the widget is updated.
+    // Only create picker if not already created.  This tag gets called more than
+    // once if it's used inside a widget and the widget is updated.  Since the user
+    // isn't navigating off the page, we want to keep the same picker.
     if (window.${id} == undefined) {
         ${id} = new Picker('${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}');
 
@@ -83,6 +84,10 @@
                     styleClass="${pageScope.buttonStyleClass}"/>
     	    </c:when>
     	    <c:when test="${pageScope.linkType == 'selection'}">
+                <c:if test="${empty pageScope.selectionProperty}">
+                    <span class="errorMessage">The "selectionProperty" attribute is
+                        required when using "selection" linkType on tags:pickerDialog.</span>
+                </c:if>
                 <c:if test="${empty pageScope.nameKey}">
                     <c:set var="nameKey" value="selectionPicker"/>
                 </c:if>
