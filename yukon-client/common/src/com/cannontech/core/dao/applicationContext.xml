@@ -205,6 +205,4 @@
   
   <bean id="serviceCompanyDao" class="com.cannontech.core.dao.impl.ServiceCompanyDaoImpl"/>
   
-  <bean id="dynamicDataDao" class="com.cannontech.core.dao.impl.DynamicDataDaoImpl"/>
-  
 </beans>

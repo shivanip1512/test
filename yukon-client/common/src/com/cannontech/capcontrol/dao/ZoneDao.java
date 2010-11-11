@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
+import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.Zone;
 
 public interface ZoneDao {
@@ -141,4 +142,18 @@ public interface ZoneDao {
 	 * @param bankId
 	 */
 	public void removeBankToZoneMapping(int bankId);
+
+	/**
+	 * Returns a list of all CapBankPointDeltas for the given list of bankIds.
+	 * @param bankIds
+	 * @return
+	 */
+    public List<CapBankPointDelta> getAllPointDeltasForBankIds(List<Integer> bankIds);
+    
+    /**
+     * Returns a list of Point Ids for the given Cap Bank Id.
+     * @param bankId
+     * @return
+     */
+    public List<Integer> getMonitorPointsForBank(int bankId);
 }

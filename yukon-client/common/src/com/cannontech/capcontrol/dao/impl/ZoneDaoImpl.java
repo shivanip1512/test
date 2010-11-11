@@ -13,6 +13,7 @@ import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
+import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
@@ -30,12 +31,34 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<Zone> zoneTemplate;
     
+    private static YukonRowMapper<CapBankPointDelta> pointDeltaRowMapper = 
+        new YukonRowMapper<CapBankPointDelta>() {
+        @Override
+        public CapBankPointDelta mapRow(YukonResultSet rs) throws SQLException {
+            CapBankPointDelta capBankPointDelta = new CapBankPointDelta();
+            
+            capBankPointDelta.setPointId(rs.getInt("PointId"));
+            capBankPointDelta.setBankId(rs.getInt("BankId"));
+            capBankPointDelta.setBankName(rs.getString("BankName"));
+            capBankPointDelta.setCbcName(rs.getString("CbcName"));
+            capBankPointDelta.setAffectedDeviceName(rs.getString("AffectedDeviceName"));
+            capBankPointDelta.setAffectedPointName(rs.getString("AffectedPointName"));
+            capBankPointDelta.setPreOpValue(rs.getDouble("PreOpValue"));
+            capBankPointDelta.setDelta(rs.getDouble("Delta"));
+            
+            String staticDelta = rs.getString("StaticDelta").trim().intern();
+            capBankPointDelta.setStaticDelta("Y".equals(staticDelta));
+            
+            return capBankPointDelta;
+        }
+    };
+
     private static YukonRowMapper<Zone> zoneRowMapper = 
     	new YukonRowMapper<Zone>() {
 		@Override
         public Zone mapRow(YukonResultSet rs) throws SQLException {
-            
             Zone zone = new Zone();
+            
             zone.setId(rs.getInt("ZoneId"));
             zone.setName(rs.getString("ZoneName"));
             zone.setRegulatorId(rs.getInt("RegulatorId"));
@@ -351,6 +374,40 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sql.append("Where DeviceId").in(bankIds);
         
         yukonJdbcTemplate.update(sql); 
+    }
+    
+    @Override
+    public List<CapBankPointDelta> getAllPointDeltasForBankIds(List<Integer> bankIds) {
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        
+        sqlBuilder.append("SELECT DMPR.BankId, DMPR.PointId, PAO.PAOName AS BankName,");
+        sqlBuilder.append("  PAOC.PAOName AS CbcName, PAO2.PAOName AS AffectedDeviceName,");
+        sqlBuilder.append("  P.PointName AS AffectedPointName, DMPR.PreOpValue, DMPR.Delta, DMPR.StaticDelta");
+        sqlBuilder.append("FROM DynamicCCMonitorPointResponse DMPR");
+        sqlBuilder.append("JOIN Point P ON P.PointId = DMPR.PointId");
+        sqlBuilder.append("JOIN YukonPAObject PAO ON DMPR.BankId = PAO.PAObjectId");
+        sqlBuilder.append("JOIN YukonPAObject PAO2 ON P.PAObjectId = PAO2.PAObjectId");
+        sqlBuilder.append("JOIN CapBank CB ON CB.DeviceId = DMPR.BankId");
+        sqlBuilder.append("JOIN YukonPAObject PAOC ON PAOC.PAObjectId = CB.ControlDeviceId");
+        sqlBuilder.append("JOIN CCFeederBankList FBL ON FBL.DeviceId = CB.DeviceId");
+        sqlBuilder.append("JOIN CCFeederSubAssignment FSA ON FSA.FeederId = FBL.FeederId");
+        sqlBuilder.append("WHERE DMPR.BankId");
+        sqlBuilder.in(bankIds);
+        
+        return yukonJdbcTemplate.query(sqlBuilder, pointDeltaRowMapper);
+    }
+
+    @Override
+    public List<Integer> getMonitorPointsForBank(int bankId) {
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        
+        sqlBuilder.append("SELECT PointID");
+        sqlBuilder.append("FROM CCMonitorBankList");
+        sqlBuilder.append("WHERE BankID").eq(bankId);
+        sqlBuilder.append("ORDER BY DisplayOrder");
+        
+        List<Integer> points = yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
+        return points;
     }
     
     private FieldMapper<Zone> zoneFieldMapper = new FieldMapper<Zone>() {

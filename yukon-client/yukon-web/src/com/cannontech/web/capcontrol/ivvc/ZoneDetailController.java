@@ -20,7 +20,6 @@ import com.cannontech.cbc.web.CapControlCommandExecutor;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.search.SearchResult;
-import com.cannontech.core.dao.DynamicDataDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.capcontrol.VoltageRegulatorPointMapping;
@@ -47,7 +46,6 @@ public class ZoneDetailController {
     private FilterCacheFactory filterCacheFactory;
     private RolePropertyDao rolePropertyDao;
     private ZoneService zoneService;
-    private DynamicDataDao dynamicDataDao;
     private VoltageRegulatorService voltageRegulatorService;
     private AttributeService attributeService;
     private VoltageFlatnessGraphService voltageFlatnessGraphService;
@@ -165,7 +163,7 @@ public class ZoneDetailController {
     private void setupDeltas(ModelMap model, HttpServletRequest request, CapControlCache cache, Zone zone) {
         List<Integer> bankIds = zoneService.getCapBankIdsForSubBusId(zone.getSubstationBusId());
         
-        List<CapBankPointDelta> pointDeltas = dynamicDataDao.getAllPointDeltasForBankIds(bankIds);
+        List<CapBankPointDelta> pointDeltas = zoneService.getAllPointDeltasForBankIds(bankIds);
         
         int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 10);
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
@@ -226,11 +224,6 @@ public class ZoneDetailController {
     @Autowired
     public void setZoneService (ZoneService zoneService) {
         this.zoneService = zoneService;
-    }
-    
-    @Autowired
-    public void setDynamicDataDao (DynamicDataDao dynamicDataDao) {
-        this.dynamicDataDao = dynamicDataDao;
     }
     
     @Autowired

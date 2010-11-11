@@ -9,6 +9,7 @@ import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.RootZoneExistsException;
+import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
 import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
@@ -212,6 +213,14 @@ public class ZoneServiceImpl implements ZoneService {
                                           dbChangeType);
         
         dbPersistantDao.processDBChange(msg);
+    }
+    
+    public List<CapBankPointDelta> getAllPointDeltasForBankIds(List<Integer> bankIds) {
+        return zoneDao.getAllPointDeltasForBankIds(bankIds);
+    }
+    
+    public List<Integer> getMonitorPointsForBank(int bankId) {
+        return zoneDao.getMonitorPointsForBank(bankId);
     }
     
     @Autowired

@@ -18,7 +18,6 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.core.dao.DynamicDataDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
@@ -53,7 +52,6 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     private PaoDao paoDao;
     private DynamicDataSource dynamicDataSource;
     private StrategyDao strategyDao;
-    private DynamicDataDao dynamicDataDao;
     private PointDao pointDao;
     private DateFormattingService dateFormattingService;
     private ZoneService zoneService;
@@ -282,7 +280,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         
         //Add the cap banks
         for (CapBankToZoneMapping bankToZone : banksToZone) {
-            List<Integer> bankPoints = dynamicDataDao.getMonitorPointsForBank(bankToZone.getDeviceId());
+            List<Integer> bankPoints = zoneService.getMonitorPointsForBank(bankToZone.getDeviceId());
             for (Integer pointId : bankPoints) {
         		VfPoint graphPoint = getCapBankToZoneVfPoint(userContext, cache, bankToZone, pointId, zone, graphStartPosition);
                 points.add(graphPoint);
@@ -434,11 +432,6 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     public void setFilterCacheFactory(FilterCacheFactory filterCacheFactory) {
         this.filterCacheFactory = filterCacheFactory;
     }
-    
-    @Autowired
-    public void setDynamicDataDao(DynamicDataDao dynamicDataDao) {
-		this.dynamicDataDao = dynamicDataDao;
-	}
     
     @Autowired
     public void setPointDao(PointDao pointDao) {
