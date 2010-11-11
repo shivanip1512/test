@@ -33,8 +33,8 @@ Picker.prototype = {
 		this.multiSelectMode = false;
 		this.immediateSelectMode = false;
 		this.memoryGroup = false;
-		this.reset(false, true);
-
+		this.resetSearchFields();
+		this.selectedItems = new Array();
 		this.extraDestinationFields = new Array();
 		if (extraDestinationFields) {
 			var pairs = extraDestinationFields.split(/;/);
@@ -49,32 +49,26 @@ Picker.prototype = {
 				}
 			}
 		}
+		this.allowEmptySelection = false;
 
 		this.resultAreaId = 'picker_' + this.pickerId + '_resultArea';
 		this.resultAreaFixedId = 'picker_' + this.pickerId + '_resultAreaFixed';
 		this.errorHolderId = 'picker_' + this.pickerId + '_errorHolder';
+		this.primed = false;
 	},
 
 	/**
 	 * Reset things that need to be reset when first popping up the picker
 	 * or when clearing it.
-	 * 
-	 * - clearRecent is true for showAll but false for just showing the
-	 *   picker (where we want to re-use the previous search).
 	 */
-	reset: function(clearRecent, clearSelectedItems) {
-		if (clearRecent && this.memoryGroup) {
-			Picker.rememberedSearches[this.memoryGroup] = '';
-		}
+	resetSearchFields: function() {
 		this.currentSearch = '';
 		this.inSearch = false;
 		this.previousIndex = -1;
 		this.nextIndex = -1;
+		this.hitCount = 0;
 		if (this.ssInput) {
 			this.ssInput.value = '';
-		}
-		if (clearSelectedItems) {
-			this.selectedItems = new Array();
 		}
 	},
 
@@ -108,7 +102,7 @@ Picker.prototype = {
 	 * 
 	 * - start is the index of the first result to show.
 	 */
-	doSearch: function(start) {
+	doSearch: function(start, count, onComplete) {
 		this.inSearch = true;
 		showBusy();
 		var ss = this.ssInput.value;
@@ -133,12 +127,76 @@ Picker.prototype = {
 			parameters.extraArgs = this.extraArgs;
 		}
 
+		if (count) {
+			parameters.count = count;
+		}
+
+		if (!onComplete) {
+			onComplete = this.updateSearchResults.bind(this);
+		}
+
 		new Ajax.Request('/picker/v2/search', {
 			'method': 'get',
 			'parameters': parameters,
-			'onComplete': this.updateSearchResults.bind(this),
+			'onComplete': onComplete,
 			'onFailure': this.ajaxError.bind(this)
 			});
+	},
+
+	/**
+	 * This method does secondary initialization which needs to happen after
+	 * the HTML elements in the tag file have been fully created.
+	 */
+	init : function() {
+		this.inputAreaDiv = $('picker_' + this.pickerId + '_inputArea');
+		if (this.selectionProperty) {
+			this.selectedItemsPopup = $('picker_' + this.pickerId + '_selectedItemsPopup');
+			this.selectedItemsDisplayArea = $('picker_' + this.pickerId + '_selectedItemsDisplayArea');
+			this.showSelectedLink = $($('picker_' + this.pickerId + '_showSelectedImg').parentNode);
+			this.showSelectedLink.hide();
+		}
+
+		var initialIds = [];
+		if (this.destinationFieldId) {
+			if ($F(this.destinationFieldId)) {
+				initialIds = $F(this.destinationFieldId).split(',');
+			}
+		} else {
+			initialIds = this.inputAreaDiv.getElementsBySelector('input').pluck('value');
+		}
+
+		if (initialIds && initialIds.length > 0) {
+			this.prime(false, initialIds);
+		}
+	},
+
+	/**
+	 * This method primes the picker, performing the initial search if necessary
+	 * and populating the dialog with the results of pickerDialog.jsp.  If the
+	 * picker has initially selected ids, this needs to be called on initial
+	 * page load to correctly populate the data outside the picker but otherwise,
+	 * it doesn't need to be done until the picker is first used (which may
+	 * never happen).
+	 */
+	prime: function(showPicker, initialIds) {
+		var bodyElem = document.documentElement.getElementsByTagName('body')[0];
+		var pickerDialogDivContainer = document.createElement('div');
+		bodyElem.appendChild(pickerDialogDivContainer);
+		var parameters = {
+				'type' : this.pickerType,
+				'id' : this.pickerId,
+				'multiSelectMode' : this.multiSelectMode,
+				'immediateSelectMode' : this.immediateSelectMode
+			};
+		if (this.extraArgs) {
+			parameters.extraArgs = this.extraArgs;
+		}
+
+		new Ajax.Updater(pickerDialogDivContainer, '/picker/v2/build', {
+			'parameters': parameters,
+			'evalScripts': true,
+			'onComplete': this.onPrimeComplete.bind(this, showPicker, initialIds)
+		});
 	},
 
 	/**
@@ -151,24 +209,13 @@ Picker.prototype = {
 				'turning multiSelectMode off');
 			this.multiSelectMode = false;
 		}
-		this.reset(false, true);
+
+		this.lastSelectedItems = this.selectedItems.clone();
+		this.resetSearchFields();
 		this.clearSearchResults();
-		if (!$(this.pickerId)) {
+		if (!this.primed) {
 			showBusy();
-			var bodyElem = document.documentElement.getElementsByTagName('body')[0];
-			var pickerDialogDivContainer = document.createElement('div');
-			bodyElem.appendChild(pickerDialogDivContainer);
-			var parameters = {
-					'type' : this.pickerType,
-					'id' : this.pickerId,
-					'multiSelectMode' : this.multiSelectMode,
-					'immediateSelectMode' : this.immediateSelectMode
-				};
-			new Ajax.Updater(pickerDialogDivContainer, '/picker/v2/build', {
-				'parameters': parameters,
-				'evalScripts': true,
-				'onComplete': this.onComplete.bind(this)
-			});
+			this.prime(true);
 		} else {
 			this.doShow();
 		}
@@ -185,29 +232,67 @@ Picker.prototype = {
 		this.doSearch();
 	},
 
-	onComplete : function(transport, json) {
+	onPrimeComplete : function(showPicker, initialIds, transport, json) {
 		hideBusy();
 		this.ssInput = $('picker_' + this.pickerId + '_ss');
 		this.showAllLink = $('picker_' + this.pickerId + '_showAllLink');
-		this.inputAreaDiv = $('picker_' + this.pickerId + '_inputArea');
 		this.resultsDiv = $('picker_' + this.pickerId + '_results');
 		this.noResultsDiv = $('picker_' + this.pickerId + '_noResults');
 		this.nothingSelectedDiv = $('picker_' + this.pickerId + '_nothingSelected');
 		this.selectAllCheckBox = $('picker_' + this.pickerId + '_selectAll');
+		this.selectAllPagesLink = $('picker_' + this.pickerId + '_selectAllPages');
+		this.allPagesSelected = $('picker_' + this.pickerId + '_allPagesSelected');
+		this.clearEntireSelectionLink = $('picker_' + this.pickerId + '_clearEntireSelection');
+		this.entireSelectionCleared = $('picker_' + this.pickerId + '_entireSelectionCleared');
+		if (this.selectionProperty) {
+			this.selectionLabel = $('picker_' + this.pickerId + '_label').getElementsBySelector('span')[0];
+			this.originalSelectionLabel = this.selectionLabel.innerHTML;
+		}
 		this.outputColumns = json.outputColumns;
 		this.idFieldName = json.idFieldName;
-		this.doShow();
+
+		if (initialIds && initialIds.length > 0) {
+			var parameters = {
+					'type' : this.pickerType,
+					'id' : this.pickerId,
+					'initialIds' : initialIds
+				};
+			if (this.extraArgs) {
+				parameters.extraArgs = this.extraArgs;
+			}
+
+			new Ajax.Request('/picker/v2/idSearch', {
+				'method' : 'post',
+				'parameters': parameters,
+				'onComplete': this.onIdSearchComplete.bind(this)
+			});
+		}
+
+		if (showPicker) {
+			this.doShow();
+		}
+		this.primed = true;
+	},
+
+	onIdSearchComplete : function(transport) {
+		var json = transport.responseText.evalJSON();
+		if (json.hits && json.hits.resultList) {
+			this.selectedItems = json.hits.resultList;
+			this.showSelectedLink.show();
+		}
+		this.updateOutsideFields(true);
 	},
 
 	/**
-	 * Hide the picker.
+	 * Cancel the current picker and pop it down.
 	 */
-	hide: function() {
+	cancel: function() {
+		this.selectedItems = this.lastSelectedItems;
 		$(this.pickerId).hide();
 	},
 
 	okPressed: function() {
-		if (this.selectedItems.size() == 0) {
+		if (!this.allowEmptySelection && this.selectedItems.size() == 0) {
 			this.nothingSelectedDiv.show();
 		} else {
 			if (this.destinationFieldId) {
@@ -225,20 +310,53 @@ Picker.prototype = {
 				});
 			}
 
-			if (!this.endAction || this.endAction(this.selectedItems)) {
-				var hit = this.selectedItems[0];
-				for (var index = 0; index < this.extraDestinationFields.length; index++) {
-					extraDestinationField = this.extraDestinationFields[index];
-					
-					// support for both innerHTML and value setting
-					if($(extraDestinationField.fieldId).tagName === 'INPUT') {
-						$(extraDestinationField.fieldId).value = hit[extraDestinationField.property];
+			this.updateOutsideFields(false);
+			$(this.pickerId).hide();
+		}
+	},
+
+	updateOutsideFields : function(isInitial) {
+		// protect from calling endAction for empty lists on first run.
+		if (this.selectedItems.length == 0 && isInitial) {
+			return;
+		}
+
+		if (!this.endAction || this.endAction(this.selectedItems)) {
+			var hit = null;
+			if (this.selectedItems.length > 0) {
+				hit = this.selectedItems[0];
+				this.showSelectedLink.show();
+			} else {
+				this.showSelectedLink.hide();
+			}
+
+			if (this.selectionProperty) {
+				if (hit == null) {
+					this.selectionLabel.innerHTML = this.originalSelectionLabel;
+					this.selectionLabel.addClassName('noSelectionPickerLabel');
+				} else {
+					var labelMsg = hit[this.selectionProperty].escapeHTML();
+					if (this.selectedItems.length > 1) {
+						 labelMsg +=  ' ' + this.selectedAndMsg + ' ' +
+						 	(this.selectedItems.length - 1) + ' ' +
+						 	this.selectedMoreMsg;
 					}
-					else {
-						$(extraDestinationField.fieldId).innerHTML = hit[extraDestinationField.property];
-					}
+					this.selectionLabel.innerHTML = labelMsg;
+					this.selectionLabel.removeClassName('noSelectionPickerLabel');
 				}
-				this.hide();
+			}
+
+			for (var index = 0; index < this.extraDestinationFields.length; index++) {
+				extraDestinationField = this.extraDestinationFields[index];
+				var value = hit == null ? '' : hit[extraDestinationField.property];
+				
+				// support for both innerHTML and value setting
+				if ($(extraDestinationField.fieldId).tagName === 'INPUT') {
+					$(extraDestinationField.fieldId).value = value;
+				}
+				else {
+					$(extraDestinationField.fieldId).innerHTML = value;
+				}
 			}
 		}
 	},
@@ -248,6 +366,10 @@ Picker.prototype = {
 			$(this.destinationFieldId).value = '';
 		} else {
 			this.inputAreaDiv.innerHTML = '';
+		}
+		if (this.selectionProperty) {
+			this.selectionLabel.innerHTML = this.originalSelectionLabel;
+			this.selectionLabel.addClassName('noSelectionPickerLabel');
 		}
 	},
 
@@ -268,7 +390,10 @@ Picker.prototype = {
 	},
 
 	showAll: function() {
-		this.reset(true, false);
+		if (this.memoryGroup) {
+			Picker.rememberedSearches[this.memoryGroup] = '';
+		}
+		this.resetSearchFields();
 		this.ssInput.focus();
 		this.doSearch();
 	},
@@ -298,6 +423,8 @@ Picker.prototype = {
 		var json = transport.responseText.evalJSON();
 		var newResultArea = this.renderTableResults(json);
 		this.updatePagingArea(json);
+		this.selectAllPagesMsg = json.selectAllPages;
+		this.allPagesSelectedMsg = json.allPagesSelected;
 		var oldResultArea = $(this.resultAreaId);
 		var resultHolder = this.resultsDiv;
 		if (oldResultArea) {
@@ -402,6 +529,39 @@ Picker.prototype = {
 		return resultArea;
 	},
 
+	showSelected: function() {
+		var pickerThis = this;
+
+		var outputColumns = new Array();
+		this.outputColumns.each(function(outputColumn) {
+			var translatedColumn = {
+	 			'title': outputColumn.title,
+	 			'field': outputColumn.field,
+	 			'link': null
+	 		};
+	 		if (outputColumn.maxCharsDisplayed > 0) {
+	 			translatedColumn.maxLen = outputColumn.maxCharsDisplayed;
+		 	}
+	 		outputColumns.push(translatedColumn);
+	 	});
+		var alternateRow = false;
+	 	var processRowForRender = function (rowElement, rowObject) {
+	 		if (alternateRow) {
+	 			$(rowElement).addClassName("altRow");
+	 		}
+	 		alternateRow = !alternateRow;
+	 	};
+
+		var resultTable = $(createHtmlTableFromJson(this.selectedItems,
+				outputColumns, processRowForRender));
+		resultTable.addClassName('compactResultsTable');
+		resultTable.addClassName('pickerResultTable');
+		resultTable.addClassName('rowHighlighting');
+		this.selectedItemsDisplayArea.innerHTML = '';
+		this.selectedItemsDisplayArea.appendChild(resultTable);
+		this.selectedItemsPopup.show();
+	},
+
 	/**
 	 * Update the paging area of the form for the current search results.
 	 */
@@ -410,6 +570,9 @@ Picker.prototype = {
 		this.previousIndex = -1;
 		this.nextIndex = -1;
 
+		if (json) {
+			this.hitCount = json.hits.hitCount;
+		}
 		if (json && json.hits.startIndex > 0) {
 			this.previousIndex = json.hits.previousStartIndex;
 			pickerDiv.getElementsBySelector('.previousLink .enabledAction')[0].show();
@@ -430,8 +593,19 @@ Picker.prototype = {
 		pickerDiv.getElementsBySelector('.pageNumText')[0].innerHTML = json ? json.pages : '';
 	},
 
+	removeFromSelectedItems : function(hit) {
+		var oldSelectedItems = this.selectedItems;
+		this.selectedItems = [];
+		for (var index = 0; index < oldSelectedItems.length; index++) {
+			if (oldSelectedItems[index][this.idFieldName] != hit[this.idFieldName]) {
+				this.selectedItems.push(oldSelectedItems[index]);
+			}
+		}
+	},
+
 	selectAll: function() {
 		var pickerThis = this;
+		var numSelectedBefore = this.selectedItems.length;
 		this.allLinks.each(function(hitRow) {
 			var parentRow = $($(hitRow.link).parentNode.parentNode);
 			if (pickerThis.selectAllCheckBox.checked) {
@@ -439,22 +613,80 @@ Picker.prototype = {
 				pickerThis.selectedItems.push(hitRow.hit);
 			} else {
 				parentRow.removeClassName('highlighted');
-				pickerThis.selectedItems = pickerThis.selectedItems.without(hitRow.hit);
+				pickerThis.removeFromSelectedItems(hitRow.hit);
 			}
 		});
+
+		$(this.clearEntireSelectionLink.parentNode).hide();
+		this.entireSelectionCleared.hide();
+		$(this.allPagesSelected.parentNode).hide();
+		// Cap "select all on every page" at 5000.
+		if (this.selectAllCheckBox.checked && this.nextIndex != -1 && this.hitCount <= 5000) {
+			this.selectAllPagesLink.innerHTML = this.selectAllPagesMsg;
+			$(this.selectAllPagesLink.parentNode).show();
+		} else {
+			$(this.selectAllPagesLink.parentNode).hide();
+			if (numSelectedBefore > this.selectedItems.length && this.selectedItems.length > 0) {
+				$(this.clearEntireSelectionLink.parentNode).show();
+			}
+		}
+
+		this.ssInput.focus();
+	},
+
+	selectAllPages: function() {
+		this.doSearch(0, -1, this.selectAllOnComplete.bind(this));
+	},
+
+	selectAllOnComplete: function(transport) {
+		var json = transport.responseText.evalJSON();
+		var hitList = json.hits.resultList;
+		// remove "exclude items"
+		if (this.excludeIds && this.excludeIds.length > 0) {
+			this.selectedItems = [];
+			var pickerThis = this;
+			hitList.each(function(hit) {
+				if (pickerThis.excludeIds.indexOf(hit[pickerThis.idFieldName]) == -1) {
+					pickerThis.selectedItems.push(hit);
+				}
+			});
+		} else {
+			this.selectedItems = hitList;
+		}
+		hideBusy();
+		this.inSearch = false;
+		this.ssInput.focus();
+		$(this.selectAllPagesLink.parentNode).hide();
+		this.allPagesSelected.innerHTML = this.allPagesSelectedMsg;
+		$(this.allPagesSelected.parentNode).show();
+	},
+
+	clearEntireSelection : function() {
+		this.selectedItems = [];
+		$(this.allPagesSelected.parentNode).hide();
+		$(this.clearEntireSelectionLink.parentNode).hide();
+		this.entireSelectionCleared.show();
+		this.allLinks.each(function(hitRow) {
+			$($(hitRow.link).parentNode.parentNode).removeClassName('highlighted');
+		});
+		this.selectAllCheckBox.checked = false;
 	},
 
 	updateSelectAllCheckbox: function() {
 		if (!this.multiSelectMode) {
 			return;
 		}
-		var allSelected = true;
+		var allSelected = this.allLinks.length > 0;
 		this.allLinks.each(function(hitRow) {
 			if (!$($(hitRow.link).parentNode.parentNode).hasClassName('highlighted')) {
 				allSelected = false;
 			}
 		});
 		this.selectAllCheckBox.checked = allSelected;
+		$(this.selectAllPagesLink.parentNode).hide();
+		$(this.allPagesSelected.parentNode).hide();
+		$(this.clearEntireSelectionLink.parentNode).hide();
+		this.entireSelectionCleared.hide();
 	},
 
 	/**
@@ -473,7 +705,7 @@ Picker.prototype = {
 		if (parentRow.hasClassName('highlighted')) {
 			// unselect
 			parentRow.removeClassName('highlighted');
-			this.selectedItems = this.selectedItems.without(hit);
+			this.removeFromSelectedItems(hit);
 			this.selectAllCheckBox.checked = false;
 		} else {
 			// select
@@ -484,11 +716,12 @@ Picker.prototype = {
 					$(rows[index]).removeClassName('highlighted');
 				}
 				this.selectedItems = [hit];
+				parentRow.addClassName('highlighted');
 			} else {
 				this.selectedItems.push(hit);
+				parentRow.addClassName('highlighted');
 				this.updateSelectAllCheckbox();
 			}
-			parentRow.addClassName('highlighted');
 		}
 	}
 }

@@ -6,12 +6,16 @@
 <%@ attribute name="immediateSelectMode" type="java.lang.Boolean" description="True if picker should select and close when an item is clicked"%>
 <%@ attribute name="endAction" description="Javascript function to call on picker close"%>
 <%@ attribute name="memoryGroup" description="Adds the picker to the memory group - picker will open up with previous search text populated (as long as no page refresh between)"%>
-<%@ attribute name="linkType" description="Type of link to create which can be 'normal' (the default--a plain anchor tag link), 'button' or 'none'"%>
+<%@ attribute name="linkType" description="Type of link to create which can be 'normal' (the default--a plain anchor tag link), 'button', 'selection' or 'none'"%>
+<%@ attribute name="nameKey" description="i18n key; required if linkType is 'button'"%>
 <%@ attribute name="styleClass" description="If provided, puts the styleClass provided on the picker link's span"%>
-<%@ attribute name="extraArgs" description="Dynamic inputs to picker search"%>
+<%@ attribute name="extraArgs" description="Dynamic inputs to picker search" rtexprvalue="true"%>
 <%@ attribute name="extraDestinationFields" description="used when a selection has been made and the picker is closed.  It's a semicolon separated list of: [property]:[fieldId]"%>
 <%@ attribute name="buttonStyleClass" description="Class to style the button with"%>
 <%@ attribute name="anchorStyleClass" description="Class to style the anchor with"%>
+<%@ attribute name="selectionProperty" description="With a linkType of 'selection', determine property to fill label with."%>
+<%@ attribute name="allowEmptySelection" description="Allow an empty selection.  This also adds a 'clear' button."%>
+<%@ attribute name="initialIds" type="java.lang.Object" description="Ids of items selected at the start." rtexprvalue="true"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -23,46 +27,90 @@
 <cti:includeScript link="/JavaScript/tableCreation.js"/>
 
 <script type="text/javascript">
+    // Only create picker if not already created.  (This tag "used" more than
+    // once if it's used inside a widget and the widget is updated.
+    if (window.${id} == undefined) {
+        ${id} = new Picker('${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}');
 
-    ${pageScope.id} = new Picker('${pageScope.type}', '${pageScope.destinationFieldName}', '${pageScope.id}', '${pageScope.extraDestinationFields}');
-
-    <c:if test="${pageScope.multiSelectMode}">
-        ${pageScope.id}.multiSelectMode = true;
-    </c:if>
-    <c:if test="${pageScope.immediateSelectMode}">
-        ${pageScope.id}.immediateSelectMode = true;
-    </c:if>
-    <c:if test="${!empty pageScope.endAction}">
-        ${pageScope.id}.endAction = ${pageScope.endAction};
-    </c:if>
-    <c:if test="${!empty pageScope.destinationFieldId}">
-        ${pageScope.id}.destinationFieldId = '${pageScope.destinationFieldId}';
-    </c:if>
-    <c:if test="${!empty pageScope.memoryGroup}">
-        ${pageScope.id}.memoryGroup = '${pageScope.memoryGroup}';
-    </c:if>
-    <c:if test="${!empty pageScope.extraArgs}">
-        ${pageScope.id}.extraArgs = '<spring:escapeBody javaScriptEscape="true">${pageScope.extraArgs}</spring:escapeBody>';
-    </c:if>
-    
+        <c:if test="${pageScope.multiSelectMode}">
+            ${id}.multiSelectMode = true;
+        </c:if>
+        <c:if test="${pageScope.immediateSelectMode}">
+            ${id}.immediateSelectMode = true;
+        </c:if>
+        <c:if test="${!empty pageScope.endAction}">
+            ${id}.endAction = ${pageScope.endAction};
+        </c:if>
+        <c:if test="${!empty pageScope.destinationFieldId}">
+            ${id}.destinationFieldId = '${pageScope.destinationFieldId}';
+        </c:if>
+        <c:if test="${!empty pageScope.memoryGroup}">
+            ${id}.memoryGroup = '${pageScope.memoryGroup}';
+        </c:if>
+        <c:if test="${!empty pageScope.extraArgs}">
+            ${id}.extraArgs = '<spring:escapeBody javaScriptEscape="true">${pageScope.extraArgs}</spring:escapeBody>';
+        </c:if>
+        <c:if test="${!empty pageScope.selectionProperty}">
+            ${id}.selectionProperty = '${pageScope.selectionProperty}';
+        </c:if>
+        <c:if test="${!empty pageScope.allowEmptySelection}">
+            ${id}.allowEmptySelection = '${pageScope.allowEmptySelection}';
+        </c:if>
+        ${id}.selectedAndMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedAnd"/>';
+        ${id}.selectedMoreMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedMore"/>';
+    }
 </script>
-<span id="picker_${pageScope.id}_inputArea"></span>
 
-<span <c:if test="${not empty pageScope.styleClass}">class="${pageScope.styleClass}"</c:if>>
-    <c:choose>
-	    <c:when test="${!pageScope.linkType == 'none'}">
-	    </c:when>
-	    <c:when test="${pageScope.linkType == 'button'}">
-	        <input type="button" value="<jsp:doBody/>" 
-	            onclick="javascript:${pageScope.id}.show()" 
-	            class="formSubmit <c:if test="${not empty pageScope.buttonStyleClass}">${pageScope.buttonStyleClass}</c:if>">
-	    </c:when>
-	    <c:otherwise>
-            <c:set var="anchorAttributes" value=""/>
-            <c:if test="${!empty pageScope.anchorStyleClass}">
-                <c:set var="anchorAttributes" value=" class=\"${pageScope.anchorStyleClass}\""/>
-            </c:if>
-            <a href="javascript:${pageScope.id}.show()"${anchorAttributes}><jsp:doBody/></a>
-	    </c:otherwise>
-    </c:choose>
+<cti:msgScope paths="components.picker">
+    <cti:msg2 var="nothingSelectedMsg" key=".nothingSelected"/>
+    <cti:msg2 var="selectedItemsDialogTitleMsg" key=".selectedItemsDialogTitle"/>
+    <cti:msg2 var="closeMsg" key=".close"/>
+</cti:msgScope>
+
+<span id="picker_${id}_inputArea">
+<c:if test="${!empty initialIds}">
+    <c:forEach var="initialId" items="${initialIds}">
+        <input type="hidden" name="${destinationFieldName}" value="${initialId}">
+    </c:forEach>
+</c:if>
 </span>
+
+<c:if test="${pageScope.linkType != 'none'}">
+    <span <c:if test="${not empty pageScope.styleClass}">class="${pageScope.styleClass}"</c:if>>
+        <c:choose>
+    	    <c:when test="${pageScope.linkType == 'button'}">
+                <cti:button key="${pageScope.nameKey}" onclick="${id}.show()"
+                    styleClass="${pageScope.buttonStyleClass}"/>
+    	    </c:when>
+    	    <c:when test="${pageScope.linkType == 'selection'}">
+                <c:if test="${empty pageScope.nameKey}">
+                    <c:set var="nameKey" value="selectionPicker"/>
+                </c:if>
+                <cti:labeledImg id="picker_${id}_label" key="${pageScope.nameKey}"
+                    labelStyleClass="noSelectionPickerLabel"
+                    href="javascript:${id}.show()" imageOnRight="true"/>
+                <c:if test="${!empty pageScope.multiSelectMode}">
+                    <cti:img id="picker_${id}_showSelectedImg" href="javascript:${id}.showSelected()" key="zoom"/>
+                </c:if>
+                <tags:simplePopup title="${selectedItemsDialogTitleMsg}" id="picker_${id}_selectedItemsPopup">
+                    <div id="picker_${id}_selectedItemsDisplayArea" class="dialogScrollArea"></div>
+                    <div class="actionArea">
+                        <input type="button" onclick="$('picker_${id}_selectedItemsPopup').hide()"
+                            value="${closeMsg}"/>
+                    </div>
+                </tags:simplePopup>
+    	    </c:when>
+    	    <c:otherwise>
+                <c:set var="anchorAttributes" value=""/>
+                <c:if test="${!empty pageScope.anchorStyleClass}">
+                    <c:set var="anchorAttributes" value=" class=\"${pageScope.anchorStyleClass}\""/>
+                </c:if>
+                <a href="javascript:${id}.show()"${anchorAttributes}><jsp:doBody/></a>
+    	    </c:otherwise>
+        </c:choose>
+    </span>
+</c:if>
+
+<script type="text/javascript">
+${id}.init();
+</script>

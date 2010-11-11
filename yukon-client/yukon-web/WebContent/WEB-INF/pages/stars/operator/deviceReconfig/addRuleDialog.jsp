@@ -21,14 +21,14 @@
 		<div id="loadGroupsDiv" >
 			<span class="subtleGray"><i>4 Load Groups Selected</i></span>
    			<a href="javascript:void(0);" title=""  id="chooseGroupIcon_${uniqueId}" style="text-decoration:none;">	
-				<img src="/WebConfig/yukon/Icons/database_add.gif">
+				<img src="/WebConfig/yukon/Icons/database_add.png">
 			</a>
 		</div>
 		
 		<div id="loadProgramsDiv" style="display:none;">
 			<span class="subtleGray"><i>2 Load Programs Selected</i></span>
    			<a href="javascript:void(0);" title=""  id="chooseGroupIcon_${uniqueId}" style="text-decoration:none;">	
-				<img src="/WebConfig/yukon/Icons/database_add.gif">
+				<img src="/WebConfig/yukon/Icons/database_add.png">
 			</a>
 		</div>
 		

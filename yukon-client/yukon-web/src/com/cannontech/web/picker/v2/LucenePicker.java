@@ -30,10 +30,22 @@ public abstract class LucenePicker<T> extends BasePicker<T> {
         return hits;
     }
 
+    @Override
+    public SearchResult<T> search(Iterable<Integer> initialIds,
+            String extraArgs, YukonUserContext userContext) {
+        YukonObjectCriteria combinedCriteria = combineCriteria(criteria, initialIds);
+        SearchResult<T> hits = searcher.all(combinedCriteria, 0, Integer.MAX_VALUE);
+        return hits;
+    }
+
     public YukonObjectCriteria combineCriteria(YukonObjectCriteria baseCriteria, String extraArgs) {
     	return baseCriteria;
     }
-    
+
+    public YukonObjectCriteria combineCriteria(YukonObjectCriteria baseCriteria, Iterable<Integer> initialIds) {
+        throw new UnsupportedOperationException(this.getClass().getName() + " doesn't support initial ids");
+    }
+
     public void setCriteria(YukonObjectCriteria criteria) {
         this.criteria = criteria;
     }

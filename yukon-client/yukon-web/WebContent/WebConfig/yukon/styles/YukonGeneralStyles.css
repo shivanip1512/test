@@ -770,6 +770,11 @@ div.pagedBox table.boxTable {
     font-size: 12px;
 }
 
+.noSelectionPickerLabel {
+    font-style: italic;
+    color: gray;
+}
+
 .logoImage {
 	vertical-align: middle;
 }
@@ -1185,4 +1190,12 @@ div.mediumContainer {
     text-align: right;
     width: 95%;
     padding-bottom: 5px;
+}
+
+span.leftOfImageLabel {
+    padding-right: 5px;
+}
+
+span.rightOfImageLabel {
+    padding-left: 5px;
 }

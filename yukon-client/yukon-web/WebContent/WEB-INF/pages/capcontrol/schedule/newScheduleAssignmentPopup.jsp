@@ -42,8 +42,7 @@
 				<td>Cap Banks:&nbsp;</td>
 				<td>
 					<tags:pickerDialog id="cbcSubBusPicker" type="cbcSubBusPicker"
-                			destinationFieldId="paoIdList" multiSelectMode="true"
-                			endAction="">
+                			destinationFieldId="paoIdList" multiSelectMode="true">
                 			Choose Device</tags:pickerDialog>
 				</td>
 			</tr>

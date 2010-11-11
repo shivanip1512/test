@@ -52,8 +52,8 @@
     <entry key="yukon.web.components.image.view.imageUrl">/WebConfig/yukon/Icons/magnifier.gif</entry>
     <entry key="yukon.web.components.image.view.hoverUrl">/WebConfig/yukon/Icons/magnifier_over.gif</entry>
     <entry key="yukon.web.components.image.view.hoverText"></entry>
-    <entry key="yukon.web.components.image.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
-    <entry key="yukon.web.components.image.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+    <entry key="yukon.web.components.image.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+    <entry key="yukon.web.components.image.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
     <entry key="yukon.web.components.image.add.hoverText">Add</entry>
     <entry key="yukon.web.components.image.add.label">Add</entry>
     <entry key="yukon.web.components.image.remove.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
@@ -78,6 +78,15 @@
 	<entry key="yukon.web.components.image.down.hoverText">Move Down</entry>
 	<entry key="yukon.web.components.image.down.disabled.imageUrl">/WebConfig/yukon/Icons/green_arrow_down_disabled.gif</entry>
 
+    <entry key="yukon.web.components.image.selectionPicker.imageUrl">/WebConfig/yukon/Icons/database_add.png</entry>
+    <entry key="yukon.web.components.image.selectionPicker.hoverUrl">/WebConfig/yukon/Icons/database_add_over.png</entry>
+    <entry key="yukon.web.components.image.selectionPicker.hoverText">Select items</entry>
+    <entry key="yukon.web.components.image.selectionPicker.label">None selected</entry>
+
+    <entry key="yukon.web.components.image.zoom.imageUrl">/WebConfig/yukon/Icons/magnifier.gif</entry>
+    <entry key="yukon.web.components.image.zoom.hoverUrl">/WebConfig/yukon/Icons/magnifier_over.gif</entry>
+    <entry key="yukon.web.components.image.zoom.hoverText">View all currently selected items.</entry>
+
 	<entry key="yukon.web.components.image.flashingGreenUpArrow.imageUrl">/WebConfig/yukon/Icons/arrow_up_green_anim.gif</entry>
 	<entry key="yukon.web.components.image.flashingGreenUpArrow.hoverUrl">/WebConfig/yukon/Icons/arrow_up_green_anim.gif</entry>
 	<entry key="yukon.web.components.image.flashingGreenUpArrow.hoverText"></entry>
@@ -94,13 +103,17 @@
 	<entry key="yukon.web.components.image.greenDownArrow.hoverUrl">/WebConfig/yukon/Icons/arrow_down_green.gif</entry>
 	<entry key="yukon.web.components.image.greenDownArrow.hoverText"></entry>
 
+    <entry key="yukon.web.components.picker.nothingSelected">Nothing has been selected.</entry>
+    <entry key="yukon.web.components.picker.selectedItemsDialogTitle">Selected Items</entry>
+    <entry key="yukon.web.components.picker.close">Close</entry>
+
     <entry key="yukon.web.components.tokenRequest.passwordPrompt">Password</entry>
 
     <entry key="yukon.web.components.button.ok.label">OK</entry>
     <entry key="yukon.web.components.button.cancel.label">Cancel</entry>
 
-    <entry key="yukon.web.components.button.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
-    <entry key="yukon.web.components.button.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+    <entry key="yukon.web.components.button.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+    <entry key="yukon.web.components.button.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
     <entry key="yukon.web.components.button.add.hoverText">Add</entry>
     <entry key="yukon.web.components.button.add.label">Add</entry>
 

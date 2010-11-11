@@ -39,6 +39,23 @@ Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
                     <input class="notButton" id="picker_${id}_selectAll" type="checkbox"
                         onclick="javascript:${id}.selectAll()">
                     <label for="picker_${id}_selectAll"><i:inline key=".selectAll"/></label>
+                    &nbsp;&nbsp;
+                    <span style="display: none">
+                        <i:inline key=".pageSelected"/>&nbsp;&nbsp;
+                        <a id="picker_${id}_selectAllPages" href="javascript:${id}.selectAllPages()">place holder</a>
+                    </span>
+                    <span style="display: none">
+                        <i:inline key=".selectionCleared"/>&nbsp;&nbsp;
+                        <a id="picker_${id}_clearEntireSelection"
+                            href="javascript:${id}.clearEntireSelection()"><i:inline key=".clearEntireSelection"/></a>
+                    </span>
+                    <span style="display: none">
+                        <span id="picker_${id}_allPagesSelected">place holder</span>&nbsp;&nbsp;
+                        <a href="javascript:${id}.clearEntireSelection()"><i:inline key=".clearEntireSelection"/></a>
+                    </span>
+                    <span id="picker_${id}_entireSelectionCleared" style="display: none">
+                        <i:inline key=".entireSelectionCleared"/>
+                    </span>
                 </td>
             </c:if>
             <td class="rightActions">
@@ -46,7 +63,7 @@ Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
                     <input type="button" onclick="${id}.okPressed()"
                         value="<cti:msg2 key=".ok"/>"/>
                 </c:if>
-                <input type="button" onclick="${id}.hide()"
+                <input type="button" onclick="${id}.cancel()"
                     value="<cti:msg2 key=".cancel"/>"/>
             </td>
         </tr>

@@ -23,6 +23,7 @@ public class ButtonTag extends YukonTagSupport {
     protected String styleClass = null;
     protected String type = null;
     protected String name = null;
+    protected Boolean imageOnRight = false;
 
     public void setId(String id) {
         this.id = id;
@@ -46,6 +47,10 @@ public class ButtonTag extends YukonTagSupport {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setImageOnRight(Boolean imageOnRight) {
+        this.imageOnRight = imageOnRight;
     }
 
     @Override
@@ -140,23 +145,28 @@ public class ButtonTag extends YukonTagSupport {
             out.write(">");
 
             boolean hasImage = StringUtils.isNotBlank(imageUrl);
-            
+
             if (hasImage) {
                 imageUrl = ServletUtil.createSafeUrl(getRequest(), imageUrl);
-                out.write("<img class=\"logoImage\" src=\"");
-                out.write(imageUrl);
-                out.write("\">");
+                if (!imageOnRight) {
+                    writeImage(out, imageUrl);
+                }
             }
 
             if (!StringUtils.isBlank(labelText)) {
                 out.write("<span");
-                
                 if (hasImage) {
-                    out.write(" style=\"padding-left: 5px;\"");
+                    out.write(" class=\"");
+                    out.write(imageOnRight ? "leftOfImageLabel" : "rightOfImageLabel");
+                    out.write("\"");
                 }
                 out.write(">");
                 out.write(labelText);
                 out.write("</span>");
+            }
+
+            if (hasImage && imageOnRight) {
+                writeImage(out, imageUrl);
             }
 
             out.write("</button>");
@@ -164,6 +174,12 @@ public class ButtonTag extends YukonTagSupport {
         } finally {
             MessageScopeHelper.forRequest(getRequest()).popScope();
         }
+    }
+
+    private void writeImage(JspWriter out, String imageUrl) throws IOException {
+        out.write("<img class=\"logoImage\" src=\"");
+        out.write(imageUrl);
+        out.write("\">");
     }
 
     protected String getLocalMessage(MessageSourceResolvable resolvable, boolean required) {

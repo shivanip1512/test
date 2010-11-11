@@ -67,7 +67,7 @@
 	    	&nbsp;
 	    	<span class="subtleGray"><i>Select Load Group</i></span>
    			<a href="javascript:void(0);" title=""  id="chooseGroupIcon_${uniqueId}" style="text-decoration:none;">	
-				<img src="/WebConfig/yukon/Icons/database_add.gif">
+				<img src="/WebConfig/yukon/Icons/database_add.png">
 			</a>
 	    	
 	    </tags:sectionContainer>

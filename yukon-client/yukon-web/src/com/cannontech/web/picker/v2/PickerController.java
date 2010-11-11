@@ -34,7 +34,7 @@ public class PickerController {
     @RequestMapping
     public String build(HttpServletResponse response, Model model, String type,
             String id, Boolean multiSelectMode, Boolean immediateSelectMode,
-            YukonUserContext userContext) {
+            String extraArgs, YukonUserContext userContext) {
         Picker<?> picker = pickerService.getPicker(type);
 
         model.addAttribute("title", picker.getDialogTitle());
@@ -46,9 +46,27 @@ public class PickerController {
         object.put("outputColumns",
                    makeLocal(picker.getOutputColumns(), userContext));
         object.put("idFieldName", picker.getIdFieldName());
+
         response.addHeader("X-JSON", object.toString());
 
         return "pickerDialog";
+    }
+
+    @RequestMapping
+    public void idSearch(HttpServletResponse response, String type,
+            Integer[] initialIds, String extraArgs, YukonUserContext userContext)
+            throws IOException {
+        Picker<?> picker = pickerService.getPicker(type);
+
+        SearchResult<?> hits =
+            picker.search(Lists.newArrayList(initialIds),
+                    extraArgs, userContext);
+        JSONObject object = new JSONObject();
+        object.put("hits", JSONObject.fromBean(hits));
+
+        PrintWriter out = response.getWriter();
+        out.print(object.toString());
+        out.close();
     }
 
     @RequestMapping
@@ -58,6 +76,9 @@ public class PickerController {
             throws ServletException, IOException {
         int start = NumberUtils.toInt(startStr, 0);
         count = count == null ? 20 : count;
+        if (count == -1) {
+            count = Integer.MAX_VALUE;
+        }
 
         Picker<?> picker = pickerService.getPicker(type);
         SearchResult<?> hits = picker.search(ss, start, count, extraArgs,
@@ -67,15 +88,26 @@ public class PickerController {
 
         JSONObject object = new JSONObject();
         object.put("hits", JSONObject.fromBean(hits));
+
         MessageSourceAccessor messageSourceAccessor = 
             messageSourceResolver.getMessageSourceAccessor(userContext);
-        MessageSourceResolvable pagesResolvable =
+        MessageSourceResolvable resolvable =
             new YukonMessageSourceResolvable("yukon.common.paging.viewing",
                                              hits.getStartIndex() + 1,
                                              hits.getEndIndex(),
                                              hits.getHitCount());
-        String pages = messageSourceAccessor.getMessage(pagesResolvable);
-        object.put("pages", pages);
+        object.put("pages", messageSourceAccessor.getMessage(resolvable));
+
+        resolvable =
+            new YukonMessageSourceResolvable("yukon.web.picker.selectAllPages",
+                                             hits.getHitCount());
+        object.put("selectAllPages", messageSourceAccessor.getMessage(resolvable));
+
+        resolvable =
+            new YukonMessageSourceResolvable("yukon.web.picker.allPagesSelected",
+                                             hits.getHitCount());
+        object.put("allPagesSelected", messageSourceAccessor.getMessage(resolvable));
+
         PrintWriter out = response.getWriter();
         out.print(object.toString());
         out.close();

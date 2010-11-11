@@ -31,6 +31,11 @@ public abstract class DatabasePaoPicker extends
     }
 
     @Override
+    protected String getDatabaseIdFieldName() {
+        return "paobjectId";
+    }
+
+    @Override
     public List<OutputColumn> getOutputColumns() {
         return outputColumns;
     }

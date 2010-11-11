@@ -31,7 +31,7 @@
 	
 </script>
 
-	<input id="userIdSelected" type="hidden" value="0"> 
+	<input id="userIdSelected" type="hidden" value=""> 
 	<div>
 		Select user to edit:
 	    <tags:pickerDialog type="userPicker" id="userPicker"
@@ -53,7 +53,7 @@
 	        immediateSelectMode="true">
             <img class="cssicon" src="/WebConfig/yukon/Icons/clearbits/search.gif">
 	    </tags:pickerDialog>
-	    <input id="loginGroupIdSelected" type="hidden" value="0"> 
+	    <input id="loginGroupIdSelected" type="hidden" value=""> 
 		<span style="display:none" id="groupSelectedName"></span> 
 	</div>
 

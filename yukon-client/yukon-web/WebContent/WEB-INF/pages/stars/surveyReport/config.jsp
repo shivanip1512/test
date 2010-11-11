@@ -98,27 +98,12 @@ function questionChanged() {
 }
 
 function programsChosen(programs) {
-	var selectedProgramsList = $('selectedPrograms');
-	selectedProgramsList.innerHTML = '';
-
-	for (var index = 0; index < programs.length; index++) {
-        var listItem = document.createElement('li');
-        var program = programs[index];
-        listItem.innerHTML = program.paoName;
-        selectedProgramsList.appendChild(listItem);
-	}
-
-	$('selectedProgramsArea').show();
-	$('noProgramsSelected').hide();
-	$('clearProgramsLink').show();
+    if (programs && programs.length) {
+    	$('noProgramsSelected').hide();
+    } else {
+        $('noProgramsSelected').show();
+    }
 	return true;
-}
-
-function clearPrograms() {
-	programPicker.clearSelected();
-    $('selectedProgramsArea').hide();
-    $('noProgramsSelected').show();
-    $('clearProgramsLink').hide();
 }
 
 function updateFieldsFromBackingBean() {
@@ -127,11 +112,6 @@ function updateFieldsFromBackingBean() {
 	    $('answerId_' + initialAnswers[index]).checked = true;
 	}
 	answerCheckboxChanged();
-
-	var initialPrograms = ${cti:jsonString(initialPrograms)};
-	if (initialPrograms && initialPrograms.length > 0) {
-	    programsChosen(initialPrograms);
-	}
 }
 </script>
 
@@ -190,17 +170,14 @@ function updateFieldsFromBackingBean() {
             </tags:bind>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".programs">
-            <div class="dialogScrollArea" id="selectedProgramsArea" style="display:none">
-                <ul id="selectedPrograms"></ul>
-            </div>
+            <tags:pickerDialog id="programPicker" type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
+                destinationFieldName="programId" extraArgs="${energyCompanyId}"
+                endAction="programsChosen" multiSelectMode="true" linkType="selection"
+                allowEmptySelection="true"
+                selectionProperty="paoName" initialIds="${reportConfig.programIds}"/>
             <div id="noProgramsSelected">
                 <i:inline key=".noProgramsSelected"/>
             </div>
-            <tags:pickerDialog id="programPicker" type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
-                destinationFieldName="programId" extraArgs="${energyCompanyId}"
-                endAction="programsChosen" multiSelectMode="true">
-                <i:inline key=".choosePrograms"/></tags:pickerDialog>
-            <a id="clearProgramsLink" href="javascript:clearPrograms()" style="display:none"><i:inline key=".clearPrograms"/></a>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".accountNumber" rowId="accountNumberRow">
             <tags:input path="accountNumber"/>

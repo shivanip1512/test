@@ -22,7 +22,6 @@ import com.google.common.collect.Lists;
  * @param <T>
  */
 public abstract class DatabasePicker<T> extends BasePicker<T> {
-
 	private List<SqlFilter> sqlFilters;
     private List<PostProcessingFilter<T>> postProcessingFilters;
     private RowMapperWithBaseQuery<T> rowMapper;
@@ -43,6 +42,31 @@ public abstract class DatabasePicker<T> extends BasePicker<T> {
     protected void updateFilters(List<SqlFilter> sqlFilters,
             List<PostProcessingFilter<T>> postProcessingFilters,
             String extraArgs, YukonUserContext userContext) {
+    }
+
+    /**
+     * Subclasses need to override this method if the id field name is not the
+     * same as the database field.
+     */
+    protected String getDatabaseIdFieldName() {
+        return getIdFieldName();
+    }
+
+    /**
+     * Subclasses need to override this method if the id field name is not the
+     * same as the database field.
+     */
+    protected void addInitialSearchFilters(List<SqlFilter> sqlFilters,
+            List<PostProcessingFilter<T>> postProcessingFilters,
+            final Iterable<Integer> initialIds) {
+        SqlFilter initialSqlFilter = new SqlFilter() {
+            @Override
+            public SqlFragmentSource getWhereClauseFragment() {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append(getDatabaseIdFieldName()).in(initialIds);
+                return sql;
+            }};
+        sqlFilters.add(initialSqlFilter);
     }
 
     @Override
@@ -91,6 +115,36 @@ public abstract class DatabasePicker<T> extends BasePicker<T> {
         // no sorter support
         SearchResult<T> dbResults =
             filterService.filter(filter, null, start, count, rowMapper);
+        return dbResults;
+    }
+
+    @Override
+    public final SearchResult<T> search(Iterable<Integer> initialIds,
+            String extraArgs, YukonUserContext userContext) {
+        if (initialIds == null || !initialIds.iterator().hasNext()) {
+            return null;
+        }
+
+        final List<SqlFilter> mySqlFilters = Lists.newArrayList();
+        final List<PostProcessingFilter<T>> myPostProcessingFilters = Lists.newArrayList();
+        updateFilters(mySqlFilters, myPostProcessingFilters, extraArgs, userContext);
+        addInitialSearchFilters(mySqlFilters, myPostProcessingFilters, initialIds);
+
+        // combine sql and post processing filter into a single UiFilter
+        UiFilter<T> filter = new UiFilter<T>() {
+            @Override
+            public Iterable<PostProcessingFilter<T>> getPostProcessingFilters() {
+                return myPostProcessingFilters;
+            }
+
+            @Override
+            public Iterable<SqlFilter> getSqlFilters() {
+                return mySqlFilters;
+            }
+        };
+
+        SearchResult<T> dbResults =
+            filterService.filter(filter, null, 0, Integer.MAX_VALUE, rowMapper);
         return dbResults;
     }
 

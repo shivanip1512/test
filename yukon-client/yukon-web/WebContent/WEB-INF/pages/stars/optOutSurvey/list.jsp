@@ -100,8 +100,8 @@
             <div class="actionArea">
 	            <tags:pickerDialog type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker" id="programPicker"
 	                destinationFieldName="programIds" endAction="chooseSurvey"
-	                multiSelectMode="true" linkType="button"
-	                extraArgs="${energyCompanyId}"><cti:msg2 key=".add"/></tags:pickerDialog>
+	                multiSelectMode="true" linkType="button" nameKey="add"
+	                extraArgs="${energyCompanyId}"/>
                 <tags:pickerDialog type="surveyPicker" id="surveyPicker"
                     destinationFieldName="surveyId" endAction="addOptOutSurvey"
                     styleClass="simpleLink" immediateSelectMode="true"

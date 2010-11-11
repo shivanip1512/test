@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.analysis.report.ColumnLayoutData;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.search.UltraLightPao;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Answer;
 import com.cannontech.common.survey.model.Question;
@@ -31,7 +29,6 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.EnergyCompanyDao;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
@@ -45,7 +42,6 @@ import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.InputUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @Controller
@@ -54,7 +50,6 @@ import com.google.common.collect.Maps;
 public class SurveyReportController {
     private SurveyDao surveyDao;
     private EnergyCompanyDao energyCompanyDao;
-    private PaoDao paoDao;
     private DatePropertyEditorFactory datePropertyEditorFactory;
     private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
     private SimpleReportService simpleReportService;
@@ -103,7 +98,7 @@ public class SurveyReportController {
                 if ((answerIds == null || answerIds.size() == 0)
                         && !reportConfig.isIncludeOtherAnswers()
                         && !reportConfig.isIncludeUnanswered()) {
-                    errors.rejectValue("answerIds", "atLeasteOneAnswerRequired");
+                    errors.rejectValue("answerId", "atLeasteOneAnswerRequired");
                 }
             }
         }
@@ -117,14 +112,14 @@ public class SurveyReportController {
         ReportConfig reportConfig = new ReportConfig();
         reportConfig.setSurveyId(surveyId);
         model.addAttribute("reportConfig", reportConfig);
+        return config(model, survey, userContext);
+    }
+
+    private String config(ModelMap model, Survey survey, YukonUserContext userContext) {
         LiteEnergyCompany energyCompany =
             energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
         model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyID());
-        return config(model, surveyId);
-    }
-
-    private String config(ModelMap model, int surveyId) {
-        List<Question> questions = surveyDao.getQuestionsBySurveyId(surveyId);
+        List<Question> questions = surveyDao.getQuestionsBySurveyId(survey.getSurveyId());
         model.addAttribute("questions", questions);
         Map<Integer, Object> questionsById = Maps.newHashMap();
         for (final Question question : questions) {
@@ -152,33 +147,7 @@ public class SurveyReportController {
             List<MessageSourceResolvable> messages =
                 YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            Map<Integer, String> programNamesById =
-                paoDao.getYukonPAONames(Lists.newArrayList(reportConfig.getProgramIds()));
-            List<UltraLightPao> initialPrograms = Lists.newArrayList();
-            LiteEnergyCompany energyCompany =
-                energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
-            model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyID());
-            for (final Integer programId : reportConfig.getProgramIds()) {
-                final String programName = programNamesById.get(programId);
-                initialPrograms.add(new UltraLightPao() {
-                    @Override
-                    public String getType() {
-                        return PaoType.LM_DIRECT_PROGRAM.getDbString();
-                    }
-                    
-                    @Override
-                    public String getPaoName() {
-                        return programName;
-                    }
-                    
-                    @Override
-                    public int getPaoId() {
-                        return programId;
-                    }
-                });
-            }
-            model.addAttribute("initialPrograms", initialPrograms);
-            return config(model, surveyId);
+            return config(model, survey, userContext);
         }
 
         String definitionName = "summary".equals(reportConfig.getReportType())
@@ -236,11 +205,6 @@ public class SurveyReportController {
     @Autowired
     public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
         this.energyCompanyDao = energyCompanyDao;
-    }
-
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
     }
 
     @Autowired

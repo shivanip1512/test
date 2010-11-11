@@ -116,7 +116,7 @@
 		    			<input type="hidden" id="loadGroupPaoIds" name="loadGroupPaoIds" value="">
 		    			<span class="subtleGray"><i>4 Load Groups Selected</i></span>
 		    			<a href="javascript:void(0);" title="${selectDeviceGroupChooseText}"  id="chooseGroupIcon_${uniqueId}" style="text-decoration:none;">	
-							<img src="/WebConfig/yukon/Icons/database_add.gif">
+							<img src="/WebConfig/yukon/Icons/database_add.png">
 						</a>
 						<%--
 		    			<cti:multiPaoPicker pickerId="loadGroupPaoIdsPicker" paoIdField="loadGroupPaoIds" asButton="true" finalTriggerAction="loadGroupPaoIdsPickerComplete" constraint="com.cannontech.common.search.criteria.LMGroupCriteria">Select</cti:multiPaoPicker>

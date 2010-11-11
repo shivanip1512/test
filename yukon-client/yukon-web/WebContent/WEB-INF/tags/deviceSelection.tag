@@ -103,8 +103,8 @@
             </form>
             
 		    <tags:pickerDialog id="selectDevicesPicker" type="${pageScope.pickerType}"
-		        destinationFieldId="deviceIds" multiSelectMode="true"
-		        endAction="selectDevices">${selectDevicesLabel}</tags:pickerDialog>
+		        destinationFieldId="deviceIds" multiSelectMode="true" linkType="none"
+		        endAction="selectDevices"/>
         </td>
         
         <td>

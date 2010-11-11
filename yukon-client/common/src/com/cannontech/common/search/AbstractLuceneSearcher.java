@@ -4,7 +4,6 @@
 package com.cannontech.common.search;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,6 +19,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 
 import com.cannontech.common.search.index.IndexManager;
+import com.google.common.collect.Lists;
 
 /**
  * @author nmeverden
@@ -48,7 +48,7 @@ public abstract class AbstractLuceneSearcher<E> {
         final SearchResult<E> result = getIndexManager().getSearchTemplate().doCallBackSearch(query, aSort, new HitsCallbackHandler<SearchResult<E>>() {
             public SearchResult<E> processHits(Hits hits) throws IOException {
                 final int stop = Math.min(start + count, hits.length());
-                final List<E> list = new ArrayList<E>(count);
+                final List<E> list = Lists.newArrayListWithCapacity(stop - start);
 
                 for (int i = start; i < stop; ++i) {
                     list.add(buildResults(hits.doc(i)));

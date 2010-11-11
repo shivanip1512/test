@@ -14,6 +14,17 @@ import com.cannontech.web.taglib.UniqueIdentifierTag;
 import com.cannontech.web.taglib.MessageScopeHelper.MessageScope;
 
 public class LabeledImageTag extends ImageTag {
+    private String labelStyleClass = null;
+    private boolean imageOnRight = false;
+
+    public void setLabelStyleClass(String labelStyleClass) {
+        this.labelStyleClass = labelStyleClass;
+    }
+
+    public void setImageOnRight(boolean imageOnRight) {
+        this.imageOnRight = imageOnRight;
+    }
+
     @Override
     public void doTag() throws JspException, IOException,
             NoSuchMessageException {
@@ -70,21 +81,24 @@ public class LabeledImageTag extends ImageTag {
                 out.write("\">");
             }
 
-            out.write("<img class=\"logoImage\" src=\"");
-            out.write(imageUrl);
-            out.write("\"");
-
-            if (hoverText != null) {
-                out.write(" alt=\"");
-                out.write(hoverText);
-                out.write("\"");
+            if (!imageOnRight) {
+                writeImage(out, imageUrl);
             }
-            out.write("> ");
-            
-            out.write("<span>");
+
+            out.write("<span class=\"");
+            out.write(imageOnRight ? "leftOfImageLabel" : "rightOfImageLabel");
+            if (!StringUtils.isBlank(labelStyleClass)) {
+                out.write(' ');
+                out.write(labelStyleClass);
+            }
+            out.write("\">");
             out.write(labelText);
             out.write("</span>");
-            
+
+            if (imageOnRight) {
+                writeImage(out, imageUrl);
+            }
+
             if (StringUtils.isNotBlank(href)) {
                 out.write("</a>");
             }
@@ -93,5 +107,11 @@ public class LabeledImageTag extends ImageTag {
         } finally {
             MessageScopeHelper.forRequest(getRequest()).popScope();
         }
+    }
+
+    private void writeImage(JspWriter out, String imageUrl) throws IOException {
+        out.write("<img class=\"logoImage\" src=\"");
+        out.write(imageUrl);
+        out.write("\">");
     }
 }

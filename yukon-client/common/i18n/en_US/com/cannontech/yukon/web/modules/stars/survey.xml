@@ -61,8 +61,8 @@
 <entry key="yukon.web.modules.survey.edit.actions">Actions</entry>
 <entry key="yukon.web.modules.survey.edit.answers.title">Answers</entry>
 <entry key="yukon.web.modules.survey.edit.answerKey">Key</entry>
-<entry key="yukon.web.modules.survey.edit.addAnswer.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
-<entry key="yukon.web.modules.survey.edit.addAnswer.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+<entry key="yukon.web.modules.survey.edit.addAnswer.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+<entry key="yukon.web.modules.survey.edit.addAnswer.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
 <entry key="yukon.web.modules.survey.edit.addAnswer.hoverText">Add an answer to the question.</entry>
 <entry key="yukon.web.modules.survey.edit.addAnswer.label">Add Answer</entry>
 <entry key="yukon.web.modules.survey.edit.addAnswer.title">Add Answer</entry>
@@ -77,8 +77,8 @@
 <entry key="yukon.web.modules.survey.edit.edit.label">Edit Detail Information</entry>
 <entry key="yukon.web.modules.survey.edit.edit.title">Survey Details</entry>
 
-<entry key="yukon.web.modules.survey.edit.addQuestion.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
-<entry key="yukon.web.modules.survey.edit.addQuestion.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+<entry key="yukon.web.modules.survey.edit.addQuestion.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+<entry key="yukon.web.modules.survey.edit.addQuestion.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
 <entry key="yukon.web.modules.survey.edit.addQuestion.hoverText">Add a question to the survey.</entry>
 <entry key="yukon.web.modules.survey.edit.addQuestion.label">Add Question</entry>
 <entry key="yukon.web.modules.survey.edit.addQuestion.title">Add Question</entry>
@@ -147,7 +147,6 @@
 <entry key="yukon.web.modules.survey.reportConfig.includeUnanswered">Include Unanswered</entry>
 <entry key="yukon.web.modules.survey.reportConfig.programs">Programs</entry>
 <entry key="yukon.web.modules.survey.reportConfig.choosePrograms">Choose</entry>
-<entry key="yukon.web.modules.survey.reportConfig.clearPrograms">Clear</entry>
 <entry key="yukon.web.modules.survey.reportConfig.noProgramsSelected">No programs have been selected.  No filtering will be done based on program.</entry>
 <entry key="yukon.web.modules.survey.reportConfig.accountNumber">Account Number</entry>
 <entry key="yukon.web.modules.survey.reportConfig.deviceSerialNumber">Device Serial Number</entry>
@@ -166,12 +165,13 @@
 <entry key="yukon.web.modules.survey.report.endDate">End Date</entry>
 <entry key="yukon.web.modules.survey.report.noEndDate">None</entry>
 <entry key="yukon.web.modules.survey.report.unanswered">Unanswered</entry>
+<entry key="yukon.web.modules.survey.report.noControlDuringOptOut">No Control</entry>
 <entry key="yukon.web.modules.survey.report.export">Export:</entry>
 <entry key="yukon.web.modules.survey.report.csvReport.imageUrl">/WebConfig/yukon/Icons/excel.gif</entry>
-<entry key="yukon.web.modules.survey.report.csvReport.hoverText">Delete Opt Out Survey</entry>
+<entry key="yukon.web.modules.survey.report.csvReport.hoverText">Generate CSV report.</entry>
 <entry key="yukon.web.modules.survey.report.csvReport.label">CSV</entry>
 <entry key="yukon.web.modules.survey.report.pdfReport.imageUrl">/WebConfig/yukon/Icons/pdf.gif</entry>
-<entry key="yukon.web.modules.survey.report.pdfReport.hoverText">Delete Opt Out Survey</entry>
+<entry key="yukon.web.modules.survey.report.pdfReport.hoverText">Generate PDF report.</entry>
 <entry key="yukon.web.modules.survey.report.pdfReport.label">PDF</entry>
 
 <!-- OPT OUT SURVEY ADMINISTRATION -->

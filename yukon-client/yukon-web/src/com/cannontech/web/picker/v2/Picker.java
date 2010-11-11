@@ -38,4 +38,11 @@ public interface Picker<T> {
      */
     public SearchResult<T> search(String ss, int start, int count,
             String extraArgs, YukonUserContext userContext);
+
+    /**
+     * Perform a search for the specific ids requested.  This is used to
+     * populate the picker if there were previously saved results.
+     */
+    public SearchResult<T> search(Iterable<Integer> initialIds,
+            String extraArgs, YukonUserContext userContext);
 }

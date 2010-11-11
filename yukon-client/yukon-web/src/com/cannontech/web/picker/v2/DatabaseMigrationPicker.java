@@ -33,7 +33,13 @@ public class DatabaseMigrationPicker extends BasePicker<DatabaseMigrationContain
         
 		return searchResult;
 	}
-	
+
+    @Override
+    public SearchResult<DatabaseMigrationContainer> search(Iterable<Integer> initialIds,
+            String extraArgs, YukonUserContext userContext) {
+        throw new UnsupportedOperationException("DatabaseMigrationPicker doesn't support initial ids");
+    }
+
 	public void setExportType(ExportTypeEnum exportType) {
 		this.exportType = exportType;
 	}

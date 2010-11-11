@@ -1614,6 +1614,22 @@
                 link class, defaults to 'simpleLink', applied to wrapping span
             </description>
         </attribute>
+        <attribute>
+            <name>labelStyleClass</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                class for label, applied to span wrapping just the label
+            </description>
+        </attribute>
+        <attribute>
+            <name>imageOnRight</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                true if image should show to the right of the text, has no effect if there is no image or no text
+            </description>
+        </attribute>
     </tag>
 
     <tag>
@@ -1672,6 +1688,14 @@
             <rtexprvalue>true</rtexprvalue>
             <description>
                 button name
+            </description>
+        </attribute>
+        <attribute>
+            <name>imageOnRight</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                true if image should show to the right of the text, has no effect if there is no image or no text
             </description>
         </attribute>
     </tag>

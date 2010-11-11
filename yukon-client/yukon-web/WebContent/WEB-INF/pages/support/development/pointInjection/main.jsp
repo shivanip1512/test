@@ -103,10 +103,10 @@ YEvent.observeSelectorClick('.dateTimeClear', function(event) {
 <tags:pickerDialog 
     id="thePointPicker" 
     type="pointPicker" 
-    linkType="button" 
+    linkType="none" 
     immediateSelectMode="true"
-    endAction="addRowHandler">
-    Add Row</tags:pickerDialog>
+    endAction="addRowHandler"/>
+    <input type="button" onclick="javascript:thePointPicker.show();" value="Add Row">
 <button id="clearAllRows">Clear</button>
 
 <table style="display:none">

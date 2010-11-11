@@ -240,9 +240,8 @@
                                     <div>
                                         <cti:displayForPageEditModes modes="EDIT">
                                             <tags:pickerDialog type="twoWayLcrPicker" id="twoWayLcrPicker" linkType="button" immediateSelectMode="true"
-                                                destinationFieldId="chosenYukonDeviceId" 
-                                                destinationFieldName="chosenYukonDeviceId"
-                                                endAction="changeTwoWayDeviceName"><cti:msg2 key=".twoWayPickerButton"/></tags:pickerDialog>
+                                                nameKey="twoWayPickerButton" destinationFieldId="chosenYukonDeviceId"
+                                                endAction="changeTwoWayDeviceName"/>
                                             <input type="button" value="<cti:msg2 key=".twoWayNewButton"/>" onclick="showDeviceCreationPopup();" class="formSubmit">
                                         </cti:displayForPageEditModes>
                                     </div>
