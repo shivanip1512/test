@@ -14,13 +14,14 @@ import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessage;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 public class FlashScopeMessagesTag extends YukonTagSupport {
     private final static String REQUEST_ATTR_NAME = "com.cannontech.web.taglib.FlashScopeMessagesTag.flashScopeMessages";
 
 	private boolean htmlEscape = true;
 	
-	@SuppressWarnings("unchecked")
     @Override
     public void doTag() throws JspException, IOException {
     	
@@ -31,12 +32,19 @@ public class FlashScopeMessagesTag extends YukonTagSupport {
 
 		FlashScope flashScope = new FlashScope(session);
 		List<FlashScopeMessage> flashScopeMessages = flashScope.pullMessages();
-		List<FlashScopeMessage> requestMessages = (List<FlashScopeMessage>) request.getAttribute(REQUEST_ATTR_NAME);
+		Iterable<FlashScopeMessage> requestMessages = null;
+		if (request.getAttribute(REQUEST_ATTR_NAME) != null) {
+		    requestMessages = Iterables.filter((Iterable<?>) request.getAttribute(REQUEST_ATTR_NAME),
+		                                       FlashScopeMessage.class);
+		}
 		if (requestMessages == null) {
 		    requestMessages = flashScopeMessages;
-		    request.setAttribute(REQUEST_ATTR_NAME, requestMessages);
+	        request.setAttribute(REQUEST_ATTR_NAME, requestMessages);
 		} else if (!flashScopeMessages.isEmpty()) {
-		    requestMessages.addAll(flashScopeMessages);
+		    List<FlashScopeMessage> temp = Lists.newArrayList(requestMessages);
+		    temp.addAll(flashScopeMessages);
+		    requestMessages = temp;
+	        request.setAttribute(REQUEST_ATTR_NAME, requestMessages);
 		}
 		for (FlashScopeMessage flashScopeMessage : requestMessages) {
 			
