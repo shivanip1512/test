@@ -37,10 +37,6 @@ public class PeakTargetSetting {
         this.offPeakValue = offPeakValue;
     }
 
-    public String getUnits() {
-        return type.getUnits();
-    }
-
     public static String getPeakType() {
         return PEAK_TYPE;
     }
