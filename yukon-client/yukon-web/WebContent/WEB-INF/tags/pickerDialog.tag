@@ -51,7 +51,7 @@
         <c:if test="${!empty pageScope.extraArgs}">
             ${id}.extraArgs = '<spring:escapeBody javaScriptEscape="true">${pageScope.extraArgs}</spring:escapeBody>';
         </c:if>
-        <c:if test="${!empty pageScope.selectionProperty}">
+        <c:if test="${!empty pageScope.selectionProperty && pageScope.linkType == 'selection'}">
             ${id}.selectionProperty = '${pageScope.selectionProperty}';
         </c:if>
         <c:if test="${!empty pageScope.allowEmptySelection}">
@@ -61,6 +61,11 @@
         ${id}.selectedMoreMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedMore"/>';
     }
 </script>
+
+<c:if test="${pageScope.linkType != 'selection' && !empty pageScope.selectionProperty}">
+    <span class="errorMessage">The "selectionProperty" attribute is
+        only valid when using "selection" linkType on tags:pickerDialog.</span>
+</c:if>
 
 <cti:msgScope paths="components.picker">
     <cti:msg2 var="nothingSelectedMsg" key=".nothingSelected"/>
@@ -117,5 +122,7 @@
 </c:if>
 
 <script type="text/javascript">
-${id}.init();
+Event.observe(window, 'load', function() {
+    ${id}.init();
+});
 </script>
