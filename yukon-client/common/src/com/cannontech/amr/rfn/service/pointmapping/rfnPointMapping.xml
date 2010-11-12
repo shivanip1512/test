@@ -4,6 +4,8 @@
         <paoType value="RFN410FL"/>
         <paoType value="RFN410FX"/>
         <paoType value="RFN410FD"/>
+        <paoType value="RFN430KV"/>
+        <paoType value="RFN430A3"/>
         <point name="Delivered kWh"> 
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -27,6 +29,17 @@
             </modifiers>
             <modifiers match="none">
                 <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Net kWh"> 
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="all">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
