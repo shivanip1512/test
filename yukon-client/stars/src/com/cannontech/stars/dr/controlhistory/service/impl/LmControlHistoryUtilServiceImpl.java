@@ -453,6 +453,7 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
         Duration totalOptedOutControlDuration = Duration.ZERO;
         Duration totalOptedOutDuration = Duration.ZERO;
         int optOutCount = 0;
+        OpenInterval openStartToNow = OpenInterval.createOpenStart(new Instant());
         
         for (LMHardwareControlGroup optOut : optOuts) {
 
@@ -467,7 +468,8 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
                     optOutInterval.overlap(enrolledControlHistoryEntry.getOpenInterval());
                 
                 if (optedOutControlHistoryInterval != null) {
-                    optedOutDuration = optedOutDuration.plus(optedOutControlHistoryInterval.getCurrentDurationToNow());
+                    OpenInterval reportableOptOutControlHistoryInterval = optedOutControlHistoryInterval.overlap(openStartToNow);
+                    optedOutDuration = optedOutDuration.plus(reportableOptOutControlHistoryInterval.toClosedInterval().toDuration());
                 }
             }
             

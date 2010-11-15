@@ -132,9 +132,19 @@ public class OverrideHistory {
 	    }
 	    return null;
 	}
-	
-    public OpenInterval getOpenInterval() {
-        return new OpenInterval(getStartInstant(), getStopInstant());
+
+	public OpenInterval getOpenInterval() {
+        if (startDate == null && stopDate == null) {
+            return OpenInterval.createUnBounded();
+        }
+        if (startDate == null) {
+            return OpenInterval.createOpenStart(stopDate);
+        }
+        if (stopDate == null) {
+            return OpenInterval.createOpenEnd(startDate);
+        }
+        
+        return OpenInterval.createClosed(startDate, stopDate);
     }
 
 	

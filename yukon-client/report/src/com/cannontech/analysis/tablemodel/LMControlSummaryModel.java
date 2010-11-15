@@ -95,7 +95,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
 
         Instant startDateTime = new Instant(getStartDate());
         Instant stopDateTime = new Instant(getStopDate());
-        OpenInterval reportInterval = new OpenInterval(startDateTime, stopDateTime);
+        OpenInterval reportInterval = OpenInterval.createClosed(startDateTime, stopDateTime);
         
         List<Integer> groupIdsFromSQL = programDao.getDistinctGroupIdsByYukonProgramIds(programIds);
         List<CustomerAccountWithNames> accountsFromSQL = customerAccountDao.getAllAccountsWithNamesByGroupIds(energyCompanyId, 

@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
-import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
 import org.joda.time.ReadableInstant;
@@ -17,6 +16,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.PeekingIterator;
 
+
+/**
+ * This class is meant to be an expanded version of the Joda interval class that allows for open ended 
+ * representations for start and end dates.  One use case for this class would be program enrollments.
+ * In the case of an active enrollment, we would have a start date but no stop date.  This cannot
+ * be represented in an interval but can be represented as an open ended OpenInterval.
+ * 
+ */
 public class OpenInterval {
     private Instant start; // null implies this started at the beginning of time
     private Instant end; // null implies this stops at the end of time
@@ -35,7 +42,7 @@ public class OpenInterval {
             }
         });
     
-    public OpenInterval(Instant start, Instant end) {
+    private OpenInterval(Instant start, Instant end) {
         this.start = start;
         this.end = end;
     }
@@ -191,8 +198,7 @@ public class OpenInterval {
         return previous;
     }
 
-    private static List<OpenInterval> intersection(List<OpenInterval> listA,
-            List<OpenInterval> listB) {
+    private static List<OpenInterval> intersection(List<OpenInterval> listA, List<OpenInterval> listB) {
         List<OpenInterval> result = Lists.newArrayListWithExpectedSize(listA.size() + listB.size());
 
         // we know that both lists are sorted
@@ -313,50 +319,6 @@ public class OpenInterval {
             return new OpenInterval(start, new Instant());
         } else {
             return this;
-        }
-    }
-    
-    public Duration getCurrentDurationUsingNowForOpenIntervals(){
-        Instant now = new Instant();
-        
-        if (isOpenStart()) {
-            throw new UnsupportedOperationException("We currently do not support open started durations.");
-        }
-        
-        // The duration is for the future and is open ended.  
-        // Returning zero since we do not want to return a negative duration.
-        if (isOpenEnd() && now.isBefore(start)) {
-            return Duration.ZERO;
-        }
-        
-        if (isOpenEnd()) {
-            return withCurrentEnd().toClosedInterval().toDuration();
-        } else {
-            return toClosedInterval().toDuration();
-        }
-    }
-    
-    public Duration getCurrentDurationToNow(){
-        Instant now = new Instant();
-        
-        if (isOpenStart()) {
-            throw new UnsupportedOperationException("We currently do not support open started durations.");
-        }
-        
-        // The duration is for the future.
-        // Returning zero since we do not want to return a negative duration.
-        if (now.isBefore(start)) {
-            return Duration.ZERO;
-        }
-        
-        if (isOpenEnd()) {
-            return withCurrentEnd().toClosedInterval().toDuration();
-        } else {
-            if (end.isBefore(now)) {
-                return toClosedInterval().toDuration();
-            } else {
-                return withCurrentEnd().toClosedInterval().toDuration();
-            }
         }
     }
 

@@ -89,7 +89,10 @@ public class LMHardwareControlGroup implements Cloneable{
     
     public Duration getEnrollmentDuration() {
         OpenInterval enrollmentInterval = getEnrollmentInterval();
-        return enrollmentInterval.getCurrentDurationToNow();
+        OpenInterval openStartToNow = OpenInterval.createOpenStart(new Instant());
+        OpenInterval enrollmentIntervalUntilNow = enrollmentInterval.overlap(openStartToNow);
+        
+        return enrollmentIntervalUntilNow.toClosedInterval().toDuration();
     }
     
     public OpenInterval getOptOutInterval() {
