@@ -836,7 +836,7 @@ int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
 
         if( Tcl_DoOneEvent( TCL_ALL_EVENTS | TCL_DONT_WAIT) == 1 )
         {
-            Tcl_SetResult( interp, "interrupted", NULL );
+            Tcl_SetResult( interp, "interrupted", TCL_VOLATILE );
             tcl_ret = TCL_ERROR;
             break;
         }
@@ -877,7 +877,7 @@ int mcu8100service(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
 
         if( Tcl_DoOneEvent( TCL_ALL_EVENTS | TCL_DONT_WAIT) == 1 )
         {
-            Tcl_SetResult( interp, "interrupted", NULL );
+            Tcl_SetResult( interp, "interrupted", TCL_VOLATILE );
             tcl_ret = TCL_ERROR;
             break;
         }
@@ -886,7 +886,7 @@ int mcu8100service(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
     results.clear();
 
     // set the number of pil requests sent to be the return val
-    Tcl_SetResult( interp, (char*)CtiNumStr(num_sent).toString().c_str(), NULL);
+    Tcl_SetResult( interp, (char*)CtiNumStr(num_sent).toString().c_str(), TCL_VOLATILE);
     return tcl_ret;
 }
 
@@ -920,7 +920,7 @@ int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
 
         if( Tcl_DoOneEvent( TCL_ALL_EVENTS | TCL_DONT_WAIT) == 1 )
         {
-            Tcl_SetResult( interp, "interrupted", NULL );
+            Tcl_SetResult( interp, "interrupted", TCL_VOLATILE );
             tcl_ret = TCL_ERROR;
             break;
         }
@@ -929,7 +929,7 @@ int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
     results.clear();
 
     // set the number of pil requests sent to be the return val
-    Tcl_SetResult( interp, (char*)CtiNumStr(num_sent).toString().c_str(), NULL);
+    Tcl_SetResult( interp, (char*)CtiNumStr(num_sent).toString().c_str(), TCL_VOLATILE);
     return tcl_ret;
 }
 
@@ -1371,11 +1371,11 @@ int isHoliday(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     temp = CtiTime::localtime_r(&t);
     if( mgr.isHoliday(CtiDate(temp), id) )
     {
-        Tcl_SetResult(interp, "true", NULL );
+        Tcl_SetResult(interp, "true", TCL_VOLATILE );
         return TCL_OK;
     }
 
-    Tcl_SetResult(interp, "false", NULL );
+    Tcl_SetResult(interp, "false", TCL_VOLATILE );
     return TCL_OK;
 }
 
@@ -1523,7 +1523,7 @@ int Wait(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
         if( Tcl_DoOneEvent( TCL_ALL_EVENTS | TCL_DONT_WAIT) == 1 )
         {
             WriteOutput("interrupted");
-            Tcl_SetResult( interp, "interrupted", NULL );
+            Tcl_SetResult( interp, "interrupted", TCL_VOLATILE );
             return TCL_ERROR;
         }
 
@@ -1538,7 +1538,7 @@ int getDeviceName(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
   if(argc < 2)
     {
       WriteOutput("Usage: getDeviceName <deviceid>");
-      Tcl_SetResult(interp, "0", NULL);
+      Tcl_SetResult(interp, "0", TCL_VOLATILE);
       return TCL_OK;
     }
 
@@ -1821,7 +1821,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
 
         if( Tcl_DoOneEvent( TCL_ALL_EVENTS | TCL_DONT_WAIT) == 1 )
         {
-            Tcl_SetResult( interp, "interrupted", NULL );
+            Tcl_SetResult( interp, "interrupted", TCL_VOLATILE );
             interrupted = true;
             break;
         }
