@@ -152,8 +152,11 @@ Picker.prototype = {
 		if (this.selectionProperty) {
 			this.selectedItemsPopup = $('picker_' + this.pickerId + '_selectedItemsPopup');
 			this.selectedItemsDisplayArea = $('picker_' + this.pickerId + '_selectedItemsDisplayArea');
-			this.showSelectedLink = $($('picker_' + this.pickerId + '_showSelectedImg').parentNode);
-			this.showSelectedLink.hide();
+			var showSelectedImg = $('picker_' + this.pickerId + '_showSelectedImg');
+			if (showSelectedImg) {
+				this.showSelectedLink = $(showSelectedImg.parentNode);
+				this.showSelectedLink.hide();
+			}
 		}
 
 		var initialIds = [];
@@ -310,8 +313,9 @@ Picker.prototype = {
 				});
 			}
 
-			this.updateOutsideFields(false);
-			$(this.pickerId).hide();
+			if (this.updateOutsideFields(false)) {
+				$(this.pickerId).hide();
+			}
 		}
 	},
 
@@ -321,44 +325,47 @@ Picker.prototype = {
 			return;
 		}
 
-		if (!this.endAction || this.endAction(this.selectedItems)) {
-			var hit = null;
-			if (this.selectedItems.length > 0) {
-				hit = this.selectedItems[0];
-				this.showSelectedLink.show();
+		if (this.endAction && !this.endAction(this.selectedItems)) {
+			return false;
+		}
+
+		var hit = null;
+		if (this.selectedItems.length > 0) {
+			hit = this.selectedItems[0];
+			if (this.showSelectedLink) this.showSelectedLink.show();
+		} else {
+			if (this.showSelectedLink) this.showSelectedLink.hide();
+		}
+
+		if (this.selectionProperty) {
+			if (hit == null) {
+				this.selectionLabel.innerHTML = this.originalSelectionLabel;
+				this.selectionLabel.addClassName('noSelectionPickerLabel');
 			} else {
-				this.showSelectedLink.hide();
-			}
-
-			if (this.selectionProperty) {
-				if (hit == null) {
-					this.selectionLabel.innerHTML = this.originalSelectionLabel;
-					this.selectionLabel.addClassName('noSelectionPickerLabel');
-				} else {
-					var labelMsg = hit[this.selectionProperty].escapeHTML();
-					if (this.selectedItems.length > 1) {
-						 labelMsg +=  ' ' + this.selectedAndMsg + ' ' +
-						 	(this.selectedItems.length - 1) + ' ' +
-						 	this.selectedMoreMsg;
-					}
-					this.selectionLabel.innerHTML = labelMsg;
-					this.selectionLabel.removeClassName('noSelectionPickerLabel');
+				var labelMsg = hit[this.selectionProperty].toString().escapeHTML();
+				if (this.selectedItems.length > 1) {
+					 labelMsg +=  ' ' + this.selectedAndMsg + ' ' +
+					 	(this.selectedItems.length - 1) + ' ' +
+					 	this.selectedMoreMsg;
 				}
-			}
-
-			for (var index = 0; index < this.extraDestinationFields.length; index++) {
-				extraDestinationField = this.extraDestinationFields[index];
-				var value = hit == null ? '' : hit[extraDestinationField.property];
-				
-				// support for both innerHTML and value setting
-				if ($(extraDestinationField.fieldId).tagName === 'INPUT') {
-					$(extraDestinationField.fieldId).value = value;
-				}
-				else {
-					$(extraDestinationField.fieldId).innerHTML = value;
-				}
+				this.selectionLabel.innerHTML = labelMsg;
+				this.selectionLabel.removeClassName('noSelectionPickerLabel');
 			}
 		}
+
+		for (var index = 0; index < this.extraDestinationFields.length; index++) {
+			extraDestinationField = this.extraDestinationFields[index];
+			var value = hit == null ? '' : hit[extraDestinationField.property];
+			
+			// support for both innerHTML and value setting
+			if ($(extraDestinationField.fieldId).tagName === 'INPUT') {
+				$(extraDestinationField.fieldId).value = value;
+			}
+			else {
+				$(extraDestinationField.fieldId).innerHTML = value;
+			}
+		}
+		return true;
 	},
 
 	clearSelected: function() {

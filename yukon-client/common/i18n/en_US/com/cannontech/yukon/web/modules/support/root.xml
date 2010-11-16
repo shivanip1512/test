@@ -27,15 +27,30 @@
     
     
     <entry key="yukon.web.modules.support.pickerTest.pageName">Picker Test</entry>
-    <entry key="yukon.web.modules.support.pickerTest.pick4.label">Pick 4 (i18n)</entry>
-    <entry key="yukon.web.modules.support.pickerTest.pick4.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
-    <entry key="yukon.web.modules.support.pickerTest.pick5.label">Pick 5 (i18n)</entry>
-    <entry key="yukon.web.modules.support.pickerTest.pick5.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
-    <entry key="yukon.web.modules.support.pickerTest.pick6.label">Pick 6 (i18n)</entry>
-    <entry key="yukon.web.modules.support.pickerTest.pick6.imageUrl">/WebConfig/yukon/Icons/folder_edit.gif</entry>
+    <entry key="yukon.web.modules.support.pickerTest.linkPickers.title">Link Pickers</entry>
+
+    <entry key="yukon.web.modules.support.pickerTest.buttonPickers.title">Button Pickers</entry>
     <entry key="yukon.web.modules.support.pickerTest.pick7.label">Pick 7 (i18n)</entry>
     <entry key="yukon.web.modules.support.pickerTest.pick7.imageUrl">/WebConfig/yukon/Icons/folder_edit.gif</entry>
+    <entry key="yukon.web.modules.support.pickerTest.pick7.hoverUrl">/WebConfig/yukon/Icons/folder_edit_over.gif</entry>
     <entry key="yukon.web.modules.support.pickerTest.pick8.label">Pick 8 (i18n)</entry>
     <entry key="yukon.web.modules.support.pickerTest.pick8.imageUrl">/WebConfig/yukon/Icons/folder_edit.gif</entry>
     <entry key="yukon.web.modules.support.pickerTest.pick9.label">Pick 9 (i18n)</entry>
+    <entry key="yukon.web.modules.support.pickerTest.pick11.label">Pick 11 (i18n)</entry>
+
+    <entry key="yukon.web.modules.support.pickerTest.memoryGroupedPickers.title">Memory Grouped Pickers</entry>
+    <entry key="yukon.web.modules.support.pickerTest.pick12.label">Pick 12 (i18n)</entry>
+    <entry key="yukon.web.modules.support.pickerTest.pick13.label">Pick 13 (i18n)</entry>
+    <entry key="yukon.web.modules.support.pickerTest.pick14.label">Pick 14 (i18n)</entry>
+
+    <entry key="yukon.web.modules.support.pickerTest.selectionPickers.title">Selection Pickers</entry>
+    <entry key="yukon.web.modules.support.pickerTest.pick16.label">Pick 2 (i18n)</entry>
+    <entry key="yukon.web.modules.support.pickerTest.pick16.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+    <entry key="yukon.web.modules.support.pickerTest.pick18.label">Pick 4 (i18n)</entry>
+    <entry key="yukon.web.modules.support.pickerTest.pick18.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+    <entry key="yukon.web.modules.support.pickerTest.pick18.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
+    <entry key="yukon.web.modules.support.pickerTest.pick19.label">Pick 5 (i18n)</entry>
+    <entry key="yukon.web.modules.support.pickerTest.pick19.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+    <entry key="yukon.web.modules.support.pickerTest.pick20.label">Pick 6 (i18n)</entry>
+    <entry key="yukon.web.modules.support.pickerTest.pick20.imageUrl">/WebConfig/yukon/Icons/folder_edit.gif</entry>
 </properties>

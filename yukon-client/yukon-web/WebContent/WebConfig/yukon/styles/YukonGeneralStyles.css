@@ -937,7 +937,7 @@ a.simpleLink, span.simpleLink a {
     color: black;
 }
 
-span.simpleLink > a > span:hover {
+span.simpleLink > a:hover > span {
     text-decoration: underline;
 }
 

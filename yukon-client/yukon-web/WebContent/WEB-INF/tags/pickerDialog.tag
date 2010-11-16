@@ -7,14 +7,14 @@
 <%@ attribute name="endAction" description="Javascript function to call on picker close"%>
 <%@ attribute name="memoryGroup" description="Adds the picker to the memory group - picker will open up with previous search text populated (as long as no page refresh between)"%>
 <%@ attribute name="linkType" description="Type of link to create which can be 'normal' (the default--a plain anchor tag link), 'button', 'selection' or 'none'"%>
-<%@ attribute name="nameKey" description="i18n key; required if linkType is 'button'"%>
+<%@ attribute name="nameKey" description="i18n key; required if linkType is 'button'; unused for 'none' or 'link'"%>
 <%@ attribute name="styleClass" description="If provided, puts the styleClass provided on the picker link's span"%>
 <%@ attribute name="extraArgs" description="Dynamic inputs to picker search" rtexprvalue="true"%>
 <%@ attribute name="extraDestinationFields" description="used when a selection has been made and the picker is closed.  It's a semicolon separated list of: [property]:[fieldId]"%>
 <%@ attribute name="buttonStyleClass" description="Class to style the button with"%>
 <%@ attribute name="anchorStyleClass" description="Class to style the anchor with"%>
-<%@ attribute name="selectionProperty" description="Required with a linkType of 'selection', used to determine name of property from selected item to display in label."%>
-<%@ attribute name="allowEmptySelection" description="Allow an empty selection.  This also adds a 'clear' button."%>
+<%@ attribute name="selectionProperty" description="Required with a linkType of 'selection', used to determine name of property from selected item to display in label.  Not used with other linkType values."%>
+<%@ attribute name="allowEmptySelection" description="Allow an empty selection.  Only valid when 'multiSelectMode' is true."%>
 <%@ attribute name="initialIds" type="java.lang.Object" description="Ids of items selected at the start." rtexprvalue="true"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -55,10 +55,10 @@
             ${id}.selectionProperty = '${pageScope.selectionProperty}';
         </c:if>
         <c:if test="${!empty pageScope.allowEmptySelection}">
-            ${id}.allowEmptySelection = '${pageScope.allowEmptySelection}';
+            ${id}.allowEmptySelection = ${pageScope.allowEmptySelection};
+            ${id}.selectedAndMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedAnd"/>';
+            ${id}.selectedMoreMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedMore"/>';
         </c:if>
-        ${id}.selectedAndMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedAnd"/>';
-        ${id}.selectedMoreMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedMore"/>';
     }
 </script>
 
@@ -67,11 +67,12 @@
         only valid when using "selection" linkType on tags:pickerDialog.</span>
 </c:if>
 
-<cti:msgScope paths="components.picker">
-    <cti:msg2 var="nothingSelectedMsg" key=".nothingSelected"/>
-    <cti:msg2 var="selectedItemsDialogTitleMsg" key=".selectedItemsDialogTitle"/>
-    <cti:msg2 var="closeMsg" key=".close"/>
-</cti:msgScope>
+<c:if test="${pageScope.linkType == 'selection'}">
+    <cti:msgScope paths="components.picker">
+        <cti:msg2 var="selectedItemsDialogTitleMsg" key=".selectedItemsDialogTitle"/>
+        <cti:msg2 var="closeMsg" key=".close"/>
+    </cti:msgScope>
+</c:if>
 
 <span id="picker_${id}_inputArea">
 <c:if test="${!empty initialIds}">
@@ -99,7 +100,7 @@
                 <cti:labeledImg id="picker_${id}_label" key="${pageScope.nameKey}"
                     labelStyleClass="noSelectionPickerLabel"
                     href="javascript:${id}.show()" imageOnRight="true"/>
-                <c:if test="${!empty pageScope.multiSelectMode}">
+                <c:if test="${pageScope.multiSelectMode}">
                     <cti:img id="picker_${id}_showSelectedImg" href="javascript:${id}.showSelected()" key="zoom"/>
                 </c:if>
                 <tags:simplePopup title="${selectedItemsDialogTitleMsg}" id="picker_${id}_selectedItemsPopup">
