@@ -55,7 +55,7 @@
         var currentTempUnit = $F('temperatureUnit');
         
         if(isNaN(currentTemp)){
-            currentTemp = tempDefault;
+            currentTemp = getRawConvertedTemp(tempDefault, currentTempUnit);
         }
         
         // Convert current temp to fahrenheit if needed for validation
