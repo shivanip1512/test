@@ -26,7 +26,7 @@
 			<td class="widgetColumnCell" valign="top" style="padding: 9px 0px 0px 0px">    
 			    <!-- System Information -->
 			    <cti:checkProperty property="ConsumerInfoRole.OPT_OUT_ADMIN_STATUS">
-				    <tags:boxContainer2 nameKey=".systemInfo.title" hideEnabled="false">
+				    <tags:boxContainer2 nameKey="systemInfo" hideEnabled="false">
 				        <tags:nameValueContainer2>
 				            <tags:nameValue2 nameKey=".totalAccounts">
 				                ${totalNumberOfAccounts}
@@ -112,10 +112,11 @@
                         </form>       
                     </tags:boxContainer2>
                 </cti:checkProperty>
-
+                <br/>
+                
 			    <!-- Cancel Current Opt Outs -->
 			    <cti:checkProperty property="ConsumerInfoRole.OPT_OUT_ADMIN_CANCEL_CURRENT">
-				    <tags:boxContainer2 nameKey=".cancelOptOuts" hideEnabled="false">
+				    <tags:boxContainer2 nameKey="cancelOptOuts" hideEnabled="false">
 				    
 				    	<div style="font-size:11px;"><b><i:inline key=".cancelOptOuts.note.label"/></b> <i:inline key=".cancelOptOuts.note.text"/></div>
 				        <br>
@@ -159,7 +160,7 @@
 
 			    <!-- Opt Outs Count/Don't Count -->
 			    <cti:checkProperty property="ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_COUNTS">
-				    <tags:boxContainer2 nameKey=".countOptOuts" hideEnabled="false">
+				    <tags:boxContainer2 nameKey="countOptOuts" hideEnabled="false">
 				        
 				        <div style="font-size:11px;"><b><i:inline key=".countOptOuts.note.label"/></b> <i:inline key=".countOptOuts.note.text"/></div>
 				        <br>
