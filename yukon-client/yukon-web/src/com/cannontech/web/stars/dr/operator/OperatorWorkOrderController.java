@@ -38,7 +38,6 @@ import com.cannontech.stars.dr.workOrder.model.WorkOrderCurrentStateEnum;
 import com.cannontech.stars.dr.workOrder.model.WorkOrderDto;
 import com.cannontech.stars.dr.workOrder.service.WorkOrderService;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -91,16 +90,8 @@ public class OperatorWorkOrderController {
         
         boolean allowAccountEditing = 
             rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
-
         setupViewWorkOrderModelMap(accountInfoFragment, modelMap, userContext, workOrderId);
         
-        // Getting the assigned entry id to help with the change service company java script
-        LiteStarsEnergyCompany energyCompany = 
-            starsDatabaseCache.getEnergyCompany(accountInfoFragment.getEnergyCompanyId());
-        YukonListEntry yukonListEntry = 
-            energyCompany.getYukonListEntry(WorkOrderCurrentStateEnum.ASSIGNED.getDefinitionId());
-        modelMap.addAttribute("assignedEntryId", yukonListEntry.getEntryID());
-
         WorkOrderDto workOrderDto;
         if (workOrderId == null) {
             workOrderDto = new WorkOrderDto();
@@ -116,8 +107,6 @@ public class OperatorWorkOrderController {
             }
         
         }
-        
-        
 
         modelMap.addAttribute("workOrderDto", workOrderDto);
 
@@ -207,8 +196,6 @@ public class OperatorWorkOrderController {
                                           AccountInfoFragment accountInfoFragment,
                                           YukonUserContext userContext) throws IOException, FunctionInitializeException {
         
-        WorkOrderDto workOrder = workOrderService.getWorkOrder(workOrderId);
-        
         WorkOrderModel workOrderModel = new WorkOrderModel();
         workOrderModel.setEnergyCompanyID(accountInfoFragment.getEnergyCompanyId());
         workOrderModel.setOrderID(workOrderId);
@@ -242,8 +229,15 @@ public class OperatorWorkOrderController {
 
         List<ServiceCompanyDto> allServiceCompanies = serviceCompanyDao.getAllServiceCompanies();
         modelMap.addAttribute("allServiceCompanies", allServiceCompanies);
-        
         modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
+        
+        // Getting the assigned entry id to help with the change service company java script
+        LiteStarsEnergyCompany energyCompany = 
+            starsDatabaseCache.getEnergyCompany(accountInfoFragment.getEnergyCompanyId());
+        YukonListEntry yukonListEntry = 
+            energyCompany.getYukonListEntry(WorkOrderCurrentStateEnum.ASSIGNED.getDefinitionId());
+        modelMap.addAttribute("assignedEntryId", yukonListEntry.getEntryID());
+
     }
     
     @InitBinder

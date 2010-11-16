@@ -170,7 +170,7 @@
        
         <tags:slowInput2 formId="viewAllForm" key="cancel"/>
         
-        <cti:displayForPageEditModes modes="CREATE,EDIT">
+        <cti:displayForPageEditModes modes="EDIT">
             <tags:slowInput2 formId="deleteForm" key="delete"/>
         </cti:displayForPageEditModes>
         
