@@ -221,8 +221,8 @@
 <entry key="yukon.web.menu.config.support.webservice.xml">XML</entry>
 
 <entry key="yukon.web.menu.config.support.events">Events</entry>
-<entry key="yukon.web.menu.config.support.events.byCategory">By Category</entry>
-<entry key="yukon.web.menu.config.support.events.byType">By Type</entry>
+<entry key="yukon.web.menu.config.support.events.byCategory">Category</entry>
+<entry key="yukon.web.menu.config.support.events.byType">Type</entry>
 
 <entry key="yukon.web.menu.config.support.development">Development</entry>
 <entry key="yukon.web.menu.config.support.development.pointInjection">Point Injection</entry>

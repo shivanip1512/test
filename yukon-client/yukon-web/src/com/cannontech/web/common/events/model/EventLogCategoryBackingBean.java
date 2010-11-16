@@ -2,18 +2,20 @@ package com.cannontech.web.common.events.model;
 
 import org.joda.time.LocalDate;
 
+import com.cannontech.common.events.model.EventCategory;
+
 public class EventLogCategoryBackingBean {
-    private String[] categories;
+    private EventCategory[] categories;
     private String filterValue;
     private LocalDate startDate;
     private LocalDate stopDate;
-    private int itemsPerPage = 10;
+    private int itemsPerPage = 50;
     private int page = 1;
     
-    public String[] getCategories() {
+    public EventCategory[] getCategories() {
         return categories;
     }
-    public void setCategories(String[] categories) {
+    public void setCategories(EventCategory[] categories) {
         this.categories = categories;
     }
     

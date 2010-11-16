@@ -1,16 +1,18 @@
 package com.cannontech.common.events.model;
 
+import org.springframework.context.MessageSourceResolvable;
+
 public class EventLogFilter {
-    private String key;
+    private MessageSourceResolvable key;
     private ArgumentColumn argumentColumn;
     private EventLogColumnTypeEnum eventLogColumnType;
     private FilterValue filterValue;
 
-    public String getKey() {
+    public MessageSourceResolvable getKey() {
         return key;
     }
 
-    public void setKey(String key) {
+    public void setKey(MessageSourceResolvable key) {
         this.key = key;
     }
 

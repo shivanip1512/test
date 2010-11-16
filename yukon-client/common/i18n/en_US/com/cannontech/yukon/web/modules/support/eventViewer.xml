@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+   <!-- Generic Event Messages -->
+    <entry key="yukon.common.events.title">Events</entry>
+    <entry key="yukon.common.events.columnHeader.event">Event</entry>
+    <entry key="yukon.common.events.columnHeader.dateAndTime"><![CDATA[Date & Time]]></entry>
+    <entry key="yukon.common.events.columnHeader.message">Message</entry>
+    <entry key="yukon.common.events.noResults">No Results Found</entry>
+
+
+    <entry key="yukon.web.modules.support.category">Category</entry>
+    <entry key="yukon.web.modules.support.generateReports">Generate Reports</entry>
+
+    <entry key="yukon.web.modules.support.byCategory.categories">Categories</entry>
+    <entry key="yukon.web.modules.support.byCategory.filterValue">Filter Value</entry>
+    <entry key="yukon.web.modules.support.byCategory.dateRange">Date Range</entry>
+
+    <!-- Validation -->    
+    <entry key="yukon.web.modules.support.eventViewer.startDateMustBeBeforeStopDate">The start date must be before the end date.</entry>
+    <entry key="yukon.web.modules.support.eventViewer.dateMustNotBeBlank">A valid date must be entered.</entry>
+    
+    <!-- By Type -->
+    <entry key="yukon.web.modules.support.eventViewer.byType.event">Event</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.dateAndTime">Date and Time</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.cancel">Cancel</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.eventCategories">Event Categories</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.eventType">Event Type</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.eventLogDateRange">Event Log Date Range</entry>
+
+    <entry key="yukon.web.modules.support.eventViewer.byType.noEventLogTypeSelected">No Event Log Type Selected</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.eventLogTypeTreeSectorIcon">No Event Log Type Selected</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.noEventLogTypeSelected">No Event Log Type Selected</entry>
+    
+    <!--  Filter popup -->
+    <entry key="yukon.web.modules.support.eventViewer.byType.eventLogFilters">Event Log Filters</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.filter">Filter</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.showAll">Show All</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.noFilterOptionsAvailable">No filter options available.</entry>
+    
+    <entry key="yukon.web.modules.support.eventViewer.byType.eventLogTypeTreeSector.confirm">Are you sure you want add an extra opt out for {0}?</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.eventLogTypeTreeSector.imageUrl">/WebConfig/yukon/Icons/folder.gif</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.eventLogTypeTreeSector.hoverUrl">/WebConfig/yukon/Icons/folder_over.gif</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.eventLogTypeTreeSector.hoverText">Allows you to select an event category type to review.</entry>
+
+    <!--  Result Exports -->
+    <entry key="yukon.web.modules.support.eventViewer.byType.csvExport.label">CSV</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.csvExport.imageUrl">/WebConfig/yukon/Icons/excel.gif</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.csvExport.hoverText">Export results to a CSV formatted file.</entry>
+
+    <entry key="yukon.web.modules.support.eventViewer.byType.title">Title</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.turnOnEventLog">Turn on event logging for this category.</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.turnOffEventLog">Turn off event logging for this category.</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.viewEventLog">View event log</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.categoryOptions">Category Options</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.enableCategory">Enable Category</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.disableCategory">Disable Category</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.viewCategory">View Category</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.selectEventLog">Select Event Log</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.noEventLogSelected">No event log was selected</entry>
+    
+</properties>

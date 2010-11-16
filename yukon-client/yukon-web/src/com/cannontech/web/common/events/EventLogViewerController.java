@@ -1,11 +1,15 @@
 package com.cannontech.web.common.events;
 
+import java.beans.PropertyEditorSupport;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,7 +18,6 @@ import java.util.Map.Entry;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import net.sf.jsonOLD.JSONObject;
 
@@ -22,19 +25,15 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
-import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
@@ -58,7 +57,9 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
@@ -73,14 +74,16 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.validator.EventLogCategoryValidator;
 import com.cannontech.web.stars.dr.operator.validator.EventLogTypeValidator;
 import com.cannontech.web.util.ExtTreeNode;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.SetMultimap;
 
 @Controller
 @RequestMapping("/eventLog/*")
 @CheckRoleProperty(YukonRoleProperty.ADMIN_EVENT_LOGS)
-@SessionAttributes(value="eventLogTypeBackingBean")
 public class EventLogViewerController {
 
     private final String eventLogResolvablePrefix ="yukon.common.events.";
@@ -93,39 +96,16 @@ public class EventLogViewerController {
     private EventLogService eventLogService;
     private EventLogUIService eventLogUIService;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
+    private DateFormattingService dateFormattingService;
 
     @RequestMapping
-    public void viewByCategory(@ModelAttribute("eventLogCategoryBackingBean") EventLogCategoryBackingBean eventLogCategoryBackingBean, 
+    public void viewByCategory(@ModelAttribute("eventLogCategoryBackingBean") EventLogCategoryBackingBean backingBean, 
                                BindingResult bindingResult,
                                FlashScope flashScope,
                                YukonUserContext userContext, 
                                ModelMap model) throws ServletException, ParseException {
-        model.addAttribute("eventLogTypeBackingBean", new EventLogTypeBackingBean());
-        
-        if (eventLogCategoryBackingBean.getStartDate() == null) {
-            eventLogCategoryBackingBean.setStartDate(new LocalDate(userContext.getJodaTimeZone()).minusDays(1));
-        }
-        
-        if (eventLogCategoryBackingBean.getStopDate() == null) {
-            eventLogCategoryBackingBean.setStopDate(new LocalDate(userContext.getJodaTimeZone()));
-        }
-
-        // Get event category map
-        List<EventCategory> eventCategories = Lists.newArrayList();
-        if (eventLogCategoryBackingBean.getCategories() == null) {
-            eventCategories = getAllEventCategories();
-        } else {
-            for (String categoryStr : eventLogCategoryBackingBean.getCategories()) {
-                EventCategory category = EventCategory.createCategory(categoryStr);
-                eventCategories.add(category);
-            }
-        }
-
-        Map<EventCategory, Boolean> selectedMap = ServletUtil.convertListToMap(eventCategories); 
-        model.addAttribute("selectedCategories", selectedMap);
-
         // Validating the search data
-        eventLogCategoryValidator.doValidation(eventLogCategoryBackingBean, bindingResult);
+        eventLogCategoryValidator.doValidation(backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
             
             List<MessageSourceResolvable> messages = 
@@ -134,62 +114,60 @@ public class EventLogViewerController {
             return;
         } 
         
+        List<EventCategory> eventCategories = Lists.newArrayList();
+        eventCategories.addAll(Arrays.asList(backingBean.getCategories()));
+        
         // Getting the search results
         SearchResult<EventLog> searchResult = 
             eventLogUIService.getFilteredPagedSearchResultByCategories(eventCategories, 
-                                                                       eventLogCategoryBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                                       eventLogCategoryBackingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                                       eventLogCategoryBackingBean.getStartIndex(), 
-                                                                       eventLogCategoryBackingBean.getItemsPerPage(),
-                                                                       eventLogCategoryBackingBean.getFilterValue(),
+                                                                       backingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
+                                                                       backingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
+                                                                       backingBean.getStartIndex(), 
+                                                                       backingBean.getItemsPerPage(),
+                                                                       backingBean.getFilterValue(),
                                                                        userContext);
         
         model.addAttribute("searchResult", searchResult);
-        model.addAttribute("events", searchResult.getResultList());
+    }
+    
+    @ModelAttribute("eventLogCategoryBackingBean")
+    public EventLogCategoryBackingBean initializeEventLogCategoryBackingBean(YukonUserContext userContext) {
+        EventLogCategoryBackingBean backingBean = new EventLogCategoryBackingBean();
+        backingBean.setStartDate(new LocalDate(userContext.getJodaTimeZone()).minusDays(1));
+        backingBean.setStopDate(new LocalDate(userContext.getJodaTimeZone()));
+        
+        backingBean.setCategories(getAllEventCategories().toArray(new EventCategory[]{}));
+        
+        return backingBean;
     }
 
-    @RequestMapping
-    public void viewByType(ModelMap model,
-                           SessionStatus sessionStatus) {
-        // Clear Session Attribute
-        sessionStatus.setComplete();
-
-        buildTreeModelData(model);
-        
+    @RequestMapping(value="viewByType", method=RequestMethod.GET)
+    public void selectByType(ModelMap model) {
         SearchResult<EventLog> emptyResult = SearchResult.emptyResult();
         
         model.addAttribute("searchResult", emptyResult);
-        model.addAttribute("events", emptyResult.getResultList());
-        
     }
     
-    @RequestMapping(value="viewByType", params="eventLogType", method=RequestMethod.GET)
-    public void viewByType(HttpServletRequest request,
-                           HttpSession session,
+    @RequestMapping(value="viewByType", params={"eventLogType", "!export"}, method=RequestMethod.GET)
+    public void viewByType(@ModelAttribute("eventLogTypeBackingBean") EventLogTypeBackingBean eventLogTypeBackingBean,
+                           BindingResult bindingResult,
+                           FlashScope flashScope,
                            YukonUserContext userContext, 
+                           HttpServletRequest request,
                            ModelMap model) throws ServletRequestBindingException{
-        buildTreeModelData(model);
 
-        // Get event log type
-        String eventLogType = ServletRequestUtils.getRequiredStringParameter(request, "eventLogType");
-        eventLogType = StringUtils.removeStart(eventLogType, "Categories.");
+        // Validating the search data
+        eventLogTypeValidator.doValidation(eventLogTypeBackingBean, bindingResult);
+        if (bindingResult.hasErrors()) {
 
-        // Create event log type backing bean
-        EventLogTypeBackingBean eventLogTypeBackingBean = (EventLogTypeBackingBean)session.getAttribute("eventLogTypeBackingBean");
-        if (eventLogTypeBackingBean == null ||
-            !eventLogType.equalsIgnoreCase(eventLogTypeBackingBean.getEventLogType())) {
-            List<EventLogFilter> eventLogFilters = getEventLogFilter(eventLogType, userContext);
-            eventLogTypeBackingBean = 
-                new EventLogTypeBackingBean(eventLogType,
-                                            userContext,
-                                            eventLogFilters);
-        }
-        eventLogTypeBackingBean.setItemsPerPage(ServletRequestUtils.getIntParameter(request, "itemsPerPage", 10));
-        eventLogTypeBackingBean.setPage(ServletRequestUtils.getIntParameter(request, "page", 1));
-        model.addAttribute("eventLogTypeBackingBean", eventLogTypeBackingBean);
+            List<MessageSourceResolvable> messages = 
+                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            return;
+        } 
 
         UiFilter<EventLog> eventLogSqlFilters = getEventLogUIFilters(eventLogTypeBackingBean);
-        
+
         // Get default search results
         SearchResult<EventLog> searchResult = 
             eventLogUIService.getFilteredPagedSearchResultByType(eventLogTypeBackingBean.getEventLogType(), 
@@ -200,55 +178,32 @@ public class EventLogViewerController {
                                                                  eventLogSqlFilters,
                                                                  userContext);
 
-        buildEventLogResults(userContext, model, eventLogTypeBackingBean, searchResult);
+        buildEventLogResults(userContext, eventLogTypeBackingBean, searchResult, model);
         
-        model.addAttribute("searchResult", searchResult);
-        model.addAttribute("events", searchResult.getResultList());
+        String csvLink = ServletUtil.tweakHTMLRequestURI(request, "export", "CSV");
+        model.addAttribute("csvLink", csvLink);
+    }
+    
+    @ModelAttribute("eventLogTypeBackingBean")
+    public EventLogTypeBackingBean initializeEventLogTypeBackingBean(String eventLogType,
+            YukonUserContext userContext) {
+        if (org.apache.commons.lang.StringUtils.isBlank(eventLogType)) return null;
         
+        List<EventLogFilter> eventLogFilters = getEventLogFilter(eventLogType, userContext);
+        EventLogTypeBackingBean eventLogTypeBackingBean = 
+            new EventLogTypeBackingBean(eventLogType,
+                                        userContext.getJodaTimeZone(),
+                                        eventLogFilters);
+        return eventLogTypeBackingBean;
     }
 
-    @RequestMapping(value="viewByType", params="eventLogType",method=RequestMethod.POST)
-    public void viewByType(@ModelAttribute("eventLogTypeBackingBean") EventLogTypeBackingBean eventLogTypeBackingBean,
-                           BindingResult bindingResult,
-                           FlashScope flashScope,
-                           HttpServletRequest request,
-                           YukonUserContext userContext, 
-                           ModelMap model) throws ServletException, ParseException {
-
-        buildTreeModelData(model);
-
-        // Validating the search data
-        eventLogTypeValidator.doValidation(eventLogTypeBackingBean, bindingResult);
-        if (bindingResult.hasErrors()) {
-            
-            List<MessageSourceResolvable> messages = 
-                YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            return;
-        } 
-
-        UiFilter<EventLog> eventLogSqlFilters = getEventLogUIFilters(eventLogTypeBackingBean);
-        
-        // Get search results
-        SearchResult<EventLog> searchResult = 
-            eventLogUIService.getFilteredPagedSearchResultByType(eventLogTypeBackingBean.getEventLogType(), 
-                                                                 eventLogTypeBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                                 eventLogTypeBackingBean.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                                                                 eventLogTypeBackingBean.getStartIndex(), 
-                                                                 eventLogTypeBackingBean.getItemsPerPage(),
-                                                                 eventLogSqlFilters,
-                                                                 userContext);
-        
-        
-        buildEventLogResults(userContext, model, eventLogTypeBackingBean, searchResult);
-        
-        model.addAttribute("searchResult", searchResult);
-        model.addAttribute("events", searchResult.getResultList());
-        
+    @ModelAttribute
+    public void setupTreeModelData(String eventLogType, ModelMap map) {
+        buildTreeModelData(eventLogType, map);
     }
-
-    @RequestMapping(params="export")
-    public void viewByType(@ModelAttribute("eventLogTypeBackingBean") EventLogTypeBackingBean eventLogTypeBackingBean,
+    
+    @RequestMapping(value="viewByType", params="export", method=RequestMethod.GET)
+    public void exportByType(@ModelAttribute("eventLogTypeBackingBean") EventLogTypeBackingBean eventLogTypeBackingBean,
                            HttpServletResponse response,
                            YukonUserContext userContext, 
                            ModelMap model) throws ServletException, ParseException, IOException {
@@ -271,8 +226,8 @@ public class EventLogViewerController {
             messageSourceResolver.getMessageSourceAccessor(userContext);
 
         List<EventLogFilter> eventLogFilters = eventLogTypeBackingBean.getEventLogFilters();
-        columnNames.add(messageSourceAccessor.getMessage("yukon.web.modules.support.byType.event"));
-        columnNames.add(messageSourceAccessor.getMessage("yukon.web.modules.support.byType.dateAndTime"));
+        columnNames.add(messageSourceAccessor.getMessage("yukon.web.modules.support.eventViewer.byType.event"));
+        columnNames.add(messageSourceAccessor.getMessage("yukon.web.modules.support.eventViewer.byType.dateAndTime"));
         for (EventLogFilter eventLogFilter : eventLogFilters) {
             columnNames.add(messageSourceAccessor.getMessage(eventLogFilter.getKey()));
         }
@@ -318,29 +273,57 @@ public class EventLogViewerController {
      *
      */
     private void buildEventLogResults(YukonUserContext userContext,
-                                      ModelMap model,
-                                      EventLogTypeBackingBean eventLogTypeBackingBean,
-                                      SearchResult<EventLog> searchResult) {
+            EventLogTypeBackingBean eventLogTypeBackingBean,
+            SearchResult<EventLog> rawResults,
+            ModelMap model) {
         // Get column names
-        List<String> columnNames = Lists.newArrayList();
-        final MessageSourceAccessor messageSourceAccessor = 
-            messageSourceResolver.getMessageSourceAccessor(userContext);
+        List<ColumnHeader> columnNames = Lists.newArrayList();
+        List<Integer> columnArgumentIndexes = Lists.newArrayList();
         
-        List<EventLogFilter> eventLogFilters = eventLogTypeBackingBean.getEventLogFilters();
-        columnNames.add(messageSourceAccessor.getMessage("yukon.web.modules.support.byType.event"));
-        columnNames.add(messageSourceAccessor.getMessage("yukon.web.modules.support.byType.dateAndTime"));
-        for (EventLogFilter eventLogFilter : eventLogFilters) {
-            columnNames.add(messageSourceAccessor.getMessage(eventLogFilter.getKey()));
+        String eventLogType = eventLogTypeBackingBean.getEventLogType();
+        MethodLogDetail eventTypeDetail = eventLogService.getDetailForEventType(eventLogType);
+        Set<EventParameter> parameters = eventTypeDetail.getParameterToColumnMapping().keySet();
+        // TODO see if parameters could be sorted 
+        for (EventParameter eventParameter : parameters) {
+            // get name for column
+            MessageSourceResolvable columnKey = getColumnKey(eventLogType, eventParameter);
+            ArgumentColumn argumentColumn = eventTypeDetail.getParameterToColumnMapping().get(eventParameter);
+            
+            ColumnHeader columnHeader = new ColumnHeader(columnKey, argumentColumn);
+            columnNames.add(columnHeader);
+            
+            // get column indexes
+            int index = eventLogDao.getArgumentColumns().indexOf(argumentColumn);
+            columnArgumentIndexes.add(index);
         }
         model.addAttribute("columnNames", columnNames);
         
-        // Get data grid
-        List<List<String>> dataGrid = 
-            eventLogUIService.getDataGridRow(searchResult, userContext);
-        model.addAttribute("dataGrid", dataGrid);
+        SearchResult<ReportableEventLog> result = new SearchResult<ReportableEventLog>();
+        result.setBounds(rawResults.getStartIndex(), rawResults.getCount(), rawResults.getHitCount());
+        List<ReportableEventLog> resultList = Lists.newArrayListWithCapacity(rawResults.getResultList().size());
+        for (EventLog rawLog : rawResults.getResultList()) {
+            List<String> cells = Lists.newArrayListWithCapacity(columnArgumentIndexes.size());
+            for (Integer index : columnArgumentIndexes) {
+                Object rawCell = rawLog.getArguments()[index];
+                String cell = formatCell(rawCell, userContext);
+                cells.add(cell);
+            }
+            ReportableEventLog reportableEventLog = new ReportableEventLog(rawLog, cells);
+            resultList.add(reportableEventLog);
+        }
+        result.setResultList(resultList);
+        model.addAttribute("searchResult", result);
     }
     
     
+    private String formatCell(Object argument, YukonUserContext userContext) {
+        if (argument instanceof Date) {
+            return dateFormattingService.format(argument, DateFormatEnum.BOTH, userContext);
+        } else {
+            return argument.toString();
+        }
+    }
+
     private void generateCsvReport(List<String> columnNames,
                                     List<List<String>> dataGrid,
                                     OutputStream outputStream,
@@ -366,16 +349,15 @@ public class EventLogViewerController {
     /**
      * Builds up the model map for the tree structure for selecting an event type.
      */
-    private void buildTreeModelData(ModelMap model) {
+    private void buildTreeModelData(String eventLogType, ModelMap model) {
         // Build Select Event Tree
         // ALL GROUPS HIERARCHY
         EventCategoryHierarchy everythingHierarchy = getEventLogHierarchy();
         
-        // ALL GROUPS TREE JSON
         HighlightSelectedEventLogNodeAttributeSettingCallback callback = 
-            new HighlightSelectedEventLogNodeAttributeSettingCallback(null);
+            new HighlightSelectedEventLogNodeAttributeSettingCallback(StringUtils.defaultString(eventLogType, ""));
         ExtTreeNode allGroupsRoot = 
-            EventLogTreeUtils.makeEventCategoryExtTree(everythingHierarchy, "Categories", callback);
+            new EventLogTreeUtils().makeEventCategoryExtTree(everythingHierarchy, callback);
 
         // selected node Ext path
         String extSelectedNodePath = callback.getExtSelectedNodePath();
@@ -392,9 +374,6 @@ public class EventLogViewerController {
      */
     private List<EventLogFilter> getEventLogFilter(String eventLogType, YukonUserContext userContext) {
         List<EventLogFilter> eventLogFilters = Lists.newArrayList();
-        final MessageSourceAccessor messageSourceAccessor = 
-            messageSourceResolver.getMessageSourceAccessor(userContext);
-        String eventLogResolvablePath = eventLogResolvablePrefix+eventLogType;
 
         MethodLogDetail detailForEventType = eventLogService.getDetailForEventType(eventLogType);
         Map<ArgumentColumn, EventParameter> columnToParameterMapping = 
@@ -420,103 +399,81 @@ public class EventLogViewerController {
                 eventLogFilter.setFilterValue(new DateFilterValue());
             }
 
-            // Check to see if a numeric key exists to override a named key
-            String eventLogColumnKey = eventLogResolvablePath+"."+eventParameter.getName();
-            try {
-                messageSourceAccessor.getMessage(eventLogColumnKey);
-                eventLogFilter.setKey(eventLogColumnKey);
-                continue;
-                // This is fine.  It just means the message we tried didn't exist.
-            } catch (NoSuchMessageException e) {
-                if (!eventParameter.isNamed()) {
-                    throw new IllegalArgumentException("The key "+eventLogColumnKey+" does not exist.");
-                }
-            }
-
-            // A numeric key was not found.  Try using the class key
-            eventLogColumnKey = eventLogResolvablePrefix+eventParameter.getName();
-            try {
-                messageSourceAccessor.getMessage(eventLogColumnKey);
-                eventLogFilter.setKey(eventLogColumnKey);
-            } catch (NoSuchMessageException e) {
-                throw new IllegalArgumentException("The key "+eventLogColumnKey+" does not exist.");
-            }
+            MessageSourceResolvable eventLogColumnKey = getColumnKey(eventLogType,
+                                                                     eventParameter);
+            eventLogFilter.setKey(eventLogColumnKey);
 
         }
                 
         return eventLogFilters;
     }
 
+    private MessageSourceResolvable getColumnKey(String eventLogType, EventParameter eventParameter) {
+        ArrayList<String> keys = Lists.newArrayListWithCapacity(2);
+        String key1 = eventLogResolvablePrefix + eventLogType + "." + eventParameter.getName();
+        keys.add(key1);
+        if (eventParameter.isNamed()) {
+            String key2 = eventLogResolvablePrefix + eventParameter.getName();
+            keys.add(key2);
+        }
+        
+        String name = "unknown";
+        if (eventParameter.isNamed()) {
+            name = eventParameter.getName();
+        }
+        String defaultText = name + " (#" + eventParameter.getArgumentNumber() + ")";
+        
+        MessageSourceResolvable result = 
+            YukonMessageSourceResolvable.createMultipleCodesWithDefault(keys, defaultText);
+        return result;
+    }
+
     private EventCategoryHierarchy getEventLogHierarchy() {
 
         ListMultimap<EventCategory, String> eventLogTypeMultiMap = 
             eventLogService.getEventLogTypeMultiMap();
+        
+        SetMultimap<EventCategory, EventCategory> parentChildLookup = getCategoriesByParent(eventLogTypeMultiMap.keySet());
 
         EventCategoryHierarchy eventLogHierarchy = new EventCategoryHierarchy();
         eventLogHierarchy.setEventCategory(EventCategory.createCategory("Categories"));
-        List<String> emptyList = Lists.newArrayList();
-        eventLogHierarchy.setEventLogTypes(emptyList);
+        eventLogHierarchy.setEventLogTypes(ImmutableList.<String>of());
 
-        for (EventCategory eventCategory : eventLogTypeMultiMap.keySet()) {
-            List<String> eventLogTypes = eventLogTypeMultiMap.get(eventCategory);
-            eventLogHierarchyHelper(eventLogHierarchy, eventCategory, eventLogTypes);
-        }
+        fillInChildren(eventLogHierarchy, null, eventLogTypeMultiMap, parentChildLookup);
         
         return eventLogHierarchy;
     }
-    
-    private void eventLogHierarchyHelper(EventCategoryHierarchy eventCategoryHierarchy,
-                                            EventCategory eventCategory,
-                                            List<String> eventLogTypes) {
 
-        String echFullPath = eventCategoryHierarchy.getEventCategory().getFullName();
-        echFullPath = StringUtils.removeStart(echFullPath, "Categories");
-        echFullPath = StringUtils.removeStart(echFullPath, ".");
-            
-        if (eventCategory.getFullName().equalsIgnoreCase(echFullPath )) {
-            eventCategoryHierarchy.setEventLogTypes(eventLogTypes);
-            return;
-        }
-            
-        for (EventCategoryHierarchy childEventCategoryHierarchy : eventCategoryHierarchy.getChildEventCategoryHierarchyList()) {
-            String echChildFullPath = childEventCategoryHierarchy.getEventCategory().getFullName();
-            echChildFullPath = StringUtils.removeStart(echChildFullPath, "Categories");
-            echChildFullPath = StringUtils.removeStart(echChildFullPath, ".");
-            
-            if (eventCategory.getFullName().startsWith(echChildFullPath)) {
-                eventLogHierarchyHelper(childEventCategoryHierarchy, eventCategory, eventLogTypes);
-                return;
+    private SetMultimap<EventCategory, EventCategory> getCategoriesByParent(
+            Iterable<EventCategory> categories) {
+        SetMultimap<EventCategory, EventCategory> parentChildLookup = HashMultimap.create();
+        
+        for (EventCategory eventCategory : categories) {
+            // this extra for loop is needed because the DAO does not return categories that
+            // do not have child types (e.g. currently a category for "system" is not returned by itself)
+            for (EventCategory category = eventCategory; category != null; category = category.getParent()) {
+                parentChildLookup.put(category.getParent(), category);
             }
         }
-        
-        // Build out eventCategoryHierarchy structure
-        buildEventCategoryHierarchy(eventCategoryHierarchy, eventCategory, eventLogTypes);
-        return;
-        
+        return parentChildLookup;
     }
-
-    private void buildEventCategoryHierarchy(EventCategoryHierarchy eventCategoryHierarchy,
-                                             EventCategory eventCategory, List<String> eventLogTypes) {
-        String echFullPath = eventCategoryHierarchy.getEventCategory().getFullName();
-        echFullPath = StringUtils.removeStart(echFullPath, "Categories");
-        echFullPath = StringUtils.removeStart(echFullPath, ".");
+    
+    private void fillInChildren(EventCategoryHierarchy parentHierarchy,
+            EventCategory eventCategory, ListMultimap<EventCategory, String> eventLogTypeMultiMap,
+            SetMultimap<EventCategory, EventCategory> parentChildLookup) {
         
-        String remainingEventCategoryPath = eventCategory.getFullName().replace(echFullPath, "");
-        String[] remainingEventCategories = StringUtils.split(remainingEventCategoryPath, ".");
-
-        if (remainingEventCategories.length > 0) {
-            EventCategoryHierarchy echChild = new EventCategoryHierarchy();
+        Set<EventCategory> unsortedCategories = parentChildLookup.get(eventCategory);
+        List<EventCategory> sortedCategories = Ordering.natural().sortedCopy(unsortedCategories);
+        
+        for (EventCategory childEventCategory : sortedCategories) {
+            EventCategoryHierarchy eventLogHierarchy = new EventCategoryHierarchy();
+            eventLogHierarchy.setEventCategory(childEventCategory);
+            fillInChildren(eventLogHierarchy, childEventCategory, eventLogTypeMultiMap, parentChildLookup);
             
-            EventCategory childEventCategory = 
-                EventCategory.createCategory(eventCategoryHierarchy.getEventCategory().getFullName()+"."+remainingEventCategories[0]);
-            echChild.setEventCategory(childEventCategory);
-            eventCategoryHierarchy.addChildEventCategoryHierarchy(echChild);
-            
-            buildEventCategoryHierarchy(echChild, eventCategory, eventLogTypes);
-        } else {
-            eventCategoryHierarchy.setEventLogTypes(eventLogTypes);
+            parentHierarchy.addChildEventCategoryHierarchy(eventLogHierarchy);
         }
-        
+        List<String> childTypes = eventLogTypeMultiMap.get(eventCategory);
+        parentHierarchy.setEventLogTypes(Ordering.natural().sortedCopy(childTypes));
     }
 
     @ModelAttribute
@@ -534,6 +491,84 @@ public class EventLogViewerController {
         
         binder.registerCustomEditor(EventLogColumnTypeEnum.class,
                                     new EventLogColumnTypePropertyEditor());
+        
+        binder.registerCustomEditor(EventCategory.class, new PropertyEditorSupport() {
+            @Override
+            public String getAsText() {
+                EventCategory eventCategory = (EventCategory) getValue();
+                return eventCategory.getFullName();
+            }
+            
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                EventCategory eventCategory = EventCategory.createCategory(text);
+                setValue(eventCategory);
+            }
+        });
+    }
+    
+    @RequestMapping
+    public void testAll(ModelMap map) {
+        Date now = new Date();
+        List<ArgumentColumn> argumentColumns = eventLogDao.getArgumentColumns();
+        Object[] fakeArguments = new Object[argumentColumns.size()];
+        int i = 0;
+        for (ArgumentColumn argumentColumn : argumentColumns) {
+            fakeArguments[i++] = argumentColumn.getColumnName();
+        }
+        ListMultimap<EventCategory, String> typeMultiMap = eventLogService.getEventLogTypeMultiMap();
+        
+        List<MessageSourceResolvable> allKeys = Lists.newArrayList();
+        
+        for (Entry<EventCategory, String> type : typeMultiMap.entries()) {
+            String fullType = EventLog.getFullName(type.getKey(), type.getValue());
+            MethodLogDetail detailForEventType = eventLogService.getDetailForEventType(fullType);
+            EventLog eventLog = new EventLog();
+            eventLog.setDateTime(now);
+            eventLog.setEventType(fullType);
+            eventLog.setArguments(fakeArguments);
+            MessageSourceResolvable eventDescription = eventLog.getMessageSourceResolvable();
+            allKeys.add(eventDescription);
+            Set<EventParameter> keySet = detailForEventType.getParameterToColumnMapping().keySet();
+            for (EventParameter eventParameter : keySet) {
+                MessageSourceResolvable columnKey = getColumnKey(fullType, eventParameter);
+                allKeys.add(columnKey);
+            }
+        }
+        
+        map.addAttribute("allKeys", allKeys);
+    }
+    
+    public static class ReportableEventLog {
+        private EventLog eventLog;
+        private List<String> parameters;
+        
+        private ReportableEventLog(EventLog eventLog, List<String> parameters) {
+            this.eventLog = eventLog;
+            this.parameters = parameters;
+        }
+        public EventLog getEventLog() {
+            return eventLog;
+        }
+        public List<String> getParameters() {
+            return parameters;
+        }
+    }
+    
+    public static class ColumnHeader {
+        private MessageSourceResolvable label;
+        private ArgumentColumn argumentColumn;
+        private ColumnHeader(MessageSourceResolvable label, ArgumentColumn argumentColumn) {
+            this.label = label;
+            this.argumentColumn = argumentColumn;
+        }
+        public MessageSourceResolvable getLabel() {
+            return label;
+        }
+        public ArgumentColumn getArgumentColumn() {
+            return argumentColumn;
+        }
+        
     }
     
     @Autowired
@@ -574,6 +609,11 @@ public class EventLogViewerController {
     @Autowired
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
+    }
+    
+    @Autowired
+    public void setDateFormattingService(DateFormattingService dateFormattingService) {
+        this.dateFormattingService = dateFormattingService;
     }
     
 }

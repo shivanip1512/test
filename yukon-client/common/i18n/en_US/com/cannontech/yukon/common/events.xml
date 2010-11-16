@@ -1,62 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-    <!-- Generic Event Messages -->
-    <entry key="yukon.common.events.title">Events</entry>
-    <entry key="yukon.common.events.columnHeader.event">Event</entry>
-    <entry key="yukon.common.events.columnHeader.dateAndTime"><![CDATA[Date & Time]]></entry>
-    <entry key="yukon.common.events.columnHeader.message">Message</entry>
-    <entry key="yukon.common.events.noResults">No Results Found</entry>
 
-
-    <entry key="yukon.web.modules.support.category">Category</entry>
-    <entry key="yukon.web.modules.support.generateReports">Generate Reports</entry>
-
-    <entry key="yukon.web.modules.support.byCategory.categories">Categories</entry>
-    <entry key="yukon.web.modules.support.byCategory.filterValue">Filter Value</entry>
-    <entry key="yukon.web.modules.support.byCategory.dateRange">Date Range</entry>
-
-    <!-- Validation -->    
-    <entry key="yukon.web.modules.support.startDateMustBeBeforeStopDate">The start date must be before the end date.</entry>
-    
-    <!-- By Type -->
-    <entry key="yukon.web.modules.support.byType.event">Event</entry>
-    <entry key="yukon.web.modules.support.byType.dateAndTime">Date and Time</entry>
-    <entry key="yukon.web.modules.support.byType.cancel">Cancel</entry>
-    <entry key="yukon.web.modules.support.byType.eventCategories">Event Categories</entry>
-    <entry key="yukon.web.modules.support.byType.eventType">Event Type</entry>
-    <entry key="yukon.web.modules.support.byType.eventLogDateRange">Event Log Date Range</entry>
-
-    <entry key="yukon.web.modules.support.byType.noEventLogTypeSelected">No Event Log Type Selected</entry>
-    <entry key="yukon.web.modules.support.byType.eventLogTypeTreeSectorIcon">No Event Log Type Selected</entry>
-    <entry key="yukon.web.modules.support.byType.noEventLogTypeSelected">No Event Log Type Selected</entry>
-    
-    <!--  Filter popup -->
-    <entry key="yukon.web.modules.support.byType.eventLogFilters">Event Log Filters</entry>
-    <entry key="yukon.web.modules.support.byType.filter">Filter</entry>
-    <entry key="yukon.web.modules.support.byType.showAll">Show All</entry>
-    <entry key="yukon.web.modules.support.byType.noFilterOptionsAvailable">No filter options available.</entry>
-    
-    <entry key="yukon.web.modules.support.byType.eventLogTypeTreeSector.confirm">Are you sure you want add an extra opt out for {0}?</entry>
-    <entry key="yukon.web.modules.support.byType.eventLogTypeTreeSector.imageUrl">/WebConfig/yukon/Icons/folder.gif</entry>
-    <entry key="yukon.web.modules.support.byType.eventLogTypeTreeSector.hoverUrl">/WebConfig/yukon/Icons/folder_over.gif</entry>
-    <entry key="yukon.web.modules.support.byType.eventLogTypeTreeSector.hoverText">Allows you to select an event category type to review.</entry>
-
-    <!--  Result Exports -->
-    <entry key="yukon.web.modules.support.byType.csvExport.label">CSV</entry>
-    <entry key="yukon.web.modules.support.byType.csvExport.imageUrl">/WebConfig/yukon/Icons/excel.gif</entry>
-    <entry key="yukon.web.modules.support.byType.csvExport.hoverText">Export results to a CSV formatted file.</entry>
-    
-    <entry key="yukon.web.modules.support.byType.title">Title</entry>
-    <entry key="yukon.web.modules.support.byType.turnOnEventLog">Turn on event logging for this category.</entry>
-    <entry key="yukon.web.modules.support.byType.turnOffEventLog">Turn off event logging for this category.</entry>
-    <entry key="yukon.web.modules.support.byType.viewEventLog">View event log</entry>
-    <entry key="yukon.web.modules.support.byType.categoryOptions">Category Options</entry>
-    <entry key="yukon.web.modules.support.byType.enableCategory">Enable Category</entry>
-    <entry key="yukon.web.modules.support.byType.disableCategory">Disable Category</entry>
-    <entry key="yukon.web.modules.support.byType.viewCategory">View Category</entry>
-    <entry key="yukon.web.modules.support.byType.selectEventLog">Select Event Log</entry>
-    <entry key="yukon.web.modules.support.byType.noEventLogSelected">No event log was selected</entry>
 
     <!-- Event Log Arg Annotation i18n keys -->
     <entry key="yukon.common.events.accountNumber">Account Number</entry>
@@ -208,12 +153,11 @@
     
     <!-- AMR -->
     <entry key="yukon.common.events.amr.meterReading.readNowPushedForReadingsWidget">Read Now button pressed for deviceId={7} by {1}</entry>
-    <entry key="yukon.common.events.amr.meterReading.readNowPushedForReadingsWidget">Read Now button pressed for deviceId={7} by {1}</entry>
     
     <entry key="yukon.common.events.system.rfn.createdNewMeterAutomatically">New meter created from {2} for {1} with meter number of {3} based on archive request: {7}</entry>
-    <entry key="yukon.common.events.system.rfn.createdNewMeterAutomatically.1">???</entry>
-    <entry key="yukon.common.events.system.rfn.createdNewMeterAutomatically.2">???</entry>
-    <entry key="yukon.common.events.system.rfn.createdNewMeterAutomatically.3">???</entry>
+    <entry key="yukon.common.events.system.rfn.createdNewMeterAutomatically.1">RFN ID</entry>
+    <entry key="yukon.common.events.system.rfn.createdNewMeterAutomatically.2">Template</entry>
+    <entry key="yukon.common.events.system.rfn.createdNewMeterAutomatically.3">Meter Number</entry>
     
     <entry key="yukon.common.events.system.rfn.receivedDataForUnkownMeterTemplate">Unable to create meter because template does not exist: {1}</entry>
     <entry key="yukon.common.events.system.rfn.receivedDataForUnkownMeterTemplate.1">Template Name</entry>

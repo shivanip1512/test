@@ -7,7 +7,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<tags:nameValue2 nameKey="${eventLogFilter.key}">
+<tags:nameValue2 nameKey=".dateFilter" label="${eventLogFilter.key}">
 
     <tags:dateInputCalendar fieldName="eventLogFilters[${count-1}].filterValue.startDate" springInput="true" showErrorOnNextLine="false"/>
     <tags:dateInputCalendar fieldName="eventLogFilters[${count-1}].filterValue.stopDate" springInput="true" />

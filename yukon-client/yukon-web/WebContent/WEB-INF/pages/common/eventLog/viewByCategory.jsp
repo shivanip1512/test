@@ -13,18 +13,15 @@
     <%-- Filter Options --%>
     <tags:sectionContainer title="Filter Options">
         <form:form id="byCategoryForm" action="/spring/common/eventLog/viewByCategory" 
-                   commandName="eventLogCategoryBackingBean">
+                   commandName="eventLogCategoryBackingBean" method="get">
             <tags:hidden path="itemsPerPage"/>
  
             <tags:nameValueContainer2>
                 
                 <tags:nameValue2 nameKey=".categories">
-                    <select name="categories" multiple size="4">
-                        <c:forEach items="${eventCategoryList}" var="eventCategory">
-                            <c:set var="selected" value="${selectedCategories[eventCategory] ? 'selected' : ''}"/>
-                            <option ${selected}><spring:escapeBody htmlEscape="true">${eventCategory.fullName}</spring:escapeBody></option>
-                        </c:forEach>
-                    </select>
+                    <form:select path="categories" multiple="true" size="5">
+                        <form:options items="${eventCategoryList}"/>
+                    </form:select>
                 </tags:nameValue2>
                 
                 <tags:nameValue2 nameKey=".filterValue">
@@ -60,14 +57,14 @@
                     <cti:msg key="yukon.common.events.columnHeader.message"/>
                 </th>
             </tr>
-            <c:forEach items="${events}" var="event">
+            <c:forEach items="${searchResult.resultList}" var="event">
                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                    <td><spring:escapeBody htmlEscape="true">${event.eventType}</spring:escapeBody></td>
-                    <td><cti:formatDate type="BOTH" value="${event.dateTime}" /></td>
+                    <td nowrap="nowrap"><spring:escapeBody htmlEscape="true">${event.eventType}</spring:escapeBody></td>
+                    <td nowrap="nowrap"><cti:formatDate type="BOTH" value="${event.dateTime}" /></td>
                     <td><cti:msg key="${event.messageSourceResolvable}" /></td>
                 </tr>
             </c:forEach>
-            <c:if test="${empty events}">
+            <c:if test="${empty searchResult.resultList}">
             <tr>
                 <td colspan="3"><cti:msg key="yukon.common.events.noResults"/></td>
             </tr>

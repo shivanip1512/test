@@ -4,26 +4,41 @@ public class EventParameter {
     private String name;
     private Class<?> mappedType;
     private boolean named;
+    private String annotatedName;
+    private int argumentNumber;
     
-    private EventParameter(String name, Class<?> mappedType, boolean named) {
-        super();
-        this.name = name;
+    private EventParameter(String annotatedName, Class<?> mappedType, boolean named) {
+        this.annotatedName = annotatedName;
         this.mappedType = mappedType;
         this.named = named;
     }
 
-    public static EventParameter createNamed(String name, Class<?> mappedClass) {
-        return new EventParameter(name, mappedClass, true);
+    public EventParameter(int argumentNumber, Class<?> mappedClass, boolean named) {
+        this.argumentNumber = argumentNumber;
+        this.mappedType = mappedClass;
+        this.named = named;
+    }
+
+    public static EventParameter createNamed(String annotatedName, Class<?> mappedClass) {
+        return new EventParameter(annotatedName, mappedClass, true);
     }
     
-    public static EventParameter createDefault(int paramNumber, Class<?> mappedClass) {
-        return new EventParameter(Integer.toString(paramNumber), mappedClass, false);
+    public static EventParameter createDefault(int argumentNumber, Class<?> mappedClass) {
+        return new EventParameter(argumentNumber, mappedClass, false);
     }
 
     public String getName() {
-        return name;
+        return isNamed() ? annotatedName : String.valueOf(argumentNumber);
     }
-
+    
+    public int getArgumentNumber() {
+        return argumentNumber;
+    }
+    
+    public String getAnnotatedName() {
+        return annotatedName;
+    }
+    
     public Class<?> getMappedType() {
         return mappedType;
     }

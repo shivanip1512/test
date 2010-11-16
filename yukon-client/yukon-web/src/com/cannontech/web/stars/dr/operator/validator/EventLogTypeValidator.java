@@ -38,9 +38,11 @@ public class EventLogTypeValidator extends SimpleValidator<EventLogTypeBackingBe
         // Validate start and stop dates
         LocalDate startDate = eventLogTypeBackingBean.getStartDate();
         LocalDate stopDate = eventLogTypeBackingBean.getStopDate();
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "startDate", "yukon.web.modules.support.eventViewer.dateMustNotBeBlank");
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "stopDate", "yukon.web.modules.support.eventViewer.dateMustNotBeBlank");
         if (startDate != null && stopDate != null && startDate.isAfter(stopDate)) {
             YukonValidationUtils.rejectValues(errors,
-                                              "yukon.web.modules.support.startDateMustBeBeforeStopDate",
+                                              "yukon.web.modules.support.eventViewer.startDateMustBeBeforeStopDate",
                                               "startDate",
                                               "stopDate");
         }
@@ -63,10 +65,11 @@ public class EventLogTypeValidator extends SimpleValidator<EventLogTypeBackingBe
             LocalDate stopDate = dateFilterValue.getStopDate();
             if (startDate != null && stopDate != null && startDate.isAfter(stopDate)) {
                 YukonValidationUtils.rejectValues(errors,
-                                                  "yukon.web.modules.support.startDateMustBeBeforeStopDate",
+                                                  "yukon.web.modules.support.eventViewer.startDateMustBeBeforeStopDate",
                                                   "startDate",
                                                   "stopDate");
             }
+
 
         }
         

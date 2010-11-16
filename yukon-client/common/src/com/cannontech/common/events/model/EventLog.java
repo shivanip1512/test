@@ -35,6 +35,10 @@ public class EventLog {
         String categoryName = eventType.substring(0, eventType.lastIndexOf("."));
         return EventCategory.createCategory(categoryName);
     }
+    
+    public static String getFullName(EventCategory eventCategory, String methodName) {
+        return eventCategory.getFullName() + "." + methodName;
+    }
 
     public EventCategory getEventCategory() {
         return eventCategory;

@@ -108,6 +108,7 @@ public class EventLogServiceImpl implements EventLogService {
     }
     
     private List<ArgumentMapper<?>> argumentMappers;
+
     {
         // This area defines what arguments can be used in the interface methods.
         // The argumentMappers list is processed in order, by doing an instanceof
@@ -194,19 +195,13 @@ public class EventLogServiceImpl implements EventLogService {
                     choosenMappers.add(argumentMapper);
                     
                     // Get the parameter number from the list of argument columns 
-                    int paramNumber = 0;
-                    for (;paramNumber < argumentColumns.size(); paramNumber++) {
-                        if (argumentColumns.get(paramNumber).equals(argumentColumn)) {
-                            paramNumber++;
-                            break;
-                        }
-                    }
+                    int argumentNumber = argumentColumns.indexOf(argumentColumn) + 1;
                     
                     EventParameter eventParameter;
                     if (parameterName != null) {
                         eventParameter = EventParameter.createNamed(parameterName.toString(), argumentMapper.javaType);
                     } else {
-                        eventParameter = EventParameter.createDefault(paramNumber, argumentMapper.javaType);
+                        eventParameter = EventParameter.createDefault(argumentNumber, argumentMapper.javaType);
                     }
                     methodLogDetail.addColomnAndParameterMapping(argumentColumn, eventParameter);
                     

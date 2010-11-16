@@ -319,9 +319,8 @@ table.compactResultsTable td td {
 }
 
 table.compactResultsTable td {
-    padding: 2px 2px;
+    padding: 3px 8px 2px 4px;
     font-size: 11px !important;
-    padding-top:3px;
     vertical-align: top;
 }
 
@@ -1190,12 +1189,4 @@ div.mediumContainer {
     text-align: right;
     width: 95%;
     padding-bottom: 5px;
-}
-
-span.leftOfImageLabel {
-    padding-right: 5px;
-}
-
-span.rightOfImageLabel {
-    padding-left: 5px;
 }

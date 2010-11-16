@@ -1,23 +1,21 @@
 package com.cannontech.web.common.events;
 
-import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.web.group.NodeAttributeSettingCallback;
 import com.cannontech.web.util.ExtTreeNode;
 
 public class HighlightSelectedEventLogNodeAttributeSettingCallback 
-                   implements NodeAttributeSettingCallback<EventCategory> {
+                   implements NodeAttributeSettingCallback<String> {
 
-	private EventCategory selectedEventCategory;
 	private String extSelectedNodePath;
+    private String selectedEventType;
 	
-	public HighlightSelectedEventLogNodeAttributeSettingCallback(EventCategory selectedEventCategory) {
-		this.selectedEventCategory = selectedEventCategory;
+	public HighlightSelectedEventLogNodeAttributeSettingCallback(String eventType) {
+        this.selectedEventType = eventType;
 	}
 	
 	@Override
-	public void setAdditionalAttributes(ExtTreeNode node, EventCategory eventCategory) {
-        if (this.selectedEventCategory != null && 
-            this.selectedEventCategory.equals(eventCategory)) {
+	public void setAdditionalAttributes(ExtTreeNode node, String eventType) {
+        if (this.selectedEventType.equals(eventType)) {
             node.setAttribute("cls", "highlightNode");
             extSelectedNodePath = node.getNodePath();
         }

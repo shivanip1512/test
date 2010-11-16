@@ -7,7 +7,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<tags:nameValue2 nameKey="${eventLogFilter.key}">
+<tags:nameValue2 nameKey=".numberFilter" label="${eventLogFilter.key}">
     <tags:input path="eventLogFilters[${count-1}].filterValue.doubleFilterValue" />
 </tags:nameValue2>
 

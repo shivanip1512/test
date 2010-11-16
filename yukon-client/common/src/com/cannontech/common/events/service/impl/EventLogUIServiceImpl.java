@@ -109,7 +109,7 @@ public class EventLogUIServiceImpl implements EventLogUIService {
         
         // Process search results
         SearchResult<EventLog> searchResult =
-            filterService.filter(filter, eventLogDateComparator, startIndex, 
+            filterService.filter(filter, null, startIndex, 
                                  itemsPerPage, eventLogDao.getEventLogRowMapper());
 
         return searchResult;
@@ -146,16 +146,6 @@ public class EventLogUIServiceImpl implements EventLogUIService {
             sql.append("EventTime").gte(startDate).append(" AND ");
             sql.append("EventTime").lte(stopDate);
         }
-    };
-    
-    private Comparator<EventLog> eventLogDateComparator = 
-        new Comparator<EventLog>() {
-
-            @Override
-            public int compare(EventLog o1, EventLog o2) {
-                return o1.getDateTime().compareTo(o2.getDateTime());
-            }
-        
     };
     
     // Dependency Injection

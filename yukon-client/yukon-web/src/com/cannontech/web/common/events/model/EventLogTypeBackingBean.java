@@ -2,29 +2,29 @@ package com.cannontech.web.common.events.model;
 
 import java.util.List;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
 import com.cannontech.common.events.model.EventLogFilter;
-import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class EventLogTypeBackingBean {
     private String eventLogType;
     private LocalDate startDate;
     private LocalDate stopDate;
-    private int itemsPerPage = 10;
+    private int itemsPerPage = 50;
     private int page = 1;
 
     private List<EventLogFilter> eventLogFilters = Lists.newArrayList();
     
     public EventLogTypeBackingBean(){}
     public EventLogTypeBackingBean(String eventLogType,
-                                   YukonUserContext userContext,
+                                   DateTimeZone timeZone,
                                    List<EventLogFilter> eventLogFilters) {
         this.eventLogType = eventLogType;
         
-        this.startDate = new LocalDate(userContext.getJodaTimeZone()).minusDays(1);
-        this.stopDate = new LocalDate(userContext.getJodaTimeZone());
+        this.startDate = new LocalDate(timeZone).minusDays(1);
+        this.stopDate = new LocalDate(timeZone);
 
         this.eventLogFilters = eventLogFilters;
     }
@@ -74,4 +74,5 @@ public class EventLogTypeBackingBean {
     public int getStartIndex() {
         return (page - 1) * itemsPerPage;
     }
+    
 }

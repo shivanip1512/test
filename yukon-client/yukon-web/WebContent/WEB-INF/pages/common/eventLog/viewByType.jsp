@@ -9,7 +9,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i" %>
 
-<cti:standardPage title="Event Log" module="support" page="byType">
+<cti:standardPage title="Event Log" module="support" page="eventViewer.byType">
     <cti:standardMenu menuSelection="events|byType" />
     <c:set var="baseUrl" value="/spring/common/eventLog/viewByType"/>
     
@@ -18,8 +18,8 @@
     <tags:simplePopup id="filterPopup" title="${eventLogFiltersTitle}">
         <c:choose>
             <c:when test="${not empty eventLogTypeBackingBean}">
-                <form:form id="filterForm" action="" commandName="eventLogTypeBackingBean">
-        
+                <form:form id="filterForm" action="" commandName="eventLogTypeBackingBean" method="get">
+                <form:hidden path="eventLogType"/>
                     <tags:nameValueContainer2>
         
                         <tags:nameValue2 nameKey=".eventLogDateRange">
@@ -84,9 +84,10 @@
                 <cti:msg2 var="noEventLogSelected" key=".noEventLogSelected"/>
                                                             
                 <ext:popupTree id="eventCategoryEditorTree"
+                               treeCss="/JavaScript/extjs_cannon/resources/css/eventType-tree.css"
                                treeAttributes="{}"
                                triggerElement="showPopupButton"
-                               dataJson="${allEventCategoriesDataJson}"
+                               dataJson="${allEventCategoriesDataJson}" highlightNodePath="${extSelectedNodePath}"
                                title="${selectEventLog}"
                                width="432"
                                height="600" />
@@ -99,10 +100,7 @@
     <div style="text-align: right;">
         <%-- GENERATE REPORTS --%>
 
-        <cti:url var="csvExportUrl" value="/spring/common/eventLog/viewByType">
-            <cti:param name="export" value="CSV"/>
-        </cti:url>
-        <cti:labeledImg key="csvExport" href="${csvExportUrl}"/>
+        <cti:labeledImg key="csvExport" href="${csvLink}"/>
 
     </div>
 
@@ -110,7 +108,7 @@
     <tags:pagedBox filterDialog="filterPopup" title="${eventsTitle}" searchResult="${searchResult}" baseUrl="${baseUrl}" pageByHundereds="true">
     
         <c:choose>
-            <c:when test="${empty dataGrid}">
+            <c:when test="${searchResult.count == 0}">
                 <table>
                     <tr>
                         <td colspan="2"><cti:msg key="yukon.common.events.noResults"/></td>
@@ -120,17 +118,19 @@
             <c:otherwise>
                 <table class="compactResultsTable rowHighlighting" style="width: 100%;">
                     <tr>
-                        <c:forEach items="${columnNames}" var="columnName">
-                            <th>
-                                <spring:escapeBody htmlEscape="true">${columnName}</spring:escapeBody>
+                      <th><i:inline key=".dateAndTime"/></th>
+                        <c:forEach items="${columnNames}" var="column">
+                            <th title="${column.argumentColumn.columnName}">
+                                <i:inline key="${column.label}"/>
                             </th>
                         </c:forEach>
                     </tr>
-                    <c:forEach items="${dataGrid}" var="dataRow">
+                    <c:forEach items="${searchResult.resultList}" var="row">
                         <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                            <c:forEach items="${dataRow}" var="dataEntry">
+                        <td title="<cti:msg2 htmlEscape="true" key="${row.eventLog.messageSourceResolvable}"/>"><cti:formatDate type="FULL" value="${row.eventLog.dateTime}"/></td>
+                            <c:forEach items="${row.parameters}" var="parameter">
                                 <td>
-                                    <spring:escapeBody htmlEscape="true">${dataEntry}</spring:escapeBody>
+                                    <spring:escapeBody htmlEscape="true">${parameter}</spring:escapeBody>
                                 </td>
                             </c:forEach>
                         </tr>

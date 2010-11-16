@@ -20,6 +20,7 @@ import com.cannontech.common.events.model.ArgumentColumn;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -89,6 +90,11 @@ public class EventLogDaoImpl implements EventLogDao {
         @Override
         public boolean needsWhere() {
             return true;
+        }
+        
+        @Override
+        public SqlFragmentSource getOrderBy() {
+            return new SimpleSqlFragment("ORDER BY EventTime DESC");
         }
         
         public EventLog mapRow(ResultSet rs, int rowNum) throws java.sql.SQLException {
@@ -227,7 +233,7 @@ public class EventLogDaoImpl implements EventLogDao {
         /* Get paged data. */
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(findAllSqlStatementBuilder(startDate, stopDate, slimEventCategories));
-        sql.append("ORDER BY EL.EventTime, EL.EventLogId");
+        sql.append("ORDER BY EL.EventTime DESC, EL.EventLogId DESC");
         
         PagingResultSetExtractor<EventLog> rse = new PagingResultSetExtractor<EventLog>(start, pageCount, eventLogRowMapper);
         yukonJdbcTemplate.query(sql, rse);
@@ -302,7 +308,7 @@ public class EventLogDaoImpl implements EventLogDao {
         /* Get paged data. */
         SqlStatementBuilder sql = findAllSqlStatementBuilder(startDate, stopDate, slimEventCategories);
         sql.append("AND").appendFragment(getEventLogColumnSqlFragment(filterString));
-        sql.append("ORDER BY EL.EventTime, EL.EventLogId");
+        sql.append("ORDER BY EL.EventTime DESC, EL.EventLogId DESC");
         
         PagingResultSetExtractor<EventLog> rse = 
             new PagingResultSetExtractor<EventLog>(start, pageCount, eventLogRowMapper);
