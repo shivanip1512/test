@@ -62,6 +62,7 @@
 			                picker[rowNumber].destinationFieldId = 'pointId[' + rowNumber + ']';
 							var filterType = document.getElementById('filterType[' + rowNumber + ']').value;
 			                picker[rowNumber].extraArgs = filterType;
+			                picker[rowNumber].init();
 
 			                function createPickerShower(rowNumberIn) {
 				                return function() {
