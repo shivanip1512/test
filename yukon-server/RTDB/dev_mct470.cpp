@@ -4297,14 +4297,32 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< C
                         dout << CtiTime() << " **** Checkpoint - invalid time (" << std::hex << peak_time << ") in IED peak decode for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
-
-                pointOffset = offset + rate * 2;
-                insertPointDataReport(AnalogPointType, pointOffset,
-                                      ReturnMsg, pi, pointname, peak_time);
-                if( parse.getFlags() & CMD_FLAG_FROZEN && pointOffset == PointOffset_TOU_KWBase ) //Currently we only support frozen rate A
+                if( (peak_time.seconds() >= (DawnOfTime_UtcSeconds - 86400) && peak_time.seconds() <= (DawnOfTime_UtcSeconds + 86400) ) ||
+                     (peak_time.seconds() - 86400) <= 0 )
                 {
-                    insertPointDataReport(AnalogPointType, PointOffset_TOU_KWBase + PointOffset_FrozenPointOffset,
-                                      ReturnMsg, pi, "Frozen " + pointname, peak_time);
+                    // Don't insert a point, just send the message.
+                    pointOffset = offset + rate * 2;
+                    CtiPointSPtr p;
+                    resultString += "\n" + getName() + " / ";
+                    resultString += (p = getDevicePointOffsetTypeEqual(pointOffset, AnalogPointType)) ? p->getName() : pointname;
+                    resultString += ": " + CtiNumStr(pi.value) + " [No peak occurred]\n";
+                    if( parse.getFlags() & CMD_FLAG_FROZEN && pointOffset == PointOffset_TOU_KWBase ) //Currently we only support frozen rate A
+                    {
+                        resultString += "\n" + getName() + " / ";
+                        resultString += (p = getDevicePointOffsetTypeEqual(PointOffset_TOU_KWBase + PointOffset_FrozenPointOffset, AnalogPointType)) ? p->getName() : pointname;
+                        resultString += ": " + CtiNumStr(pi.value) + " [No peak occurred]\n";
+                    }
+                }
+                else
+                {
+                    pointOffset = offset + rate * 2;
+                    insertPointDataReport(AnalogPointType, pointOffset,
+                                          ReturnMsg, pi, pointname, peak_time);
+                    if( parse.getFlags() & CMD_FLAG_FROZEN && pointOffset == PointOffset_TOU_KWBase ) //Currently we only support frozen rate A
+                    {
+                        insertPointDataReport(AnalogPointType, PointOffset_TOU_KWBase + PointOffset_FrozenPointOffset,
+                                          ReturnMsg, pi, "Frozen " + pointname, peak_time);
+                    }
                 }
             }
         }
