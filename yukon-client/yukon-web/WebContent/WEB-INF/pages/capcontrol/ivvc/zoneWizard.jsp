@@ -203,8 +203,8 @@
 						type="availableCapBankPicker"
 						multiSelectMode="true"
 						endAction="addBankHandler"
-						linkType="none" extraArgs="${zoneDto.substationBusId}"/>
-					<cti:button key="add" onclick="javascript:bankPicker.show();"/>
+						linkType="button" nameKey="add"
+                        extraArgs="${zoneDto.substationBusId}"/>
 				</div>
 			</tags:boxContainer2>
 		</cti:dataGridCell>
@@ -259,8 +259,7 @@
 						type="voltPointPicker"
 						multiSelectMode="true"
 						endAction="addPointHandler"
-						linkType="none"/>
-					<cti:button key="add" onclick="javascript:pointPicker.show();"/>
+						linkType="button" nameKey="add"/>
 				</div>
 			</tags:boxContainer2>
 		</cti:dataGridCell>

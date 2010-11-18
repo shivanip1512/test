@@ -1190,3 +1190,11 @@ div.mediumContainer {
     width: 95%;
     padding-bottom: 5px;
 }
+
+span.leftOfImageLabel {
+    padding-right: 5px;
+}
+
+span.rightOfImageLabel {
+    padding-left: 5px;
+}

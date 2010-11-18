@@ -123,7 +123,9 @@
 </c:if>
 
 <script type="text/javascript">
-Event.observe(window, 'load', function() {
+if (window.loadComplete) {
     ${id}.init();
-});
+} else {
+    Event.observe(window, 'load', ${id}.init.bind(${id}));
+}
 </script>
