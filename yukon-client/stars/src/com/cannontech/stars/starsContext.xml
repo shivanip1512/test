@@ -153,7 +153,9 @@
     <bean id="starsTwoWayLcrYukonDeviceAssignmentService" class="com.cannontech.stars.core.service.impl.StarsTwoWayLcrYukonDeviceAssignmentServiceImpl"/>
 
     <bean id="staticLoadGroupMappingDao" class="com.cannontech.stars.dr.hardware.dao.impl.StaticLoadGroupMappingDaoImpl"/>
-    
+
+    <bean id="inventoryPagingScheduleDao" class="com.cannontech.stars.dr.hardware.dao.impl.InventoryPagingScheduleDaoImpl"/>
+
     <bean id="starsWorkOrderBaseDao" class="com.cannontech.stars.core.dao.impl.StarsWorkOrderBaseDaoImpl"/>
 
     <bean id="accountSiteDao" class="com.cannontech.stars.dr.account.dao.impl.AccountSiteDaoImpl"/>
