@@ -64,7 +64,7 @@
     		</c:otherwise>
     	</c:choose>
     
-        <cti:crumbLink url="${subStationAddress}" title="${areaName}" />
+        <cti:crumbLink url="${substationAddress}" title="${areaName}" />
         <cti:crumbLink url="${feederAddress}" title="${subStationName}" />
 		
 		<cti:crumbLink title="${subBusName}" />
