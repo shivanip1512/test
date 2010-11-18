@@ -41,43 +41,45 @@ function dropDownChanged(questionKey) {
     <c:set var="pathPrefix"
         value="surveyResults[${currentSurveyIndex}].answers[${index}]"/>
     <input type="hidden" name="${pathPrefix}.questionId"
-        value="${question.surveyQuestionId}"/>
-    <c:set var="questionKey" value="${baseKey}.${question.questionKey}"/>
+        value="${question.question.surveyQuestionId}"/>
+    <c:set var="questionKey" value="${baseKey}.${question.question.questionKey}"/>
     <div class="surveyQuestion">
-        <cti:msg2 key="${questionKey}"/>
+       	<spring:escapeBody htmlEscape="true">${question.questionText}</spring:escapeBody>
     </div>
     <div class="surveyAnswer">
-        <c:if test="${question.questionType == 'DROP_DOWN'}">
-            <cti:msg2 var="pleaseChoose" blankIfMissing="true"
-                key="${questionKey}.pleaseChoose"/>
+        <c:if test="${question.question.questionType == 'DROP_DOWN'}">
+        	<c:set var='pleaseChoose' value=""/>
+            <c:if test="${question.pleaseChooseValid}">
+            	<c:set var='pleaseChoose'> <spring:escapeBody htmlEscape="true">${question.pleaseChooseText}</spring:escapeBody> </c:set> 
+           	</c:if>
             <tags:bind path="${pathPrefix}.dropDownAnswer">
             <form:select multiple="single"
                 path="${pathPrefix}.dropDownAnswer"
-                id="selectAnswer_${question.questionKey}"
-                onchange="dropDownChanged('${question.questionKey}')">
+                id="selectAnswer_${question.question.questionKey}"
+                onchange="dropDownChanged('${question.question.questionKey}')">
                 <c:if test="${!empty pleaseChoose}">
                     <form:option value="pleaseChoose">${pleaseChoose}</form:option>
                 </c:if>
-                <c:forEach var="answer" items="${question.answers}">
-                    <form:option value="${answer.surveyQuestionAnswerId}">
-                        <cti:msg2 key="${questionKey}.${answer.answerKey}"/>
+                <c:forEach var="answer" items="${question.resolvedAnswers}">           
+                    <form:option value="${answer.answer.surveyQuestionAnswerId}">
+				    	<span><spring:escapeBody htmlEscape="true">${answer.answerText}</spring:escapeBody></span>
                     </form:option>
                 </c:forEach>
-                <c:if test="${question.textAnswerAllowed}">
+                <c:if test="${question.question.textAnswerAllowed}">
                     <form:option value="other">
-                        <cti:msg2 key="${questionKey}.other"/>
+				    	<spring:escapeBody htmlEscape="true">${question.otherText}</spring:escapeBody>
                     </form:option>
                 </c:if>
             </form:select>
             </tags:bind>
         </c:if>
-        <div id="textAnswerArea_${question.questionKey}">
+        <div id="textAnswerArea_${question.question.questionKey}">
             <tags:input size="80" maxlength="255"
                 path="${pathPrefix}.textAnswer"/>
         </div>
     </div>
     <script type="text/javascript">
-        dropDownChanged('${question.questionKey}');
+        dropDownChanged('${question.question.questionKey}');
     </script>
 </c:forEach>
 

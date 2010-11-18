@@ -27,7 +27,9 @@ import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Question;
+import com.cannontech.common.survey.model.ResolvedQuestion;
 import com.cannontech.common.survey.model.Survey;
+import com.cannontech.common.survey.service.SurveyService;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -73,6 +75,7 @@ public class OptOutController extends AbstractConsumerController {
     private OptOutStatusService optOutStatusService;
     private OptOutSurveyService optOutSurveyService;
     private SurveyDao surveyDao;
+    private SurveyService surveyService;
     private OptOutControllerHelper helper;
 
     private static class StartDateException extends IllegalArgumentException {
@@ -298,9 +301,12 @@ public class OptOutController extends AbstractConsumerController {
         // failed validation.
         if (surveyId != 0) {
             Survey survey = surveyDao.getSurveyById(surveyId);
-            List<Question> questions = surveyDao.getQuestionsBySurveyId(surveyId);
+            List<ResolvedQuestion> questions = surveyService.getResolvedQuestionsBySurveyId(surveyId, userContext);
             model.addAttribute("survey", survey);
             model.addAttribute("questions", questions);
+            
+            List<MessageSourceResolvable> messages = surveyService.errorsForResolvedQuestions(questions);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             return "consumer/optout/optOutSurvey.jsp";
         }
 
@@ -517,5 +523,10 @@ public class OptOutController extends AbstractConsumerController {
     @Autowired
     public void setHelper(OptOutControllerHelper helper) {
         this.helper = helper;
+    }
+
+    @Autowired
+    public void setSurveyService(SurveyService surveyService) {
+        this.surveyService = surveyService;
     }
 }

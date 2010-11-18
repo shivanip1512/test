@@ -27,6 +27,7 @@ import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Answer;
 import com.cannontech.common.survey.model.Question;
 import com.cannontech.common.survey.model.QuestionType;
+import com.cannontech.common.survey.model.ResolvedQuestion;
 import com.cannontech.common.survey.model.Survey;
 import com.cannontech.common.survey.service.SurveyService;
 import com.cannontech.common.validator.SimpleValidator;
@@ -205,10 +206,22 @@ public class SurveyController {
 
     @RequestMapping
     public String edit(ModelMap model, int surveyId,
-            YukonUserContext userContext) {
+            YukonUserContext userContext, FlashScope flashScope) {
         Survey survey = verifyEditable(surveyId, userContext);
         model.addAttribute("survey", survey);
-        List<Question> questions = surveyDao.getQuestionsBySurveyId(surveyId);
+        
+        List<ResolvedQuestion> resolvedQuestions = surveyService.getResolvedQuestionsBySurveyId(surveyId, userContext);
+        List<MessageSourceResolvable> messages = surveyService.errorsForResolvedQuestions(resolvedQuestions);
+        flashScope.setMessage(messages, FlashScopeMessageType.WARNING);
+                
+        List<Question> questions = Lists.transform(resolvedQuestions, new Function<ResolvedQuestion, Question>() {
+
+            @Override
+            public Question apply(ResolvedQuestion from) {
+                return from.getQuestion();
+            }
+            
+        });
         model.addAttribute("questions", questions);
         model.addAttribute("hasBeenTaken", surveyDao.hasBeenTaken(surveyId));
         return "survey/edit.jsp";
