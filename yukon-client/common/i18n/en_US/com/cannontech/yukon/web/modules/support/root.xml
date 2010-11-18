@@ -24,6 +24,7 @@
     
     
     <entry key="yukon.web.modules.support.pointInjection.myPicker.label">Foo</entry>
+    <entry key="yukon.web.modules.support.pointInjection.addRow.label">Add Row</entry>
     
     
     <entry key="yukon.web.modules.support.pickerTest.pageName">Picker Test</entry>
