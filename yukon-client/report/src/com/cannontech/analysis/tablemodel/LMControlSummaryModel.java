@@ -89,7 +89,8 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
     }
 
     public void doLoadData() {
-        // get all of the customers
+        // Validate that neither getStartDate and getStopDate are null and then create
+        // a closed openInterval with those dates.
         Validate.notNull(getStartDate(), "Start date must not be null");
         Validate.notNull(getStopDate(), "End date must not be null");
 
@@ -97,6 +98,8 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
         Instant stopDateTime = new Instant(getStopDate());
         OpenInterval reportInterval = OpenInterval.createClosed(startDateTime, stopDateTime);
         
+
+        // get all of the customers
         List<Integer> groupIdsFromSQL = programDao.getDistinctGroupIdsByYukonProgramIds(programIds);
         List<CustomerAccountWithNames> accountsFromSQL = customerAccountDao.getAllAccountsWithNamesByGroupIds(energyCompanyId, 
                                                                                                               groupIdsFromSQL,

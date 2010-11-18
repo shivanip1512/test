@@ -88,6 +88,8 @@ public class LMHardwareControlGroup implements Cloneable{
     }
     
     public Duration getEnrollmentDuration() {
+        // Creating interval to represent any time prior to now and intersecting it
+        // with the enrollment to find the current enrollment interval
         OpenInterval enrollmentInterval = getEnrollmentInterval();
         OpenInterval openStartToNow = OpenInterval.createOpenStart(new Instant());
         OpenInterval enrollmentIntervalUntilNow = enrollmentInterval.overlap(openStartToNow);
