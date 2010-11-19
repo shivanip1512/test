@@ -130,9 +130,16 @@
 							<spring:escapeBody htmlEscape="true">${zoneName}</spring:escapeBody>
 						</td>
 						<td>
-							<a title="Edit" href="javascript:showZoneEditor('${zoneEditorUrl}');" class="tierIconLink">
-                            	<img alt="Edit" class="tierImg" src="${editInfoImage}">
-                            </a>
+							<c:choose>
+								<c:when test="${hasEditingRole}">
+									<a href="javascript:showZoneWizard('${zoneEditorUrl}');">
+										<cti:img key="edit"/>
+									</a>
+								</c:when>
+								<c:otherwise>
+									<cti:img key="disabledEdit"/>
+								</c:otherwise>
+							</c:choose>
                         </td>
 					</tr>
 				
@@ -348,27 +355,47 @@
 								<td style="width:13%"><spring:escapeBody htmlEscape="true">${pointDelta.affectedDeviceName}</spring:escapeBody></td>
 								<td style="width:15%"><spring:escapeBody htmlEscape="true">${pointDelta.affectedPointName}</spring:escapeBody></td>
 								<td style="width:10%"><spring:escapeBody htmlEscape="true">${pointDelta.preOpValue}</spring:escapeBody></td>
-								<td style="width:8%"><input type="checkbox" id="staticDelta_${pointDelta.bankId}_${pointDelta.pointId}"
-									onclick="saveDelta('${pointDelta.bankId}_${pointDelta.pointId}')" 
-									<c:choose>
-					                	<c:when test="${pointDelta.staticDelta}">
-			                                checked="checked"
-			                            </c:when>
-			                        </c:choose> 
-                        		></td>
-								<td class="editable" style="width:100%">
-									<div id="viewDelta_${pointDelta.bankId}_${pointDelta.pointId}" title="Click to edit."
-									     onclick="editDelta('${pointDelta.bankId}_${pointDelta.pointId}')">
-										<spring:escapeBody htmlEscape="true">${pointDelta.delta}</spring:escapeBody>
-									</div>
-									<div id="editDelta_${pointDelta.bankId}_${pointDelta.pointId}" style="display:none">
-										<input type="text" style="margin-right: 5px;width:30px;" name="editDeltaInput"
-											   onKeyPress="return saveOrCancel(event, '${pointDelta.bankId}_${pointDelta.pointId}')"  
-			                                   value="<spring:escapeBody htmlEscape="true">${pointDelta.delta}</spring:escapeBody>">
-			                            <a href="javascript:saveDelta('${pointDelta.bankId}_${pointDelta.pointId}')">Save</a>
-			                            <a href="javascript:cancelEdit('${pointDelta.bankId}_${pointDelta.pointId}')">Cancel</a>
-									</div>
-								</td>
+                        		<c:choose>
+	                        		<c:when test="${hasEditingRole}">
+										<td style="width:8%"><input type="checkbox" id="staticDelta_${pointDelta.bankId}_${pointDelta.pointId}"
+											onclick="saveDelta('${pointDelta.bankId}_${pointDelta.pointId}')" 
+											<c:choose>
+							                	<c:when test="${pointDelta.staticDelta}">
+					                                checked="checked"
+					                            </c:when>
+					                        </c:choose> 
+		                        		></td>
+										<td class="editable" style="width:100%">
+											<div id="viewDelta_${pointDelta.bankId}_${pointDelta.pointId}" title="Click to edit."
+											     onclick="editDelta('${pointDelta.bankId}_${pointDelta.pointId}')">
+												<spring:escapeBody htmlEscape="true">${pointDelta.delta}</spring:escapeBody>
+											</div>
+											<div id="editDelta_${pointDelta.bankId}_${pointDelta.pointId}" style="display:none">
+												<input type="text" style="margin-right: 5px;width:30px;" name="editDeltaInput"
+													   onKeyPress="return saveOrCancel(event, '${pointDelta.bankId}_${pointDelta.pointId}')"  
+					                                   value="<spring:escapeBody htmlEscape="true">${pointDelta.delta}</spring:escapeBody>">
+					                            <a href="javascript:saveDelta('${pointDelta.bankId}_${pointDelta.pointId}')">Save</a>
+					                            <a href="javascript:cancelEdit('${pointDelta.bankId}_${pointDelta.pointId}')">Cancel</a>
+											</div>
+										</td>
+									</c:when>
+									<c:otherwise>
+										<td style="width:8%">
+											<input type="checkbox" id="staticDelta_${pointDelta.bankId}_${pointDelta.pointId}"
+												   disabled="disabled"
+											<c:choose>
+							                	<c:when test="${pointDelta.staticDelta}">
+					                                checked="checked"
+					                            </c:when>
+					                        </c:choose> 
+		                        		></td>
+										<td style="width:100%">
+											<div id="viewDelta_${pointDelta.bankId}_${pointDelta.pointId}">
+												<spring:escapeBody htmlEscape="true">${pointDelta.delta}</spring:escapeBody>
+											</div>
+										</td>
+									</c:otherwise>
+								</c:choose>
 							</tr>
 						</c:forEach>
 					</table>

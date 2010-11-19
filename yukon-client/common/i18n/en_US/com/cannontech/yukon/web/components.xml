@@ -63,6 +63,11 @@
     <entry key="yukon.web.components.image.filter.hoverUrl">/WebConfig/yukon/Icons/filter_over.gif</entry>
     <entry key="yukon.web.components.image.filter.hoverText">Filter</entry>
     <entry key="yukon.web.components.image.filter.label">Filter</entry>
+	<entry key="yukon.web.components.image.disabledEdit.imageUrl">/WebConfig/yukon/Icons/pencil_disabled_gray.gif</entry>
+	<entry key="yukon.web.components.image.disabledEdit.hoverUrl">/WebConfig/yukon/Icons/pencil_disabled_gray.gif</entry>
+	<entry key="yukon.web.components.image.disabledRemove.imageUrl">/WebConfig/yukon/Icons/delete_disabled_gray.gif</entry>
+	<entry key="yukon.web.components.image.disabledRemove.hoverUrl">/WebConfig/yukon/Icons/delete_disabled_gray.gif</entry>
+
 
     <entry key="yukon.web.components.image.meterDetail.imageUrl">/WebConfig/yukon/Icons/meter.gif</entry>
     <entry key="yukon.web.components.image.meterDetail.hoverUrl">/WebConfig/yukon/Icons/meter_over.gif</entry>

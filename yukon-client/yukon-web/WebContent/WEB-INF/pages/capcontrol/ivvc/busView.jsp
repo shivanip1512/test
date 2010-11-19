@@ -135,17 +135,27 @@
 						<capTags:regulatorModeIndicator paoId="${zone.regulatorId}" type="VOLTAGE_REGULATOR"/>
 						<a href="${zoneDetailUrl}">${zone.name}</a>
 						<div>
-							<a href="javascript:showZoneWizard('${zoneEditorUrl}');"><cti:img key="edit"/></a> 
-							<a href="${zoneDeleteUrl}"><cti:img key="delete"/></a>
+						<c:choose>
+							<c:when  test="${hasEditingRole}">
+								<a href="javascript:showZoneWizard('${zoneEditorUrl}');"><cti:img key="edit"/></a> 
+								<a href="${zoneDeleteUrl}"><cti:img key="remove"/></a>
+							</c:when>
+							<c:otherwise>
+								<cti:img key="disabledEdit"/> 
+								<cti:img key="disabledRemove"/>
+							</c:otherwise>
+						</c:choose>
 							<div class="nonwrapping">
 								<capTags:regulatorTapIndicator paoId="${zone.regulatorId}" type="VOLTAGE_REGULATOR"/>
 							</div>
 						</div>
 					</div>
 				</cti:navigableHierarchy>
-				<div class="actionArea">
-					<cti:button key="add" onclick="javascript:showZoneWizard('${zoneCreatorUrl}');"/>
-				</div>
+				<c:if test="${hasEditingRole}">
+					<div class="actionArea">
+						<cti:button key="add" onclick="javascript:showZoneWizard('${zoneCreatorUrl}');"/>
+					</div>
+				</c:if>
 				<c:if test="${unassignedBanksExist}">
 					<div class="strongWarningMessage"><i:inline key=".zoneList.unassignedBanks"/></div>
 				</c:if>
