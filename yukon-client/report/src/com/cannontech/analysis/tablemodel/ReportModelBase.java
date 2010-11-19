@@ -16,7 +16,6 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.jfree.report.modules.output.csv.CSVQuoter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -59,9 +58,9 @@ import com.google.common.collect.Lists;
 public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTableModel implements Reportable
 {
 	public enum ReportFilter{ NONE(""),
-			METER("Meter Number"),
-			DEVICE("Device"),
-			GROUPS("Groups"),
+			METER("Meter Number", ReportFilterType.METERNUMBER),
+			DEVICE("Device", ReportFilterType.DEVICENAME),
+			GROUPS("Groups", ReportFilterType.DEVICEGROUP),
 			ROUTE("Route"),
 			RECEIVER("Receiver"),
 			LMGROUP("LM Group"),
@@ -79,22 +78,27 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
             PROGRAM("Program"),
             PROGRAM_SINGLE_SELECT("Program", false),
             STRATEGY("Strategy"),
-            ACCOUNT_NUMBER("Account Number"), 
-            SERIAL_NUMBER("Serial Number"),
-            USER("User"),
+            ACCOUNT_NUMBER("Account Number", ReportFilterType.ACCOUNTNUMBER), 
+            SERIAL_NUMBER("Serial Number", ReportFilterType.SERIALNUMBER),
+            USER("User", ReportFilterType.USER),
             ;
 
 		private String filterTitle;
-		private boolean multiSelect;
+		private boolean multiSelect = true;
+		private ReportFilterType reportFilterType = ReportFilterType.PAOBJECTID;
 		
 		private ReportFilter(String filterTitle) {
 		    this.filterTitle = filterTitle;
-		    this.multiSelect = true;
 		}
 		
 		private ReportFilter(String filterTitle, boolean multiSelect){
 		    this.filterTitle = filterTitle;
 		    this.multiSelect = multiSelect;
+		}
+		
+		private ReportFilter(String filterTitle, ReportFilterType reportFilterType){
+		    this.filterTitle = filterTitle;
+		    this.reportFilterType = reportFilterType;
 		}
 		
 		public String getFilterTitle() {
@@ -104,7 +108,23 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 		public boolean isMultiSelect() {
 		    return multiSelect;
 		}
+		
+		public ReportFilterType getReportFilterType() {
+			return reportFilterType;
+		}
 	}
+	
+	private enum ReportFilterType {
+		METERNUMBER,
+		DEVICENAME,
+		DEVICEGROUP,
+		PAOBJECTID,
+		ACCOUNTNUMBER,
+		USER,
+		SERIALNUMBER
+		;
+	}
+	
 	
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	private String fieldSeparator = ",";
@@ -407,40 +427,52 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 	{
 		if( req != null)
 		{
-			String param = req.getParameter(ATT_EC_ID);
-			if( param != null)
-				setEnergyCompanyID(Integer.valueOf(param));
-			else
+			// Need to clear some objects.  These may be (re)loaded by filter type below.
+			setBillingGroups(null);
+			setPaoIDs(null);
+
+			try {
+				Integer energyCompanyId = ServletRequestUtils.getIntParameter(req, ATT_EC_ID);
+				setEnergyCompanyID(energyCompanyId);
+
+			} catch (ServletRequestBindingException e) {
 				setEnergyCompanyID(null);
+				CTILogger.error(e);				
+			}
 				
-			param = req.getParameter(ATT_START_DATE);
-			if( param != null)
-				setStartDate(ServletUtil.parseDateStringLiberally(param, getTimeZone()));				
-			else
+			String startDate = ServletRequestUtils.getStringParameter(req, ATT_START_DATE, null);
+			if (startDate != null) {
+				setStartDate(ServletUtil.parseDateStringLiberally(startDate, getTimeZone()));
+			} else {
 				setStartDate(null);
+			}
 			
-			param = req.getParameter(ATT_STOP_DATE);
-			if( param != null)
-				setStopDate(ServletUtil.parseDateStringLiberally(param, getTimeZone()));
-			else
+			String stopDate = ServletRequestUtils.getStringParameter(req, ATT_STOP_DATE, null);
+			if( stopDate != null) {
+				setStopDate(ServletUtil.parseDateStringLiberally(stopDate, getTimeZone()));
+			} else {
 				setStopDate(null);
-				
+			}
+
+			//This parameter is not implemented in this getHTMLOptionsTable since most of the implementing classes
+			//	have their own rendering of this parameter.  But setting it here takes care of all the other classes not having to do it.
+			Integer sortOrder = ServletRequestUtils.getIntParameter(req, ATT_SORT_ORDER, ASCENDING);
+			setSortOrder(sortOrder);
+
 	        String filterModelType = ServletRequestUtils.getStringParameter(req, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE.name());
 	        ReportFilter filter = Enum.valueOf(ReportFilter.class, filterModelType);
 			setFilterModelType(filter);
-			
+			ReportFilterType reportFilterType = getFilterModelType().getReportFilterType();
+
 			//Load billingGroup model values
-			if ( getFilterModelType().equals(ReportFilter.GROUPS) )
-			{
+			if ( reportFilterType.equals(ReportFilterType.DEVICEGROUP) ) {	// Device Group values
+				
 				String[] paramArray = req.getParameterValues(ATT_FILTER_MODEL_VALUES);
-				if( paramArray != null)
+				if( paramArray != null) {
 					setBillingGroups(paramArray);
-				else
-					setBillingGroups(null);
+				}
 					
-				//Unload paoIDs
-				setPaoIDs(null);
-			} else if( getFilterModelType().equals(ReportFilter.METER)) {
+			} else if( reportFilterType.equals(ReportFilterType.METERNUMBER)) {	// Meter Number values
              
                 String filterValueList = req.getParameter(ATT_FILTER_METER_VALUES).trim();
                 StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
@@ -453,13 +485,11 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
                         idsArray[i++] = lPao.getYukonID();
                     }
                 }
-                if( idsArray.length > 0 )
+                if( idsArray.length > 0 ) {
                     setPaoIDs(idsArray);
-                else
-                    setPaoIDs(null);
-                //Unload billingGroups
-                setBillingGroups(null);
-            } else if( getFilterModelType().equals(ReportFilter.DEVICE)) {
+                }
+
+            } else if( reportFilterType.equals(ReportFilterType.DEVICENAME)) {	// Device Name values
              
                 String filterValueList = req.getParameter(ATT_FILTER_DEVICE_VALUES).trim();
                 StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
@@ -472,75 +502,18 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
                         idsArray[i++] = lPao.getYukonID();
                     }
                 }
-                if( idsArray.length > 0 )
+                if( idsArray.length > 0 ) {
                     setPaoIDs(idsArray);
-                else
-                    setPaoIDs(null);
-
-                //Unload billingGroups
-                setBillingGroups(null);   
+                }
                 
-            // SINGLE PAO ID SELECT BY PICKER
-            } else if(getFilterModelType().equals(ReportFilter.PROGRAM_SINGLE_SELECT)) {
-                
-            	Integer paoId = null;
-            	try {
-            		paoId = ServletRequestUtils.getIntParameter(req, ReportModelBase.ATT_FILTER_MODEL_VALUES);
-            	} catch (ServletRequestBindingException e) {
-            		// leave null. param was not a number for some reason.
-            	}
-            	
-            	if (paoId != null) {
-            		setPaoIDs(new int[]{paoId.intValue()});
-            	} else {
-            		setPaoIDs(null);
-            	}
-            	
-            	setBillingGroups(null);
-                
-             // MULTI PAO ID SELECT BY PICKER
-            } else if(getFilterModelType().equals(ReportFilter.PROGRAM) ||
-            		  getFilterModelType().equals(ReportFilter.LMGROUP) ||
-            		  getFilterModelType().equals(ReportFilter.LMCONTROLAREA)) {
-            	
-            	String filterValuesStr = ServletRequestUtils.getStringParameter(req, ReportModelBase.ATT_FILTER_MODEL_VALUES, "");
-            	int[] paoIdsArray = com.cannontech.common.util.StringUtils.parseIntString(filterValuesStr);
-            	
-            	if (paoIdsArray.length > 0) {
-            		setPaoIDs(paoIdsArray);
-            	} else {
-            		setPaoIDs(null);
-            	}
-            	
-            	setBillingGroups(null);
-            	
-            // MULTI PAO ID SELECT BY SELECT
-            } else { //Load PaobjectID int values
+            } else if (reportFilterType.equals(ReportFilterType.PAOBJECTID)) { // PaobjectID values
 
-            	String[] paramArray = req.getParameterValues(ATT_FILTER_MODEL_VALUES);
-				if( paramArray != null)
-				{
-					int [] idsArray = new int[paramArray.length];
-					for (int i = 0; i < paramArray.length; i++)
-					{
-						if(StringUtils.isNotBlank(paramArray[i]))
-							idsArray[i] = Integer.valueOf(paramArray[i]).intValue();
-					}
-					setPaoIDs(idsArray);
-				}
-				else
-					setPaoIDs(null);
-
-				//Unload billinggroups
-				setBillingGroups(null);
+            	int[] idsArray = ServletRequestUtils.getIntParameters(req, ATT_FILTER_MODEL_VALUES);
+            	if (idsArray.length > 0) {
+            		setPaoIDs(idsArray);
+            	}
 			}
-			//This parameter is not implemented in this getHTMLOptionsTable since most of the implementing classes
-			//	have their own rendering of this parameter.  But setting it here takes care of all the other classes not having to do it.
-			param = req.getParameter(ATT_SORT_ORDER);
-			if( param != null)
-				setSortOrder(Integer.valueOf(param).intValue());
-			else
-				setSortOrder(ASCENDING);			
+			
 		}
 	}
 	/**
