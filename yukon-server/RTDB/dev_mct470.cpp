@@ -4298,19 +4298,28 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< C
                     }
                 }
                 if( (peak_time.seconds() >= (DawnOfTime_UtcSeconds - 86400) && peak_time.seconds() <= (DawnOfTime_UtcSeconds + 86400) ) ||
-                     (peak_time.seconds() - 86400) <= 0 )
+                     (peak_time.seconds() <= 86400) )
                 {
                     // Don't insert a point, just send the message.
+                    static string noPeak = ": " + CtiNumStr(pi.value) + " [No peak occurred]\n";
                     pointOffset = offset + rate * 2;
                     CtiPointSPtr p;
-                    resultString += "\n" + getName() + " / ";
-                    resultString += (p = getDevicePointOffsetTypeEqual(pointOffset, AnalogPointType)) ? p->getName() : pointname;
-                    resultString += ": " + CtiNumStr(pi.value) + " [No peak occurred]\n";
+                    if( p = getDevicePointOffsetTypeEqual(pointOffset, AnalogPointType) )
+                    {
+                        pointname = p->getName();
+                    }
+                    resultString += "\n" + getName() + " / " + pointname + noPeak;
                     if( parse.getFlags() & CMD_FLAG_FROZEN && pointOffset == PointOffset_TOU_KWBase ) //Currently we only support frozen rate A
                     {
-                        resultString += "\n" + getName() + " / ";
-                        resultString += (p = getDevicePointOffsetTypeEqual(PointOffset_TOU_KWBase + PointOffset_FrozenPointOffset, AnalogPointType)) ? p->getName() : pointname;
-                        resultString += ": " + CtiNumStr(pi.value) + " [No peak occurred]\n";
+                        if( p = getDevicePointOffsetTypeEqual(PointOffset_TOU_KWBase + PointOffset_FrozenPointOffset, AnalogPointType) )
+                        {
+                            pointname = p->getName();
+                        }
+                        else
+                        {
+                            pointname = "Frozen " + pointname;
+                        }
+                        resultString += "\n" + getName() + " / " + pointname + noPeak;
                     }
                 }
                 else
