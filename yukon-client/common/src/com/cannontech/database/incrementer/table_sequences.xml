@@ -250,8 +250,8 @@
         <table name="YukonGroupRole" identitycolumn="GroupRoleId" initsequence="true"/>
         <table name="YukonUserRole" identitycolumn="UserRoleId" initsequence="true"/>
       </sequence>
-      <sequence name="inventoryPagingSchedule">
-        <table name="inventoryPagingSchedule" identitycolumn="inventoryPagingScheduleId"/>
+      <sequence name="commandSchedule">
+        <table name="commandSchedule" identitycolumn="commandScheduleId"/>
       </sequence>
   </sequencetable>
 </sequencetables>

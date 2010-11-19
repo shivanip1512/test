@@ -154,7 +154,7 @@
 
     <bean id="staticLoadGroupMappingDao" class="com.cannontech.stars.dr.hardware.dao.impl.StaticLoadGroupMappingDaoImpl"/>
 
-    <bean id="inventoryPagingScheduleDao" class="com.cannontech.stars.dr.hardware.dao.impl.InventoryPagingScheduleDaoImpl"/>
+    <bean id="commandScheduleDao" class="com.cannontech.stars.dr.hardware.dao.impl.CommandScheduleDaoImpl"/>
 
     <bean id="starsWorkOrderBaseDao" class="com.cannontech.stars.core.dao.impl.StarsWorkOrderBaseDaoImpl"/>
 

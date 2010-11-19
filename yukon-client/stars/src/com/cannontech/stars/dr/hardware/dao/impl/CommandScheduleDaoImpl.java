@@ -18,96 +18,97 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.stars.dr.hardware.dao.InventoryPagingScheduleDao;
-import com.cannontech.stars.dr.hardware.model.InventoryPagingSchedule;
+import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
+import com.cannontech.stars.dr.hardware.model.CommandSchedule;
 
-public class InventoryPagingScheduleDaoImpl implements
-        InventoryPagingScheduleDao {
+public class CommandScheduleDaoImpl implements CommandScheduleDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
 
-    private SimpleTableAccessTemplate<InventoryPagingSchedule> dbTemplate;
-    private final static FieldMapper<InventoryPagingSchedule> fieldMapper = new FieldMapper<InventoryPagingSchedule>() {
+    private SimpleTableAccessTemplate<CommandSchedule> dbTemplate;
+    private final static FieldMapper<CommandSchedule> fieldMapper = new FieldMapper<CommandSchedule>() {
         @Override
-        public Number getPrimaryKey(InventoryPagingSchedule schedule) {
-            return schedule.getInventoryPagingScheduleId();
+        public Number getPrimaryKey(CommandSchedule schedule) {
+            return schedule.getCommandScheduleId();
         }
 
         @Override
-        public void setPrimaryKey(InventoryPagingSchedule schedule,
-                int inventoryPagingScheduleId) {
-            schedule.setInventoryPagingScheduleId(inventoryPagingScheduleId);
+        public void setPrimaryKey(CommandSchedule schedule,
+                int commandScheduleId) {
+            schedule.setCommandScheduleId(commandScheduleId);
         }
 
         @Override
         public void extractValues(MapSqlParameterSource parameterHolder,
-                InventoryPagingSchedule schedule) {
+                CommandSchedule schedule) {
             parameterHolder.addValue("startTimeCronString", schedule.getStartTimeCronString());
-            ReadablePeriod period = schedule.getPeriod();
+            ReadablePeriod period = schedule.getRunPeriod();
             String periodStr = period.get(DurationFieldType.hours()) + "h " +
                 period.get(DurationFieldType.minutes()) + "m";
             parameterHolder.addValue("period", periodStr);
-            parameterHolder.addValue("pagingDelayInSeconds", schedule.getPagingDelayInSeconds());
+            parameterHolder.addValue("pagingDelayInSeconds", schedule.getDelayPeriod());
             parameterHolder.addValue("enabled", schedule.isEnabled());
         }
     };
-    private final static YukonRowMapper<InventoryPagingSchedule> rowMapper = new YukonRowMapper<InventoryPagingSchedule>() {
+    private final static YukonRowMapper<CommandSchedule> rowMapper = new YukonRowMapper<CommandSchedule>() {
         @Override
-        public InventoryPagingSchedule mapRow(YukonResultSet rs)
+        public CommandSchedule mapRow(YukonResultSet rs)
                 throws SQLException {
-            InventoryPagingSchedule retVal = new InventoryPagingSchedule();
-            retVal.setInventoryPagingScheduleId(rs.getInt("inventoryPagingScheduleId"));
+            CommandSchedule retVal = new CommandSchedule();
+            retVal.setCommandScheduleId(rs.getInt("commandScheduleId"));
             retVal.setStartTimeCronString(rs.getString("startTimeCronString"));
             String periodStr = rs.getString("period");
             ReadablePeriod period = SimplePeriodFormat.getConfigPeriodFormatter().parsePeriod(periodStr);
-            retVal.setPeriod(period);
-            retVal.setPagingDelayInSeconds(rs.getInt("pagingDelayInSeconds"));
+            retVal.setRunPeriod(period);
+            periodStr = rs.getString("delayPeriod");
+            period = SimplePeriodFormat.getConfigPeriodFormatter().parsePeriod(periodStr);
+            retVal.setDelayPeriod(period);
             retVal.setEnabled(rs.getBoolean("enabled"));
             return retVal;
         }
     };
 
     @Override
-    public InventoryPagingSchedule getById(int inventoryPagingScheduleId) {
+    public CommandSchedule getById(int commandScheduleId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT inventoryPagingScheduleId, startTimeCronString,");
+        sql.append("SELECT commandScheduleId, startTimeCronString,");
         sql.append(  "period, pagingDelayInSeconds, enabled");
-        sql.append("FROM inventoryPagingSchedule");
-        sql.append("WHERE inventoryPagingScheduleId").eq(inventoryPagingScheduleId);
+        sql.append("FROM commandSchedule");
+        sql.append("WHERE commandScheduleId").eq(commandScheduleId);
         return yukonJdbcTemplate.queryForObject(sql, rowMapper);
     }
 
     @Override
-    public List<InventoryPagingSchedule> getAll() {
+    public List<CommandSchedule> getAll() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT inventoryPagingScheduleId, startTimeCronString,");
+        sql.append("SELECT commandScheduleId, startTimeCronString,");
         sql.append(  "period, pagingDelayInSeconds, enabled");
-        sql.append("FROM inventoryPagingSchedule");
+        sql.append("FROM commandSchedule");
         return yukonJdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
-    public List<InventoryPagingSchedule> getAllEnabled() {
+    public List<CommandSchedule> getAllEnabled() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT inventoryPagingScheduleId, startTimeCronString,");
+        sql.append("SELECT commandScheduleId, startTimeCronString,");
         sql.append(  "period, pagingDelayInSeconds, enabled");
-        sql.append("FROM inventoryPagingSchedule");
+        sql.append("FROM commandSchedule");
         sql.append("WHERE enabledj = 'y'");
         return yukonJdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
-    public void save(InventoryPagingSchedule schedule) {
+    public void save(CommandSchedule schedule) {
         dbTemplate.save(schedule);
     }
 
     @PostConstruct
     public void init() {
-        dbTemplate = new SimpleTableAccessTemplate<InventoryPagingSchedule>(yukonJdbcTemplate,
+        dbTemplate = new SimpleTableAccessTemplate<CommandSchedule>(yukonJdbcTemplate,
                                                                             nextValueHelper);
-        dbTemplate.withTableName("inventoryPagingSchedule");
+        dbTemplate.withTableName("commandSchedule");
         dbTemplate.withFieldMapper(fieldMapper);
-        dbTemplate.withPrimaryKeyField("inventoryPagingScheduleId");
+        dbTemplate.withPrimaryKeyField("commandScheduleId");
         dbTemplate.withPrimaryKeyValidOver(0);
     }
 
