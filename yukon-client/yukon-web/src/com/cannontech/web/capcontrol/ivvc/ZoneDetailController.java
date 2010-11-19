@@ -17,13 +17,10 @@ import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.web.CapControlCommandExecutor;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.capcontrol.VoltageRegulatorPointMapping;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.user.YukonUserContext;
@@ -47,7 +44,6 @@ public class ZoneDetailController {
     private RolePropertyDao rolePropertyDao;
     private ZoneService zoneService;
     private VoltageRegulatorService voltageRegulatorService;
-    private AttributeService attributeService;
     private VoltageFlatnessGraphService voltageFlatnessGraphService;
     
     @RequestMapping
@@ -79,7 +75,8 @@ public class ZoneDetailController {
     }
     
     @RequestMapping
-    public String deltaUpdate(ModelMap model, boolean staticDelta, int bankId, int pointId, double delta, int zoneId, Boolean isSpecialArea, LiteYukonUser user, HttpServletRequest request) {
+    public String deltaUpdate(ModelMap model, boolean staticDelta, int bankId, int pointId, double delta, 
+                              int zoneId, Boolean isSpecialArea, LiteYukonUser user, HttpServletRequest request) {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         CapControlCommandExecutor exec = new CapControlCommandExecutor(cache, user);
         
@@ -140,8 +137,11 @@ public class ZoneDetailController {
         
         List<ViewableCapBank> viewableCapBankList = CapControlWebUtils.createViewableCapBank(capBankList);
         for (ViewableCapBank bank:viewableCapBankList) {
-            LitePoint point = attributeService.getPointForAttribute(bank.getControlDevice(), BuiltInAttribute.VOLTAGE);
-            bank.setVoltagePointId(point.getLiteID());
+            List<Integer> monitorPoints = zoneService.getMonitorPointsForBank(bank.getCapBankDevice().getCcId());
+            if (monitorPoints.size() > 0) {
+                //Grabbing the first one to display, list is sorted on display order
+                bank.setVoltagePointId(monitorPoints.get(0));
+            }
             
             if (unassignedBankIds.contains(bank.getCapBankDevice().getCcId())) {
                 bank.setNotAssignedToZone(true);
@@ -173,7 +173,15 @@ public class ZoneDetailController {
         List<CapBankPointDelta> trimmedPointDeltas = Lists.newArrayList();
         
         if (startIndex < pointDeltas.size()) {
-        	trimmedPointDeltas = pointDeltas.subList(startIndex, startIndex + itemsPerPage > pointDeltas.size() ? pointDeltas.size() : startIndex + itemsPerPage);
+            int endIndex;
+            
+            if (startIndex + itemsPerPage > pointDeltas.size()) {
+                endIndex = pointDeltas.size();
+            } else {
+                endIndex = startIndex + itemsPerPage;
+            }
+            
+        	trimmedPointDeltas = pointDeltas.subList(startIndex,endIndex);
         }
         
         searchResults.setResultList(trimmedPointDeltas);
@@ -229,11 +237,6 @@ public class ZoneDetailController {
     @Autowired
     public void setVoltageRegulatorService(VoltageRegulatorService voltageRegulatorService) {
         this.voltageRegulatorService = voltageRegulatorService;
-    }
-
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
     }
     
     @Autowired
