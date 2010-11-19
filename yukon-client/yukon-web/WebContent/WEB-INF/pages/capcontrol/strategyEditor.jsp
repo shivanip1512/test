@@ -175,7 +175,7 @@
                 </x:panelGrid>
                 
                 <h:dataTable id="peakSettingsData" var="setting" headerClass="peakSettingsTableHeader" rowClasses="peakSettingsTableCell" columnClasses="peakSettingsTableCell"
-                    value="#{capControlForm.strategy.targetSettings}">
+                    value="#{capControlForm.strategy.targetSettings}" >
 
                     <h:column>
                         <f:facet name="header">
@@ -189,7 +189,8 @@
                         <f:facet name="header">
                             <x:outputText value="#{capControlForm.peakHeader}"/>
                         </f:facet>
-                        <x:inputText styleClass="char8Label" required="true" value="#{setting.peakValue}" />
+                        <x:inputText styleClass="char8Label" required="true" value="#{setting.peakValue}" 
+                                     disabled="#{!capControlForm.editingCBCStrategy}"/>
                         <x:outputText value="#{setting.type.units}" styleClass="padUnitsLabel"/>
                     </h:column>
                     
@@ -212,7 +213,8 @@
                         <f:facet name="header">
                             <x:outputText value="#{capControlForm.offPeakHeader}"/>
                         </f:facet>
-                        <x:inputText styleClass="char8Label" required="true" value="#{setting.offPeakValue}" />
+                        <x:inputText styleClass="char8Label" required="true" value="#{setting.offPeakValue}" 
+                                     disabled="#{!capControlForm.editingCBCStrategy}"/>
                         <x:outputText value="#{setting.type.units}" styleClass="padUnitsLabel"/>
                     </h:column>
                     
