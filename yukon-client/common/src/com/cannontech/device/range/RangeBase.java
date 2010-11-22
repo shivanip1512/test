@@ -1,6 +1,6 @@
 package com.cannontech.device.range;
 
-import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.common.pao.PaoType;
 
 
 public class RangeBase implements IValidRange
@@ -8,40 +8,32 @@ public class RangeBase implements IValidRange
    private long lowRange = Long.MIN_VALUE;
    private long upperRange = Long.MAX_VALUE;
    private long[] excludedValues = new long[0];
-   private int deviceType = 0;
+   private PaoType paoType;
    private String rangeDescription = null;
 
-	/**
-	 * Constructor for RangeBase.
-	 */
-   protected RangeBase()
-   {
-      super();
-   }
-
-	public RangeBase( long lowRange_, long upperRange_, int deviceType_, String desc_, 
+	public RangeBase( long lowRange_, long upperRange_, PaoType paoType, String desc_, 
                       long[] excludedValues_ ) {
 		super();
 		lowRange = lowRange_;
 		upperRange = upperRange_;
-		deviceType = deviceType_;
+		this.paoType = paoType;
 		rangeDescription = desc_;
 		excludedValues = excludedValues_;
 	}
 
-	public RangeBase( long lowRange_, long upperRange_, int deviceType_) {
+	public RangeBase( long lowRange_, long upperRange_, PaoType paoType) {
       super();
       lowRange = lowRange_;
       upperRange = upperRange_;
-      deviceType = deviceType_;
+      this.paoType = paoType;
    }
 
-   public RangeBase( long lowRange_, long upperRange_, int deviceType_, String desc_ )
+   public RangeBase( long lowRange_, long upperRange_, PaoType paoType, String desc_ )
    {
       super();
       lowRange = lowRange_;
       upperRange = upperRange_;
-      deviceType = deviceType_;
+      this.paoType = paoType;
       rangeDescription = desc_;
    }
    
@@ -49,7 +41,7 @@ public class RangeBase implements IValidRange
    {
        if( rangeDescription == null) {
            rangeDescription = "Valid range for " + 
-                               PAOGroups.getPAOTypeString(deviceType) + 
+                               paoType + 
                                " addresses is " + lowRange +
                                " to " + upperRange;
        }

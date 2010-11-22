@@ -55,6 +55,7 @@ import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
 import com.cannontech.device.range.DeviceAddressRange;
+import com.cannontech.device.range.RangeBase;
 import com.cannontech.yukon.IDatabaseCache;
  
 public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemListener, CaretListener {
@@ -663,8 +664,9 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 			{
 		      	long addy = Long.parseLong(getAddressTextField().getText());
 		      	int deviceType = PAOGroups.getDeviceType( deviceBase.getPAOType() );
-		      	if( !DeviceAddressRange.isValidRange( deviceType, addy ) ) {
-		        	setErrorString( DeviceAddressRange.getRangeMessage( deviceType ) );
+		      	RangeBase rangeBase = DeviceAddressRange.getRangeBase(deviceType);
+		      	if (!rangeBase.isValidRange(Long.valueOf(addy))) {
+		        	setErrorString( rangeBase.getRangeDescription() );
 		
 		         	getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
 		         	getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );

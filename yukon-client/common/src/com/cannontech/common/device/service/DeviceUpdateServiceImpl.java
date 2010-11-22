@@ -56,6 +56,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.device.range.DeviceAddressRange;
+import com.cannontech.device.range.RangeBase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -74,8 +75,9 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private Logger log = YukonLogManager.getLogger(DeviceUpdateServiceImpl.class);
     
     public void changeAddress(YukonDevice device, int newAddress) throws IllegalArgumentException {
-
-        boolean validAddressForType = DeviceAddressRange.isValidRange(device.getPaoIdentifier().getPaoType().getDeviceTypeId(), newAddress);
+    	
+    	RangeBase rangeBase = DeviceAddressRange.getRangeBase(device.getPaoIdentifier().getPaoType());
+        boolean validAddressForType = rangeBase.isValidRange(newAddress);
 
         if (!validAddressForType) {
             throw new IllegalArgumentException("Address not in valid range for device type: " + newAddress);

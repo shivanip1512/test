@@ -36,6 +36,7 @@ import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.device.range.DeviceAddressRange;
+import com.cannontech.device.range.RangeBase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -103,7 +104,8 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         try {
             
             // test
-            if (!DeviceAddressRange.isValidRange(deviceType, address)) {
+        	RangeBase rangeBase = DeviceAddressRange.getRangeBase(deviceType);
+            if (!rangeBase.isValidRange(address)) {
                 throw new DeviceCreationException("Invalid address for device type (" + address + ").");
             }
             else if (StringUtils.isBlank(name)) {

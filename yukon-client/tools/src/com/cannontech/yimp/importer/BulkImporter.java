@@ -58,6 +58,7 @@ import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
 import com.cannontech.device.range.DeviceAddressRange;
+import com.cannontech.device.range.RangeBase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.porter.message.Request;
@@ -342,7 +343,8 @@ public void runImport(List<ImportData> imps) {
         /*Address range check for 400 series*/
         if(template400SeriesBase instanceof MCT400SeriesBase) {
         	int deviceType = PAOGroups.getDeviceType(template400SeriesBase.getPAOType());
-        	if (!DeviceAddressRange.isValidRange(deviceType, Long.parseLong(address))) {
+        	RangeBase rangeBase = DeviceAddressRange.getRangeBase(deviceType);
+        	if (!rangeBase.isValidRange(Long.parseLong(address))) {
         		String error = "Has an incorrect " + template400SeriesBase.getPAOType() + " address ("+address+").  ";
         		log.error(logMsgPrefix + error);
         		errorMsg.add(error);

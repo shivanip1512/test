@@ -33,7 +33,8 @@ public class MeterConfigValidator extends SimpleValidator<Meter> {
             PaoType deviceType = meter.getDeviceType();
             try {
                 Long physicalAddress = Long.parseLong(meter.getAddress());
-                if(!DeviceAddressRange.isValidRange(deviceType.getDeviceTypeId(), physicalAddress)) {
+                RangeBase rangeBase = DeviceAddressRange.getRangeBase(deviceType);
+                if(!rangeBase.isValidRange(physicalAddress)) {
                     failAddress(meter, errors);
                 }
             } catch (NumberFormatException e) {
@@ -45,7 +46,7 @@ public class MeterConfigValidator extends SimpleValidator<Meter> {
     
     private void failAddress(Meter meter, Errors errors) {
         String paoTypeString = meter.getDeviceType().getPaoTypeName();
-        RangeBase range = DeviceAddressRange.getRangeBase(meter.getDeviceType().getDeviceTypeId());
+        RangeBase range = DeviceAddressRange.getRangeBase(meter.getDeviceType());
         Long lowRange = new Long(range.getLowRange());
         Long upperRange = new Long(range.getUpperRange());
         errors.rejectValue("address", "yukon.web.modules.operator.meterConfig.error.invalidRange", new Object[]{paoTypeString, lowRange, upperRange}, null);

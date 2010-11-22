@@ -1,16 +1,14 @@
 package com.cannontech.device.range;
 
 /**
- * @author rneuharth
- * Sep 5, 2002 at 4:20:40 PM
- * 
- * A undefined generated comment
  * Ranges entered by SNelson on 20090615.
  * Ranges can be found in http://portal.cannontech.com/sites/Ops/Production%20Documents/Other%20Address%20Numbers-%20Allocation%20doc/Product%20Address%20Numbers.xls
- * 
  */
-import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
+import java.util.Map;
+
+import com.cannontech.common.pao.PaoType;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 public class DeviceAddressRange
 {
@@ -20,183 +18,56 @@ public class DeviceAddressRange
 	
 	// Use Integer values for default range.
 	// The address field in DeviceCarrierSettings is an int (and should be positive)
-	private static final RangeBase RANGE_DEFAULT = 
-		new RangeBase(0, Integer.MAX_VALUE, PAOGroups.INVALID);
-   
-	//MCT470= 510,001-594,000
-	private static final RangeBase RANGE_MCT470 = 
-		new RangeBase( 100000, 3997695, DeviceTypes.MCT470);
+	private static final RangeBase RANGE_DEFAULT = new RangeBase(0, Integer.MAX_VALUE, null);
+	private static final Map<PaoType, RangeBase> paoTypeRange;
 	
-	//MCT430= 620,000-620,199; 620,200-700,000
-    private static final RangeBase RANGE_MCT430A = 
-        new RangeBase( 100000, 3997695, DeviceTypes.MCT430A);
-    
-    private static final RangeBase RANGE_MCT430S4 = 
-        new RangeBase( 100000, 3997695, DeviceTypes.MCT430S4);
+	static {
+        Builder<PaoType, RangeBase> builder = ImmutableMap.builder();
+        add(builder, PaoType.MCT470, 100000, 3997695);		// MCT470= 510,001-594,000
+    	add(builder, PaoType.MCT430A, 100000, 3997695);		// MCT430= 620,000-620,199; 620,200-700,000
+    	add(builder, PaoType.MCT430S4, 100000, 3997695);
+    	add(builder, PaoType.MCT430SL, 100000, 3997695);
+    	add(builder, PaoType.MCT430A3, 100000, 3997695);
+    	add(builder, PaoType.MCT410CL, 0, 3997695);	   		// 310,000-313,555; 313,600-314,499; 314,500-499,999; 594,001-610,000; 810,001-1,000,000; 2,897,700-3,597,700 
+    	add(builder, PaoType.MCT410IL, 0, 3997695);			// 700,001-799,999; 1,000,001-1,398,100; 1,398,102 - 2,796,201   
+    	add(builder, PaoType.MCT410FL, 0, 3997695);			// 3,797,700-3,996,927
+    	add(builder, PaoType.MCT410GL, 0, 3997695);
+    	add(builder, PaoType.MCTBROADCAST, 1, 4096);
+    	
+    	add(builder, PaoType.REPEATER, 464, 4302);
+    	add(builder, PaoType.REPEATER_921, 464, 4302);
+    	add(builder, PaoType.REPEATER_902, 800450, 809900);
+    	add(builder, PaoType.REPEATER_850, 560001, 590000);
+    	
+    	add(builder, PaoType.CCU710A, 0, 127);
+    	add(builder, PaoType.CCU711, 0, 126);
+    	add(builder, PaoType.CCU721, 0, 126);
+    	add(builder, PaoType.RTUWELCO, 0, 127);
+    	add(builder, PaoType.CAPBANKCONTROLLER, 0, 999999999);
+    	add(builder, PaoType.CBC_FP_2800, 0, 999999999);
+    	add(builder, PaoType.DNP_CBC_6510, 0, 999999999);
+    	add(builder, PaoType.SERIES_5_LMI, 0, 127);
+    	add(builder, PaoType.RTC, 0, 15);
+    	add(builder, PaoType.RTM, 0, 15);
+    	
+    	paoTypeRange = builder.build();
+	}
 
-    private static final RangeBase RANGE_MCT430SL = 
-        new RangeBase( 100000, 3997695, DeviceTypes.MCT430SL);
-
-    private static final RangeBase RANGE_MCT430A3 = 
-        new RangeBase( 100000, 3997695, DeviceTypes.MCT430A3);
-    
-   	// 310,000-313,555; 313,600-314,499; 314,500-499,999; 
-    // 594,001-610,000; 810,001-1,000,000; 2,897,700-3,597,700 
-	private static final RangeBase RANGE_MCT410CL = 
-		new RangeBase( 0, 3997695, DeviceTypes.MCT410CL); 
-   	
-	//700,001-799,999; 1,000,001-1,398,100; 1,398,102 - 2,796,201 
-   	private static final RangeBase RANGE_MCT410IL = 
-		new RangeBase( 0, 3997695, DeviceTypes.MCT410IL);   
-   	
-   	// 3,797,700-3,996,927
-   	private static final RangeBase RANGE_MCT410FL = 
-   	    new RangeBase( 0, 3997695, DeviceTypes.MCT410FL);
-   	
-   	private static final RangeBase RANGE_MCT410GL = 
-   	    new RangeBase( 0, 3997695, DeviceTypes.MCT410GL);
-
-   	private static final RangeBase RANGE_MCT_BROADCAST = 
-        new RangeBase( 1, 4096, DeviceTypes.MCTBROADCAST);
-
-   	private static final RangeBase RANGE_REPEATER900 = 
-        new RangeBase( 464, 4302, DeviceTypes.REPEATER);
-
-    private static final RangeBase RANGE_REPEATER921 = 
-        new RangeBase( 464, 4302, DeviceTypes.REPEATER_921);
-
-   	private static final RangeBase RANGE_REPEATER902 = 
-   		new RangeBase( 800450, 809900, DeviceTypes.REPEATER_902);
-
-   	private static final RangeBase RANGE_CCU710A = 
-        new RangeBase( 0, 127, DeviceTypes.CCU710A);
-   	
-   	private static final RangeBase RANGE_CCU711 = 
-        new RangeBase( 0, 126, DeviceTypes.CCU711);
-   	
-   	private static final RangeBase RANGE_CCU721 = 
-   	    new RangeBase( 0, 126, DeviceTypes.CCU721);
-
-   	private static final RangeBase RANGE_RTU_WELCO = 
-        new RangeBase( 0, 127, DeviceTypes.RTUWELCO);
-
-   	private static final RangeBase RANGE_VERSACOM = 
-        new RangeBase( 0, 999999999, DeviceTypes.EDITABLEVERSACOMSERIAL);
-         
-    private static final RangeBase RANGE_CAPBANKCONTROLLER = 
-        new RangeBase( 0, 999999999, DeviceTypes.CAPBANKCONTROLLER);
-
-    private static final RangeBase RANGE_CBC_FP_2800 = 
-        new RangeBase( 0, 999999999, DeviceTypes.CBC_FP_2800);
-
-    private static final RangeBase RANGE_DNP_CBC_6510 = 
-        new RangeBase( 0, 999999999, DeviceTypes.DNP_CBC_6510);
-
-   	private static final RangeBase RANGE_SERIES_5_LMI = 
-		new RangeBase( 0, 127, DeviceTypes.SERIES_5_LMI);
-
-   	private static final RangeBase RANGE_RTC = 
-		new RangeBase( 0, 15, DeviceTypes.RTC);
-   
-   	private static final RangeBase RANGE_RTM = 
-		new RangeBase( 0, 15, DeviceTypes.RTM);
+	private static void add(Builder<PaoType, RangeBase> builder, PaoType paoType, int lowerRange, int upperRange) {
+   		builder.put(paoType, new RangeBase(lowerRange, upperRange, paoType));
+	}
+	
+	public static RangeBase getRangeBase(PaoType paoType) {
+		RangeBase rangeBase = paoTypeRange.get(paoType);
+		if (rangeBase == null) {
+			return RANGE_DEFAULT; 
+		}
+		return rangeBase;
+	}		
 
 	/**
-	 * Constructor for DeviceAddressRange.
-	 */
-	private DeviceAddressRange()
-	{
-		super();      
+	 * @Deprecated - use getRangeBase(PaoType paoType) */
+	public static RangeBase getRangeBase(int deviceType) {
+		return getRangeBase(PaoType.getForId(deviceType));
 	}
-   
-   	public static RangeBase getRangeBase( int deviceType_ )
-   	{
-   	    switch (deviceType_) {
-            case DeviceTypes.MCT470:
-                return RANGE_MCT470;
-                
-            case DeviceTypes.MCT430A:
-                return RANGE_MCT430A;    
-                
-            case DeviceTypes.MCT430S4:
-                return RANGE_MCT430S4;    
-            
-            case DeviceTypes.MCT430SL:
-                return RANGE_MCT430SL;    
-
-            case DeviceTypes.MCT430A3:
-                return RANGE_MCT430A3;    
-
-            case DeviceTypes.MCT410CL:
-                return RANGE_MCT410CL;
-		
-            case DeviceTypes.MCT410IL:
-                return RANGE_MCT410IL;
-                
-            case DeviceTypes.MCT410FL:
-                return RANGE_MCT410FL;
-                
-            case DeviceTypes.MCT410GL:
-                return RANGE_MCT410GL;
-            
-            case DeviceTypes.REPEATER:
-                return RANGE_REPEATER900;
-            
-            case DeviceTypes.REPEATER_902:
-                return RANGE_REPEATER902;
-            
-            case DeviceTypes.REPEATER_921:
-                return RANGE_REPEATER921;
-            
-            case DeviceTypes.CCU710A:
-                return RANGE_CCU710A;
-            
-            case DeviceTypes.CCU711:
-                return RANGE_CCU711;
-                
-            case DeviceTypes.CCU721:
-                return RANGE_CCU721;
-                
-            case DeviceTypes.MCTBROADCAST:
-                return RANGE_MCT_BROADCAST;
-
-            case DeviceTypes.RTUWELCO:
-                return RANGE_RTU_WELCO;
-                
-            case DeviceTypes.SERIES_5_LMI:
-                return RANGE_SERIES_5_LMI;
-                
-            case DeviceTypes.RTC:
-                return RANGE_RTC;
-            
-            case DeviceTypes.RTM:
-                return RANGE_RTM;
-                
-            case DeviceTypes.CAPBANKCONTROLLER:
-                return RANGE_CAPBANKCONTROLLER;
-                
-            case DeviceTypes.CBC_FP_2800:
-                return RANGE_CBC_FP_2800;
-            
-            case DeviceTypes.DNP_CBC_6510:
-                return RANGE_DNP_CBC_6510;
-
-            case DeviceTypes.EDITABLEVERSACOMSERIAL:
-                return RANGE_VERSACOM;
-                
-            default:
-            return RANGE_DEFAULT;
-        }
-  	}
-   
-   	public synchronized static String getRangeMessage( int deviceType_ )
-   	{
-      	return getRangeBase( deviceType_ ).getRangeDescription();
-   	}
-   
-   	public synchronized static boolean isValidRange( int deviceType_, long value_ )
-   	{
-      	return getRangeBase( deviceType_ ).isValidRange( new Long(value_) );
-   	}
-   
 }

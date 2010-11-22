@@ -1998,12 +1998,12 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     
     	if( getPhysicalAddressTextField().isVisible() ) {
     		int deviceType = PAOGroups.getDeviceType( deviceBase.getPAOType() );
-            String error = DeviceAddressRange.getRangeMessage( deviceType );
+            String error = DeviceAddressRange.getRangeBase(deviceType).getRangeDescription();
             try{
                 int address = Integer.parseInt( getPhysicalAddressTextField().getText() );
-                
+                RangeBase rangeBase = DeviceAddressRange.getRangeBase(deviceType);
                 // Verify Address is within range
-                if( !DeviceAddressRange.isValidRange( deviceType, address ) ) {
+                if (!rangeBase.isValidRange(address)) {
                    setErrorString(error);
                    return false;
                 }

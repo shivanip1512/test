@@ -559,8 +559,9 @@ public boolean isInputValid()
 
 	int address = Integer.parseInt( getAddress());
 	int deviceType = PAOGroups.getDeviceType(deviceBase.getPAOType());
-	if( !DeviceAddressRange.isValidRange( deviceType, address ) ) {
-		setErrorString( DeviceAddressRange.getRangeMessage( deviceType) );
+	RangeBase rangeBase = DeviceAddressRange.getRangeBase(deviceType);
+	if (!rangeBase.isValidRange(address)) {
+		setErrorString(rangeBase.getRangeDescription());
 		getJLabelErrorMessage().setText( "(" + getErrorString() + ")" );
 		getJLabelErrorMessage().setToolTipText( "(" + getErrorString() + ")" );
 		getJLabelErrorMessage().setVisible( true );
