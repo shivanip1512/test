@@ -21,7 +21,7 @@
 					title="Description of the Voltage Regulator" />
 
 				<x:inputText id="paoDescription"
-					value="#{capControlForm.PAOBase.PAODescription}" required="true"
+					value="#{capControlForm.PAOBase.PAODescription}" required="false"
 					maxlength="60" styleClass="char32Label" />
 			</x:panelGroup>
 		</x:panelGrid>
