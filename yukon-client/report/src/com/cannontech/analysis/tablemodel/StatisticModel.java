@@ -144,8 +144,12 @@ public class StatisticModel extends ReportModelBase {
         setData(null);
                 
         SqlFragmentSource sql = buildSQLStatement();
-        log.info(sql.toString()); 
-        log.info("START DATE > " + getStartDate() + " - STOP DATE <= " + getStopDate());
+        log.info(sql.toString());
+        if(getStatPeriodType() != null && getStatPeriodType().equalsIgnoreCase(LIFETIME_STAT_PERIOD_TYPE_STRING)) {
+        	log.info("Ignoring date range settings.");
+        } else {
+        	log.info("START DATE >= " + getStartDate());
+        }
         
         JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
         template.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {

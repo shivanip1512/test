@@ -19,20 +19,6 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-/**
- * Created on Dec 15, 2003
- * StatisticReportDatabase TableModel object
- * Abstract class for all Statistical report tableModels to extend.
- * Extending classes must implement:
- *   addDataRow(ResultSet)	- add a "row" object to the data Vector
- *   buildSQLStatement()	- Returns the sql query statment
- * 
- * Contains the start and stop times for query information.
- * Contains the paoClass - YukonPaobject.paoClass
- * 				category - YukonPaobject.category
- * 				statType - DynamicPaoStatistics.statisticType
- * @author snebben
- */
 public class ActivityDetailModel extends ReportModelBase
 {
 	/** A string for the title of the data */
@@ -128,7 +114,6 @@ public class ActivityDetailModel extends ReportModelBase
 	
 	/**
 	 * Constructor class
-	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public ActivityDetailModel(Date start_, Date stop_)
 	{
@@ -137,7 +122,6 @@ public class ActivityDetailModel extends ReportModelBase
 
 	/**
 	 * Constructor class
-	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public ActivityDetailModel()
 	{
@@ -147,7 +131,6 @@ public class ActivityDetailModel extends ReportModelBase
 	/**
 	 * Constructor class
 	 * Only ONE energycompanyID is used 
-	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public ActivityDetailModel(Integer ecID_)
 	{

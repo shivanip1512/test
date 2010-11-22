@@ -6,9 +6,6 @@ public class StatisticHistoryDeviceModel extends StatisticHistoryModel
 	
 	/**
 	 * Constructor class
-	 * @param category_ YukonPaobject.category
-	 * @param paoClass_ YukonPaobject.paoClass
-	 * @param statPeriodType_ DynamicPaoStatistics.StatisticType
 	 */
 	public StatisticHistoryDeviceModel()
 	{

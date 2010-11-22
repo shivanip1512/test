@@ -123,7 +123,6 @@ public class HECO_LMEventSummaryModel extends HECO_SettlementModelBase
 	
 	/**
 	 * Constructor class
-	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public HECO_LMEventSummaryModel(Date start_, Date stop_)
 	{
@@ -135,7 +134,6 @@ public class HECO_LMEventSummaryModel extends HECO_SettlementModelBase
 
 	/**
 	 * Constructor class
-	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public HECO_LMEventSummaryModel()
 	{
@@ -145,7 +143,6 @@ public class HECO_LMEventSummaryModel extends HECO_SettlementModelBase
 	/**
 	 * Constructor class
 	 * Only ONE energycompanyID is used 
-	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public HECO_LMEventSummaryModel(Integer ecID_)
 	{

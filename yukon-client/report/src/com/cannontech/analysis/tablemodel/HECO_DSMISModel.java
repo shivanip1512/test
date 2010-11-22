@@ -62,7 +62,6 @@ public class HECO_DSMISModel extends HECO_SettlementModelBase
 	}
 	/**
 	 * Constructor class
-	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public HECO_DSMISModel(Date start_, Date stop_)
 	{
@@ -76,7 +75,6 @@ public class HECO_DSMISModel extends HECO_SettlementModelBase
 
 	/**
 	 * Constructor class
-	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public HECO_DSMISModel()
 	{
@@ -86,7 +84,6 @@ public class HECO_DSMISModel extends HECO_SettlementModelBase
 	/**
 	 * Constructor class
 	 * Only ONE energycompanyID is used 
-	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public HECO_DSMISModel(Integer ecID_)
 	{

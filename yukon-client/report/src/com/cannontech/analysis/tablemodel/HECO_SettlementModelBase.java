@@ -101,7 +101,6 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	
 	/**
 	 * Constructor class
-	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public HECO_SettlementModelBase(Date start_, Date stop_)
 	{
@@ -113,7 +112,6 @@ public class HECO_SettlementModelBase extends ReportModelBase
 
 	/**
 	 * Constructor class
-	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public HECO_SettlementModelBase()
 	{
@@ -123,7 +121,6 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	/**
 	 * Constructor class
 	 * Only ONE energycompanyID is used 
-	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public HECO_SettlementModelBase(Integer ecID_)
 	{

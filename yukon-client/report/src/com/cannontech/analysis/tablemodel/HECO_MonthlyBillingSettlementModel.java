@@ -107,7 +107,6 @@ public class HECO_MonthlyBillingSettlementModel extends HECO_SettlementModelBase
 	}
 	/**
 	 * Constructor class
-	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public HECO_MonthlyBillingSettlementModel(Date start_, Date stop_)
 	{
@@ -116,7 +115,6 @@ public class HECO_MonthlyBillingSettlementModel extends HECO_SettlementModelBase
 
 	/**
 	 * Constructor class
-	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public HECO_MonthlyBillingSettlementModel()
 	{
@@ -126,7 +124,6 @@ public class HECO_MonthlyBillingSettlementModel extends HECO_SettlementModelBase
 	/**
 	 * Constructor class
 	 * Only ONE energycompanyID is used 
-	 * @param statType_ DynamicPaoStatistics.StatisticType
 	 */
 	public HECO_MonthlyBillingSettlementModel(Integer ecID_)
 	{

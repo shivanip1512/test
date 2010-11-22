@@ -110,9 +110,7 @@ public class DisconnectModel extends ReportModelBase<DisconnectMeterAndPointData
 
     /**
      * Constructor class
-     * @param statType_ DynamicPaoStatistics.StatisticType
      */
-
     public DisconnectModel()
     {
         this(false);	
