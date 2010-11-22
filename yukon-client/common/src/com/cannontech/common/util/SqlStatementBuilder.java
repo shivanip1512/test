@@ -10,9 +10,9 @@ import java.util.List;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.ReadableInstant;
+import org.joda.time.ReadablePeriod;
+import org.joda.time.format.ISOPeriodFormat;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 /**
@@ -112,7 +112,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
             } else if (object.getClass().isArray()) {
                 // is this the right assumption?
                 appendList((Object[]) object);
-            } else if (object instanceof Collection) {
+            } else if (object instanceof Collection<?>) {
                 // is this the right assumption?
                 appendList((Collection<?>)object);            
             } else if (object instanceof SqlFragmentSource) {
@@ -283,6 +283,8 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
             return e.name();
         } else if (argument instanceof ReadableInstant) {
             return ((ReadableInstant) argument).toInstant().toDate();
+        } else if (argument instanceof ReadablePeriod) {
+            return ISOPeriodFormat.standard().print((ReadablePeriod) argument);
         } else {
             return argument;
         }

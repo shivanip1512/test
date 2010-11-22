@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.Map;
 
 import org.joda.time.Instant;
+import org.joda.time.ReadablePeriod;
+import org.joda.time.format.ISOPeriodFormat;
 
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.base.Function;
@@ -73,7 +75,7 @@ public class YukonResultSet {
         return rs.getInt(columnLabel);
     }
 
-    public boolean getBoolean(String columnLabel) throws SQLException {
+    public boolean getYNBoolean(String columnLabel) throws SQLException {
         return rs.getString(columnLabel).equalsIgnoreCase("y");
     }
 
@@ -105,7 +107,12 @@ public class YukonResultSet {
         }
         return new Instant(timestamp);
     }
-    
+
+    public ReadablePeriod getPeriod(String columnLabel) throws SQLException {
+        String periodStr = rs.getString(columnLabel);
+        return ISOPeriodFormat.standard().parseMutablePeriod(periodStr);
+    }
+
     private static Map<Class<Enum<?>>, Map<String, Enum<?>>> enumValueLookup = 
         new MapMaker().concurrencyLevel(10).makeComputingMap(new Function<Class<Enum<?>>, Map<String, Enum<?>>>() {
             public Map<String, Enum<?>> apply(Class<Enum<?>> from) {

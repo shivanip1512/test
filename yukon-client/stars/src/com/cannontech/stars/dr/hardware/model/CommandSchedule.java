@@ -48,4 +48,11 @@ public class CommandSchedule {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+    @Override
+    public String toString() {
+        return "CommandSchedule [commandScheduleId=" + commandScheduleId +
+            ", delayPeriod=" + delayPeriod + ", enabled=" + enabled + ", runPeriod=" + runPeriod +
+            ", startTimeCronString=" + startTimeCronString + "]";
+    }
 }

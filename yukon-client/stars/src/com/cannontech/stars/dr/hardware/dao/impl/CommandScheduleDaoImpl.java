@@ -5,12 +5,9 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.joda.time.DurationFieldType;
-import org.joda.time.ReadablePeriod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
-import com.cannontech.common.util.SimplePeriodFormat;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
@@ -42,12 +39,9 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
         public void extractValues(MapSqlParameterSource parameterHolder,
                 CommandSchedule schedule) {
             parameterHolder.addValue("startTimeCronString", schedule.getStartTimeCronString());
-            ReadablePeriod period = schedule.getRunPeriod();
-            String periodStr = period.get(DurationFieldType.hours()) + "h " +
-                period.get(DurationFieldType.minutes()) + "m";
-            parameterHolder.addValue("period", periodStr);
-            parameterHolder.addValue("pagingDelayInSeconds", schedule.getDelayPeriod());
-            parameterHolder.addValue("enabled", schedule.isEnabled());
+            parameterHolder.addValue("runPeriod", schedule.getRunPeriod());
+            parameterHolder.addValue("delayPeriod", schedule.getDelayPeriod());
+            parameterHolder.addValue("enabled", schedule.isEnabled() ? "y" : "n");
         }
     };
     private final static YukonRowMapper<CommandSchedule> rowMapper = new YukonRowMapper<CommandSchedule>() {
@@ -57,13 +51,9 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
             CommandSchedule retVal = new CommandSchedule();
             retVal.setCommandScheduleId(rs.getInt("commandScheduleId"));
             retVal.setStartTimeCronString(rs.getString("startTimeCronString"));
-            String periodStr = rs.getString("period");
-            ReadablePeriod period = SimplePeriodFormat.getConfigPeriodFormatter().parsePeriod(periodStr);
-            retVal.setRunPeriod(period);
-            periodStr = rs.getString("delayPeriod");
-            period = SimplePeriodFormat.getConfigPeriodFormatter().parsePeriod(periodStr);
-            retVal.setDelayPeriod(period);
-            retVal.setEnabled(rs.getBoolean("enabled"));
+            retVal.setRunPeriod(rs.getPeriod("runPeriod"));
+            retVal.setDelayPeriod(rs.getPeriod("delayPeriod"));
+            retVal.setEnabled(rs.getYNBoolean("enabled"));
             return retVal;
         }
     };
@@ -72,7 +62,7 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
     public CommandSchedule getById(int commandScheduleId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT commandScheduleId, startTimeCronString,");
-        sql.append(  "period, pagingDelayInSeconds, enabled");
+        sql.append(  "runPeriod, delayPeriod, enabled");
         sql.append("FROM commandSchedule");
         sql.append("WHERE commandScheduleId").eq(commandScheduleId);
         return yukonJdbcTemplate.queryForObject(sql, rowMapper);
@@ -82,7 +72,7 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
     public List<CommandSchedule> getAll() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT commandScheduleId, startTimeCronString,");
-        sql.append(  "period, pagingDelayInSeconds, enabled");
+        sql.append(  "runPeriod, delayPeriod, enabled");
         sql.append("FROM commandSchedule");
         return yukonJdbcTemplate.query(sql, rowMapper);
     }
@@ -91,9 +81,9 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
     public List<CommandSchedule> getAllEnabled() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT commandScheduleId, startTimeCronString,");
-        sql.append(  "period, pagingDelayInSeconds, enabled");
+        sql.append(  "runPeriod, delayPeriod, enabled");
         sql.append("FROM commandSchedule");
-        sql.append("WHERE enabledj = 'y'");
+        sql.append("WHERE enabled = 'y'");
         return yukonJdbcTemplate.query(sql, rowMapper);
     }
 
@@ -105,7 +95,7 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
     @PostConstruct
     public void init() {
         dbTemplate = new SimpleTableAccessTemplate<CommandSchedule>(yukonJdbcTemplate,
-                                                                            nextValueHelper);
+                                                                    nextValueHelper);
         dbTemplate.withTableName("commandSchedule");
         dbTemplate.withFieldMapper(fieldMapper);
         dbTemplate.withPrimaryKeyField("commandScheduleId");
