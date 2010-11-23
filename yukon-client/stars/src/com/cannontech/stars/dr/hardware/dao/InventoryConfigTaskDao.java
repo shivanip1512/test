@@ -13,4 +13,8 @@ public interface InventoryConfigTaskDao {
     public InventoryConfigTask create(String taskName, InventoryCollection inventoryCollection);
 
     public void update(InventoryConfigTask task);
+
+    public int delete(int taskId);
+
+    public InventoryConfigTask findTask(String name);
 }

@@ -8,11 +8,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.common.deviceReconfig.dao.DeviceReconfigMonitorDao;
-import com.cannontech.common.deviceReconfig.model.DeviceReconfigMonitor;
 import com.cannontech.common.events.loggers.DeviceReconfigEventLogService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
+import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -21,7 +21,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 @CheckRoleProperty(YukonRoleProperty.DEVICE_RECONFIG)
 public class DeviceReconfigMonitorsWidget extends WidgetControllerBase {
     
-    private DeviceReconfigMonitorDao deviceReconfigMonitorDao;
+    private InventoryConfigTaskDao inventoryConfigTaskDao;
     private DeviceReconfigEventLogService deviceReconfigEventLogService;
 
     @Override
@@ -29,18 +29,18 @@ public class DeviceReconfigMonitorsWidget extends WidgetControllerBase {
 
         ModelAndView mav = new ModelAndView("deviceReconfigMonitorsWidget/render.jsp");
 
-        List<DeviceReconfigMonitor> monitors = deviceReconfigMonitorDao.getAll();
-        mav.addObject("monitors", monitors);
+        List<InventoryConfigTask> tasks = inventoryConfigTaskDao.getAll();
+        mav.addObject("tasks", tasks);
 
         return mav;
     }
 
     public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        int monitorId = WidgetParameterHelper.getRequiredIntParameter(request, "monitorId");
+        int taskId = WidgetParameterHelper.getRequiredIntParameter(request, "taskId");
         
-        String name = deviceReconfigMonitorDao.getById(monitorId).getName();
-        deviceReconfigMonitorDao.delete(monitorId);
+        String name = inventoryConfigTaskDao.getById(taskId).getTaskName();
+        inventoryConfigTaskDao.delete(taskId);
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         deviceReconfigEventLogService.taskDeleted(userContext.getYukonUser(), name);
@@ -50,8 +50,8 @@ public class DeviceReconfigMonitorsWidget extends WidgetControllerBase {
     }
 
     @Autowired
-    public void setDeviceReconfigMonitorDao(DeviceReconfigMonitorDao deviceReconfigMonitorDao) {
-        this.deviceReconfigMonitorDao = deviceReconfigMonitorDao;
+    public void setInventoryConfigTaskDao(InventoryConfigTaskDao inventoryConfigTaskDao) {
+        this.inventoryConfigTaskDao = inventoryConfigTaskDao;
     }
     
     @Autowired

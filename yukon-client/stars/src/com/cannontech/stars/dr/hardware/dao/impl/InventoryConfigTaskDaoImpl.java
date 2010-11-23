@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,7 +60,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
             return retVal;
         }
     };
-
+    
     @Override
     public InventoryConfigTask getById(int inventoryConfigTaskId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -68,6 +69,20 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
         sql.append("FROM inventoryConfigTask");
         sql.append("WHERE inventoryConfigTaskId").eq(inventoryConfigTaskId);
         return yukonJdbcTemplate.queryForObject(sql, rowMapper);
+    }
+
+    @Override
+    public InventoryConfigTask findTask(String taskName) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT inventoryConfigTaskId, taskName,");
+        sql.append(  "numberOfItems, numberOfItemsProcessed");
+        sql.append("FROM inventoryConfigTask");
+        sql.append("WHERE TaskName").eq(taskName);
+        try {
+            return yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
@@ -106,6 +121,15 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     @Transactional
     public void update(InventoryConfigTask task) {
         dbTemplate.save(task);
+    }
+    
+    @Override
+    public int delete(int taskId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM InventoryConfigTask");
+        sql.append("WHERE InventoryConfigTaskId").eq(taskId);
+        
+        return yukonJdbcTemplate.update(sql);
     }
 
     @PostConstruct

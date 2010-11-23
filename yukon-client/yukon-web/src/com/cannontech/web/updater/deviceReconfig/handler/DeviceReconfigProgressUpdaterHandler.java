@@ -1,41 +1,38 @@
 package com.cannontech.web.updater.deviceReconfig.handler;
 
+import java.text.DecimalFormat;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.deviceReconfig.dao.DeviceReconfigMonitorDao;
-import com.cannontech.common.deviceReconfig.model.DeviceReconfigMonitor;
-import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
+import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorUpdaterType;
 
 public class DeviceReconfigProgressUpdaterHandler implements DeviceReconfigUpdaterHandler {
 
-    private DeviceReconfigMonitorDao deviceReconfigMonitorDao;
+    private InventoryConfigTaskDao inventoryConfigTaskDao;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @Override
-    public String handle(int monitorId, YukonUserContext userContext) {
+    public String handle(int taskId, YukonUserContext userContext) {
 
-        String progress = "N/A";
+        DecimalFormat format = new DecimalFormat("##0%");
+            
+        InventoryConfigTask inventoryConfigTask = inventoryConfigTaskDao.getById(taskId);
+        int itemsProcessed = inventoryConfigTask.getNumberOfItemsProcessed();
         
-        try {
-            
-            DeviceReconfigMonitor deviceReconfigMonitor = deviceReconfigMonitorDao.getById(monitorId);
-            
-            
-        } catch (NotFoundException e) {
-            // TODO
+        if( itemsProcessed == inventoryConfigTask.getNumberOfItems()) {
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String complete = messageSourceAccessor.getMessage("yukon.web.widgets.deviceReconfigMonitorsWidget.complete");
+            return complete;
         }
+            
+        double percentComplete = (new Double(itemsProcessed).doubleValue() / new Double(inventoryConfigTask.getNumberOfItems()).doubleValue()) * 100;
         
-        /* TEST */
-        if(monitorId == 0) {
-            progress = "In Progress 47%";
-        } else if (monitorId == 1) {
-            progress = "In Progress 16%";
-        } else if (monitorId == 2) {
-            progress = "Complete";
-        }
-        
-        return progress;
+        return format.format(percentComplete);
     }
 
     @Override
@@ -44,8 +41,13 @@ public class DeviceReconfigProgressUpdaterHandler implements DeviceReconfigUpdat
     }
     
     @Autowired
-    public void setDeviceReconfigMonitorDao(DeviceReconfigMonitorDao deviceReconfigMonitorDao) {
-        this.deviceReconfigMonitorDao = deviceReconfigMonitorDao;
+    public void setInventoryConfigTaskDao(InventoryConfigTaskDao inventoryConfigTaskDao) {
+        this.inventoryConfigTaskDao = inventoryConfigTaskDao;
+    }
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
     }
     
 }

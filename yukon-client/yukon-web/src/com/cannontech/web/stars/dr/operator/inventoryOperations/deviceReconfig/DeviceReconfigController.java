@@ -20,6 +20,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
+import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
 import com.cannontech.stars.dr.hardware.model.CommandSchedule;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
@@ -36,6 +37,7 @@ public class DeviceReconfigController {
     private DeviceReconfigOptionsValidator validator;
     private CommandScheduleDao commandScheduleDao;
     private DeviceReconfigEventLogService deviceReconfigEventLogService;
+    private InventoryConfigTaskDao inventoryConfigTaskDao;
 
     @RequestMapping(value="/operator/inventory/inventoryOperations/deviceReconfig/setup", method=RequestMethod.GET)
     public String setup(HttpServletRequest request, ModelMap modelMap) throws ServletRequestBindingException {
@@ -65,7 +67,7 @@ public class DeviceReconfigController {
             return "operator/inventory/inventoryOperations/deviceReconfig/setup.jsp";
         }
         
-        /* TODO add with dao */
+        inventoryConfigTaskDao.create(deviceReconfigOptions.getName(), inventoryCollectionFactory.createCollection(request));
         
         /* Log Event */
         deviceReconfigEventLogService.taskCreated(userContext.getYukonUser(), deviceReconfigOptions.getName());
@@ -109,4 +111,10 @@ public class DeviceReconfigController {
     public void setDeviceReconfigEventLogService(DeviceReconfigEventLogService deviceReconfigEventLogService) {
         this.deviceReconfigEventLogService = deviceReconfigEventLogService;
     }
+    
+    @Autowired
+    public void setInventoryConfigTaskDao(InventoryConfigTaskDao inventoryConfigTaskDao) {
+        this.inventoryConfigTaskDao = inventoryConfigTaskDao;
+    }
+    
 }

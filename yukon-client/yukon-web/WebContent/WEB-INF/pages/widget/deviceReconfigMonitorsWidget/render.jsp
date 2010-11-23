@@ -8,38 +8,42 @@
 <c:set var="removeImgHover" value="/WebConfig/yukon/Icons/delete_over.gif"/>
 
 <c:choose>
-    <c:when test="${empty monitors}">
-
+    <c:when test="${empty tasks}">
+        <div>
+            <i:inline key=".noTasks"/>
+        </div>
     </c:when>
 
     <c:otherwise>
         <table class="compactResultsTable">
     
             <tr>
-                <th><i:inline key=".monitorName"/></th>
+                <th><i:inline key=".taskName"/></th>
                 <th><i:inline key=".status"/></th>
                 <th nowrap="nowrap"><i:inline key=".deviceCount"/></th>
                 <th class="removeColumn"><i:inline key=".remove"/></th>
             </tr>
         
-            <c:forEach var="monitor" items="${monitors}">
+            <c:forEach var="task" items="${tasks}">
             
                 <tr>
                     
                     <td>
-                        <spring:escapeBody htmlEscape="true">${monitor.name}</spring:escapeBody>
+                        <spring:escapeBody htmlEscape="true">${task.taskName}</spring:escapeBody>
                     </td>
                     
                     <td nowrap="nowrap">
-                        <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${monitor.id}/PROGRESS"/>
+                        <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/STATUS_CLASS">
+                            <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/PROGRESS"/>
+                        </cti:classUpdater>
                     </td>
                     
-                    <td>${monitor.deviceCount}</td>
+                    <td>${task.numberOfItems}</td>
                     
                     <td class="removeColumn">
-                        <cti:msg2 key=".delete" var="deleteTitle" argument="${monitor.name}"/>
-                        <cti:msg2 key=".confirmDelete" var="confirmText" argument="${monitor.name}"/>
-                        <tags:widgetActionRefreshImage method="delete" imgSrc="${removeImg}" imgSrcHover="${removeImgHover}" monitorId="${monitor.id}" confirmText="${confirmText}" title="${deleteTitle}"/>
+                        <cti:msg2 key=".delete" var="deleteTitle" argument="${task.taskName}"/>
+                        <cti:msg2 key=".confirmDelete" var="confirmText" argument="${task.taskName}"/>
+                        <tags:widgetActionRefreshImage method="delete" imgSrc="${removeImg}" imgSrcHover="${removeImgHover}" taskId="${task.inventoryConfigTaskId}" confirmText="${confirmText}" title="${deleteTitle}"/>
                     </td>
                     
                 </tr>

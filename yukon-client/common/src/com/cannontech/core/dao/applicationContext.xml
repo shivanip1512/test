@@ -182,8 +182,6 @@
 
   <bean id="statusPointMonitorDao" class="com.cannontech.amr.statusPointMonitoring.dao.impl.StatusPointMonitorDaoImpl"/>
   
-  <bean id="deviceReconfigMonitorDao" class="com.cannontech.common.deviceReconfig.dao.impl.DeviceReconfigMonitorDaoImpl"/>
-
   <bean id="persistedSystemValueDaoImpl" class="com.cannontech.core.dao.impl.PersistedSystemValueDaoImpl"/>
 
   <bean class="com.cannontech.common.survey.dao.impl.SurveyDaoImpl"/>

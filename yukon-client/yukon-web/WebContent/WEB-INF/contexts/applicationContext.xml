@@ -1388,6 +1388,7 @@
     
     <bean id="deviceReconfigMonitorBackingService" class="com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorBackingService"/>
     <bean id="deviceReconfigProgressUpdaterHandler" class="com.cannontech.web.updater.deviceReconfig.handler.DeviceReconfigProgressUpdaterHandler"/>
+    <bean id="deviceReconfigStatusClassUpdaterHandler" class="com.cannontech.web.updater.deviceReconfig.handler.DeviceReconfigStatusClassUpdaterHandler"/>
     <bean id="deviceReconfigOptionsValidator" class="com.cannontech.web.stars.dr.operator.inventoryOperations.deviceReconfig.DeviceReconfigOptionsValidator"/>
     <bean id="commandScheduleValidator" class="com.cannontech.web.stars.dr.operator.inventoryOperations.CommandScheduleValidator"/>
     
