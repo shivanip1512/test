@@ -10,6 +10,7 @@ import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.RootZoneExistsException;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
+import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
 import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
@@ -203,6 +204,11 @@ public class ZoneServiceImpl implements ZoneService {
     @Override
     public void unassignBank(int bankId) {
         zoneDao.removeBankToZoneMapping(bankId);
+    }
+    
+    @Override
+    public List<CcEvent> getLatestEvents(int zoneId,int subBusId, int rowLimit) {
+        return zoneDao.getLatestEvents(zoneId, subBusId, rowLimit);
     }
     
     private void sendZoneChangeDbMessage(int zoneId, DbChangeType dbChangeType) {

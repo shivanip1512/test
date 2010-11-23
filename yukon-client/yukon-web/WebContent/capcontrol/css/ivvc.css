@@ -52,3 +52,9 @@ div.zoneHierarchy li div div div {
 	right: 200%;
 	border: none;
 }
+
+div.historyContainer {
+    max-height: 98px;
+    overflow: auto;
+    overflow-x: hidden;
+}

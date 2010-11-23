@@ -5,6 +5,7 @@ import java.util.List;
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
+import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneDto;
 import com.cannontech.capcontrol.model.ZoneHierarchy;
@@ -107,4 +108,14 @@ public interface ZoneService {
      * @return
      */
     public List<Integer> getMonitorPointsForBank(int bankId);
+    
+    /**
+     * Returns the latest CCEvents for the zone and subBus passed in. 
+     * It will limit the return by rowLimit
+     * @param zoneId
+     * @param subBusId
+     * @param rowLimit
+     * @return
+     */
+    List<CcEvent> getLatestEvents(int zoneId, int subBusId, int rowLimit);
 }

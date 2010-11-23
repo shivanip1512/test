@@ -14,6 +14,8 @@ import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
+import com.cannontech.capcontrol.model.CcEvent;
+import com.cannontech.capcontrol.model.CcEventType;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
@@ -92,6 +94,19 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         	pointToZone.setGraphPositionOffset(rs.getDouble("GraphPositionOffset"));
         	pointToZone.setDistance(rs.getDouble("Distance"));
             return pointToZone;
+        }
+    };
+    
+    private static YukonRowMapper<CcEvent> ccEventRowMapper = 
+        new YukonRowMapper<CcEvent>() {
+        @Override
+        public CcEvent mapRow(YukonResultSet rs) throws SQLException {
+            CcEvent ccEvent = new CcEvent();
+            
+            ccEvent.setText(rs.getString("Text"));//  setPointId(rs.getInt("PointId"));
+            ccEvent.setDateTime(rs.getDate("DateTime"));
+            
+            return ccEvent;
         }
     };
     
@@ -366,6 +381,42 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         List<Integer> bankIds = Lists.newArrayList();
         bankIds.add(bankId);
         removeBankToZoneMappings(bankIds);
+    }
+    
+    @Override
+    public List<CcEvent> getLatestEvents(int zoneId, int subBusId, int rowLimit) {       
+        final List<CcEventType> eventTypes = Lists.newArrayList( new CcEventType[] {CcEventType.BankStateUpdate, 
+                                                      CcEventType.CommandSent, 
+                                                      CcEventType.ManualCommand});
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EVResults.Text,EVResults.DateTime");
+        sql.append("FROM (");
+        sql.append("  SELECT EV.Text,EV.DateTime,ROW_NUMBER() over (ORDER BY EV.DateTime desc) rn");
+        sql.append("  FROM CCEventLog EV ");
+        sql.append("  WHERE EV.EventType").eq(CcEventType.IvvcCommStatus);
+        sql.append("    AND EV.SubId").eq(subBusId);
+        sql.append("  UNION");
+        sql.append("  SELECT EV.Text,EV.DateTime,ROW_NUMBER() over (ORDER BY EV.DateTime desc) rn");
+        sql.append("  FROM CCEventLog EV");
+        sql.append("  JOIN Point P ON  EV.PointId = P.PointId");
+        sql.append("    AND EV.EventType").in(eventTypes);
+        sql.append("  JOIN YukonPAObject PAO ON P.PAObjectId = PAO.PAObjectId");
+        sql.append("  WHERE PAO.PAObjectId IN (SELECT DeviceId ");
+        sql.append("                           FROM CapBankToZoneMapping ");
+        sql.append("                           WHERE ZoneId").eq(zoneId);
+        sql.append("                           )");
+        sql.append("UNION ");
+        sql.append("  SELECT EV.Text,EV.DateTime,ROW_NUMBER() over (ORDER BY EV.DateTime desc) rn");
+        sql.append("  FROM CCEventLog EV");
+        sql.append("    JOIN Zone Z ON  EV.RegulatorId = Z.RegulatorId");
+        sql.append("      AND EV.EventType").eq(CcEventType.IvvcTapOperation);
+        sql.append("  WHERE Z.ZoneId").eq(zoneId); 
+        sql.append(") EVResults");
+        sql.append("WHERE EVResults.rn").lte(rowLimit);
+        sql.append("ORDER BY EVResults.DateTime desc;");
+
+        return yukonJdbcTemplate.query(sql,ccEventRowMapper);
     }
     
     private void removeBankToZoneMappings(List<Integer> bankIds) {

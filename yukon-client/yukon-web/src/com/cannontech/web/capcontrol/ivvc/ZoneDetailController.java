@@ -11,6 +11,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.capcontrol.model.CapBankPointDelta;
+import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.capcontrol.service.ZoneService;
@@ -62,7 +63,7 @@ public class ZoneDetailController {
         VoltageRegulatorFlags regulatorFlags = cache.getVoltageRegulatorFlags(zone.getRegulatorId());
         
         setupDetails(model,regulatorFlags);
-        setupIvvcEvents(model);
+        setupIvvcEvents(model,zone.getId(),zone.getSubstationBusId());
         setupCapBanks(model,cache,zone);
         setupBreadCrumbs(model, cache, zone, isSpecialArea);
         setupDeltas(model,request,cache,zone);
@@ -117,9 +118,12 @@ public class ZoneDetailController {
         model.addAttribute("disableRemoteCommandHolder",CommandHolder.LTC_REMOTE_DISABLE);
     }
     
-    private void setupIvvcEvents(ModelMap model) {
+    private void setupIvvcEvents(ModelMap model,int zoneId,int subBusId) {
+        final int rowLimit = 20;
         
-        return;
+        List<CcEvent> events = zoneService.getLatestEvents(zoneId, subBusId, rowLimit);
+        
+        model.addAttribute("events", events);
     }
     
     private void setupCapBanks(ModelMap model, CapControlCache cache, Zone zone) {
