@@ -4,7 +4,7 @@
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.roles.consumer.ResidentialCustomerRole" %>
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
-<%@ page import="com.cannontech.stars.dr.hardware.model.HardwareType" %>
+<%@ page import="com.cannontech.common.inventory.HardwareType" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 
 <jsp:useBean id="wareAdmin" scope="page" class="com.cannontech.stars.web.bean.WarehouseAdminBean" />
