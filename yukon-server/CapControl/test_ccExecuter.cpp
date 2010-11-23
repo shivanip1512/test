@@ -150,7 +150,7 @@ struct TestCapControlBusStore : public CtiCCSubstationBusStore
         manager->setAttributeService( & attributes );
 
         setVoltageRegulatorManager(manager);
-        reloadVoltageRegulatorFromDatabase(-1);   // reload all 
+        reloadVoltageRegulatorFromDatabase(-1);   // reload all
     }
 };
 
@@ -170,7 +170,7 @@ struct TestCapControlBusStore_ErrorCase : public CtiCCSubstationBusStore
         manager->setAttributeService( & attributes );
 
         setVoltageRegulatorManager(manager);
-        reloadVoltageRegulatorFromDatabase(-1);   // reload all 
+        reloadVoltageRegulatorFromDatabase(-1);   // reload all
     }
 };
 
@@ -324,14 +324,16 @@ BOOST_AUTO_TEST_CASE(test_sendVolatgeRegulatorTapPosition_Success)
     theStore->initialize();
 
     std::vector<CtiMessage*>        toDispatch;
+    std::vector<CtiCCEventLogMsg*>  events;
     std::vector<CtiRequestMsg*>     requests;
 
     CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE, 1);//Consumed in executor.
     CtiCCCommandExecutor commandExecutor(commandMsg);
 
-    BOOST_CHECK_NO_THROW( commandExecutor.sendVoltageRegulatorTapPosition(commandMsg->getCommand(),toDispatch,requests) );
+    BOOST_CHECK_NO_THROW( commandExecutor.sendVoltageRegulatorTapPosition(commandMsg->getCommand(),toDispatch,events,requests) );
 
     BOOST_CHECK_EQUAL( 1, toDispatch.size() );
+    BOOST_CHECK_EQUAL( 1, events.size() );
     BOOST_CHECK_EQUAL( 1, requests.size()   );
 
     CtiCCSubstationBusStore::deleteInstance();
@@ -345,15 +347,17 @@ BOOST_AUTO_TEST_CASE(test_sendVolatgeRegulatorTapPosition_NoVoltageRegulator_Exc
     theStore->initialize();
 
     std::vector<CtiMessage*>        toDispatch;
+    std::vector<CtiCCEventLogMsg*>  events;
     std::vector<CtiRequestMsg*>     requests;
 
     CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE, 2);//Consumed in executor.
     CtiCCCommandExecutor commandExecutor(commandMsg);
 
-    BOOST_CHECK_THROW( commandExecutor.sendVoltageRegulatorTapPosition(commandMsg->getCommand(),toDispatch,requests),
+    BOOST_CHECK_THROW( commandExecutor.sendVoltageRegulatorTapPosition(commandMsg->getCommand(),toDispatch,events,requests),
                        NoVoltageRegulator );
 
     BOOST_CHECK_EQUAL( 0, toDispatch.size() );
+    BOOST_CHECK_EQUAL( 0, events.size() );
     BOOST_CHECK_EQUAL( 0, requests.size()   );
 
     CtiCCSubstationBusStore::deleteInstance();
@@ -367,15 +371,17 @@ BOOST_AUTO_TEST_CASE(test_sendVolatgeRegulatorTapPosition_MissingPointAttribute_
     theStore->initialize();
 
     std::vector<CtiMessage*>        toDispatch;
+    std::vector<CtiCCEventLogMsg*>  events;
     std::vector<CtiRequestMsg*>     requests;
 
     CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE, 1);//Consumed in executor.
     CtiCCCommandExecutor commandExecutor(commandMsg);
 
-    BOOST_CHECK_THROW( commandExecutor.sendVoltageRegulatorTapPosition(commandMsg->getCommand(),toDispatch,requests),
+    BOOST_CHECK_THROW( commandExecutor.sendVoltageRegulatorTapPosition(commandMsg->getCommand(),toDispatch,events,requests),
                        MissingPointAttribute );
 
     BOOST_CHECK_EQUAL( 0, toDispatch.size() );
+    BOOST_CHECK_EQUAL( 0, events.size() );
     BOOST_CHECK_EQUAL( 0, requests.size()   );
 
     CtiCCSubstationBusStore::deleteInstance();

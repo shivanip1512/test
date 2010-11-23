@@ -3558,7 +3558,7 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
     static const std::string insertSql = "insert into cceventlog values ( "
                                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
                                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                                           "?, ?)";
+                                           "?, ?, ?)";
 
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseWriter dbInserter(connection, insertSql);
@@ -3584,7 +3584,8 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
                  << msg->getCVar()
                  << msg->getStationId()
                  << msg->getAreaId()
-                 << msg->getSpecialAreaId();
+                 << msg->getSpecialAreaId()
+                 << msg->getRegulatorId();
 
     if( _CC_DEBUG & CC_DEBUG_DATABASE )
     {

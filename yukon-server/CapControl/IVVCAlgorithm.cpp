@@ -342,7 +342,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             {
                 isControlled = subbus->isAlreadyControlled();
             }
-            else 
+            else
             {
                 state->setState(IVVCState::IVVC_WAIT);
 
@@ -539,7 +539,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                         ccEvents->insert(
                             new CtiCCEventLogMsg(
                                     0,
-                                    pv.first,   
+                                    pv.first,
                                     spAreaId,
                                     areaId,
                                     stationId,
@@ -588,8 +588,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             {
                 state->_tapOpDelay = timeNow;
 
-                CtiMultiMsg* ccEvents = new CtiMultiMsg();
-
                 for each ( const IVVCState::TapOperationZoneMap::value_type & operation in state->_tapOps )
                 {
                     long zoneID     = operation.first;
@@ -606,28 +604,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                         if ( regulatorId > 0 )
                         {
-                            CtiCCExecutorFactory::createExecutor( 
+                            CtiCCExecutorFactory::createExecutor(
                                 new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER, regulatorId ) )->execute();
-                            
-                            {   // Write to the event log.
-                                LONG stationId, areaId, spAreaId;
-                                store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
-
-                                ccEvents->insert(
-                                    new CtiCCEventLogMsg(
-                                            0,
-                                            regulatorId,
-                                            spAreaId,
-                                            areaId,
-                                            stationId,
-                                            subbus->getPaoId(),
-                                            0,
-                                            capControlIvvcTapOperation,
-                                            0,
-                                            0,
-                                            "IVVC Lower Tap Operation",
-                                            "cap control") );
-                            }
 
                             if (_CC_DEBUG & CC_DEBUG_IVVC)
                             {
@@ -645,28 +623,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                         if ( regulatorId > 0 )
                         {
-                            CtiCCExecutorFactory::createExecutor( 
+                            CtiCCExecutorFactory::createExecutor(
                                 new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE, regulatorId ) )->execute();
-
-                            {   // Write to the event log.
-                                LONG stationId, areaId, spAreaId;
-                                store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
-
-                                ccEvents->insert(
-                                    new CtiCCEventLogMsg(
-                                            0,
-                                            regulatorId,
-                                            spAreaId,
-                                            areaId,
-                                            stationId,
-                                            subbus->getPaoId(),
-                                            0,
-                                            capControlIvvcTapOperation,
-                                            0,
-                                            0,
-                                            "IVVC Raise Tap Operation",
-                                            "cap control") );
-                            }
 
                             if (_CC_DEBUG & CC_DEBUG_IVVC)
                             {
@@ -684,8 +642,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     state->setLastTapOpTime( timeNow );
                     state->setState(IVVCState::IVVC_WAIT);
                 }
-
-                sendEvents(dispatchConnection, ccEvents);
             }
             break;
         }
@@ -804,35 +760,35 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
     try
     {
         // Process each zones regulator, CBCs and extra voltage points
-    
+
         Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
-    
+
         for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
         {
             ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
-    
+
             // Regulator
-    
+
             VoltageRegulatorManager::SharedPtr regulator = regulatorManager->getVoltageRegulator( zone->getRegulatorId() );
-    
+
             long voltagePointId = regulator->getPointByAttribute(PointAttribute::Voltage).getPointId();
-    
+
             pointRequests.insert( PointRequest(voltagePointId, RegulatorRequestType, ! sendScan) );
-    
+
             if ( sendScan )
             {
                 CtiCCExecutorFactory::createExecutor( new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_INTEGRITY_SCAN,
                                                                         zone->getRegulatorId() ) )->execute();
             }
-    
+
             // 2-way CBCs
-    
+
             Zone::IdSet capbankIds = zone->getBankIds();
-    
+
             for each ( const Zone::IdSet::value_type & ID in capbankIds )
             {
                 CtiCCCapBankPtr bank    = store->findCapBankByPAObjectID(ID);
-    
+
                 for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
                 {
                     if ( point->getPointId() > 0 )
@@ -846,11 +802,11 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
                                                                             bank->getControlDeviceId() ) )->execute();
                 }
             }
-    
+
             // Additional voltage points
-    
+
             Zone::IdSet additionalVoltagePointIds = zone->getPointIds();
-    
+
             for each ( const Zone::IdSet::value_type & ID in additionalVoltagePointIds )
             {
                 pointRequests.insert( PointRequest(ID, OtherRequestType) );
@@ -1047,7 +1003,7 @@ bool IVVCAlgorithm::isVoltageRegulatorInRemoteMode(const long regulatorID) const
     {
         CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-        VoltageRegulatorManager::SharedPtr regulator = 
+        VoltageRegulatorManager::SharedPtr regulator =
                 store->getVoltageRegulatorManager()->getVoltageRegulator(regulatorID);
 
         LitePoint point = regulator->getPointByAttribute(PointAttribute::AutoRemoteControl);
@@ -1158,7 +1114,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
             bool isCapBankClosed = (currentBank->getControlStatus() == CtiCCCapBank::Close ||
                                     currentBank->getControlStatus() == CtiCCCapBank::CloseQuestionable);
 
-            if ( currentBank->getIgnoreFlag() && 
+            if ( currentBank->getIgnoreFlag() &&
                  CtiTime::now() > CtiTime( currentBank->getLastStatusChangeTime().seconds() + (_REFUSAL_TIMEOUT * 60) ) )
             {
                 currentBank->setIgnoreFlag(FALSE);
@@ -1322,7 +1278,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
         state->_estimated.clear();     // done with this data
 
-        tapOperation(state, subbus, strategy, pointValues);    
+        tapOperation(state, subbus, strategy, pointValues);
     }
 
     return true;
@@ -1372,7 +1328,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
 
         try
         {
-            VoltageRegulatorManager::SharedPtr regulator = 
+            VoltageRegulatorManager::SharedPtr regulator =
                     store->getVoltageRegulatorManager()->getVoltageRegulator( zone->getRegulatorId() );
 
             long voltagePointId = regulator->getPointByAttribute(PointAttribute::Voltage).getPointId();

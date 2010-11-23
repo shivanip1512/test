@@ -121,7 +121,7 @@ class CtiCCCommandExecutor : public CtiCCExecutor
         // These should never be called outside the class
         void scanVoltageRegulatorIntegrity    (const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
         void sendVoltageRegulatorRemoteControl(const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
-        void sendVoltageRegulatorTapPosition  (const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiRequestMsg*> &requests);
+        void sendVoltageRegulatorTapPosition  (const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiCCEventLogMsg*> &events, std::vector<CtiRequestMsg*> &requests);
         void sendVoltageRegulatorKeepAlive    (const LONG commandType, std::vector<CtiMessage*> &toDispatch, std::vector<CtiRequestMsg*> &requests);
 
     private:

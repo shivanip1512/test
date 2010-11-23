@@ -302,6 +302,13 @@ public:
         _feederId(feederId), _eventType(eventType), _seqId(seqId), _value(value), _text(text), _userName(userName),
         _kvarBefore(kvarBefore), _kvarAfter(kvarAfter), _kvarChange(kvarChange), _ipAddress(ipAddress),
         _actionId(actionId), _stateInfo(stateInfo), _aVar(aVar), _bVar(bVar), _cVar(cVar) { }; //provided for polymorphic persitence only
+
+    CtiCCEventLogMsg(string text, int regulatorId = 0) : _userName("cap control"), _text(text), _logId(0),
+        _pointId(SYS_PID_CAPCONTROL), _spAreaId(0),_areaId(0),_stationId(0),_subId(0),
+        _feederId(0), _eventType(capControlIvvcTapOperation), _seqId(0), _value(0),
+        _kvarBefore(0), _kvarAfter(0), _kvarChange(0),
+        _actionId(0), _aVar(0), _bVar(0), _cVar(0), _regulatorId(regulatorId) { };
+
     CtiCCEventLogMsg (const CtiCCEventLogMsg& aRef);
 
     LONG getLogId() const { return _logId; };
@@ -326,7 +333,7 @@ public:
     DOUBLE getAVar() const { return _aVar; };
     DOUBLE getBVar() const { return _bVar; };
     DOUBLE getCVar() const { return _cVar; };
-
+    int getRegulatorId() const { return _regulatorId; };
 
     void setLogId(LONG id) { _logId = id; return;};
     void setActionId(LONG id) { _actionId = id; return;};
@@ -366,6 +373,7 @@ private:
     string _ipAddress;
     LONG _actionId;
     string _stateInfo;
+    int _regulatorId;
 
     DOUBLE _aVar;
     DOUBLE _bVar;

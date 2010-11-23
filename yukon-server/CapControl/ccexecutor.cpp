@@ -8105,7 +8105,7 @@ void CtiCCCommandExecutor::sendVoltageRegulatorCommands(const LONG command)
             case CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER:
             {
                 commandName += "Tap Position";
-                sendVoltageRegulatorTapPosition(command, toDispatch, requests);
+                sendVoltageRegulatorTapPosition(command, toDispatch, events, requests);
                 break;
             }
             case CtiCCCommand::VOLTAGE_REGULATOR_KEEP_ALIVE:
@@ -8163,7 +8163,7 @@ void CtiCCCommandExecutor::scanVoltageRegulatorIntegrity(const LONG             
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    
+
     VoltageRegulatorManager::SharedPtr regulator = store->getVoltageRegulatorManager()->getVoltageRegulator( _command->getId() );
 
     LitePoint point = regulator->getPointByAttribute(PointAttribute::Voltage);
@@ -8228,7 +8228,7 @@ void CtiCCCommandExecutor::sendVoltageRegulatorRemoteControl(const LONG         
 
     //Command Action
     std::string commandString = "putvalue analog " + CtiNumStr( point.getPointOffset() ) + enableString;
-    
+
     CtiRequestMsg * reqMsg = createPorterRequestMsg( point.getPointId(), commandString );
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
@@ -8236,6 +8236,7 @@ void CtiCCCommandExecutor::sendVoltageRegulatorRemoteControl(const LONG         
 
 void CtiCCCommandExecutor::sendVoltageRegulatorTapPosition(const LONG                  commandType,
                                                            std::vector<CtiMessage*>    &toDispatch,
+                                                           std::vector<CtiCCEventLogMsg*> &events,
                                                            std::vector<CtiRequestMsg*> &requests)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -8279,6 +8280,8 @@ void CtiCCCommandExecutor::sendVoltageRegulatorTapPosition(const LONG           
                                             CapControlLogType,
                                             SignalEvent,
                                             _command->getUser() ) );
+
+    events.push_back(new CtiCCEventLogMsg(text,regulator->getPaoId()));
 
     std::string commandString = "control close select pointid " + CtiNumStr( point.getPointId() );
 

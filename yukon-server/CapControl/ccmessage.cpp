@@ -546,7 +546,8 @@ void CtiCCEventLogMsg::restoreGuts(RWvistream& strm)
          >> _cVar
          >> _stationId
          >> _areaId
-         >> _spAreaId;
+         >> _spAreaId
+         >> _regulatorId;
 
       return;
 }
@@ -580,7 +581,8 @@ void CtiCCEventLogMsg::saveGuts(RWvostream& strm) const
          << _cVar
          << _stationId
          << _areaId
-         << _spAreaId;
+         << _spAreaId
+         << _regulatorId;
 
     return;
 }
@@ -616,6 +618,8 @@ CtiCCEventLogMsg& CtiCCEventLogMsg::operator=(const CtiCCEventLogMsg& right)
         _aVar = right._aVar;
         _bVar = right._bVar;
         _cVar = right._cVar;
+
+        _regulatorId = right._regulatorId;
 
     }
 
