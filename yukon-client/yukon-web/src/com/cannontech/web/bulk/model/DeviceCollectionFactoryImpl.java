@@ -11,8 +11,8 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import com.cannontech.common.bulk.collection.DeviceCollection;
-import com.cannontech.common.bulk.collection.DeviceCollectionType;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 
 /**
  * Implementation class for DeviceCollectionFactory

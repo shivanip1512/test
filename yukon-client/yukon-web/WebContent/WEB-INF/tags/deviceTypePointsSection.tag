@@ -1,6 +1,6 @@
 <%@ attribute name="paoTypeMasks" required="true" type="com.cannontech.web.bulk.model.PaoTypeMasks"%>
 <%@ attribute name="deviceType" required="false" type="com.cannontech.common.pao.PaoType"%>
-<%@ attribute name="deviceTypeDeviceCollection" required="false" type="com.cannontech.common.bulk.collection.DeviceCollection"%>
+<%@ attribute name="deviceTypeDeviceCollection" required="false" type="com.cannontech.common.bulk.collection.device.DeviceCollection"%>
 <%@ attribute name="columnCount" required="true" type="java.lang.Integer"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>

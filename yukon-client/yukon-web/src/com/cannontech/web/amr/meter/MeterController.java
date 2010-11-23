@@ -22,7 +22,7 @@ import com.cannontech.amr.meter.search.model.MeterSearchField;
 import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
 import com.cannontech.amr.meter.search.service.MeterSearchService;
-import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoClass;

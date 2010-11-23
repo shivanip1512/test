@@ -1,4 +1,14 @@
-
+function showInventoryCollection(popup, popupContent, url) {
+    
+    $('inventoryCollectionImg').src = '/WebConfig/yukon/Icons/indicator_arrows.gif'
+    new Ajax.Updater(popupContent, url, {method: 'get', evalScripts: true, parameters: {},
+        onComplete: function() {
+            $(popup).show();
+            $('inventoryCollectionImg').src = '/WebConfig/yukon/Icons/magnifier.gif'
+        }
+        
+    });
+}
 
 function showSelectedDevices(imgEl, divId, innerDivId, url, mag, magOverDisabled) {
 

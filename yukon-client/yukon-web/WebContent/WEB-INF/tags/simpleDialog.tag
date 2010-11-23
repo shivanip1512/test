@@ -2,6 +2,7 @@
 <%@ attribute name="id" required="true"%>
 <%@ attribute name="title"%>
 <%@ attribute name="onClose"%>
+<%@ attribute name="styleClass" required="false"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -15,4 +16,8 @@
     <c:set var="title" value="title not specified"/>
 </c:if>
 
-<tags:simplePopup id="${id}" title="${pageScope.title}" onClose="${pageScope.onClose}"/>
+<c:if test="${!empty pageScope.styleClass}">
+    <c:set var="style" value="${pageScope.styleClass}"/>
+</c:if>
+
+<tags:simplePopup id="${id}" title="${pageScope.title}" onClose="${pageScope.onClose}" styleClass="${style}"/>

@@ -31,5 +31,6 @@ public enum DataType {
     MSP_DEVICE_GROUP_SYNC,
     ACCOUNT_IMPORT,
     CAPCONTROL,
+    DEVICE_RECONFIG,
     ;
 }

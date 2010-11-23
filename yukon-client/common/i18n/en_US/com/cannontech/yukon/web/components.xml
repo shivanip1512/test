@@ -43,22 +43,38 @@
     <entry key="yukon.web.components.image.edit.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
     <entry key="yukon.web.components.image.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.gif</entry>
     <entry key="yukon.web.components.image.edit.hoverText">Edit</entry>
+    
     <entry key="yukon.web.components.image.info.imageUrl">/WebConfig/yukon/Icons/information.gif</entry>
     <entry key="yukon.web.components.image.info.hoverUrl">/WebConfig/yukon/Icons/information_over.gif</entry>
     <entry key="yukon.web.components.image.info.hoverText">Info</entry>
+    
     <entry key="yukon.web.components.image.copy.imageUrl">/WebConfig/yukon/Icons/copy.gif</entry>
     <entry key="yukon.web.components.image.copy.hoverUrl">/WebConfig/yukon/Icons/copy_over.gif</entry>
     <entry key="yukon.web.components.image.copy.hoverText">Copy</entry>
+    
     <entry key="yukon.web.components.image.view.imageUrl">/WebConfig/yukon/Icons/magnifier.gif</entry>
     <entry key="yukon.web.components.image.view.hoverUrl">/WebConfig/yukon/Icons/magnifier_over.gif</entry>
     <entry key="yukon.web.components.image.view.hoverText"></entry>
+
+    <entry key="yukon.web.components.image.deviceCollection.imageUrl">/WebConfig/yukon/Icons/magnifier.gif</entry>
+    <entry key="yukon.web.components.image.deviceCollection.disabled.imageUrl">/WebConfig/yukon/Icons/indicator_arrows.gif</entry>
+    <entry key="yukon.web.components.image.deviceCollection.hoverUrl">/WebConfig/yukon/Icons/magnifier_zoom_in.gif</entry>
+    <entry key="yukon.web.components.image.deviceCollection.hoverText">View Selected Devices</entry>
+
+    <entry key="yukon.web.components.image.inventoryCollection.imageUrl">/WebConfig/yukon/Icons/magnifier.gif</entry>
+    <entry key="yukon.web.components.image.inventoryCollection.disabled.imageUrl">/WebConfig/yukon/Icons/indicator_arrows.gif</entry>
+    <entry key="yukon.web.components.image.inventoryCollection.hoverUrl">/WebConfig/yukon/Icons/magnifier_zoom_in.gif</entry>
+    <entry key="yukon.web.components.image.inventoryCollection.hoverText">View Selected Inventory</entry>
+    
     <entry key="yukon.web.components.image.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
     <entry key="yukon.web.components.image.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
     <entry key="yukon.web.components.image.add.hoverText">Add</entry>
     <entry key="yukon.web.components.image.add.label">Add</entry>
+    
     <entry key="yukon.web.components.image.remove.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
     <entry key="yukon.web.components.image.remove.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
     <entry key="yukon.web.components.image.remove.hoverText">Remove</entry>
+    
     <entry key="yukon.web.components.image.filter.imageUrl">/WebConfig/yukon/Icons/filter.gif</entry>
     <entry key="yukon.web.components.image.filter.hoverUrl">/WebConfig/yukon/Icons/filter_over.gif</entry>
     <entry key="yukon.web.components.image.filter.hoverText">Filter</entry>
@@ -114,8 +130,11 @@
 
     <entry key="yukon.web.components.tokenRequest.passwordPrompt">Password</entry>
 
+    <entry key="yukon.web.components.button.create.label">Create</entry>
     <entry key="yukon.web.components.button.ok.label">OK</entry>
+    <entry key="yukon.web.components.button.save.label">Save</entry>
     <entry key="yukon.web.components.button.cancel.label">Cancel</entry>
+    <entry key="yukon.web.components.button.delete.label">Delete</entry>
 
     <entry key="yukon.web.components.button.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
     <entry key="yukon.web.components.button.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>

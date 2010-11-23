@@ -7,7 +7,7 @@
 }
 
 td.removeColumn, th.removeColumn {
-	text-align:center;
+	text-align:center !important;
 }
 
 h2 { /*Page Header*/
@@ -932,12 +932,15 @@ table.actionArea td.leftActions {
 	white-space: nowrap;
 }
 
-a.simpleLink, span.simpleLink a {
+a.simpleLink, span.simpleLink a,
+label.simpleLink {
     text-decoration: none;
     color: black;
 }
 
-span.simpleLink > a:hover > span {
+span.simpleLink > a:hover > span,
+a.simpleLink:hover > span,
+label.simpleLink:hover > span {
     text-decoration: underline;
 }
 
@@ -1142,8 +1145,9 @@ input.formSubmit,
     padding-right: 10px;
 }
 
-button.formSubmit span {
-    vertical-align: middle;
+button.formSubmit img {
+	padding-right: 3px;
+	vertical-align: top;
 }
 
 #logOutput { 

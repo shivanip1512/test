@@ -2,6 +2,9 @@ package com.cannontech.stars.dr.hardware.model;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.inventory.InventoryCategory;
+
 /**
  * Thermostat data transfer object
  */

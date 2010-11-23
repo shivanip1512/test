@@ -1,7 +1,7 @@
 package com.cannontech.stars.dr.thermostat.model;
 
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.stars.dr.hardware.model.HardwareType;
 
 /**
  * Model object which represents a schedule for a thermostat.

@@ -12,4 +12,10 @@ public interface CommandScheduleDao {
     public List<CommandSchedule> getAllEnabled();
 
     public void save(CommandSchedule schedule);
+
+    int delete(int scheduleId);
+
+    public void disable(int scheduleId);
+    
+    public void enable(int scheduleId);
 }

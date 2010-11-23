@@ -1,0 +1,56 @@
+button.buttonGroup {
+    padding: 0px;
+    width: 160px;
+}
+
+table.selectionTable {
+    margin-top: 2px;
+}
+
+table.selectionTable td.selectionTypeCol {
+    width:200px;
+    font-weight:bold;
+}
+
+table.selectionTable th.removeColumn,
+table.selectionTable td.removeColumn {
+    width:100px;
+}
+
+div.actionsHeader {
+    font-size: 11px;
+}
+
+td.actionCell {
+    vertical-align: top;
+    padding-right: 10px;
+    padding-bottom: 10px;
+}
+
+table.inventoryOperationsLayout {
+    width: 100%;
+}
+
+table.inventoryOperationsLayout td.first,
+table.inventoryOperationsLayout td.last {
+    vertical-align: top;
+    width: 50%;
+}
+
+table.inventoryOperationsLayout td.last {
+    padding-left: 20px;
+}
+
+table.deviceReconfigLayout {
+    width: 100%;
+}
+
+table.deviceReconfigLayout td.first,
+table.deviceReconfigLayout td.last {
+    vertical-align: top;
+    width: 50%;
+}
+
+table.deviceReconfigLayout td.last {
+    padding-left: 20px;
+}

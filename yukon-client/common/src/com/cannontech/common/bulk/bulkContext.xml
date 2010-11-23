@@ -426,7 +426,7 @@
         <property name="name" value="DEVICE_TYPE"/>
     </bean>
     
-    <bean id="deviceGroupCollectionHelper" class="com.cannontech.common.bulk.collection.DeviceGroupCollectionHelperImpl"/>
+    <bean id="deviceGroupCollectionHelper" class="com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelperImpl"/>
     
     <bean id="recentResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     

@@ -187,11 +187,24 @@ public class DateFormattingServiceImpl implements DateFormattingService {
         // for periods so for now, we only support "h:mm" for periods and
         // durations.
         PeriodFormatterBuilder formatBuilder = new PeriodFormatterBuilder();
-        formatBuilder.printZeroAlways()
-                     .appendHours()
-                     .appendSuffix(":")
-                     .minimumPrintedDigits(2)
-                     .appendMinutes();
+        switch (type) {
+        
+        case HM_SHORT:
+            formatBuilder.printZeroAlways()
+            .appendHours()
+            .appendSuffix(":")
+            .minimumPrintedDigits(2)
+            .appendMinutes();
+            break;
+
+        case S:
+            formatBuilder.printZeroAlways().appendSeconds();
+            break;
+
+        default:
+            throw new IllegalArgumentException(type + " is not a valid format.");
+        }
+        
         return formatBuilder.toFormatter();
     }
 }

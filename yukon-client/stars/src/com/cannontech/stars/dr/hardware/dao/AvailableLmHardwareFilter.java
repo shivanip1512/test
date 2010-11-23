@@ -3,10 +3,10 @@ package com.cannontech.stars.dr.hardware.dao;
 import java.util.Set;
 
 import com.cannontech.common.bulk.filter.SqlFilter;
+import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.inventory.LMHardwareClass;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.stars.dr.hardware.model.HardwareType;
-import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
 
 public class AvailableLmHardwareFilter implements SqlFilter {
     

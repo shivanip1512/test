@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.MassChangeCallbackResult;
-import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.field.BulkField;
 import com.cannontech.common.bulk.field.BulkFieldService;
 import com.cannontech.common.util.RecentResultsCache;

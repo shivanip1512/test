@@ -12,7 +12,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.bulk.model.DeviceCollectionFactory;

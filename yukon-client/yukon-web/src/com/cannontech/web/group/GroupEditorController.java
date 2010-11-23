@@ -18,8 +18,8 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.common.bulk.collection.DeviceCollection;
-import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.groups.composed.dao.DeviceGroupComposedDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;

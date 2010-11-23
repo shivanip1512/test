@@ -120,12 +120,10 @@
             <link>/operator/Hardware/PurchaseTrack.jsp</link>
             <requireRoleProperty value="PURCHASING_ACCESS" />
           </option>
-          <!-- YUK-8217 waiting for full implementation
           <option name="deviceReconfig">
-            <link>/spring/stars/operator/deviceReconfig/home</link>
+            <link>/spring/stars/operator/inventory/inventoryOperations/home</link>
             <requireRoleProperty value="DEVICE_RECONFIG" />
           </option>
-          -->
 
         </options>
       </option>
@@ -678,7 +676,7 @@
       control pages.
     -->
     <skin name="INNER" />
-    <css file="css/CapcontrolGeneralStyles.css" /> <!-- normally this should be an absolute path -->
+    <css file="/capcontrol/css/CapcontrolGeneralStyles.css" />
   </module>
 
   <module name="commercialcurtailment">
@@ -1028,9 +1026,21 @@
                         </option>
                     </options>
                 </option>
+                <option name="inventory">
+                    <options>
+                        <option name="home">
+                            <!-- Future home of old stars inventory page: <link>/spring/stars/operator/inventory/home</link>-->
+                            <link>/spring/stars/operator/inventory/inventoryOperations/home</link>
+                        </option>
+                        <option name="inventoryOperations">
+                            <link>/spring/stars/operator/inventory/inventoryOperations/home</link>
+                        </option>
+                    </options>
+                </option>
                 <dynamicOptions id="faq" bean="operatorFaqMenuOption">
                     <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ADMIN_FAQ" />
                 </dynamicOptions>
+                
             </options>
         </menu>
 
@@ -1057,7 +1067,7 @@
                         <labelArgument>${accountNumber}</labelArgument>
                         <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
                         <pages>
-                            <page name="account.EDIT" type="DETAIL_CHILD_WITH_INFO">
+                            <page name="account.EDIT" type="DETAIL_WITH_INFO">
                                 <menu>account|accounts</menu>
                                 <link>/spring/stars/operator/account/accountEdit?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
@@ -1246,32 +1256,32 @@
                                 <menu>account|accounts</menu>
                                 <link>/spring/stars/operator/workOrder/workOrderList?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
-                            <pages>
-                            <page name="workOrder.VIEW" type="DETAIL">
-                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
-                                <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>
-                                <labelArgument>${workOrderNumber}</labelArgument>
+                                <pages>
+                                    <page name="workOrder.VIEW" type="DETAIL">
+                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
+                                        <menu>account|accounts</menu>
+                                        <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>
+                                        <labelArgument>${workOrderNumber}</labelArgument>
+                                    </page>
+                                    <page name="workOrder.EDIT" type="DETAIL">
+                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
+                                        <menu>account|accounts</menu>
+                                        <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>
+                                        <labelArgument>${workOrderNumber}</labelArgument>
+                                    </page>
+                                    <page name="workOrder.CREATE" type="DETAIL">
+                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
+                                        <menu>account|accounts</menu>
+                                        <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>
+                                        <labelArgument>${workOrderNumber}</labelArgument>
+                                    </page>
+                                </pages>
                             </page>
-                            <page name="workOrder.EDIT" type="DETAIL">
-                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
+                            <page name="accountLog" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>
-                                <labelArgument>${workOrderNumber}</labelArgument>
+                                <link>/spring/stars/operator/account/accountLog?accountId=${accountId}</link>
+                                <labelArgument>${accountNumber}</labelArgument>
                             </page>
-                            <page name="workOrder.CREATE" type="DETAIL">
-                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
-                                <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>
-                                <labelArgument>${workOrderNumber}</labelArgument>
-                            </page>
-                        </pages>
-                    </page>
-                    <page name="accountLog" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                        <menu>account|accounts</menu>
-                        <link>/spring/stars/operator/account/accountLog?accountId=${accountId}</link>
-                        <labelArgument>${accountNumber}</labelArgument>
-                    </page>
                         </pages>
                     </page>
                 </pages>
@@ -1279,6 +1289,40 @@
             <page name="faq" type="BASIC">
                 <menu>operatorFaq</menu>
                 <link>/spring/stars/operator/faq</link>
+            </page>
+            <page name="inventory" type="BASIC">
+                <menu>inventory|home</menu>
+                <!-- Future home of old stars inventory page: <link>/spring/stars/operator/inventory/home</link>-->
+                <link>/spring/stars/operator/inventory/inventoryOperations/home</link>
+                <pages>
+                    <page name="inventoryOperations" type="BASIC">
+                        <menu>inventory|inventoryOperations</menu>
+                        <link>/spring/stars/operator/inventory/inventoryOperations/home</link>
+                        <pages>
+                            <page name="filterSelection" type="DETAIL">
+                                <menu>inventory|inventoryOperations</menu>
+                                <link>/spring/stars/operator/inventory/inventoryOperations/setupFilterRules</link>
+                            </page>
+                            <page name="commandSchedule.CREATE" type="BASIC">
+                                <menu>inventory|inventoryOperations</menu>
+                            </page>
+                            <page name="commandSchedule.EDIT" type="DETAIL">
+                                <menu>inventory|inventoryOperations</menu>
+                                <labelArgument>${scheduleName}</labelArgument>
+                            </page>
+                            <page name="inventoryActions" type="DETAIL">
+                                <menu>inventory|inventoryOperations</menu>
+                                <link>/spring/stars/operator/inventory/inventoryOperations/inventoryActions?${local:convertMapToQueryHtml(inventoryCollection.collectionParameters)}</link>
+                                <pages>
+                                    <page name="deviceReconfig" type="DETAIL_CHILD">
+                                        <menu>inventory|inventoryOperations</menu>
+                                        <link>/spring/stars/operator/inventory/inventoryOperations/deviceReconfig/setup</link>
+                                    </page>
+                                </pages>
+                            </page>
+                        </pages>
+                    </page>
+                </pages>
             </page>
         </pages>
     </module>

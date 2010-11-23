@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -16,7 +17,6 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
-import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
 

@@ -3,7 +3,7 @@ package com.cannontech.amr.deviceread.service;
 import java.util.List;
 import java.util.Set;
 
-import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;

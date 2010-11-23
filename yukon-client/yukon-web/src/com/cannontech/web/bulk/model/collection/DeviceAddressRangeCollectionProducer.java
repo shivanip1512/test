@@ -12,9 +12,9 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
-import com.cannontech.common.bulk.collection.DeviceCollection;
-import com.cannontech.common.bulk.collection.DeviceCollectionType;
-import com.cannontech.common.bulk.collection.ListBasedDeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
+import com.cannontech.common.bulk.collection.device.ListBasedDeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.PaoIdentifier;

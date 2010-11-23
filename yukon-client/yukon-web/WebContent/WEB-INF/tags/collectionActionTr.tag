@@ -1,6 +1,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<%@ attribute name="deviceCollection" required="true" type="com.cannontech.common.bulk.collection.DeviceCollection"%>
+<%@ attribute name="deviceCollection" required="true" type="com.cannontech.common.bulk.collection.device.DeviceCollection"%>
 <%@ attribute name="action" required="true" type="java.lang.String"%>
 <%@ attribute name="inputName" required="false" type="java.lang.String"%>
 <%@ attribute name="inputValue" required="false" type="java.lang.String"%>

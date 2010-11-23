@@ -1,7 +1,7 @@
 <%@ attribute name="key" required="true" type="java.lang.String"%>
 <%@ attribute name="noteLabelStyle" required="false" type="java.lang.String"%>
 <%@ attribute name="noteTextArguments" required="false" type="java.lang.String"%>
-<%@ attribute name="deviceCollection" required="false" type="com.cannontech.common.bulk.collection.DeviceCollection"%>
+<%@ attribute name="deviceCollection" required="false" type="com.cannontech.common.bulk.collection.device.DeviceCollection"%>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

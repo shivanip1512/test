@@ -45,7 +45,7 @@ public class WidgetInterceptor extends HandlerInterceptorAdapter {
         response.addHeader("X-JSON", object.toString());
    
         String beanName = existingParams.get("shortName");
-        MessageScopeHelper.forRequest(request).pushScope("." + beanName, ".widgets." + beanName);
+        MessageScopeHelper.forRequest(request).pushScope("widgets." + beanName);
     }
     
     @Override

@@ -1,6 +1,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ attribute name="deviceCollection" required="true" type="com.cannontech.common.bulk.collection.DeviceCollection"%>
+<%@ attribute name="deviceCollection" required="true" type="com.cannontech.common.bulk.collection.device.DeviceCollection"%>
 
 <tags:crumbLinkByMap url="/spring/bulk/collectionActions"
                      parameterMap="${deviceCollection.collectionParameters}" 

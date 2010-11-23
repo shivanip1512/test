@@ -336,11 +336,6 @@
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
-    <attribute>
-      <name>mode</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
   </tag>
   
   <tag>
@@ -427,6 +422,17 @@
     <body-content>empty</body-content>
     <attribute>
       <name>deviceCollection</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>inventoryCollection</name>
+    <tag-class>com.cannontech.web.taglib.InventoryCollectionTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>inventoryCollection</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
@@ -877,6 +883,22 @@
   		<required>false</required>
   		<rtexprvalue>true</rtexprvalue>
   		<description>Text to be displayed in place of formatted date if date is null.</description>
+	</attribute>
+  </tag>
+
+  <tag>
+  	<name>formatCron</name>
+  	<tag-class>com.cannontech.web.taglib.FormatCronTag</tag-class>
+  	<body-content>empty</body-content>
+	<attribute>
+ 		<name>value</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>	
+	</attribute>
+ 	<attribute>
+ 		<name>var</name>
+  		<required>false</required>
+  		<rtexprvalue>true</rtexprvalue>
 	</attribute>
   </tag>
 

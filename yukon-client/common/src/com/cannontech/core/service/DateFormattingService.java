@@ -58,7 +58,8 @@ public interface DateFormattingService {
     }
 
     static public enum PeriodFormatEnum {
-        HM_SHORT
+        HM_SHORT,
+        S
     }
 
     public static enum MidnightMode {

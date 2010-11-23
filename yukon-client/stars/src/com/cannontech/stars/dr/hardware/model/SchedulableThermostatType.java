@@ -1,6 +1,8 @@
 package com.cannontech.stars.dr.hardware.model;
 
 import java.util.Set;
+
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriodStyle;
 import com.google.common.collect.Sets;

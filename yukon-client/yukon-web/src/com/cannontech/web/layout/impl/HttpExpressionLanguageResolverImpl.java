@@ -68,6 +68,10 @@ public class HttpExpressionLanguageResolverImpl implements HttpExpressionLanguag
         return result;
     }
     
+    public static String convertMapToQueryHtml(Map<String, String> map) {
+        return ServletUtil.buildQueryStringFromMap(map, false);
+    }
+    
     public static String convertMapToQueryString(Map<String, String> map) {
         return ServletUtil.buildQueryStringFromMap(map, true);
     }

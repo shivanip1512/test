@@ -242,7 +242,7 @@
                                             <tags:pickerDialog type="twoWayLcrPicker" id="twoWayLcrPicker" linkType="button" immediateSelectMode="true"
                                                 nameKey="twoWayPickerButton" destinationFieldId="chosenYukonDeviceId"
                                                 endAction="changeTwoWayDeviceName"/>
-                                            <input type="button" value="<cti:msg2 key=".twoWayNewButton"/>" onclick="showDeviceCreationPopup();" class="formSubmit">
+                                            <cti:button key="twoWayNewButton" type="button" onclick="showDeviceCreationPopup();"/>
                                         </cti:displayForPageEditModes>
                                     </div>
                                     <tags:hidden path="deviceId" id="chosenYukonDeviceId"/>

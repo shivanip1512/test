@@ -15,8 +15,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
-import com.cannontech.common.bulk.collection.DeviceCollection;
-import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;

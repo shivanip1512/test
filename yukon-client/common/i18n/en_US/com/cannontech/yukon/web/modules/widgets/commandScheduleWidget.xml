@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <entry key="yukon.web.widgets.commandScheduleWidget.title">Command Scheduling</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.start">Start</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.runPeriod">Duration</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.delayPeriod">Delay</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.remove">Remove</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.delete">Click to delete.</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.create">Create</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.enabled">Enabled</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.enableTitle">Click to enable.</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.disableTitle">Click to disable.</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.noSchedules">No Schedule Entries</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.create.label">Create</entry>
+
+</properties>

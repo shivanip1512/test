@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.common.inventory.HardwareConfigType;
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.LazyList;
-import com.cannontech.stars.dr.hardware.model.HardwareConfigType;
-import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 
 public class HardwareConfigurationDto {

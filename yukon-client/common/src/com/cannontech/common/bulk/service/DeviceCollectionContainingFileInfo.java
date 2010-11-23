@@ -1,6 +1,6 @@
 package com.cannontech.common.bulk.service;
 
-import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
 
 public class DeviceCollectionContainingFileInfo extends BulkFileInfo {
     

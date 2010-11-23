@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.inventory.HardwareConfigType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PersistenceException;
@@ -33,11 +34,11 @@ public class InventoryUtils {
 
 	public static final int SA205_UNUSED_ADDR = 3909;
 	
-	public static final int HW_CONFIG_TYPE_EXPRESSCOM = 1;
-	public static final int HW_CONFIG_TYPE_VERSACOM = 2;
-	public static final int HW_CONFIG_TYPE_SA205 = 3;
-	public static final int HW_CONFIG_TYPE_SA305 = 4;
-	public static final int HW_CONFIG_TYPE_SA_SIMPLE = 5;
+	public static final int HW_CONFIG_TYPE_EXPRESSCOM = HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId();
+	public static final int HW_CONFIG_TYPE_VERSACOM = HardwareConfigType.VERSACOM.getHardwareConfigTypeId();
+	public static final int HW_CONFIG_TYPE_SA205 = HardwareConfigType.SA205.getHardwareConfigTypeId();
+	public static final int HW_CONFIG_TYPE_SA305 = HardwareConfigType.SA305.getHardwareConfigTypeId();
+	public static final int HW_CONFIG_TYPE_SA_SIMPLE = HardwareConfigType.SA_SIMPLE.getHardwareConfigTypeId();
 	
 	public static int getInventoryCategoryID(int deviceTypeID, LiteStarsEnergyCompany energyCompany) {
 		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( deviceTypeID );

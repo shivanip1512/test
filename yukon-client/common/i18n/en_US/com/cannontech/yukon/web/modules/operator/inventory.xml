@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    
+    <!-- Future home of the old stars inventory page: /inventory/home.jsp -->
+    <entry key="yukon.web.modules.operator.inventory.pageName">Inventory</entry>
+    <entry key="yukon.web.modules.operator.inventory.pageDescription">Inventory</entry>
+
+    <!-- /inventory/inventoryOperations/home.jsp -->
+    <entry key="yukon.web.modules.operator.inventoryOperations.pageName">Inventory Operations</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.pageDescription">Inventory Operations</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.deviceSelection.title">Choose Device Selection Type</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.selectInventoryButton.label">Select by Inventory</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.selectInventoryDescription">Choose inventory manually.</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.selectFileButton.label">Select by File Upload</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.selectFileDescription">Upload a CSV formatted file containing serial number, device type, and account number.</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.selectFilterButton.label">Select by Filter</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.selectFilterDescription">Set various inventory parameters to select devices.</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.recentOperations.title">Recent Operations</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.recentOperations.name">Name</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.recentOperations.runSchedule">Run Schedule</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.recentOperations.duration">Duration</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.recentOperations.status">Status</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.recentOperations.deviceCount">Device Count</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.noRecentOps">No Recent Operations</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.fileLabel">Inventory File</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.fileUploadTitle">Inventory File Chooser</entry>
+    
+    <!-- /inventory/inventoryOperations/setupSelection.jsp -->
+    <entry key="yukon.web.modules.operator.filterSelection.pageName">Inventory Selection</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.pageDescription">Inventory Selection</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.filterMode">Filter Mode</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.filterModePrefix">Match </entry>
+    <entry key="yukon.web.modules.operator.filterSelection.filterModeSuffix"> of the following rules:</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.tableHeader.rules">Rules</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.tableHeader.remove">Remove</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.noRules">No Filter Rules Defined</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.filterMode.UNION">At Least One</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.filterMode.INTERSECT">Every One</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.unenrolled">Not enrolled in any program.</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.select.label">Select</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.cancel">Cancel</entry>
+    
+    <entry key="yukon.web.modules.operator.filterSelection.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.add.hoverText">Add new filter rule.</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.add.label">Add Rule</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.serialNumberRangeSeperator"> to </entry>
+    
+    <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.LOAD_GROUP">Load Group</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.PROGRAM">Program</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.FIELD_INSTALL_DATE">Field Install Date</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.PROGRAM_SIGNUP_DATE">Program Sign-Up Date</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.DEVICE_TYPE">Device Type</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.SERIAL_NUMBER_RANGE">Serial Number Range</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.UNENROLLED">Unenrolled</entry>
+    
+    <entry key="yukon.common.collection.inventory.selectedInventoryPopup.linkLabel">Inventory Selected: </entry>
+    <entry key="yukon.common.collection.inventory.selectedInventoryPopup.count">Inventory Count: {0}</entry>
+    <entry key="yukon.common.collection.inventory.selectedInventoryPopup.popupTitle">Selected Inventory</entry>
+    <entry key="yukon.common.collection.inventory.selectedInventoryPopup.selectedDevicesResultsLimited">Results limited to first {0} inventory.</entry>
+    <entry key="yukon.common.collection.inventory.idList">Individually Selected Inventory</entry>
+    <entry key="yukon.common.collection.inventory.temporary">Temporary</entry>
+    <entry key="yukon.common.collection.inventory.temporaryWithHint">Temporary: {0}</entry>
+    
+    <!-- /inventory/inventoryOperations/inventoryActions.jsp -->
+    <entry key="yukon.web.modules.operator.inventoryActions.pageName">Inventory Actions</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.pageDescription">Inventory Actions</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.actionsContainer.title">Select An Action To Perform On Selected Inventory</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.instructionsLabel">Instructions:</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.instructions">Selecting any of these options will not immediately make any changes.  You will be directed to a page with additional options and/or opportunity to confirm your action.</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.deviceReconfigDescription">Setup device reconfiguration options.</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.deviceReconfig.label">Device Reconfiguration</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.hardwareType">Type</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.label">Label</entry>
+    
+    <!-- /inventory/inventoryOperations/deviceReconfig/setup.jsp -->
+    <entry key="yukon.web.modules.operator.deviceReconfig.setupContainer.title">Device Reconfiguration Setup</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfig.configurationOptions.title">Configuration Options</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfig.pagingSettings.title">Current Command Scheduling</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfig.name">Name</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfig.scheduleEnabled">Enabled</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfig.scheduleDisabled">Disabled</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfig.error.required.name">Name of the device reconfiguration task cannot be empty.</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfig.error.unavailable.name">Name already in use.</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfig.error.tooLong.name">Name must be 250 characters or less.</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfig.creationSuccessful">Device Reconfiguration Task {0} created successfully.</entry>
+    
+    <!-- /inventory/inventoryOperations/commandSchedule.jsp -->
+    <entry key="yukon.web.modules.operator.commandSchedule.CREATE.pageName">Create Command Schedule</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.EDIT.pageName">Edit Command Schedule</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.EDIT.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.runSchedule">Run Schedule</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.duration">Duration</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.hours">Hours</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.minutes">Minutes</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.seconds">Seconds</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.delayPeriod">Delay</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.confirmDeleteTitle">Delete</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.confirmDeleteMessage">Are you sure you want to delete this command schedule entry?</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.deleted">Command schedule entry deleted successfully.</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.created">Command schedule entry created successfully.</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.error.required.hours">Hours or Minutes must be set.</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.error.required.minutes">Hours or Minutes must be set.</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.error.required.seconds">Seconds must be set.</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.error.lessThanZero.hours">Hours must be greater than zero.</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.error.lessThanZero.minutes">Minutes must be greater than zero.</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.error.lessThanZero.seconds">Seconds must be greater than zero.</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.error.durationLessThanZero.hours">Duration must be greater than zero.</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.error.durationLessThanZero.minutes">Duration must be greater than zero.</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.error.NaN.hours">Duration hours is not a valid number.</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.error.NaN.minutes">Duration minutes is not a valid number.</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.error.NaN.seconds">Delay seconds is not a valid number.</entry>
+    
+</properties>

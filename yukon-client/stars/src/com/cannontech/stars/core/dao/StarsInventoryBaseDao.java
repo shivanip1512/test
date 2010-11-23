@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.inventory.LMHardwareClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -11,7 +12,6 @@ import com.cannontech.database.data.lite.stars.LiteMeterHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
-import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
 
 public interface StarsInventoryBaseDao {
 

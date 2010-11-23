@@ -18,6 +18,8 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.inventory.LMHardwareClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
@@ -41,8 +43,6 @@ import com.cannontech.stars.dr.event.dao.EventInventoryDao;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.dao.LMConfigurationBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
-import com.cannontech.stars.dr.hardware.model.HardwareType;
-import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.util.ServerUtils;

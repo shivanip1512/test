@@ -89,8 +89,8 @@
     <entry key="yukon.web.modules.operator.hardware.serviceCompanyInfo">Service Company Info</entry>
     <entry key="yukon.web.modules.operator.hardware.status">Status</entry>
     <entry key="yukon.web.modules.operator.hardware.twoWayDevice">Two Way Device</entry>
-    <entry key="yukon.web.modules.operator.hardware.twoWayPickerButton">Choose</entry>
-    <entry key="yukon.web.modules.operator.hardware.twoWayNewButton">New</entry>
+    <entry key="yukon.web.modules.operator.hardware.twoWayPickerButton.label">Choose</entry>
+    <entry key="yukon.web.modules.operator.hardware.twoWayNewButton.label">New</entry>
     <entry key="yukon.web.modules.operator.hardware.voltage">Voltage</entry>
     <entry key="yukon.web.modules.operator.hardware.warehouse">Warehouse</entry>
     

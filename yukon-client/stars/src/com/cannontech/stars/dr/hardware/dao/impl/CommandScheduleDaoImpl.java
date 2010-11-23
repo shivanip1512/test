@@ -36,8 +36,8 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
         }
 
         @Override
-        public void extractValues(MapSqlParameterSource parameterHolder,
-                CommandSchedule schedule) {
+        public void extractValues(MapSqlParameterSource parameterHolder, CommandSchedule schedule) {
+            
             parameterHolder.addValue("startTimeCronString", schedule.getStartTimeCronString());
             parameterHolder.addValue("runPeriod", schedule.getRunPeriod());
             parameterHolder.addValue("delayPeriod", schedule.getDelayPeriod());
@@ -46,8 +46,7 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
     };
     private final static YukonRowMapper<CommandSchedule> rowMapper = new YukonRowMapper<CommandSchedule>() {
         @Override
-        public CommandSchedule mapRow(YukonResultSet rs)
-                throws SQLException {
+        public CommandSchedule mapRow(YukonResultSet rs) throws SQLException {
             CommandSchedule retVal = new CommandSchedule();
             retVal.setCommandScheduleId(rs.getInt("commandScheduleId"));
             retVal.setStartTimeCronString(rs.getString("startTimeCronString"));
@@ -91,11 +90,39 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
     public void save(CommandSchedule schedule) {
         dbTemplate.save(schedule);
     }
+    
+    @Override
+    public int delete(int scheduleId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM CommandSchedule");
+        sql.append("WHERE CommandScheduleId").eq(scheduleId);
+        
+        return yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public void enable(int scheduleId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE CommandSchedule");
+        sql.append("SET Enabled = 'y'");
+        sql.append("WHERE CommandScheduleId").eq(scheduleId);
+        
+        yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public void disable(int scheduleId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE CommandSchedule");
+        sql.append("SET Enabled = 'n'");
+        sql.append("WHERE CommandScheduleId").eq(scheduleId);
+        
+        yukonJdbcTemplate.update(sql);
+    }
 
     @PostConstruct
     public void init() {
-        dbTemplate = new SimpleTableAccessTemplate<CommandSchedule>(yukonJdbcTemplate,
-                                                                    nextValueHelper);
+        dbTemplate = new SimpleTableAccessTemplate<CommandSchedule>(yukonJdbcTemplate, nextValueHelper);
         dbTemplate.withTableName("commandSchedule");
         dbTemplate.withFieldMapper(fieldMapper);
         dbTemplate.withPrimaryKeyField("commandScheduleId");

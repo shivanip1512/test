@@ -29,7 +29,7 @@ import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.callbackResult.BulkFieldBackgroupProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
-import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;

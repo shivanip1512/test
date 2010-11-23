@@ -110,11 +110,13 @@
 			
 				<%-- ADD NOTIFICATION --%>
 				<cti:displayForPageEditModes modes="EDIT">
-					<tr style="background-color:#EEE;">
-						<td colspan="3">
-							 <cti:button key="addNotification" type="submit" name="newNotification"/>
-						</td>
-					</tr>
+                    <tfoot>
+    					<tr>
+    						<td colspan="3">
+    							 <cti:button key="addNotification" type="submit" name="newNotification"/>
+    						</td>
+    					</tr>
+                    </tfoot>
 				</cti:displayForPageEditModes>
 				
 			</table>

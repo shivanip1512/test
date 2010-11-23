@@ -38,7 +38,7 @@ Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
                 <td class="leftActions">
                     <input class="notButton" id="picker_${id}_selectAll" type="checkbox"
                         onclick="javascript:${id}.selectAll()">
-                    <label for="picker_${id}_selectAll"><i:inline key=".selectAll"/></label>
+                    <label for="picker_${id}_selectAll" class="simpleLink pointer"><i:inline key=".selectAll"/></label>
                     &nbsp;&nbsp;
                     <span style="display: none">
                         <i:inline key=".pageSelected"/>&nbsp;&nbsp;

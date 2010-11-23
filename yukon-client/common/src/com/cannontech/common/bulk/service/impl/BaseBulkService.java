@@ -26,7 +26,7 @@ import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.callbackResult.BulkProcessorCallback;
 import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
 import com.cannontech.common.bulk.callbackResult.TranslatingBulkProcessorCallback;
-import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.field.BulkField;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.field.BulkFieldService;

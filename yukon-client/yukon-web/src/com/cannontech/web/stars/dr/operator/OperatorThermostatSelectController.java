@@ -7,10 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;

@@ -63,4 +63,12 @@
     <bean class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.RfnMeteringEventLogService"/>
     </bean>
+    
+    <bean id="deviceReconfigEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.DeviceReconfigEventLogService"/>
+    </bean>
+    
+    <bean id="commandScheduleEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.CommandScheduleEventLogService"/>
+    </bean>
 </beans>

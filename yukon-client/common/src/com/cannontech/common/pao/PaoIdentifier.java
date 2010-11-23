@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import org.apache.commons.lang.Validate;
 
-
 public final class PaoIdentifier implements YukonPao, Serializable {
 
     private static final long serialVersionUID = -592760481960580100L;
@@ -21,6 +20,7 @@ public final class PaoIdentifier implements YukonPao, Serializable {
     public int getPaoId() {
         return paoId;
     }
+    
     public PaoType getPaoType() {
         return paoType;
     }

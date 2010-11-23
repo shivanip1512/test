@@ -594,6 +594,24 @@
         </property>
     </bean>
     
+    <bean id="deviceReconfigMonitorsWidget" class="com.cannontech.web.widget.DeviceReconfigMonitorsWidget">
+        <property name="title" value="Device Reconfiguration Monitors"/>
+        <property name="roleAndPropertiesChecker">
+            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="DEVICE_RECONFIG"/>
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="commandScheduleWidget" class="com.cannontech.web.widget.CommandScheduleWidget">
+        <property name="title" value="Command Scheduling"/>
+        <property name="roleAndPropertiesChecker">
+            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="DEVICE_RECONFIG"/>
+            </bean>
+        </property>
+    </bean>
+    
     <bean id="scheduledGroupRequstExecutionWidget" class="com.cannontech.web.widget.ScheduledGroupRequstExecutionWidget">
     	<property name="title" value="Scheduled Requests"/>
         <property name="identityPath" value="common/deviceIdentity.jsp" />
@@ -716,6 +734,9 @@
                 </entry>
                 <entry key="CAPCONTROL">
                     <ref local="capControlBackingService"/>
+                </entry>
+                <entry key="DEVICE_RECONFIG">
+                    <ref local="deviceReconfigMonitorBackingService"/>
                 </entry>
             </map>
         </property>
@@ -1098,6 +1119,8 @@
     
     <bean id="formatDurationTagPrototype" class="com.cannontech.web.taglib.FormatDurationTag"/>
     
+    <bean id="formatCronTagPrototype" class="com.cannontech.web.taglib.FormatCronTag"/>
+    
     <bean id="formatObjectTagPrototype" class="com.cannontech.web.taglib.FormatObjectTag"/>
 
     <bean id="formatTimePeriodTagPrototype" class="com.cannontech.web.taglib.FormatTimePeriodTag"/>
@@ -1314,6 +1337,20 @@
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
     </bean>
     
+    <bean id="memoryCollectionProducer" class="com.cannontech.web.stars.dr.operator.inventoryOperations.model.collection.MemoryCollectionProducer" />
+    
+    <bean id="inventoryCollectionFactory" class="com.cannontech.web.common.collection.InventoryCollectionFactoryImpl">
+        <property name="collectionProducerList">
+            <list>
+                <bean class="com.cannontech.web.stars.dr.operator.inventoryOperations.model.collection.InventoryIdListCollectionProducer" />
+                <bean class="com.cannontech.web.stars.dr.operator.inventoryOperations.model.collection.InventoryFileUploadCollectionProducer" />
+                <ref bean="memoryCollectionProducer"/>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="inventoryOperationsFilterService" class="com.cannontech.web.stars.dr.operator.inventoryOperations.service.impl.InventoryOperationsFilterServiceImpl"/>
+    
     <!-- Simple HTTP Post Service Factory -->
     <bean id="simpleHttpPostServiceFactory" class="com.cannontech.web.simplePost.impl.SimpleHttpPostServiceFactoryImpl">
     </bean>
@@ -1349,9 +1386,10 @@
     
     <bean id="multispeakDeviceGroupSyncBackingService" class="com.cannontech.web.updater.multispeak.deviceGroupSync.MultispeakDeviceGroupSyncBackingService"/>
     
-    <bean id="deviceReconfigService" class="com.cannontech.web.stars.dr.operator.deviceReconfig.service.impl.DeviceReconfigServiceImpl"/>
-    <bean id="deviceReconfigLoadGroupSelectionTypeHandler" class="com.cannontech.web.stars.dr.operator.deviceReconfig.service.impl.DeviceReconfigLoadGroupSelectionTypeHandler"/>
-    <bean id="deviceReconfigProgramSelectionTypeHandler" class="com.cannontech.web.stars.dr.operator.deviceReconfig.service.impl.DeviceReconfigProgramSelectionTypeHandler"/>
+    <bean id="deviceReconfigMonitorBackingService" class="com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorBackingService"/>
+    <bean id="deviceReconfigProgressUpdaterHandler" class="com.cannontech.web.updater.deviceReconfig.handler.DeviceReconfigProgressUpdaterHandler"/>
+    <bean id="deviceReconfigOptionsValidator" class="com.cannontech.web.stars.dr.operator.inventoryOperations.deviceReconfig.DeviceReconfigOptionsValidator"/>
+    <bean id="commandScheduleValidator" class="com.cannontech.web.stars.dr.operator.inventoryOperations.CommandScheduleValidator"/>
     
     <!-- OPERATOR -->
     <bean id="operatorAccountService" class="com.cannontech.web.stars.dr.operator.service.impl.OperatorAccountServiceImpl"/>

@@ -217,10 +217,11 @@
                                 </tags:nameValueContainer>
                                 
                                 <br>
-                                <input id="editGroupNameSaveButton" type="button" value="${changeNameButtonText}" 
-                                        onclick="checkAndSubmitNewName('newGroupName', 'editGroupNameForm', 'editGroupNameSaveButton', 'editGroupNameWaitImg');">
-                                <img id="editGroupNameWaitImg" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
-                            
+                                <div class="actionArea">
+                                    <input id="editGroupNameSaveButton" type="button" value="${changeNameButtonText}" 
+                                            onclick="checkAndSubmitNewName('newGroupName', 'editGroupNameForm', 'editGroupNameSaveButton', 'editGroupNameWaitImg');">
+                                    <img id="editGroupNameWaitImg" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
+                                </div>
                             </form>
                             
                         </tags:simplePopup>
@@ -335,10 +336,11 @@
                                     </tags:nameValueContainer>
                                     
                                     <br>
-                                    <input id="addSubGroupSaveButton" type="button" value="${subgroupNameSaveText}" 
-                                           onclick="checkAndSubmitNewName('childGroupName', 'addSubGroupForm', 'addSubGroupSaveButton', 'addSubGroupWaitImg');">
-                                	<img id="addSubGroupWaitImg" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
-                                	
+                                    <div class="actionArea">
+                                        <input id="addSubGroupSaveButton" type="button" value="${subgroupNameSaveText}" 
+                                               onclick="checkAndSubmitNewName('childGroupName', 'addSubGroupForm', 'addSubGroupSaveButton', 'addSubGroupWaitImg');">
+                                    	<img id="addSubGroupWaitImg" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
+                                	</div>
                                 </form>
                                 
                             </tags:simplePopup>

@@ -1,13 +1,14 @@
 package com.cannontech.stars.dr.hardware.model;
 
+import org.joda.time.Period;
 import org.joda.time.ReadablePeriod;
 
 public class CommandSchedule {
     private int commandScheduleId;
     private String startTimeCronString;
-    private ReadablePeriod runPeriod;
-    private ReadablePeriod delayPeriod;
-    private boolean enabled;
+    private ReadablePeriod runPeriod = new Period();
+    private ReadablePeriod delayPeriod = new Period();
+    private boolean enabled = true;
 
     public int getCommandScheduleId() {
         return commandScheduleId;

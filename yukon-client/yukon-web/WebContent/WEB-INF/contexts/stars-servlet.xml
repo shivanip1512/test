@@ -85,6 +85,8 @@
         <property name="methodNameResolver" ref="methodNameResolver" />
     </bean>
     
+    <bean id="inventoryFilterController" class="com.cannontech.web.stars.dr.operator.inventoryOperations.InventoryFilterController"/>
+    
 	<bean id="methodNameResolver"
 		class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
         <property name="defaultMethodName" value="view"/>

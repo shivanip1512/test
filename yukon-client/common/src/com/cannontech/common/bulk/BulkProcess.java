@@ -5,7 +5,7 @@ import java.util.Date;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
-import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.user.YukonUserContext;
 
 /**

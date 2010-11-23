@@ -15,6 +15,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
@@ -26,7 +27,6 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.CustomerAction;
 import com.cannontech.stars.dr.hardware.model.CustomerEventType;
-import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
@@ -556,5 +556,4 @@ public class ThermostatServiceImpl implements ThermostatService {
                                 ActivityLogActions.THERMOSTAT_SCHEDULE_ACTION,
                                 logMessage.toString());
     }
-    
 }

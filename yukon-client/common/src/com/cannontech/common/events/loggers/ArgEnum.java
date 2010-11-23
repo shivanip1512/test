@@ -6,6 +6,7 @@ public enum ArgEnum {
     commandRequestExecutionContextId, 
     commandRequestExecutionId, 
     commandRequestExecutionType, 
+    commandScheduleId,
     contactName, 
     controlAreaName, 
     deviceLabel, 
@@ -29,6 +30,7 @@ public enum ArgEnum {
     serialNumber, 
     shedDuration, 
     tagSet, 
+    taskName,
     thermostatLabel,
     username, 
     workOrderNumber

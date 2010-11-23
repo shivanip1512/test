@@ -1,9 +1,14 @@
 package com.cannontech.stars.dr.hardware.dao;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 
@@ -57,12 +62,16 @@ public interface InventoryDao {
      */
     public void save(Thermostat thermostat);
 
-    /**
-     * Method to get all inventory items for an account
-     * @param accountId
-     * @return
-     */
     public List<Integer> getInventoryIdsByAccount(int accountId);
     
     public int getYukonDefinitionIdByEntryId(int entryId);
+    
+    public InventoryIdentifier getYukonInventory(int inventoryId);
+
+    public InventoryIdentifier getYukonInventory(String serialNumber, int energyCompanyId);
+    
+    public Set<InventoryIdentifier> getYukonInventory(Collection<Integer> inventoryIds);
+
+    public List<DisplayableLmHardware> getDisplayableLMHardware(List<? extends YukonInventory> inventoryIdentifiers);
+
 }
