@@ -253,5 +253,8 @@
       <sequence name="commandSchedule">
         <table name="commandSchedule" identitycolumn="commandScheduleId"/>
       </sequence>
+      <sequence name="inventoryConfigTask">
+        <table name="inventoryConfigTask" identitycolumn="inventoryReconfigTaskId"/>
+      </sequence>
   </sequencetable>
 </sequencetables>
