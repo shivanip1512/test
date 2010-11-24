@@ -270,26 +270,27 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 	private VfLine buildLineDataForZone(YukonUserContext userContext, CapControlCache cache, Zone zone) {
         VfLine line = new VfLine();
         List<VfPoint> points = Lists.newArrayList();
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         List<CapBankToZoneMapping> banksToZone = zoneService.getCapBankToZoneMapping(zone.getId());
         List<PointToZoneMapping> pointsToZone = zoneService.getPointToZoneMapping(zone.getId());
         double graphStartPosition = getGraphStartPositionForZone(zone);
         
         //Add the regulator as the first point
-        VfPoint regulatorGraphPoint = getRegulatorVfPoint(userContext, zone, graphStartPosition);
+        VfPoint regulatorGraphPoint = getRegulatorVfPoint(messageSourceAccessor, userContext, zone, graphStartPosition);
         points.add(regulatorGraphPoint);
         
         //Add the cap banks
         for (CapBankToZoneMapping bankToZone : banksToZone) {
             List<Integer> bankPoints = zoneService.getMonitorPointsForBank(bankToZone.getDeviceId());
             for (Integer pointId : bankPoints) {
-        		VfPoint graphPoint = getCapBankToZoneVfPoint(userContext, cache, bankToZone, pointId, zone, graphStartPosition);
+        		VfPoint graphPoint = getCapBankToZoneVfPoint(messageSourceAccessor, userContext, cache, bankToZone, pointId, zone, graphStartPosition);
                 points.add(graphPoint);
             }
         }
         
         //Add the additional points
         for (PointToZoneMapping pointToZone : pointsToZone) {
-        	VfPoint graphPoint = getPointToZoneVfPoint(userContext, pointToZone, zone, graphStartPosition);
+        	VfPoint graphPoint = getPointToZoneVfPoint(messageSourceAccessor, userContext, pointToZone, zone, graphStartPosition);
             points.add(graphPoint);
         }
         
@@ -312,66 +313,64 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         return line;
     }
 	
-	private String getDescription(PointValueQualityHolder pointValue, LitePoint litePoint, DisplayablePao displayablePao, Zone zone, double distance, YukonUserContext userContext) {
-		MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-		
-		String description = "";
-		String pointValueString = pointFormattingService.getValueString(pointValue, Format.SHORT, userContext);
-		String timestamp = dateFormattingService.format(pointValue.getPointDataTimeStamp(), DateFormatEnum.BOTH, userContext);
-		
-		if (litePoint != null) {
-			String litePointString = litePoint.getPointName();
-			if (distance != 0) {
-				description = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndDist", 
-						pointValueString, litePointString, displayablePao.getName(), timestamp, zone.getName(), distance);
-			} else {
-				description = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndNoDist", 
-						pointValueString, litePointString, displayablePao.getName(), timestamp, zone.getName());
-			}
-		} else {
-			if (distance != 0) {
-				description = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndDist", 
-						pointValueString, displayablePao.getName(), timestamp, zone.getName(), distance);
-			} else {
-				description = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndNoDist", 
-						pointValueString, displayablePao.getName(), timestamp, zone.getName());
-			}
-		}
-		
-		return description;
-	}
-	
-	private VfPoint getRegulatorVfPoint(YukonUserContext userContext, Zone zone, double graphStartPosition) {
+	private VfPoint getRegulatorVfPoint(MessageSourceAccessor messageSourceAccessor, YukonUserContext userContext, Zone zone, double graphStartPosition) {
 		int regulatorId = zone.getRegulatorId();
         YukonPao regulatorPao = paoDao.getYukonPao(regulatorId);
         DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(regulatorPao);
         LitePoint regulatorPoint = attributeService.getPointForAttribute(regulatorPao, BuiltInAttribute.VOLTAGE);
         PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(regulatorPoint.getLiteID());
-        String description = getDescription(pointValue, null, displayablePao, zone, 0, userContext);
+        String pointValueString = pointFormattingService.getValueString(pointValue, Format.SHORT, userContext);
+        String timestamp = dateFormattingService.format(pointValue.getPointDataTimeStamp(), DateFormatEnum.BOTH, userContext);
+        
+        String description = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndNoDist", 
+        			pointValueString, displayablePao.getName(), timestamp, zone.getName());
         
         VfPoint regulatorGraphPoint = new VfPoint(description, graphStartPosition, pointValue.getValue());
         return regulatorGraphPoint;
 	}
 	
-	private VfPoint getPointToZoneVfPoint(YukonUserContext userContext, PointToZoneMapping pointToZone, Zone zone, double graphStartPosition) {
+	private VfPoint getPointToZoneVfPoint(MessageSourceAccessor messageSourceAccessor, YukonUserContext userContext, PointToZoneMapping pointToZone, Zone zone, double graphStartPosition) {
 		int pointId = pointToZone.getPointId();
 		LitePoint litePoint = pointDao.getLitePoint(pointId);
 		YukonPao yukonPao = paoDao.getYukonPao(litePoint.getPaobjectID());
 		DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(yukonPao);
 		PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(pointId);
-		String description = getDescription(pointValue, litePoint, displayablePao, zone, pointToZone.getDistance(), userContext);
+		String litePointString = litePoint.getPointName();
+		String pointValueString = pointFormattingService.getValueString(pointValue, Format.SHORT, userContext);
+		String timestamp = dateFormattingService.format(pointValue.getPointDataTimeStamp(), DateFormatEnum.BOTH, userContext);
+		double distance = pointToZone.getDistance();
+		String description = "";
+		
+		if (distance != 0) {
+			description = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndDist", 
+					pointValueString, litePointString, displayablePao.getName(), timestamp, zone.getName(), distance);
+		} else {
+			description = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.pointAndNoDist", 
+					pointValueString, litePointString, displayablePao.getName(), timestamp, zone.getName());
+		}
 		
 		double xPosition = graphStartPosition + pointToZone.getGraphPositionOffset();
 		VfPoint graphPoint = new VfPoint(description, xPosition, pointValue.getValue());
 		return graphPoint;
 	}
 	
-	private VfPoint getCapBankToZoneVfPoint(YukonUserContext userContext, CapControlCache cache, CapBankToZoneMapping bankToZone, Integer pointId, Zone zone, double graphStartPosition) {
+	private VfPoint getCapBankToZoneVfPoint(MessageSourceAccessor messageSourceAccessor, YukonUserContext userContext, CapControlCache cache, CapBankToZoneMapping bankToZone, Integer pointId, Zone zone, double graphStartPosition) {
 		CapBankDevice bank = cache.getCapBankDevice(bankToZone.getDeviceId());
 		YukonPao yukonPao = paoDao.getYukonPao(bank.getControlDeviceID());
         DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(yukonPao);
 		PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(pointId);
-		String description = getDescription(pointValue, null, displayablePao, zone, bankToZone.getDistance(), userContext);
+		String pointValueString = pointFormattingService.getValueString(pointValue, Format.SHORT, userContext);
+		String timestamp = dateFormattingService.format(pointValue.getPointDataTimeStamp(), DateFormatEnum.BOTH, userContext);
+		double distance = bankToZone.getDistance();
+		String description = "";
+		
+		if (distance != 0) {
+			description = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndDist", 
+					pointValueString, displayablePao.getName(), timestamp, zone.getName(), distance);
+		} else {
+			description = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.noPointAndNoDist", 
+					pointValueString, displayablePao.getName(), timestamp, zone.getName());
+		}
 		
 		double xPosition = graphStartPosition + bankToZone.getGraphPositionOffset();
 		VfPoint graphPoint = new VfPoint(description, xPosition, pointValue.getValue());
