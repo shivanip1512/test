@@ -59,8 +59,13 @@ public class CommandScheduleWidget extends WidgetControllerBase {
     }
 
     @Autowired
-    public void setInventoryPagingScheduleDao(CommandScheduleDao commandScheduleDao) {
+    public void setCommandScheduleDao(CommandScheduleDao commandScheduleDao) {
         this.commandScheduleDao = commandScheduleDao;
+    }
+    
+    @Autowired
+    public void setCommandScheduleEventLogService(CommandScheduleEventLogService commandScheduleEventLogService) {
+        this.commandScheduleEventLogService = commandScheduleEventLogService;
     }
 
 }

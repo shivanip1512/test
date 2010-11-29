@@ -34,11 +34,11 @@
         
             <cti:dataGridCell>
                     <tags:boxContainer2 nameKey="deviceSelection" hideEnabled="false">
-                        <table cellspacing="10">
+                        <table class="inventoryActionsTable">
                         
                             <%-- INVENTORY PICKER--%>
                             <tr>
-                                <td>
+                                <td class="button top">
                                     <form id="selectByInventoryPickerForm" action="/spring/stars/operator/inventory/inventoryOperations/inventoryActions" method="get">
                                         <input type="hidden" name="collectionType" value="idList"/>
                                         <input type="hidden" name="idList.ids" id="inventoryIds"/>
@@ -47,23 +47,23 @@
                                     </form>
                                 </td>
                     
-                                <td><i:inline key=".selectInventoryDescription"/></td>
+                                <td class="description top"><i:inline key=".selectInventoryDescription"/></td>
                             </tr>
                             
                             <%-- INVENTORY FILTER --%>
                             <tr>
-                                <td>
+                                <td class="button middle">
                                     <form id="selectByFilterForm" action="/spring/stars/operator/inventory/inventoryOperations/setupFilterRules" method="get">
                                         <cti:button key="selectFilterButton" type="submit" styleClass="buttonGroup" name="filterButton"/>
                                     </form>
                                 </td>
                     
-                                <td><i:inline key=".selectFilterDescription"/></td>
+                                <td class="description middle"><i:inline key=".selectFilterDescription"/></td>
                             </tr>
                     
                             <%-- FILE UPLOAD --%>
                             <tr>
-                                <td>
+                                <td class="button">
                                     <cti:button key="selectFileButton" type="button" styleClass="buttonGroup" name="fileButton" onclick="showFileUpload()"/>
                                     <tags:simplePopup id="fileUploadPopup" title="${fileUploadTitle}" styleClass="mediumSimplePopup">
                                         <form id="selectByFileForm" method="post" action="/spring/stars/operator/inventory/inventoryOperations/uploadFile" enctype="multipart/form-data">
@@ -82,7 +82,7 @@
                                     </tags:simplePopup>
                                 </td>
                     
-                                <td><i:inline key=".selectFileDescription"/></td>
+                                <td class="description"><i:inline key=".selectFileDescription"/></td>
                             </tr>
                         </table>
                                  

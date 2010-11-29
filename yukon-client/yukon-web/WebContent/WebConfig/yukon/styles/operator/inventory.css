@@ -54,3 +54,20 @@ table.deviceReconfigLayout td.last {
 table.deviceReconfigLayout td.last {
     padding-left: 20px;
 }
+
+table.inventoryActionsTable {
+    width: 100%;
+}
+
+table.inventoryActionsTable td.description {
+    width: 100%;
+}
+
+table.inventoryActionsTable td.button {
+    padding-right: 5px;
+}
+
+table.inventoryActionsTable td.top,
+table.inventoryActionsTable td.middle {
+    padding-bottom: 5px;
+}

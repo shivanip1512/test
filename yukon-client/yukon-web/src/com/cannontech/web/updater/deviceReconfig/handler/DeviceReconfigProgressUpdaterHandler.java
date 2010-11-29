@@ -19,7 +19,7 @@ public class DeviceReconfigProgressUpdaterHandler implements DeviceReconfigUpdat
     @Override
     public String handle(int taskId, YukonUserContext userContext) {
 
-        DecimalFormat format = new DecimalFormat("##0%");
+        DecimalFormat format = new DecimalFormat("#0%");
             
         InventoryConfigTask inventoryConfigTask = inventoryConfigTaskDao.getById(taskId);
         int itemsProcessed = inventoryConfigTask.getNumberOfItemsProcessed();
