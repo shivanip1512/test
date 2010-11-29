@@ -17,6 +17,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.util.ServletRequestEnumUtils;
 
 public class DeviceReadStatisticsSummaryController extends ReportControllerBase{
 
@@ -53,8 +54,7 @@ public class DeviceReadStatisticsSummaryController extends ReportControllerBase{
             deviceReadSummaryModel.setTitle("Device Read Statistics Summary: " + attribute.getDescription());  
         }
         
-        String filterModelType = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE.name());
-        ReportFilter filter = Enum.valueOf(ReportFilter.class, filterModelType);
+        ReportFilter filter = ServletRequestEnumUtils.getEnumParameter(request, ReportFilter.class, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE);
 
         if (filter == ReportFilter.GROUPS) {
             String names[] = ServletRequestUtils.getStringParameters(request, ReportModelBase.ATT_FILTER_MODEL_VALUES);

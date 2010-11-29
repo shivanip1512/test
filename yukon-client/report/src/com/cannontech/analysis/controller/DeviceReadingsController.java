@@ -25,6 +25,7 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.util.ServletRequestEnumUtils;
 
 public class DeviceReadingsController extends ReportControllerBase{
 
@@ -88,9 +89,8 @@ public class DeviceReadingsController extends ReportControllerBase{
             deviceReadingsModel.setStopDate(stopTime.toDate());
         }
         
-        String filterModelType = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE.name());
-        ReportFilter filter = Enum.valueOf(ReportFilter.class, filterModelType);
-
+        ReportFilter filter = ServletRequestEnumUtils.getEnumParameter(request, ReportFilter.class, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE);
+        
         if (filter == ReportFilter.GROUPS) {
             String names[] = ServletRequestUtils.getStringParameters(request, ReportModelBase.ATT_FILTER_MODEL_VALUES);
             List<String> namesList = Arrays.asList(names); 

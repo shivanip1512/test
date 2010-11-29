@@ -6,12 +6,12 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
 public class ServletRequestEnumUtils {
-    public static <T extends Enum<T>> T getEnumParameter(ServletRequest request, Class<T> type, String name) throws ServletRequestBindingException {
+    public static <T extends Enum<T>> T getEnumParameter(ServletRequest request, Class<T> type, String name) {
         return getEnumParameter(request, type, name, null);
     }
     
-    public static <T extends Enum<T>> T getEnumParameter(ServletRequest request, Class<T> type, String name, T defaultValue) throws ServletRequestBindingException {
-        String stringParameter = ServletRequestUtils .getStringParameter(request, name);
+    public static <T extends Enum<T>> T getEnumParameter(ServletRequest request, Class<T> type, String name, T defaultValue) {
+        String stringParameter = ServletRequestUtils .getStringParameter(request, name, null);
         if (stringParameter == null) {
             return defaultValue;
         } else {

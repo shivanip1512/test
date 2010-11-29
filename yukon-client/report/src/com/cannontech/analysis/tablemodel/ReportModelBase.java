@@ -35,6 +35,8 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.util.ServletRequestEnumUtils;
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 
@@ -53,52 +55,48 @@ import com.google.common.collect.Lists;
  *   Vector data - contains data object o for table rows
  *     (o is normally defined in the extending class as an inner class object model).    
  * 
- * @author snebben
  */
 public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTableModel implements Reportable
 {
-	public enum ReportFilter{ NONE(""),
+	public enum ReportFilter{ NONE("", null),
 			METER("Meter Number", ReportFilterType.METERNUMBER),
 			DEVICE("Device", ReportFilterType.DEVICENAME),
 			GROUPS("Groups", ReportFilterType.DEVICEGROUP),
-			ROUTE("Route"),
-			RECEIVER("Receiver"),
-			LMGROUP("LM Group"),
-			LMCONTROLAREA("LM Control Area"),
-			LMSCENARIO("LM Scenario"),
-			TRANSMITTER("Transmitter"),
-			RTU("RTU"),
-			CAPCONTROLSUBBUS("Substation Bus"),
-            CAPCONTROLSUBSTATION("Substation"),
-			CAPCONTROLFEEDER("Feeder"),
-			CAPBANK("Cap Bank"),
-            SCHEDULE("Schedule (Script)"),
-            AREA("Area"),
-            PORT("Port"),
-            PROGRAM("Program"),
-            PROGRAM_SINGLE_SELECT("Program", false),
-            STRATEGY("Strategy"),
+			ROUTE("Route", ReportFilterType.PAOBJECTID),
+			RECEIVER("Receiver", ReportFilterType.PAOBJECTID),
+			LMGROUP("LM Group", ReportFilterType.PAOBJECTID),
+			LMCONTROLAREA("LM Control Area", ReportFilterType.PAOBJECTID),
+			LMSCENARIO("LM Scenario", ReportFilterType.PAOBJECTID),
+			TRANSMITTER("Transmitter", ReportFilterType.PAOBJECTID),
+			RTU("RTU", ReportFilterType.PAOBJECTID),
+			CAPCONTROLSUBBUS("Substation Bus", ReportFilterType.PAOBJECTID),
+            CAPCONTROLSUBSTATION("Substation", ReportFilterType.PAOBJECTID),
+			CAPCONTROLFEEDER("Feeder", ReportFilterType.PAOBJECTID),
+			CAPBANK("Cap Bank", ReportFilterType.PAOBJECTID),
+            SCHEDULE("Schedule (Script)", ReportFilterType.PAOBJECTID),
+            AREA("Area", ReportFilterType.PAOBJECTID),
+            PORT("Port", ReportFilterType.PAOBJECTID),
+            PROGRAM("Program", ReportFilterType.PAOBJECTID),
+            PROGRAM_SINGLE_SELECT("Program", ReportFilterType.PAOBJECTID, false),
+            STRATEGY("Strategy", ReportFilterType.PAOBJECTID),
             ACCOUNT_NUMBER("Account Number", ReportFilterType.ACCOUNTNUMBER), 
             SERIAL_NUMBER("Serial Number", ReportFilterType.SERIALNUMBER),
             USER("User", ReportFilterType.USER),
             ;
 
 		private String filterTitle;
+		private ReportFilterType reportFilterType;
 		private boolean multiSelect = true;
-		private ReportFilterType reportFilterType = ReportFilterType.PAOBJECTID;
-		
-		private ReportFilter(String filterTitle) {
-		    this.filterTitle = filterTitle;
-		}
-		
-		private ReportFilter(String filterTitle, boolean multiSelect){
-		    this.filterTitle = filterTitle;
-		    this.multiSelect = multiSelect;
-		}
 		
 		private ReportFilter(String filterTitle, ReportFilterType reportFilterType){
 		    this.filterTitle = filterTitle;
 		    this.reportFilterType = reportFilterType;
+		}
+
+		private ReportFilter(String filterTitle, ReportFilterType reportFilterType, boolean multiSelect){
+		    this.filterTitle = filterTitle;
+		    this.reportFilterType = reportFilterType;
+		    this.multiSelect = multiSelect;
 		}
 		
 		public String getFilterTitle() {
@@ -115,16 +113,88 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 	}
 	
 	private enum ReportFilterType {
-		METERNUMBER,
-		DEVICENAME,
-		DEVICEGROUP,
-		PAOBJECTID,
-		ACCOUNTNUMBER,
-		USER,
-		SERIALNUMBER
-		;
+		METERNUMBER {
+	        @Override
+	        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
+	            model.loadPao(model, request, new Function<String, LiteYukonPAObject>() {
+	                @Override
+	                public LiteYukonPAObject apply(String from) {
+	                    return DaoFactory.getDeviceDao().getLiteYukonPaobjectByMeterNumber(from);
+	                }
+	            });
+	        }
+	    }
+		,
+		DEVICENAME {
+	        @Override
+	        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
+	            model.loadPao(model, request, new Function<String, LiteYukonPAObject>() {
+	                @Override
+	                public LiteYukonPAObject apply(String from) {
+	                    return DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(from);
+	                }
+	            });
+	        }
+	    }
+		,
+		DEVICEGROUP {
+			@Override
+	        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
+	            String[] paramArray = request.getParameterValues(ATT_FILTER_MODEL_VALUES);
+	            if( paramArray != null) {
+	                model.setBillingGroups(paramArray);
+	            }
+	        }
+		}
+		,
+		PAOBJECTID {
+			@Override
+	        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
+	            int[] idsArray = ServletRequestUtils.getIntParameters(request, ATT_FILTER_MODEL_VALUES);
+	            if (idsArray.length > 0) {
+	                model.setPaoIDs(idsArray);
+	            }
+	        }
+	    }
+		,
+		ACCOUNTNUMBER {
+	        @Override
+	        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
+	        }
+	    }
+	    ,
+		USER {
+	        @Override
+	        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
+	        }
+	    }
+	    ,
+		SERIALNUMBER {
+	        @Override
+	        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
+	        }
+	    },
+	    ;
+		
+		 public abstract void applyParameters(ReportModelBase<?> model, HttpServletRequest request);
 	}
-	
+
+	private void loadPao(ReportModelBase<?> model, HttpServletRequest request, Function<String, LiteYukonPAObject> lookup) {
+	    String filterValueList = request.getParameter(ATT_FILTER_METER_VALUES).trim();
+	    StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
+	    int[] idsArray = new int[st.countTokens()];
+	    int i = 0;
+	    while (st.hasMoreTokens()) {
+	        String meterNumber = st.nextToken().trim();
+	        LiteYukonPAObject lPao = lookup.apply(meterNumber);
+	        if( lPao != null) {
+	            idsArray[i++] = lPao.getYukonID();
+	        }
+	    }
+	    if( idsArray.length > 0 ) {
+	        model.setPaoIDs(idsArray);
+	    }
+	}
 	
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	private String fieldSeparator = ",";
@@ -423,10 +493,10 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 		return html;
 	}
 	
-	public void setParameters( HttpServletRequest req )
-	{
-		if( req != null)
-		{
+	public void setParameters( HttpServletRequest req ) {
+		
+		if( req != null) {
+			
 			// Need to clear some objects.  These may be (re)loaded by filter type below.
 			setBillingGroups(null);
 			setPaoIDs(null);
@@ -459,61 +529,10 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 			Integer sortOrder = ServletRequestUtils.getIntParameter(req, ATT_SORT_ORDER, ASCENDING);
 			setSortOrder(sortOrder);
 
-	        String filterModelType = ServletRequestUtils.getStringParameter(req, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE.name());
-	        ReportFilter filter = Enum.valueOf(ReportFilter.class, filterModelType);
+	        ReportFilter filter = ServletRequestEnumUtils.getEnumParameter(req, ReportFilter.class, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE);
 			setFilterModelType(filter);
 			ReportFilterType reportFilterType = getFilterModelType().getReportFilterType();
-
-			//Load billingGroup model values
-			if ( reportFilterType.equals(ReportFilterType.DEVICEGROUP) ) {	// Device Group values
-				
-				String[] paramArray = req.getParameterValues(ATT_FILTER_MODEL_VALUES);
-				if( paramArray != null) {
-					setBillingGroups(paramArray);
-				}
-					
-			} else if( reportFilterType.equals(ReportFilterType.METERNUMBER)) {	// Meter Number values
-             
-                String filterValueList = req.getParameter(ATT_FILTER_METER_VALUES).trim();
-                StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
-                int[] idsArray = new int[st.countTokens()];
-                int i = 0;
-                while (st.hasMoreTokens()) {
-                    String meterNumber = st.nextToken().trim();
-                    LiteYukonPAObject lPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByMeterNumber(meterNumber);
-                    if( lPao != null) {
-                        idsArray[i++] = lPao.getYukonID();
-                    }
-                }
-                if( idsArray.length > 0 ) {
-                    setPaoIDs(idsArray);
-                }
-
-            } else if( reportFilterType.equals(ReportFilterType.DEVICENAME)) {	// Device Name values
-             
-                String filterValueList = req.getParameter(ATT_FILTER_DEVICE_VALUES).trim();
-                StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
-                int[] idsArray = new int[st.countTokens()];
-                int i = 0;
-        		while (st.hasMoreTokens()) {
-                    String deviceName = st.nextToken().trim();
-                    LiteYukonPAObject lPao = DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(deviceName);
-                    if( lPao != null) {
-                        idsArray[i++] = lPao.getYukonID();
-                    }
-                }
-                if( idsArray.length > 0 ) {
-                    setPaoIDs(idsArray);
-                }
-                
-            } else if (reportFilterType.equals(ReportFilterType.PAOBJECTID)) { // PaobjectID values
-
-            	int[] idsArray = ServletRequestUtils.getIntParameters(req, ATT_FILTER_MODEL_VALUES);
-            	if (idsArray.length > 0) {
-            		setPaoIDs(idsArray);
-            	}
-			}
-			
+			reportFilterType.applyParameters(this, req);
 		}
 	}
 	/**

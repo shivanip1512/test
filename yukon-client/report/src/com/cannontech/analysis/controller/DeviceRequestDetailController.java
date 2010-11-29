@@ -13,6 +13,7 @@ import com.cannontech.analysis.tablemodel.DeviceRequestDetailModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.web.util.ServletRequestEnumUtils;
 
 public class DeviceRequestDetailController extends ReportControllerBase{
 
@@ -42,9 +43,8 @@ public class DeviceRequestDetailController extends ReportControllerBase{
         super.setRequestParameters(request);
         DeviceRequestDetailModel deviceRequestDetailModel = (DeviceRequestDetailModel)model;
 
-        String filterModelType = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE.name());
-        ReportFilter filter = Enum.valueOf(ReportFilter.class, filterModelType);
-
+        ReportFilter filter = ServletRequestEnumUtils.getEnumParameter(request, ReportFilter.class, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE);
+        
         if (filter == ReportFilter.GROUPS) {
             String names[] = ServletRequestUtils.getStringParameters(request, ReportModelBase.ATT_FILTER_MODEL_VALUES);
             List<String> namesList = Arrays.asList(names); 

@@ -13,6 +13,7 @@ import com.cannontech.analysis.tablemodel.OptOutLimitModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.web.util.ServletRequestEnumUtils;
 import com.google.common.collect.Sets;
 
 public class OptOutLimitController extends ReportControllerBase {
@@ -55,8 +56,7 @@ public class OptOutLimitController extends ReportControllerBase {
         EnergyCompanyModelAttributes ecModel = (EnergyCompanyModelAttributes)model;
         super.setRequestParameters(request);
 
-        String filterModelType = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE.name());
-        ReportFilter filter = Enum.valueOf(ReportFilter.class, filterModelType);
+        ReportFilter filter = ServletRequestEnumUtils.getEnumParameter(request, ReportFilter.class, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE);
         
         if (filter == ReportFilter.ACCOUNT_NUMBER) {
             

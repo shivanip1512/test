@@ -15,6 +15,7 @@ import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.web.util.ServletRequestEnumUtils;
 
 public class DisconnectCollarController extends ReportControllerBase {
     
@@ -52,8 +53,7 @@ public class DisconnectCollarController extends ReportControllerBase {
         DisconnectCollarModel diconnectModel = (DisconnectCollarModel) model;
         super.setRequestParameters(request);
 
-        String filterModelType = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE.name());
-        ReportFilter filter = Enum.valueOf(ReportFilter.class, filterModelType);
+        ReportFilter filter = ServletRequestEnumUtils.getEnumParameter(request, ReportFilter.class, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE);
 
         if (filter == ReportFilter.METER) {
             String filterValueList = request.getParameter(ReportModelBase.ATT_FILTER_METER_VALUES).trim();

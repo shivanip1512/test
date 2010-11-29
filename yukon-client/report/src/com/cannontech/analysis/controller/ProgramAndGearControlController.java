@@ -18,6 +18,7 @@ import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.util.ServletRequestEnumUtils;
 import com.google.common.collect.Sets;
 
 public class ProgramAndGearControlController extends ReportControllerBase {
@@ -61,8 +62,7 @@ public class ProgramAndGearControlController extends ReportControllerBase {
         
         programAndGearControlModel.setLiteUser(ServletUtil.getYukonUser(request));
         
-        String filterModelType = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE.name());
-        ReportFilter filter = Enum.valueOf(ReportFilter.class, filterModelType);
+        ReportFilter filter = ServletRequestEnumUtils.getEnumParameter(request, ReportFilter.class, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE);
         
         String filterValuesStr = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_VALUES, "");
         Set<Integer> paoIdsSet = Sets.newHashSet(StringUtils.parseIntStringForList(filterValuesStr));
