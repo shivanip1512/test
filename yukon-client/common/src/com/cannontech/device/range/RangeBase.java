@@ -1,5 +1,7 @@
 package com.cannontech.device.range;
 
+import java.util.Arrays;
+
 import com.cannontech.common.pao.PaoType;
 
 
@@ -40,10 +42,9 @@ public class RangeBase implements IValidRange
    public String getRangeDescription()
    {
        if( rangeDescription == null) {
-           rangeDescription = "Valid range for " + 
-                               paoType + 
-                               " addresses is " + lowRange +
-                               " to " + upperRange;
+           rangeDescription = "PaoType:" + paoType +
+           						"  Valid Range:" + lowRange + " to " + upperRange +
+           						"  Excluded: " + Arrays.toString(excludedValues);
        }
        return rangeDescription;
    }

@@ -6,6 +6,7 @@ package com.cannontech.device.range;
  */
 import java.util.Map;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -60,6 +61,7 @@ public class DeviceAddressRange
 	public static RangeBase getRangeBase(PaoType paoType) {
 		RangeBase rangeBase = paoTypeRange.get(paoType);
 		if (rangeBase == null) {
+			CTILogger.debug("No Range found for " + paoType + ". Using Default Range [" + RANGE_DEFAULT.getRangeDescription() + "].");
 			return RANGE_DEFAULT; 
 		}
 		return rangeBase;

@@ -106,7 +106,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             // test
         	RangeBase rangeBase = DeviceAddressRange.getRangeBase(deviceType);
             if (!rangeBase.isValidRange(address)) {
-                throw new DeviceCreationException("Invalid address for device type (" + address + ").");
+                throw new DeviceCreationException("Invalid address: " + address + ". " + rangeBase.getRangeDescription());
             }
             else if (StringUtils.isBlank(name)) {
                 throw new DeviceCreationException("Device name is blank.");
