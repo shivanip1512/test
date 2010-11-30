@@ -25,11 +25,17 @@
             </tr>
         
             <c:forEach var="task" items="${tasks}">
-            
+                
+                <cti:url value="/spring/stars/operator/inventory/inventoryOperations/deviceReconfig/status" var="statusUrl">
+                    <cti:param name="taskId" value="${task.inventoryConfigTaskId}"/>
+                </cti:url>
+                
                 <tr>
                     
                     <td>
-                        <spring:escapeBody htmlEscape="true">${task.taskName}</spring:escapeBody>
+                        <a href="${statusUrl}">
+                            <spring:escapeBody htmlEscape="true">${task.taskName}</spring:escapeBody>
+                        </a>
                     </td>
                     
                     <td nowrap="nowrap">

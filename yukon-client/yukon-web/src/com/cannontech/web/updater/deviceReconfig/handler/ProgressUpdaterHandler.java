@@ -11,7 +11,7 @@ import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorUpdaterType;
 
-public class DeviceReconfigProgressUpdaterHandler implements DeviceReconfigUpdaterHandler {
+public class ProgressUpdaterHandler implements DeviceReconfigUpdaterHandler {
 
     private InventoryConfigTaskDao inventoryConfigTaskDao;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -30,7 +30,7 @@ public class DeviceReconfigProgressUpdaterHandler implements DeviceReconfigUpdat
             return complete;
         }
             
-        double percentComplete = (new Double(itemsProcessed).doubleValue() / new Double(inventoryConfigTask.getNumberOfItems()).doubleValue()) * 100;
+        double percentComplete = ( (double)itemsProcessed / (double) inventoryConfigTask.getNumberOfItems());
         
         return format.format(percentComplete);
     }

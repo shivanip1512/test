@@ -113,4 +113,19 @@
     <entry key="yukon.web.modules.operator.commandSchedule.error.NaN.minutes">Duration minutes is not a valid number.</entry>
     <entry key="yukon.web.modules.operator.commandSchedule.error.NaN.seconds">Delay seconds is not a valid number.</entry>
     
+    <!-- /inventory/inventoryOperations/deviceReconfig/status.jsp -->
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.pageName">Device Reconfiguration Results</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.statusContainer.title">{0} Reconfiguration Result Details</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.progress">Progress</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.inProgress">In Progress</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.complete">Complete</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.successCount">Successfully Paged</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.failedCount">Failed To Paged</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.notesLabel">Note:</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.notes">Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.newOperation.imageUrl">/WebConfig/yukon/Icons/magnifier.gif</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.newOperation.hoverUrl">/WebConfig/yukon/Icons/magnifier_over.gif</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.newOperation.label">Choose A New Operation For These Devices</entry>
+    
 </properties>

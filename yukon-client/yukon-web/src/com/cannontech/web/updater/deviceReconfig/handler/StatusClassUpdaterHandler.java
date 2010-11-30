@@ -7,7 +7,7 @@ import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorUpdaterType;
 
-public class DeviceReconfigStatusClassUpdaterHandler implements DeviceReconfigUpdaterHandler {
+public class StatusClassUpdaterHandler implements DeviceReconfigUpdaterHandler {
 
     private InventoryConfigTaskDao inventoryConfigTaskDao;
 

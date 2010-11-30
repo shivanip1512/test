@@ -29,6 +29,10 @@ public class DataUpdaterValueTag extends YukonTagSupport {
         out.print(StringEscapeUtils.escapeHtml(newValue));
         out.print("</span>");
     }
+    
+    public void setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
+    }
 
     public void setType(String type) {
         this.type = type;

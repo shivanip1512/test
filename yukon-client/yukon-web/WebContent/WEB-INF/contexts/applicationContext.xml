@@ -1387,8 +1387,16 @@
     <bean id="multispeakDeviceGroupSyncBackingService" class="com.cannontech.web.updater.multispeak.deviceGroupSync.MultispeakDeviceGroupSyncBackingService"/>
     
     <bean id="deviceReconfigMonitorBackingService" class="com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorBackingService"/>
-    <bean id="deviceReconfigProgressUpdaterHandler" class="com.cannontech.web.updater.deviceReconfig.handler.DeviceReconfigProgressUpdaterHandler"/>
-    <bean id="deviceReconfigStatusClassUpdaterHandler" class="com.cannontech.web.updater.deviceReconfig.handler.DeviceReconfigStatusClassUpdaterHandler"/>
+    
+    <bean class="com.cannontech.web.updater.deviceReconfig.handler.FailedCountUpdaterHandler"/>
+    <bean class="com.cannontech.web.updater.deviceReconfig.handler.ItemsProcessedUpdaterHandler"/>
+    <bean class="com.cannontech.web.updater.deviceReconfig.handler.NewOperationForFailedUpdaterHandler"/>
+    <bean class="com.cannontech.web.updater.deviceReconfig.handler.NewOperationForSuccessUpdaterHandler"/>
+    <bean class="com.cannontech.web.updater.deviceReconfig.handler.ProgressUpdaterHandler"/>
+    <bean class="com.cannontech.web.updater.deviceReconfig.handler.StatusClassUpdaterHandler"/>
+    <bean class="com.cannontech.web.updater.deviceReconfig.handler.StatusTextUpdaterHandler"/>
+    <bean class="com.cannontech.web.updater.deviceReconfig.handler.SuccessCountUpdaterHandler"/>
+    
     <bean id="deviceReconfigOptionsValidator" class="com.cannontech.web.stars.dr.operator.inventoryOperations.deviceReconfig.DeviceReconfigOptionsValidator"/>
     <bean id="commandScheduleValidator" class="com.cannontech.web.stars.dr.operator.inventoryOperations.CommandScheduleValidator"/>
     

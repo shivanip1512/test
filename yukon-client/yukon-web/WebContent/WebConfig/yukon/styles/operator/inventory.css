@@ -17,7 +17,7 @@ table.selectionTable td.removeColumn {
     width:100px;
 }
 
-div.actionsHeader {
+div.containerHeader {
     font-size: 11px;
 }
 
@@ -70,4 +70,16 @@ table.inventoryActionsTable td.button {
 table.inventoryActionsTable td.top,
 table.inventoryActionsTable td.middle {
     padding-bottom: 5px;
+}
+
+span.statusPart {
+    padding-right: 5px;
+}
+
+span.hidden {
+    display: none;
+}
+
+span.visible {
+    display: block;
 }

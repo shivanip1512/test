@@ -9,7 +9,7 @@
 
     <tags:boxContainer2 nameKey="actionsContainer" hideEnabled="false">
     
-        <div class="actionsHeader">
+        <div class="containerHeader">
             <table>
                 <tr>
                     <td valign="top" colspan="2">

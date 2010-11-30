@@ -21,8 +21,11 @@ public interface InventoryConfigTaskDao {
 
     public int delete(int taskId);
 
+    public int getSuccessCount(int taskId);
+
+    public int getFailedCount(int taskId);
+    
     public List<InventoryConfigTaskItem> getItems(int maxItems);
 
-    public void markComplete(InventoryConfigTaskItem taskItem,
-            InventoryConfigTaskItem.Status status);
+    public void markComplete(InventoryConfigTaskItem taskItem, InventoryConfigTaskItem.Status status);
 }

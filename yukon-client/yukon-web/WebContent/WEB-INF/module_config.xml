@@ -1316,9 +1316,12 @@
                                 <pages>
                                     <page name="deviceReconfig" type="DETAIL_CHILD">
                                         <menu>inventory|inventoryOperations</menu>
-                                        <link>/spring/stars/operator/inventory/inventoryOperations/deviceReconfig/setup</link>
                                     </page>
                                 </pages>
+                            </page>
+                            <page name="deviceReconfigStatus" type="DETAIL_CHILD">
+                                <menu>inventory|inventoryOperations</menu>
+                                <labelArgument>${taskName}</labelArgument>
                             </page>
                         </pages>
                     </page>

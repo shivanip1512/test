@@ -22,6 +22,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
 import com.cannontech.stars.dr.hardware.model.CommandSchedule;
+import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -84,6 +85,22 @@ public class DeviceReconfigController {
         addCollectionToModelMap(request, modelMap);
         
         return "redirect:/spring/stars/operator/inventory/inventoryOperations/inventoryActions";
+    }
+    
+    @RequestMapping(value="/operator/inventory/inventoryOperations/deviceReconfig/status", method=RequestMethod.GET)
+    public String status(HttpServletRequest request, ModelMap modelMap, int taskId) throws ServletRequestBindingException {
+        
+        InventoryConfigTask task = inventoryConfigTaskDao.getById(taskId);
+        modelMap.addAttribute("task", task);
+        modelMap.addAttribute("taskName", task.getTaskName());
+        
+        return "operator/inventory/inventoryOperations/deviceReconfig/status.jsp";
+    }
+    
+    @RequestMapping(value="/operator/inventory/inventoryActions/deviceReconfig/delete", method=RequestMethod.POST)
+    public String delete(HttpServletRequest request, ModelMap modelMap, int taskId) throws ServletRequestBindingException {
+        inventoryConfigTaskDao.delete(taskId);
+        return "redirect:/spring/stars/operator/inventory/inventoryOperations/home";
     }
     
     public void addCollectionToModelMap(HttpServletRequest request, ModelMap modelMap) throws ServletRequestBindingException {
