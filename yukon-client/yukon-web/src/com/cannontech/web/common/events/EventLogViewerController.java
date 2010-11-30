@@ -187,7 +187,7 @@ public class EventLogViewerController {
     @ModelAttribute("eventLogTypeBackingBean")
     public EventLogTypeBackingBean initializeEventLogTypeBackingBean(String eventLogType,
             YukonUserContext userContext) {
-        if (org.apache.commons.lang.StringUtils.isBlank(eventLogType)) return null;
+        if (StringUtils.isBlank(eventLogType)) return null;
         
         List<EventLogFilter> eventLogFilters = getEventLogFilter(eventLogType, userContext);
         EventLogTypeBackingBean eventLogTypeBackingBean = 
