@@ -326,7 +326,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         sql.append(  "AND hcg.groupEnrollStop IS NULL");
         sql.append(  "AND hcg.type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
         sql.append(  "AND hcg.inventoryId").eq(inventoryId);
-        return false;
+        return yukonJdbcTemplate.queryForInt(sql) > 0;
     }
 
     private final static YukonRowMapper<ProgramEnrollment> enrollmentRowMapper = new YukonRowMapper<ProgramEnrollment>(){
