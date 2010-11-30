@@ -36,6 +36,7 @@ import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.user.UserUtils;
+import com.google.common.collect.Lists;
 
 public class YukonSwitchCommandAction {
 
@@ -371,7 +372,7 @@ public class YukonSwitchCommandAction {
     // builds up the command from the information stored in the LMConfiguration
     // object/tables
     /* from YukonSwitchCommandAction */
-    private static String[] getConfigCommands(LiteStarsLMHardware liteHw,
+    public static String[] getConfigCommands(LiteStarsLMHardware liteHw,
                                               LiteStarsEnergyCompany energyCompany,
                                               boolean useHardwareAddressing,
                                               Integer groupID)
@@ -691,7 +692,7 @@ public class YukonSwitchCommandAction {
     }
 
     /* from YukonSwitchCommandAction */
-    public static void sendDisableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, Integer routeID)
+    public static void sendDisableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, Integer routeId)
             throws WebClientException {
         if (liteHw.getManufacturerSerialNumber().trim().length() == 0) {
             throw new WebClientException("The manufacturer serial # of the hardware cannot be empty");
@@ -702,71 +703,21 @@ public class YukonSwitchCommandAction {
         Integer unavailStatusEntryID = new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).getEntryID());
     
         LiteYukonUser user = energyCompany.getUser();
-    
-        String cmd = null;
-        String map1Cmdlorm = null;
-        String map1Cmdhorm = null;
-        boolean is305 = false;
-    
-        int hwConfigType = InventoryUtils.getHardwareConfigType(liteHw.getLmHardwareTypeID());
-        if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
-            cmd = "putconfig vcom service out serial " + liteHw.getManufacturerSerialNumber();
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
-            cmd = "putconfig xcom service out serial " + liteHw.getManufacturerSerialNumber();
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
-            // To disable a SA205 switch, reconfig all slots to the unused
-            // address
-            cmd = "putconfig sa205 serial "
-                  + liteHw.getManufacturerSerialNumber() + " assign" + " 1="
-                  + InventoryUtils.SA205_UNUSED_ADDR + ",2="
-                  + InventoryUtils.SA205_UNUSED_ADDR + ",3="
-                  + InventoryUtils.SA205_UNUSED_ADDR + ",4="
-                  + InventoryUtils.SA205_UNUSED_ADDR + ",5="
-                  + InventoryUtils.SA205_UNUSED_ADDR + ",6="
-                  + InventoryUtils.SA205_UNUSED_ADDR;
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
-            /*
-             * To disable a SA305 switch, we need to zero out relay map 1 and
-             * tell the
-             * switch to use map 1 instead of map 0
-             */
-            is305 = true;
-    
-            // sets map 1 to zero values
-            map1Cmdlorm = "putconfig sa305 serial "
-                          + liteHw.getManufacturerSerialNumber() + " utility "
-                          + liteHw.getLMConfiguration().getSA305().getUtility()
-                          + " lorm1=0";
-            map1Cmdhorm = "putconfig sa305 serial "
-                          + liteHw.getManufacturerSerialNumber() + " utility "
-                          + liteHw.getLMConfiguration().getSA305().getUtility()
-                          + " horm1=0";
-            // tell the switch to use relay map1 instead of relay map0
-            cmd = "putconfig sa305 serial "
-                  + liteHw.getManufacturerSerialNumber() + " utility "
-                  + liteHw.getLMConfiguration().getSA305().getUtility()
-                  + " use relay map 1";
-        }
-    
-        if (cmd == null)
+        List<String> commands = getDisableCommands(liteHw);
+
+        if (commands.isEmpty())
             return;
-    
-        int rtID = 0;
-        if (routeID != null) {
-            rtID = routeID.intValue();
-        } else {
-            rtID = liteHw.getRouteID();
+
+        if (routeId == null) {
+            routeId = liteHw.getRouteID();
         }
-        if (rtID == 0)
-            rtID = energyCompany.getDefaultRouteID();
-    
-        if (is305) {
-            ServerUtils.sendSerialCommand(map1Cmdlorm, rtID, user);
-            ServerUtils.sendSerialCommand(map1Cmdhorm, rtID, user);
+        if (routeId == null || routeId == 0)
+            routeId = energyCompany.getDefaultRouteID();
+
+        for (String command : commands) {
+            ServerUtils.sendSerialCommand(command, routeId, user);
         }
-    
-        ServerUtils.sendSerialCommand(cmd, rtID, user);
-    
+
         // Add "Termination" to hardware events
         try {
             com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
@@ -793,75 +744,62 @@ public class YukonSwitchCommandAction {
         }
     }
 
+    public static List<String> getDisableCommands(LiteStarsLMHardware liteHw) {
+        List<String> retVal = Lists.newArrayList();
+        int hwConfigType = InventoryUtils.getHardwareConfigType(liteHw.getLmHardwareTypeID());
+        if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
+            retVal.add("putconfig vcom service out serial " + liteHw.getManufacturerSerialNumber());
+        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+            retVal.add("putconfig xcom service out serial " + liteHw.getManufacturerSerialNumber());
+        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
+            // To disable a SA205 switch, reconfig all slots to the unused
+            // address
+            retVal.add("putconfig sa205 serial " + liteHw.getManufacturerSerialNumber() +
+                       " assign" + " 1=" + InventoryUtils.SA205_UNUSED_ADDR + ",2=" +
+                       InventoryUtils.SA205_UNUSED_ADDR + ",3=" + InventoryUtils.SA205_UNUSED_ADDR +
+                       ",4=" + InventoryUtils.SA205_UNUSED_ADDR + ",5=" +
+                       InventoryUtils.SA205_UNUSED_ADDR + ",6=" + InventoryUtils.SA205_UNUSED_ADDR);
+        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
+            // To disable a SA305 switch, we need to zero out relay map 1 and tell the switch to
+            // use map 1 instead of map 0
+
+            // sets map 1 to zero values
+            retVal.add("putconfig sa305 serial " + liteHw.getManufacturerSerialNumber() +
+                       " utility " + liteHw.getLMConfiguration().getSA305().getUtility() + " lorm1=0");
+            retVal.add("putconfig sa305 serial " + liteHw.getManufacturerSerialNumber() +
+                       " utility " + liteHw.getLMConfiguration().getSA305().getUtility() + " horm1=0");
+            // tell the switch to use relay map1 instead of relay map0
+            retVal.add("putconfig sa305 serial " + liteHw.getManufacturerSerialNumber() +
+                       " utility " + liteHw.getLMConfiguration().getSA305().getUtility() + " use relay map 1");
+        }
+        return retVal;
+    }
+
     /* from YukonSwitchCommandAction */
-    public static void sendEnableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, Integer routeID)
+    public static void sendEnableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, Integer routeId)
             throws WebClientException {
         if (liteHw.getManufacturerSerialNumber().length() == 0) {
             throw new WebClientException("The manufacturer serial # of the hardware cannot be empty");
         }
-    
+
         LiteYukonUser user = energyCompany.getUser();
-    
-        String cmd = null;
-        String map1Cmdlorm = null;
-        String map1Cmdhorm = null;
-        boolean is305 = false;
-    
-        int hwConfigType = InventoryUtils.getHardwareConfigType(liteHw.getLmHardwareTypeID());
-        if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
-            cmd = "putconfig vcom service in serial " + liteHw.getManufacturerSerialNumber();
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
-            cmd = "putconfig xcom service in serial " + liteHw.getManufacturerSerialNumber();
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
-            // To enable a SA205 switch, just reconfig it using the saved
-            // configuration
-            cmd = getConfigCommands(liteHw, energyCompany, true, null)[0];
-        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
-            /*
-             * To enable a SA305 switch, we need to tell the
-             * switch to use map 1 instead of map 0 and then reset
-             * values in relay map 1 to their defaults just to be neat and tidy
-             */
-            is305 = true;
-    
-            // tell the switch to use relay map0 instead of relay map1
-            cmd = "putconfig sa305 serial "
-                  + liteHw.getManufacturerSerialNumber() + " utility "
-                  + liteHw.getLMConfiguration().getSA305().getUtility()
-                  + " use relay map 0";
-    
-            // puts relay 1 back to its default values
-            map1Cmdlorm = "putconfig sa305 serial "
-                          + liteHw.getManufacturerSerialNumber() + " utility "
-                          + liteHw.getLMConfiguration().getSA305().getUtility()
-                          + " lorm1=40";
-            map1Cmdhorm = "putconfig sa305 serial "
-                          + liteHw.getManufacturerSerialNumber() + " utility "
-                          + liteHw.getLMConfiguration().getSA305().getUtility()
-                          + " horm1=65";
-    
-        }
-    
-        if (cmd == null) {
+
+        List<String> commands = getEnableCommands(liteHw, energyCompany, false);
+        if (commands.isEmpty()) {
             return;
         }
-    
-        int rtID = 0;
-        if (routeID != null) {
-            rtID = routeID.intValue();
-        } else {
-            rtID = liteHw.getRouteID();
+
+        if (routeId == null) {
+            routeId = liteHw.getRouteID();
         }
-        if (rtID == 0) {
-            rtID = energyCompany.getDefaultRouteID();
+        if (routeId == null || routeId == 0) {
+            routeId = energyCompany.getDefaultRouteID();
         }
-    
-        ServerUtils.sendSerialCommand(cmd, rtID, user);
-        if (is305) {
-            ServerUtils.sendSerialCommand(map1Cmdlorm, rtID, user);
-            ServerUtils.sendSerialCommand(map1Cmdhorm, rtID, user);
+
+        for (String command : commands) {
+            ServerUtils.sendSerialCommand(command, routeId, user);
         }
-    
+
         // Add "Activation Completed" to hardware events
         Integer hwEventEntryID = new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID());
         Integer actCompEntryID = new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID());
@@ -892,4 +830,38 @@ public class YukonSwitchCommandAction {
         }
     }
 
+    public static List<String> getEnableCommands(LiteStarsLMHardware liteHw,
+            LiteStarsEnergyCompany energyCompany, boolean willAlsoConfig) throws WebClientException {
+        List<String> retVal = Lists.newArrayList();
+
+        int hwConfigType = InventoryUtils.getHardwareConfigType(liteHw.getLmHardwareTypeID());
+        if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
+            retVal.add("putconfig vcom service in serial " + liteHw.getManufacturerSerialNumber());
+        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
+            retVal.add("putconfig xcom service in serial " + liteHw.getManufacturerSerialNumber());
+        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205) {
+            // To enable a SA205 switch, just reconfig it using the saved configuration
+            if (!willAlsoConfig) {
+                retVal.add(getConfigCommands(liteHw, energyCompany, true, null)[0]);
+            }
+        } else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
+            // To enable a SA305 switch, we need to tell the switch to use map 1 instead of map 0
+            // and then reset values in relay map 1 to their defaults just to be neat and tidy.
+
+            // tell the switch to use relay map0 instead of relay map1
+            retVal.add("putconfig sa305 serial " + liteHw.getManufacturerSerialNumber() +
+                       " utility " + liteHw.getLMConfiguration().getSA305().getUtility() +
+                       " use relay map 0");
+
+            // puts relay 1 back to its default values
+            retVal.add("putconfig sa305 serial " + liteHw.getManufacturerSerialNumber() +
+                       " utility " + liteHw.getLMConfiguration().getSA305().getUtility() +
+                       " lorm1=40");
+            retVal.add("putconfig sa305 serial " + liteHw.getManufacturerSerialNumber() +
+                       " utility " + liteHw.getLMConfiguration().getSA305().getUtility() +
+                       " horm1=65");
+        }
+
+        return retVal;
+    }
 }

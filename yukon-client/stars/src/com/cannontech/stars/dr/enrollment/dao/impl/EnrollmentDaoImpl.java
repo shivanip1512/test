@@ -317,7 +317,19 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 	        || lastAction == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP;
     }
 
-	private final static YukonRowMapper<ProgramEnrollment> enrollmentRowMapper = new YukonRowMapper<ProgramEnrollment>(){
+	@Override
+    public boolean isEnrolled(int inventoryId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM lmHardwareControlGroup hcg");
+        sql.append("WHERE hcg.groupEnrollStart IS NOT NULL");
+        sql.append(  "AND hcg.groupEnrollStop IS NULL");
+        sql.append(  "AND hcg.type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
+        sql.append(  "AND hcg.inventoryId").eq(inventoryId);
+        return false;
+    }
+
+    private final static YukonRowMapper<ProgramEnrollment> enrollmentRowMapper = new YukonRowMapper<ProgramEnrollment>(){
         @Override
         public ProgramEnrollment mapRow(YukonResultSet rs) throws SQLException {
             ProgramEnrollment programEnrollment = new ProgramEnrollment();
