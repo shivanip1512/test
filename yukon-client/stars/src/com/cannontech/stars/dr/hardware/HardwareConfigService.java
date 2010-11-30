@@ -93,38 +93,36 @@ public class HardwareConfigService implements Runnable {
                     log.debug("got " + items.size() + " items");
                     for (InventoryConfigTaskItem item : items) {
                         log.debug("processing item " + item);
+                        Status status = Status.FAIL;  // fail if there are no commands
                         workProcessed = true;
                         int inventoryId = item.getInventoryId();
                         int energyCompanyId = item.getEnergyCompanyId();
                         LiteYukonUser user = energyCompanyDao.getEnergyCompanyUser(energyCompanyId);
-                        List<String> commands = null;
                         try {
-                            commands = hardwareConfigService.getConfigCommands(inventoryId, energyCompanyId, user);
+                            List<String> commands = hardwareConfigService.getConfigCommands(inventoryId, energyCompanyId, user);
+                            log.debug(item.getInventoryId() + " needs " + commands.size() + " commands");
+                            LiteStarsLMHardware hardware = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
+                            if (!commands.isEmpty()) {
+                                status = Status.SUCCESS;
+                                for (String command : commands) {
+                                    log.debug("processing command [" + command + "]");
+                                    try {
+                                        commandRequestHardwareExecutor.execute(hardware, command, user);
+                                    } catch (CommandCompletionException cce) {
+                                        log.error("error executing command [" + command + "]");
+                                        status = Status.FAIL;
+                                    }
+                                    try {
+                                        Thread.sleep(shortestDelayInMillis);
+                                    } catch (InterruptedException ie) {
+                                        log.info("sleep interrupted");
+                                    }
+                                }
+                            } else {
+                                log.debug("no commands");
+                            }
                         } catch (WebClientException e) {
                             log.error("error getting commands for inventory id " + inventoryId, e);
-                            continue;
-                        }
-                        log.debug(item.getInventoryId() + " needs " + commands.size() + " commands");
-                        LiteStarsLMHardware hardware = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
-                        Status status = Status.FAIL;  // fail if there are no commands
-                        if (!commands.isEmpty()) {
-                            status = Status.SUCCESS;
-                            for (String command : commands) {
-                                log.debug("processing command [" + command + "]");
-                                try {
-                                    commandRequestHardwareExecutor.execute(hardware, command, user);
-                                } catch (CommandCompletionException cce) {
-                                    log.error("error executing command [" + command + "]");
-                                    status = Status.FAIL;
-                                }
-                                try {
-                                    Thread.sleep(shortestDelayInMillis);
-                                } catch (InterruptedException ie) {
-                                    log.info("sleep interrupted");
-                                }
-                            }
-                        } else {
-                            log.debug("no commands");
                         }
                         inventoryConfigTaskDao.markComplete(item, status);
                     }
