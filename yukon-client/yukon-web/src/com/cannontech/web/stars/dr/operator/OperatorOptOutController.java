@@ -27,7 +27,6 @@ import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Question;
-import com.cannontech.common.survey.model.ResolvedQuestion;
 import com.cannontech.common.survey.model.Survey;
 import com.cannontech.common.survey.service.SurveyService;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -281,11 +280,12 @@ public class OperatorOptOutController {
                     optOutBackingBean.createSurveyResults(surveyIds);
                 }
 
-                // Find the oldest incomplete survey and make it the current.
+                // Find the oldest incomplete and valid survey and make it the current.
                 int index = 0;
                 for (SurveyResult surveyResult : optOutBackingBean.getSurveyResults()) {
-                    if (!surveyResult.isAnswered()) {
-                        surveyId = surveyResult.getSurveyId();
+                    int possibleSurveyId = surveyResult.getSurveyId();
+                    if (!surveyResult.isAnswered() && surveyService.areAllSurveyKeysForContextValid(possibleSurveyId, userContext)) {
+                        surveyId = possibleSurveyId;
                         optOutBackingBean.setCurrentSurveyIndex(index);
                         break;
                     }
@@ -298,12 +298,9 @@ public class OperatorOptOutController {
         // failed validation.
         if (surveyId != 0) {
             Survey survey = surveyDao.getSurveyById(surveyId);
-            List<ResolvedQuestion> questions = surveyService.getResolvedQuestionsBySurveyId(surveyId, userContext);
+            List<Question> questions = surveyDao.getQuestionsBySurveyId(survey.getSurveyId());
             model.addAttribute("survey", survey);
             model.addAttribute("questions", questions);
-            
-            List<MessageSourceResolvable> messages = surveyService.errorsForResolvedQuestions(questions);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             return "operator/program/optOut/optOutSurvey.jsp";
         }
 

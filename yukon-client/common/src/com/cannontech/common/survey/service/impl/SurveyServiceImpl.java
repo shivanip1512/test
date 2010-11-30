@@ -1,7 +1,6 @@
 package com.cannontech.common.survey.service.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -17,8 +16,6 @@ import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.dao.impl.SurveyRowMapper;
 import com.cannontech.common.survey.model.Answer;
 import com.cannontech.common.survey.model.Question;
-import com.cannontech.common.survey.model.ResolvedAnswer;
-import com.cannontech.common.survey.model.ResolvedQuestion;
 import com.cannontech.common.survey.model.Survey;
 import com.cannontech.common.survey.service.SurveyService;
 import com.cannontech.common.util.SqlBuilder;
@@ -26,7 +23,6 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class SurveyServiceImpl implements SurveyService {
     private FilterService filterService;
@@ -52,86 +48,73 @@ public class SurveyServiceImpl implements SurveyService {
         return retVal;
     }
     
+      
     @Override
-    public List<ResolvedQuestion> getResolvedQuestionsBySurveyId(int surveyId, YukonUserContext userContext) {
+    public boolean areAllSurveyKeysForContextValid(int surveyId, YukonUserContext userContext) {
         List<Question> questions = surveyDao.getQuestionsBySurveyId(surveyId);
         Survey survey = surveyDao.getSurveyById(surveyId);
-        List<ResolvedQuestion> retVal = Lists.newArrayList();
+        final MessageSourceAccessor messageSourceAccessor = 
+            messageSourceResolver.getMessageSourceAccessor(userContext);
+        
         for (Question question : questions) {
-            ResolvedQuestion resolvedQuestion = new ResolvedQuestion();          
-            resolvedQuestion.setQuestion(question);
-                        
-            final MessageSourceAccessor messageSourceAccessor = 
-                messageSourceResolver.getMessageSourceAccessor(userContext);
-            try {
-                String resolvedString = messageSourceAccessor.getMessage(survey.getBaseKey(question));
-                resolvedQuestion.setQuestionText(resolvedString);
-                resolvedQuestion.setValid(true);
-            } catch (NoSuchMessageException e) {
-                resolvedQuestion.setQuestionText(survey.getBaseKey(question));
-                resolvedQuestion.setValid(false);
-            }
             
-            try {
-                String resolvedString = messageSourceAccessor.getMessage(survey.getBaseKey(question) + ".pleaseChoose");
-                resolvedQuestion.setPleaseChooseText(resolvedString);
-                resolvedQuestion.setPleaseChooseValid(true);
-            } catch (NoSuchMessageException e) {
-                resolvedQuestion.setPleaseChooseText(survey.getBaseKey(question) + ".pleaseChoose");
-                resolvedQuestion.setPleaseChooseValid(false);
-            }
+            String baseKey = survey.getBaseKey(question);
+            String otherKey = baseKey + ".other";
             
-            try {
-                String resolvedString = messageSourceAccessor.getMessage(survey.getBaseKey(question) + ".other");
-                resolvedQuestion.setOtherText(resolvedString);
-                resolvedQuestion.setOtherValid(true);
-            } catch (NoSuchMessageException e) {
-                resolvedQuestion.setOtherText(survey.getBaseKey(question) + ".other");
-                resolvedQuestion.setOtherValid(false);
-            }
+            if (!isI18nKeyResolvable(baseKey, messageSourceAccessor))
+                return false;
             
-            List<ResolvedAnswer> resolvedAnswers = Lists.newArrayList();
+            if (question.isTextAnswerAllowed())
+                if (!isI18nKeyResolvable(otherKey, messageSourceAccessor))
+                    return false;
+            
             for (Answer answer : question.getAnswers()) {
-                ResolvedAnswer resolvedAnswer = new ResolvedAnswer();
-
-                resolvedAnswer.setAnswer(answer);
-                            
-                try {
-                    String resolvedString = messageSourceAccessor.getMessage(survey.getBaseKey(question) + "." + answer.getAnswerKey());
-                    resolvedAnswer.setAnswerText(resolvedString);
-                    resolvedAnswer.setValid(true);
-                } catch (NoSuchMessageException e) {
-                    resolvedAnswer.setAnswerText(survey.getBaseKey(question) + "." + answer.getAnswerKey());
-                    resolvedAnswer.setValid(false);
-                }
-                
-                resolvedAnswers.add(resolvedAnswer);
+                String answerKey = baseKey + "." + answer.getAnswerKey();
+                if (!isI18nKeyResolvable(answerKey, messageSourceAccessor))
+                    return false;
             }
-            
-            resolvedQuestion.setResolvedAnswers(resolvedAnswers);
-            
-            retVal.add(resolvedQuestion);
-            
         }
-        return retVal;
+        
+        return true;
+    }
+
+    private boolean isI18nKeyResolvable(String baseKey, final MessageSourceAccessor messageSourceAccessor) {
+        try {
+            messageSourceAccessor.getMessage(baseKey);
+        } catch (NoSuchMessageException e) {
+            return false;
+        }
+        return true;
     }
     
     @Override
-    public List<MessageSourceResolvable> errorsForResolvedQuestions(List<ResolvedQuestion> questions){
+    public List<MessageSourceResolvable> getKeyErrorsForQuestions(int surveyId, YukonUserContext userContext){
         List<MessageSourceResolvable> retVal = Lists.newArrayList();
+        List<Question> questions = surveyDao.getQuestionsBySurveyId(surveyId);
+        Survey survey = surveyDao.getSurveyById(surveyId);
+        final MessageSourceAccessor messageSourceAccessor = 
+            messageSourceResolver.getMessageSourceAccessor(userContext);
         
-        for(ResolvedQuestion question : questions) {
-            if(!question.isValid())
-                retVal.add(new YukonMessageSourceResolvable("yukon.web.error.i18nKeyMissing", question.getQuestionText()));
-            if(!question.isOtherValid() && question.getQuestion().isTextAnswerAllowed())
-                retVal.add(new YukonMessageSourceResolvable("yukon.web.error.i18nKeyMissing", question.getOtherText()));
-
-            for( ResolvedAnswer answer : question.getResolvedAnswers()) {
-                if(!answer.isValid())
-                    retVal.add(new YukonMessageSourceResolvable("yukon.web.error.i18nKeyMissing", answer.getAnswerText()));
+        for (Question question : questions) {
+            
+            String baseKey = survey.getBaseKey(question);
+            String otherKey = baseKey + ".other";
+            
+            if (!isI18nKeyResolvable(baseKey, messageSourceAccessor))
+                retVal.add(new YukonMessageSourceResolvable("yukon.web.error.i18nKeyMissing", baseKey));
+            
+            if (question.isTextAnswerAllowed())
+                if (!isI18nKeyResolvable(otherKey, messageSourceAccessor))
+                    retVal.add(new YukonMessageSourceResolvable("yukon.web.error.i18nKeyMissing", otherKey));
+            
+            for (Answer answer : question.getAnswers()) {
+                String answerKey = baseKey + "." + answer.getAnswerKey();
+                if (!isI18nKeyResolvable(answerKey, messageSourceAccessor))
+                    retVal.add(new YukonMessageSourceResolvable("yukon.web.error.i18nKeyMissing", answerKey));
             }
         }
-        return retVal;       
+        
+        return retVal; 
     }
 
     @Autowired
