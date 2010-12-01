@@ -23,11 +23,13 @@ import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListEnum;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.CollectionCreationException;
 import com.cannontech.web.input.type.DateType;
@@ -47,6 +49,7 @@ public class InventoryFilterController {
     private MemoryCollectionProducer memoryCollectionProducer;
     private StarsDatabaseCache starsDatabaseCache;
     private YukonListDao yukonListDao;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     /* Setup Filter Rules */
     @RequestMapping(value = "/operator/inventory/inventoryOperations/setupFilterRules")
@@ -97,7 +100,11 @@ public class InventoryFilterController {
         
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
         Set<InventoryIdentifier> inventory = inventoryOperationsFilterService.getInventory(filterModel.getFilterMode(), filterModel.getFilterRules(), energyCompany.getDefaultDateTimeZone());
-        InventoryCollection temporaryCollection = memoryCollectionProducer.createCollection(inventory.iterator(), "Filter");
+        
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String filterDescription = messageSourceAccessor.getMessage("yukon.common.collection.inventory.filterBased");
+        
+        InventoryCollection temporaryCollection = memoryCollectionProducer.createCollection(inventory.iterator(), filterDescription);
         modelMap.addAttribute("inventoryCollection", temporaryCollection);
         modelMap.addAllAttributes(temporaryCollection.getCollectionParameters());
         return "redirect:inventoryActions";
@@ -157,6 +164,11 @@ public class InventoryFilterController {
     @Autowired
     public void setYukonListDao(YukonListDao yukonListDao) {
         this.yukonListDao = yukonListDao;
+    }
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
     }
     
 }

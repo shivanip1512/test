@@ -37,7 +37,7 @@ public class InventoryActionsController {
 
     /* Inventory Actions */
     @RequestMapping(value = "/operator/inventory/inventoryOperations/inventoryActions", method=RequestMethod.GET)
-    public String inventoryActions(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext, String cancel) throws ServletRequestBindingException {
+    public String inventoryActions(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
         
         InventoryCollection inventoryCollection = inventoryCollectionFactory.createCollection(request);
         modelMap.addAttribute("inventoryCollection", inventoryCollection);

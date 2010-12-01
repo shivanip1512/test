@@ -81,5 +81,9 @@ span.hidden {
 }
 
 span.visible {
-    display: block;
+    display: inline;
+}
+
+span.newOpLink {
+    vertical-align: baseline !important;
 }

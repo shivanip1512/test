@@ -9,12 +9,14 @@
 <cti:standardPage module="operator" page="deviceReconfigStatus">
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
     
-    <cti:url var="newOperationFailed" value="/spring/stars/operator/inventory/inventoryOperations/newOperation">
-        <cti:param name="for" value="failed"/>
+    <cti:url var="newOperationFailed" value="/spring/stars/operator/inventory/inventoryOperations/deviceReconfig/newOperation">
+        <cti:param name="type" value="FAIL"/>
+        <cti:param name="taskId" value="${task.inventoryConfigTaskId}"/>
     </cti:url>
     
-    <cti:url var="newOperationSuccess" value="/spring/stars/operator/inventory/inventoryOperations/newOperation">
-        <cti:param name="for" value="success"/>
+    <cti:url var="newOperationSuccess" value="/spring/stars/operator/inventory/inventoryOperations/deviceReconfig/newOperation">
+        <cti:param name="type" value="SUCCESS"/>
+        <cti:param name="taskId" value="${task.inventoryConfigTaskId}"/>
     </cti:url>
 
         <tags:boxContainer2 nameKey="statusContainer" hideEnabled="false" arguments="${task.taskName}">
@@ -30,23 +32,25 @@
                 
                 <tags:nameValue2 nameKey=".progress">
                     <div>
-                        <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/STATUS_TEXT" styleClass="statusPart"/>
-                        <span class="statusPart"><cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/ITEMS_PROCESSED"/>/${task.numberOfItems}</span>
-                        <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/PROGRESS"/>
+                        <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/STATUS_CLASS">
+                            <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/STATUS_TEXT" styleClass="statusPart"/>
+                            <span class="statusPart"><cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/ITEMS_PROCESSED"/>/${task.numberOfItems}</span>
+                            <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/PROGRESS"/>
+                        </cti:classUpdater>
                     </div>
                 </tags:nameValue2>
                 
                 <tags:nameValue2 nameKey=".successCount">
                     <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/SUCCESS_COUNT" styleClass="statusPart successMessage"/>
                     <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/NEW_OPERATION_FOR_SUCCESS">
-                        <span style="display:none;"><cti:labeledImg key="newOperation" href="${newOperationSuccess}"/></span>
+                        <cti:labeledImg key="newOperation" href="${newOperationSuccess}" imageOnRight="true" labelStyleClass="newOpLink"/>
                     </cti:classUpdater>
                 </tags:nameValue2>
                 
                 <tags:nameValue2 nameKey=".failedCount">
                     <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/FAILED_COUNT" styleClass="statusPart errorMessage"/>
                     <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/NEW_OPERATION_FOR_FAILED">
-                        <span style="display:none;"><cti:labeledImg key="newOperation" href="${newOperationFailed}"/></span>
+                        <cti:labeledImg key="newOperation" href="${newOperationFailed}" imageOnRight="true" labelStyleClass="newOpLink"/>
                     </cti:classUpdater>
                 </tags:nameValue2>
                 

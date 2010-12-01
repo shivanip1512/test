@@ -4,8 +4,6 @@ import java.text.DecimalFormat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
 import com.cannontech.user.YukonUserContext;
@@ -14,22 +12,15 @@ import com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorUpdaterTyp
 public class ProgressUpdaterHandler implements DeviceReconfigUpdaterHandler {
 
     private InventoryConfigTaskDao inventoryConfigTaskDao;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @Override
     public String handle(int taskId, YukonUserContext userContext) {
 
-        DecimalFormat format = new DecimalFormat("#0%");
+        DecimalFormat format = new DecimalFormat("##0.#%");
             
         InventoryConfigTask inventoryConfigTask = inventoryConfigTaskDao.getById(taskId);
         int itemsProcessed = inventoryConfigTask.getNumberOfItemsProcessed();
         
-        if( itemsProcessed == inventoryConfigTask.getNumberOfItems()) {
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String complete = messageSourceAccessor.getMessage("yukon.web.widgets.deviceReconfigMonitorsWidget.complete");
-            return complete;
-        }
-            
         double percentComplete = ( (double)itemsProcessed / (double) inventoryConfigTask.getNumberOfItems());
         
         return format.format(percentComplete);
@@ -43,11 +34,6 @@ public class ProgressUpdaterHandler implements DeviceReconfigUpdaterHandler {
     @Autowired
     public void setInventoryConfigTaskDao(InventoryConfigTaskDao inventoryConfigTaskDao) {
         this.inventoryConfigTaskDao = inventoryConfigTaskDao;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
     }
     
 }

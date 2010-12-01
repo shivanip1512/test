@@ -7,7 +7,7 @@ public class CommandSchedule {
     private int commandScheduleId;
     private String startTimeCronString;
     private ReadablePeriod runPeriod = new Period();
-    private ReadablePeriod delayPeriod = new Period();
+    private ReadablePeriod delayPeriod = new Period(2000);
     private boolean enabled = true;
 
     public int getCommandScheduleId() {

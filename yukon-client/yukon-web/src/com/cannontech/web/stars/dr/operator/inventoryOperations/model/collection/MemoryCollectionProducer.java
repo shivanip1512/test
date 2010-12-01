@@ -60,15 +60,13 @@ public class MemoryCollectionProducer implements CollectionProducer<InventoryCol
 
     @Override
     public InventoryCollection createCollection(HttpServletRequest request) throws ServletRequestBindingException, CollectionCreationException {
-        return createCollection(request, null);
-    }
-   
-    public InventoryCollection createCollection(HttpServletRequest request, String descriptionHint) throws ServletRequestBindingException, CollectionCreationException {
-        String parameterName = getSupportedType().getParameterName("key");
+        String keyName = getSupportedType().getParameterName("key");
+        String descriptionName = getSupportedType().getParameterName("description");
         
-        String key = ServletRequestUtils.getStringParameter(request, parameterName);
+        String key = ServletRequestUtils.getStringParameter(request, keyName);
+        String description = ServletRequestUtils.getStringParameter(request, descriptionName);
         
-        return buildMemoryCollection(memoryMap.get(key).getCollection(), key, descriptionHint);
+        return buildMemoryCollection(memoryMap.get(key).getCollection(), key, description);
     }
     
     public InventoryCollection createCollection(Iterator<? extends YukonInventory> inventories, String descriptionHint) {
@@ -91,6 +89,7 @@ public class MemoryCollectionProducer implements CollectionProducer<InventoryCol
         
         return new ListBasedInventoryCollection() {
             
+            private String description = descriptionHint;
 
             public Map<String, String> getCollectionParameters() {
 
@@ -98,8 +97,8 @@ public class MemoryCollectionProducer implements CollectionProducer<InventoryCol
 
                 paramMap.put("collectionType", getSupportedType().name());
                 paramMap.put(getSupportedType().getParameterName("key"), key);
-                if (StringUtils.isNotBlank(descriptionHint)) {
-                    paramMap.put(getParameterName("description"), descriptionHint);
+                if (StringUtils.isNotBlank(description)) {
+                    paramMap.put(getParameterName("description"), description);
                 }
 
                 return paramMap;
@@ -116,8 +115,8 @@ public class MemoryCollectionProducer implements CollectionProducer<InventoryCol
 
             @Override
             public MessageSourceResolvable getDescription() {
-                if (descriptionHint != null) {
-                    return new YukonMessageSourceResolvable("yukon.common.collection.inventory.temporaryWithHint", descriptionHint);
+                if (description != null) {
+                    return new YukonMessageSourceResolvable("yukon.common.collection.inventory.description", description);
                 } else {
                     return new YukonMessageSourceResolvable("yukon.common.collection.inventory.temporary");
                 }

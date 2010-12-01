@@ -351,7 +351,7 @@ public class InventoryDaoImpl implements InventoryDao {
         return new InventoryIdentifier(inventoryId, HardwareType.valueOf(hardwareTypeDefinitionId));
     }
     
-    public class InventoryIdentifierMapper implements YukonRowMapper<InventoryIdentifier> {
+    public static class InventoryIdentifierMapper implements YukonRowMapper<InventoryIdentifier> {
         @Override
         public InventoryIdentifier mapRow(YukonResultSet rs) throws SQLException {
             int inventoryId = rs.getInt("InventoryId");

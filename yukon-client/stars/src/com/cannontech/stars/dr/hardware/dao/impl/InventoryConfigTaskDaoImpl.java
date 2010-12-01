@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
@@ -216,6 +217,19 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
         sql.append(  "AND Status").eq(Status.SUCCESS);
         return yukonJdbcTemplate.queryForInt(sql);
     }
+    
+    @Override
+    public List<InventoryIdentifier> getSuccessFailList(int taskId, Status status) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT icti.InventoryId InventoryId, yle.YukonDefinitionId YukonDefinitionId");
+        sql.append("FROM InventoryConfigTaskItem icti");
+        sql.append(  "JOIN LmHardwareBase lmhb ON lmhb.InventoryId = icti.InventoryId");
+        sql.append(  "JOIN YukonListEntry yle ON yle.EntryID = lmhb.LMHardwareTypeID");
+        sql.append("WHERE icti.InventoryConfigTaskId").eq(taskId);
+        sql.append(  "AND Status").eq(status);
+        
+        return yukonJdbcTemplate.query(sql, new InventoryDaoImpl.InventoryIdentifierMapper());
+    }
 
     @Override
     @Transactional
@@ -253,4 +267,5 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
     }
+
 }
