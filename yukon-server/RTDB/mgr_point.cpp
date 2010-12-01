@@ -851,7 +851,7 @@ CtiPointManager::ptr_type CtiPointManager::getEqualByName(LONG pao, string pname
                 else
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << p->getName() << " point is non-updated" << endl;
+                    dout << CtiTime() << " Device ID: " << p->getDeviceID() << " : " << p->getName() << " point is non-updated" << endl;
                 }
             }
         }
@@ -946,7 +946,7 @@ CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offs
                     else
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << p->getName() << " point is non-updated" << endl;
+                        dout << CtiTime() << " Device ID: " << p->getDeviceID() << " : " << p->getName() << " point is non-updated" << endl;
                     }
                 }
             }
@@ -990,7 +990,7 @@ CtiPointManager::ptr_type CtiPointManager::getControlOffsetEqual(LONG pao, INT O
                 else
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << p->getName() << " point is non-updated" << endl;
+                    dout << CtiTime() << " Device ID: " << p->getDeviceID() << " : " << p->getName() << " point is non-updated" << endl;
                 }
             }
         }
