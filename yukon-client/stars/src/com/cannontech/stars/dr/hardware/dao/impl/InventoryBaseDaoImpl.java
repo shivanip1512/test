@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -133,6 +134,15 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     public InventoryBase getById(final int inventoryId) {
         InventoryBase inventoryBase = simpleJdbcTemplate.queryForObject(selectByIdSql, rowMapper, inventoryId);
         return inventoryBase;
+    }
+    
+    @Override
+    public InventoryBase findById(int inventoryId) {
+        try {
+            return getById(inventoryId);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
     }
     
     @Override
@@ -277,5 +287,4 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
         this.lmHardwareBaseDao = lmHardwareBaseDao;
     }
-    
 }

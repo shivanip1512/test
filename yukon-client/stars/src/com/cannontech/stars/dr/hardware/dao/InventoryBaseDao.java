@@ -34,5 +34,7 @@ public interface InventoryBaseDao {
     public void uninstallInventory(Integer inventoryId);
     
     public List<InventoryBase> getByDeviceId(int deviceId);
+
+    public InventoryBase findById(int inventoryId);
     
 }

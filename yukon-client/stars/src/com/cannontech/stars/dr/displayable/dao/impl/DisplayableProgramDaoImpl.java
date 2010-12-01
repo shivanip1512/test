@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 import org.joda.time.Duration;
 import org.springframework.stereotype.Repository;
@@ -25,7 +24,6 @@ import com.google.common.base.Function;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
-import com.google.common.collect.Sets;
 
 @Repository
 public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements DisplayableProgramDao {
@@ -168,9 +166,7 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
         
         for (DisplayableProgram displayableProgram : displayablePrograms) {
             
-            Set<InventoryBase> includedInventoryBases = Sets.newHashSet();
             List<DisplayableControlHistory> reducedControlHistory = Lists.newArrayList();
-
             for (DisplayableControlHistory displayableControlHistory : displayableProgram.getDisplayableControlHistoryList()) {
                 
                 if(past) {
@@ -183,11 +179,7 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
                     }
                 }
                 
-                InventoryBase inventoryBase = displayableControlHistory.getControlHistory().getInventory();
-                if (!includedInventoryBases.contains(inventoryBase)) {
-                    includedInventoryBases.add(inventoryBase);
-                    reducedControlHistory.add(displayableControlHistory);
-                }
+                reducedControlHistory.add(displayableControlHistory);
             }
             
             if(past && reducedControlHistory.isEmpty()) {
