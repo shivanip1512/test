@@ -62,7 +62,6 @@
     <entry key="yukon.common.collection.inventory.successList">Success List</entry>
     <entry key="yukon.common.collection.inventory.failedList">Failed List</entry>
     <entry key="yukon.common.collection.inventory.idList">Individually Selected Inventory</entry>
-    <entry key="yukon.common.collection.inventory.idList">Individually Selected Inventory</entry>
     <entry key="yukon.common.collection.inventory.filterBased">Filter Based</entry>
     <entry key="yukon.common.collection.inventory.temporary">Temporary</entry>
     <entry key="yukon.common.collection.inventory.description">{0}</entry>
