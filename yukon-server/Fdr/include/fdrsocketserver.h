@@ -1,15 +1,4 @@
-/*
- *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
- */
-#ifndef __FDRSOCKETSERVER_H__
-#define __FDRSOCKETSERVER_H__
-
-
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
-#include <windows.h>
+#pragma once
 
 #include "dlldefs.h"
 #include "queues.h"
@@ -32,8 +21,8 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         virtual int processMessageFromForeignSystem(CHAR *data) { return 0; };
 
         virtual int processMessageFromForeignSystem(
-          CtiFDRClientServerConnection& connection, char* data, unsigned int size) = 0;
-        
+          Cti::Fdr::ServerConnection& connection, const char* data, unsigned int size) = 0;
+
         virtual bool loadTranslationLists(void);
         virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false)=0;
         //Force Cleanup in sub classes from this point.
@@ -104,8 +93,4 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         string direction;
         HANDLE _shutdownEvent;
 };
-
-
-#endif  //  #ifndef __FDRSOCKETSERVER_H__
-
 

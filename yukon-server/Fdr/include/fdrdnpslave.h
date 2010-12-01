@@ -1,28 +1,4 @@
-
-/*
- *    FILE NAME: fdrdnplave.h
- *
- *    DATE: 01/20/2009
- *
- *    AUTHOR: Julie Richter
- *
- *    PURPOSE: Interface implenting DNP Slave Response (class header)
- *
- *    DESCRIPTION: This class implements an interface that exchanges point data
- *                 from an DNP slave device.  The data is status, Analog and counter data.
-
- *    History:
- *      $Log$
- * *
- *
- *    Copyright (C) 2009 Cooper Power Systems.  All rights reserved.
- *
- */
-
-#ifndef __FDRDNPSLAVE_H__
-#define __FDRDNPSLAVE_H__
-
-#include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
+#pragma once
 
 #include <map>
 
@@ -119,8 +95,8 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
                                                char** buffer,
                                                unsigned int& bufferSize);
 
-        virtual int processMessageFromForeignSystem(CtiFDRClientServerConnection& connection,
-                                           char* data, unsigned int size);
+        virtual int processMessageFromForeignSystem(Cti::Fdr::ServerConnection& connection,
+                                           const char* data, unsigned int size);
         virtual unsigned long getHeaderBytes(const char* data, unsigned int size);
 
         virtual unsigned int getMagicInitialMsgSize();
@@ -129,9 +105,9 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
     private:
         CtiDnpId    ForeignToYukonId(CtiFDRDestination pointDestination);
         bool        YukonToForeignQuality (USHORT aQuality, CtiTime lastTimeStamp);
-        int processScanSlaveRequest (CtiFDRClientServerConnection& connection,
-                                         char* data, unsigned int size, bool includeTime);
-        int processDataLinkConfirmationRequest(CtiFDRClientServerConnection& connection, char* data);
+        int processScanSlaveRequest (Cti::Fdr::ServerConnection& connection,
+                                         const char* data, unsigned int size, bool includeTime);
+        int processDataLinkConfirmationRequest(Cti::Fdr::ServerConnection& connection, const char* data);
 
         bool isScanIntegrityRequest(const char* data, unsigned int size);
         void dumpDNPMessage(const string direction, const char* data, unsigned int size);
@@ -166,7 +142,3 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
     public:
 
 };
-
-
-#endif  //  #ifndef __FDRDNPSLAVE_H__
-

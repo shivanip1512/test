@@ -1,34 +1,5 @@
-
-/*
- *
- *    FILE NAME: fdrdnpslave.cpp
- *
- *    DATE: 03/07/2001
- *
- *    PVCS KEYWORDS:
- *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
- *    REVISION     :  $Revision$
- *    DATE         :  $Date$
- *
- *
- *    AUTHOR: David Sutton
- *
- *    PURPOSE: Interface to the Acs Foreign System
- *
- *
- *    ---------------------------------------------------
- *    History:
- *      $Log$
- *
- *
- *
- *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
- *
- */
 #include "yukon.h"
 
-
-#include <windows.h>
 #include <iostream>
 
 #include <stdio.h>
@@ -100,14 +71,14 @@ const string CtiFDRDnpSlave::CtiFdrDNPOutMessageString="DNP OutMessage";
 // Constructors, Destructor, and Operators
 CtiFDRDnpSlave::CtiFDRDnpSlave() :
     CtiFDRSocketServer(string("DNPSLAVE")),
-    _helper(NULL),
     _staleDataTimeOut(0)
-{}
+{
+    _helper = new CtiFDRDNPHelper<CtiDnpId>(this);
+}
 
 void CtiFDRDnpSlave::startup()
 {
     init();
-    _helper = new CtiFDRDNPHelper<CtiDnpId>(this);
 }
 
 CtiFDRDnpSlave::~CtiFDRDnpSlave()
@@ -294,8 +265,8 @@ bool CtiFDRDnpSlave::buildForeignSystemMessage(const CtiFDRDestination& destinat
     return false;
 }
 
-int CtiFDRDnpSlave::processMessageFromForeignSystem (CtiFDRClientServerConnection& connection,
-                                         char* data, unsigned int size)
+int CtiFDRDnpSlave::processMessageFromForeignSystem (Cti::Fdr::ServerConnection& connection,
+                                         const char* data, unsigned int size)
 {
     BYTEUSHORT dest, src;
     BOOL timeFlag = false;
@@ -373,7 +344,7 @@ int CtiFDRDnpSlave::processMessageFromForeignSystem (CtiFDRClientServerConnectio
 }
 
 
-int CtiFDRDnpSlave::processDataLinkConfirmationRequest(CtiFDRClientServerConnection& connection, char* data)
+int CtiFDRDnpSlave::processDataLinkConfirmationRequest(Cti::Fdr::ServerConnection& connection, const char* data)
 {
     int retVal = 0;
     unsigned char* buffer = NULL;
@@ -438,8 +409,8 @@ int CtiFDRDnpSlave::processDataLinkConfirmationRequest(CtiFDRClientServerConnect
 
 }
 
-int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& connection,
-                                         char* data, unsigned int size, bool includeTime)
+int CtiFDRDnpSlave::processScanSlaveRequest (Cti::Fdr::ServerConnection& connection,
+                                         const char* data, unsigned int size, bool includeTime)
 {
 
     int retVal = 0;

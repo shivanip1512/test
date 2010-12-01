@@ -1,8 +1,3 @@
-/*
- *
- *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
- *
- */
 #include "yukon.h"
 
 #include <iostream>
@@ -32,12 +27,12 @@ CtiFDRScadaServer::~CtiFDRScadaServer()
  * for data when this method returns.
  */
 int CtiFDRScadaServer::processMessageFromForeignSystem(
-  CtiFDRClientServerConnection& connection, char* data, unsigned int size)
+  Cti::Fdr::ServerConnection& connection, const char* data, unsigned int size)
 {
     bool retVal = false;
-    
+
     CtiLockGuard<CtiMutex> sendGuard(getReceiveFromList().getMutex());
-    
+
     USHORT function = getHeaderBytes(data, size);
 
     switch (function)
@@ -110,7 +105,7 @@ int CtiFDRScadaServer::processMessageFromForeignSystem(
 /** Return the message indicator stored in the first 2 or 4 bytes.
  *  This should return a number than can be dirrectly compared
  *  to one of the SINGLE_SOCKET_* constants (i.e. this function
- *  must mask off unnecessary bits and do any necessary 
+ *  must mask off unnecessary bits and do any necessary
  *  network-to-host conversion).
  */
 unsigned long CtiFDRScadaServer::getHeaderBytes(const char* data, unsigned int size)
@@ -122,5 +117,3 @@ unsigned long CtiFDRScadaServer::getHeaderBytes(const char* data, unsigned int s
     USHORT* function = (USHORT*)data;
     return ntohs (*function);
 }
-
-

@@ -1,97 +1,3 @@
-/*
- *
- *    FILE NAME: fdracsmulti.cpp
- *
- *    DATE: 03/07/2001
- *
- *    PVCS KEYWORDS:
- *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
- *    REVISION     :  $Revision$
- *    DATE         :  $Date$
- *
- *
- *    AUTHOR: David Sutton
- *
- *    PURPOSE: Interface to the Acs Foreign System
- *
- *    DESCRIPTION: This class implements an interface that exchanges point data
- *                 from an ACS scada system.  The data is both status and Analog data.
- *                Information is exchanged using sockets opened on a predefined socket
- *                number and also pre-defined messages between the systems.  See the
- *                design document for more information
- *
- *    ---------------------------------------------------
- *    History:
- *      $Log$
- *      Revision 1.12.2.1  2008/11/13 17:23:46  jmarks
- *      YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
- *
- *      Responded to reviewer comments again.
- *
- *      I eliminated excess references to windows.h .
- *
- *      This still left over 100 references to it where "yukon.h" or "precompiled.h" was not obviously included.  Some other chaining of references could still be going on, and of course it is potentially possible that not all the files in the project that include windows.h actually need it - I didn't check for that.
- *
- *      None-the-less, I than added the NOMINMAX define right before each place where windows.h is still included.
- *      Special note:  std::min<LONG>(TimeOut, 500); is still required for compilation.
- *
- *      In this process I occasionally deleted a few empty lines, and when creating the define, also added some.
- *
- *      This may not have affected every file in the project, but while mega-editing it certainly seemed like it did.
- *
- *      Revision 1.12  2008/10/02 23:57:15  tspar
- *      YUK-5013 Full FDR reload should not happen with every point
- *
- *      YUKRV-325  review changes
- *
- *      Revision 1.11  2008/09/23 15:14:57  tspar
- *      YUK-5013 Full FDR reload should not happen with every point db change
- *
- *      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
- *
- *      Revision 1.10  2008/09/15 21:08:47  tspar
- *      YUK-5013 Full FDR reload should not happen with every point db change
- *
- *      Changed interfaces to handle points on an individual basis so they can be added
- *      and removed by point id.
- *
- *      Changed the fdr point manager to use smart pointers to help make this transition possible.
- *
- *      Revision 1.9  2007/05/11 19:05:06  tspar
- *      YUK-3880
- *
- *      Refactored a few interfaces.
- *
- *      Revision 1.8  2006/01/16 21:09:52  mfisher
- *      removed RogueWave stuff out of comments
- *
- *      Revision 1.7  2006/01/03 20:23:37  tspar
- *      Moved non RW string utilities from rwutil.h to utility.h
- *
- *      Revision 1.6  2005/12/20 17:17:12  tspar
- *      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
- *
- *      Revision 1.5  2005/10/28 19:27:01  tmack
- *      Added a configuration parameter to set the link timeout value.
- *
- *      Revision 1.4  2005/10/05 19:10:37  tmack
- *      Fixed bug with handleStatusUpdate.
- *      Fixed small bug with time sync variation when the set time was less than the allowed minimum.
- *
- *      Revision 1.3  2005/09/14 16:22:27  tmack
- *      Made some small changes for ACS(MULTI), mostly related to logging and error handling.
- *
- *      Revision 1.2  2005/09/13 21:53:50  tmack
- *      Changed config file keys to contain "MULTI".
- *
- *      Revision 1.1  2005/09/13 20:37:27  tmack
- *      New file for the ACS(MULTI) implementation.
- *
- *
- *
- *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
- *
- */
 #include "yukon.h"
 
 #include <iostream>
@@ -572,8 +478,8 @@ unsigned int CtiFDRAcsMulti::getMessageSize(const char* data)
     return sizeof (ACSInterface_t);
 }
 
-bool CtiFDRAcsMulti::processValueMessage(CtiFDRClientServerConnection& connection,
-                                     char* data, unsigned int size)
+bool CtiFDRAcsMulti::processValueMessage(Cti::Fdr::ServerConnection& connection,
+                                     const char* data, unsigned int size)
 {
     ACSInterface_t     *acsData = (ACSInterface_t*)data;
     int                 quality;
@@ -592,8 +498,8 @@ bool CtiFDRAcsMulti::processValueMessage(CtiFDRClientServerConnection& connectio
     return _helper->handleValueUpdate(acsId, value, quality, timestamp);
 }
 
-bool CtiFDRAcsMulti::processStatusMessage(CtiFDRClientServerConnection& connection,
-                                      char* data, unsigned int size)
+bool CtiFDRAcsMulti::processStatusMessage(Cti::Fdr::ServerConnection& connection,
+                                      const char* data, unsigned int size)
 {
     ACSInterface_t  *acsData = (ACSInterface_t*)data;
     int                 quality;
@@ -613,7 +519,7 @@ bool CtiFDRAcsMulti::processStatusMessage(CtiFDRClientServerConnection& connecti
     return _helper->handleStatusUpdate(acsId, value, quality, timestamp);
 }
 
-bool CtiFDRAcsMulti::processControlMessage(CtiFDRClientServerConnection& connection, char* data, unsigned int size)
+bool CtiFDRAcsMulti::processControlMessage(Cti::Fdr::ServerConnection& connection, const char* data, unsigned int size)
 {
     int retVal = NORMAL;
     CtiPointDataMsg     *pData;
@@ -634,7 +540,7 @@ bool CtiFDRAcsMulti::processControlMessage(CtiFDRClientServerConnection& connect
     return _helper->handleControl(acsId, controlState);
 }
 
-bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection& connection, char* data, unsigned int size)
+bool CtiFDRAcsMulti::processTimeSyncMessage(Cti::Fdr::ServerConnection& connection, const char* data, unsigned int size)
 {
     int retVal = NORMAL;
     CtiPointDataMsg     *pData;

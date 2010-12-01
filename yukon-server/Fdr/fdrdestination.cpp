@@ -1,19 +1,3 @@
-/*****************************************************************************
-*
-*    FILE NAME: fdrdestination.cpp
-*
-*    DATE: 05/24/2001
-*
-*    AUTHOR: David Sutton
-*
-*    PURPOSE: class header CtiFDRDestination
-*
-*    DESCRIPTION: represents a FDR destination record
-*
-*
-*
-*    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************/
 #include "yukon.h"
 
 #include <rw/ctoken.h>
@@ -26,7 +10,7 @@
 #include "guard.h"
 /** local definitions **/
 
-CtiFDRDestination::CtiFDRDestination(CtiFDRPoint* parentPoint, string &translation, string &destination)
+CtiFDRDestination::CtiFDRDestination(CtiFDRPoint* parentPoint, const string &translation, const string &destination)
 :   iTranslation(translation),
     iDestination(destination),
     iParentPoint(parentPoint)
@@ -131,12 +115,12 @@ string CtiFDRDestination::getTranslationValue(string propertyName) const {
     string nameValuePair;
     int pos;
     const string translation = getTranslation();
-    
+
     boost::char_separator<char> sep(";");
     Boost_char_tokenizer pairTokenizer(translation, sep);
     for ( Boost_char_tokenizer::iterator itr = pairTokenizer.begin() ;
-        itr != pairTokenizer.end() ; 
-        ++itr) 
+        itr != pairTokenizer.end() ;
+        ++itr)
     {
         nameValuePair = *itr;
         //grab the name so we can tell if this is the token we want.
@@ -158,6 +142,6 @@ string CtiFDRDestination::getTranslationValue(string propertyName) const {
 
 std::ostream& operator<< (std::ostream& os, const CtiFDRDestination& dest)
 {
-    return os << "[destination " << dest.getDestination() 
+    return os << "[destination " << dest.getDestination()
         << " for " << *dest.getParentPoint() << "]";
 }

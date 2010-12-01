@@ -16,7 +16,8 @@ INCLPATHS+= \
 -I$(SQLAPI)\include \
 -I$(FDR)\Telegyr\inc \
 -I$(FDR)\OSIPI\inc \
--I$(FDR)\LiveData
+-I$(FDR)\LiveData \
+-I$(PROT)\include
 
 
 .PATH.H = \
@@ -36,6 +37,7 @@ INCLPATHS+= \
 ;$(RW)
 
 FDRTESTOBJS=\
+test_fdrDnpSlave.obj \
 test_fdrTextImport.obj \
 test_fdrTristateSub.obj \
 test_fdrTelegyr.obj
@@ -54,14 +56,6 @@ FDRTELEGYRLIBS=\
 $(COMPILEBASE)\lib\apiclilib.lib \
 $(COMPILEBASE)\lib\pllib.lib \
 $(COMPILEBASE)\lib\psapi.lib
-
-FRDLIBS=\
-$(COMPILEBASE)\lib\apiclilib.lib \
-$(COMPILEBASE)\lib\pllib.lib \
-$(COMPILEBASE)\lib\psapi.lib \
-$(COMPILEBASE)\Fdr\OSIPI\lib\piapi32.lib \
-$(COMPILEBASE)\Fdr\OSIPI\lib\pilog32.lib
-
 
 CTIFDRDLL=\
 $(BIN)\fdrbepc.lib \
@@ -86,6 +80,7 @@ $(BIN)\fdrlivedata.lib \
 $(BIN)\fdrwabash.lib \
 $(BIN)\fdrtristatesub.lib \
 $(BIN)\cti_fdr.lib \
+$(BIN)\fdrdnpslave.lib \
 
 
 ALL:      fdrtest
@@ -134,6 +129,24 @@ deps:
 ######################################################################################
 
 #UPDATE#
+test_fdrdnpslave.obj:	fdrdnpslave.h dlldefs.h queues.h cticalls.h \
+		os2_2w32.h types.h fdrpointlist.h mgr_fdrpoint.h smartmap.h \
+		boostutil.h utility.h ctitime.h numstr.h sorted_vector.h \
+		dllbase.h dsm2.h mutex.h guard.h cticonnect.h yukon.h \
+		precompiled.h ctidbgmem.h netports.h dsm2err.h words.h \
+		readers_writer_lock.h critical_section.h fdrpoint.h \
+		pointtypes.h fdrdestination.h fdr.h pointdefs.h rwutil.h \
+		database_connection.h dbaccess.h sema.h database_reader.h \
+		row_reader.h boost_time.h logger.h thread.h CtiPCPtrQueue.h \
+		fdrscadaserver.h fdrsocketserver.h \
+		fdrclientserverconnection.h fdrinterface.h message.h \
+		collectable.h msg_dbchg.h connection.h exchange.h msg_multi.h \
+		msg_pdata.h msg_ptreg.h msg_reg.h queue.h cparms.h \
+		configkey.h configval.h fdrdebuglevel.h fdrdnphelper.h \
+		dnp_object_analoginput.h dnp_objects.h prot_base.h xfer.h \
+		dnp_object_time.h prot_dnp.h packet_finder.h \
+		dnp_application.h dnp_transport.h dnp_datalink.h \
+		dnp_datalink_packet.h dnp_object_binaryoutput.h
 test_fdrtelegyr.obj:	fdrtelegyr.h dlldefs.h fdrinterface.h message.h \
 		ctitime.h ctidbgmem.h collectable.h rwutil.h yukon.h \
 		precompiled.h types.h database_connection.h dbaccess.h \

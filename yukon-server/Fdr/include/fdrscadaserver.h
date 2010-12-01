@@ -1,18 +1,4 @@
-/*
-
- *
- *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
- *
- */
-#ifndef __FDRSCADASERVER_H__
-#define __FDRSCADASERVER_H__
-
-
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
-#include <windows.h>
+#pragma once
 
 #include "dlldefs.h"
 #include "fdrsocketserver.h"
@@ -39,27 +25,22 @@ class IM_EX_FDRBASE CtiFDRScadaServer : public CtiFDRSocketServer
         virtual ~CtiFDRScadaServer();
 
         virtual int processMessageFromForeignSystem(
-          CtiFDRClientServerConnection& connection, char* data, unsigned int size);
+          Cti::Fdr::ServerConnection& connection, const char* data, unsigned int size);
         virtual unsigned int getMessageSize(const char* data) = 0;
         virtual unsigned long getHeaderBytes(const char* data, unsigned int size);
         virtual unsigned int getMagicInitialMsgSize()=0;
 
     protected:
 
-        virtual bool processValueMessage(CtiFDRClientServerConnection& connection,
-                                         char* data, unsigned int size) {return false;};
-        virtual bool processStatusMessage(CtiFDRClientServerConnection& connection,
-                                         char* data, unsigned int size) {return false;};
-        virtual bool processControlMessage(CtiFDRClientServerConnection& connection,
-                                         char* data, unsigned int size) {return false;};
-        virtual bool processRegistrationMessage(CtiFDRClientServerConnection& connection,
-                                         char* data, unsigned int size) {return false;};
-        virtual bool processTimeSyncMessage(CtiFDRClientServerConnection& connection,
-                                         char* data, unsigned int size) {return false;};
-        
+        virtual bool processValueMessage(Cti::Fdr::ServerConnection& connection,
+                                         const char* data, unsigned int size) {return false;};
+        virtual bool processStatusMessage(Cti::Fdr::ServerConnection& connection,
+                                         const char* data, unsigned int size) {return false;};
+        virtual bool processControlMessage(Cti::Fdr::ServerConnection& connection,
+                                         const char* data, unsigned int size) {return false;};
+        virtual bool processRegistrationMessage(Cti::Fdr::ServerConnection& connection,
+                                         const char* data, unsigned int size) {return false;};
+        virtual bool processTimeSyncMessage(Cti::Fdr::ServerConnection& connection,
+                                         const char* data, unsigned int size) {return false;};
+
 };
-
-
-#endif  //  #ifndef __FDRSCADASERVER_H__
-
-

@@ -51,13 +51,13 @@ const CHAR * CtiFDRManager::COLNAME_PTBASE_POINTTYPE =   "PointType";
 
 // constructors, destructors, operators first
 
-CtiFDRManager::CtiFDRManager(string & aInterfaceName):
+CtiFDRManager::CtiFDRManager(const string & aInterfaceName):
 iInterfaceName(aInterfaceName),
 iWhereSelectStr()
 {
 }
 
-CtiFDRManager::CtiFDRManager(string & aInterfaceName, string & aWhereSelectStr):
+CtiFDRManager::CtiFDRManager(const string & aInterfaceName, string & aWhereSelectStr):
 iInterfaceName(aInterfaceName),
 iWhereSelectStr(aWhereSelectStr)
 {
@@ -129,7 +129,7 @@ bool CtiFDRManager::loadPointList()
             // we now have control options so put those into the same list as a default
             if(getWhereSelectStr() == string (FDR_INTERFACE_SEND))
             {
-                ss << " AND (FDR.DIRECTIONTYPE = '" << getWhereSelectStr() << "' OR FDR.DIRECTIONTYPE = '"; 
+                ss << " AND (FDR.DIRECTIONTYPE = '" << getWhereSelectStr() << "' OR FDR.DIRECTIONTYPE = '";
                 ss << string(FDR_INTERFACE_SEND_FOR_CONTROL) << "')";
             }
             else if(getWhereSelectStr() == string (FDR_INTERFACE_RECEIVE))
@@ -210,7 +210,7 @@ bool CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
             // we now have control options so put those into the same list as a default
             if(getWhereSelectStr() == string (FDR_INTERFACE_SEND))
             {
-                ss << " AND (FDR.DIRECTIONTYPE = '" << getWhereSelectStr() << "' OR FDR.DIRECTIONTYPE = '"; 
+                ss << " AND (FDR.DIRECTIONTYPE = '" << getWhereSelectStr() << "' OR FDR.DIRECTIONTYPE = '";
                 ss << string(FDR_INTERFACE_SEND_FOR_CONTROL) << "')";
             }
             else if(getWhereSelectStr() == string (FDR_INTERFACE_RECEIVE))
@@ -312,10 +312,10 @@ bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,C
                 dout << CtiTime() << " " << loggedSQLstring << endl;
             }
         }
-    
+
         while( rdr() )
         {
-    
+
             rdr[0]      >> pointID;
             rdr[1]   >> translation;
             rdr[2]   >> destination;
@@ -337,19 +337,19 @@ bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,C
             {
                 rdr[8]    >> dataOffset;
             }
-    
-    
+
+
             std::map< long, CtiFDRPointSPtr >::iterator itr = fdrPtrMap.find(pointID);
-    
+
             if( itr != fdrPtrMap.end() )
                 fdrPtr = (*itr).second;
             else
                 fdrPtr = CtiFDRPointSPtr(new CtiFDRPoint( pointID ));
-    
+
             if( fdrPtrMap.size() == 0 ||  itr == fdrPtrMap.end() )
             {
                 fdrPtr->setPointType ((CtiPointType_t) resolvePointType(tmp));
-    
+
                 if((fdrPtr->getPointType() == AnalogPointType) ||
                    (fdrPtr->getPointType() == PulseAccumulatorPointType) ||
                    (fdrPtr->getPointType() == DemandAccumulatorPointType) ||
@@ -358,7 +358,7 @@ bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,C
                     fdrPtr->setMultiplier(multiplier);
                     fdrPtr->setOffset (dataOffset);
                 }
-    
+
                 // set controllable
                 if(direction == string(FDR_INTERFACE_SEND_FOR_CONTROL) ||
                    direction == string(FDR_INTERFACE_RECEIVE_FOR_CONTROL))
@@ -369,7 +369,7 @@ bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,C
                 {
                     fdrPtr->setControllable (false);
                 }
-    
+
                 CtiFDRDestination tmpDestination (fdrPtr.get(), translation, destination);
                 fdrPtr->getDestinationList().push_back(tmpDestination);
                 fdrPtrMap.insert( std::pair<long,CtiFDRPointSPtr >(pointID, fdrPtr));

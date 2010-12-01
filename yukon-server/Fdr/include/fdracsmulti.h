@@ -1,94 +1,4 @@
-/*
- *    FILE NAME: fdracs.h
- *
- *    DATE: 03/07/2001
- *
- *    AUTHOR: David Sutton
- *
- *    PURPOSE: Interface to the ACS scada systemm (class header)
- *
- *    DESCRIPTION: This class implements an interface that exchanges point data
- *                 from an ACS scada system.  The data is both status and Analog data.
- *                 Information is exchanged using sockets opened on a predefined socket
- *                 number and also pre-defined messages between the systems.  See the
- *                 design document for more information
- *    History:
- *      $Log$
- *      Revision 1.9.2.2  2008/11/18 20:11:30  jmarks
- *      [YUKRV-525] Comment: YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
- *
- *      * Responded to reviewer comments
- *      * Changed monitor's version to MUTEX version
- *      * Other changes for compilation
- *
- *      Revision 1.9.2.1  2008/11/13 17:23:45  jmarks
- *      YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
- *
- *      Responded to reviewer comments again.
- *
- *      I eliminated excess references to windows.h .
- *
- *      This still left over 100 references to it where "yukon.h" or "precompiled.h" was not obviously included.  Some other chaining of references could still be going on, and of course it is potentially possible that not all the files in the project that include windows.h actually need it - I didn't check for that.
- *
- *      None-the-less, I than added the NOMINMAX define right before each place where windows.h is still included.
- *      Special note:  std::min<LONG>(TimeOut, 500); is still required for compilation.
- *
- *      In this process I occasionally deleted a few empty lines, and when creating the define, also added some.
- *
- *      This may not have affected every file in the project, but while mega-editing it certainly seemed like it did.
- *
- *      Revision 1.9  2008/10/29 18:16:48  mfisher
- *      YUK-6374 Remove unused DSM/2 remnants
- *      Removed many orphaned function headers and structure definitions
- *      Moved ILEX items closer to point of use in TimeSyncThread()
- *
- *      Revision 1.8  2008/10/02 23:57:15  tspar
- *      YUK-5013 Full FDR reload should not happen with every point
- *
- *      YUKRV-325  review changes
- *
- *      Revision 1.7  2008/09/23 15:15:22  tspar
- *      YUK-5013 Full FDR reload should not happen with every point db change
- *
- *      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
- *
- *      Revision 1.6  2008/09/15 21:09:16  tspar
- *      YUK-5013 Full FDR reload should not happen with every point db change
- *
- *      Changed interfaces to handle points on an individual basis so they can be added
- *      and removed by point id.
- *
- *      Changed the fdr point manager to use smart pointers to help make this transition possible.
- *
- *      Revision 1.5  2007/11/12 16:46:55  mfisher
- *      Removed some Rogue Wave includes
- *
- *      Revision 1.4  2007/05/11 19:20:27  tspar
- *      missed file
- *
- *      Revision 1.3  2005/12/20 17:17:15  tspar
- *      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
- *
- *      Revision 1.2  2005/10/28 19:27:01  tmack
- *      Added a configuration parameter to set the link timeout value.
- *
- *      Revision 1.1  2005/09/13 20:37:27  tmack
- *      New file for the ACS(MULTI) implementation.
- *
- *
- *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
- *
- */
-
-#ifndef __FDRACS_H__
-#define __FDRACS_H__
-
-
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
-#include <windows.h>
+#pragma once
 
 #include <map>
 
@@ -280,14 +190,14 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
                                                char** buffer,
                                                unsigned int& bufferSize);
 
-        virtual bool processValueMessage(CtiFDRClientServerConnection& connection,
-                                         char* data, unsigned int size);
-        virtual bool processStatusMessage(CtiFDRClientServerConnection& connection,
-                                          char* data, unsigned int size);
-        virtual bool processControlMessage(CtiFDRClientServerConnection& connection,
-                                           char* data, unsigned int size);
-        virtual bool processTimeSyncMessage(CtiFDRClientServerConnection& connection,
-                                            char* data, unsigned int size);
+        virtual bool processValueMessage(Cti::Fdr::ServerConnection& connection,
+                                         const char* data, unsigned int size);
+        virtual bool processStatusMessage(Cti::Fdr::ServerConnection& connection,
+                                          const char* data, unsigned int size);
+        virtual bool processControlMessage(Cti::Fdr::ServerConnection& connection,
+                                           const char* data, unsigned int size);
+        virtual bool processTimeSyncMessage(Cti::Fdr::ServerConnection& connection,
+                                            const char* data, unsigned int size);
 
     private:
         CtiAcsId    ForeignToYukonId(USHORT remote, CHAR category, USHORT point,
@@ -319,10 +229,4 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
         static const CHAR * KEY_FDR_ACS_SERVER_NAMES;
         static const CHAR * KEY_LINK_TIMEOUT;
 
-    public:
-
 };
-
-
-#endif  //  #ifndef __FDRACS_H__
-

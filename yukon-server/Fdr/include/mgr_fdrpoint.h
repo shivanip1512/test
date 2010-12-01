@@ -1,27 +1,4 @@
-#ifndef __MGR_FDRPOINT_H__
-#define __MGR_FDRPOINT_H__
-
-/*****************************************************************************
-*
-*    FILE NAME: mgr_fdrpoint.h
-*
-*    DATE: 09/18/2000
-*
-*    AUTHOR: Ben Wallace
-*
-*    PURPOSE: class head for CtiFDRManager
-*
-*    DESCRIPTION: Manages a collection of FDRPoints which are points
-*                 that are sent or received from other systems.  Translation
-*                 information is also included in our for id or renaming.
-*
-*
-*    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************
-*/
-
-
-/** include files **/
+#pragma once
 
 #include "dlldefs.h"
 #include "smartmap.h"
@@ -39,8 +16,8 @@ class IM_EX_FDRBASE CtiFDRManager
 
     public:
         // constructors, destructor
-        CtiFDRManager(string & InterfaceName);
-        CtiFDRManager(string & InterfaceName, string & aWhereSelectStr);
+        CtiFDRManager(const string & InterfaceName);
+        CtiFDRManager(const string & InterfaceName, string & aWhereSelectStr);
 
         virtual ~CtiFDRManager();
 
@@ -102,5 +79,3 @@ class IM_EX_FDRBASE CtiFDRManager
         CtiSmartMap<CtiFDRPoint> pointMap;
 
 };
-
-#endif                  // #ifndef __MGR_FDRPOINT_H__
