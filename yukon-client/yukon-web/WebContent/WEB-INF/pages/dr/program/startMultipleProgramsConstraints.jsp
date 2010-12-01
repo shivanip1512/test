@@ -11,15 +11,19 @@
 overrideAllChecked = function() {
     allChecked = $('overrideAllConstraints').checked;
     for (index = 0; index < ${numProgramsToStart}; index++) {
-        $('programStartInfoOverride' + index).checked = allChecked;
+    	var checkbox = $('programStartInfoOverride' + index);
+        if (checkbox) checkbox.checked = allChecked;
     }
 }
 
 updateAllOverridesChecked = function() {
     allChecked = true;
     for (index = 0; index < ${numProgramsToStart}; index++) {
-        allChecked &= $('programStartInfoOverride' + index).checked;
-        if (!allChecked) break;
+    	var checkbox = $('programStartInfoOverride' + index);
+        if (checkbox) {
+            allChecked &= checkbox.checked;
+            if (!allChecked) break;
+        }
     }
     $('overrideAllConstraints').checked = allChecked;
 }
