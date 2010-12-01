@@ -83,6 +83,7 @@ public class PointDataInjectionController {
         pointData.setId(pointId);
         pointData.setTime(dateTime.toDate());
         pointData.setPointQuality(quality);
+        pointData.setValue(value);
         
         if (forceArchive != null && forceArchive.equals("on")) {
         	pointData.setTagsPointMustArchive(true);
