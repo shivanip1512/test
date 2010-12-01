@@ -18,5 +18,10 @@
   <button class="valuePlus">+</button>
 </c:if>
 </td>
+<%
+	String forceArchive = request.getParameter("forceArchive");
+	boolean forceArchiveChecked = ((forceArchive != null) && (forceArchive.equals("true")));
+%>
+<td><input type="checkbox" name="forceArchive" <% if (forceArchiveChecked) { %>checked<% } %> onclick="forceArchiveChecked(this, ${pointId})"></td>
 <td><button class="sendData">Send</button><button class="removeRow">Remove</button></td>
 </tr></table>

@@ -28,8 +28,9 @@ function addRowHandler(selectedPointInfo) {
 function addRow(pointId) {
     var newRow = $("dummyRow").cloneNode(true);
     $('pointTableBody').appendChild(newRow);
+	var forceArchive = localStorage.getItem(pointId + 'forceArchive');
     new Ajax.Request("addRow",{
-        parameters: {'pointId': pointId},
+        parameters: {'pointId': pointId, 'forceArchive': forceArchive},
         onSuccess: function(transport) {
             var dummyHolder = document.createElement('div');
             dummyHolder.innerHTML = transport.responseText;
@@ -37,6 +38,10 @@ function addRow(pointId) {
             $('pointTableBody').replaceChild(replacementRow, newRow);
         }
     });
+}
+
+function forceArchiveChecked(box, pointId) {
+	localStorage.setItem(pointId + 'forceArchive', box.checked);
 }
 
 YEvent.observeSelectorClick('.removeRow', function(event) {
@@ -95,6 +100,7 @@ YEvent.observeSelectorClick('.dateTimeClear', function(event) {
 <th>Time</th>
 <th>Quality</th>
 <th>Value</th>
+<th>Archive</th>
 <th>Actions</th>
 </tr>
 </thead>

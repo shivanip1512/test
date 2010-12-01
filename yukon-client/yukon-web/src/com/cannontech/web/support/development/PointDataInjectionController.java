@@ -45,7 +45,7 @@ public class PointDataInjectionController {
     }
     
     @RequestMapping("addRow")
-    public void addRow(int pointId, ModelMap model) {
+    public void addRow(int pointId, String forceArchive, ModelMap model) {
         PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(pointId);
         model.addAttribute("paoPointIdentifier", paoPointIdentifier);
         PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(pointId);
@@ -65,6 +65,7 @@ public class PointDataInjectionController {
             model.addAttribute("decimalPointValue", String.format("%.4f", pointValue.getValue()));
         }
         model.addAttribute("qualities", PointQuality.values());
+        model.addAttribute("forceArchive", forceArchive);
     }
     
     @RequestMapping("sendData")
@@ -74,6 +75,7 @@ public class PointDataInjectionController {
             @RequestParam("time")LocalTime time, 
             PointQuality quality, 
             double value, 
+            String forceArchive,
             YukonUserContext userContext) {
         DateTime dateTime = date.toDateTime(time, userContext.getJodaTimeZone());
         
@@ -81,7 +83,11 @@ public class PointDataInjectionController {
         pointData.setId(pointId);
         pointData.setTime(dateTime.toDate());
         pointData.setPointQuality(quality);
-        pointData.setValue(value);
+        
+        if (forceArchive != null && forceArchive.equals("on")) {
+        	pointData.setTagsPointMustArchive(true);
+        }
+        
         dynamicDataSource.putValue(pointData);
         log.info("point data send from injector: " + pointData);
         return new TextView();
