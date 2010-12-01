@@ -1,50 +1,21 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_dnp
-*
-* Date:   5/22/2002
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.66.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:40 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
+#include "dev_dnp.h"
 
-
-#include <map>
-#include <string>
-
-#include "dsm2.h"
 #include "porter.h"
 
-#include "pt_base.h"
-#include "pt_numeric.h"
 #include "pt_status.h"
 #include "pt_accum.h"
-#include "master.h"
+
 #include "dllyukon.h"
 
-#include "pointtypes.h"
-#include "mgr_route.h"
 #include "msg_cmd.h"
-#include "msg_pcrequest.h"
-#include "msg_pcreturn.h"
-#include "msg_pdata.h"
 #include "msg_lmcontrolhistory.h"
-#include "cmdparse.h"
-#include "dev_dnp.h"
-#include "logger.h"
-#include "numstr.h"
-#include "cparms.h"
 
 using namespace std;
 
-namespace Cti       {
-namespace Devices    {
+namespace Cti {
+namespace Devices {
 
 DnpDevice::DnpDevice()
 {
@@ -556,27 +527,6 @@ Protocol::Interface *DnpDevice::getProtocol()
 }
 
 
-int DnpDevice::generate(CtiXfer &xfer)
-{
-    return _dnp.generate(xfer);
-}
-
-
-int DnpDevice::decode(CtiXfer &xfer, int status)
-{
-    int retval = NoError;
-
-    retval = _dnp.decode(xfer, status);
-
-    if( _dnp.isTransactionComplete() )
-    {
-        const Protocol::DNPInterface::output_point &op = _porter_info.protocol_parameter;
-    }
-
-    return retval;
-}
-
-
 int DnpDevice::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
 {
     int retVal = NoError;
@@ -598,7 +548,6 @@ int DnpDevice::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList 
         OutMessage->Source        = _dnp_address.getMasterAddress();
         OutMessage->Destination   = _dnp_address.getSlaveAddress();
         OutMessage->EventCode     = RESULT;
-        OutMessage->MessageFlags |= _dnp.commandRequiresRequeueOnFail() ? MessageFlag_RequeueCommandOnceOnFail : 0;
         OutMessage->Retry         = 0;  //  _dnp.commandRetries();
 
         //  give it a higher priority if it's a time sync or a control command
@@ -1111,7 +1060,7 @@ void DnpDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
    }
 
    _dnp.setAddresses(_dnp_address.getSlaveAddress(), _dnp_address.getMasterAddress());
-   _dnp.setName(string(getName().data()));
+   _dnp.setName(getName());
 
    if( getType() == TYPE_DARTRTU )
    {

@@ -1,12 +1,11 @@
 #include "yukon.h"
 
-
-#include "dllbase.h"
-#include "logger.h"
-#include "numstr.h"
-#include "prot_dnp.h"
 #include "dnp_application.h"
 
+#include "prot_dnp.h"
+
+#include "logger.h"
+#include "numstr.h"
 
 namespace Cti       {
 namespace Protocol  {
@@ -17,12 +16,8 @@ ApplicationLayer::ApplicationLayer() :
     _srcAddr(0),
     _request_function(RequestConfirm),
     _seqno(0),
-    _request_buf_len(0),
-    _response_buf_len(0),
-    _ioState(Uninitialized),
-    _retryState(Uninitialized),
-    _comm_errors(0),
-    _final_frame_received(false)
+    _appState(Uninitialized),
+    _comm_errors(0)
 {
     memset( &_request,     0, sizeof(request_t) );
     memset( &_response,    0, sizeof(response_t) );
@@ -65,13 +60,6 @@ void ApplicationLayer::setAddresses( unsigned short dstAddr, unsigned short srcA
 void ApplicationLayer::setOptions( int options )
 {
     _transport.setOptions(options);
-    if( options & DNPInterface::Options_SlaveResponse )
-    {
-        _iin.all_stations=1;
-        _iin.class_1=1;
-        _iin.class_2=1;
-        _iin.class_3=1;
-    }
 }
 
 
@@ -80,12 +68,9 @@ void ApplicationLayer::setCommand( FunctionCode fc )
     eraseInboundObjectBlocks();
     eraseOutboundObjectBlocks();
 
-    _final_frame_received = false;
-
     _request_function = fc;
 
-    _ioState    = Output;
-    _retryState = Output;
+    _appState    = SendRequest;
     _comm_errors = 0;
 
     //  this and initUnsolicited() are the only places where _iin is cleared
@@ -98,10 +83,7 @@ void ApplicationLayer::initUnsolicited( void )
     eraseInboundObjectBlocks();
     eraseOutboundObjectBlocks();
 
-    _final_frame_received = false;
-
-    _ioState    = Input;
-    _retryState = Input;
+    _appState    = RecvUnsolicited;
     _comm_errors = 0;
 
     //  this and setCommand() are the only places where _iin is cleared
@@ -146,7 +128,7 @@ void ApplicationLayer::processInput( void )
         dout << endl;
         dout << "data: " << endl;
 
-        for( int i = 0; i < _response_buf_len; i++ )
+        for( int i = 0; i < _response.buf_len; i++ )
         {
             dout << string(CtiNumStr(_response.buf[i]).hex().zpad(2)) << " ";
 
@@ -165,16 +147,11 @@ void ApplicationLayer::processInput( void )
     //  OR'ing them all together should catch all of the interesting indications from all frames
     _iin.raw |= _response.ind.raw;
 
-    if( _response.ctrl.first )
-    {
-        eraseInboundObjectBlocks();
-    }
-
-    while( processed < _response_buf_len )
+    while( processed < _response.buf_len )
     {
         ObjectBlock *tmpOB = CTIDBG_new ObjectBlock;
 
-        processed += tmpOB->restore(&(_response.buf[processed]), _response_buf_len - processed);
+        processed += tmpOB->restore(&(_response.buf[processed]), _response.buf_len - processed);
 
         _in_object_blocks.push(tmpOB);
     }
@@ -208,7 +185,7 @@ void ApplicationLayer::initForOutput( void )
         delete ob;
     }
 
-    _request_buf_len = pos;
+    _request.buf_len = pos;
 }
 
 void ApplicationLayer::setSequenceNumber(int seqNbr)
@@ -218,6 +195,9 @@ void ApplicationLayer::setSequenceNumber(int seqNbr)
 
 void ApplicationLayer::initForSlaveOutput( void )
 {
+    _appState    = SendResponse;
+    _comm_errors = 0;
+
     unsigned pos = 0;
 
     memset( &_response, 0, sizeof(_response) );
@@ -247,12 +227,12 @@ void ApplicationLayer::initForSlaveOutput( void )
         delete ob;
     }
 
-    _response_buf_len = pos;
+    _response.buf_len = pos;
 }
 
 void ApplicationLayer::completeSlave( void )
 {
-    _ioState = Complete;
+    _appState = Complete;
     _transport.setIoStateComplete();
 }
 
@@ -322,7 +302,7 @@ void ApplicationLayer::resetLink( void )
 
 bool ApplicationLayer::isTransactionComplete( void ) const
 {
-    return _ioState == Complete || _ioState == Uninitialized || _ioState == Failed;
+    return _appState == Complete || _appState == Uninitialized || _appState == Failed;
 }
 
 
@@ -356,7 +336,7 @@ bool ApplicationLayer::isOneWay( void ) const
 bool ApplicationLayer::errorCondition( void ) const
 {
     //  make this return decent error codes, not just a bool
-    return _ioState == Failed;
+    return _appState == Failed;
 }
 
 
@@ -366,31 +346,32 @@ int ApplicationLayer::generate( CtiXfer &xfer )
 
     if( _transport.isTransactionComplete() )
     {
-        switch( _ioState )
+        switch( _appState )
         {
-            case Output:
+            case SendResponse:
+            {
+                _transport.initForOutput((unsigned char *)&_response, _response.buf_len + RspHeaderSize, _dstAddr, _srcAddr);
+
+                break;
+            }
+            case SendRequest:
             {
                 //  _request was initialized by DNPInterface::generate()
-                if( _iin.raw != 0 )
-                {    
-                    _transport.initForOutput((unsigned char *)&_response, _response_buf_len + RspHeaderSize, _dstAddr, _srcAddr);
-                }
-                else
-                {    
-                    _transport.initForOutput((unsigned char *)&_request, _request_buf_len + ReqHeaderSize, _dstAddr, _srcAddr);
-                }
+                _transport.initForOutput((unsigned char *)&_request, _request.buf_len + ReqHeaderSize, _dstAddr, _srcAddr);
 
                 break;
             }
 
-            case Input:
+            case RecvUnsolicited:
+            case RecvResponse:
             {
                 _transport.initForInput((unsigned char *)&_response, BufferSize);
 
                 break;
             }
 
-            case OutputAck:
+            case SendUnexpectedConfirm:
+            case SendConfirm:
             {
                 generateAck(&_acknowledge, _response.ctrl);
 
@@ -402,12 +383,12 @@ int ApplicationLayer::generate( CtiXfer &xfer )
             default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - unhandled state " << _ioState << " in Cti::Protocol::DNP::Application::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - unhandled state " << _appState << " in Cti::Protocol::DNP::Application::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             case Failed:
             {
                 //  eventually, we should respect the results from _transport.initForOutput and _transport.initForInput - they could fail, too
-                _ioState = Failed;
+                _appState = Failed;
                 retVal = NOTNORMAL;
 
                 break;
@@ -432,13 +413,15 @@ int ApplicationLayer::decode( CtiXfer &xfer, int status )
     {
         if( ++_comm_errors <= gDNPInternalRetries )  // CommRetries )
         {
-            _ioState = _retryState;
-            //  retVal = NoError;
+            if( _appState == RecvResponse )
+            {
+                //  re-output on error
+                _appState = SendRequest;
+            }
         }
         else
         {
-            _ioState    = Failed;
-            _retryState = Failed;
+            _appState = Failed;
         }
 
         if( isDebugLudicrous() )
@@ -449,72 +432,89 @@ int ApplicationLayer::decode( CtiXfer &xfer, int status )
     }
     else if( _transport.isTransactionComplete() )
     {
-        switch( _ioState )
+        switch( _appState )
         {
-            case Output:
+            case SendResponse:
+            {
+                _appState = Complete;
+
+                break;
+            }
+
+            case SendRequest:
             {
                 if( isOneWay() )
                 {
-                    _ioState    = Complete;
-                    _retryState = Complete;
+                    _appState = Complete;
                 }
                 else
                 {
-                    _ioState    = Input;
-                    //  leave _retryState on Output, so we re-output on error
-                    //  _retryState = _ioState;
+                    _appState = RecvResponse;
                 }
 
                 break;
             }
 
-            case Input:
+            case RecvUnsolicited:
+            case RecvResponse:
             {
                 //  rudimentary bounds check on our input
                 if( _transport.getInputSize() >= RspHeaderSize )
                 {
-                    _response_buf_len = _transport.getInputSize() - RspHeaderSize;
+                    _response.buf_len = _transport.getInputSize() - RspHeaderSize;
 
+                    //  add filtering for duplicate/unexpected/bad sequence packets
                     processInput();
 
                     if( _response.ctrl.app_confirm )
                     {
-                        _ioState    = OutputAck;
-                        _retryState = _ioState;
+                        if( _response.ctrl.unsolicited && _appState == RecvResponse )
+                        {
+                            //  we weren't expecting an unsolicited -
+                            //  acknowledge it so we can get back to business
+                            _appState = SendUnexpectedConfirm;
+                        }
+                        else
+                        {
+                            _appState = SendConfirm;
+                        }
                     }
                     else if( !_response.ctrl.final )
                     {
-                        _ioState    = Input;
-                        _retryState = _ioState;
+                        _appState = RecvResponse;
                     }
                     else
                     {
-                        _ioState    = Complete;
-                        _retryState = _ioState;
+                        _appState = Complete;
                     }
                 }
                 else
                 {
-                    _response_buf_len = 0;
-                    _ioState    = Failed;
-                    _retryState = _ioState;
+                    _response.buf_len = 0;
+                    _appState = Failed;
                 }
 
                 break;
             }
 
-            case OutputAck:
+            case SendUnexpectedConfirm:
+            {
+                //  get back to business - listen for the real response now
+                _appState = RecvResponse;
+
+                break;
+            }
+
+            case SendConfirm:
             {
                 //  _response is untouched between Input and OutputAck, so this is still good data
                 if( !_response.ctrl.final )
                 {
-                    _ioState    = Input;
-                    _retryState = _ioState;
+                    _appState = RecvResponse;
                 }
                 else
                 {
-                    _ioState    = Complete;
-                    _retryState = _ioState;
+                    _appState = Complete;
                 }
 
                 break;
@@ -523,10 +523,9 @@ int ApplicationLayer::decode( CtiXfer &xfer, int status )
             default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - unknown state(" << _ioState << ") in Application::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - unknown state(" << _appState << ") in Application::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
-                _ioState    = Failed;
-                _retryState = _ioState;
+                _appState = Failed;
             }
         }
     }

@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_base
-*
-* Class:  CtiProtocolBase
-* Date:   2002-oct-01
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/01/21 20:41:49 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PROT_BASE_H__
-#define __PROT_BASE_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include <vector>
 #include <string>
@@ -26,13 +8,11 @@
 #include "msg_pdata.h"
 #include "xfer.h"
 
-namespace Cti       {
-namespace Protocol  {
+namespace Cti {
+namespace Protocol {
 
-class IM_EX_PROT Interface
+class IM_EX_PROT Interface : boost::noncopyable
 {
-private:
-
 protected:
 
     std::string _name;
@@ -40,14 +20,9 @@ protected:
 public:
 
     typedef std::vector< CtiPointDataMsg * > pointlist_t;
-    typedef std::vector< string * >          stringlist_t;
+    typedef std::vector< std::string * >     stringlist_t;
 
-    Interface();
-    Interface(const Interface &aRef);
-
-    virtual ~Interface();
-
-    Interface &operator=(const Interface &aRef);
+    virtual ~Interface() { }
 
     //  client-side (Scanner, PIL) functions
     virtual int sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList );
@@ -72,5 +47,3 @@ public:
 
 }
 }
-
-#endif // #ifndef __PROT_BASE_H__

@@ -249,8 +249,6 @@ INT CtiDeviceSeriesV::ResultDecode( INMESS *InMessage, CtiTime &Now, list< CtiMe
         if( _seriesv.hasInboundPoints() )
         {
             _seriesv.getInboundPoints(seriesvPoints);
-
-//            processInboundPoints(InMessage, TimeNow, vgList, retList, outList, seriesvPoints);
         }
     }
 

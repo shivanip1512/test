@@ -10,6 +10,7 @@
 
 
 #include "boostutil.h"
+#include "boost_test_helpers.h"
 
 using boost::unit_test_framework::test_suite;
 
@@ -23,6 +24,8 @@ using boost::unit_test_framework::test_suite;
 using namespace std;
 
 using namespace Cti::Protocol;
+
+using Cti::byte_buffer;
 
 class Test_Wrap : public Wrap
 {
@@ -60,16 +63,11 @@ public:
     };
 };
 
-class Test_Klondike : public Klondike
+struct Test_Klondike : public Klondike
 {
-public:
-
     unsigned long time;
 
-    void setWrap(Wrap *wrap)
-    {
-        Klondike::setWrap(wrap);
-    };
+    using Klondike::setWrap;
 
     long currentTime()
     {
@@ -77,24 +75,18 @@ public:
     };
 };
 
-struct nice_buffer
-{
-    vector<char> v;
 
-    nice_buffer &operator, (unsigned char c) {  v.push_back(c);  return *this;  };
-    nice_buffer &operator<<(unsigned char c) {  v.push_back(c);  return *this;  };
-    operator string()  {  return string(v.begin(), v.end());  }
-};
-
-
-void do_xfer(Test_Klondike &tk, Test_Wrap &tw, CtiXfer &xfer, string outbound, string inbound)
+void do_xfer(Test_Klondike &tk, Test_Wrap &tw, CtiXfer &xfer, const byte_buffer &outbound, const byte_buffer &inbound)
 {
     //  first do the send...
     BOOST_CHECK_EQUAL(tk.generate(xfer), NoError);
 
     // check what was assigned into our Test_Wrap object
-    BOOST_CHECK_EQUAL(tw.sent.size(), outbound.size());
-    BOOST_CHECK(!memcmp( &*(tw.sent.begin()), &*outbound.begin(), outbound.size()));
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+        tw.sent.begin(),
+        tw.sent.end(),
+        outbound.begin(),
+        outbound.end());
 
     BOOST_CHECK_EQUAL(tk.decode(xfer, 0), NoError);
     BOOST_CHECK(!tk.errorCondition());
@@ -108,13 +100,10 @@ void do_xfer(Test_Klondike &tk, Test_Wrap &tw, CtiXfer &xfer, string outbound, s
     BOOST_CHECK_EQUAL(tw.sent.size(), 0);
 
     //  assign our inbound data into the Test_Wrap object
-    inbound.c_str();
-
-    string::const_iterator iter = inbound.begin();
-    for( ;iter != inbound.end(); iter++ )
-    {
-        tw.received.push_back(*iter);
-    }
+    tw.received.insert(
+        tw.received.end(),
+        inbound.begin(),
+        inbound.end());
 
     BOOST_CHECK_EQUAL(tk.decode(xfer, 0), NoError);
     BOOST_CHECK(!tk.errorCondition());
@@ -141,8 +130,8 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_timesync_and_queue_loading)
 
     test_klondike.time = 0x456789ab;
 
-    do_xfer(test_klondike, test_wrap, xfer, (nice_buffer() << 0x21, 0xab, 0x89, 0x67, 0x45),
-                                            (nice_buffer() << 0x80, 0x21, 0x00, 0x00));
+    do_xfer(test_klondike, test_wrap, xfer, (byte_buffer() << 0x21, 0xab, 0x89, 0x67, 0x45),
+                                            (byte_buffer() << 0x80, 0x21, 0x00, 0x00));
     cout << "Transaction " << ++transactions << endl;
 
     //  then queue up a queued command
@@ -162,13 +151,13 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_timesync_and_queue_loading)
     BOOST_CHECK_EQUAL(test_klondike.setCommand(Klondike::Command_LoadQueue), NoError);
 
     //  verify it grabs the status from the CCU first
-    do_xfer(test_klondike, test_wrap, xfer, (nice_buffer() << 0x11),
-                                            (nice_buffer() << 0x81, 0x11, 0x00, 0x00, 0x04, 0x37, 0x00));
+    do_xfer(test_klondike, test_wrap, xfer, (byte_buffer() << 0x11),
+                                            (byte_buffer() << 0x81, 0x11, 0x00, 0x00, 0x04, 0x37, 0x00));
     cout << "Transaction " << ++transactions << endl;
 
     //  then loads the queued request
-    do_xfer(test_klondike, test_wrap, xfer, (nice_buffer() << 0x13, 0x37, 0x00, 0x01, 0x0f, 0x10, 0x00, 0x03, 0x12, 0x34, 0x56),
-                                            (nice_buffer() << 0x81, 0x13, 0x08, 0x00, 0x01, 0x03));
+    do_xfer(test_klondike, test_wrap, xfer, (byte_buffer() << 0x13, 0x37, 0x00, 0x01, 0x0f, 0x10, 0x00, 0x03, 0x12, 0x34, 0x56),
+                                            (byte_buffer() << 0x81, 0x13, 0x08, 0x00, 0x01, 0x03));
     cout << "Transaction " << ++transactions << endl;
 }
 
@@ -189,26 +178,26 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_route_loading)
 
     test_klondike.addRoute(1, 27, 3, 6);
 
-    do_xfer(test_klondike, test_wrap, xfer, (nice_buffer() << 0x34, 0x00),
-                                            (nice_buffer() << 0x80, 0x21, 0x00, 0x00));
+    do_xfer(test_klondike, test_wrap, xfer, (byte_buffer() << 0x34, 0x00),
+                                            (byte_buffer() << 0x80, 0x21, 0x00, 0x00));
     cout << "Transaction " << ++transactions << endl;
 
     //  fixed, variable, stages, bus
 
-    do_xfer(test_klondike, test_wrap, xfer, (nice_buffer() << 0x31, 0x01, 0x00, 0xdb, 0x31),
-                                            (nice_buffer() << 0x80, 0x21, 0x00, 0x00));
+    do_xfer(test_klondike, test_wrap, xfer, (byte_buffer() << 0x31, 0x01, 0x00, 0xdb, 0x31),
+                                            (byte_buffer() << 0x80, 0x21, 0x00, 0x00));
     cout << "Transaction " << ++transactions << endl;
 
     BOOST_CHECK_EQUAL(test_klondike.setCommand(Klondike::Command_LoadRoutes), NoError);
 
     test_klondike.addRoute(2, 16, 5, 2);
 
-    do_xfer(test_klondike, test_wrap, xfer, (nice_buffer() << 0x34, 0x00),
-                                            (nice_buffer() << 0x80, 0x21, 0x00, 0x00));
+    do_xfer(test_klondike, test_wrap, xfer, (byte_buffer() << 0x34, 0x00),
+                                            (byte_buffer() << 0x80, 0x21, 0x00, 0x00));
     cout << "Transaction " << ++transactions << endl;
 
-    do_xfer(test_klondike, test_wrap, xfer, (nice_buffer() << 0x31, 0x02, 0x00, 0xdb, 0x31, 0x01, 0x85, 0x12),
-                                            (nice_buffer() << 0x80, 0x21, 0x00, 0x00));
+    do_xfer(test_klondike, test_wrap, xfer, (byte_buffer() << 0x31, 0x02, 0x00, 0xdb, 0x31, 0x01, 0x85, 0x12),
+                                            (byte_buffer() << 0x80, 0x21, 0x00, 0x00));
     cout << "Transaction " << ++transactions << endl;
 }
 

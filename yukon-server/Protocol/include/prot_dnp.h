@@ -1,26 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_dnp
-*
-* Class:  CtiProtocolDNP
-* Date:   5/6/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.25.10.2 $
-* DATE         :  $Date: 2008/11/18 20:11:29 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PROT_DNP_H__
-#define __PROT_DNP_H__
-#pragma warning( disable : 4786)
-
-
-#include <list>
-#include <map>
+#pragma once
 
 #include "dlldefs.h"
 #include "pointtypes.h"
@@ -32,8 +10,10 @@
 #include "dnp_objects.h"
 #include "dnp_object_binaryoutput.h"
 
-namespace Cti       {
-namespace Protocol  {
+#include <map>
+
+namespace Cti {
+namespace Protocol {
 
 class IM_EX_PROT DNPInterface : public Interface
 {
@@ -42,7 +22,7 @@ class IM_EX_PROT DNPInterface : public Interface
 
 private:
 
-    DNP::ApplicationLayer _app_layer;  //  be explicit to ensure Slick doesn't confuse it with anything else :rolleyes:
+    DNP::ApplicationLayer _app_layer;
     unsigned short   _masterAddress, _slaveAddress;
     int              _options;
     unsigned long    _last_complaint;
@@ -55,30 +35,23 @@ private:
     stringlist_t _string_results;
     pointlist_t  _point_results;
 
-    map<unsigned, double> _analog_inputs;
-    map<unsigned, double> _binary_inputs;
-    map<unsigned, double> _analog_outputs;
-    map<unsigned, double> _binary_outputs;
-    map<unsigned, double> _counters;
+    std::map<unsigned, double> _analog_inputs;
+    std::map<unsigned, double> _binary_inputs;
+    std::map<unsigned, double> _analog_outputs;
+    std::map<unsigned, double> _binary_outputs;
+    std::map<unsigned, double> _counters;
 
-    map<unsigned, unsigned> _point_count;
+    std::map<unsigned, unsigned> _point_count;
 
     void recordPoints(int group, const pointlist_t &points);
     string pointSummary(unsigned points);
-    string pointDataReport(const map<unsigned, double> &pointdata, unsigned points);
+    string pointDataReport(const std::map<unsigned, double> &pointdata, unsigned points);
 
     enum
     {
         TimeDifferential  =   60,
         ComplaintInterval = 3600,
     };
-
-    enum Retries
-    {
-        Retries_Default = 2
-    };
-
-    void initLayers( void );
 
     const char *getControlResultString( int result_status ) const;
 
@@ -100,21 +73,12 @@ protected:
 public:
 
     DNPInterface();
-    DNPInterface(const DNPInterface &aRef);
-
-    virtual ~DNPInterface();
-
-    DNPInterface &operator=(const DNPInterface &aRef);
 
     void setAddresses( unsigned short slaveAddress, unsigned short masterAddress );
     void setOptions( int options );
 
     bool setCommand( Command command );
     bool setCommand( Command command, output_point &point );
-    //bool setCommand( Command command, vector<output_point> &point_vector );
-
-    bool commandRequiresRequeueOnFail( void );
-    int  commandRetries( void );
 
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
@@ -201,27 +165,19 @@ public:
 
 
 
-class IM_EX_PROT DNPSlaveInterface : public DNPInterface, boost::noncopyable
+class IM_EX_PROT DNPSlaveInterface : public DNPInterface
 {
     struct input_point;
-
-private:
 
     typedef DNPInterface Inherited;
     vector<input_point> _input_point_list;
     void addObjectBlock(DNP::ObjectBlock *objBlock);
 
-protected:
-
-
 public:
 
     DNPSlaveInterface();
 
-    virtual ~DNPSlaveInterface();
-
     bool setSlaveCommand( Command command );
-    bool setSlaveCommand( Command command, input_point &point );
     void setOptions( int options, int seqNumber=0 );
 
     int slaveGenerate( CtiXfer &xfer );
@@ -269,7 +225,6 @@ public:
         bool includeTime;
         CtiTime timestamp;
     };
-
 };
 
 
@@ -277,18 +232,12 @@ namespace DNP {
 
 struct DnpPacketFinder : public Protocols::PacketFinder
 {
-public:
-
     DnpPacketFinder() :
         PacketFinder(0x05, 0x64, DatalinkLayer::isPacketValid)
     { };
 };
 
 }
-
-
 }
 }
 
-
-#endif // #ifndef __PROT_DNP_H__

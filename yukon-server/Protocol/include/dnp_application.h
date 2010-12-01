@@ -1,37 +1,13 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dnp_application
-*
-* Namespace: CtiDNP
-* Class:     Application
-* Date:   5/7/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/10/24 16:14:01 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DNP_APPLICATION_H__
-#define __DNP_APPLICATION_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include <queue>
-
-using std::queue;
-
-#include "message.h"
 
 #include "dnp_objects.h"
 #include "dnp_transport.h"
 
-namespace Cti       {
-namespace Protocol  {
-namespace DNP       {
+namespace Cti {
+namespace Protocol {
+namespace DNP {
 
 class ApplicationLayer
 {
@@ -43,7 +19,7 @@ public:
         BufferSize = 4096
     };
 
-    typedef queue< const ObjectBlock * > object_block_queue;
+    typedef std::queue< const ObjectBlock * > object_block_queue;
 
 private:
 
@@ -89,6 +65,7 @@ private:
         control_header ctrl;
         unsigned char  func_code;
         unsigned char  buf[BufferSize];
+        unsigned       buf_len;
     } _request;
 
     struct response_t
@@ -97,6 +74,7 @@ private:
         unsigned char  func_code;
         indications    ind;
         unsigned char  buf[BufferSize];
+        unsigned       buf_len;
     } _response;
 
     struct acknowledge_t
@@ -109,24 +87,32 @@ private:
 
     FunctionCode _request_function;
     int _seqno;
-    unsigned _request_buf_len,
-             _response_buf_len;
 
-    enum ApplicationIOState
+    enum IoState
     {
         Uninitialized = 0,
-        Output,
-        Input,
-        OutputAck,
+
+        //  DNP master states
+        SendRequest,
+        RecvResponse,
+        SendConfirm,
+
+        RecvUnsolicited,
+
+        //  DNP master states
+        SendUnexpectedConfirm,
+
+        //  DNP slave state
+        SendResponse,
+
         Complete,
         Failed
-    } _ioState, _retryState;
+
+    } _appState;
 
     int _comm_errors;
 
     indications _iin;
-
-    bool _final_frame_received;
 
     object_block_queue _out_object_blocks,
                        _in_object_blocks;
@@ -144,8 +130,7 @@ protected:
     enum
     {
         ReqHeaderSize = 2,
-        RspHeaderSize = 4,
-        CommRetries   = 3
+        RspHeaderSize = 4
     };
 
 
@@ -157,7 +142,6 @@ public:
     virtual ~ApplicationLayer();
 
     ApplicationLayer &operator=(const ApplicationLayer &aRef);
-
 
     //  initialization functions
     void setAddresses( unsigned short dstAddr, unsigned short srcAddr );
@@ -223,4 +207,3 @@ public:
 }
 }
 
-#endif // #ifndef __DNP_APPLICATION_H__

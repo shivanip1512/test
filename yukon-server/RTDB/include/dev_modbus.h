@@ -80,9 +80,7 @@ public:
 
     INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList);
-    //virtual void processInboundPoints(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, RWTPtrSlist<CtiPointDataMsg> &dnpPoints );
 };
 
 }
 }
-

@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_dnp
-*
-* Date:   5/6/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2008/02/15 21:03:46 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "boost/scoped_ptr.hpp"
@@ -43,33 +28,6 @@ DNPInterface::DNPInterface() :
     setAddresses(DefaultSlaveAddress, DefaultMasterAddress);
 }
 
-DNPInterface::DNPInterface(const DNPInterface &aRef)
-{
-    *this = aRef;
-}
-
-DNPInterface::~DNPInterface()
-{
-}
-
-DNPInterface &DNPInterface::operator=(const DNPInterface &aRef)
-{
-    if( this != &aRef )
-    {
-        _app_layer     = aRef._app_layer;
-        _masterAddress = aRef._masterAddress;
-        _slaveAddress  = aRef._slaveAddress;
-    }
-
-    return *this;
-}
-
-
-void DNPInterface::initLayers( void )
-{
-}
-
-
 void DNPInterface::setAddresses( unsigned short slaveAddress, unsigned short masterAddress )
 {
     _masterAddress = masterAddress;
@@ -92,11 +50,11 @@ bool DNPInterface::setCommand( Command command )
     _command = command;
 
     //  clear the point records out
-    _analog_inputs.erase(_analog_inputs.begin(), _analog_inputs.end());
-    _analog_outputs.erase(_analog_outputs.begin(), _analog_outputs.end());
-    _binary_inputs.erase(_binary_inputs.begin(), _binary_inputs.end());
-    _binary_outputs.erase(_binary_outputs.begin(), _binary_outputs.end());
-    _counters.erase(_counters.begin(), _counters.end());
+    _analog_inputs.clear();
+    _analog_outputs.clear();
+    _binary_inputs.clear();
+    _binary_outputs.clear();
+    _counters.clear();
 
     return _command != Command_Invalid;
 }
@@ -110,71 +68,6 @@ bool DNPInterface::setCommand( Command command, output_point &point )
 
     return setCommand(command);
 }
-
-/*
-bool DNPInterface::setCommand( Command command, vector<output_point> &point_vector )
-{
-    _command_parameters.clear();
-
-    _command_parameters.insert(_command_parameters.end(),
-                               point_vector.begin(),
-                               point_vector.end());
-
-    return setCommand(command);
-}
-*/
-
-bool DNPInterface::commandRequiresRequeueOnFail( void )
-{
-    bool retVal = false;
-/*
-    switch( _command )
-    {
-        case Command_SetDigitalOut_Direct:
-        case Command_SetDigitalOut_SBO_Select:
-        case Command_SetDigitalOut_SBO_Operate:
-        {
-            retVal = true;
-
-            break;
-        }
-
-        default:
-        {
-            break;
-        }
-    }
-*/
-    return retVal;
-}
-
-
-int DNPInterface::commandRetries( void )
-{
-    int retVal;
-
-    switch( _command )
-    {
-        case Command_SetDigitalOut_Direct:
-        case Command_SetDigitalOut_SBO_Select:
-        case Command_SetDigitalOut_SBO_Operate:
-        {
-            retVal = 0;
-
-            break;
-        }
-
-        default:
-        {
-            retVal = Retries_Default;
-
-            break;
-        }
-    }
-
-    return retVal;
-}
-
 
 int DNPInterface::generate( CtiXfer &xfer )
 {
@@ -820,7 +713,7 @@ void DNPInterface::getInboundPoints( pointlist_t &points )
 {
     points.insert(points.end(), _point_results.begin(), _point_results.end());
 
-    _point_results.erase(_point_results.begin(), _point_results.end());
+    _point_results.clear();
 }
 
 
@@ -828,7 +721,7 @@ void DNPInterface::getInboundStrings( stringlist_t &strings )
 {
     strings.insert(strings.end(), _string_results.begin(), _string_results.end());
 
-    _string_results.erase(_string_results.begin(), _string_results.end());
+    _string_results.clear();
 }
 
 
@@ -877,17 +770,12 @@ void DNPInterface::addStringResults(string *s)
 }
 
 
-DNPSlaveInterface::DNPSlaveInterface() 
+DNPSlaveInterface::DNPSlaveInterface()
 {
    getApplicationLayer().completeSlave();
    setOptions(DNPSlaveInterface::Options_SlaveResponse);
 
 }
-
-DNPSlaveInterface::~DNPSlaveInterface()
-{
-}
-
 
 int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
 {
@@ -909,7 +797,7 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
                    DNP::AnalogInput *ain;
                    DNP::BinaryInput *bin;
                    DNP::Counter *counterin;
-                    
+
 
                     dob1 = CTIDBG_new ObjectBlock(ObjectBlock::ByteIndex_ShortQty);
                     dob2 = CTIDBG_new ObjectBlock(ObjectBlock::ByteIndex_ShortQty);
@@ -978,7 +866,7 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
                     addObjectBlock(dob1);
                     addObjectBlock(dob2);
                     addObjectBlock(dob3);
-                
+
                 break;
             }
             case Command_UnsolicitedInbound:
@@ -1002,10 +890,10 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
                 setSlaveCommand(Command_Invalid);
             }
         }
-       
+
         //  finalize the request
         getApplicationLayer().initForSlaveOutput();
-        
+
     }
 
     return getApplicationLayer().generate(xfer);
@@ -1018,7 +906,7 @@ void DNPSlaveInterface::slaveTransactionComplete()
         addStringResults(CTIDBG_new string("Operation failed"));
     }
     setSlaveCommand(Command_Complete);
-    
+
     return;
 }
 
@@ -1038,16 +926,6 @@ bool DNPSlaveInterface::setSlaveCommand( Command command )
         getApplicationLayer().completeSlave();
     }
     return getCommand() != Command_Invalid;
-}
-
-
-bool DNPSlaveInterface::setSlaveCommand( Command command, input_point &point )
-{
-    _input_point_list.clear();
-
-    _input_point_list.push_back(point);
-
-    return setSlaveCommand(command);
 }
 
 void DNPSlaveInterface::addObjectBlock(DNP::ObjectBlock *objBlock)

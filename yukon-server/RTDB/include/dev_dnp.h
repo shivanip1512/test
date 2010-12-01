@@ -53,8 +53,6 @@ private:
 
     dnp_accumulator_pointdata_map _lastIntervalAccumulatorData;
 
-    bool _scanGeneralPending, _scanIntegrityPending, _scanAccumulatorPending;
-
 protected:
 
     Protocol::DNPInterface _dnp;
@@ -90,8 +88,6 @@ public:
 
     void initUnsolicited();
 
-    virtual int generate(CtiXfer &xfer);
-    virtual int decode(CtiXfer &xfer, int status);
     void sendDispatchResults(CtiConnection &vg_connection);
     int  sendCommResult(INMESS *InMessage);
 
@@ -105,7 +101,6 @@ public:
 
     INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     INT ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, list< CtiMessage* > &retList);
-    //virtual void processInboundPoints(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, RWTPtrSlist<CtiPointDataMsg> &dnpPoints );
 };
 
 }
