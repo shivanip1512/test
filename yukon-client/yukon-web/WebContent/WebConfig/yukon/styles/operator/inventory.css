@@ -87,3 +87,7 @@ span.visible {
 span.newOpLink {
     vertical-align: baseline !important;
 }
+
+ul.resultList {
+    padding: 4px;
+}

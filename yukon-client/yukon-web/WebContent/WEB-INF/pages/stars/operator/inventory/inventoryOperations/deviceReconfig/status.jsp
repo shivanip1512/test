@@ -34,27 +34,51 @@
                     <div>
                         <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/STATUS_CLASS">
                             <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/STATUS_TEXT" styleClass="statusPart"/>
-                            <span class="statusPart"><cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/ITEMS_PROCESSED"/>/${task.numberOfItems}</span>
-                            <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/PROGRESS"/>
                         </cti:classUpdater>
                     </div>
                 </tags:nameValue2>
+            
+            </tags:nameValueContainer2>
+            
+            <ul class="resultList">
+                <li>
+                    <tags:updateableProgressBar totalCount="${task.numberOfItems}" countKey="DEVICE_RECONFIG/${task.inventoryConfigTaskId}/ITEMS_PROCESSED"/>
+                </li>
+            </ul>
+            
+            <br>
+            
+            <tags:nameValueContainer2>
                 
                 <tags:nameValue2 nameKey=".successCount">
-                    <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/SUCCESS_COUNT" styleClass="statusPart successMessage"/>
-                    <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/NEW_OPERATION_FOR_SUCCESS">
-                        <cti:labeledImg key="newOperation" href="${newOperationSuccess}" imageOnRight="true" labelStyleClass="newOpLink"/>
-                    </cti:classUpdater>
-                </tags:nameValue2>
-                
-                <tags:nameValue2 nameKey=".failedCount">
-                    <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/FAILED_COUNT" styleClass="statusPart errorMessage"/>
-                    <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/NEW_OPERATION_FOR_FAILED">
-                        <cti:labeledImg key="newOperation" href="${newOperationFailed}" imageOnRight="true" labelStyleClass="newOpLink"/>
-                    </cti:classUpdater>
+                    <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/SUCCESS_COUNT" styleClass="successMessage normalBoldLabel"/>
                 </tags:nameValue2>
                 
             </tags:nameValueContainer2>
+
+            <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/NEW_OPERATION_FOR_SUCCESS">
+                <ul class="resultList">
+                    <li>
+                        <a href="${newOperationSuccess}" class="small"><i:inline key=".newOperation"/></a>
+                    </li>
+                </ul>
+            </cti:classUpdater>
+            
+            <tags:nameValueContainer2>
+                
+                <tags:nameValue2 nameKey=".failedCount">
+                    <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/FAILED_COUNT" styleClass="errorMessage normalBoldLabel"/>
+                </tags:nameValue2>
+                
+            </tags:nameValueContainer2>
+            
+            <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/NEW_OPERATION_FOR_FAILED">
+                <ul class="resultList">
+                    <li>
+                        <a href="${newOperationFailed}" class="small"><i:inline key=".newOperation"/></a>
+                    </li>
+                </ul>
+            </cti:classUpdater>
             
             <br>
             
