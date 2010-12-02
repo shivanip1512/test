@@ -1,13 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_wctp
-*
-* Date:   5/29/2002
-*
-* Author: Zhihong Yao
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <stdio.h>
@@ -1080,6 +1070,11 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, l
                         if(msgLen == 0)
                         {
                             msgLen = strlen(wctpMsg);
+                        }
+                        else
+                        {
+                            //  Cut off any trailing garbage
+                            wctpMsg[msgLen] = 0;
                         }
 
                         if(strlen(wctpMsg) < msgLen)
