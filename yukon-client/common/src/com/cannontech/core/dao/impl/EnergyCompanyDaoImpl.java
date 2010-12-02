@@ -25,7 +25,7 @@ import com.google.common.collect.Lists;
 
 /**
  * Energy company related convenience funcs
- * @author: alauinger 
+ * @author: alauinger
  */
 public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     // the following is a duplicate of StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID
@@ -35,187 +35,212 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     private YukonUserDao yukonUserDao;
     private IDatabaseCache databaseCache;
     private SimpleJdbcTemplate simpleJdbcTemplate;
-    
-private EnergyCompanyDaoImpl() {
-	super();
-}
 
-public class DisplayableServiceCompany {
-    int serviceCompanyId;
-    String serviceCompanyName;
-    
-    public int getServiceCompanyId() {
-        return serviceCompanyId;
+    private EnergyCompanyDaoImpl() {
+        super();
     }
-    
-    public void setServiceCompanyId(int serviceCompanyId) {
-        this.serviceCompanyId = serviceCompanyId;
-    }
-    
-    public String getServiceCompanyName() {
-        return serviceCompanyName;
-    }
-    
-    public void setServiceCompanyName(String serviceCompanyName) {
-        this.serviceCompanyName = serviceCompanyName;
-    }
-}
 
-@Override
-public List<DisplayableServiceCompany> getAllInheritedServiceCompanies(int energyCompanyId) {
-    List<Integer> energyCompanyIds = Lists.newArrayList();
-    energyCompanyIds.add(energyCompanyId);
-    energyCompanyIds.addAll(getParentEnergyCompanyIds(energyCompanyId));
-    SqlStatementBuilder sql = new SqlStatementBuilder();
-    sql.append("select sc.CompanyID companyId, sc.CompanyName companyName from ServiceCompany sc");
-    sql.append("join ECToGenericMapping ecgm on ecgm.ItemID = sc.CompanyID");
-    sql.append("where ecgm.EnergyCompanyID in (").appendArgumentList(energyCompanyIds).append(")");
-    sql.append("and ecgm.MappingCategory = 'ServiceCompany'");
-    
-    return simpleJdbcTemplate.query(sql.getSql(), new ParameterizedRowMapper<DisplayableServiceCompany>() {
-        @Override
-        public DisplayableServiceCompany mapRow(ResultSet rs, int rowNum) throws SQLException {
-            DisplayableServiceCompany sc = new DisplayableServiceCompany();
-            sc.setServiceCompanyId(rs.getInt("companyId"));
-            sc.setServiceCompanyName(SqlUtils.convertDbValueToString(rs.getString("companyName")));
-            return sc;
+    public class DisplayableServiceCompany {
+        int serviceCompanyId;
+        String serviceCompanyName;
+
+        public int getServiceCompanyId() {
+            return serviceCompanyId;
         }
-    }, sql.getArguments());
-}
 
-@Override
-public List<Integer> getParentEnergyCompanyIds(int energyCompanyId){
-    List<Integer> parentIds = Lists.newArrayList();
-    
-    SqlStatementBuilder sql = new SqlStatementBuilder();
-    sql.append("select EnergyCompanyId");
-    sql.append("from ECToGenericMapping");
-    sql.append("where MappingCategory = 'Member'");
-    sql.append("and ItemId = ").appendArgument(energyCompanyId);
-    
-    try {
-        int parentId = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
-        parentIds.add(parentId);
-        
-        /* Recursive call to get the whole parent chain */
-        parentIds.addAll(getParentEnergyCompanyIds(parentId));
-    } catch (EmptyResultDataAccessException e) {
-        /* We found the last parent which means we are done */
-    }
-    
-    return parentIds;
-}
-
-/* (non-Javadoc)
- * @see com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompany(int)
- */
-public LiteEnergyCompany getEnergyCompany(int energyCompanyID) {
-    for(Iterator<LiteEnergyCompany> i = databaseCache.getAllEnergyCompanies().iterator(); i.hasNext();) {
-        LiteEnergyCompany e = i.next();
-        if(e.getEnergyCompanyID() == energyCompanyID) {
-            return e;
+        public void setServiceCompanyId(int serviceCompanyId) {
+            this.serviceCompanyId = serviceCompanyId;
         }
-    }	
-	return null;
-}
 
-/* (non-Javadoc)
- * @see com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompany(com.cannontech.database.data.lite.LiteYukonUser)
- */
-public LiteEnergyCompany getEnergyCompany(LiteYukonUser user) {
-	LiteEnergyCompany liteEnergyCompany = databaseCache.getALiteEnergyCompanyByUserID(user);
-    if (liteEnergyCompany == null) {
-        return getEnergyCompany(DEFAULT_ENERGY_COMPANY_ID);
+        public String getServiceCompanyName() {
+            return serviceCompanyName;
+        }
+
+        public void setServiceCompanyName(String serviceCompanyName) {
+            this.serviceCompanyName = serviceCompanyName;
+        }
     }
-    return liteEnergyCompany;
-}
 
-@Override
-public LiteEnergyCompany getEnergyCompanyByName(final String energyCompanyName) {
-    List<LiteEnergyCompany> energyCompanies = databaseCache.getAllEnergyCompanies();
-    for (final LiteEnergyCompany energyCompany : energyCompanies) {
-        String name = energyCompany.getName();
-        if (name.equalsIgnoreCase(energyCompanyName)) return energyCompany;
+    @Override
+    public List<DisplayableServiceCompany> getAllInheritedServiceCompanies(
+            int energyCompanyId) {
+        List<Integer> energyCompanyIds = Lists.newArrayList();
+        energyCompanyIds.add(energyCompanyId);
+        energyCompanyIds.addAll(getParentEnergyCompanyIds(energyCompanyId));
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select sc.CompanyID companyId, sc.CompanyName companyName from ServiceCompany sc");
+        sql.append("join ECToGenericMapping ecgm on ecgm.ItemID = sc.CompanyID");
+        sql.append("where ecgm.EnergyCompanyID in (").appendArgumentList(energyCompanyIds).append(")");
+        sql.append("and ecgm.MappingCategory = 'ServiceCompany'");
+
+        return simpleJdbcTemplate.query(sql.getSql(),
+            new ParameterizedRowMapper<DisplayableServiceCompany>() {
+                @Override
+                public DisplayableServiceCompany mapRow(
+                        ResultSet rs, int rowNum)
+                        throws SQLException {
+                    DisplayableServiceCompany sc = new DisplayableServiceCompany();
+                    sc.setServiceCompanyId(rs.getInt("companyId"));
+                    sc.setServiceCompanyName(SqlUtils.convertDbValueToString(rs.getString("companyName")));
+                    return sc;
+                }
+            },
+            sql.getArguments());
     }
-    throw new NotFoundException("Energy Company with name: " + energyCompanyName + " not found.");
-}
 
-/* (non-Javadoc)
- * @see com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompaniesByCustomer(int)
- */
-public LiteEnergyCompany[] getEnergyCompaniesByCustomer( int customerID_ )
-{
-	List<LiteEnergyCompany> enrgComps = new ArrayList<LiteEnergyCompany>( 16 );
-	for( int i = 0; i < databaseCache.getAllEnergyCompanies().size(); i++ )
-	{
-	    LiteEnergyCompany e = databaseCache.getAllEnergyCompanies().get(i);
+    @Override
+    public List<Integer> getParentEnergyCompanyIds(int energyCompanyId) {
+        List<Integer> parentIds = Lists.newArrayList();
 
-	    for( int j = 0; j < e.getCiCustumerIDs().size(); i++ )
-	    {
-	        if( e.getCiCustumerIDs().elementAt(j) == customerID_ )
-	        {
-	            enrgComps.add( e );
-	            break; //move onto the next energycompany
-	        }
-	    }
-	}	
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select EnergyCompanyId");
+        sql.append("from ECToGenericMapping");
+        sql.append("where MappingCategory = 'Member'");
+        sql.append("and ItemId = ").appendArgument(energyCompanyId);
 
-	LiteEnergyCompany[] cArr = new LiteEnergyCompany[ enrgComps.size() ];
-	return enrgComps.toArray( cArr );
-}
+        try {
+            int parentId = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
+            parentIds.add(parentId);
 
-/* (non-Javadoc)
- * @see com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompanyUser(com.cannontech.database.data.lite.LiteEnergyCompany)
- */
-public LiteYukonUser getEnergyCompanyUser(LiteEnergyCompany company) {
-	return yukonUserDao.getLiteYukonUser(company.getUserID());
-}
+            /* Recursive call to get the whole parent chain */
+            parentIds.addAll(getParentEnergyCompanyIds(parentId));
+        } catch (EmptyResultDataAccessException e) {
+            /* We found the last parent which means we are done */
+        }
 
-/* (non-Javadoc)
- * @see com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompanyUser(int)
- */
-public LiteYukonUser getEnergyCompanyUser(int energyCompanyID) {
-	LiteEnergyCompany ec = getEnergyCompany(energyCompanyID);
-	return (ec == null ? null : getEnergyCompanyUser(ec));
-}
+        return parentIds;
+    }
 
-/* (non-Javadoc)
- * @see com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompanyProperty(com.cannontech.database.data.lite.LiteYukonUser, int)
- */
-public String getEnergyCompanyProperty(LiteYukonUser user, int rolePropertyID) {
-	LiteEnergyCompany ec = getEnergyCompany( user );
-	LiteYukonUser ecUser = getEnergyCompanyUser( ec );
-	return rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(rolePropertyID), ecUser);
-}
+    /*
+     * (non-Javadoc)
+     * @see com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompany(int)
+     */
+    public LiteEnergyCompany getEnergyCompany(int energyCompanyID) {
+        for (Iterator<LiteEnergyCompany> i = databaseCache.getAllEnergyCompanies().iterator(); i.hasNext();) {
+            LiteEnergyCompany e = i.next();
+            if (e.getEnergyCompanyID() == energyCompanyID) {
+                return e;
+            }
+        }
+        return null;
+    }
 
-/* (non-Javadoc)
- * @see com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompanyProperty(com.cannontech.database.data.lite.LiteEnergyCompany, int)
- */
-public String getEnergyCompanyProperty(LiteEnergyCompany ec, int rolePropertyID) {
-    return rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(rolePropertyID), getEnergyCompanyUser(ec));
-}
+    /*
+     * (non-Javadoc)
+     * @see
+     * com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompany(com.cannontech
+     * .database.data.lite.LiteYukonUser)
+     */
+    public LiteEnergyCompany getEnergyCompany(LiteYukonUser user) {
+        LiteEnergyCompany liteEnergyCompany = databaseCache.getALiteEnergyCompanyByUserID(user);
+        if (liteEnergyCompany == null) {
+            return getEnergyCompany(DEFAULT_ENERGY_COMPANY_ID);
+        }
+        return liteEnergyCompany;
+    }
 
-@Override
-public void addEnergyCompanyCustomerListEntry(int customerId, int energyCompanyId) {
-    String sql = "INSERT INTO EnergyCompanyCustomerList VALUES (?,?)";
-    simpleJdbcTemplate.update(sql, energyCompanyId, customerId);
-}
+    @Override
+    public LiteEnergyCompany getEnergyCompanyByName(
+            final String energyCompanyName) {
+        List<LiteEnergyCompany> energyCompanies = databaseCache.getAllEnergyCompanies();
+        for (final LiteEnergyCompany energyCompany : energyCompanies) {
+            String name = energyCompany.getName();
+            if (name.equalsIgnoreCase(energyCompanyName))
+                return energyCompany;
+        }
+        throw new NotFoundException("Energy Company with name: " + energyCompanyName + " not found.");
+    }
 
-@Autowired
-public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-    this.simpleJdbcTemplate = simpleJdbcTemplate;
-}
+    /*
+     * (non-Javadoc)
+     * @see
+     * com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompaniesByCustomer
+     * (int)
+     */
+    public LiteEnergyCompany[] getEnergyCompaniesByCustomer(int customerID_) {
+        List<LiteEnergyCompany> enrgComps = new ArrayList<LiteEnergyCompany>(16);
+        for (int i = 0; i < databaseCache.getAllEnergyCompanies().size(); i++) {
+            LiteEnergyCompany e = databaseCache.getAllEnergyCompanies().get(i);
 
-public void setDatabaseCache(IDatabaseCache databaseCache) {
-    this.databaseCache = databaseCache;
-}
+            for (int j = 0; j < e.getCiCustumerIDs().size(); i++) {
+                if (e.getCiCustumerIDs().elementAt(j) == customerID_) {
+                    enrgComps.add(e);
+                    break; // move onto the next energycompany
+                }
+            }
+        }
 
-@Autowired
-public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-    this.rolePropertyDao = rolePropertyDao;
-}
+        LiteEnergyCompany[] cArr = new LiteEnergyCompany[enrgComps.size()];
+        return enrgComps.toArray(cArr);
+    }
 
-public void setYukonUserDao(YukonUserDao yukonUserDao) {
-    this.yukonUserDao = yukonUserDao;
-}
+    /*
+     * (non-Javadoc)
+     * @see
+     * com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompanyUser(com.cannontech
+     * .database.data.lite.LiteEnergyCompany)
+     */
+    public LiteYukonUser getEnergyCompanyUser(LiteEnergyCompany company) {
+        return yukonUserDao.getLiteYukonUser(company.getUserID());
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompanyUser(int)
+     */
+    public LiteYukonUser getEnergyCompanyUser(int energyCompanyID) {
+        LiteEnergyCompany ec = getEnergyCompany(energyCompanyID);
+        return (ec == null ? null : getEnergyCompanyUser(ec));
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompanyProperty(com
+     * .cannontech.database.data.lite.LiteYukonUser, int)
+     */
+    public String getEnergyCompanyProperty(LiteYukonUser user,
+            int rolePropertyID) {
+        LiteEnergyCompany ec = getEnergyCompany(user);
+        LiteYukonUser ecUser = getEnergyCompanyUser(ec);
+        return rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(rolePropertyID),
+                                                      ecUser);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompanyProperty(com
+     * .cannontech.database.data.lite.LiteEnergyCompany, int)
+     */
+    public String getEnergyCompanyProperty(LiteEnergyCompany ec,
+            int rolePropertyID) {
+        return rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(rolePropertyID),
+                                                      getEnergyCompanyUser(ec));
+    }
+
+    @Override
+    public void addEnergyCompanyCustomerListEntry(int customerId,
+            int energyCompanyId) {
+        String sql = "INSERT INTO EnergyCompanyCustomerList VALUES (?,?)";
+        simpleJdbcTemplate.update(sql, energyCompanyId, customerId);
+    }
+
+    @Autowired
+    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    }
+
+    public void setDatabaseCache(IDatabaseCache databaseCache) {
+        this.databaseCache = databaseCache;
+    }
+
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
+
+    public void setYukonUserDao(YukonUserDao yukonUserDao) {
+        this.yukonUserDao = yukonUserDao;
+    }
 }
