@@ -42,6 +42,7 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
             parameterHolder.addValue("runPeriod", schedule.getRunPeriod());
             parameterHolder.addValue("delayPeriod", schedule.getDelayPeriod());
             parameterHolder.addValue("enabled", schedule.isEnabled() ? "y" : "n");
+            parameterHolder.addValue("energyCompanyId", schedule.getEnergyCompanyId());
         }
     };
     private final static YukonRowMapper<CommandSchedule> rowMapper = new YukonRowMapper<CommandSchedule>() {
@@ -53,6 +54,7 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
             retVal.setRunPeriod(rs.getPeriod("runPeriod"));
             retVal.setDelayPeriod(rs.getPeriod("delayPeriod"));
             retVal.setEnabled(rs.getYNBoolean("enabled"));
+            retVal.setEnergyCompanyId(rs.getInt("energyCompanyId"));
             return retVal;
         }
     };
@@ -61,28 +63,30 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
     public CommandSchedule getById(int commandScheduleId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT commandScheduleId, startTimeCronString,");
-        sql.append(  "runPeriod, delayPeriod, enabled");
+        sql.append(  "runPeriod, delayPeriod, enabled, energyCompanyId");
         sql.append("FROM commandSchedule");
         sql.append("WHERE commandScheduleId").eq(commandScheduleId);
         return yukonJdbcTemplate.queryForObject(sql, rowMapper);
     }
 
     @Override
-    public List<CommandSchedule> getAll() {
+    public List<CommandSchedule> getAll(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT commandScheduleId, startTimeCronString,");
-        sql.append(  "runPeriod, delayPeriod, enabled");
+        sql.append(  "runPeriod, delayPeriod, enabled, energyCompanyId");
         sql.append("FROM commandSchedule");
+        sql.append("WHERE energyCompanyId").eq(energyCompanyId);
         return yukonJdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
-    public List<CommandSchedule> getAllEnabled() {
+    public List<CommandSchedule> getAllEnabled(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT commandScheduleId, startTimeCronString,");
-        sql.append(  "runPeriod, delayPeriod, enabled");
+        sql.append(  "runPeriod, delayPeriod, enabled, energyCompanyId");
         sql.append("FROM commandSchedule");
         sql.append("WHERE enabled = 'y'");
+        sql.append(  "AND energyCompanyId").eq(energyCompanyId);
         return yukonJdbcTemplate.query(sql, rowMapper);
     }
 

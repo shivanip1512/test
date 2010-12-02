@@ -226,6 +226,11 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         simpleJdbcTemplate.update(sql, energyCompanyId, customerId);
     }
 
+    @Override
+    public List<LiteEnergyCompany> getAllEnergyCompanies() {
+        return databaseCache.getAllEnergyCompanies();
+    }
+
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;

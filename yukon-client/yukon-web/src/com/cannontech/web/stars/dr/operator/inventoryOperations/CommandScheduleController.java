@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.events.loggers.CommandScheduleEventLogService;
 import com.cannontech.common.util.SimplePeriodFormat;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
 import com.cannontech.stars.dr.hardware.model.CommandSchedule;
@@ -37,6 +38,7 @@ public class CommandScheduleController {
     private CronExpressionTagService cronExpressionTagService;
     private CommandScheduleValidator validator;
     private CommandScheduleEventLogService commandScheduleEventLogService;
+    private EnergyCompanyDao energyCompanyDao;
     
     /* Command Schedule Edit/Creation page */
     @RequestMapping(value = "/operator/inventory/inventoryOperations/commandSchedule", method = RequestMethod.GET)
@@ -98,7 +100,9 @@ public class CommandScheduleController {
         ReadablePeriod delay = SimplePeriodFormat.getConfigPeriodFormatter().parsePeriod(schedule.getSeconds() + "s");
         schedule.getCommandSchedule().setRunPeriod(duration);
         schedule.getCommandSchedule().setDelayPeriod(delay);
-        
+        int energyCompanyId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
+        schedule.getCommandSchedule().setEnergyCompanyId(energyCompanyId);
+
         commandScheduleDao.save(schedule.getCommandSchedule());
         
         if (scheduleId > 0) {
@@ -156,5 +160,9 @@ public class CommandScheduleController {
     public void setCommandScheduleEventLogService(CommandScheduleEventLogService commandScheduleEventLogService) {
         this.commandScheduleEventLogService = commandScheduleEventLogService;
     }
-    
+
+    @Autowired
+    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
+        this.energyCompanyDao = energyCompanyDao;
+    }
 }

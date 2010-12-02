@@ -51,6 +51,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
             parameterHolder.addValue("taskName", task.getTaskName());
             parameterHolder.addValue("numberOfItems", task.getNumberOfItems());
             parameterHolder.addValue("numberOfItemsProcessed", task.getNumberOfItemsProcessed());
+            parameterHolder.addValue("energyCompanyId", task.getEnergyCompanyId());
         }
     };
     private final static YukonRowMapper<InventoryConfigTask> rowMapper = new YukonRowMapper<InventoryConfigTask>() {
@@ -62,6 +63,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
             retVal.setTaskName(rs.getString("taskName"));
             retVal.setNumberOfItems(rs.getInt("numberOfItems"));
             retVal.setNumberOfItemsProcessed(rs.getInt("numberOfItemsProcessed"));
+            retVal.setEnergyCompanyId(rs.getInt("energyCompanyId"));
             return retVal;
         }
     };
@@ -72,7 +74,6 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
             InventoryConfigTaskItem retVal = new InventoryConfigTaskItem();
             retVal.setInventoryConfigTaskId(rs.getInt("inventoryConfigTaskId"));
             retVal.setInventoryId(rs.getInt("inventoryId"));
-            retVal.setEnergyCompanyId(rs.getInt("energyCompanyId"));
             retVal.setStatus(Status.valueOf(rs.getString("status")));
             return retVal;
         }
@@ -82,19 +83,22 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     public InventoryConfigTask getById(int inventoryConfigTaskId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT inventoryConfigTaskId, taskName,");
-        sql.append(  "numberOfItems, numberOfItemsProcessed");
+        sql.append(  "numberOfItems, numberOfItemsProcessed,");
+        sql.append(  "energyCompanyId");
         sql.append("FROM inventoryConfigTask");
         sql.append("WHERE inventoryConfigTaskId").eq(inventoryConfigTaskId);
         return yukonJdbcTemplate.queryForObject(sql, rowMapper);
     }
 
     @Override
-    public InventoryConfigTask findTask(String taskName) {
+    public InventoryConfigTask findTask(String taskName, int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT inventoryConfigTaskId, taskName,");
-        sql.append(  "numberOfItems, numberOfItemsProcessed");
+        sql.append(  "numberOfItems, numberOfItemsProcessed,");
+        sql.append(  "energyCompanyId");
         sql.append("FROM inventoryConfigTask");
         sql.append("WHERE TaskName").eq(taskName);
+        sql.append(  "AND energyCompanyId").eq(energyCompanyId);
         try {
             return yukonJdbcTemplate.queryForObject(sql, rowMapper);
         } catch (EmptyResultDataAccessException e) {
@@ -103,42 +107,51 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     }
 
     @Override
-    public List<InventoryConfigTask> getAll() {
+    public List<InventoryConfigTask> getAll(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT inventoryConfigTaskId, taskName,");
-        sql.append(  "numberOfItems, numberOfItemsProcessed");
+        sql.append(  "numberOfItems, numberOfItemsProcessed,");
+        sql.append(  "energyCompanyId");
         sql.append("FROM inventoryConfigTask");
+        sql.append("WHERE energyCompanyId").eq(energyCompanyId);
         return yukonJdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
-    public List<InventoryConfigTask> getUnfinished() {
+    public List<InventoryConfigTask> getUnfinished(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT inventoryConfigTaskId, taskName,");
-        sql.append(  "numberOfItems, numberOfItemsProcessed");
+        sql.append(  "numberOfItems, numberOfItemsProcessed,");
+        sql.append(  "energyCompanyId");
         sql.append("FROM inventoryConfigTask");
         sql.append("WHERE numberOfItems > numberOfItemsProcessed");
+        sql.append("AND energyCompanyId").eq(energyCompanyId);
         return yukonJdbcTemplate.query(sql, rowMapper);
     }
-    
+
     @Override
     @Transactional
-    public InventoryConfigTask create(String taskName, InventoryCollection inventoryCollection) {
+    public InventoryConfigTask create(String taskName,
+            InventoryCollection inventoryCollection, int energyCompanyId) {
         InventoryConfigTask task = new InventoryConfigTask();
         task.setTaskName(taskName);
-        // TODO:  should this be a long?
         task.setNumberOfItems((int) inventoryCollection.getInventoryCount());
         task.setNumberOfItemsProcessed(0);
+        task.setEnergyCompanyId(energyCompanyId);
         dbTemplate.save(task);
         int taskId = task.getInventoryConfigTaskId();
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO inventoryConfigTaskItem");
+        sql.append("(InventoryConfigTaskId, inventoryId, status)");
+        sql.append("VALUES (" + taskId + ", ?, '" + Status.UNPROCESSED + "')");
+
+        List<Object[]> batchArgs = Lists.newArrayList();
         for (YukonInventory inventory : inventoryCollection) {
-            // TODO:  batch
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("INSERT INTO inventoryConfigTaskItem");
-            sql.append("(InventoryConfigTaskId, inventoryId, status)");
-            sql.values(taskId, inventory.getInventoryIdentifier().getInventoryId(), Status.UNPROCESSED);
-            yukonJdbcTemplate.update(sql);
+            batchArgs.add(new Object[] {inventory.getInventoryIdentifier().getInventoryId()});
         }
+        yukonJdbcTemplate.batchUpdate(sql.getSql(), batchArgs);
+
         return task;
     }
 
@@ -159,8 +172,8 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
 
     @Override
     @Transactional(readOnly=true)
-    public List<InventoryConfigTaskItem> getItems(int maxItems) {
-        List<InventoryConfigTask> unfinishedTasks = getUnfinished();
+    public List<InventoryConfigTaskItem> getItems(int maxItems, int energyCompanyId) {
+        List<InventoryConfigTask> unfinishedTasks = getUnfinished(energyCompanyId);
         if (unfinishedTasks.isEmpty()) {
             return Collections.emptyList();
         }
@@ -190,10 +203,9 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
         sql.append("FROM (");
-        sql.append(  "SELECT inventoryConfigTaskId, ti.inventoryId, status, energyCompanyId,");
-        sql.append(    "ROW_NUMBER() OVER (ORDER BY ti.inventoryId) AS rowNumber");
-        sql.append(  "FROM inventoryConfigTaskItem ti");
-        sql.append(    "JOIN ecToInventoryMapping ecm ON ecm.inventoryId = ti.inventoryId");
+        sql.append(  "SELECT inventoryConfigTaskId, inventoryId, status,");
+        sql.append(    "ROW_NUMBER() OVER (ORDER BY inventoryId) AS rowNumber");
+        sql.append(  "FROM inventoryConfigTaskItem");
         sql.append(  "WHERE inventoryConfigTaskId").eq(task.getInventoryConfigTaskId());
         sql.append(    "AND status").eq(Status.UNPROCESSED).append(") f");
         sql.append("WHERE rowNumber").lte(maxItems);
@@ -217,7 +229,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
         sql.append(  "AND Status").eq(Status.SUCCESS);
         return yukonJdbcTemplate.queryForInt(sql);
     }
-    
+
     @Override
     public List<InventoryIdentifier> getSuccessFailList(int taskId, Status status) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -267,5 +279,4 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
     }
-
 }

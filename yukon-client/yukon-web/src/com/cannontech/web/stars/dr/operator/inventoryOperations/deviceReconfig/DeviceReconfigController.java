@@ -9,6 +9,7 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +19,11 @@ import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.events.loggers.DeviceReconfigEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
@@ -41,22 +45,42 @@ import com.google.common.collect.Lists;
 public class DeviceReconfigController {
 
     private InventoryCollectionFactoryImpl inventoryCollectionFactory;
-    private DeviceReconfigOptionsValidator validator;
     private CommandScheduleDao commandScheduleDao;
     private DeviceReconfigEventLogService deviceReconfigEventLogService;
     private InventoryConfigTaskDao inventoryConfigTaskDao;
     private MemoryCollectionProducer memoryCollectionProducer;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
+    private EnergyCompanyDao energyCompanyDao;
+
+    private class OptionsValidator extends SimpleValidator<DeviceReconfigOptions> {
+        int energyCompanyId;
+
+        OptionsValidator(int energyCompanyId) {
+            super(DeviceReconfigOptions.class);
+            this.energyCompanyId = energyCompanyId;
+        }
+
+        @Override
+        protected void doValidation(DeviceReconfigOptions target, Errors errors) {
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.modules.operator.deviceReconfig.error.required.name");
+            YukonValidationUtils.checkExceedsMaxLength(errors, "name", target.getName(), 250);
+
+            if (inventoryConfigTaskDao.findTask(target.getName(), energyCompanyId) != null) {
+                errors.rejectValue("name", "yukon.web.modules.operator.deviceReconfig.error.unavailable.name");
+            }
+        }
+    }
 
     @RequestMapping(value="/operator/inventory/inventoryOperations/deviceReconfig/setup", method=RequestMethod.GET)
-    public String setup(HttpServletRequest request, ModelMap modelMap) throws ServletRequestBindingException {
+    public String setup(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
         
         addCollectionToModelMap(request, modelMap);
         
         DeviceReconfigOptions deviceReconfigOptions = new DeviceReconfigOptions();
         modelMap.addAttribute("deviceReconfigOptions", deviceReconfigOptions);
-        
-        List<CommandSchedule> schedules = commandScheduleDao.getAll();
+
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
+        List<CommandSchedule> schedules = commandScheduleDao.getAll(energyCompany.getEnergyCompanyID());
         modelMap.addAttribute("schedules", schedules);
         
         return "operator/inventory/inventoryOperations/deviceReconfig/setup.jsp";
@@ -65,9 +89,11 @@ public class DeviceReconfigController {
     @RequestMapping(value="/operator/inventory/inventoryOperations/deviceReconfig/save", method=RequestMethod.POST)
     public String save(@ModelAttribute("deviceReconfigOptions") DeviceReconfigOptions deviceReconfigOptions, BindingResult bindingResult, 
                        HttpServletRequest request, ModelMap modelMap, FlashScope flashScope, YukonUserContext userContext) throws ServletRequestBindingException {
-        
+
+        int energyCompanyId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
+        OptionsValidator validator = new OptionsValidator(energyCompanyId);
         validator.validate(deviceReconfigOptions, bindingResult);
-        
+
         if(bindingResult.hasErrors()) {
             /* Add errors to flash scope */
             addCollectionToModelMap(request, modelMap);
@@ -75,9 +101,9 @@ public class DeviceReconfigController {
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             return "operator/inventory/inventoryOperations/deviceReconfig/setup.jsp";
         }
-        
-        inventoryConfigTaskDao.create(deviceReconfigOptions.getName(), inventoryCollectionFactory.createCollection(request));
-        
+
+        inventoryConfigTaskDao.create(deviceReconfigOptions.getName(), inventoryCollectionFactory.createCollection(request), energyCompanyId);
+
         /* Log Event */
         deviceReconfigEventLogService.taskCreated(userContext.getYukonUser(), deviceReconfigOptions.getName());
         
@@ -141,12 +167,7 @@ public class DeviceReconfigController {
         modelMap.addAttribute("inventoryCollection", inventoryCollection);
         modelMap.addAllAttributes(inventoryCollection.getCollectionParameters());
     }
-    
-    @Autowired
-    public void setDeviceReconfigOptionsValidator(DeviceReconfigOptionsValidator validator) {
-        this.validator = validator;
-    }
-    
+
     @Autowired
     public void setInventoryCollectionFactory(InventoryCollectionFactoryImpl inventoryCollectionFactory) {
         this.inventoryCollectionFactory = inventoryCollectionFactory;
@@ -176,5 +197,9 @@ public class DeviceReconfigController {
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
     }
-    
+
+    @Autowired
+    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
+        this.energyCompanyDao = energyCompanyDao;
+    }
 }

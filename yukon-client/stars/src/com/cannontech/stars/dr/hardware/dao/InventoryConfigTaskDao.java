@@ -11,13 +11,14 @@ import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem.Status;
 public interface InventoryConfigTaskDao {
     public InventoryConfigTask getById(int inventoryConfigTaskId);
 
-    public InventoryConfigTask findTask(String name);
+    public InventoryConfigTask findTask(String name, int energyCompanyId);
 
-    public List<InventoryConfigTask> getAll();
+    public List<InventoryConfigTask> getAll(int energyCompanyId);
 
-    public List<InventoryConfigTask> getUnfinished();
-    
-    public InventoryConfigTask create(String taskName, InventoryCollection inventoryCollection);
+    public List<InventoryConfigTask> getUnfinished(int energyCompanyId);
+
+    public InventoryConfigTask create(String taskName, InventoryCollection inventoryCollection,
+            int energyCompanyId);
 
     public void update(InventoryConfigTask task);
 
@@ -26,11 +27,10 @@ public interface InventoryConfigTaskDao {
     public int getSuccessCount(int taskId);
 
     public int getFailedCount(int taskId);
-    
-    public List<InventoryConfigTaskItem> getItems(int maxItems);
+
+    public List<InventoryConfigTaskItem> getItems(int maxItems, int energyCompanyId);
 
     public void markComplete(InventoryConfigTaskItem taskItem, InventoryConfigTaskItem.Status status);
 
     public List<InventoryIdentifier> getSuccessFailList(int taskId, Status status);
-    
 }

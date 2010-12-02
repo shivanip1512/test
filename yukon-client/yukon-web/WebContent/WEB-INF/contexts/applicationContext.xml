@@ -1396,10 +1396,9 @@
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.StatusClassUpdaterHandler"/>
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.StatusTextUpdaterHandler"/>
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.SuccessCountUpdaterHandler"/>
-    
-    <bean id="deviceReconfigOptionsValidator" class="com.cannontech.web.stars.dr.operator.inventoryOperations.deviceReconfig.DeviceReconfigOptionsValidator"/>
+
     <bean id="commandScheduleValidator" class="com.cannontech.web.stars.dr.operator.inventoryOperations.CommandScheduleValidator"/>
-    
+
     <!-- OPERATOR -->
     <bean id="operatorAccountService" class="com.cannontech.web.stars.dr.operator.service.impl.OperatorAccountServiceImpl"/>
     <bean id="operatorThermostatHelperImpl" class="com.cannontech.web.stars.dr.operator.service.impl.OperatorThermostatHelperImpl"/>

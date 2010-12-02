@@ -9,6 +9,7 @@ public class CommandSchedule {
     private ReadablePeriod runPeriod = new Period();
     private ReadablePeriod delayPeriod = new Period(2000);
     private boolean enabled = true;
+    private int energyCompanyId;
 
     public int getCommandScheduleId() {
         return commandScheduleId;
@@ -50,10 +51,19 @@ public class CommandSchedule {
         this.enabled = enabled;
     }
 
+    public int getEnergyCompanyId() {
+        return energyCompanyId;
+    }
+
+    public void setEnergyCompanyId(int energyCompanyId) {
+        this.energyCompanyId = energyCompanyId;
+    }
+
     @Override
     public String toString() {
         return "CommandSchedule [commandScheduleId=" + commandScheduleId +
             ", delayPeriod=" + delayPeriod + ", enabled=" + enabled + ", runPeriod=" + runPeriod +
-            ", startTimeCronString=" + startTimeCronString + "]";
+            ", startTimeCronString=" + startTimeCronString +
+            ", energyCompanyId=" + energyCompanyId + "]";
     }
 }

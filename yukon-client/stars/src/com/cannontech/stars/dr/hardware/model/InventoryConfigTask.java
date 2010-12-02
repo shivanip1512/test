@@ -5,6 +5,7 @@ public class InventoryConfigTask {
     private String taskName;
     private int numberOfItems;
     private int numberOfItemsProcessed;
+    private int energyCompanyId;
 
     public int getInventoryConfigTaskId() {
         return inventoryConfigTaskId;
@@ -38,10 +39,19 @@ public class InventoryConfigTask {
         this.numberOfItemsProcessed = numberOfItemsProcessed;
     }
 
+    public int getEnergyCompanyId() {
+        return energyCompanyId;
+    }
+
+    public void setEnergyCompanyId(int energyCompanyId) {
+        this.energyCompanyId = energyCompanyId;
+    }
+
     @Override
     public String toString() {
         return "InventoryConfigTask [inventoryConfigTaskId=" + inventoryConfigTaskId +
             ", numberOfItems=" + numberOfItems +
-            ", numberOfItemsProcessed=" + numberOfItemsProcessed + ", taskName=" + taskName + "]";
+            ", numberOfItemsProcessed=" + numberOfItemsProcessed + ", taskName=" + taskName +
+            ", energyCompanyId=" + energyCompanyId + "]";
     }
 }

@@ -98,14 +98,14 @@ public interface EnrollmentDao {
 
     /**
      * Determine if the given inventory item is in service.
-     * @param inventoryId The id of the inventory item to checked.
+     * @param inventoryId The id of the inventory item to check.
      * @return true if the inventory is in service.
      */
 	public boolean isInService(int inventoryId);
 
 	/**
 	 * Determine if the given inventory item is in enrolled in anything.
-	 * @param inventoryId The id of the inventory item to checked.
+	 * @param inventoryId The id of the inventory item to check.
 	 * @return true if the inventory is in enrolled.
 	 */
 	public boolean isEnrolled(int inventoryId);

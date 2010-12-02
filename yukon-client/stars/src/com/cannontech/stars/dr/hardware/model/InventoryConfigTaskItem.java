@@ -7,7 +7,6 @@ public class InventoryConfigTaskItem {
 
     private int inventoryConfigTaskId;
     private int inventoryId;
-    private int energyCompanyId;
     private Status status;
 
     public int getInventoryConfigTaskId() {
@@ -26,14 +25,6 @@ public class InventoryConfigTaskItem {
         this.inventoryId = inventoryId;
     }
 
-    public int getEnergyCompanyId() {
-        return energyCompanyId;
-    }
-
-    public void setEnergyCompanyId(int energyCompanyId) {
-        this.energyCompanyId = energyCompanyId;
-    }
-
     public Status getStatus() {
         return status;
     }
@@ -45,8 +36,7 @@ public class InventoryConfigTaskItem {
     @Override
     public String toString() {
         return "InventoryConfigTaskItem [inventoryConfigTaskId=" + inventoryConfigTaskId +
-            ", inventoryId=" + inventoryId + ", energyCompanyId=" + energyCompanyId +
-            ", status=" + status + "]";
+            ", inventoryId=" + inventoryId + ", status=" + status + "]";
     }
 
 }

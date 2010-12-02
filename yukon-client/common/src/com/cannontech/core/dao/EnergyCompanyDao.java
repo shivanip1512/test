@@ -83,4 +83,6 @@ public interface EnergyCompanyDao {
     public List<DisplayableServiceCompany> getAllInheritedServiceCompanies(int energyCompanyId);
 
     public List<Integer> getParentEnergyCompanyIds(int energyCompanyId);
+
+    public List<LiteEnergyCompany> getAllEnergyCompanies();
 }
