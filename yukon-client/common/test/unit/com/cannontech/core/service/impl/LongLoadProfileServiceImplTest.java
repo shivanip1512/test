@@ -37,6 +37,8 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.ConnectionException;
@@ -169,6 +171,10 @@ public class LongLoadProfileServiceImplTest {
             @Override
             public void performDBChange(DBPersistent item, TransactionType transactionType)
                     throws PersistenceException {
+            }
+
+            @Override
+            public void processDatabaseChange(DbChangeType type, DbChangeCategory category, int primaryKey) {
             }            
 
         });

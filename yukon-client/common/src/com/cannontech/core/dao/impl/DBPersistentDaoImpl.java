@@ -32,6 +32,8 @@ import com.cannontech.database.dbchange.ChangeSequenceStrategyEnum;
 import com.cannontech.database.dbchange.DbChangeIdentifier;
 import com.cannontech.database.dbchange.DbChangeMessageHolder;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeHelper;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.DbPersistentBeanFactory;
 
@@ -124,6 +126,12 @@ public class DBPersistentDaoImpl implements DBPersistentDao
             log.debug("sending out an un synchronized DB change messages");
             asyncDynamicDataSource.publishDbChange(dbChange);
         }
+    }
+    
+    @Override
+    public void processDatabaseChange(DbChangeType type, DbChangeCategory category, int primaryKey) {
+        DBChangeMsg dbChangeMsg = DbChangeHelper.newDbChange(type, category, primaryKey);
+        processDBChange(dbChangeMsg);
     }
 
     private DbChangeMessageHolder createNewMessageHolder() {

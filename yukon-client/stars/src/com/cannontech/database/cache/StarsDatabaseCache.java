@@ -429,7 +429,6 @@ public class StarsDatabaseCache implements DBChangeListener {
         webConfigMap = null;
     }
 
-	
 	private void handleApplianceCategoryChange(DBChangeMsg msg) {
 	    int applianceCategoryId = msg.getId();
 

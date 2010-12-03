@@ -27,6 +27,7 @@ import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
@@ -62,7 +63,7 @@ import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.operator.AdministratorRole;
@@ -200,7 +201,14 @@ public class StarsAdminUtil {
                 }
 			}
 			
-			energyCompany.setDefaultRouteID( routeID );
+			// Sending out DB change to notify possible other servers.
+			DBPersistentDao dbPersistentDao = YukonSpringHook.getBean(DBPersistentDao.class);
+			dbPersistentDao.processDatabaseChange(DbChangeType.UPDATE, 
+			                                      DbChangeCategory.ENERGY_COMPANY_DEFAULT_ROUTE, 
+			                                      energyCompany.getEnergyCompanyID());
+
+			// Logging Default Route Id
+			
 		}
 	}
 	

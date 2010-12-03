@@ -1,30 +1,46 @@
 package com.cannontech.database.data.lite.stars;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.dao.AddressDao;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.company.EnergyCompany;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
+import com.google.common.collect.Maps;
 
 public class LiteStarsEnergyCompanyFactory {
     private AddressDao addressDao;
-    private StarsInventoryBaseDao starsInventoryBaseDao;
+    private AsyncDynamicDataSource asyncDynamicDataSource;
+    private DBPersistentDao dbPersistentDao;
+    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
+    private PaoPermissionService paoPermissionService;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    private StarsInventoryBaseDao starsInventoryBaseDao;
+    private StarsSearchDao starsSearchDao;
     private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
-	private YukonListDao yukonListDao;
-	private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
 	private SystemDateFormattingService systemDateFormattingService;
 	private WarehouseDao warehouseDao;
+	private YukonJdbcTemplate yukonJdbcTemplate;
 	private YukonGroupDao yukonGroupDao;
+	private YukonListDao yukonListDao;
+	
+	private static Map<Integer, LiteStarsEnergyCompany> energyCompanyCache = Maps.newHashMap();
 	
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
         LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany(energyCompany);
@@ -40,61 +56,89 @@ public class LiteStarsEnergyCompanyFactory {
     
     private void applyPropertySetters(LiteStarsEnergyCompany energyCompany) {
         energyCompany.setAddressDao(addressDao);
-        energyCompany.setStarsInventoryBaseDao(starsInventoryBaseDao);
-        energyCompany.setStarsCustAccountInformationDao(starsCustAccountInformationDao);
-        energyCompany.setStarsWorkOrderBaseDao(starsWorkOrderBaseDao);
-        energyCompany.setSimpleJdbcTemplate(simpleJdbcTemplate);
-        energyCompany.setYukonListDao(yukonListDao);
+        energyCompany.setDbPersistentDao(dbPersistentDao);
         energyCompany.setEnergyCompanyRolePropertyDao(energyCompanyRolePropertyDao);
+        energyCompany.setPaoPermissionService(paoPermissionService);
+        energyCompany.setStarsCustAccountInformationDao(starsCustAccountInformationDao);
         energyCompany.setSystemDateFormattingService(systemDateFormattingService);
+        energyCompany.setStarsInventoryBaseDao(starsInventoryBaseDao);
+        energyCompany.setStarsSearchDao(starsSearchDao);
+        energyCompany.setStarsWorkOrderBaseDao(starsWorkOrderBaseDao);
         energyCompany.setWarehouseDao(warehouseDao);
+        energyCompany.setYukonJdbcTemplate(yukonJdbcTemplate);
         energyCompany.setYukonGroupDao(yukonGroupDao);
-        
+        energyCompany.setYukonListDao(yukonListDao);
+
         energyCompany.initialize();
+
+        // Add to energyCompanyCache
+        energyCompanyCache.put(energyCompany.getEnergyCompanyID(), energyCompany);
+
+        // Adding Database Change listeners
+        DatabaseChangeEventListener defaultRouteEventListener = new DatabaseChangeEventListener() {
+            @Override
+            public void eventReceived(DatabaseChangeEvent event) {
+                
+                LiteStarsEnergyCompany liteStarsEnergyCompany = energyCompanyCache.get(event.getPrimaryKey());
+                if (liteStarsEnergyCompany != null) {
+                    liteStarsEnergyCompany.resetDefaultRouteId();
+                }
+            }};
+
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY_DEFAULT_ROUTE,
+                                                              defaultRouteEventListener);
+
+
     }
     
+    // DI Setter
     @Autowired
     public void setAddressDao(AddressDao addressDao) {
         this.addressDao = addressDao;
     }
-    
+
     @Autowired
-    public void setStarsInventoryBaseDao(
-            StarsInventoryBaseDao starsInventoryBaseDao) {
-        this.starsInventoryBaseDao = starsInventoryBaseDao;
+    public void setAsyncDynamicDataSource(AsyncDynamicDataSource asyncDynamicDataSource) {
+        this.asyncDynamicDataSource = asyncDynamicDataSource;
     }
     
     @Autowired
-    public void setStarsCustAccountInformationDao(
-            StarsCustAccountInformationDao starsCustAccountInformationDao) {
+    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
+    }
+    
+    @Autowired
+    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
+        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
+    }
+
+    @Autowired
+    public void setPaoPermissionService(PaoPermissionService paoPermissionService) {
+        this.paoPermissionService = paoPermissionService;
+    }
+    
+    @Autowired
+    public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
         this.starsCustAccountInformationDao = starsCustAccountInformationDao;
     }
     
     @Autowired
-    public void setStarsWorkOrderBaseDao(
-            StarsWorkOrderBaseDao starsWorkOrderBaseDao) {
+    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
+        this.starsInventoryBaseDao = starsInventoryBaseDao;
+    }
+    
+    @Autowired
+    public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
+        this.starsSearchDao = starsSearchDao;
+    }
+    
+    @Autowired
+    public void setStarsWorkOrderBaseDao(StarsWorkOrderBaseDao starsWorkOrderBaseDao) {
         this.starsWorkOrderBaseDao = starsWorkOrderBaseDao;
     }
     
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-    
-    @Autowired
-    public void setYukonListDao(YukonListDao yukonListDao) {
-		this.yukonListDao = yukonListDao;
-	}
-    
-    @Autowired
-    public void setEnergyCompanyRolePropertyDao(
-            EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
-        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
-    }
-    
-    @Autowired
-    public void setSystemDateFormattingService(
-			SystemDateFormattingService systemDateFormattingService) {
+    public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
 		this.systemDateFormattingService = systemDateFormattingService;
 	}
     
@@ -104,7 +148,17 @@ public class LiteStarsEnergyCompanyFactory {
     }
     
     @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
+    
+    @Autowired
     public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
         this.yukonGroupDao = yukonGroupDao;
+    }
+
+    @Autowired
+    public void setYukonListDao(YukonListDao yukonListDao) {
+        this.yukonListDao = yukonListDao;
     }
 }

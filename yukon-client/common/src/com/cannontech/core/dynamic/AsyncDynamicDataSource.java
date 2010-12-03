@@ -5,6 +5,7 @@ import java.util.Set;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 
 /**
  * AsyncDynamicDataSource provides a method to receive dynamic point, signal/alarm, 
@@ -94,6 +95,19 @@ public interface AsyncDynamicDataSource {
      * @param l         the listener to remove
      */
     public void removeDBChangeListener(DBChangeListener l);
+    
+    /**
+     * This is similar to addDBChangeListener, but uses a cleaner interface.
+     * @param listener
+     */
+    public void addDatabaseChangeEventListener(DatabaseChangeEventListener listener);
+    
+    /**
+     * Register for DB changes of a specific type.
+     * @param changeCategory
+     * @param listener
+     */
+    public void addDatabaseChangeEventListener(DbChangeCategory changeCategory, DatabaseChangeEventListener listener);
     
     /**
      * Processes a DBChangeMsg locally and then queue to the 

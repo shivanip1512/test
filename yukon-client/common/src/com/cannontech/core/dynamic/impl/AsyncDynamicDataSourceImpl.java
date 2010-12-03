@@ -1,6 +1,7 @@
 package com.cannontech.core.dynamic.impl;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -20,6 +21,7 @@ import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dynamic.AllPointDataListener;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -29,6 +31,10 @@ import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeHelper;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
@@ -185,6 +191,32 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     public void removeDBChangeLiteListener(DBChangeLiteListener l) {
         dbChangeLiteListeners.remove(l);
     }
+    
+    @Override
+    public void addDatabaseChangeEventListener(final DatabaseChangeEventListener listener) {
+        addDBChangeListener(new DBChangeListener() {
+            @Override
+            public void dbChangeReceived(DBChangeMsg dbChange) {
+                DatabaseChangeEvent event = DbChangeHelper.convertToEvent(dbChange);
+                if (event != null) {
+                    listener.eventReceived(event);
+                }
+            }
+        });
+    }
+    
+    @Override
+    public void addDatabaseChangeEventListener(final DbChangeCategory changeCategory, final DatabaseChangeEventListener listener) {
+        addDBChangeListener(new DBChangeListener() {
+            @Override
+            public void dbChangeReceived(DBChangeMsg dbChange) {
+                DatabaseChangeEvent event = DbChangeHelper.findMatchingEvent(dbChange, EnumSet.allOf(DbChangeType.class), changeCategory);
+                if (event != null) {
+                    listener.eventReceived(event);
+                }
+            }
+        });
+    }
         
     public void messageReceived(MessageEvent e) {
         Object o = e.getMessage();
@@ -204,8 +236,8 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         else if(o instanceof ServerResponseMsg) {
             handleIncoming(((ServerResponseMsg)o).getPayload());
         }
-        else if(o instanceof Multi) {
-            Multi multi = (Multi) o;
+        else if(o instanceof Multi<?>) {
+            Multi<?> multi = (Multi<?>) o;
             for(Object obj : multi.getVector()) {
                 handleIncoming(obj);
             }

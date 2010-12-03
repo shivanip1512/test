@@ -18,7 +18,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.joda.time.DateTimeZone;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
@@ -30,10 +29,14 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
+import com.cannontech.common.util.SqlFragmentCollection;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.AddressDao;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonEnergyCompany;
@@ -43,8 +46,8 @@ import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
+import com.cannontech.database.TransactionType;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteBase;
@@ -66,7 +69,6 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
@@ -91,11 +93,24 @@ import com.cannontech.stars.xml.serialize.StarsSubstations;
 import com.google.common.collect.Iterables;
 
 public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompany {
+    private AddressDao addressDao;
+    private DBPersistentDao dbPersistentDao;
+    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
+    private PaoPermissionService paoPermissionService;
+    private StarsInventoryBaseDao starsInventoryBaseDao;
+    private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    private StarsSearchDao starsSearchDao;
+    private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
+    private SystemDateFormattingService systemDateFormattingService;
+    private YukonJdbcTemplate yukonJdbcTemplate;
+    private YukonListDao yukonListDao;
+    private YukonGroupDao yukonGroupDao;
+    
 	private final static long serialVersionUID = 1L;
-
+	
     public static final int FAKE_LIST_ID = -9999;   // Magic number for YukonSelectionList ID, used for substation and service company list
     public static final int INVALID_ROUTE_ID = -1;  // Mark that a valid default route id is not found, and prevent futher attempts
-    
+
     private static final String[] OPERATOR_SELECTION_LISTS = {
         YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE,
         YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL,
@@ -179,19 +194,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private long nextCallNo = 0;
     private long nextOrderNo = 0;
     
-    private int dftRouteID = CtiUtilities.NONE_ZERO_ID;
+    private volatile int dftRouteID = CtiUtilities.NONE_ZERO_ID;
     private int operDftGroupID = com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID - 1;
-    
-
-    private AddressDao addressDao;
-    private StarsInventoryBaseDao starsInventoryBaseDao;
-    private StarsCustAccountInformationDao starsCustAccountInformationDao;
-    private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
-    private YukonListDao yukonListDao;
-    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
-    private YukonGroupDao yukonGroupDao;
-    private SystemDateFormattingService systemDateFormattingService;
     
     private class EnergyCompanyHierarchy {
         // Energy company hierarchy
@@ -281,76 +285,72 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         this.user = user;
     }
 
+    /**
+     * This method gets the default route for the given energy company.  It will either use the 
+     * cached value stored in this class or try to figure out the default route from the database
+     * if the routeId is CtiUtilities.NONE_ZERO_ID(0).
+     */
     public int getDefaultRouteID() {
         if (dftRouteID == INVALID_ROUTE_ID) return dftRouteID;
         
         if (dftRouteID == CtiUtilities.NONE_ZERO_ID) {
-            String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
             
-            PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-            Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(user, Permission.DEFAULT_ROUTE);
+            Set<Integer> permittedPaoIDs = paoPermissionService.getPaoIdsForUserPermission(user, Permission.DEFAULT_ROUTE);
             if(! permittedPaoIDs.isEmpty()) {
-                String sql = "SELECT exc.LMGroupID, macro.OwnerID FROM LMGroupExpressCom exc, GenericMacro macro " +
-                    "WHERE macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
-                sql += " AND macro.OwnerID in (";
-                Integer[] permittedIDs = new Integer[permittedPaoIDs.size()];
-                permittedIDs = permittedPaoIDs.toArray(permittedIDs);
-                for(Integer paoID : permittedIDs) {
-                    sql += paoID.toString() + ",";
-                }
-                sql = sql.substring(0, sql.length() - 1);
-                sql += ")";
                 
-                Object[][] serialGroupIDs = com.cannontech.util.ServletUtil.executeSQL(
-                        dbAlias, sql, new Class<?>[] { Integer.class, Integer.class } );
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT LMGEC.LMGroupId, GM.OwnerId ");
+                sql.append("FROM LMGroupExpressCom LMGEC");
+                sql.append("JOIN GenericMacro GM ON GM.ChildId = LMGEC.LMGroupId");
+                sql.append("WHERE GM.MacroType").eq(MacroTypes.GROUP);
+                sql.append("  AND LMGEC.SerialNumber = '0'");
+                sql.append("  AND GM.OwnerId").in(permittedPaoIDs);
+                
+                List<Integer> serialGroupIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
                 
                 // get a serial group whose serial number is set to 0, the route id of this group is the default route id
-                if (serialGroupIDs != null && serialGroupIDs.length > 0) {
+                if (serialGroupIds != null && serialGroupIds.size() > 0) {
                     
                     // get versacom serial groups
-                    sql = "SELECT YUKONPAOBJECT.PAONAME,LMGROUPVERSACOM.SERIALADDRESS,LMGROUPVERSACOM.DEVICEID,LMGROUPVERSACOM.ROUTEID "
-                        + "FROM YUKONPAOBJECT,LMGROUPVERSACOM WHERE YUKONPAOBJECT.PAOBJECTID=LMGROUPVERSACOM.DEVICEID AND ";
-                    for (int i = 0; i < serialGroupIDs.length; i++) {
-                        if( i == 0 )
-                            sql += "(LMGROUPVERSACOM.DEVICEID=" + serialGroupIDs[i][0];
-                        else
-                            sql += " OR LMGROUPVERSACOM.DEVICEID=" + serialGroupIDs[i][0];
+                    SqlStatementBuilder sql2 = new SqlStatementBuilder();
+                    sql2.append("SELECT LMGV.RouteId");
+                    sql2.append("FROM YukonPAObject PAO");
+                    sql2.append("JOIN LMGroupVersacom LMGV ON PAO.PAObjectId = LMGV.DeviceId");
+
+                    SqlFragmentCollection lmGroupVersacomDeviceIdOred = SqlFragmentCollection.newOrCollection();
+                    for (int i = 0; i < serialGroupIds.size(); i++) {
+                        SqlStatementBuilder lmGroupVersecomSql = new SqlStatementBuilder();
+                        lmGroupVersecomSql.append("LMGV.DeviceId").eq(serialGroupIds.get(i));
+                        lmGroupVersacomDeviceIdOred.add(lmGroupVersecomSql);
                     }
-                    sql += ")";
-                
-                    Object[][] versacomNameSerial = com.cannontech.util.ServletUtil.executeSQL(
-                            dbAlias, sql, new Class<?>[] { String.class, Integer.class, Integer.class, Integer.class } );
+                    sql2.append("WHERE").appendFragment(lmGroupVersacomDeviceIdOred);
+                    sql2.append("AND LMGV.SerialAddress").eq("0");
                     
-                    if (versacomNameSerial != null) {
-                        for (int i = 0; i < versacomNameSerial.length; i++) {
-                            if (((Integer) versacomNameSerial[i][1]).intValue() == 0) {
-                                dftRouteID = ((Integer) versacomNameSerial[i][3]).intValue();
-                                return dftRouteID;
-                            }
-                        }
+                    List<Integer> versacomDefaultRouteIds = yukonJdbcTemplate.query(sql2, new IntegerRowMapper());
+                    if (versacomDefaultRouteIds != null && versacomDefaultRouteIds.size() > 0) {
+                        dftRouteID = versacomDefaultRouteIds.get(0);
+                        return dftRouteID;
                     }
                     
                     // get expresscom serial groups 
-                    sql = "SELECT YUKONPAOBJECT.PAONAME,LMGROUPEXPRESSCOM.SERIALNUMBER,LMGROUPEXPRESSCOM.LMGROUPID,LMGROUPEXPRESSCOM.ROUTEID "
-                        + "FROM YUKONPAOBJECT,LMGROUPEXPRESSCOM WHERE YUKONPAOBJECT.PAOBJECTID=LMGROUPEXPRESSCOM.LMGROUPID AND ";
-                    for (int i = 0; i < serialGroupIDs.length; i++) {
-                        if( i == 0 )
-                            sql += "(LMGROUPEXPRESSCOM.LMGROUPID=" + serialGroupIDs[i][0];
-                        else
-                            sql += " OR LMGROUPEXPRESSCOM.LMGROUPID=" + serialGroupIDs[i][0];
-                    }
-                    sql += ")";
-                   
-                    Object[][] expresscomNameSerial = com.cannontech.util.ServletUtil.executeSQL(
-                            dbAlias, sql, new Class<?>[] { String.class, Integer.class, Integer.class, Integer.class } );
+                    SqlStatementBuilder sql3 = new SqlStatementBuilder();
+                    sql3.append("SELECT LMGE.RouteId");
+                    sql3.append("FROM YukonPAObject PAO");
+                    sql3.append("JOIN LMGroupExpresscom LMGE ON PAO.PAObjectId = LMGE.LMGroupId");
                     
-                    if (expresscomNameSerial != null) {
-                        for (int i = 0; i < expresscomNameSerial.length; i++) {
-                            if (((Integer) expresscomNameSerial[i][1]).intValue() == 0) {
-                                dftRouteID = ((Integer) expresscomNameSerial[i][3]).intValue();
-                                return dftRouteID;
-                            }
-                        }
+                    SqlFragmentCollection lmGroupExpresscomLmGroupIdOred = SqlFragmentCollection.newOrCollection();
+                    for (int i = 0; i < serialGroupIds.size(); i++) {
+                        SqlStatementBuilder lmGroupExpresscomSql = new SqlStatementBuilder();
+                        lmGroupExpresscomSql.append("LMGE.LmGroupId").eq(serialGroupIds.get(i));
+                        lmGroupExpresscomLmGroupIdOred.add(lmGroupExpresscomSql);
+                    }
+                    sql3.append("WHERE").appendFragment(lmGroupExpresscomLmGroupIdOred);
+                    sql3.append("AND LMGE.SerialNumber").eq("0");
+                    
+                    List<Integer> expresscomDefaultRouteIds = yukonJdbcTemplate.query(sql3, new IntegerRowMapper());
+                    if (expresscomDefaultRouteIds != null && expresscomDefaultRouteIds.size() > 0) {
+                        dftRouteID = expresscomDefaultRouteIds.get(0);
+                        return dftRouteID;
                     }
                 }
             }
@@ -362,8 +362,12 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return dftRouteID;
     }
     
-    public void setDefaultRouteID(int routeID) {
-        dftRouteID = routeID;
+    /**
+     * This method resets the default routeId for the given energy company.  This will cause the
+     * get method to look up the value next time it is needed instead of using the cached value.
+     */
+    public void resetDefaultRouteId() {
+        dftRouteID = CtiUtilities.NONE_ZERO_ID;
     }
     
     public TimeZone getDefaultTimeZone() {
@@ -396,8 +400,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     }
     
     public String getEnergyCompanySetting(int rolePropertyID) {
-        String value = DaoFactory.getAuthDao()
-                                 .getRolePropertyValue(user, rolePropertyID);
+        String value = DaoFactory.getAuthDao().getRolePropertyValue(user, rolePropertyID);
         if (value != null && value.equalsIgnoreCase(CtiUtilities.STRING_NONE))
             value = "";
         return value;
@@ -570,7 +573,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             listDB.setUserUpdateAvailable( dftList.getUserUpdateAvailable() );
             listDB.setEnergyCompanyId( getEnergyCompanyID() );
             
-            list = Transaction.createTransaction(Transaction.INSERT, list).execute();
+            dbPersistentDao.performDBChange(list, TransactionType.INSERT);
             listDB = list.getYukonSelectionList();
             
             YukonSelectionList cList = new YukonSelectionList();
@@ -590,7 +593,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                     entry.setEntryOrder( new Integer(dftEntry.getEntryOrder()) );
                     entry.setEntryText( dftEntry.getEntryText() );
                     entry.setYukonDefID( new Integer(dftEntry.getYukonDefID()) );
-                    entry = Transaction.createTransaction(Transaction.INSERT, entry).execute();
+                    dbPersistentDao.performDBChange(entry, TransactionType.INSERT);
                     
                     YukonListEntry cEntry = new YukonListEntry();
                     StarsLiteFactory.setConstantYukonListEntry( cEntry, entry );
@@ -798,7 +801,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     
     public List<Integer> getOperatorLoginIDs() {
         String sql = "SELECT OperatorLoginID FROM EnergyCompanyOperatorLoginList WHERE EnergyCompanyID = ?";
-        List<Integer> list = simpleJdbcTemplate.query(sql, integerRowMapper, getEnergyCompanyID());
+        List<Integer> list = yukonJdbcTemplate.query(sql, integerRowMapper, getEnergyCompanyID());
         return list;
     }
     
@@ -830,11 +833,11 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                     map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
                     
                     try {
-                        Transaction.createTransaction( Transaction.DELETE, map ).execute();
-                    }
-                    catch (TransactionException e) {
+                        dbPersistentDao.performDBChange(map, TransactionType.DELETE);
+                    } catch (PersistenceException e) {
                         CTILogger.error( e.getMessage(), e );
                     }
+                    
                     
                     it.remove();
                 }
@@ -903,10 +906,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                     map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
                     
                     try {
-                        Transaction.createTransaction( Transaction.INSERT, map ).execute();
+                        dbPersistentDao.performDBChange(map, TransactionType.INSERT);
                         routeIDs.add( dftRouteID );
-                    }
-                    catch (TransactionException e) {
+                    } catch (PersistenceException e) {
                         CTILogger.error( e.getMessage(), e );
                     }
                 }
@@ -1255,8 +1257,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                 com.cannontech.database.data.stars.appliance.ApplianceBase appliance =
                         new com.cannontech.database.data.stars.appliance.ApplianceBase();
                 appliance.setApplianceID( new Integer(liteApp.getApplianceID()) );
-                
-                appliance = Transaction.createTransaction( Transaction.RETRIEVE, appliance ).execute();
+                dbPersistentDao.performDBChange(appliance, TransactionType.RETRIEVE);
                 
                 liteApp = StarsLiteFactory.createLiteStarsAppliance( appliance, this );
                 appliances.set(i, liteApp);
@@ -1367,8 +1368,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      */
     public List<Object> searchAccountBySerialNo(String serialNo, boolean searchMembers) {
         
-    	StarsSearchDao starsSearchDao = YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
-    	
     	List<LiteInventoryBase> invList = 
     		starsSearchDao.searchLMHardwareBySerialNumber(serialNo, Collections.singletonList(this));
         List<Object> accountList = new ArrayList<Object>();
@@ -2055,40 +2054,40 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return getUser();
     }
     
-    void setAddressDao(AddressDao addressDao) {
+    // DI Setters    
+    public void setAddressDao(AddressDao addressDao) {
         this.addressDao = addressDao;
     }
     
-    void setStarsInventoryBaseDao(
-            StarsInventoryBaseDao starsInventoryBaseDao) {
+    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
+    }
+    
+    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
+        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
+    }
+
+    public void setPaoPermissionService(PaoPermissionService paoPermissionService) {
+        this.paoPermissionService = paoPermissionService;
+    }
+    
+    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
         this.starsInventoryBaseDao = starsInventoryBaseDao;
     }
     
-    void setStarsCustAccountInformationDao(
-            StarsCustAccountInformationDao starsCustAccountInformationDao) {
+    public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
         this.starsCustAccountInformationDao = starsCustAccountInformationDao;
     }
 
-    void setStarsWorkOrderBaseDao(
-            StarsWorkOrderBaseDao starsWorkOrderBaseDao) {
+    public void setStarsWorkOrderBaseDao(StarsWorkOrderBaseDao starsWorkOrderBaseDao) {
         this.starsWorkOrderBaseDao = starsWorkOrderBaseDao;
     }
     
-    void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
+        this.starsSearchDao = starsSearchDao;
     }
     
-    void setYukonListDao(YukonListDao yukonListDao) {
-		this.yukonListDao = yukonListDao;
-	}
-    
-    public void setEnergyCompanyRolePropertyDao(
-            EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
-        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
-    }
-    
-    public void setSystemDateFormattingService(
-			SystemDateFormattingService systemDateFormattingService) {
+    public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
 		this.systemDateFormattingService = systemDateFormattingService;
 	}
     
@@ -2100,4 +2099,12 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         this.yukonGroupDao = yukonGroupDao;
     }
     
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
+
+    public void setYukonListDao(YukonListDao yukonListDao) {
+        this.yukonListDao = yukonListDao;
+    }
+
 }
