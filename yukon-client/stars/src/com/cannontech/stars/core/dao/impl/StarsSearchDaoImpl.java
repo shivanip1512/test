@@ -78,13 +78,19 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 			return null;
 		}
 		
-		LiteStarsLMHardware liteHardware = liteHardwareList.get(0);
-		if(energyCompanyId != liteHardware.getEnergyCompanyId()) {
-			LiteStarsEnergyCompany inventoryEC = ecMappingDao.getInventoryEC(liteHardware.getInventoryID());
-			throw new ObjectInOtherEnergyCompanyException( liteHardware, inventoryEC);
+		LiteStarsLMHardware lmHardwareInOtherEnergyCompany = null;
+		for (LiteStarsLMHardware liteStarsLMHardware : liteHardwareList) {
+			if(energyCompanyId == liteStarsLMHardware.getEnergyCompanyId()) {
+				//found _a_ match on same energy company, let's use that one.
+				return liteStarsLMHardware;
+			} else {	//found a match on different energy company
+				lmHardwareInOtherEnergyCompany = liteStarsLMHardware;
+			}
 		}
 		
-		return liteHardware;
+		// If we get to here, we didn't find the serial number for the energyCompany provided.  Throw exception.
+		LiteStarsEnergyCompany otherEnergyCompany = ecMappingDao.getInventoryEC(lmHardwareInOtherEnergyCompany.getInventoryID());
+		throw new ObjectInOtherEnergyCompanyException( lmHardwareInOtherEnergyCompany, otherEnergyCompany);
 	}
 
 	@Override

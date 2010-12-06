@@ -35,6 +35,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperAdapter;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
@@ -406,7 +407,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         
         // Unenroll the inventory from all its programs
         if(InventoryUtils.isLMHardware(liteInv.getCategoryID())){
-            unenrollHardware(liteInv, user);
+            unenrollHardware(liteInv, user, energyCompany);
         }
         
         if (deleteFromInventory) {
@@ -442,7 +443,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     }
 
     // Unenrolls the inventory from all its programs
-    private void unenrollHardware(LiteInventoryBase liteInv, LiteYukonUser user) {
+    private void unenrollHardware(LiteInventoryBase liteInv, LiteYukonUser user, LiteStarsEnergyCompany energyCompany) {
         EnrollmentHelper enrollmentHelper = new EnrollmentHelper();
         CustomerAccount customerAccount = customerAccountDao.getById(liteInv.getAccountID());
         enrollmentHelper.setAccountNumber(customerAccount.getAccountNumber());
@@ -450,7 +451,8 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         LMHardwareBase lmHardwareBase = hardwareBaseDao.getById(liteInv.getInventoryID());
         enrollmentHelper.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
         
-        enrollmentService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, user);        
+        EnrollmentHelperAdapter enrollmentHelperAdapter = new EnrollmentHelperAdapter(enrollmentHelper, customerAccount, lmHardwareBase, energyCompany);
+        enrollmentService.doEnrollment(enrollmentHelperAdapter, EnrollmentEnum.UNENROLL, user);        
     }
     
     // adds the UnInstall hardware event

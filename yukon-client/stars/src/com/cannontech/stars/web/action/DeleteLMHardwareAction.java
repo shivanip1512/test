@@ -28,6 +28,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperAdapter;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
@@ -207,18 +208,21 @@ public class DeleteLMHardwareAction implements ActionBase {
 			
 			try {
     		    // Unenrolls the inventory from all its programs (inside below catch block as well)
-                EnrollmentHelperService enrollmentHelperService = YukonSpringHook.getBean("enrollmentService", EnrollmentHelperService.class);
-                EnrollmentHelper enrollmentHelper = new EnrollmentHelper();
-                
-    			CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
-    			CustomerAccount customerAccount = customerAccountDao.getById(liteAcctInfo.getAccountID());
-    			enrollmentHelper.setAccountNumber(customerAccount.getAccountNumber());
-    
-    			LMHardwareBaseDao lmHardwareBaseDao = YukonSpringHook.getBean("hardwareBaseDao", LMHardwareBaseDao.class);
-    			LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(deleteHw.getInventoryID());
-    			enrollmentHelper.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
-    			
-    			enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, energyCompany.getUser());
+				if (liteAcctInfo.getAccountID() > 0) {  //Enrollments are only applicable for inventory assigned to an account
+                    EnrollmentHelperService enrollmentHelperService = YukonSpringHook.getBean("enrollmentService", EnrollmentHelperService.class);
+                    EnrollmentHelper enrollmentHelper = new EnrollmentHelper();
+
+    				CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
+        			CustomerAccount customerAccount = customerAccountDao.getById(liteAcctInfo.getAccountID());
+	    			enrollmentHelper.setAccountNumber(customerAccount.getAccountNumber());
+	    
+	    			LMHardwareBaseDao lmHardwareBaseDao = YukonSpringHook.getBean("hardwareBaseDao", LMHardwareBaseDao.class);
+	    			LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(deleteHw.getInventoryID());
+	    			enrollmentHelper.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
+	    			
+	    			EnrollmentHelperAdapter enrollmentHelperAdapter = new EnrollmentHelperAdapter(enrollmentHelper, customerAccount, lmHardwareBase, energyCompany);
+	    			enrollmentHelperService.doEnrollment(enrollmentHelperAdapter, EnrollmentEnum.UNENROLL, energyCompany.getUser());
+    			}
     			
 			} catch (NotFoundException e) {
 			    // able to ignore because it is possible that we don't have an LMHardwareBase but that we have a reference to a yukonPaobject instead

@@ -37,6 +37,7 @@ import com.cannontech.stars.dr.enrollment.model.EnrolledDevicePrograms;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEventLoggingData;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperAdapter;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
@@ -155,23 +156,28 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         
         return new EnrollmentEventLoggingData(lmHardwareBase, loadGroup, program);
     }
-    
-    @Override
-    public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
 
-        CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(enrollmentHelper.getAccountNumber(),
-                                                                                user);
+    public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
+    	EnrollmentHelperAdapter enrollmentHelperAdapter = buildEnrollmentHelperAdapter(enrollmentHelper, enrollmentEnum, user);
+    	doEnrollment(enrollmentHelperAdapter, enrollmentEnum, user);    	
+    }
+    
+    public void doEnrollment(EnrollmentHelperAdapter enrollmentHelperAdapter, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
+
+        CustomerAccount customerAccount = enrollmentHelperAdapter.getCustomerAccount();
+        EnrollmentHelper enrollmentHelper = enrollmentHelperAdapter.getEnrollmentHelper();
+        
         // Get the current enrollments.  This list will be updated to reflect
         // the desired enrollment data then passed to applyEnrollments which
         // will make it so.
         List<ProgramEnrollment> enrollmentData = 
             enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
         
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);        
+        LiteStarsEnergyCompany energyCompany = enrollmentHelperAdapter.getLiteStarsEnergyCompany();        
         String trackHwAddr = energyCompany.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
         boolean useHardwareAddressing = Boolean.parseBoolean(trackHwAddr);
         
-        ProgramEnrollment programEnrollment = buildProgrameEnrollment(enrollmentHelper, customerAccount, user, enrollmentEnum);
+        ProgramEnrollment programEnrollment = buildProgrameEnrollment(enrollmentHelperAdapter, enrollmentEnum);
         
         if (enrollmentEnum == EnrollmentEnum.ENROLL) {
             addProgramEnrollment(enrollmentData, programEnrollment, enrollmentHelper.isSeasonalLoad(), useHardwareAddressing);
@@ -245,28 +251,11 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         }
     }
 
-    private ProgramEnrollment buildProgrameEnrollment(EnrollmentHelper enrollmentHelper, CustomerAccount account, LiteYukonUser user, EnrollmentEnum enrollmentEnum){
+    private ProgramEnrollment buildProgrameEnrollment(EnrollmentHelperAdapter enrollmentHelperAdapter, EnrollmentEnum enrollmentEnum){
 
-        //get the energyCompany for the user
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-        
-        LiteInventoryBase liteInv = null;
-        try {
-            liteInv = starsSearchDao.searchLMHardwareBySerialNumber(enrollmentHelper.getSerialNumber(), energyCompany);
-        } catch (ObjectInOtherEnergyCompanyException e) {
-            if(enrollmentEnum.equals(EnrollmentEnum.UNENROLL)) {
-                liteInv = (LiteInventoryBase) e.getObject();
-            } else {
-                throw new RuntimeException(e);
-            }
-        }
-        if (liteInv == null) {
-            throw new IllegalArgumentException("The supplied piece of hardware was not found: " + enrollmentHelper.getSerialNumber());
-        }        
-		if (liteInv.getAccountID() != account.getAccountId()) {
-            throw new IllegalArgumentException("The supplied piece of hardware: " + enrollmentHelper.getSerialNumber() + 
-            		" does not belong to the supplied account: " + enrollmentHelper.getAccountNumber());
-        }
+    	LMHardwareBase lmHardwareBase = enrollmentHelperAdapter.getLmHardwareBase();
+    	EnrollmentHelper enrollmentHelper = enrollmentHelperAdapter.getEnrollmentHelper();
+        LiteStarsEnergyCompany energyCompany = enrollmentHelperAdapter.getLiteStarsEnergyCompany();
 
         /* This part of the method will get all the energy company ids that can have 
          * an appliance category this energy company can use.
@@ -280,7 +269,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         if(enrollmentEnum.equals(EnrollmentEnum.UNENROLL) &&
            StringUtils.isEmpty(enrollmentHelper.getProgramName())) {
         	ProgramEnrollment programEnrollment = new ProgramEnrollment();
-	        programEnrollment.setInventoryId(liteInv.getInventoryID());
+	        programEnrollment.setInventoryId(lmHardwareBase.getInventoryId());
 	        programEnrollment.setAssignedProgramId(0);
 	        return programEnrollment;
         } else {
@@ -300,7 +289,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 	         * used later on to enroll or unenroll.
 	         */
 	        ProgramEnrollment programEnrollment = new ProgramEnrollment();
-	        programEnrollment.setInventoryId(liteInv.getInventoryID());
+	        programEnrollment.setInventoryId(lmHardwareBase.getInventoryId());
 	        programEnrollment.setAssignedProgramId(program.getProgramId());
 	        if (enrollmentHelper.getApplianceKW() != null) {
 	        	programEnrollment.setApplianceKW(enrollmentHelper.getApplianceKW());
@@ -462,6 +451,33 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 		
 		return enrolledDeviceProgramsList;
 	}
+	
+    private EnrollmentHelperAdapter buildEnrollmentHelperAdapter(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user) {
+    	CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(enrollmentHelper.getAccountNumber(), user);
+    	
+    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+    	LiteInventoryBase liteInventoryBase;
+        try {
+        	liteInventoryBase = starsSearchDao.searchLMHardwareBySerialNumber(enrollmentHelper.getSerialNumber(), energyCompany);
+        } catch (ObjectInOtherEnergyCompanyException e) {
+            if(enrollmentEnum.equals(EnrollmentEnum.UNENROLL)) {
+                liteInventoryBase = (LiteInventoryBase) e.getObject();
+            } else {
+                throw new RuntimeException(e);
+            }
+        }
+        if (liteInventoryBase == null) {
+            throw new IllegalArgumentException("The supplied piece of hardware was not found: " + enrollmentHelper.getSerialNumber());
+        }        
+		if (liteInventoryBase.getAccountID() != customerAccount.getAccountId()) {
+            throw new IllegalArgumentException("The supplied piece of hardware: " + enrollmentHelper.getSerialNumber() + 
+            		" does not belong to the supplied account: " + enrollmentHelper.getAccountNumber());
+        }
+		
+		LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(liteInventoryBase.getInventoryID());
+    	EnrollmentHelperAdapter enrollmentHelperAdapter = new EnrollmentHelperAdapter(enrollmentHelper, customerAccount, lmHardwareBase, energyCompany);
+    	return enrollmentHelperAdapter;
+    }
 
 	@Autowired
 	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
