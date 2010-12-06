@@ -208,7 +208,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 			
 			try {
     		    // Unenrolls the inventory from all its programs (inside below catch block as well)
-				if (liteAcctInfo.getAccountID() > 0) {  //Enrollments are only applicable for inventory assigned to an account
+				if (liteAcctInfo != null && liteAcctInfo.getAccountID() > 0) {  //Enrollments are only applicable for inventory assigned to an account
                     EnrollmentHelperService enrollmentHelperService = YukonSpringHook.getBean("enrollmentService", EnrollmentHelperService.class);
                     EnrollmentHelper enrollmentHelper = new EnrollmentHelper();
 
@@ -246,8 +246,9 @@ public class DeleteLMHardwareAction implements ActionBase {
 				eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
 				eventBaseDB.setActionID( new Integer(uninstallActID) );
 				eventBaseDB.setEventDateTime( removeDate );
-				if (liteAcctInfo != null)
+				if (liteAcctInfo != null && liteAcctInfo.getAccountID() > 0) {
 					eventBaseDB.setNotes( "Removed from account #" + liteAcctInfo.getCustomerAccount().getAccountNumber() );
+				}
 				eventDB.setInventoryID( new Integer(liteInv.getInventoryID()) );
 				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 				
@@ -268,7 +269,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 				
 			}
     		
-			if (liteAcctInfo != null) {
+			if (liteAcctInfo != null && liteAcctInfo.getAccountID() > 0) {
 				if (InventoryUtils.isLMHardware( liteInv.getCategoryID() )) {
                     List<LiteStarsAppliance> liteApps = liteAcctInfo.getAppliances();
 					
