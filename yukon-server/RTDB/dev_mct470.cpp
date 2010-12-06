@@ -4301,7 +4301,7 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< C
                      (peak_time.seconds() <= 86400) )
                 {
                     // Don't insert a point, just send the message.
-                    static string noPeak = ": " + CtiNumStr(pi.value) + " [No peak occurred]\n";
+                    const string noPeak = ": " + CtiNumStr(pi.value) + " [No peak occurred]\n";
                     pointOffset = offset + rate * 2;
                     CtiPointSPtr p;
                     if( p = getDevicePointOffsetTypeEqual(pointOffset, AnalogPointType) )
