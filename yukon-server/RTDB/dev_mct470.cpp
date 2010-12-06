@@ -4058,7 +4058,7 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< C
                 {
                     for( int byte = 0; byte < 6; byte++ )
                     {
-                        int pointoffset = PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6;
+                        int pointoffset = PointOffset_DNPCounter_Precanned1+byte+(i-1)*6;
 
                         string pointname;
                         pointname  = "Pulse Accumulator point ";
