@@ -2077,7 +2077,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     }
     
     public String getOffPeakHeader() {
-        return isTimeOfDay() ? "Open" : "Off Peak";
+        return isTimeOfDay() ? "Close" : "Off Peak";
     }
     
     public void setSeasonScheduleDao(SeasonScheduleDao seasonScheduleDao) {
