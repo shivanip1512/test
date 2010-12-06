@@ -17,8 +17,8 @@ public interface InventoryConfigTaskDao {
 
     public List<InventoryConfigTask> getUnfinished(int energyCompanyId);
 
-    public InventoryConfigTask create(String taskName, InventoryCollection inventoryCollection,
-            int energyCompanyId);
+    public InventoryConfigTask create(String taskName, boolean sendInService,
+            InventoryCollection inventoryCollection, int energyCompanyId);
 
     public void update(InventoryConfigTask task);
 

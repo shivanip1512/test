@@ -18,5 +18,5 @@ public interface HardwareConfigService {
      * @throws WebClientException 
      */
     public List<String> getConfigCommands(int inventoryId, int energyCompanyId,
-            LiteYukonUser user) throws WebClientException;
+            boolean includeInService, LiteYukonUser user) throws WebClientException;
 }

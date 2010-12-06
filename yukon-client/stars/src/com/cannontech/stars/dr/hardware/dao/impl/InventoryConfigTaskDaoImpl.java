@@ -18,6 +18,7 @@ import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -49,6 +50,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
         public void extractValues(MapSqlParameterSource parameterHolder,
                 InventoryConfigTask task) {
             parameterHolder.addValue("taskName", task.getTaskName());
+            parameterHolder.addValue("sendInService", YNBoolean.valueOf(task.isSendInService()));
             parameterHolder.addValue("numberOfItems", task.getNumberOfItems());
             parameterHolder.addValue("numberOfItemsProcessed", task.getNumberOfItemsProcessed());
             parameterHolder.addValue("energyCompanyId", task.getEnergyCompanyId());
@@ -61,6 +63,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
             InventoryConfigTask retVal = new InventoryConfigTask();
             retVal.setInventoryConfigTaskId(rs.getInt("InventoryConfigTaskId"));
             retVal.setTaskName(rs.getString("taskName"));
+            retVal.setSendInService(rs.getEnum("sendInService", YNBoolean.class).getBoolean());
             retVal.setNumberOfItems(rs.getInt("numberOfItems"));
             retVal.setNumberOfItemsProcessed(rs.getInt("numberOfItemsProcessed"));
             retVal.setEnergyCompanyId(rs.getInt("energyCompanyId"));
@@ -74,6 +77,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
             InventoryConfigTaskItem retVal = new InventoryConfigTaskItem();
             retVal.setInventoryConfigTaskId(rs.getInt("inventoryConfigTaskId"));
             retVal.setInventoryId(rs.getInt("inventoryId"));
+            retVal.setSendInService(rs.getEnum("sendInService", YNBoolean.class).getBoolean());
             retVal.setStatus(Status.valueOf(rs.getString("status")));
             return retVal;
         }
@@ -82,9 +86,8 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     @Override
     public InventoryConfigTask getById(int inventoryConfigTaskId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT inventoryConfigTaskId, taskName,");
-        sql.append(  "numberOfItems, numberOfItemsProcessed,");
-        sql.append(  "energyCompanyId");
+        sql.append("SELECT inventoryConfigTaskId, taskName, sendInService, numberOfItems,");
+        sql.append(  "numberOfItemsProcessed, energyCompanyId");
         sql.append("FROM inventoryConfigTask");
         sql.append("WHERE inventoryConfigTaskId").eq(inventoryConfigTaskId);
         return yukonJdbcTemplate.queryForObject(sql, rowMapper);
@@ -93,9 +96,8 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     @Override
     public InventoryConfigTask findTask(String taskName, int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT inventoryConfigTaskId, taskName,");
-        sql.append(  "numberOfItems, numberOfItemsProcessed,");
-        sql.append(  "energyCompanyId");
+        sql.append("SELECT inventoryConfigTaskId, taskName, sendInService, numberOfItems,");
+        sql.append(  "numberOfItemsProcessed, energyCompanyId");
         sql.append("FROM inventoryConfigTask");
         sql.append("WHERE TaskName").eq(taskName);
         sql.append(  "AND energyCompanyId").eq(energyCompanyId);
@@ -109,9 +111,8 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     @Override
     public List<InventoryConfigTask> getAll(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT inventoryConfigTaskId, taskName,");
-        sql.append(  "numberOfItems, numberOfItemsProcessed,");
-        sql.append(  "energyCompanyId");
+        sql.append("SELECT inventoryConfigTaskId, taskName, sendInService, numberOfItems,");
+        sql.append(  "numberOfItemsProcessed, energyCompanyId");
         sql.append("FROM inventoryConfigTask");
         sql.append("WHERE energyCompanyId").eq(energyCompanyId);
         return yukonJdbcTemplate.query(sql, rowMapper);
@@ -120,9 +121,8 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     @Override
     public List<InventoryConfigTask> getUnfinished(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT inventoryConfigTaskId, taskName,");
-        sql.append(  "numberOfItems, numberOfItemsProcessed,");
-        sql.append(  "energyCompanyId");
+        sql.append("SELECT inventoryConfigTaskId, taskName, sendInService, numberOfItems,");
+        sql.append(  "numberOfItemsProcessed, energyCompanyId");
         sql.append("FROM inventoryConfigTask");
         sql.append("WHERE numberOfItems > numberOfItemsProcessed");
         sql.append("AND energyCompanyId").eq(energyCompanyId);
@@ -131,10 +131,11 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
 
     @Override
     @Transactional
-    public InventoryConfigTask create(String taskName,
+    public InventoryConfigTask create(String taskName, boolean sendInService,
             InventoryCollection inventoryCollection, int energyCompanyId) {
         InventoryConfigTask task = new InventoryConfigTask();
         task.setTaskName(taskName);
+        task.setSendInService(sendInService);
         task.setNumberOfItems((int) inventoryCollection.getInventoryCount());
         task.setNumberOfItemsProcessed(0);
         task.setEnergyCompanyId(energyCompanyId);
@@ -203,10 +204,11 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
         sql.append("FROM (");
-        sql.append(  "SELECT inventoryConfigTaskId, inventoryId, status,");
+        sql.append(  "SELECT ti.inventoryConfigTaskId, inventoryId, status, sendInService,");
         sql.append(    "ROW_NUMBER() OVER (ORDER BY inventoryId) AS rowNumber");
-        sql.append(  "FROM inventoryConfigTaskItem");
-        sql.append(  "WHERE inventoryConfigTaskId").eq(task.getInventoryConfigTaskId());
+        sql.append(  "FROM inventoryConfigTaskItem ti");
+        sql.append(    "JOIN inventoryConfigTask t ON ti.inventoryConfigTaskId = t.inventoryConfigTaskId");
+        sql.append(  "WHERE ti.inventoryConfigTaskId").eq(task.getInventoryConfigTaskId());
         sql.append(    "AND status").eq(Status.UNPROCESSED).append(") f");
         sql.append("WHERE rowNumber").lte(maxItems);
         return yukonJdbcTemplate.query(sql, itemRowMapper);

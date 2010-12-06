@@ -74,7 +74,7 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
 
     @Override
     public List<String> getConfigCommands(int inventoryId, int energyCompanyId,
-            LiteYukonUser user) throws WebClientException {
+            boolean includeInService, LiteYukonUser user) throws WebClientException {
         boolean trackHardwareAddressing =
             rolePropertyDao.checkProperty(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, user);
         LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
@@ -82,7 +82,9 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
         List<String> retVal = Lists.newArrayList();
 
         if (enrollmentDao.isEnrolled(inventoryId)) {
-            retVal.addAll(YukonSwitchCommandAction.getEnableCommands(liteHw, energyCompany, true));
+            if (includeInService) {
+                retVal.addAll(YukonSwitchCommandAction.getEnableCommands(liteHw, energyCompany, true));
+            }
             String[] commands = YukonSwitchCommandAction.getConfigCommands(liteHw, energyCompany,
                                                                            trackHardwareAddressing, null);
             retVal.addAll(Lists.newArrayList(commands));

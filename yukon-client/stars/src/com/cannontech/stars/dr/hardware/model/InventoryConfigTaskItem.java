@@ -7,6 +7,7 @@ public class InventoryConfigTaskItem {
 
     private int inventoryConfigTaskId;
     private int inventoryId;
+    private boolean sendInService;
     private Status status;
 
     public int getInventoryConfigTaskId() {
@@ -25,6 +26,14 @@ public class InventoryConfigTaskItem {
         this.inventoryId = inventoryId;
     }
 
+    public boolean isSendInService() {
+        return sendInService;
+    }
+
+    public void setSendInService(boolean sendInService) {
+        this.sendInService = sendInService;
+    }
+
     public Status getStatus() {
         return status;
     }
@@ -36,7 +45,6 @@ public class InventoryConfigTaskItem {
     @Override
     public String toString() {
         return "InventoryConfigTaskItem [inventoryConfigTaskId=" + inventoryConfigTaskId +
-            ", inventoryId=" + inventoryId + ", status=" + status + "]";
+        ", inventoryId=" + inventoryId +", sendInService=" + sendInService + ", status=" + status + "]";
     }
-
 }

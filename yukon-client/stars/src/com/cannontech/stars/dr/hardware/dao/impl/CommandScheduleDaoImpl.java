@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -41,7 +42,7 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
             parameterHolder.addValue("startTimeCronString", schedule.getStartTimeCronString());
             parameterHolder.addValue("runPeriod", schedule.getRunPeriod());
             parameterHolder.addValue("delayPeriod", schedule.getDelayPeriod());
-            parameterHolder.addValue("enabled", schedule.isEnabled() ? "y" : "n");
+            parameterHolder.addValue("enabled", YNBoolean.valueOf(schedule.isEnabled()));
             parameterHolder.addValue("energyCompanyId", schedule.getEnergyCompanyId());
         }
     };
@@ -53,7 +54,7 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
             retVal.setStartTimeCronString(rs.getString("startTimeCronString"));
             retVal.setRunPeriod(rs.getPeriod("runPeriod"));
             retVal.setDelayPeriod(rs.getPeriod("delayPeriod"));
-            retVal.setEnabled(rs.getYNBoolean("enabled"));
+            retVal.setEnabled(rs.getEnum("enabled", YNBoolean.class).getBoolean());
             retVal.setEnergyCompanyId(rs.getInt("energyCompanyId"));
             return retVal;
         }
@@ -85,7 +86,7 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
         sql.append("SELECT commandScheduleId, startTimeCronString,");
         sql.append(  "runPeriod, delayPeriod, enabled, energyCompanyId");
         sql.append("FROM commandSchedule");
-        sql.append("WHERE enabled = 'y'");
+        sql.append("WHERE enabled").eq(YNBoolean.YES);
         sql.append(  "AND energyCompanyId").eq(energyCompanyId);
         return yukonJdbcTemplate.query(sql, rowMapper);
     }
@@ -108,7 +109,7 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
     public void enable(int scheduleId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE CommandSchedule");
-        sql.append("SET Enabled = 'y'");
+        sql.append("SET Enabled").eq(YNBoolean.YES);
         sql.append("WHERE CommandScheduleId").eq(scheduleId);
         
         yukonJdbcTemplate.update(sql);
@@ -118,7 +119,7 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
     public void disable(int scheduleId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE CommandSchedule");
-        sql.append("SET Enabled = 'n'");
+        sql.append("SET Enabled").eq(YNBoolean.NO);
         sql.append("WHERE CommandScheduleId").eq(scheduleId);
         
         yukonJdbcTemplate.update(sql);

@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.hardware.model;
 public class InventoryConfigTask {
     private int inventoryConfigTaskId;
     private String taskName;
+    private boolean sendInService;
     private int numberOfItems;
     private int numberOfItemsProcessed;
     private int energyCompanyId;
@@ -21,6 +22,14 @@ public class InventoryConfigTask {
 
     public void setTaskName(String taskName) {
         this.taskName = taskName;
+    }
+
+    public boolean isSendInService() {
+        return sendInService;
+    }
+
+    public void setSendInService(boolean sendInService) {
+        this.sendInService = sendInService;
     }
 
     public int getNumberOfItems() {
@@ -52,6 +61,6 @@ public class InventoryConfigTask {
         return "InventoryConfigTask [inventoryConfigTaskId=" + inventoryConfigTaskId +
             ", numberOfItems=" + numberOfItems +
             ", numberOfItemsProcessed=" + numberOfItemsProcessed + ", taskName=" + taskName +
-            ", energyCompanyId=" + energyCompanyId + "]";
+            ", sendInService=" + sendInService + ", energyCompanyId=" + energyCompanyId + "]";
     }
 }

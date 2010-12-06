@@ -75,10 +75,6 @@ public class YukonResultSet {
         return rs.getInt(columnLabel);
     }
 
-    public boolean getYNBoolean(String columnLabel) throws SQLException {
-        return rs.getString(columnLabel).equalsIgnoreCase("y");
-    }
-
     public Integer getNullableInt(String columnLabel) throws SQLException {
         int retVal = rs.getInt(columnLabel);
         return rs.wasNull() ? null : retVal;

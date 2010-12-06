@@ -154,7 +154,10 @@ public class HardwareConfigService {
                             workProcessed = true;
                             int inventoryId = item.getInventoryId();
                             try {
-                                List<String> commands = hardwareConfigService.getConfigCommands(inventoryId, energyCompanyId, user);
+                                List<String> commands = hardwareConfigService.getConfigCommands(inventoryId,
+                                                                                                energyCompanyId,
+                                                                                                item.isSendInService(),
+                                                                                                user);
                                 log.debug(item.getInventoryId() + " needs " + commands.size() + " commands");
                                 LiteStarsLMHardware hardware = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
                                 if (!commands.isEmpty()) {

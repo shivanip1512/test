@@ -102,7 +102,8 @@ public class DeviceReconfigController {
             return "operator/inventory/inventoryOperations/deviceReconfig/setup.jsp";
         }
 
-        inventoryConfigTaskDao.create(deviceReconfigOptions.getName(), inventoryCollectionFactory.createCollection(request), energyCompanyId);
+        boolean sendInService = true; // Aaron fill this in
+        inventoryConfigTaskDao.create(deviceReconfigOptions.getName(), sendInService, inventoryCollectionFactory.createCollection(request), energyCompanyId);
 
         /* Log Event */
         deviceReconfigEventLogService.taskCreated(userContext.getYukonUser(), deviceReconfigOptions.getName());
