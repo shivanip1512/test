@@ -48,6 +48,11 @@ public class MockPointDao implements PointDao {
     public int getMaxPointID() {
         return 0;
     }
+    
+    @Override
+    public int getPointId(PaoPointIdentifier paoPointIdentifier) {
+        return 0;
+    }
 
     public int getNextPointId() {
         return 0;
