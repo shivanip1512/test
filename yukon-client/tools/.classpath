@@ -27,5 +27,9 @@
 	<classpathentry kind="lib" path="/third-party/mail.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/cbc"/>
 	<classpathentry kind="lib" path="/third-party/SchemaCompare.jar" sourcepath="/SchemaCompare"/>
+	<classpathentry kind="lib" path="/third-party/commons-io-1.3.2.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/macs"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/resource"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
