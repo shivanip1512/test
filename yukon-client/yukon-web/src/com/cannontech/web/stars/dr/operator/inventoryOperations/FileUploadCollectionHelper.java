@@ -8,7 +8,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
+import com.cannontech.common.bulk.collection.inventory.YukonCollection;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -33,8 +33,8 @@ public class FileUploadCollectionHelper {
     public String fileUploadHelper(HttpServletRequest request, ModelMap modelMap, FlashScope flashScope, YukonUserContext userContext) throws ServletRequestBindingException {
         
         try {
-            InventoryCollection inventoryCollection = inventoryCollectionFactory.createCollection(request);
-            modelMap.addAllAttributes(inventoryCollection.getCollectionParameters());
+            YukonCollection yukonCollection = inventoryCollectionFactory.createCollection(request);
+            modelMap.addAllAttributes(yukonCollection.getCollectionParameters());
         } catch (CollectionCreationException e) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.inventoryOperations." + e.getMessage()));
             

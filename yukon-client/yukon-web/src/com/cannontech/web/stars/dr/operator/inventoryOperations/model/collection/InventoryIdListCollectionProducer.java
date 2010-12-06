@@ -12,17 +12,16 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
-import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
+import com.cannontech.common.bulk.collection.inventory.YukonCollection;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollectionType;
 import com.cannontech.common.bulk.collection.inventory.ListBasedInventoryCollection;
 import com.cannontech.common.inventory.InventoryIdentifier;
-import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.collection.CollectionProducer;
 
-public class InventoryIdListCollectionProducer  implements CollectionProducer<InventoryCollectionType, InventoryCollection>{
+public class InventoryIdListCollectionProducer  implements CollectionProducer<InventoryCollectionType, YukonCollection>{
 
     private InventoryDao inventoryDao;
     
@@ -30,7 +29,7 @@ public class InventoryIdListCollectionProducer  implements CollectionProducer<In
         return InventoryCollectionType.idList;
     }
 
-    public InventoryCollection createCollection(HttpServletRequest request) throws ServletRequestBindingException {
+    public YukonCollection createCollection(HttpServletRequest request) throws ServletRequestBindingException {
 
         final String ids = ServletRequestUtils.getStringParameter(request, getSupportedType().getParameterName("ids"));
         
@@ -48,7 +47,7 @@ public class InventoryIdListCollectionProducer  implements CollectionProducer<In
                 return paramMap;
             }
 
-            public List<? extends YukonInventory> getInventoryList() {
+            public List<InventoryIdentifier> getList() {
 
                 List<InventoryIdentifier> inventoryList = new ArrayList<InventoryIdentifier>();
 
@@ -61,7 +60,7 @@ public class InventoryIdListCollectionProducer  implements CollectionProducer<In
             }
             
             @Override
-            public long getInventoryCount() {
+            public long getCount() {
                 return idList.size();
             }
 

@@ -2,6 +2,7 @@ package com.cannontech.web.stars.dr.operator.inventoryOperations;
 
 import java.text.ParseException;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
@@ -27,18 +28,26 @@ public class FilterModelValidator extends SimpleValidator<FilterModel> {
             switch (rule.getRuleType()) {
 
             case FIELD_INSTALL_DATE:
-                try {
-                    dateFormattingService.flexibleDateParser(rule.getFieldInstallDate(), new SystemUserContext());
-                } catch (ParseException e) {
+                if (StringUtils.isBlank(rule.getFieldInstallDate())) {
                     errors.reject("yukon.web.modules.operator.filterSelection.error.invalidFieldInstallDate");
+                } else {
+                    try {
+                        dateFormattingService.flexibleDateParser(rule.getFieldInstallDate(), new SystemUserContext());
+                    } catch (ParseException e) {
+                        errors.reject("yukon.web.modules.operator.filterSelection.error.invalidFieldInstallDate");
+                    }
                 }
                 break;
 
             case PROGRAM_SIGNUP_DATE:
-                try {
-                    dateFormattingService.flexibleDateParser(rule.getProgramSignupDate(), new SystemUserContext());
-                } catch (ParseException e) {
+                if (StringUtils.isBlank(rule.getProgramSignupDate())) {
                     errors.reject("yukon.web.modules.operator.filterSelection.error.invalidProgramSignupDate");
+                } else {
+                    try {
+                        dateFormattingService.flexibleDateParser(rule.getProgramSignupDate(), new SystemUserContext());
+                    } catch (ParseException e) {
+                        errors.reject("yukon.web.modules.operator.filterSelection.error.invalidProgramSignupDate");
+                    }
                 }
                 break;
             

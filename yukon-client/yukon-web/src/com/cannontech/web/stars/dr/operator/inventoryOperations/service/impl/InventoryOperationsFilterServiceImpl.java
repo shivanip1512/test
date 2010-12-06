@@ -2,6 +2,7 @@ package com.cannontech.web.stars.dr.operator.inventoryOperations.service.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
 
@@ -17,7 +18,9 @@ import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.inventoryOperations.model.FilterMode;
 import com.cannontech.web.stars.dr.operator.inventoryOperations.model.RuleModel;
 import com.cannontech.web.stars.dr.operator.inventoryOperations.service.InventoryOperationsFilterService;
@@ -27,9 +30,10 @@ import com.google.common.collect.Sets;
 public class InventoryOperationsFilterServiceImpl implements InventoryOperationsFilterService {
     
     private YukonJdbcTemplate yukonJdbcTemplate;
+    private DateFormattingService dateFormattingService;
     
     @Override
-    public Set<InventoryIdentifier> getInventory(FilterMode filterMode, List<RuleModel> rules, DateTimeZone timeZone) {
+    public Set<InventoryIdentifier> getInventory(FilterMode filterMode, List<RuleModel> rules, DateTimeZone timeZone, YukonUserContext userContext) throws ParseException {
         SqlFragmentCollection whereClause;
         
         if (filterMode == FilterMode.INTERSECT) {
@@ -46,7 +50,7 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
         sql.append(  "JOIN YukonListEntry yle ON yle.EntryID = lmhb.LMHardwareTypeID");
         
         for (RuleModel rule : rules) {
-            whereClause.add(getFragmentForRule(rule, timeZone));
+            whereClause.add(getFragmentForRule(rule, timeZone, userContext));
         }
         
         sql.append("WHERE").append(whereClause);
@@ -64,7 +68,7 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
         return Sets.newHashSet(inventory);
     }
     
-    private SqlFragmentSource getFragmentForRule(RuleModel rule, DateTimeZone timeZone) {
+    private SqlFragmentSource getFragmentForRule(RuleModel rule, DateTimeZone timeZone, YukonUserContext userContext) throws ParseException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         switch (rule.getRuleType()) {
@@ -74,7 +78,8 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             break;
             
         case FIELD_INSTALL_DATE:
-            LocalDate localDate = new LocalDate(rule.getFieldInstallDate());
+            
+            LocalDate localDate = new LocalDate(dateFormattingService.flexibleDateParser(rule.getFieldInstallDate(), userContext));
             Interval interval = localDate.toInterval(timeZone);
             sql.append("(ib.InstallDate").gte(interval.getStart());
             sql.append("AND ib.InstallDate").lt(interval.getEnd()).append(")");
@@ -97,7 +102,7 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             break;
             
         case PROGRAM_SIGNUP_DATE:
-            LocalDate programSignupDate = new LocalDate(rule.getProgramSignupDate());
+            LocalDate programSignupDate = new LocalDate(dateFormattingService.flexibleDateParser(rule.getProgramSignupDate(), userContext));
             Interval programSignupInterval = programSignupDate.toInterval(timeZone);
             sql.append("(lmhcg.GroupEnrollStart").gte(programSignupInterval.getStart());
             sql.append("AND lmhcg.GroupEnrollStart").lt(programSignupInterval.getEnd());
@@ -132,4 +137,9 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
     
+    @Autowired
+    public void setDateFormattingService(DateFormattingService dateFormattingService) {
+        this.dateFormattingService = dateFormattingService;
+    }
+
 }

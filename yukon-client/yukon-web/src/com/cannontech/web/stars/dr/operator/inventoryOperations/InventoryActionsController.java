@@ -14,9 +14,9 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
+import com.cannontech.common.bulk.collection.inventory.YukonCollection;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.inventory.YukonInventory;
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
@@ -39,9 +39,9 @@ public class InventoryActionsController {
     @RequestMapping(value = "/operator/inventory/inventoryOperations/inventoryActions", method=RequestMethod.GET)
     public String inventoryActions(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
         
-        InventoryCollection inventoryCollection = inventoryCollectionFactory.createCollection(request);
-        modelMap.addAttribute("inventoryCollection", inventoryCollection);
-        modelMap.addAllAttributes(inventoryCollection.getCollectionParameters());
+        YukonCollection yukonCollection = inventoryCollectionFactory.createCollection(request);
+        modelMap.addAttribute("inventoryCollection", yukonCollection);
+        modelMap.addAllAttributes(yukonCollection.getCollectionParameters());
         
         return "operator/inventory/inventoryOperations/inventoryActions.jsp";
     }
@@ -55,9 +55,9 @@ public class InventoryActionsController {
         String hardwareType = messageSourceAccessor.getMessage("yukon.web.modules.operator.inventoryActions.hardwareType");
         String label = messageSourceAccessor.getMessage("yukon.web.modules.operator.inventoryActions.label");
         
-        InventoryCollection inventoryCollection = inventoryCollectionFactory.createCollection(request);
-        int totalInventoryCount = (int)inventoryCollection.getInventoryCount();
-        List<YukonInventory> inventoryToLoad = inventoryCollection.getInventory(0, MAX_SELECTED_INVENTORY_DISPLAYED);
+        YukonCollection yukonCollection = inventoryCollectionFactory.createCollection(request);
+        int totalInventoryCount = (int)yukonCollection.getCount();
+        List<InventoryIdentifier> inventoryToLoad = yukonCollection.getSubList(0, MAX_SELECTED_INVENTORY_DISPLAYED);
 
         List<DisplayableLmHardware> displayableLmHardware = inventoryDao.getDisplayableLMHardware(inventoryToLoad);
         

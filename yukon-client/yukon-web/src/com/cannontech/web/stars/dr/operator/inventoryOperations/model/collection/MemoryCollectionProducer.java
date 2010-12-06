@@ -15,23 +15,23 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
-import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollectionType;
 import com.cannontech.common.bulk.collection.inventory.ListBasedInventoryCollection;
-import com.cannontech.common.inventory.YukonInventory;
+import com.cannontech.common.bulk.collection.inventory.YukonCollection;
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.common.collection.CollectionCreationException;
 import com.cannontech.web.common.collection.CollectionProducer;
 import com.google.common.collect.Lists;
 
-public class MemoryCollectionProducer implements CollectionProducer<InventoryCollectionType, InventoryCollection> {
+public class MemoryCollectionProducer implements CollectionProducer<InventoryCollectionType, YukonCollection> {
     
     private ConcurrentMap<String, NamedCollection> memoryMap = new ConcurrentHashMap<String, NamedCollection>();
     
     private class NamedCollection {
         private String name;
-        private List<YukonInventory> collection;
-        public NamedCollection(String name, List<YukonInventory> collection) {
+        private List<InventoryIdentifier> collection;
+        public NamedCollection(String name, List<InventoryIdentifier> collection) {
             this.name = name;
             this.collection = collection;
         }
@@ -41,10 +41,10 @@ public class MemoryCollectionProducer implements CollectionProducer<InventoryCol
         public void setName(String name) {
             this.name = name;
         }
-        public List<YukonInventory> getCollection() {
+        public List<InventoryIdentifier> getCollection() {
             return collection;
         }
-        public void setCollection(List<YukonInventory> collection) {
+        public void setCollection(List<InventoryIdentifier> collection) {
             this.collection = collection;
         }
     };
@@ -59,7 +59,7 @@ public class MemoryCollectionProducer implements CollectionProducer<InventoryCol
     }
 
     @Override
-    public InventoryCollection createCollection(HttpServletRequest request) throws ServletRequestBindingException, CollectionCreationException {
+    public YukonCollection createCollection(HttpServletRequest request) throws ServletRequestBindingException, CollectionCreationException {
         String keyName = getSupportedType().getParameterName("key");
         String descriptionName = getSupportedType().getParameterName("description");
         
@@ -69,10 +69,10 @@ public class MemoryCollectionProducer implements CollectionProducer<InventoryCol
         return buildMemoryCollection(memoryMap.get(key).getCollection(), key, description);
     }
     
-    public InventoryCollection createCollection(Iterator<? extends YukonInventory> inventories, String descriptionHint) {
+    public YukonCollection createCollection(Iterator<InventoryIdentifier> inventories, String descriptionHint) {
         String key = UUID.randomUUID().toString();
         
-        List<YukonInventory> yukonInventory = Lists.newArrayList();
+        List<InventoryIdentifier> yukonInventory = Lists.newArrayList();
         
         while (inventories.hasNext()) {
             yukonInventory.add(inventories.next());
@@ -85,7 +85,7 @@ public class MemoryCollectionProducer implements CollectionProducer<InventoryCol
         return buildMemoryCollection(yukonInventory, key, descriptionHint);
     }
 
-    public InventoryCollection buildMemoryCollection(final List<? extends YukonInventory> inventory, final String key, final String descriptionHint) {
+    public YukonCollection buildMemoryCollection(final List<InventoryIdentifier> inventory, final String key, final String descriptionHint) {
         
         return new ListBasedInventoryCollection() {
             
@@ -104,12 +104,12 @@ public class MemoryCollectionProducer implements CollectionProducer<InventoryCol
                 return paramMap;
             }
 
-            public List<? extends YukonInventory> getInventoryList() {
+            public List<InventoryIdentifier> getList() {
                 return inventory;
             }
             
             @Override
-            public long getInventoryCount() {
+            public long getCount() {
                 return inventory.size();
             }
 

@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.dr.operator.inventoryOperations;
 
 import java.beans.PropertyEditorSupport;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
+import com.cannontech.common.bulk.collection.inventory.YukonCollection;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListEnum;
@@ -97,7 +98,7 @@ public class InventoryFilterController {
     /* Apply Filter */
     @RequestMapping(value = "/operator/inventory/inventoryOperations/applyFilter", method=RequestMethod.POST)
     public String applyFilter(@ModelAttribute("filterModel") FilterModel filterModel, BindingResult bindingResult, FlashScope flashScope,
-                              HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext, String removeRule) {
+                              HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext, String removeRule) throws ParseException {
         
         if(StringUtils.isNotBlank(removeRule)) {
             filterModel.getFilterRules().remove(Integer.parseInt(removeRule));
@@ -114,7 +115,8 @@ public class InventoryFilterController {
         }
         
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-        Set<InventoryIdentifier> inventory = inventoryOperationsFilterService.getInventory(filterModel.getFilterMode(), filterModel.getFilterRules(), energyCompany.getDefaultDateTimeZone());
+        Set<InventoryIdentifier> inventory = inventoryOperationsFilterService.getInventory(filterModel.getFilterMode(), 
+                                                                                           filterModel.getFilterRules(), energyCompany.getDefaultDateTimeZone(), userContext);
         
         if(inventory.isEmpty()) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.filterSelection.error.noInventory"));
@@ -125,7 +127,7 @@ public class InventoryFilterController {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String filterDescription = messageSourceAccessor.getMessage("yukon.common.collection.inventory.filterBased");
         
-        InventoryCollection temporaryCollection = memoryCollectionProducer.createCollection(inventory.iterator(), filterDescription);
+        YukonCollection temporaryCollection = memoryCollectionProducer.createCollection(inventory.iterator(), filterDescription);
         modelMap.addAttribute("inventoryCollection", temporaryCollection);
         modelMap.addAllAttributes(temporaryCollection.getCollectionParameters());
         return "redirect:inventoryActions";

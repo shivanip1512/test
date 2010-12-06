@@ -9,7 +9,7 @@
 
 <cti:includeScript link="/JavaScript/showSelectedDevices.js"/>
 
-<c:set value="${inventoryCollection.inventoryCount}" var="count"/>
+<c:set value="${inventoryCollection.count}" var="count"/>
 
 <%-- CREATE URL --%>
 <c:if test="${count > 0}">

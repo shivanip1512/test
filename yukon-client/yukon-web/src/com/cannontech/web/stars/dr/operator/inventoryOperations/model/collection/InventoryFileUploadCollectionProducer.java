@@ -18,7 +18,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
+import com.cannontech.common.bulk.collection.inventory.YukonCollection;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollectionType;
 import com.cannontech.common.bulk.iterator.CloseableIterator;
 import com.cannontech.common.bulk.iterator.CloseableIteratorWrapper;
@@ -35,7 +35,7 @@ import com.cannontech.web.common.collection.CollectionCreationException;
 import com.cannontech.web.common.collection.CollectionProducer;
 import com.google.common.collect.Maps;
 
-public class InventoryFileUploadCollectionProducer implements CollectionProducer<InventoryCollectionType, InventoryCollection> {
+public class InventoryFileUploadCollectionProducer implements CollectionProducer<InventoryCollectionType, YukonCollection> {
     
     private InventoryDao inventoryDao;
     private MemoryCollectionProducer memoryCollectionProducer;
@@ -52,7 +52,7 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
     }
     
     @Override
-    public InventoryCollection createCollection(HttpServletRequest request) throws ServletRequestBindingException {
+    public YukonCollection createCollection(HttpServletRequest request) throws ServletRequestBindingException {
 
         try {
             boolean isMultipart = ServletFileUpload.isMultipartContent(request);
@@ -73,13 +73,13 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
 
     }
 
-    private InventoryCollection handleInitialRequest(HttpServletRequest request, MultipartFile dataFile) throws ServletRequestBindingException, IOException, FileNotFoundException {
+    private YukonCollection handleInitialRequest(HttpServletRequest request, MultipartFile dataFile) throws ServletRequestBindingException, IOException, FileNotFoundException {
         int energyCompanyId = ServletRequestUtils.getRequiredIntParameter(request, "energyCompanyId");
-        InventoryCollection collection;
+        YukonCollection collection;
         
         InputStream inputStream = dataFile.getInputStream();
         
-        CloseableIterator<YukonInventory> inventoryIterator = getInventoryIterator(inputStream, energyCompanyId);
+        CloseableIterator<InventoryIdentifier> inventoryIterator = getInventoryIterator(inputStream, energyCompanyId);
         
         collection = memoryCollectionProducer.createCollection(inventoryIterator, dataFile.getOriginalFilename());
         
@@ -88,7 +88,7 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
         return collection;
     }
 
-    private CloseableIterator<YukonInventory> getInventoryIterator(InputStream inputStream, final int energyCompanyId) throws IOException {
+    private CloseableIterator<InventoryIdentifier> getInventoryIterator(InputStream inputStream, final int energyCompanyId) throws IOException {
         /* Create an iterator to iterate through the file line by line */
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         CSVReader csvReader = new CSVReader(inputStreamReader);
@@ -108,7 +108,7 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
             }
         }
         
-        ObjectMapper<String[], YukonInventory> yukonInventoryMapper = new ObjectMapper<String[], YukonInventory>() {
+        ObjectMapper<String[], InventoryIdentifier> yukonInventoryMapper = new ObjectMapper<String[], InventoryIdentifier>() {
             
             @Override
             public InventoryIdentifier map(String[] from) throws ObjectMappingException {
@@ -134,7 +134,7 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
             }
         };
             
-        Iterator<YukonInventory> inventoryIterator = new MappingIterator<String[], YukonInventory>(iterator, yukonInventoryMapper);
+        Iterator<InventoryIdentifier> inventoryIterator = new MappingIterator<String[], InventoryIdentifier>(iterator, yukonInventoryMapper);
         return CloseableIteratorWrapper.getCloseableIterator(inventoryIterator);
     }
 

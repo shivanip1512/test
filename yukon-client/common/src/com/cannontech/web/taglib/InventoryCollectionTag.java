@@ -9,11 +9,11 @@ import javax.servlet.jsp.tagext.SimpleTagSupport;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
-import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
+import com.cannontech.common.bulk.collection.inventory.YukonCollection;
 
 public class InventoryCollectionTag extends SimpleTagSupport {
 
-    InventoryCollection inventoryCollection = null;
+    YukonCollection yukonCollection = null;
 
     @Override
     public void doTag() throws JspException, IOException {
@@ -21,8 +21,8 @@ public class InventoryCollectionTag extends SimpleTagSupport {
         JspWriter out = getJspContext().getOut();
 
         // Write out all of the parameters as hidden fields
-        if (inventoryCollection != null) {
-            Map<String, String> collectionParameters = inventoryCollection.getCollectionParameters();
+        if (yukonCollection != null) {
+            Map<String, String> collectionParameters = yukonCollection.getCollectionParameters();
             for (String name : collectionParameters.keySet()) {
                 String value = collectionParameters.get(name);
                 out.write("<input type=\"hidden\" name=\"" + name + "\" value=\"" + StringEscapeUtils.escapeXml(value) + "\" >");
@@ -31,8 +31,8 @@ public class InventoryCollectionTag extends SimpleTagSupport {
 
     }
     
-    public void setInventoryCollection(InventoryCollection inventoryCollection) {
-        this.inventoryCollection = inventoryCollection;
+    public void setInventoryCollection(YukonCollection yukonCollection) {
+        this.yukonCollection = yukonCollection;
     }
     
 }
