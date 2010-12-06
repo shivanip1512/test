@@ -12,8 +12,12 @@ import org.joda.time.ReadablePeriod;
 import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
+import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -44,9 +48,55 @@ public class HardwareConfigService {
 
     private class EnergyCompanyRunnable implements Runnable {
         int energyCompanyId;
+        List<DeviceErrorDescription> errors = Lists.newArrayList();
 
         EnergyCompanyRunnable(int energyCompanyId) {
             this.energyCompanyId = energyCompanyId;
+        }
+
+        void blockingCommandExecute(final LiteStarsLMHardware hardware, String command, LiteYukonUser user)
+                throws CommandCompletionException {
+            errors.clear();
+            CommandCompletionCallback<CommandRequestRoute> callback =
+                new CommandCompletionCallbackAdapter<CommandRequestRoute>() {
+                    @Override
+                    public void receivedIntermediateError(CommandRequestRoute command,
+                            DeviceErrorDescription error) {
+                        log.error("Could not execute command for inventory with id: " +
+                                  hardware.getInventoryID() + " Error: " + error.toString());
+                        errors.add(error);
+                    }
+
+                    @Override
+                    public void receivedLastError(CommandRequestRoute command,
+                            DeviceErrorDescription error) {
+                        receivedIntermediateError(command, error);
+                        log.debug("got last error for " + command.getCommand());
+                        synchronized (errors) {
+                            errors.notify();
+                        }
+                    }
+
+                    @Override
+                    public void receivedLastResultString(CommandRequestRoute command, String value) {
+                        log.debug("got last result string for " + command.getCommand());
+                        synchronized (errors) {
+                            errors.notify();
+                        }
+                    }
+            };
+            commandRequestHardwareExecutor.execute(hardware, command, user, callback);
+            synchronized (errors) {
+                boolean done = false;
+                while (!done) {
+                    try {
+                        errors.wait();
+                        done = true;
+                    } catch (InterruptedException e) {
+                        log.info("wait interrupted");
+                    }
+                }
+            }
         }
 
         @Override
@@ -90,7 +140,7 @@ public class HardwareConfigService {
                         }
                         if (shortestDelayInMillis < 0) shortestDelayInMillis = 0;
                         log.debug("using delay of " + shortestDelayInMillis + " ms");
-                        // (We're estimating 2 commands per config.)
+                        // (We're estimating 2 command per config.)
                         int numItems = shortestDelayInMillis > 0
                             ? (int) Math.round(60.0 * 1000.0 / shortestDelayInMillis / 2.0) : 100;
                         numItems = Math.max(Math.min(numItems, 100), 1);
@@ -112,9 +162,13 @@ public class HardwareConfigService {
                                     for (String command : commands) {
                                         log.debug("processing command [" + command + "]");
                                         try {
-                                            commandRequestHardwareExecutor.execute(hardware, command, user);
+                                            blockingCommandExecute(hardware, command, user);
+                                            if (!errors.isEmpty()) {
+                                                log.error(errors.size() + " error(s) executing command [" + command + "]");
+                                                status = Status.FAIL;
+                                            }
                                         } catch (CommandCompletionException cce) {
-                                            log.error("error executing command [" + command + "]");
+                                            log.error("exception executing command [" + command + "]");
                                             status = Status.FAIL;
                                         }
                                         try {
