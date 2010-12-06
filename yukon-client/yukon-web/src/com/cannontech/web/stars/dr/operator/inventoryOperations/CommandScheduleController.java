@@ -17,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.events.loggers.CommandScheduleEventLogService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SimplePeriodFormat;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
 import com.cannontech.stars.dr.hardware.model.CommandSchedule;
 import com.cannontech.user.YukonUserContext;
@@ -39,6 +41,7 @@ public class CommandScheduleController {
     private CommandScheduleValidator validator;
     private CommandScheduleEventLogService commandScheduleEventLogService;
     private EnergyCompanyDao energyCompanyDao;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     /* Command Schedule Edit/Creation page */
     @RequestMapping(value = "/operator/inventory/inventoryOperations/commandSchedule", method = RequestMethod.GET)
@@ -48,8 +51,13 @@ public class CommandScheduleController {
         if (scheduleId > 0) {
             commandSchedule = commandScheduleDao.getById(scheduleId);
             modelMap.addAttribute("mode", PageEditMode.EDIT);
+            String cronDescription = cronExpressionTagService.getDescription(commandSchedule.getStartTimeCronString(), userContext);
+            modelMap.addAttribute("displayName", cronDescription);
         } else {
             modelMap.addAttribute("mode", PageEditMode.CREATE);
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String displayName = messageSourceAccessor.getMessage("yukon.web.modules.operator.commandSchedule.createSchedule");
+            modelMap.addAttribute("displayName", displayName);
         }
         
         schedule.setCommandSchedule(commandSchedule);
@@ -165,4 +173,10 @@ public class CommandScheduleController {
     public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
         this.energyCompanyDao = energyCompanyDao;
     }
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
+    }
+    
 }

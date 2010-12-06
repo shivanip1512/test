@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
@@ -80,14 +81,16 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             break;
             
         case LOAD_GROUP:
-            sql.append("(lmhcg.LmGroupId").in(Lists.newArrayList(rule.getGroupIds().split(",")));
+            List<String> groupIds = Lists.newArrayList(StringUtils.split(rule.getGroupIds(), ","));
+            sql.append("(lmhcg.LmGroupId").in(groupIds);
             sql.append("AND lmhcg.GroupEnrollStart IS NOT NULL");
             sql.append("AND lmhcg.GroupEnrollStop IS NULL");
             sql.append("AND lmhcg.Type").eq(1).append(")");
             break;
             
         case PROGRAM:
-            sql.append("(lmhcg.ProgramId").in(Lists.newArrayList(rule.getProgramIds().split(",")));
+            List<String> programIds = Lists.newArrayList(StringUtils.split(rule.getProgramIds(), ","));
+            sql.append("(lmhcg.ProgramId").in(programIds);
             sql.append("AND lmhcg.GroupEnrollStart IS NOT NULL");
             sql.append("AND lmhcg.GroupEnrollStop IS NULL");
             sql.append("AND lmhcg.Type").eq(1).append(")");
@@ -103,8 +106,8 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             break;
             
         case SERIAL_NUMBER_RANGE:
-            sql.append("(lmhb.ManufacturerSerialNumber").gte(rule.getSerialNumberFrom().toString()).append("AND");
-            sql.append("lmhb.ManufacturerSerialNumber").lte(rule.getSerialNumberTo().toString()).append(")");
+            sql.append("(lmhb.ManufacturerSerialNumber").gte(rule.getSerialNumberFrom()).append("AND");
+            sql.append("lmhb.ManufacturerSerialNumber").lte(rule.getSerialNumberTo()).append(")");
             break;
             
         case UNENROLLED:

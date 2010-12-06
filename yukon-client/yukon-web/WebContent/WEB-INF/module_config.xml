@@ -1305,10 +1305,11 @@
                             </page>
                             <page name="commandSchedule.CREATE" type="BASIC">
                                 <menu>inventory|inventoryOperations</menu>
+                                <labelArgument>${displayName}</labelArgument>
                             </page>
                             <page name="commandSchedule.EDIT" type="DETAIL">
                                 <menu>inventory|inventoryOperations</menu>
-                                <labelArgument>${scheduleName}</labelArgument>
+                                <labelArgument>${displayName}</labelArgument>
                             </page>
                             <page name="inventoryActions" type="DETAIL">
                                 <menu>inventory|inventoryOperations</menu>

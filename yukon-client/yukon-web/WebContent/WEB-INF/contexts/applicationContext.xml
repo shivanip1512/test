@@ -1398,6 +1398,7 @@
     <bean class="com.cannontech.web.updater.deviceReconfig.handler.SuccessCountUpdaterHandler"/>
 
     <bean id="commandScheduleValidator" class="com.cannontech.web.stars.dr.operator.inventoryOperations.CommandScheduleValidator"/>
+    <bean id="filterModelValidator" class="com.cannontech.web.stars.dr.operator.inventoryOperations.FilterModelValidator"/>
 
     <!-- OPERATOR -->
     <bean id="operatorAccountService" class="com.cannontech.web.stars.dr.operator.service.impl.OperatorAccountServiceImpl"/>

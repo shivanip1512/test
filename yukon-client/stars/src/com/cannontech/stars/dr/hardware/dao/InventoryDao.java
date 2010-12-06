@@ -74,4 +74,8 @@ public interface InventoryDao {
 
     public List<DisplayableLmHardware> getDisplayableLMHardware(List<? extends YukonInventory> inventoryIdentifiers);
 
+    public boolean checkAccountNumber(int inventoryId, String accountNumber);
+
+    public boolean checkdeviceType(int inventoryId, String deviceType);
+
 }

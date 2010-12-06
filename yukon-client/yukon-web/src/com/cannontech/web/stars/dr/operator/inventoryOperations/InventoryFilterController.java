@@ -10,8 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -25,13 +27,17 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.CollectionCreationException;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.type.DateType;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.operator.inventoryOperations.model.FilterMode;
@@ -50,6 +56,7 @@ public class InventoryFilterController {
     private StarsDatabaseCache starsDatabaseCache;
     private YukonListDao yukonListDao;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
+    private FilterModelValidator filterModelValidator;
     
     /* Setup Filter Rules */
     @RequestMapping(value = "/operator/inventory/inventoryOperations/setupFilterRules")
@@ -89,7 +96,7 @@ public class InventoryFilterController {
     
     /* Apply Filter */
     @RequestMapping(value = "/operator/inventory/inventoryOperations/applyFilter", method=RequestMethod.POST)
-    public String applyFilter(@ModelAttribute("filterModel") FilterModel filterModel, 
+    public String applyFilter(@ModelAttribute("filterModel") FilterModel filterModel, BindingResult bindingResult, FlashScope flashScope,
                               HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext, String removeRule) {
         
         if(StringUtils.isNotBlank(removeRule)) {
@@ -98,8 +105,22 @@ public class InventoryFilterController {
             return "operator/inventory/inventoryOperations/setupFilterRules.jsp";
         }
         
+        filterModelValidator.validate(filterModel, bindingResult);
+        if(bindingResult.hasErrors()) {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            setupFilterSelectionModelMap(modelMap, userContext);
+            return "operator/inventory/inventoryOperations/setupFilterRules.jsp";
+        }
+        
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
         Set<InventoryIdentifier> inventory = inventoryOperationsFilterService.getInventory(filterModel.getFilterMode(), filterModel.getFilterRules(), energyCompany.getDefaultDateTimeZone());
+        
+        if(inventory.isEmpty()) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.filterSelection.error.noInventory"));
+            setupFilterSelectionModelMap(modelMap, userContext);
+            return "operator/inventory/inventoryOperations/setupFilterRules.jsp";
+        }
         
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String filterDescription = messageSourceAccessor.getMessage("yukon.common.collection.inventory.filterBased");
@@ -169,6 +190,11 @@ public class InventoryFilterController {
     @Autowired
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
+    }
+    
+    @Autowired
+    public void setFilterModelValidator(FilterModelValidator filterModelValidator) {
+        this.filterModelValidator = filterModelValidator;
     }
     
 }

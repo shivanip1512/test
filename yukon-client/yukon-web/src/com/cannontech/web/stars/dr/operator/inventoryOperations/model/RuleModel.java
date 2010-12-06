@@ -1,18 +1,16 @@
 package com.cannontech.web.stars.dr.operator.inventoryOperations.model;
 
-import java.util.Date;
-
 import com.cannontech.common.constants.YukonListEntry;
 
 public class RuleModel {
     private FilterRuleType ruleType;
     private String groupIds;
     private String programIds;
-    private Date fieldInstallDate;
-    private Date programSignupDate;
+    private String fieldInstallDate;
+    private String programSignupDate;
     private YukonListEntry deviceType;
-    private Integer serialNumberFrom;
-    private Integer serialNumberTo;
+    private String serialNumberFrom;
+    private String serialNumberTo;
     private String unenrolled;
     private String description;
 
@@ -48,19 +46,19 @@ public class RuleModel {
         this.programIds = programIds;
     }
 
-    public Date getFieldInstallDate() {
+    public String getFieldInstallDate() {
         return fieldInstallDate;
     }
 
-    public void setFieldInstallDate(Date fieldInstallDate) {
+    public void setFieldInstallDate(String fieldInstallDate) {
         this.fieldInstallDate = fieldInstallDate;
     }
 
-    public Date getProgramSignupDate() {
+    public String getProgramSignupDate() {
         return programSignupDate;
     }
 
-    public void setProgramSignupDate(Date programSignupDate) {
+    public void setProgramSignupDate(String programSignupDate) {
         this.programSignupDate = programSignupDate;
     }
 
@@ -72,19 +70,19 @@ public class RuleModel {
         this.deviceType = deviceType;
     }
 
-    public Integer getSerialNumberFrom() {
+    public String getSerialNumberFrom() {
         return serialNumberFrom;
     }
 
-    public void setSerialNumberFrom(Integer serialNumberFrom) {
+    public void setSerialNumberFrom(String serialNumberFrom) {
         this.serialNumberFrom = serialNumberFrom;
     }
 
-    public Integer getSerialNumberTo() {
+    public String getSerialNumberTo() {
         return serialNumberTo;
     }
 
-    public void setSerialNumberTo(Integer serialNumberTo) {
+    public void setSerialNumberTo(String serialNumberTo) {
         this.serialNumberTo = serialNumberTo;
     }
 

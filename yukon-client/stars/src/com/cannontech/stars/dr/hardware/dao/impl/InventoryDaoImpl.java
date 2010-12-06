@@ -423,6 +423,32 @@ public class InventoryDaoImpl implements InventoryDao {
     	
     	return defId;
     }
+    
+    @Override
+    public boolean checkAccountNumber(int inventoryId, String accountNumber) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ca.AccountNumber");
+        sql.append("FROM InventoryBase ib");
+        sql.append(  "JOIN CustomerAccount ca ON ca.AccountId = ib.AccountId");
+        sql.append("WHERE ib.InventoryId").eq(inventoryId);
+        
+        String result = yukonJdbcTemplate.queryForString(sql);
+        
+        return result.equalsIgnoreCase(accountNumber);
+    }
+
+    @Override
+    public boolean checkdeviceType(int inventoryId, String deviceType) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT yle.EntryText");
+        sql.append("FROM LmHardwareBase lmhb");
+        sql.append(  "JOIN YukonListEntry yle ON yle.EntryId = lmhb.LmHardwareTypeId");
+        sql.append("WHERE lmhb.InventoryId").eq(inventoryId);
+        
+        String result = yukonJdbcTemplate.queryForString(sql);
+        
+        return result.equalsIgnoreCase(deviceType);
+    }
 
     @Autowired
     public void setJdbcTemplate(YukonJdbcTemplate jdbcTemplate) {
