@@ -115,6 +115,11 @@ public interface PointDao {
     public LitePoint getLitePoint(PaoPointIdentifier paoPointIdentifier);
     
     /**
+     * Optimized lookup of just the point id.
+     */
+    public int getPointId(PaoPointIdentifier paoPointIdentifier);
+    
+    /**
      * Similar to getPointIDByDeviceID_Offset_PointType, but will returns the actual LitePoint
      * and throws a NotFoundException if the point doesn't exist (instead of returning 0).
      * @param deviceId

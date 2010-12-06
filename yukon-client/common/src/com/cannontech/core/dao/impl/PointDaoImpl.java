@@ -271,6 +271,23 @@ public final class PointDaoImpl implements PointDao {
         PointType pointType = paoPointIdentifier.getPointIdentifier().getPointType();
         return getLitePointIdByDeviceId_Offset_PointType(paoId, offset, pointType.getPointTypeId());
 	}
+	
+	@Override
+	public int getPointId(PaoPointIdentifier paoPointIdentifier) {
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+	    sql.append("SELECT pointid");
+	    sql.append("FROM Point");
+	    sql.append("WHERE PaObjectId").eq(paoPointIdentifier.getPaoIdentifier().getPaoId());
+	    sql.append("  AND PointOffset").eq(paoPointIdentifier.getPointIdentifier().getOffset());
+	    sql.append("  AND PointType").eq_k(paoPointIdentifier.getPointIdentifier().getPointType());
+
+	    try {
+	        int pointId = simpleJdbcTemplate.queryForInt(sql);
+	        return pointId;
+	    } catch (IncorrectResultSizeDataAccessException e) {
+	        throw new NotFoundException("unable to find pointId for " + paoPointIdentifier, e);
+	    }
+	}
 
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.PointDao#getPointIDByDeviceID_Offset_PointType(int, int, int)

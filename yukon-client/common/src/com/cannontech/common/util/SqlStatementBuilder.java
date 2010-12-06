@@ -161,6 +161,23 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
+    public SqlStatementBuilder eq_k(int constant) {
+        statement.append("= ");
+        statement.append(Integer.toString(constant));
+        return this;
+    }
+    
+    public SqlStatementBuilder eq_k(Enum<?> constant) {
+        statement.append("= '");
+        if (constant instanceof DatabaseRepresentationSource) {
+            statement.append(((DatabaseRepresentationSource) constant).getDatabaseRepresentation());
+        } else {
+            statement.append(((Enum<?>) constant).name());
+        }
+        statement.append("'");
+        return this;
+    }
+    
     public SqlStatementBuilder neq(Object argument) {
         statement.append("!= ");
         appendArgument(argument);
@@ -340,5 +357,6 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     public Object[] getArguments() {
     	return arguments.toArray();
     }
+
 
 }
