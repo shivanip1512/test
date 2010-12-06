@@ -20,9 +20,8 @@
     
     <jms:listener-container 
         connection-factory="connectionFactory" 
-        task-executor="globalTaskExecutor" 
         destination-type="queue"
-        concurrency="2"
+        concurrency="3"
         container-type="simple">
         <jms:listener destination="yukon.rr.obj.amr.rfn.MeterReadingArchiveRequest" ref="meterReadingArchiveRequestListener" method="handleArchiveRequest"/>
         <jms:listener destination="yukon.rr.obj.amr.rfn.MeterReadingArchiveProcessingRequest" ref="meterReadingArchiveRequestListener" method="handleArchiveProcessingRequest"/>
@@ -30,7 +29,6 @@
 
     <jms:listener-container 
         connection-factory="connectionFactory" 
-        task-executor="globalTaskExecutor" 
         destination-type="queue"
         concurrency="1"
         container-type="simple">

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
@@ -40,8 +41,11 @@ import com.cannontech.common.events.loggers.RfnMeteringEventLogService;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.TransactionTemplateHelper;
+import com.cannontech.database.cache.DBChangeListener;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.base.Function;
 import com.google.common.collect.ComputationException;
@@ -65,11 +69,21 @@ public class MeterReadingArchiveRequestListener {
     private TransactionTemplate transactionTemplate;
     private ConfigurationSource configurationSource;
     private RfnMeteringEventLogService rfnMeteringEventLogService;
+    private AsyncDynamicDataSource asyncDynamicDataSource;
 
     private String meterTemplatePrefix;
     private Map<RfnMeterIdentifier, RfnMeter> existingMeterLookup;
+    private Map<String, Boolean> uncreatableTemplates;
     private ConcurrentHashMultiset<String> unknownTemplatesEncountered = ConcurrentHashMultiset.create();
     private Set<String> templatesToIgnore;
+
+    private AtomicInteger meterLookupAttempt = new AtomicInteger();
+    private AtomicInteger meterLookupCacheMiss = new AtomicInteger();
+    private AtomicInteger meterLookupError = new AtomicInteger();
+    private AtomicInteger newMeterCreated = new AtomicInteger();
+    private AtomicInteger meterFoundOnCreate = new AtomicInteger();
+    private AtomicInteger processedArchiveRequest = new AtomicInteger();
+    private AtomicInteger archivedReadings = new AtomicInteger();
     
     @PostConstruct
     public void startup() {
@@ -87,14 +101,31 @@ public class MeterReadingArchiveRequestListener {
         
         existingMeterLookup = new MapMaker()
             .concurrencyLevel(4)
-            .expiration(60, TimeUnit.SECONDS)
+            .expiration(4, TimeUnit.MINUTES)
             .makeComputingMap(new Function<RfnMeterIdentifier, RfnMeter>() {
                 @Override
                 public RfnMeter apply(RfnMeterIdentifier meterIdentifier) {
+                    meterLookupCacheMiss.incrementAndGet();
                     RfnMeter rfnMeter = rfnMeterDao.getMeter(meterIdentifier);
                     return rfnMeter;
                 }
             });
+        
+        uncreatableTemplates = new MapMaker()
+            .concurrencyLevel(10)
+            .expiration(5, TimeUnit.SECONDS)
+            .makeMap();
+        
+        asyncDynamicDataSource.addDBChangeListener(new DBChangeListener() {
+            @Override
+            public void dbChangeReceived(DBChangeMsg dbChange) {
+                if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
+                    // no reason to be too delicate here
+                    existingMeterLookup.clear();
+                    uncreatableTemplates.clear();
+                }
+            }
+        });
     }
     
     public void handleArchiveRequestMessage(Message message) {
@@ -132,9 +163,11 @@ public class MeterReadingArchiveRequestListener {
             try {
                 // a simple computing map is used as a cache here to handle
                 // multiple requests for the same device in a short period of time
+                meterLookupAttempt.incrementAndGet();
                 RfnMeter rfnMeter = existingMeterLookup.get(meterIdentifier);
                 queueForArchiveProcessing(rfnMeter, archiveRequest);
             } catch (ComputationException e) {
+                meterLookupError.incrementAndGet();
                 LogHelper.debug(log, "unable to find existing meter, send to create queue: %s", e.getCause().getMessage());
                 
                 jmsTemplate.convertAndSend("yukon.rr.obj.amr.rfn.MeterReadingArchiveRequest.create", archiveRequest);
@@ -174,6 +207,7 @@ public class MeterReadingArchiveRequestListener {
         try {
             try {
                 rfnMeter = rfnMeterDao.getMeter(meterIdentifier);
+                meterFoundOnCreate.incrementAndGet();
                 LogHelper.debug(log, "Found matching meter on new meter lookup: %s", rfnMeter);
                 queueForArchiveProcessing(rfnMeter, archiveRequest);
                 return;
@@ -181,6 +215,7 @@ public class MeterReadingArchiveRequestListener {
                 // fall through
             }
             rfnMeter = createMeter(meterIdentifier);
+            newMeterCreated.incrementAndGet();
             LogHelper.debug(log, "Created new meter: %s", rfnMeter);
             queueForArchiveProcessing(rfnMeter, archiveRequest);
             return;
@@ -207,9 +242,10 @@ public class MeterReadingArchiveRequestListener {
         rfnMeterReadService.processMeterReadingDataMessage(meterPlusReadingData, messagesToSend);
 
         dynamicDataSource.putValues(messagesToSend);
+        archivedReadings.addAndGet(messagesToSend.size());
 
         sendAcknowledgement(processingRequest.getOriginalRequest());
-
+        processedArchiveRequest.incrementAndGet();
         LogHelper.debug(log, "%d PointDatas generated for RfnMeterReadingArchiveRequest", messagesToSend.size());
     }
     
@@ -222,6 +258,10 @@ public class MeterReadingArchiveRequestListener {
                 if (templatesToIgnore.contains(templateName)) {
                     throw new IgnoredTemplateException();
                 }
+                if (uncreatableTemplates.containsKey(templateName)) {
+                    unknownTemplatesEncountered.add(templateName, 1);
+                    throw new BadTemplateDeviceCreationException(templateName);
+                }
                 try {
                     String deviceName = meterIdentifier.getSensorSerialNumber().trim();
                     YukonDevice newDevice = deviceCreationService.createDeviceByTemplate(templateName, deviceName, true);
@@ -231,7 +271,13 @@ public class MeterReadingArchiveRequestListener {
                     rfnMeteringEventLogService.createdNewMeterAutomatically(meter.getPaoIdentifier().getPaoId(), meter.getMeterIdentifier().getCombinedIdentifier(), templateName, deviceName);
                     return meter;
                 } catch (BadTemplateDeviceCreationException e) {
-                    handleUnkownTemplate(meterIdentifier, templateName);
+                    uncreatableTemplates.put(templateName, Boolean.TRUE);
+                    int oldCount = unknownTemplatesEncountered.add(templateName, 1);
+                    if (oldCount == 0) {
+                        // we may log this multiple times if the server is restarted, but this if statement
+                        // seems to be a good idea to prevent excess 
+                        rfnMeteringEventLogService.receivedDataForUnkownMeterTemplate(templateName);
+                    }
                     throw e;
                 }
             }
@@ -239,15 +285,6 @@ public class MeterReadingArchiveRequestListener {
         });
         
         return result;
-    }
-
-    private void handleUnkownTemplate(final RfnMeterIdentifier meterIdentifier, String templateName) {
-        int oldCount = unknownTemplatesEncountered.add(templateName, 1);
-        if (oldCount == 0) {
-            // we may log this multiple times if the server is restarted, but this if statement
-            // seems to be a good idea to prevent excess 
-            rfnMeteringEventLogService.receivedDataForUnkownMeterTemplate(templateName);
-        }
     }
 
     private RfnMeterIdentifier getMeterIdentifier(RfnMeterReadingData meterReadingDataNotification) {
@@ -275,6 +312,8 @@ public class MeterReadingArchiveRequestListener {
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
     }
     
     @Autowired
@@ -307,8 +346,48 @@ public class MeterReadingArchiveRequestListener {
         this.rfnMeteringEventLogService = rfnMeteringEventLogService;
     }
     
+    @Autowired
+    public void setAsyncDynamicDataSource(AsyncDynamicDataSource asyncDynamicDataSource) {
+        this.asyncDynamicDataSource = asyncDynamicDataSource;
+    }
+    
     @ManagedAttribute
     public String getUnkownTempaltes() {
         return unknownTemplatesEncountered.entrySet().toString();
+    }
+    
+    @ManagedAttribute
+    public int getMeterLookupAttempt() {
+        return meterLookupAttempt.get();
+    }
+    
+    @ManagedAttribute
+    public int getMeterLookupCacheMiss() {
+        return meterLookupCacheMiss.get();
+    }
+    
+    @ManagedAttribute
+    public int getMeterLookupError() {
+        return meterLookupError.get();
+    }
+    
+    @ManagedAttribute
+    public int getNewMeterCreated() {
+        return newMeterCreated.get();
+    }
+    
+    @ManagedAttribute
+    public int getMeterFoundOnCreate() {
+        return meterFoundOnCreate.get();
+    }
+    
+    @ManagedAttribute
+    public int getProcessedArchiveRequest() {
+        return processedArchiveRequest.get();
+    }
+    
+    @ManagedAttribute
+    public int getArchivedReadings() {
+        return archivedReadings.get();
     }
 }

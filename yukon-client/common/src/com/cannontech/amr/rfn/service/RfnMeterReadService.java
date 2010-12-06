@@ -23,14 +23,12 @@ import com.cannontech.amr.rfn.service.pointmapping.UnitOfMeasureToPointMapper;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Lists;
 
@@ -149,22 +147,22 @@ public class RfnMeterReadService {
             }
             LogHelper.debug(log, "Got PointValueHandler %s", pointValueHandler);
             
-            LitePoint point;
+            int pointId;
             try {
                 // this call is probably a little heavy considering how little of the LitePoint is actually needed
-                point = pointDao.getLitePoint(pointValueHandler.getPaoPointIdentifier());
+                pointId = pointDao.getPointId(pointValueHandler.getPaoPointIdentifier());
             } catch (NotFoundException e) {
                 LogHelper.debug(log, "Unable to find point for channelData: %s", channelData);
                 continue;
             }
             
             PointData pointData = new PointData();
-            pointData.setId(point.getLiteID());
+            pointData.setId(pointId);
             pointData.setPointQuality(PointQuality.Normal);
             double value = pointValueHandler.convert(channelData.getValue());
             pointData.setValue(value);
             pointData.setTime(readingInstant.toDate());
-            pointData.setType(point.getPointType());
+            pointData.setType(pointValueHandler.getPaoPointIdentifier().getPointIdentifier().getPointType().getPointTypeId());
             pointData.setTagsPointMustArchive(true); // temporary solution
             
             LogHelper.debug(log, "Generated PointData: %s", pointData);
