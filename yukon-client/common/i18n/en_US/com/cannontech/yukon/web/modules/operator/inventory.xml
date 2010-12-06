@@ -9,7 +9,7 @@
     <!-- /inventory/inventoryOperations/home.jsp -->
     <entry key="yukon.web.modules.operator.inventoryOperations.pageName">Inventory Operations</entry>
     <entry key="yukon.web.modules.operator.inventoryOperations.pageDescription">Inventory Operations</entry>
-    <entry key="yukon.web.modules.operator.inventoryOperations.deviceSelection.title">Choose Device Selection Type</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.deviceSelection.title">Choose Inventory Selection Type</entry>
     <entry key="yukon.web.modules.operator.inventoryOperations.selectInventoryButton.label">Select by Inventory</entry>
     <entry key="yukon.web.modules.operator.inventoryOperations.selectInventoryDescription">Choose inventory manually.</entry>
     <entry key="yukon.web.modules.operator.inventoryOperations.selectFileButton.label">Select by File Upload</entry>
@@ -25,8 +25,11 @@
     <entry key="yukon.web.modules.operator.inventoryOperations.noRecentOps">No Recent Operations</entry>
     <entry key="yukon.web.modules.operator.inventoryOperations.fileLabel">Inventory File</entry>
     <entry key="yukon.web.modules.operator.inventoryOperations.fileUploadTitle">Inventory File Chooser</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.noFile">A file is required for file upload inventory selection.</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.invalidColumnHeaders">File contains invalid column headers.</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.invalidInventoryData">File contains invalid inventory data.</entry>
     
-    <!-- /inventory/inventoryOperations/setupSelection.jsp -->
+    <!-- /inventory/inventoryOperations/setupFilterSelection.jsp -->
     <entry key="yukon.web.modules.operator.filterSelection.pageName">Inventory Selection</entry>
     <entry key="yukon.web.modules.operator.filterSelection.pageDescription">Inventory Selection</entry>
     <entry key="yukon.web.modules.operator.filterSelection.filterMode">Filter Mode</entry>
@@ -40,6 +43,10 @@
     <entry key="yukon.web.modules.operator.filterSelection.unenrolled">Not enrolled in any program.</entry>
     <entry key="yukon.web.modules.operator.filterSelection.select.label">Select</entry>
     <entry key="yukon.web.modules.operator.filterSelection.cancel">Cancel</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.error.noInventory">Filter returned no inventory.</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.error.invalidFieldInstallDate">Invalid field install date.</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.error.invalidProgramSignupDate">Invalid program sign-up date.</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.error.invalidSerialNumberRange">Invalid serial number range.</entry>
     
     <entry key="yukon.web.modules.operator.filterSelection.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
     <entry key="yukon.web.modules.operator.filterSelection.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
@@ -104,6 +111,7 @@
     <entry key="yukon.web.modules.operator.commandSchedule.confirmDeleteMessage">Are you sure you want to delete this command schedule entry?</entry>
     <entry key="yukon.web.modules.operator.commandSchedule.deleted">Command schedule entry deleted successfully.</entry>
     <entry key="yukon.web.modules.operator.commandSchedule.created">Command schedule entry created successfully.</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.createSchedule">Create Command Schedule</entry>
     <entry key="yukon.web.modules.operator.commandSchedule.error.required.hours">Hours or Minutes must be set.</entry>
     <entry key="yukon.web.modules.operator.commandSchedule.error.required.minutes">Hours or Minutes must be set.</entry>
     <entry key="yukon.web.modules.operator.commandSchedule.error.required.seconds">Seconds must be set.</entry>

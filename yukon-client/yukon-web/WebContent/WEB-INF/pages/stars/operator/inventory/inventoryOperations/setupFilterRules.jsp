@@ -71,7 +71,7 @@
                                         <c:when test="${rule.ruleType eq 'LOAD_GROUP'}">
                                             <form:hidden path="filterRules[${row.index}].groupIds" id="groupIds_${row.index}"/>
                                             <tags:pickerDialog  type="lmGroupPaoPermissionCheckingPicker"
-                                                    id="loadGroupPicker" selectionProperty="paoName"
+                                                    id="loadGroupPicker_${row.index}" selectionProperty="paoName"
                                                     multiSelectMode="true"
                                                     destinationFieldId="groupIds_${row.index}" linkType="selection"/>
                                         </c:when>
@@ -79,7 +79,7 @@
                                         <c:when test="${rule.ruleType eq 'PROGRAM'}">
                                             <form:hidden path="filterRules[${row.index}].programIds" id="programIds_${row.index}"/>
                                             <tags:pickerDialog  type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
-                                                    id="loadProgramPicker" selectionProperty="paoName"
+                                                    id="loadProgramPicker_${row.index}" selectionProperty="paoName"
                                                     multiSelectMode="true"
                                                     extraArgs="${energyCompanyId}"
                                                     destinationFieldId="programIds_${row.index}" linkType="selection"/>
@@ -122,12 +122,12 @@
             <tfoot>
                 <tr>
                     <td colspan="3">
-                        <cti:button key="add" type="submit" name="addButton"/>
                         <select name="ruleType">
                             <c:forEach items="${ruleTypes}" var="ruleType">
                                 <option value="${ruleType}"><cti:formatObject value="${ruleType}"/></option>
                             </c:forEach>
                         </select>
+                        <cti:button key="add" type="submit" name="addButton"/>
                      </td>
                 </tr>
             </tfoot>

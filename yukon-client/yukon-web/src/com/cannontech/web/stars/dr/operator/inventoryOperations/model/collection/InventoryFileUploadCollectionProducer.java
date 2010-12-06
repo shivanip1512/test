@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +31,7 @@ import com.cannontech.common.util.MappingIterator;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.tools.csv.CSVReader;
+import com.cannontech.web.common.collection.CollectionCreationException;
 import com.cannontech.web.common.collection.CollectionProducer;
 import com.google.common.collect.Maps;
 
@@ -62,7 +64,7 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
 
             MultipartFile dataFile = mRequest.getFile(getSupportedType().getParameterName("dataFile"));
             if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
-                throw new RuntimeException("dataFile is null");
+                throw new CollectionCreationException("noFile");
             }
             return handleInitialRequest(request, dataFile);
         } catch (IOException e) {
@@ -87,7 +89,7 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
     }
 
     private CloseableIterator<YukonInventory> getInventoryIterator(InputStream inputStream, final int energyCompanyId) throws IOException {
-        // Create an iterator to iterate through the file line by line
+        /* Create an iterator to iterate through the file line by line */
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         CSVReader csvReader = new CSVReader(inputStreamReader);
         
@@ -98,8 +100,12 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
         final Map<ColumnHeader, Integer> columnHeaderIndexMap = Maps.newEnumMap(ColumnHeader.class);
         
         for(int i = 0; i < columnHeaders.length; i++) {
-            ColumnHeader columnHeader = ColumnHeader.valueOf(columnHeaders[i]);
-            columnHeaderIndexMap.put(columnHeader, i);
+            try {
+                ColumnHeader columnHeader = ColumnHeader.valueOf(columnHeaders[i]);
+                columnHeaderIndexMap.put(columnHeader, i);
+            } catch (IllegalArgumentException e) {
+                throw new CollectionCreationException("invalidColumnHeaders", e);
+            }
         }
         
         ObjectMapper<String[], YukonInventory> yukonInventoryMapper = new ObjectMapper<String[], YukonInventory>() {
@@ -111,11 +117,20 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
                 String deviceType = from[columnHeaderIndexMap.get(ColumnHeader.DEVICE_TYPE)];
                 String accountNumber = from[columnHeaderIndexMap.get(ColumnHeader.ACCOUNT_NUMBER)];
                 
-                
-                YukonInventory yukonInventory = inventoryDao.getYukonInventory(serialNumber, energyCompanyId);
-                //TODO Throw some errors if device type and account don't match;
-                
-                return yukonInventory.getInventoryIdentifier();
+                try {
+                    YukonInventory yukonInventory = inventoryDao.getYukonInventory(serialNumber, energyCompanyId);
+                    
+                    boolean accountNumberOK = inventoryDao.checkAccountNumber(yukonInventory.getInventoryIdentifier().getInventoryId(), accountNumber);
+                    boolean deviceTypeOK = inventoryDao.checkdeviceType(yukonInventory.getInventoryIdentifier().getInventoryId(), deviceType);
+                    
+                    if (!(accountNumberOK && deviceTypeOK)) {
+                        throw new CollectionCreationException("invalidInventoryData");
+                    }
+                    
+                    return yukonInventory.getInventoryIdentifier();
+                } catch (DataAccessException e) {
+                    throw new CollectionCreationException("invalidInventoryData", e);
+                }
             }
         };
             

@@ -31,12 +31,42 @@
 
             <tags:nameValue2 nameKey=".duration">
                 <span><i:inline key=".hours"/></span>
-                <span><tags:input path="hours" size="3"/></span><br>
-            </tags:nameValue2>
-            
-            <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
+                <spring:bind path="hours">
+                    <%-- VIEW MODE --%>
+                    <cti:displayForPageEditModes modes="VIEW">
+                    ${status.value}
+                    </cti:displayForPageEditModes>
+                    <%-- EDIT/CREATE MODE --%>
+                    <cti:displayForPageEditModes modes="EDIT,CREATE">
+                        <c:set var="inputClass" value=""/>
+                        <c:if test="${status.error}">
+                            <c:set var="inputClass" value="error"/>
+                        </c:if>
+                        <form:input path="hours" size="3" cssClass="${inputClass}"/>
+                    </cti:displayForPageEditModes>
+                </spring:bind>
+                
                 <span><i:inline key=".minutes"/></span>
-                <span><tags:input  path="minutes" size="3"/></span>
+                <spring:bind path="minutes">
+                    <%-- VIEW MODE --%>
+                    <cti:displayForPageEditModes modes="VIEW">
+                    ${status.value}
+                    </cti:displayForPageEditModes>
+                    <%-- EDIT/CREATE MODE --%>
+                    <cti:displayForPageEditModes modes="EDIT,CREATE">
+                        <c:set var="inputClass" value=""/>
+                        <c:if test="${status.error}">
+                            <c:set var="inputClass" value="error"/>
+                        </c:if>
+                        <form:input path="minutes" size="3" cssClass="${inputClass}"/>
+                    </cti:displayForPageEditModes>
+                </spring:bind>
+                
+                
+                <div><form:errors path="hours" cssClass="errorMessage"/></div>
+                <div><form:errors path="minutes" cssClass="errorMessage"/></div>
+                <br>
+
             </tags:nameValue2>
 
             <tags:nameValue2 nameKey=".delayPeriod">

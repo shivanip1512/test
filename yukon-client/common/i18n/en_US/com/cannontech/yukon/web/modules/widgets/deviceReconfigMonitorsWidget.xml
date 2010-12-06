@@ -9,7 +9,7 @@
     <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.remove">Remove</entry>
     <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.delete">Delete {0}</entry>
     <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.confirmDelete">Are you sure you want to delete {0}?</entry>
-    <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.noTasks">No Device Reconfigurations</entry>
+    <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.noTasks">No Device Reconfiguration Tasks</entry>
     <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.complete">Complete</entry>
 
 </properties>

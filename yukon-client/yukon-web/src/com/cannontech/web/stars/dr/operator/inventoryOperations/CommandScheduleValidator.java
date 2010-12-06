@@ -53,12 +53,6 @@ public class CommandScheduleValidator extends SimpleValidator<CommandScheduleWra
             }
         }
         
-        /* Validate Duration */
-        if (hourValue + minuteValue <= 0) {
-            errors.rejectValue("minutes", "yukon.web.modules.operator.commandSchedule.error.durationLessThanZero.minutes");
-            errors.rejectValue("hours", "yukon.web.modules.operator.commandSchedule.error.durationLessThanZero.hours");
-        }
-        
         /* Validate Seconds */
         try {
             int seconds = Integer.parseInt(target.getSeconds());
@@ -67,6 +61,15 @@ public class CommandScheduleValidator extends SimpleValidator<CommandScheduleWra
             }
         } catch (NumberFormatException e) {
             errors.rejectValue("seconds", "yukon.web.modules.operator.commandSchedule.error.NaN.seconds");
+        }
+        
+        if(errors.hasErrors()) {
+            return;
+        }
+        
+        /* Validate Duration */
+        if (hourValue + minuteValue <= 0) {
+            errors.rejectValue("hours", "yukon.web.modules.operator.commandSchedule.error.durationLessThanZero.hours");
         }
         
     }

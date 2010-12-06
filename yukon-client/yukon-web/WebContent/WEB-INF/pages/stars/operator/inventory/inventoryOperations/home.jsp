@@ -23,7 +23,7 @@
     }
 
     function closeFileUpload() {
-        $('fileInput').value = '';
+        $('fileUpload.dataFile').value = '';
         $('fileUploadPopup').hide();
     }
     </script>
