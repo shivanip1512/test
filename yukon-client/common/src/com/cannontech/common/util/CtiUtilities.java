@@ -73,7 +73,7 @@ public final class CtiUtilities
     public static final String CELSIUS_CHARACTER = "C";
     public static final String FAHRENHEIT_CHARACTER = "F";
 	
-	public static final String COPYRIGHT = "Copyright (C)1999-2011 Cooper Industries, Ltd.";
+	public static final String COPYRIGHT = "Copyright (C)1999-2011 Cooper Industries plc.";
 	
 	public static final String USER_DIR = System.getProperty("user.home") + System.getProperty("file.separator");
 	public static final String CURRENT_DIR = System.getProperty("user.dir") + System.getProperty("file.separator");

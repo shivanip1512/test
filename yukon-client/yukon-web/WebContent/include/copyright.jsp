@@ -6,4 +6,4 @@
 		crYears = String.valueOf(crStartYear) + "-" + crYears;
 %>
 <font face="Arial, Helvetica, sans-serif" size="1">Copyright &copy; <%= crYears %>, 
-  Cooper Industries, Ltd. All rights reserved.</font> 
+  Cooper Industries plc. All rights reserved.</font> 

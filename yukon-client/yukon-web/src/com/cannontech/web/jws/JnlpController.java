@@ -65,7 +65,7 @@ public class JnlpController extends AbstractController {
         Element infoElem = new Element("information");
         jnlpElem.addContent(infoElem);
         infoElem.addContent(new Element("title").setText("Yukon® " + appTitle));
-        infoElem.addContent(new Element("vendor").setText("Cooper Industries, Ltd."));
+        infoElem.addContent(new Element("vendor").setText("Cooper Industries plc."));
         infoElem.addContent(new Element("homepage").setAttribute("href", "http://www.cannontech.com/"));
         infoElem.addContent(new Element("description").setText(appDescription));
         String safeIconUrl = ServletUtil.createSafeUrl(request, appIcon);
