@@ -160,10 +160,10 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 		    
 		    return true;
 
-		 // Check to see if there have been any energy company wide based temporary overrides.
-		 } else if (energyCompanyOptOutTemporaryOverride != null) {
+        // Check to see if there have been any energy company wide based temporary overrides.
+        } else if (energyCompanyOptOutTemporaryOverride != null) {
 
-		    // Opt Outs are disabled energy company wide and therefore are disabled for this account.
+            // Opt Outs are disabled energy company wide and therefore are disabled for this account.
             OptOutEnabled optOutEnabled = OptOutEnabled.valueOf(energyCompanyOptOutTemporaryOverride.getOptOutValue());
             if (optOutEnabled == OptOutEnabled.DISABLED) {
                 return false;
