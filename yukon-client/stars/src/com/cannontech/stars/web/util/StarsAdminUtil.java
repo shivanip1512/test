@@ -540,20 +540,6 @@ public class StarsAdminUtil {
 			if (cList.getOrdering().equalsIgnoreCase("A"))
 				Collections.sort( newEntries, StarsUtils.YUK_LIST_ENTRY_ALPHA_CMPTR );
 			
-			// Update the constant objects
-            Map<Integer,YukonListEntry> cListEntries = DaoFactory.getYukonListDao().getYukonListEntries();
-			synchronized (cListEntries) {
-				for (int i = 0; i < cList.getYukonListEntries().size(); i++) {
-					YukonListEntry entry = cList.getYukonListEntries().get(i);
-					DaoFactory.getYukonListDao().getYukonListEntries().remove( new Integer(entry.getEntryID()) );
-				}
-				
-				for (int i = 0; i < newEntries.size(); i++) {
-					YukonListEntry entry = newEntries.get(i);
-					DaoFactory.getYukonListDao().getYukonListEntries().put( new Integer(entry.getEntryID()), entry );
-				}
-			}
-			
 			cList.setYukonListEntries( newEntries );
 		}
 		finally {

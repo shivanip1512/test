@@ -1,15 +1,13 @@
 package com.cannontech.core.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -20,149 +18,213 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonListEntryRowMapper;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.util.Validator;
+import com.google.common.base.Function;
+import com.google.common.collect.MapMaker;
 
-/**
- * @author rneuharth
- *
- */
 public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao {
+
+    public class EnergyCompanyAndListName {
+        private String listName;
+        private int energyCompanyId;
+
+        public EnergyCompanyAndListName(int energyCompanyId, String listName) {
+            this.energyCompanyId = energyCompanyId;
+            this.listName = listName;
+        }
+    }
+
+    private AsyncDynamicDataSource asyncDynamicDataSource;
     private YukonJdbcTemplate yukonJdbcTemplate;
 
-    private static final String selectYukonListEntriesSql;
-    private static final String selectYukonSelectionListSql;
-    private static final String selectAllListEntriesSql;
-    private static final ParameterizedRowMapper<YukonListEntry> listEntryRowMapper;
-    private Map<Integer,YukonListEntry> yukonListEntries;
-    private Map<Integer,YukonSelectionList> yukonSelectionLists;
-	
-    static {
+    // Base Queries
+    private SqlStatementBuilder selectYukonListEntriesSql = new SqlStatementBuilder();
+    {
+        selectYukonListEntriesSql.append("SELECT EntryId, ListId, EntryOrder, EntryText, YukonDefinitionId");
+        selectYukonListEntriesSql.append("FROM YukonListEntry");
+    }
 
-        selectYukonListEntriesSql = "SELECT EntryID,ListID,EntryOrder,EntryText,YukonDefinitionID " + 
-                                    "FROM YukonListEntry ORDER BY EntryID,ListID";
-        
-        selectYukonSelectionListSql = "SELECT ListID, Ordering,SelectionLabel, WhereIsList," +
-        		                      "       ListName, UserUpdateAvailable, EnergyCompanyId " + 
-                                      "FROM YukonSelectionList " +
-                                      "WHERE ListID > " + CtiUtilities.NONE_ZERO_ID;
-        
-        selectAllListEntriesSql = "SELECT EntryID, ListID, EntryOrder, EntryText, YukonDefinitionID " +
-                                  "FROM YukonListEntry " +
-                                  "WHERE ListID = ?";
-        
-        listEntryRowMapper = new YukonListEntryRowMapper();
-        
+    private SqlStatementBuilder selectYukonSelectionListSql = new SqlStatementBuilder();
+    {
+        selectYukonSelectionListSql.append("SELECT ListId, Ordering,SelectionLabel, WhereIsList,");
+        selectYukonSelectionListSql.append("       ListName, UserUpdateAvailable, EnergyCompanyId"); 
+        selectYukonSelectionListSql.append("FROM YukonSelectionList");
     }
     
-	/**
-	 * Constructor for DaoFactory.getYukonListDao().
-	 */
-	private YukonListDaoImpl() {
-		super();
-	}
-
-	public YukonListEntry getYukonListEntry(final int entryId) {
-		final YukonListEntry entry = getYukonListEntries().get(Integer.valueOf(entryId));
-		if (entry == null ) throw new IllegalStateException("Unable to find YukonListEntry with an ID of " + entryId);
-		return entry;
-	}
+    // Cache
+    private ConcurrentMap<Integer,YukonListEntry> yukonListEntries;
+    private ConcurrentMap<Integer,YukonSelectionList> yukonSelectionLists;
+    private ConcurrentMap<EnergyCompanyAndListName, YukonSelectionList> yukonSelectionListByName;
     
-    public YukonSelectionList getYukonSelectionList(final int listID) {
-        final YukonSelectionList list = getYukonSelectionLists().get(Integer.valueOf(listID));
-        if( list == null ) throw new IllegalStateException("Unable to find YukonSelectionList with an ID of " + listID );
-        return list;
-    }
-	
-	public Map<Integer,YukonListEntry> getYukonListEntries() {
-        synchronized (this) {
-            if (yukonListEntries == null) {
-                yukonListEntries = initYukonListEntries();
-            }
-        }
-        return yukonListEntries;
-	}
+    private YukonSelectionList NULL_LIST = new YukonSelectionList();
+    private YukonListEntry NULL_ENTRY = new YukonListEntry();
     
-    public Map<Integer,YukonSelectionList> getYukonSelectionLists() {
-        synchronized (this) {
-            if (yukonSelectionLists == null) {
-                yukonSelectionLists = initYukonSelectionList();
-            }
-        }
-        return yukonSelectionLists;
+    @PostConstruct
+    public void initialize (){
+        createCacheObjects();
+        createDatabaseChangeListeners();
     }
 
-    private Map<Integer,YukonListEntry> initYukonListEntries() {
-        final Map<Integer,YukonListEntry> map = Collections.synchronizedMap(new HashMap<Integer,YukonListEntry>());
-        yukonJdbcTemplate.getJdbcOperations().query(selectYukonListEntriesSql, 
-                                                    new RowCallbackHandler() {
-            public void processRow(ResultSet rs) throws SQLException {
-                final int entryId = rs.getInt("EntryID"); 
-                final YukonListEntry entry = new YukonListEntry();
-                entry.setEntryID(entryId);
-                entry.setListID(rs.getInt("ListID"));
-                entry.setEntryOrder(rs.getInt("EntryOrder"));              
-                entry.setEntryText(rs.getString("EntryText"));
-                entry.setYukonDefID(rs.getInt("YukonDefinitionID"));
-                
-                map.put(entryId, entry);
-            }
-        });
-        return map;
-    }
-	
-    private Map<Integer,YukonSelectionList> initYukonSelectionList() {
-        final Map<Integer,YukonSelectionList> map = 
-            Collections.synchronizedMap(new HashMap<Integer,YukonSelectionList>());
-        yukonJdbcTemplate.getJdbcOperations().query(selectYukonSelectionListSql, 
-                                                    new RowCallbackHandler() {
-            public void processRow(ResultSet rs) throws SQLException {
-                final int listId = rs.getInt("ListID");
-                final YukonSelectionList selectionList = new YukonSelectionList();
-                selectionList.setListID(listId);
-                selectionList.setOrdering(rs.getString("Ordering"));
-                selectionList.setSelectionLabel(rs.getString("SelectionLabel"));
-                selectionList.setWhereIsList(rs.getString("WhereIsList"));
-                selectionList.setListName(rs.getString("ListName"));
-                selectionList.setUserUpdateAvailable(rs.getString("UserUpdateAvailable"));
-                selectionList.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
-                
-                List<YukonListEntry> allListEntries = getAllListEntries(selectionList);
-                selectionList.setYukonListEntries(allListEntries);
-                
-                map.put(listId, selectionList);
-            }
-        });
-        return map;
-    }
-    
-	public synchronized void releaseAllConstants() {
-		yukonListEntries = null;
-		yukonSelectionLists = null;
-	}
-
-	private List<YukonListEntry> getAllListEntries(final YukonSelectionList selectionList) {
-
-	    final Integer listId = Integer.valueOf(selectionList.getListID());
-        String query = selectAllListEntriesSql;
-        
-        if (selectionList.getOrdering().equalsIgnoreCase("A"))  // Alphabetical order
-            query += " ORDER BY EntryText";
-        else if (selectionList.getOrdering().equalsIgnoreCase("O")) // Order by "EntryOrder"
-            query += " ORDER BY EntryOrder";
-        else
-            query += " ORDER BY EntryID";
-        
-        List<YukonListEntry> entryList = yukonJdbcTemplate.query(query, listEntryRowMapper, listId);
-        return entryList;
-	}
-
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.YukonListDao#isListEntryValid(int, java.lang.String)
+    /**
+     * Creates the cached maps that helps add performance for retrieving YukonSelectionLists
+     * and YukonListEntries. 
      */
-	public boolean isListEntryValid( int entryID_, String entry_ )
+    private void createCacheObjects() {
+        yukonListEntries = 
+            new MapMaker().concurrencyLevel(1).makeComputingMap(new Function<Integer, YukonListEntry>() {
+                @Override
+                public YukonListEntry apply(Integer entryId) {
+                    YukonListEntry yukonListEntry = findYukonListEntryFromDb(entryId);
+                    return yukonListEntry;
+                }
+            });
+        
+        yukonSelectionLists = 
+            new MapMaker().concurrencyLevel(1).makeComputingMap(new Function<Integer, YukonSelectionList>() {
+                @Override
+                public YukonSelectionList apply(Integer listId) {
+                    YukonSelectionList yukonSelectionList = findYukonSelectionListFromDb(listId);
+                    return yukonSelectionList;
+                }
+            });
+        
+        yukonSelectionListByName = 
+            new MapMaker().concurrencyLevel(1).makeComputingMap(new Function<EnergyCompanyAndListName, YukonSelectionList>() {
+                @Override
+                public YukonSelectionList apply(EnergyCompanyAndListName energyCompanyAndListName) {
+                    
+                    try {
+                        return getSelectionListByEnergyCompanyIdAndListName(energyCompanyAndListName.energyCompanyId, 
+                                                                            energyCompanyAndListName.listName);
+                    } catch (EmptyResultDataAccessException e) {
+                        return NULL_LIST;
+                    }
+                }
+            });
+    }
+    
+    /**
+     * This method creates all the needed db change listeners for the cache objects in this class.
+     */
+    private void createDatabaseChangeListeners(){
+        // Adding clearCachesEventListener db listener
+        DatabaseChangeEventListener clearCachesEventListener = 
+            new DatabaseChangeEventListener() {
+                @Override
+                public void eventReceived(DatabaseChangeEvent event) {
+                    // Clearing cached items
+                    yukonSelectionListByName.clear();
+                    yukonSelectionLists.clear();
+                    yukonListEntries.clear();
+                }
+            };
+
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.YUKON_SELECTION_LIST,
+                                                              clearCachesEventListener);
+
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.YUKON_LIST_ENTRY,
+                                                              clearCachesEventListener);
+        
+    }
+	
+	public YukonListEntry getYukonListEntry(final int entryId) {
+		final YukonListEntry listEntry = yukonListEntries.get(entryId);
+		if (listEntry == NULL_ENTRY) {
+		    throw new IllegalStateException("Unable to find YukonListEntry with an ID of " + entryId);
+		}
+		return listEntry;
+	}
+    
+    public YukonSelectionList getYukonSelectionList(final int listId) {
+        final YukonSelectionList selectionList = yukonSelectionLists.get(listId);
+        if (selectionList == NULL_LIST) {
+            throw new IllegalStateException("Unable to find YukonSelectionList with an ID of " + listId );
+        }
+        return selectionList;
+    }
+	
+    /**
+     * This method retrieves the YukonSelectionList associated with the listId.  If a
+     * YukonSelectionList entry is not found, this method will return NULL_LIST.
+     */
+    private YukonSelectionList findYukonSelectionListFromDb(int listId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(selectYukonSelectionListSql);
+        sql.append("WHERE ListId").eq(listId);
+        
+        try {
+            return yukonJdbcTemplate.queryForObject(sql, new YukonSelectionListRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            return NULL_LIST;
+        }
+    }
+    
+    /**
+     * This method retrieves the YukonListEntry associated with the entryId.  If a
+     * YukonListEntry entry is not found, this method will return NULL_ENTRY.
+     */
+    private YukonListEntry findYukonListEntryFromDb(int entryId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(selectYukonListEntriesSql);
+        sql.append("WHERE EntryId").eq(entryId);
+        
+        try {
+            return yukonJdbcTemplate.queryForObject(sql, new YukonListEntryRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            return NULL_ENTRY;
+        }
+    }
+
+    @Override
+    public List<YukonSelectionList> getSelectionListByEnergyCompanyId(int energyCompanyId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(selectYukonSelectionListSql);
+        sql.append("WHERE ListID").gt(CtiUtilities.NONE_ZERO_ID);
+        sql.append("AND EnergyCompanyId").eq(energyCompanyId);
+        
+        return yukonJdbcTemplate.query(sql, new YukonSelectionListRowMapper());
+    }
+	
+    @Override
+    public YukonSelectionList findSelectionListByEnergyCompanyIdAndListName(int energyCompanyId,
+                                                                             String listName) {
+        
+        EnergyCompanyAndListName cacheKey = new EnergyCompanyAndListName(energyCompanyId, listName);
+        YukonSelectionList selectionList = yukonSelectionListByName.get(cacheKey);
+        
+        if (selectionList == NULL_LIST) return null;
+        
+        return selectionList;
+    }
+    
+    /**
+     * This method returns the YukonSelectionList object associated with the energyCompanyId and
+     * listName supplied.  If it does not exist it will throw an EmptyResultDataAccessException.
+     */
+    private YukonSelectionList getSelectionListByEnergyCompanyIdAndListName(int energyCompanyId,
+                                                                            String listName) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(selectYukonSelectionListSql);
+        sql.append("WHERE ListID").gt(CtiUtilities.NONE_ZERO_ID);
+        sql.append("AND EnergyCompanyId").eq(energyCompanyId);
+        sql.append("AND ListName").eq(listName);
+        
+        return yukonJdbcTemplate.queryForObject(sql, new YukonSelectionListRowMapper());
+    }
+    
+    // Contact YukonListEntry Helper Methods
+    public boolean isListEntryValid( int entryID_, String entry_ )
 	{
 		switch( entryID_ )
 		{
@@ -182,66 +244,37 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 
 	}
 	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.YukonListDao#areSameInYukon(int, int)
-     */
 	public boolean areSameInYukon(int entryID1, int entryID2) {
 		YukonListEntry entry1 = getYukonListEntry( entryID1 );
 		YukonListEntry entry2 = getYukonListEntry( entryID2 );
 		return (entry1 != null && entry2 != null && entry1.getYukonDefID() == entry2.getYukonDefID());
 	}
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.YukonListDao#isPhoneNumber(int)
-     */
-	public boolean isPhoneNumber( int listEntryID )
-	{
+	public boolean isPhoneNumber(int listEntryID) {
 		return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isPhoneType();
 	}
 
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.YukonListDao#isEmail(int)
-     */
-    public boolean isEmail( int listEntryID )
-    {
+    public boolean isEmail(int listEntryID) {
     	return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isEmailType();
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.YukonListDao#isShortEmail(int)
-     */
-    public boolean isShortEmail( int listEntryID )
-    {
+    public boolean isShortEmail(int listEntryID){
     	return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isShortEmailType();
     }
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.YukonListDao#isPIN(int)
-     */
-	public boolean isPIN( int listEntryID )
-	{
+	public boolean isPIN(int listEntryID){
 		return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isPinType();
 	}
 	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.YukonListDao#isFax(int)
-     */
-	public boolean isFax( int listEntryID )
-	{
+	public boolean isFax(int listEntryID){
 		return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isFaxType();
 	}
 	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.YukonListDao#isPager(int)
-     */
-	public boolean isPager( int listEntryID )
-	{
+	public boolean isPager(int listEntryID) {
 		return false;
 			 //listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_PAGER;
 	}	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.YukonListDao#getYukonListName(int)
-     */
+
 	public String getYukonListName(int yukonDefID) {
 		if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO)
 			return YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE;
@@ -294,27 +327,16 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 		
 		return null;
 	}
-	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.YukonListDao#getYukonListEntry(com.cannontech.common.constants.YukonSelectionList, java.lang.String)
-     */
-	public YukonListEntry getYukonListEntry(final YukonSelectionList list, final String entryText) {
+
+    public YukonListEntry getYukonListEntry(final YukonSelectionList list, final String entryText) {
         final List<YukonListEntry> entryList = list.getYukonListEntries();
         for (final YukonListEntry entry : entryList) {
             if (entry.getEntryText().equalsIgnoreCase(entryText)) return entry;
         }
         return null;
-	}
-    
-    @Override
-    public List<YukonSelectionList> getSelectionListByEnergyCompanyId(int energyCompanyId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder(selectYukonSelectionListSql);
-        sql.append("AND EnergyCompanyId").eq(energyCompanyId);
-        
-        return yukonJdbcTemplate.query(sql, new YukonSelectionListRowMapper());
-
     }
-
+	
+    // Row Mappers
     private class YukonSelectionListRowMapper implements YukonRowMapper<YukonSelectionList> {
 
         @Override
@@ -335,6 +357,34 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
             return selectionList;
         }
 
+    }
+
+    /**
+     * This method retrieves all of the yukonListEntries for a selection list, and also handles
+     * sorting them.
+     */
+    private List<YukonListEntry> getAllListEntries(final YukonSelectionList selectionList) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(selectYukonListEntriesSql);
+        sql.append("WHERE ListId").eq(selectionList.getListID());
+        
+        if (selectionList.getOrdering().equalsIgnoreCase("A")) {  // Alphabetical order
+            sql.append("ORDER BY EntryText");
+        } else if (selectionList.getOrdering().equalsIgnoreCase("O")) { // Order by "EntryOrder"
+            sql.append("ORDER BY EntryOrder");
+        } else {
+            sql.append("ORDER BY EntryId");
+        }
+        
+        List<YukonListEntry> entryList = yukonJdbcTemplate.query(sql, new YukonListEntryRowMapper());
+        return entryList;
+    }
+    
+    // DI Setters
+    @Autowired
+    public void setAsyncDynamicDataSource(AsyncDynamicDataSource asyncDynamicDataSource) {
+        this.asyncDynamicDataSource = asyncDynamicDataSource;
     }
     
     @Autowired

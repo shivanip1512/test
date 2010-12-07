@@ -4,10 +4,9 @@ package com.cannontech.dbeditor.wizard.contact;
  * Creation date: (11/21/00 4:08:38 PM)
  * @author: 
  */
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
@@ -19,6 +18,7 @@ import javax.swing.table.TableColumn;
 import org.apache.commons.lang.builder.CompareToBuilder;
 
 import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.gui.util.ComboBoxTableRenderer;
 import com.cannontech.common.gui.util.TextFieldDocument;
@@ -421,8 +421,10 @@ private javax.swing.JComboBox getJComboBoxNotifyType() {
 			ivjJComboBoxNotifyType.setName("JComboBoxNotifyType");
 			ivjJComboBoxNotifyType.setToolTipText("Set the way this contact is to be notified");
 
-			Collection<YukonListEntry> collectionOfEntries = DaoFactory.getYukonListDao().getYukonListEntries().values();
-			ArrayList<YukonListEntry> listOfEntries = new ArrayList<YukonListEntry>(collectionOfEntries);
+			YukonSelectionList contactSelectionList = 
+			    DaoFactory.getYukonListDao().getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE);
+			List<YukonListEntry> listOfEntries = contactSelectionList.getYukonListEntries();
+
 			Collections.sort(listOfEntries, new Comparator<YukonListEntry>() {
                 @Override
                 public int compare(YukonListEntry o1, YukonListEntry o2) {
@@ -430,17 +432,12 @@ private javax.swing.JComboBox getJComboBoxNotifyType() {
                 }
 			    
 			});
+			
 			for(YukonListEntry entry : listOfEntries ) {
-				
-				if (entry.getListID() == YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE ) {
-                    ivjJComboBoxNotifyType.addItem( entry );
-                }
+                ivjJComboBoxNotifyType.addItem( entry );
 			}
 			
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}

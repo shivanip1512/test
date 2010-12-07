@@ -4,17 +4,15 @@ import java.sql.SQLException;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.db.CTIDbChange;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeHelper;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
-/**
- * @author rneuharth
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
- */
-public class YukonListEntry extends com.cannontech.database.db.DBPersistent
-{
+public class YukonListEntry extends DBPersistent implements CTIDbChange {
+    
 	private Integer entryID = null;
 	private Integer listID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private Integer entryOrder = new Integer(0);
@@ -219,5 +217,15 @@ public class YukonListEntry extends com.cannontech.database.db.DBPersistent
 	public void setYukonDefID(Integer yukonDefID) {
 		this.yukonDefID = yukonDefID;
 	}
+
+    @Override
+    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+        
+        DBChangeMsg[] msgs = {
+            DbChangeHelper.newDbChange(dbChangeType, DbChangeCategory.YUKON_LIST_ENTRY, entryID)
+        };
+
+        return msgs;
+    }
 
 }

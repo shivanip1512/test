@@ -186,8 +186,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private final Map<Integer, Integer> programIdToAppCatIdMap = new ConcurrentHashMap<Integer, Integer>();
     private final Map<Integer, LiteApplianceCategory> appCategoryMap = 
     	new ConcurrentHashMap<Integer, LiteApplianceCategory>();
-    private final Map<String, YukonSelectionList> selectionListMap = 
-    	new ConcurrentHashMap<String, YukonSelectionList>(30, .75f, 2);
     
     private List<Integer> routeIDs = null;
     
@@ -229,7 +227,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     }
     
     public void initialize() {
-    	initSelectionLists();
     	initApplianceCategories();
     }
     
@@ -508,18 +505,10 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return allApplianceCategories;
     }
 
-    public Iterable<YukonSelectionList> getAllSelectionLists() {
-    	return selectionListMap.values();
-    }
-    
-    public void addYukonSelectionList(YukonSelectionList yukonSelectionList) {
-    	Validate.notNull(yukonSelectionList, "Selection list cannot be null");
-    	selectionListMap.put(yukonSelectionList.getListName(), yukonSelectionList);
-    }
-    
     public YukonSelectionList getYukonSelectionList(String listName, boolean useInherited, boolean useDefault) {
         
-    	YukonSelectionList yukonSelectionList = selectionListMap.get(listName);
+    	YukonSelectionList yukonSelectionList = 
+    	    yukonListDao.findSelectionListByEnergyCompanyIdAndListName(getEnergyCompanyID(), listName);
     	if(yukonSelectionList != null) {
     		return yukonSelectionList;
     	}
@@ -579,9 +568,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             YukonSelectionList cList = new YukonSelectionList();
             StarsLiteFactory.setConstantYukonSelectionList(cList, listDB);
             
-            DaoFactory.getYukonListDao().getYukonSelectionLists().put( listDB.getListID(), cList );
-            selectionListMap.put(cList.getListName(), cList);
-            
             if (populateDefault) {
                 for (int i = 0; i < dftList.getYukonListEntries().size(); i++) {
                     YukonListEntry dftEntry = dftList.getYukonListEntries().get(i);
@@ -597,8 +583,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                     
                     YukonListEntry cEntry = new YukonListEntry();
                     StarsLiteFactory.setConstantYukonListEntry( cEntry, entry );
-                    
-                    DaoFactory.getYukonListDao().getYukonListEntries().put( entry.getEntryID(), cEntry );
                     cList.getYukonListEntries().add( cEntry );
                 }
             }
@@ -610,21 +594,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         }
         
         return null;
-    }
-    
-    public void deleteYukonSelectionList(YukonSelectionList list) {
-        
-    	selectionListMap.remove(list.getListName());
-        
-        Map<Integer,YukonListEntry> entries = DaoFactory.getYukonListDao().getYukonListEntries();
-        synchronized (entries) {
-            for (int i = 0; i < list.getYukonListEntries().size(); i++) {
-                YukonListEntry entry = list.getYukonListEntries().get(i);
-                entries.remove( new Integer(entry.getEntryID()) );
-            }
-        }
-        
-        DaoFactory.getYukonListDao().getYukonSelectionLists().remove( new Integer(list.getListID()) );
     }
     
     public YukonListEntry getYukonListEntry(String listName, int yukonDefID) {
@@ -2013,17 +1982,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
 
         CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + accountNumber_  + "' Search (" + count + " AccountIDS loaded; EC=" + (energyCompanyIDList.size() == StarsDatabaseCache.getInstance().getAllEnergyCompanies().size()? "ALL" : energyCompanyIDList.toString()) + ")" );
         return accountList;
-    }
-    
-    private void initSelectionLists() {
-
-        List<YukonSelectionList> energyCompanySelectionList = 
-            yukonListDao.getSelectionListByEnergyCompanyId(getEnergyCompanyID());
-        
-        for (YukonSelectionList yukonSelectionList : energyCompanySelectionList) {
-            selectionListMap.put(yukonSelectionList.getListName(), yukonSelectionList);
-        }
-
     }
     
     private void initApplianceCategories(){

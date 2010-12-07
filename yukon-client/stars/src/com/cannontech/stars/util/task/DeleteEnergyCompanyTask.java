@@ -9,15 +9,17 @@ package com.cannontech.stars.util.task;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.SqlStatement;
-import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -30,7 +32,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
@@ -47,6 +48,9 @@ import com.cannontech.stars.web.util.StarsAdminUtil;
  */
 public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 
+    private DBPersistentDao dbPersistentDao;
+    private YukonListDao yukonListDao;
+    
 	private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
 	
 	int energyCompanyID = StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
@@ -151,7 +155,8 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 					int accountID = ((Integer) accounts[i][0]).intValue();
 					
 					currentAction = "Deleting customer account id = " + accountID;
-					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountID, true );
+					LiteStarsCustAccountInformation liteAcctInfo = 
+					    energyCompany.getCustAccountInformation( accountID, true );
 					AccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
 					
 					numAcctDeleted++;
@@ -181,8 +186,8 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 						new com.cannontech.database.data.stars.hardware.InventoryBase();
 				inventory.setInventoryID( new Integer(invIDs[i]) );
 				
-				Transaction.createTransaction( Transaction.DELETE, inventory ).execute();
-				
+                dbPersistentDao.performDBChange(inventory, TransactionType.DELETE);
+                
 				numInvDeleted++;
 				if (isCanceled) {
 					status = STATUS_CANCELED;
@@ -209,7 +214,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 						new com.cannontech.database.data.stars.report.WorkOrderBase();
 				order.setOrderID( new Integer(orderIDs[i]) );
 				
-				Transaction.createTransaction( Transaction.DELETE, order ).execute();
+                dbPersistentDao.performDBChange(order, TransactionType.DELETE);
 				
 				numOrderDeleted++;
 				if (isCanceled) {
@@ -240,7 +245,8 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 							new com.cannontech.database.data.stars.Substation();
 					substation.setSubstationID( substations[i].getItemID() );
 					
-					Transaction.createTransaction( Transaction.DELETE, substation ).execute();
+	                dbPersistentDao.performDBChange(substation, TransactionType.DELETE);
+					
 				}
 			}
 			
@@ -253,7 +259,8 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 						new com.cannontech.database.data.stars.report.ServiceCompany();
 				StarsLiteFactory.setServiceCompany( company, liteCompany );
 				
-				Transaction.createTransaction( Transaction.DELETE, company ).execute();
+                dbPersistentDao.performDBChange(company, TransactionType.DELETE);
+
 			}
 			
 			// Delete all appliance categories
@@ -266,7 +273,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			            new com.cannontech.database.data.stars.LMProgramWebPublishing();
 			        pubProg.setProgramID( new Integer(liteProg.getProgramID()) );
 			        pubProg.getLMProgramWebPublishing().setWebSettingsID( new Integer(liteProg.getWebSettingsID()) );
-			        Transaction.createTransaction( Transaction.DELETE, pubProg ).execute();
+	                dbPersistentDao.performDBChange(pubProg, TransactionType.DELETE);
 
 			        energyCompany.deleteProgram( liteProg.getProgramID() );
 			        StarsDatabaseCache.getInstance().deleteWebConfiguration( liteProg.getWebSettingsID() );
@@ -274,7 +281,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
     	        com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
     	                new com.cannontech.database.data.stars.appliance.ApplianceCategory();
     	        StarsLiteFactory.setApplianceCategory( appCat.getApplianceCategory(), liteAppCat );
-    	        Transaction.createTransaction( Transaction.DELETE, appCat ).execute();
+                dbPersistentDao.performDBChange(appCat, TransactionType.DELETE);
     	        
     	        energyCompany.deleteApplianceCategory( liteAppCat.getApplianceCategoryID() );
     	        StarsDatabaseCache.getInstance().deleteWebConfiguration( liteAppCat.getWebConfigurationID() );			
@@ -289,13 +296,15 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 						new com.cannontech.database.data.stars.InterviewQuestion();
 				question.setQuestionID( new Integer(liteQuestion.getQuestionID()) );
 				
-				Transaction.createTransaction( Transaction.DELETE, question ).execute();
+                dbPersistentDao.performDBChange(question, TransactionType.DELETE);
 			}
 			
 			// Delete customer selection lists
 			currentAction = "Deleting customer selection lists";
 			
-			for (YukonSelectionList cList : energyCompany.getAllSelectionLists()) {
+			List<YukonSelectionList> energyCompanySelectionLists = 
+			    yukonListDao.getSelectionListByEnergyCompanyId(energyCompany.getEnergyCompanyID());
+			for (YukonSelectionList cList : energyCompanySelectionLists) {
 				if (cList.getListID() == LiteStarsEnergyCompany.FAKE_LIST_ID) continue;
 				
 				Integer listID = new Integer( cList.getListID() );
@@ -303,13 +312,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 						new com.cannontech.database.data.constants.YukonSelectionList();
 				list.setListID( listID );
 				
-				Transaction.createTransaction( Transaction.DELETE, list ).execute();
-				
-				DaoFactory.getYukonListDao().getYukonSelectionLists().remove( listID );
-				for (int j = 0; j < cList.getYukonListEntries().size(); j++) {
-					YukonListEntry cEntry = cList.getYukonListEntries().get(j);
-					DaoFactory.getYukonListDao().getYukonListEntries().remove( new Integer(cEntry.getEntryID()) );
-				}
+                dbPersistentDao.performDBChange(list, TransactionType.DELETE);
 			}
 			
 			// Delete all other generic mappings
@@ -342,7 +345,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			ec.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 			ec.getEnergyCompany().setPrimaryContactID( new Integer(energyCompany.getPrimaryContactID()) );
 			
-			Transaction.createTransaction( Transaction.DELETE, ec ).execute();
+            dbPersistentDao.performDBChange(ec, TransactionType.DELETE);
 			
 			StarsDatabaseCache.getInstance().deleteEnergyCompany( energyCompany.getLiteID() );
 			ServerUtils.handleDBChange( energyCompany, DbChangeType.DELETE );
@@ -367,7 +370,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
                 com.cannontech.database.data.user.YukonGroup dftGroup = new com.cannontech.database.data.user.YukonGroup();
                 dftGroup.setGroupID(new Integer(liteGroup.getGroupID()));
 
-                Transaction.createTransaction(Transaction.DELETE, dftGroup).execute();
+                dbPersistentDao.performDBChange(dftGroup, TransactionType.DELETE);
                 ServerUtils.handleDBChange(liteGroup, DbChangeType.DELETE);
             }
 			status = STATUS_FINISHED;
@@ -383,4 +386,15 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 		}
 	}
 
+	// DI Setters
+	@Autowired
+	public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
+    }
+	
+	@Autowired
+	public void setYukonListDao(YukonListDao yukonListDao) {
+        this.yukonListDao = yukonListDao;
+    }
+	
 }

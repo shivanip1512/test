@@ -147,8 +147,10 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         
         final EnumSet<YukonRoleProperty> unseenProperties = EnumSet.allOf(YukonRoleProperty.class);
         
-        String sql = "select rolepropertyid, roleid, defaultvalue from yukonroleproperty";
-        simpleJdbcTemplate.getJdbcOperations().query(sql, new RowCallbackHandler() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT RolePropertyId, RoleId, DefaultValue");
+        sql.append("FROM YukonRoleProperty");
+        simpleJdbcTemplate.getJdbcOperations().query(sql.toString(), new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
                 int rolePropertyId = rs.getInt("RolePropertyId");
                 int roleId = rs.getInt("RoleId");

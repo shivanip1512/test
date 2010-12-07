@@ -1,11 +1,15 @@
 package com.cannontech.core.dao;
 
 import java.util.List;
-import java.util.Map;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 
+/**
+ * This class controls the database access to the YukonSelectionList and YukonListEntry tables.
+ * It also holds the cached maps for YukonSelectionList and YukonListEntry that help boost performance
+ * to this frequently accessed table.
+ */
 public interface YukonListDao {
 
     public boolean isListEntryValid(int entryID_, String entry_);
@@ -47,19 +51,20 @@ public interface YukonListDao {
      */
     public String getYukonListName(int yukonDefID);
     
-    public void releaseAllConstants();
-
-    
-    public YukonListEntry getYukonListEntry(YukonSelectionList list,
-            String entryText);
+    public YukonListEntry getYukonListEntry(YukonSelectionList list, String entryText);
     
     public YukonListEntry getYukonListEntry(int listEntryID);
 
     public YukonSelectionList getYukonSelectionList(int listID);
     
-    public Map<Integer,YukonSelectionList> getYukonSelectionLists();
-    
-    public Map<Integer,YukonListEntry> getYukonListEntries();
-
+    /**
+     * This method returns all the YukonSelectionList objects for a given energy company.
+     */
     public List<YukonSelectionList> getSelectionListByEnergyCompanyId(int energyCompanyId);
+
+    /**
+     * This method returns the YukonSelectionList associated with the energyCompanyId and listName.
+     * If there is not a YukonSelectionList associated with these parameters the method will return null.
+     */
+    public YukonSelectionList findSelectionListByEnergyCompanyIdAndListName(int energyCompanyId, String listName);
 }

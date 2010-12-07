@@ -4,9 +4,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonSelectionList;
-import com.cannontech.database.Transaction;
+import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -18,6 +21,8 @@ import com.cannontech.web.stars.action.StarsAdminActionController;
 
 public class UpdateSelectionListController extends StarsAdminActionController {
 
+    public DBPersistentDao dbPersistentDao;
+    
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response, 
             final HttpSession session, final StarsYukonUser user,
@@ -41,11 +46,9 @@ public class UpdateSelectionListController extends StarsAdminActionController {
                 com.cannontech.database.data.constants.YukonSelectionList list =
                         new com.cannontech.database.data.constants.YukonSelectionList();
                 list.setListID( new Integer(cList.getListID()) );
-                Transaction.createTransaction( Transaction.DELETE, list ).execute();
                 
-                energyCompany.deleteYukonSelectionList( cList );
-            }
-            else {
+                dbPersistentDao.performDBChange(list, TransactionType.DELETE);
+            } else {
                 String ordering = request.getParameter("Ordering");
                 String label = request.getParameter("Label");
                 String whereIsList = request.getParameter("WhereIsList");
@@ -74,9 +77,8 @@ public class UpdateSelectionListController extends StarsAdminActionController {
                     listDB.setWhereIsList( whereIsList );
                     listDB.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
                     
-                    listDB = (com.cannontech.database.db.constants.YukonSelectionList)
-                            Transaction.createTransaction( Transaction.UPDATE, listDB ).execute();
-                    
+
+                    dbPersistentDao.performDBChange(listDB, TransactionType.UPDATE);
                     StarsLiteFactory.setConstantYukonSelectionList( cList, listDB );
                     StarsAdminUtil.updateYukonListEntries( cList, entryData, energyCompany );
                 }
@@ -92,14 +94,11 @@ public class UpdateSelectionListController extends StarsAdminActionController {
                     listDB.setUserUpdateAvailable( StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonSelectionList(listName).getUserUpdateAvailable() );
                     listDB.setEnergyCompanyId( energyCompany.getEnergyCompanyID() );
                     
-                    list = (com.cannontech.database.data.constants.YukonSelectionList)
-                            Transaction.createTransaction(Transaction.INSERT, list).execute();
+                    dbPersistentDao.performDBChange(list, TransactionType.INSERT);
                     listDB = list.getYukonSelectionList();
                     
                     cList = new YukonSelectionList();
                     StarsLiteFactory.setConstantYukonSelectionList( cList, listDB );
-                    this.yukonListDao.getYukonSelectionLists().put( listDB.getListID(), cList );
-                    energyCompany.addYukonSelectionList(cList);
                     
                     // Mark all entry data as new entries
                     if (entryData != null) {
@@ -115,8 +114,8 @@ public class UpdateSelectionListController extends StarsAdminActionController {
                         StarsAdminUtil.updateListEntryReferences( energyCompany, cList );
                     }
                     catch (Exception e) {
-                        Transaction.createTransaction( Transaction.DELETE, list ).execute();
-                        energyCompany.deleteYukonSelectionList( cList );
+                        
+                        dbPersistentDao.performDBChange(list, TransactionType.DELETE);
                         throw e;
                     }
                 }
@@ -140,6 +139,12 @@ public class UpdateSelectionListController extends StarsAdminActionController {
         
         String redirect = this.getRedirect(request);
         response.sendRedirect(redirect);
+    }
+    
+    // DI Setters
+    @Autowired
+    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
     }
     
 }
