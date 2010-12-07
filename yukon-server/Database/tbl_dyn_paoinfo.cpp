@@ -546,6 +546,8 @@ bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn, lon
             << *tmp_key;
 
         success = executeUpdater(updater);
+        rowsAffected = updater.rowsAffected();
+
 
         if( success )
         {
