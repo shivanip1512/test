@@ -1,5 +1,3 @@
-
-
 #include "yukon.h"
 
 #include "tbl_devicereadrequestlog.h"
@@ -153,8 +151,6 @@ bool CtiTblDeviceReadRequestLog::Update()
         << getReadJobId()
         << getRequestLogId();
 
-    bool success = updater.execute();
-
-    return success && ( updater.rowsAffected() > 0 );
+    return executeUpdater(updater);
 }
 

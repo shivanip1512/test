@@ -1,6 +1,4 @@
-#ifndef DBACCESS_H
-#define DBACCESS_H
-
+#pragma once
 
 #include <rw/tvslist.h>
 #include <rw/tvhdict.h>
@@ -16,6 +14,14 @@
 #include "sema.h"
 class SAConnection;
 
+namespace Cti
+{
+    namespace Database
+    {
+        class DatabaseWriter;
+    }
+}
+
 //various database connection options
 IM_EX_CTIBASE
 void setDatabaseParams(const string& dbDll, const string& dbName,
@@ -27,5 +33,5 @@ IM_EX_CTIBASE void releaseDBConnection(SAConnection *connection);
 
 IM_EX_CTIBASE std::string assignSQLPlaceholders(const std::string &sql);
 
-#endif
+IM_EX_CTIBASE bool executeUpdater( Cti::Database::DatabaseWriter &updater );
 

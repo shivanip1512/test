@@ -1,5 +1,3 @@
-
-
 #include "yukon.h"
 
 #include "tbl_lm_controlhist.h"
@@ -401,8 +399,7 @@ bool CtiTableLMControlHistory::updateCompletedOutstandingControls()
         dout << updater.asString() << endl;
     }
 
-    bool success = updater.execute();
-    success &= ( updater.rowsAffected() > 0 );
+    bool success = executeUpdater(updater);
 
     if( ! success )
     {
@@ -600,8 +597,7 @@ bool CtiTableLMControlHistory::Update()
         << getControlPriority()
         << getPAOID();
 
-    bool success = updater.execute();
-    success &= ( updater.rowsAffected() > 0 );
+    bool success = executeUpdater(updater);
 
     if( success )
     {
@@ -864,10 +860,9 @@ bool CtiTableLMControlHistory::UpdateDynamic(Cti::Database::DatabaseConnection &
         << getControlPriority()
         << getPAOID();
 
-    bool success      = updater.execute();
-    long rowsAffected = updater.rowsAffected();
+    bool success = executeUpdater(updater);
 
-    if( ! success || rowsAffected <= 0 )
+    if( ! success )
     {
         InsertDynamic(conn);        // Try a vanilla insert if the update failed!
     }

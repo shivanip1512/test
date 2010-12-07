@@ -1,5 +1,3 @@
-
-
 #include "yukon.h"
 
 #include "tbl_devicereadjoblog.h"
@@ -117,8 +115,6 @@ bool CtiTblDeviceReadJobLog::UpdateStopTime()
         << getStopTime()
         << getJobLogId();
 
-    bool success = updater.execute();
-
-    return success && ( updater.rowsAffected() > 0 );
+    return executeUpdater(updater);
 }
 

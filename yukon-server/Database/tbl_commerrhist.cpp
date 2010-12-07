@@ -1,5 +1,3 @@
-
-
 #include "yukon.h"
 
 #include "tbl_commerrhist.h"

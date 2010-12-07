@@ -1,5 +1,3 @@
-
-
 #include "yukon.h"
 
 #include "dbaccess.h"
@@ -547,10 +545,9 @@ bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn, lon
             << *tmp_owner
             << *tmp_key;
 
-        success      = updater.execute();
-        rowsAffected = updater.rowsAffected();
+        success = executeUpdater(updater);
 
-        if( success && rowsAffected > 0 )
+        if( success )
         {
             setDirty(false);
         }

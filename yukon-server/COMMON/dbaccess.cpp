@@ -12,6 +12,7 @@
 #include <boost/foreach.hpp>
 
 #include <SQLAPI.h>
+#include "database_writer.h"
 
 using namespace std;
 
@@ -198,3 +199,10 @@ void releaseDBConnection(SAConnection *connection)
         dout << " **** CHECKPOINT **** Attempted to release a connection that could not be found " << __FILE__ << " " << __LINE__ << endl;
     }
 }
+
+DLLEXPORT
+bool executeUpdater( Cti::Database::DatabaseWriter &updater )
+{
+    return updater.execute() && (updater.rowsAffected() > 0);
+}
+

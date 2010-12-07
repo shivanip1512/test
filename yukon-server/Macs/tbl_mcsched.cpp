@@ -1,5 +1,3 @@
-
-
 #include "yukon.h"
 
 #include "tbl_mcsched.h"
@@ -193,8 +191,7 @@ bool CtiTableMCSchedule::Update()
         << getTemplateType()
         << getScheduleID();
 
-    bool success = updater.execute();
-    success &= ( updater.rowsAffected() > 0 );
+    bool success = executeUpdater(updater);
 
     if( ! success )
     {

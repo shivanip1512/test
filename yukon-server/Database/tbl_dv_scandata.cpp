@@ -1,5 +1,3 @@
-
-
 #include "yukon.h"
 
 #include "dbaccess.h"
@@ -195,8 +193,7 @@ bool CtiTableDeviceScanData::Update(Cti::Database::DatabaseConnection &conn)
         << getNextScan(3)
         << getDeviceID();
 
-    bool success = updater.execute();
-    success &= ( updater.rowsAffected() > 0 );
+    bool success = executeUpdater(updater);
 
     if ( success )
     {

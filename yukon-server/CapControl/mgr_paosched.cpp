@@ -894,9 +894,9 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
                         << currentSchedule->getLastRunTime()
                         << currentSchedule->getScheduleId();
 
-                    bool success = updater.execute();
+                    bool success = executeUpdater(updater);
 
-                    if( success && updater.rowsAffected() > 0 )    // No error occured and a row was updated
+                    if( success )
                     {
                         currentSchedule->setDirty(FALSE);
                     }

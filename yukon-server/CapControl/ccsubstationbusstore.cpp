@@ -3207,15 +3207,16 @@ bool CtiCCSubstationBusStore::UpdateBusVerificationFlagsInDB(CtiCCSubstationBus*
 
     updater << (string)(bus->getVerificationFlag()?"Y":"N") << bus->getPaoId();
 
-    bool success = updater.execute();
-    success &= ( updater.rowsAffected() > 0 );
+    bool success = executeUpdater(updater);
 
-    // Why do we send this DB change message if the actual update fails?
-    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPaoId(), ChangePAODb,
-                                              bus->getPaoCategory(), bus->getPaoType(),
-                                              ChangeTypeUpdate);
-    dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-    CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+    if ( success )
+    {
+        CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPaoId(), ChangePAODb,
+                                                  bus->getPaoCategory(), bus->getPaoType(),
+                                                  ChangeTypeUpdate);
+        dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
+        CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+    }
 
     return success;
 }
@@ -3231,10 +3232,7 @@ bool CtiCCSubstationBusStore::updateDisableFlag(unsigned int paoid, bool isDisab
 
     updater << (string)(isDisabled?"Y":"N") << paoid;
 
-    bool success = updater.execute();
-    success &= ( updater.rowsAffected() > 0 );
-
-    return success;
+    return executeUpdater(updater);
 }
 
 
@@ -3385,16 +3383,17 @@ bool CtiCCSubstationBusStore::UpdateCapBankOperationalStateInDB(CtiCCCapBank* ca
 
     updater << capbank->getOperationalState() << capbank->getPaoId();
 
-    bool updateSuccessful = updater.execute();
-    updateSuccessful &= ( updater.rowsAffected() > 0 );
+    bool updateSuccessful = executeUpdater(updater);
 
-    // Why do we send this DB change message if the actual update fails?
-    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(capbank->getPaoId(), ChangePAODb,
-                                                  capbank->getPaoCategory(),
-                                                  capbank->getPaoType(),
-                                                  ChangeTypeUpdate);
-    dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-    CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+    if ( updateSuccessful )
+    {
+        CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(capbank->getPaoId(), ChangePAODb,
+                                                      capbank->getPaoCategory(),
+                                                      capbank->getPaoType(),
+                                                      ChangeTypeUpdate);
+        dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
+        CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+    }
 
     return updateSuccessful;
 }
@@ -3420,8 +3419,7 @@ bool CtiCCSubstationBusStore::UpdateCapBankInDB(CtiCCCapBank* capbank)
             << capbank->getPaoDescription().c_str()
             << capbank->getPaoId();
 
-    bool updateSuccessful = updater.execute();
-    updateSuccessful &= ( updater.rowsAffected() > 0 );
+    bool paobjectUpdateSuccessful = executeUpdater(updater);
 
     static const string capbankUpdateSql = "update capbank set banksize = ?, operationalstate = ?"
                                            " where deviceid = ?";
@@ -3431,19 +3429,19 @@ bool CtiCCSubstationBusStore::UpdateCapBankInDB(CtiCCCapBank* capbank)
             << capbank->getOperationalState()
             << capbank->getPaoId();
 
-    updateSuccessful = updater.execute();
-    updateSuccessful &= ( updater.rowsAffected() > 0 );
-    // Shouldn't these 2 updates be a single transaction?  Why are we overwriting the return value...?
+    bool capbankUpdateSuccessful = executeUpdater(updater);
 
-    // Why do we send this DB change message if the actual update fails?
-    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(capbank->getPaoId(), ChangePAODb,
-                                                  capbank->getPaoCategory(),
-                                                  capbank->getPaoType(),
-                                                  ChangeTypeUpdate);
-    dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-    CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+    if ( paobjectUpdateSuccessful || capbankUpdateSuccessful )
+    {
+        CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(capbank->getPaoId(), ChangePAODb,
+                                                      capbank->getPaoCategory(),
+                                                      capbank->getPaoType(),
+                                                      ChangeTypeUpdate);
+        dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
+        CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+    }
 
-    return updateSuccessful;
+    return paobjectUpdateSuccessful && capbankUpdateSuccessful;
 }
 
 /*---------------------------------------------------------------------------

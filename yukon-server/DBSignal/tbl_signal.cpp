@@ -1,4 +1,3 @@
-
 #include "yukon.h"
 #include "tbl_signal.h"
 

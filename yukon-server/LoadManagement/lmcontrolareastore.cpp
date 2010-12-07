@@ -2078,15 +2078,16 @@ bool CtiLMControlAreaStore::UpdateControlAreaDisableFlagInDB(CtiLMControlArea* c
         dout << CtiTime() << " - " << updater.asString() << endl;
     }
 
-    bool success = updater.execute();
-    success &= ( updater.rowsAffected() > 0 );
+    bool success = executeUpdater(updater);
 
-    // send even on update failure?
-    CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
-                                                         controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
-                                                         ChangeTypeUpdate);
-    dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
-    CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+    if ( success )
+    {
+        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
+                                                             controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
+                                                             ChangeTypeUpdate);
+        dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
+        CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+    }
 
     return success;
 }
@@ -2118,15 +2119,16 @@ bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBaseSPtr pr
         dout << CtiTime() << " - " << updater.asString() << endl;
     }
 
-    bool success = updater.execute();
-    success &= ( updater.rowsAffected() > 0 );
+    bool success = executeUpdater(updater);
 
-    // send even on update failure?
-    CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(program->getPAOId(), ChangePAODb,
-                                                         program->getPAOCategory(), desolveLoadManagementType(program->getPAOType()),
-                                                         ChangeTypeUpdate);
-    dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
-    CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+    if ( success )
+    {
+        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(program->getPAOId(), ChangePAODb,
+                                                             program->getPAOCategory(), desolveLoadManagementType(program->getPAOType()),
+                                                             ChangeTypeUpdate);
+        dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
+        CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+    }
 
     return success;
 }
@@ -2158,15 +2160,16 @@ bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupPtr& group)
         dout << CtiTime() << " - " << updater.asString() << endl;
     }
 
-    bool success = updater.execute();
-    success &= ( updater.rowsAffected() > 0 );
+    bool success = executeUpdater(updater);
 
-    // send even on update failure?
-    CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(group->getPAOId(), ChangePAODb,
-                                                         group->getPAOCategory(), desolveDeviceType(group->getPAOType()),
-                                                         ChangeTypeUpdate);
-    dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
-    CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+    if ( success )
+    {
+        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(group->getPAOId(), ChangePAODb,
+                                                             group->getPAOCategory(), desolveDeviceType(group->getPAOType()),
+                                                             ChangeTypeUpdate);
+        dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
+        CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+    }
 
     return success;
 }
@@ -2202,15 +2205,16 @@ bool CtiLMControlAreaStore::UpdateTriggerInDB(CtiLMControlArea* controlArea, Cti
         dout << CtiTime() << " - " << updater.asString() << endl;
     }
 
-    bool success = updater.execute();
-    success &= ( updater.rowsAffected() > 0 );
+    bool success = executeUpdater(updater);
 
-    // send even on update failure?
-    CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
-                                                         controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
-                                                         ChangeTypeUpdate);
-    dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
-    CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+    if ( success )
+    {
+        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
+                                                             controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
+                                                             ChangeTypeUpdate);
+        dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
+        CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+    }
 
     return success;
 }

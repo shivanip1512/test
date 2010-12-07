@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   ctivangogh
-*
-* Date:   6/26/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.212 $
-* DATE         :  $Date: 2008/11/20 21:23:21 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-#pragma warning( disable : 4786 )
 
 #include <iomanip>
 #include <iostream>
@@ -6018,7 +6004,9 @@ void CtiVanGogh::writeMessageToScanner(const CtiCommandMsg *Cmd)
 
 INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, string user, CtiMultiMsg &sigList)
 {
-    bool success = false;
+    bool paobjectSuccess = false;
+    bool deviceSuccess = false;
+
     string objtype = resolveDeviceObjectType(did);
 
     CtiServerExclusion smguard(_server_exclusion, 10000);
@@ -6035,7 +6023,7 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, s
                 << ( TAG_DISABLE_DEVICE_BY_DEVICE & setmask ? std::string("Y") : std::string("N") )
                 << did;
 
-            updater.execute();
+            paobjectSuccess = executeUpdater(updater);
         }
 
         {
@@ -6047,22 +6035,25 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, s
                 << ( TAG_DISABLE_CONTROL_BY_DEVICE & setmask ? std::string("Y") : std::string("N") )
                 << did;
 
-            success = updater.execute();
-            success &= ( updater.rowsAffected() > 0 );
+            deviceSuccess = executeUpdater(updater);
         }
     }
 
-    CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(did, ChangePAODb, "Device", objtype, ChangeTypeUpdate);
-    dbChange->setUser(user);
-    dbChange->setSource(DISPATCH_APPLICATION_NAME);
-    sigList.insert(dbChange);
+    if ( paobjectSuccess || deviceSuccess )
+    {
+        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(did, ChangePAODb, "Device", objtype, ChangeTypeUpdate);
+        dbChange->setUser(user);
+        dbChange->setSource(DISPATCH_APPLICATION_NAME);
+        sigList.insert(dbChange);
+    }
 
-    return success ? NORMAL : UnknownError;
+    return ( paobjectSuccess && deviceSuccess ) ? NORMAL : UnknownError;
 }
 
 INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, string user, CtiMultiMsg &Multi)
 {
-    bool success = false;
+    bool pointSuccess = false;
+    bool pointStatusSuccess = false;
 
     CtiServerExclusion smguard(_server_exclusion, 10000);
     if(smguard.isAcquired())
@@ -6078,7 +6069,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, st
                 << ( TAG_DISABLE_POINT_BY_POINT & setmask ? std::string("Y") : std::string("N") )
                 << pid;
 
-            updater.execute();
+            pointSuccess = executeUpdater(updater);
         }
 
         if (TAG_DISABLE_CONTROL_BY_POINT & tagmask)
@@ -6092,18 +6083,20 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, st
                 << ( TAG_DISABLE_CONTROL_BY_POINT & setmask ? std::string("Y") : std::string("N") )
                 << pid;
 
-            success = updater.execute();
-            success &= ( updater.rowsAffected() > 0 );
+            pointStatusSuccess = executeUpdater(updater);
         }
     }
 
-    CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(pid, ChangePointDb, "Point", "Point", ChangeTypeUpdate);
-    dbChange->setUser(user);
-    dbChange->setSource(DISPATCH_APPLICATION_NAME);
-    dbChange->setMessagePriority(15);
-    Multi.insert(dbChange);
+    if ( pointSuccess || pointStatusSuccess )
+    {
+        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(pid, ChangePointDb, "Point", "Point", ChangeTypeUpdate);
+        dbChange->setUser(user);
+        dbChange->setSource(DISPATCH_APPLICATION_NAME);
+        dbChange->setMessagePriority(15);
+        Multi.insert(dbChange);
+    }
 
-    return success ? NORMAL : UnknownError;
+    return ( pointSuccess && pointStatusSuccess ) ? NORMAL : UnknownError;
 }
 
 /**

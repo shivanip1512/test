@@ -534,8 +534,7 @@ bool  CtiStatistics::Update(Cti::Database::DatabaseConnection &conn, int counter
         // where
         updater << getID() << getCounterName(counter, _intervalBounds[counter].first);
 
-        retVal = updater.execute();
-        retVal &= ( updater.rowsAffected() > 0 );
+        retVal = executeUpdater(updater);
 
         if( retVal )
         {

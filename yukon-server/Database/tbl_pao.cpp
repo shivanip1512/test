@@ -1,5 +1,3 @@
-
-
 #include "yukon.h"
 
 #include "dbaccess.h"
@@ -281,8 +279,7 @@ bool CtiTblPAO::Update()
         << getStatisticsStr()
         << getID();
 
-    bool success = updater.execute();
-    success &= ( updater.rowsAffected() > 0 );
+    bool success = executeUpdater(updater);
 
     if( success )
     {

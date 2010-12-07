@@ -1,5 +1,3 @@
-
-
 #include "yukon.h"
 
 #include "tbl_mcsimpsched.h"
@@ -121,8 +119,7 @@ bool CtiTableMCSimpleSchedule::Update()
         << getRepeatInterval()
         << getScheduleID();
 
-    bool success = updater.execute();
-    success &= ( updater.rowsAffected() > 0 );
+    bool success = executeUpdater(updater);
 
     if( ! success )
     {

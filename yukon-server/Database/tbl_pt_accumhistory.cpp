@@ -1,5 +1,3 @@
-
-
 #include "yukon.h"
 #include "tbl_pt_accumhistory.h"
 #include "dbaccess.h"
@@ -92,8 +90,7 @@ bool CtiTablePointAccumulatorHistory::Update()
         << getPresentPulseCount()
         << getPointID();
 
-    bool success = updater.execute();
-    success &= ( updater.rowsAffected() > 0 );
+    bool success = executeUpdater(updater);
 
     if ( success )
     {

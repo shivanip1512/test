@@ -1,5 +1,3 @@
-
-
 #include "yukon.h"
 
 #include <iostream>
@@ -178,8 +176,7 @@ bool CtiTablePointDispatch::Update(Cti::Database::DatabaseConnection &conn)
         << getTimeStampMillis()
         << getPointID();
 
-    bool success = updater.execute();
-    success &= ( updater.rowsAffected() > 0 );
+    bool success = executeUpdater(updater);
 
     if( success )    // No error occured!
     {

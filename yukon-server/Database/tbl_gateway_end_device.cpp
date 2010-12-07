@@ -1,5 +1,3 @@
-
-
 #include "yukon.h"
 
 #include "dbaccess.h"
@@ -126,25 +124,21 @@ bool CtiTableGatewayEndDevice::Insert(Cti::Database::DatabaseConnection &conn)
         << getDataValue();
 
     bool success = inserter.execute();
-    std::string query = inserter.asString();
 
     if( success )
     {
         setDirty(false);
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Inserted GatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "   " << query << endl;
-        }
     }
     else
     {
+        std::string query = inserter.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Unable to insert GatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ") " << endl;
             dout << "   " << query << endl;
         }
     }
+
     return success;
 }
 

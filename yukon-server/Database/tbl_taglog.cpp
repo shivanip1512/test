@@ -1,5 +1,3 @@
-
-
 #include "yukon.h"
 
 #include "dbaccess.h"

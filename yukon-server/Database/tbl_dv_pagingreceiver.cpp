@@ -1,5 +1,3 @@
-
-
 #include "yukon.h"
 
 #include "tbl_dv_pagingreceiver.h"
