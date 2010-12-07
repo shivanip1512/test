@@ -427,7 +427,8 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
                 LmControlHistoryUtilServiceImpl.calculateEnrollmentControlPeriod(controlHistoryEntry, enrollments);
             
             CustomerControlTotals calculateOptOutControlHistorySummary = 
-                calculateOptOutControlHistorySummary(enrolledControlHistoryEntries, optOuts);
+                calculateOptOutControlHistorySummary(startDateTime, stopDateTime,
+                                                     enrolledControlHistoryEntries, optOuts);
             
             totals.plus(calculateOptOutControlHistorySummary);
             
@@ -441,7 +442,9 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
      * that avoided due to opt outs, how many opt outs were used, and how many hours the inventory
      * was opted out for.
      */
-    private static CustomerControlTotals calculateOptOutControlHistorySummary(List<ControlHistoryEntry> enrolledControlHistoryEntries,
+    private static CustomerControlTotals calculateOptOutControlHistorySummary(ReadableInstant startDateTime, 
+                                                                              ReadableInstant stopDateTime, 
+                                                                              List<ControlHistoryEntry> enrolledControlHistoryEntries,
                                                                               List<LMHardwareControlGroup> optOuts) {
 
         // Calculates the total control duration for the set of enrolled control history.
@@ -454,18 +457,22 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
         Duration totalOptedOutDuration = Duration.ZERO;
         int optOutCount = 0;
         OpenInterval openStartToNow = OpenInterval.createOpenStart(new Instant());
+        OpenInterval summaryInterval = OpenInterval.createClosed(startDateTime, stopDateTime);
         
         for (LMHardwareControlGroup optOut : optOuts) {
 
-            optOutCount++;
-            totalOptedOutDuration = totalOptedOutDuration.plus(optOut.getOptOutDuration());
+            // Get the portion of the opt out that occurred during our time period.
+            OpenInterval summaryOptOutInterval = optOut.getOptOutInterval().overlap(summaryInterval);
+            Duration summaryBasedOptOutDuration =
+                summaryOptOutInterval.toClosedInterval().toDuration();
 
-            OpenInterval optOutInterval = optOut.getOptOutInterval();
+            optOutCount++;
+            totalOptedOutDuration = totalOptedOutDuration.plus(summaryBasedOptOutDuration);
             Duration optedOutDuration = Duration.ZERO;
             
             for (ControlHistoryEntry enrolledControlHistoryEntry : enrolledControlHistoryEntries) {
                 OpenInterval optedOutControlHistoryInterval = 
-                    optOutInterval.overlap(enrolledControlHistoryEntry.getOpenInterval());
+                    summaryOptOutInterval.overlap(enrolledControlHistoryEntry.getOpenInterval());
                 
                 if (optedOutControlHistoryInterval != null) {
                     OpenInterval reportableOptOutControlHistoryInterval = optedOutControlHistoryInterval.overlap(openStartToNow);
