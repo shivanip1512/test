@@ -1,20 +1,6 @@
+
+
 #include "yukon.h"
-
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_pt_accumhistory
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_accumhistory.cpp-arc  $
-* REVISION     :  $Revision: 1.8.24.1 $
-* DATE         :  $Date: 2008/11/18 20:11:29 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
 #include "tbl_pt_accumhistory.h"
 #include "dbaccess.h"
 #include "database_connection.h"
@@ -107,6 +93,7 @@ bool CtiTablePointAccumulatorHistory::Update()
         << getPointID();
 
     bool success = updater.execute();
+    success &= ( updater.rowsAffected() > 0 );
 
     if ( success )
     {
@@ -137,18 +124,6 @@ bool CtiTablePointAccumulatorHistory::Insert()
     }
 
     return success;
-}
-
-bool CtiTablePointAccumulatorHistory::Delete()
-{
-    static const std::string sql = "delete from " + getTableName() + " where pointid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       deleter(conn, sql);
-
-    deleter << getPointID();
-
-    return deleter.execute();
 }
 
 void CtiTablePointAccumulatorHistory::DecodeDatabaseReader(Cti::RowReader& rdr )

@@ -1,18 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dialup
-*
-* Date:   8/7/2001
-*
-* Author : Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dialup.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/12/20 17:16:05 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+
+
 #include "yukon.h"
 
 #include "tbl_dialup.h"
@@ -145,77 +132,6 @@ LONG CtiTableDeviceDialup::getDeviceID() const
 
     return _deviceID;
 }
-
-bool CtiTableDeviceDialup::Insert()
-{
-    static const std::string sql = "insert into " + getTableName() + " values (?, ?, ?, ?, ?, ?)";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       inserter(conn, sql);
-
-    inserter 
-        << getDeviceID()
-        << getPhoneNumber()
-        << getMinConnectTime()
-        << getMaxConnectTime()
-        << getLineSettings()
-        << getBaudRate();
-
-    bool success = inserter.execute();
-
-    if ( success )
-    {
-        setDirty(false);
-    }
-
-    return success;
-}
-
-bool CtiTableDeviceDialup::Update()
-{
-    static const std::string sql = "update " + getTableName() +
-                                   " set "
-                                        "phonenumber = ?, "
-                                        "minconnecttime = ?, "
-                                        "maxconnecttime = ?, "
-                                        "linesettings = ?, "
-                                        "baudrate = ?"
-                                   " where "
-                                        "deviceid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       updater(conn, sql);
-
-    updater 
-        << getPhoneNumber()
-        << getMinConnectTime()
-        << getMaxConnectTime()
-        << getLineSettings()
-        << getBaudRate()
-        << getDeviceID();
-
-    bool success = updater.execute();
-
-    if ( success )
-    {
-        setDirty(false);
-    }
-
-    return success;
-}
-
-bool CtiTableDeviceDialup::Delete()
-{
-    static const std::string sql = "delete from " + getTableName() + " where deviceid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       deleter(conn, sql);
-
-    deleter << getDeviceID();
-
-    return deleter.execute();
-}
-
 
 INT CtiTableDeviceDialup::getBits() const
 {

@@ -1,18 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_devicereadjoblog
-*
-* Date:   3/6/2007
-*
-* Author : Jess Otteson
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_devicereadjoblog.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2007/03/08 21:57:25 $
-*
-* Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+
+
 #include "yukon.h"
 
 #include "tbl_devicereadjoblog.h"
@@ -130,28 +117,8 @@ bool CtiTblDeviceReadJobLog::UpdateStopTime()
         << getStopTime()
         << getJobLogId();
 
-    return updater.execute();
-}
+    bool success = updater.execute();
 
-bool CtiTblDeviceReadJobLog::Update()
-{
-    static const std::string sql = "update " + getTableName() +
-                                   " set "
-                                        "scheduleid = ?, "
-                                        "starttime = ?, "
-                                        "stoptime = ?"
-                                   " where "
-                                        "devicereadjoblogid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       updater(conn, sql);
-
-    updater 
-        << getScheduleId()
-        << getStartTime()
-        << getStopTime()
-        << getJobLogId();
-
-    return updater.execute();
+    return success && ( updater.rowsAffected() > 0 );
 }
 

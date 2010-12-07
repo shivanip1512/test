@@ -1,20 +1,6 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_ied
-*
-* Date:   2/25/2000
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786)
-#ifndef __TBL_DV_IED_H__
-#define __TBL_DV_IED_H__
+
+#pragma once
 
 #include <limits.h>
 
@@ -36,8 +22,6 @@ protected:
    LONG           _deviceID;
    string      _password;
    INT            _slaveAddress;
-
-private:
 
 public:
 
@@ -64,10 +48,5 @@ public:
    LONG getDeviceID() const;
 
    CtiTableDeviceIED& setDeviceID( const LONG did);
-
-   virtual bool Insert();
-   virtual bool Update();
-   virtual bool Delete();
-
 };
-#endif // #ifndef __TBL_DV_IED_H__
+

@@ -1,16 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_ptdispatch
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_ptdispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.18.2.1 $
-* DATE         :  $Date: 2008/11/18 20:11:28 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+
+
 #include "yukon.h"
 
 #include <iostream>
@@ -190,6 +179,7 @@ bool CtiTablePointDispatch::Update(Cti::Database::DatabaseConnection &conn)
         << getPointID();
 
     bool success = updater.execute();
+    success &= ( updater.rowsAffected() > 0 );
 
     if( success )    // No error occured!
     {

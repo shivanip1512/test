@@ -1,18 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_commerrhist
-*
-* Date:   9/21/2001
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_commerrhist.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/12/20 17:16:05 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+
+
 #include "yukon.h"
 
 #include "tbl_commerrhist.h"
@@ -259,58 +246,6 @@ bool CtiTableCommErrorHistory::Insert(Cti::Database::DatabaseConnection &conn)
     }
 
     return success;
-}
-
-
-bool CtiTableCommErrorHistory::Update()
-{
-    static const std::string sql = "update " + getTableName() +
-                                   " set "
-                                        "commerrorid = ?, "
-                                        "datetime = ?, "
-                                        "soe_tag = ?, "
-                                        "errortype = ?, "
-                                        "errornumber = ?, "
-                                        "command = ?, "
-                                        "outmessage = ?, "
-                                        "inmessage = ?"
-                                   " where "
-                                        "paobjectid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       updater(conn, sql);
-
-    updater 
-        << getCommErrorID()
-        << getDateTime()
-        << getSoeTag()
-        << getErrorType()
-        << getErrorNumber()
-        << getCommand()
-        << getOutMessage()
-        << getInMessage()
-        << getPAOID();
-
-    bool success = updater.execute();
-
-    if ( success )
-    {
-        setDirty(false);
-    }
-
-    return success;
-}
-
-bool CtiTableCommErrorHistory::Delete()
-{
-    static const std::string sql = "delete from " + getTableName() + " where paobjectid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       deleter(conn, sql);
-
-    deleter << getPAOID();
-
-    return deleter.execute();
 }
 
 bool CtiTableCommErrorHistory::Prune(CtiDate &earliestDate)

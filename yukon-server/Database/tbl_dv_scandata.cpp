@@ -1,20 +1,6 @@
+
+
 #include "yukon.h"
-
-
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_scandata
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_scandata.cpp-arc  $
-* REVISION     :  $Revision: 1.13.24.1 $
-* DATE         :  $Date: 2008/11/18 20:11:29 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 
 #include "dbaccess.h"
 #include "logger.h"
@@ -210,6 +196,7 @@ bool CtiTableDeviceScanData::Update(Cti::Database::DatabaseConnection &conn)
         << getDeviceID();
 
     bool success = updater.execute();
+    success &= ( updater.rowsAffected() > 0 );
 
     if ( success )
     {

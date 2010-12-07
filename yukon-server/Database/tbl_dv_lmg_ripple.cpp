@@ -1,18 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_lmg_ripple
-*
-* Date:   8/13/2001
-*
-* Author : Eric Schmit     **didn't add to project**
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_lmg_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 17:16:06 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+
+
 #include "yukon.h"
 
 #include <assert.h>
@@ -154,74 +141,6 @@ void CtiTableRippleLoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
     rdr["shedtime"] >> _shedTime;
     rdr["routeid"] >> _routeID;
 }
-
-bool CtiTableRippleLoadGroup::Insert()
-{
-    static const std::string sql = "insert into " + getTableName() + " values (?, ?, ?, ?, ?)";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       inserter(conn, sql);
-
-    inserter 
-        << getDeviceID()
-        << getRouteID()
-        << getShedTime()
-        << getControlBits()
-        << getRestoreBits();
-
-    bool success = inserter.execute();
-
-    if ( success )
-    {
-        setDirty(false);
-    }
-
-    return success;
-}
-
-bool CtiTableRippleLoadGroup::Update()
-{
-    static const std::string sql = "update " + getTableName() +
-                                   " set "
-                                        "routeid = ?, "
-                                        "shedtime = ?, "
-                                        "controlvalue = ?, "
-                                        "restorevalue = ?"
-                                   " where "
-                                        "deviceid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       updater(conn, sql);
-
-    updater 
-        << getRouteID()
-        << getShedTime()
-        << getControlBits()
-        << getRestoreBits()
-        << getDeviceID();
-
-    bool success = updater.execute();
-
-    if ( success )
-    {
-        setDirty(false);
-    }
-
-    return success;
-}
-
-bool CtiTableRippleLoadGroup::Delete()
-{
-    static const std::string sql = "delete from " + getTableName() + " where deviceid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       deleter(conn, sql);
-
-    deleter << getDeviceID();
-
-    return deleter.execute();
-}
-
 
 bool CtiTableRippleLoadGroup::copyMessage(BYTE *bptr, bool shed) const
 {

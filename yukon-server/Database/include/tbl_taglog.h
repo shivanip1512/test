@@ -1,25 +1,6 @@
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_taglog
-*
-* Class:  CtiTableTagLog
-* Date:   12/22/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/12/20 17:16:09 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786)
-#ifndef __TBL_TAGLOG_H__
-#define __TBL_TAGLOG_H__
-
-
+#pragma once
 
 #include "ctibase.h"
 #include "dlldefs.h"
@@ -57,8 +38,6 @@ protected:
     static int _maxInstanceId;
     static int _nextLogId;
 
-private:
-
 public:
 
     typedef CtiMemDBObject Inherited;
@@ -77,15 +56,6 @@ public:
 
     bool Insert(Cti::Database::DatabaseConnection &conn);
     bool Update(Cti::Database::DatabaseConnection &conn);
-
-    virtual bool Insert();
-    virtual bool Update();
-    virtual bool Delete();
-
-    static bool Delete(int log);
-
-    void DecodeDatabaseReader(Cti::RowReader& rdr);
-
 
     int getLogId() const;           // no two tags share the same one
     int getInstanceId() const;      // Matches the dynamictag entry.  Follows the life cycle of the tag.
@@ -122,4 +92,4 @@ public:
     virtual void dump();
 
 };
-#endif // #ifndef __TBL_TAGLOG_H__
+

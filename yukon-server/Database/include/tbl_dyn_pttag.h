@@ -1,23 +1,6 @@
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dyn_pttag
-*
-* Class:  CtiTableDynamicTag
-* Date:   12/22/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786)
-#ifndef __TBL_DYN_PTTAG_H__
-#define __TBL_DYN_PTTAG_H__
+#pragma once
 
 
 #include "ctibase.h"
@@ -53,8 +36,6 @@ protected:
     string       _taggedForStr;      // user field
 
 
-private:
-
 public:
 
     typedef CtiMemDBObject Inherited;
@@ -74,11 +55,8 @@ public:
     bool Insert(Cti::Database::DatabaseConnection &conn);
     bool Update(Cti::Database::DatabaseConnection &conn);
 
-    virtual bool Insert();
-    virtual bool Update();
     virtual bool Delete();
-
-    static bool Delete(int instance);
+    static  bool Delete(int instance);
 
     static string getSQLCoreStatement();
 
@@ -112,4 +90,4 @@ public:
     virtual void dump();
 
 };
-#endif // #ifndef __TBL_DYN_PTTAG_H__
+

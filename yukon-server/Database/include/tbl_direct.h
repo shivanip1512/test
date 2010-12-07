@@ -1,21 +1,6 @@
-#ifndef __TBL_DIRECT_H__
-#pragma warning( disable : 4786)
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_direct
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_direct.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 
-#define __TBL_DIRECT_H__
+#pragma once
 
 #include <limits.h>
 #include <rw/thr/recursiv.h>
@@ -55,11 +40,5 @@ public:
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    static string getTableName();
-
-   virtual bool Insert();
-   virtual bool Update();
-   virtual bool Delete();
 };
-
-#endif
 

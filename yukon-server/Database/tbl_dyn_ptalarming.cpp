@@ -1,21 +1,6 @@
+
+
 #include "yukon.h"
-
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dyn_ptalarming
-*
-* Date:   8/7/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2008/01/14 17:23:09 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
 
 #include "dbaccess.h"
 #include "logger.h"
@@ -78,20 +63,6 @@ string CtiTableDynamicPointAlarming::getTableName()
     return string("DynamicPointAlarming");
 }
 
-
-bool CtiTableDynamicPointAlarming::Insert()
-{
-    Cti::Database::DatabaseConnection   conn;
-
-    return Insert(conn);
-}
-
-bool CtiTableDynamicPointAlarming::Update()
-{
-    Cti::Database::DatabaseConnection   conn;
-
-    return Update(conn);
-}
 
 bool CtiTableDynamicPointAlarming::Insert(Cti::Database::DatabaseConnection &conn)
 {
@@ -241,11 +212,6 @@ bool CtiTableDynamicPointAlarming::Update(Cti::Database::DatabaseConnection &con
     }
 
     return success;
-}
-
-bool CtiTableDynamicPointAlarming::Delete()
-{
-    return Delete( getPointID(), getAlarmCondition() );
 }
 
 bool CtiTableDynamicPointAlarming::Delete(long pointid, int alarm_condition)

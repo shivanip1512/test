@@ -1,24 +1,6 @@
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dyn_ptalarming
-*
-* Class:  CtiTableDynamicPointAlarming
-* Date:   8/7/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786)
-#ifndef __TBL_DYN_PTALARMING_H__
-#define __TBL_DYN_PTALARMING_H__
-
+#pragma once
 
 #include "ctibase.h"
 #include "dlldefs.h"
@@ -49,8 +31,6 @@ protected:
     INT         _logType;
     string   _user;
 
-private:
-
 public:
 
     CtiTableDynamicPointAlarming();
@@ -64,10 +44,6 @@ public:
 
     bool Insert(Cti::Database::DatabaseConnection &conn);
     bool Update(Cti::Database::DatabaseConnection &conn);
-
-    virtual bool Insert();
-    virtual bool Update();
-    virtual bool Delete();
 
     static bool Delete(long pointid, int alarm_condition);
 
@@ -113,4 +89,4 @@ public:
 
     virtual void dump();
 };
-#endif // #ifndef __TBL_DYN_PTALARMING_H__
+

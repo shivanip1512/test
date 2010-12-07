@@ -1,23 +1,6 @@
 
-#pragma warning( disable : 4786)
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dialup
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_dialup.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __TBL_DIALUP_H__
-#define __TBL_DIALUP_H__
-
-#include <limits.h>
+#pragma once
 
 #include <limits.h>
 #include <rw/thr/recursiv.h>
@@ -74,14 +57,9 @@ public:
 
     static string getTableName();
 
-    virtual bool Insert();
-    virtual bool Update();
-    virtual bool Delete();
-
     INT getStopBits() const;
     INT getParity() const;
     INT getBits() const;
 
 };
 
-#endif

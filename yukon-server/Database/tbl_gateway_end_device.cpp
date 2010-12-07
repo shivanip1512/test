@@ -1,21 +1,6 @@
+
+
 #include "yukon.h"
-
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_gateway_end_device
-*
-* Date:   7/16/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:16:06 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
 
 #include "dbaccess.h"
 #include "numstr.h"
@@ -122,21 +107,10 @@ string CtiTableGatewayEndDevice::getTableName()
     return string("GatewayEndDevice");
 }
 
-void CtiTableGatewayEndDevice::DumpData()
-{
-
-}
 void CtiTableGatewayEndDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     CtiLockGuard<CtiLogger> doubt_guard(dout);
     dout << CtiTime() << " **** ACHACHACHACHACHACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-}
-
-bool CtiTableGatewayEndDevice::Insert()
-{
-    Cti::Database::DatabaseConnection   conn;
-
-    return Insert(conn);
 }
 
 bool CtiTableGatewayEndDevice::Insert(Cti::Database::DatabaseConnection &conn)
@@ -152,27 +126,23 @@ bool CtiTableGatewayEndDevice::Insert(Cti::Database::DatabaseConnection &conn)
         << getDataValue();
 
     bool success = inserter.execute();
+    std::string query = inserter.asString();
 
     if( success )
     {
         setDirty(false);
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Inserted GatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "   " << query << endl;
+        }
     }
     else
     {
-        success = inserter.execute();
-
-        if( ! success )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Unable to insert GatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ") " << endl;
-            dout << "   " << inserter.asString() << endl;
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " InsertedGatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "   " << inserter.asString() << endl;
-            setDirty(false);
+            dout << "   " << query << endl;
         }
     }
     return success;
@@ -207,26 +177,9 @@ bool CtiTableGatewayEndDevice::Update()
     }
     else
     {
-        success = Insert();        // Try a vanilla insert if the update failed!
+        success = Insert(conn);        // Try a vanilla insert if the update failed!
     }
 
     return success;
 }
-
-bool CtiTableGatewayEndDevice::Delete()
-{
-    static const std::string sql = "delete from " + getTableName() + " where "
-                                   "serialnumber = ? and hardwaretype = ? and datatype = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       deleter(conn, sql);
-
-    deleter 
-        << getSerialNumber()
-        << getHardwareType()
-        << getDataType();
-
-    return deleter.execute();
-}
-
 

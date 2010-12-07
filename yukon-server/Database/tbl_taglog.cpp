@@ -1,22 +1,6 @@
+
+
 #include "yukon.h"
-
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_taglog
-*
-* Date:   12/22/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2007/03/05 22:55:40 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-
 
 #include "dbaccess.h"
 #include "logger.h"
@@ -94,21 +78,6 @@ bool CtiTableTagLog::operator<(const CtiTableTagLog& aRef) const
 string CtiTableTagLog::getTableName()
 {
     return string("TagLog");
-}
-
-
-bool CtiTableTagLog::Insert()
-{
-    Cti::Database::DatabaseConnection   conn;
-
-    return Insert(conn);
-}
-
-bool CtiTableTagLog::Update()
-{
-    Cti::Database::DatabaseConnection   conn;
-
-    return Update(conn);
 }
 
 bool CtiTableTagLog::Insert(Cti::Database::DatabaseConnection &conn)
@@ -238,46 +207,6 @@ bool CtiTableTagLog::Update(Cti::Database::DatabaseConnection &conn)
     }
 
     return success;
-}
-
-bool CtiTableTagLog::Delete()
-{
-    return Delete( getLogId() );
-}
-
-bool CtiTableTagLog::Delete(int log)
-{
-    static const std::string sql = "delete from " + getTableName() + " where logid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       deleter(conn, sql);
-
-    deleter << log;
-
-    if(isDebugLudicrous())
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << CtiTime() << deleter.asString() << endl;
-    }
-
-    return deleter.execute();
-}
-
-void CtiTableTagLog::DecodeDatabaseReader(Cti::RowReader& rdr)
-{
-    rdr["logid"]        >> _logId;
-    rdr["instanceid"]   >> _instanceId;
-    rdr["pointid"]      >> _pointId;
-    rdr["tagid"]        >> _tagid;
-    rdr["username"]     >> _userName;
-    rdr["action"]       >> _actionStr;
-    rdr["description"]  >> _descriptionStr;
-    rdr["tagtime"]      >> _tagtime;
-    rdr["refstr"]       >> _referenceStr;
-    rdr["forstr"]       >> _taggedForStr;
-
-    resetDirty(FALSE);
 }
 
 int CtiTableTagLog::getLogId() const        // no two tags share the same one

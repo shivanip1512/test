@@ -1,22 +1,6 @@
 
-#pragma warning( disable : 4786)
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_emetcon
-*
-* Date:   10/4/1999
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_dv_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-#ifndef __TBL_DV_EMETCON_H__
-#define __TBL_DV_EMETCON_H__
+#pragma once
 
 #include <limits.h>
 
@@ -45,10 +29,6 @@ protected:
    INT   _relay;
 
    LONG  _routeID;            // the route (macro) which defines this device.
-
-
-private:
-
 
 public:
 
@@ -89,9 +69,5 @@ public:
    static string getTableName();
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
-   virtual bool Insert();
-   virtual bool Update();
-   virtual bool Delete();
-
 };
-#endif // #ifndef __TBL_DV_EMETCON_H__
+

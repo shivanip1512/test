@@ -2079,7 +2079,9 @@ bool CtiLMControlAreaStore::UpdateControlAreaDisableFlagInDB(CtiLMControlArea* c
     }
 
     bool success = updater.execute();
+    success &= ( updater.rowsAffected() > 0 );
 
+    // send even on update failure?
     CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
                                                          controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
                                                          ChangeTypeUpdate);
@@ -2117,7 +2119,9 @@ bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBaseSPtr pr
     }
 
     bool success = updater.execute();
+    success &= ( updater.rowsAffected() > 0 );
 
+    // send even on update failure?
     CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(program->getPAOId(), ChangePAODb,
                                                          program->getPAOCategory(), desolveLoadManagementType(program->getPAOType()),
                                                          ChangeTypeUpdate);
@@ -2155,7 +2159,9 @@ bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupPtr& group)
     }
 
     bool success = updater.execute();
+    success &= ( updater.rowsAffected() > 0 );
 
+    // send even on update failure?
     CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(group->getPAOId(), ChangePAODb,
                                                          group->getPAOCategory(), desolveDeviceType(group->getPAOType()),
                                                          ChangeTypeUpdate);
@@ -2197,7 +2203,9 @@ bool CtiLMControlAreaStore::UpdateTriggerInDB(CtiLMControlArea* controlArea, Cti
     }
 
     bool success = updater.execute();
+    success &= ( updater.rowsAffected() > 0 );
 
+    // send even on update failure?
     CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
                                                          controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
                                                          ChangeTypeUpdate);

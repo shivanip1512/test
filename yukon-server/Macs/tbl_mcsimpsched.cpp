@@ -1,30 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_mcsimpsched
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/tbl_mcsimpsched.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/01/16 21:09:12 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------
-
-        Filename:  tbl_mcsimpsched.cpp
-
-        Programmer:  Aaron Lauinger
-
-        Description:    Source file for class CtiMCSimpleSchedule
 
 
-        Initial Date:  1/11/01
-
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 1999, 2001
----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "tbl_mcsimpsched.h"
@@ -147,6 +122,7 @@ bool CtiTableMCSimpleSchedule::Update()
         << getScheduleID();
 
     bool success = updater.execute();
+    success &= ( updater.rowsAffected() > 0 );
 
     if( ! success )
     {

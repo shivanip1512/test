@@ -1,18 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_tnpp
-*
-* Date:   6/28/2005
-*
-* Author : Jess Otteson
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_tnpp.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:16:06 $
-*
-* Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+
+
 #include "yukon.h"
 
 #include "tbl_dv_tnpp.h"
@@ -89,62 +76,6 @@ LONG CtiTableDeviceTnpp::getDeviceID() const
 {
 
     return _deviceID;
-}
-
-bool CtiTableDeviceTnpp::Insert()
-{
-    static const std::string sql = "insert into " + getTableName() + " (deviceid) values (?)";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       inserter(conn, sql);
-
-    inserter << getDeviceID();
-
-    bool success = inserter.execute();
-
-    if ( success )
-    {
-        setDirty(false);
-    }
-
-    return success;
-}
-
-bool CtiTableDeviceTnpp::Update()
-{
-#if 0
-    static const std::string sql = "update " + getTableName() + "  ~set some stuff here~  where deviceid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       updater(conn, sql);
-
-    updater
-//        << getPagerNumber()
-        << getDeviceID();
-
-    bool success = updater.execute();
-#endif
-
-    bool success = true;
-
-    if ( success )
-    {
-        setDirty(false);
-    }
-
-    return success;
-}
-
-bool CtiTableDeviceTnpp::Delete()
-{
-    static const std::string sql = "delete from " + getTableName() + " where deviceid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       deleter(conn, sql);
-
-    deleter << getDeviceID();
-
-    return deleter.execute();
 }
 
 unsigned short CtiTableDeviceTnpp::getInertia() const

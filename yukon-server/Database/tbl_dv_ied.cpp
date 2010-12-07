@@ -1,18 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_ied
-*
-* Date:   8/13/2001
-*
-* Author : Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_ied.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/01/03 20:23:37 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+
+
 #include "yukon.h"
 
 #include "tbl_dv_ied.h"
@@ -130,67 +117,5 @@ CtiTableDeviceIED& CtiTableDeviceIED::setDeviceID( const LONG deviceID )
 
     _deviceID = deviceID;
     return *this;
-}
-
-
-bool CtiTableDeviceIED::Insert()
-{
-    static const std::string sql = "insert into " + getTableName() + " values (?, ?, ?)";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       inserter(conn, sql);
-
-    inserter 
-        << getDeviceID()
-        << getPassword()
-        << getSlaveAddress();
-
-    bool success = inserter.execute();
-
-    if ( success )
-    {
-        setDirty(false);
-    }
-
-    return success;
-}
-
-bool CtiTableDeviceIED::Update()
-{
-    static const std::string sql = "update " + getTableName() +
-                                   " set "
-                                        "password = ?, "
-                                        "slaveaddress = ? "
-                                   " where "
-                                        "deviceid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       updater(conn, sql);
-
-    updater 
-        << getPassword()
-        << getSlaveAddress()
-        << getDeviceID();
-
-    bool success = updater.execute();
-
-    if ( success )
-    {
-        setDirty(false);
-    }
-
-    return success;
-}
-
-bool CtiTableDeviceIED::Delete()
-{
-    static const std::string sql = "delete from " + getTableName() + " where deviceid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       deleter(conn, sql);
-
-    deleter << getDeviceID();
-
-    return deleter.execute();
 }
 

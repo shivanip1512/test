@@ -1,26 +1,6 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_lm_controlhist
-*
-* Class:  CtiTableLMControlHistory
-* Date:   9/24/2001
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_lm_controlhist.h-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2008/04/21 15:22:32 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-#ifndef __TBL_LM_CONTROLHIST_H__
-#define __TBL_LM_CONTROLHIST_H__
 
 
-#include <map>
-using std::map;
+#pragma once
 
 #include "row_reader.h"
 #include <rw/thr/recursiv.h>
@@ -181,7 +161,6 @@ public:
     virtual bool Insert();
     virtual bool Insert(Cti::Database::DatabaseConnection &conn);
     virtual bool Update();
-    virtual bool Delete();
 
     void dump() const;
     void DecodeOutstandingControls(Cti::RowReader &rdr);
@@ -201,4 +180,4 @@ public:
     bool InsertDynamic(Cti::Database::DatabaseConnection &conn);
 
 };
-#endif // #ifndef __TBL_LM_CONTROLHIST_H__
+

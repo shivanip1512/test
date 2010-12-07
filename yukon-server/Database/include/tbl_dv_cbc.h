@@ -1,24 +1,6 @@
 
-#pragma warning( disable : 4786)
-#ifndef __TBL_DV_CBC_H__
-#define __TBL_DV_CBC_H__
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_cbc
-*
-* Class:  CtiTableDeviceCBC
-* Date:   8/24/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_dv_cbc.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+#pragma once
 
 #include <limits.h>
 #include <rw/thr/recursiv.h>
@@ -40,8 +22,6 @@ protected:
    LONG     _deviceID;
    INT      _serial;             // Versacom Serial number
    LONG     _routeID;            // the route (macro) which defines this device.
-
-private:
 
 public:
 
@@ -68,9 +48,5 @@ public:
    LONG getDeviceID() const;
 
    CtiTableDeviceCBC& setDeviceID( const LONG did);
-
-   virtual bool Insert();
-   virtual bool Update();
-   virtual bool Delete();
 };
-#endif // #ifndef __TBL_DV_CBC_H__
+

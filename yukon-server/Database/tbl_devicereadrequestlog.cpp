@@ -1,18 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_devicereadrequestlog
-*
-* Date:   3/6/2007
-*
-* Author : Jess Otteson
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_devicereadrequestlog.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2007/03/08 21:57:25 $
-*
-* Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+
+
 #include "yukon.h"
 
 #include "tbl_devicereadrequestlog.h"
@@ -166,6 +153,8 @@ bool CtiTblDeviceReadRequestLog::Update()
         << getReadJobId()
         << getRequestLogId();
 
-    return updater.execute();
+    bool success = updater.execute();
+
+    return success && ( updater.rowsAffected() > 0 );
 }
 

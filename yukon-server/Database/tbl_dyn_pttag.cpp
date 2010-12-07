@@ -1,21 +1,6 @@
+
+
 #include "yukon.h"
-
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dyn_pttag
-*
-* Date:   12/22/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2007/03/05 22:55:40 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
 
 #include "dbaccess.h"
 #include "logger.h"
@@ -86,21 +71,6 @@ bool CtiTableDynamicTag::operator<(const CtiTableDynamicTag& aRef) const
 string CtiTableDynamicTag::getTableName()
 {
     return string("DynamicTags");
-}
-
-
-bool CtiTableDynamicTag::Insert()
-{
-    Cti::Database::DatabaseConnection   conn;
-
-    return Insert(conn);
-}
-
-bool CtiTableDynamicTag::Update()
-{
-    Cti::Database::DatabaseConnection   conn;
-
-    return Update(conn);
 }
 
 bool CtiTableDynamicTag::Insert(Cti::Database::DatabaseConnection &conn)

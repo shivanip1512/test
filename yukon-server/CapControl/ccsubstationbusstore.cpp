@@ -3198,29 +3198,26 @@ bool CtiCCSubstationBusStore::UpdateBusVerificationFlagsInDB(CtiCCSubstationBus*
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
-    {
+    static const string updateSql = "update dynamicccsubstationbus set "
+                                    "verificationflag = ? "
+                                    " where paobjectid = ?";
 
-        bool success = false;
-        static const string updateSql = "update dynamicccsubstationbus set "
-                                        "verificationflag = ? "
-                                        " where paobjectid = ?";
+    Cti::Database::DatabaseConnection conn;
+    Cti::Database::DatabaseWriter updater(conn, updateSql);
 
-        Cti::Database::DatabaseConnection conn;
-        Cti::Database::DatabaseWriter updater(conn, updateSql);
+    updater << (string)(bus->getVerificationFlag()?"Y":"N") << bus->getPaoId();
 
-        updater << (string)(bus->getVerificationFlag()?"Y":"N") << bus->getPaoId();
+    bool success = updater.execute();
+    success &= ( updater.rowsAffected() > 0 );
 
-        success = updater.execute( );
+    // Why do we send this DB change message if the actual update fails?
+    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPaoId(), ChangePAODb,
+                                              bus->getPaoCategory(), bus->getPaoType(),
+                                              ChangeTypeUpdate);
+    dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
+    CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
 
-        CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPaoId(), ChangePAODb,
-                                                  bus->getPaoCategory(), bus->getPaoType(),
-                                                  ChangeTypeUpdate);
-        dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-        CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
-
-        return success;
-    }
-    return false;
+    return success;
 }
 
 // Updates the yukonpaobject table with the paoid and disable flag given.
@@ -3234,7 +3231,10 @@ bool CtiCCSubstationBusStore::updateDisableFlag(unsigned int paoid, bool isDisab
 
     updater << (string)(isDisabled?"Y":"N") << paoid;
 
-    return updater.execute();
+    bool success = updater.execute();
+    success &= ( updater.rowsAffected() > 0 );
+
+    return success;
 }
 
 
@@ -3386,7 +3386,9 @@ bool CtiCCSubstationBusStore::UpdateCapBankOperationalStateInDB(CtiCCCapBank* ca
     updater << capbank->getOperationalState() << capbank->getPaoId();
 
     bool updateSuccessful = updater.execute();
+    updateSuccessful &= ( updater.rowsAffected() > 0 );
 
+    // Why do we send this DB change message if the actual update fails?
     CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(capbank->getPaoId(), ChangePAODb,
                                                   capbank->getPaoCategory(),
                                                   capbank->getPaoType(),
@@ -3419,6 +3421,7 @@ bool CtiCCSubstationBusStore::UpdateCapBankInDB(CtiCCCapBank* capbank)
             << capbank->getPaoId();
 
     bool updateSuccessful = updater.execute();
+    updateSuccessful &= ( updater.rowsAffected() > 0 );
 
     static const string capbankUpdateSql = "update capbank set banksize = ?, operationalstate = ?"
                                            " where deviceid = ?";
@@ -3429,7 +3432,10 @@ bool CtiCCSubstationBusStore::UpdateCapBankInDB(CtiCCCapBank* capbank)
             << capbank->getPaoId();
 
     updateSuccessful = updater.execute();
+    updateSuccessful &= ( updater.rowsAffected() > 0 );
+    // Shouldn't these 2 updates be a single transaction?  Why are we overwriting the return value...?
 
+    // Why do we send this DB change message if the actual update fails?
     CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(capbank->getPaoId(), ChangePAODb,
                                                   capbank->getPaoCategory(),
                                                   capbank->getPaoType(),

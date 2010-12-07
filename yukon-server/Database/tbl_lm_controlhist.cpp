@@ -1,18 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_lm_controlhist
-*
-* Date:   9/24/2001
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.42.6.1 $
-* DATE         :  $Date: 2008/11/18 20:11:29 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+
+
 #include "yukon.h"
 
 #include "tbl_lm_controlhist.h"
@@ -415,6 +402,7 @@ bool CtiTableLMControlHistory::updateCompletedOutstandingControls()
     }
 
     bool success = updater.execute();
+    success &= ( updater.rowsAffected() > 0 );
 
     if( ! success )
     {
@@ -613,6 +601,7 @@ bool CtiTableLMControlHistory::Update()
         << getPAOID();
 
     bool success = updater.execute();
+    success &= ( updater.rowsAffected() > 0 );
 
     if( success )
     {
@@ -620,18 +609,6 @@ bool CtiTableLMControlHistory::Update()
     }
 
     return success;
-}
-
-bool CtiTableLMControlHistory::Delete()
-{
-    static const std::string sql = "delete from " + getTableName() + " where lmctrlhistid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       deleter(conn, sql);
-
-    deleter << getLMControlHistoryID();
-
-    return deleter.execute();
 }
 
 CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const CtiTime &logTime, const LONG increment, bool season_reset )

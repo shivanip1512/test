@@ -1,24 +1,6 @@
 
-#pragma warning( disable : 4786)
-#ifndef __TBL_DV_LMG_RIPPLE_H__
-#define __TBL_DV_LMG_RIPPLE_H__
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_lmg_ripple
-*
-* Class:  CtiTableRippleLoadGroup
-* Date:   9/25/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_dv_lmg_ripple.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+#pragma once
 
 #include <limits.h>
 #include <rw/thr/recursiv.h>
@@ -41,8 +23,6 @@ protected:
    string      _restoreBits;     // The restore command transmitted to this group.
    LONG           _routeID;         // the route
    LONG           _shedTime;
-
-private:
 
 public:
 
@@ -80,10 +60,7 @@ public:
 
    //corey's original .h has no decodedatabasereader()...
    void DecodeDatabaseReader(Cti::RowReader &rdr);
-   virtual bool Insert();
-   virtual bool Update();
-   virtual bool Delete();
 
    bool copyMessage(BYTE *bptr, bool shed) const;
 };
-#endif // #ifndef __TBL_DV_LMG_RIPPLE_H__
+

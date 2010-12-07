@@ -1,17 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dyn_paoinfo
-*
-* Date:   2005-jan-17
-*
-* Author: Matt Fisher
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.28.6.1 $
-* DATE         :  $Date: 2008/11/18 20:11:28 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+
+
 #include "yukon.h"
 
 #include "dbaccess.h"
@@ -445,24 +433,6 @@ bool CtiTableDynamicPaoInfo::hasRow() const
     return (_entry_id > 0);
 }
 
-
-bool CtiTableDynamicPaoInfo::Insert()
-{
-    Cti::Database::DatabaseConnection   conn;
-
-    return Insert(conn);
-}
-
-
-bool CtiTableDynamicPaoInfo::Update()
-{
-    Cti::Database::DatabaseConnection   conn;
-
-    long rowsAffected = 0;
-
-    return Update(conn, rowsAffected);
-}
-
 bool CtiTableDynamicPaoInfo::Insert(Cti::Database::DatabaseConnection &conn)
 {
     bool success = true;
@@ -580,7 +550,7 @@ bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn, lon
         success      = updater.execute();
         rowsAffected = updater.rowsAffected();
 
-        if( success && rowsAffected > 0)
+        if( success && rowsAffected > 0 )
         {
             setDirty(false);
         }
@@ -592,26 +562,6 @@ bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn, lon
     }
 
     return success;
-}
-
-
-bool CtiTableDynamicPaoInfo::Delete()
-{
-    static const std::string sql = "delete from " + getTableName() + " where entryid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       deleter(conn, sql);
-
-    deleter << getEntryID();
-
-    if(isDebugLudicrous())
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << CtiTime() << deleter.asString() << endl;
-    }
-
-    return deleter.execute();
 }
 
 string CtiTableDynamicPaoInfo::getSQLCoreStatement(CtiApplication_t _app_id)

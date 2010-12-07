@@ -6018,7 +6018,7 @@ void CtiVanGogh::writeMessageToScanner(const CtiCommandMsg *Cmd)
 
 INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, string user, CtiMultiMsg &sigList)
 {
-    INT status = NORMAL;
+    bool success = false;
     string objtype = resolveDeviceObjectType(did);
 
     CtiServerExclusion smguard(_server_exclusion, 10000);
@@ -6035,7 +6035,7 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, s
                 << ( TAG_DISABLE_DEVICE_BY_DEVICE & setmask ? std::string("Y") : std::string("N") )
                 << did;
 
-            status = updater.execute() ? NORMAL : UnknownError;
+            updater.execute();
         }
 
         {
@@ -6047,7 +6047,8 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, s
                 << ( TAG_DISABLE_CONTROL_BY_DEVICE & setmask ? std::string("Y") : std::string("N") )
                 << did;
 
-            status = updater.execute() ? NORMAL : UnknownError;
+            success = updater.execute();
+            success &= ( updater.rowsAffected() > 0 );
         }
     }
 
@@ -6056,12 +6057,12 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, s
     dbChange->setSource(DISPATCH_APPLICATION_NAME);
     sigList.insert(dbChange);
 
-    return status;
+    return success ? NORMAL : UnknownError;
 }
 
 INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, string user, CtiMultiMsg &Multi)
 {
-    INT status = NORMAL;
+    bool success = false;
 
     CtiServerExclusion smguard(_server_exclusion, 10000);
     if(smguard.isAcquired())
@@ -6077,7 +6078,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, st
                 << ( TAG_DISABLE_POINT_BY_POINT & setmask ? std::string("Y") : std::string("N") )
                 << pid;
 
-            status = updater.execute() ? NORMAL : UnknownError;
+            updater.execute();
         }
 
         if (TAG_DISABLE_CONTROL_BY_POINT & tagmask)
@@ -6091,7 +6092,8 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, st
                 << ( TAG_DISABLE_CONTROL_BY_POINT & setmask ? std::string("Y") : std::string("N") )
                 << pid;
 
-            status = updater.execute() ? NORMAL : UnknownError;
+            success = updater.execute();
+            success &= ( updater.rowsAffected() > 0 );
         }
     }
 
@@ -6101,7 +6103,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, st
     dbChange->setMessagePriority(15);
     Multi.insert(dbChange);
 
-    return status;
+    return success ? NORMAL : UnknownError;
 }
 
 /**

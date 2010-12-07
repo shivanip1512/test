@@ -1,18 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_tappaging
-*
-* Date:   8/14/2001
-*
-* Author : Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_tappaging.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 17:16:06 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+
+
 #include "yukon.h"
 
 #include "tbl_dv_tappaging.h"
@@ -106,62 +93,6 @@ CtiTableDeviceTapPaging& CtiTableDeviceTapPaging::setDeviceID( const LONG device
     _deviceID = deviceID;
     return *this;
 }
-
-
-bool CtiTableDeviceTapPaging::Insert()
-{
-    static const std::string sql = "insert into " + getTableName() + " (deviceid, pagernumber) values (?, ?)";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       inserter(conn, sql);
-
-    inserter
-        << getDeviceID()
-        << getPagerNumber();
-
-    bool success = inserter.execute();
-
-    if ( success )
-    {
-        setDirty(false);
-    }
-
-    return success;
-}
-
-bool CtiTableDeviceTapPaging::Update()
-{
-    static const std::string sql = "update " + getTableName() + " set pagernumber = ? where deviceid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       updater(conn, sql);
-
-    updater
-        << getPagerNumber()
-        << getDeviceID();
-
-    bool success = updater.execute();
-
-    if ( success )
-    {
-        setDirty(false);
-    }
-
-    return success;
-}
-
-bool CtiTableDeviceTapPaging::Delete()
-{
-    static const std::string sql = "delete from " + getTableName() + " where deviceid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       deleter(conn, sql);
-
-    deleter << getDeviceID();
-
-    return deleter.execute();
-}
-
 
 string CtiTableDeviceTapPaging::getSenderID() const
 {

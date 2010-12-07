@@ -1,29 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_mcsched
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/tbl_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:25:02 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------
 
-        Filename:  tbl_mcsched.h
 
-        Programmer:  Aaron Lauinger
-
-        Description:    Source file for CtiTableMCSchedule
-
-        Initial Date:  4/7/99
-                       1/11/01
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 1999, 2001
----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "tbl_mcsched.h"
@@ -218,6 +194,7 @@ bool CtiTableMCSchedule::Update()
         << getScheduleID();
 
     bool success = updater.execute();
+    success &= ( updater.rowsAffected() > 0 );
 
     if( ! success )
     {

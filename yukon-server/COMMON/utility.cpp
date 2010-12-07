@@ -433,6 +433,7 @@ INT SynchronizedIdGen(string name, int values_needed)
         updater << values_needed << name;
 
         status = updater.execute();
+        status &= ( updater.rowsAffected() > 0 );
 
         if(status)
         {

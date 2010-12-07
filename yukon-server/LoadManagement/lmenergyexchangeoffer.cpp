@@ -283,6 +283,7 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(CtiTime& 
         }
 
         bool success = updater.execute();
+        success &= ( updater.rowsAffected() > 0 );
 
         if( ! success )
         {// If update failed, we should try to insert the record because it means that there probably wasn't a entry for this object yet

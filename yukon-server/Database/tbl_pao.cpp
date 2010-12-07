@@ -1,18 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_pao
-*
-* Date:   9/12/2001
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pao.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/01/11 21:58:23 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+
+
 #include "yukon.h"
 
 #include "dbaccess.h"
@@ -295,6 +282,7 @@ bool CtiTblPAO::Update()
         << getID();
 
     bool success = updater.execute();
+    success &= ( updater.rowsAffected() > 0 );
 
     if( success )
     {

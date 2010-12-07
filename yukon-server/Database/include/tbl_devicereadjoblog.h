@@ -1,28 +1,7 @@
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_devicereadjoblog
-*
-* Date:   3/6/2007
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/Database/Include/tbl_devicereadjoblog.h-arc  $
-* REVISION     :  $Revision: 1.1.22.1 $
-* DATE         :  $Date: 2008/11/13 17:23:49 $
-*
-* Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786)
-#ifndef __TBL_DEVICEREADJOBLOG_H__
-#define __TBL_DEVICEREADJOBLOG_H__
+#pragma once
 
-
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
-#include <windows.h>
 #include "ctitime.h"
 
 #include "dlldefs.h"
@@ -39,8 +18,6 @@ protected:
     CtiTime _startTime;
     CtiTime _stopTime;
 
-private:
-
 public:
 
     CtiTblDeviceReadJobLog( long jobLogId, long scheduleId = 0, CtiTime& start = CtiTime::now(), CtiTime& stop = CtiTime::now());
@@ -52,7 +29,6 @@ public:
     CtiTblDeviceReadJobLog& operator=(const CtiTblDeviceReadJobLog& aRef);
 
     virtual bool Insert();
-    virtual bool Update();
     virtual bool UpdateStopTime();
     virtual string getTableName();
 
@@ -70,4 +46,3 @@ public:
 
 };
 
-#endif

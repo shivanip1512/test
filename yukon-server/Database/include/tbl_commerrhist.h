@@ -1,27 +1,8 @@
 
-#pragma warning( disable : 4786)
-#ifndef __TBL_COMMERRHIST_H__
-#define __TBL_COMMERRHIST_H__
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_commerrhist
-*
-* Class:  CtiTableCommErrorHistory
-* Date:   9/21/2001
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_commerrhist.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+#pragma once
 
 #include "row_reader.h"
-//#include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
 #include "dbmemobject.h"
@@ -48,8 +29,6 @@ protected:
    string      _command;
    string      _outMessage;
    string      _inMessage;
-
-private:
 
 public:
 
@@ -104,9 +83,7 @@ public:
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual bool Insert();
    virtual bool Insert(Cti::Database::DatabaseConnection &conn);
-   virtual bool Update();
-   virtual bool Delete();
    static  bool Prune(CtiDate &earliestDate);
 
 };
-#endif // #ifndef __TBL_COMMERRHIST_H__
+

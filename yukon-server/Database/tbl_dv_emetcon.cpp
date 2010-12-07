@@ -1,18 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_emetcon
-*
-* Date:   8/13/2001
-*
-* Author : Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:16:05 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+
+
 #include "yukon.h"
 
 #include "tbl_dv_emetcon.h"
@@ -178,71 +165,5 @@ void CtiTableEmetconLoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
     // Make these guys right with a binary world;
     _silver -= 1;     // Silver is 0 through 59
     _gold   += 59;    // Gold is 60 - 63
-}
-
-bool CtiTableEmetconLoadGroup::Insert()
-{
-    static const std::string sql = "insert into " + getTableName() +
-                                   " (deviceid, goldaddress, silveraddress, routeid)"
-                                   " values (?, ?, ?, ?)";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       inserter(conn, sql);
-
-    inserter 
-        << getDeviceID()
-        << getGold()
-        << getSilver()
-        << getRouteID();
-
-    bool success = inserter.execute();
-
-    if ( success )
-    {
-        setDirty(false);
-    }
-
-    return success;
-}
-
-bool CtiTableEmetconLoadGroup::Update()
-{
-    static const std::string sql = "update " + getTableName() +
-                                   " set "
-                                        "goldaddress = ?, "
-                                        "silveraddress = ?, "
-                                        "routeid = ?"
-                                   " where "
-                                        "deviceid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       updater(conn, sql);
-
-    updater 
-        << getGold()
-        << getSilver()
-        << getRouteID()
-        << getDeviceID();
-
-    bool success = updater.execute();
-
-    if ( success )
-    {
-        setDirty(false);
-    }
-
-    return success;
-}
-
-bool CtiTableEmetconLoadGroup::Delete()
-{
-    static const std::string sql = "delete from " + getTableName() + " where deviceid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       deleter(conn, sql);
-
-    deleter << getDeviceID();
-
-    return deleter.execute();
 }
 

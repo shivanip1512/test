@@ -1,24 +1,6 @@
 
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_gateway_end_device
-*
-* Class:  CtiTableGatewayEndDevice
-* Date:   7/16/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 
-#pragma warning( disable : 4786)
-#ifndef __TBL_GATEWAY_END_DEVICE_H__
-#define __TBL_GATEWAY_END_DEVICE_H__
-
+#pragma once
 
 #include "row_reader.h"
 
@@ -41,8 +23,6 @@ protected:
     UINT _dataType;
     string _dataValue;
 
-
-private:
 
 public:
 
@@ -68,13 +48,9 @@ public:
     string getDataValue() const;
 
     static string getTableName();
-    virtual void DumpData();
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-    virtual bool Insert();
     virtual bool Insert(Cti::Database::DatabaseConnection &conn);
     virtual bool Update();
-    virtual bool Delete();
-
 };
-#endif // #ifndef __TBL_GATEWAY_END_DEVICE_H__
+

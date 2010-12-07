@@ -100,7 +100,7 @@ dbsigsend.obj:	yukon.h precompiled.h types.h ctidbgmem.h dllbase.h \
 		utility.h ctitime.h queues.h numstr.h sorted_vector.h \
 		cticonnect.h netports.h dsm2err.h words.h tbl_signal.h \
 		row_reader.h database_connection.h dbaccess.h sema.h \
-		dbmemobject.h pointdefs.h
+		dbmemobject.h
 precompiled.obj:	yukon.h precompiled.h types.h ctidbgmem.h
 tbl_rawpthistory.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		tbl_rawpthistory.h ctitime.h dlldefs.h pointdefs.h utility.h \
@@ -114,6 +114,6 @@ tbl_signal.obj:	yukon.h precompiled.h types.h ctidbgmem.h tbl_signal.h \
 		dbaccess.h dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h \
 		guard.h utility.h queues.h numstr.h sorted_vector.h \
 		cticonnect.h netports.h dsm2err.h words.h sema.h \
-		dbmemobject.h pointdefs.h logger.h thread.h CtiPCPtrQueue.h \
+		dbmemobject.h logger.h thread.h CtiPCPtrQueue.h \
 		database_writer.h row_writer.h database_reader.h
 #ENDUPDATE#

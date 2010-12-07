@@ -1,6 +1,7 @@
-#include "yukon.h"
 
+#include "yukon.h"
 #include "tbl_signal.h"
+
 #include "dbaccess.h"
 #include "logger.h"
 #include "database_writer.h"
@@ -20,16 +21,16 @@ CtiTableSignal::CtiTableSignal() :
 {
 }
 
-CtiTableSignal::CtiTableSignal(LONG            id,
-                               const CtiTime  &tme,
-                               INT             millis,
-                               const string   &text,
-                               const string   &addl,
-                               INT             lp,
-                               INT             lt,
-                               INT             soe,
-                               const string   &user,
-                               const INT       lid) :
+CtiTableSignal::CtiTableSignal(LONG                 id,
+                               const CtiTime       &tme,
+                               INT                  millis,
+                               const std::string   &text,
+                               const std::string   &addl,
+                               INT                  lp,
+                               INT                  lt,
+                               INT                  soe,
+                               const std::string   &user,
+                               const INT            lid) :
     _logID(lid),
     _pointID(id),
     _time(tme),
@@ -88,20 +89,6 @@ CtiTableSignal& CtiTableSignal::operator=(const CtiTableSignal& aRef)
     return *this;
 }
 
-void CtiTableSignal::DecodeDatabaseReader( Cti::RowReader& rdr )
-{
-    rdr["logid"]        >> _logID;
-    rdr["pointid"]      >> _pointID;
-    rdr["datetime"]     >> _time;
-    rdr["soe_tag"]      >> _soe;
-    rdr["type"]         >> _logType;
-    rdr["priority"]     >> _logPriority;
-    rdr["action"]       >> _additional;
-    rdr["description"]  >> _text;
-    rdr["username"]     >> _user;
-    rdr["millis"]       >> _millis;
-}
-
 void CtiTableSignal::Insert(Cti::Database::DatabaseConnection &conn)
 {
     static const std::string sql = "insert into " + getTableName() +
@@ -109,21 +96,21 @@ void CtiTableSignal::Insert(Cti::Database::DatabaseConnection &conn)
 
     if(getAdditionalInfo().length() >= DEFAULT_ACTIONLENGTH)
     {
-        string temp = getAdditionalInfo();
+        std::string temp = getAdditionalInfo();
         temp.resize(DEFAULT_ACTIONLENGTH - 1);
         setAdditionalInfo(temp);
     }
 
     if(getText().length() >= DEFAULT_DESCRIPTIONLENGTH)
     {
-        string temp = getText();
+        std::string temp = getText();
         temp.resize(DEFAULT_DESCRIPTIONLENGTH - 1);
         setText(temp);
     }
 
     if(getUser().length() >= DEFAULT_USERLENGTH)
     {
-        string temp = getUser();
+        std::string temp = getUser();
         temp.resize(DEFAULT_USERLENGTH - 1);
         setUser(temp);
     }
@@ -159,91 +146,9 @@ void CtiTableSignal::Insert()
     Insert(conn);
 }
 
-void CtiTableSignal::Restore()
+std::string CtiTableSignal::getTableName() const
 {
-    static const string sql =  "SELECT SL.logid, SL.pointid, SL.datetime, SL.soe_tag, SL.type, SL.priority, "
-                                 "SL.action, SL.description, SL.username, SL.millis "
-                               "FROM Systemlog SL "
-                               "WHERE SL.logid = ?";
-
-    Cti::Database::DatabaseConnection connection;
-    Cti::Database::DatabaseReader reader(connection, sql);
-
-    reader << getLogID();
-
-    reader.execute();
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-    }
-    else
-    {
-        setDirty( true );
-    }
-}
-
-void CtiTableSignal::Update()
-{
-    static const std::string sql = "update " + getTableName() +
-                                   " set "
-                                        "pointid = ?, "
-                                        "datetime = ?, "
-                                        "soe_tag = ?, "
-                                        "type = ?, "
-                                        "priority = ?, "
-                                        "action = ?, "
-                                        "description = ?, "
-                                        "username = ?, "
-                                        "millis = ?"
-                                   " where "
-                                        "logid = ?";
-
-    if(getAdditionalInfo().length() >= DEFAULT_ACTIONLENGTH)
-    {
-        getAdditionalInfo().resize(DEFAULT_ACTIONLENGTH - 1);
-    }
-
-    if(getText().length() >= DEFAULT_DESCRIPTIONLENGTH)
-    {
-        getText().resize(DEFAULT_DESCRIPTIONLENGTH - 1);
-    }
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       updater(conn, sql);
-
-    updater
-        << getPointID()
-        << getTime()
-        << getSOE()
-        << getLogType()
-        << getPriority()
-        << getAdditionalInfo()
-        << getText()
-        << getUser()
-        << getMillis()
-        << getLogID();
-
-    updater.execute();
-}
-
-void CtiTableSignal::Delete()
-{
-    static const std::string sql = "delete from " + getTableName() + " where logid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       deleter(conn, sql);
-
-    deleter << getLogID();
-
-    deleter.execute();
-}
-
-
-
-string CtiTableSignal::getTableName() const
-{
-    return string("Systemlog");
+    return std::string("Systemlog");
 }
 
 LONG CtiTableSignal::getLogID() const
@@ -271,12 +176,12 @@ INT CtiTableSignal::getPriority() const
     return _logPriority;
 }
 
-string CtiTableSignal::getText() const
+std::string CtiTableSignal::getText() const
 {
     return _text;
 }
 
-string CtiTableSignal::getUser() const
+std::string CtiTableSignal::getUser() const
 {
     return _user;
 }
@@ -291,7 +196,7 @@ INT CtiTableSignal::getLogType() const
     return _logType;
 }
 
-string CtiTableSignal::getAdditionalInfo() const
+std::string CtiTableSignal::getAdditionalInfo() const
 {
     return _additional;
 }
@@ -346,13 +251,13 @@ CtiTableSignal& CtiTableSignal::setPriority(INT cls)
     return *this;
 }
 
-CtiTableSignal& CtiTableSignal::setText(const string &str)
+CtiTableSignal& CtiTableSignal::setText(const std::string &str)
 {
     _text = str;
     return *this;
 }
 
-CtiTableSignal& CtiTableSignal::setUser(const string &str)
+CtiTableSignal& CtiTableSignal::setUser(const std::string &str)
 {
     _user = str;
     return *this;
@@ -372,7 +277,7 @@ CtiTableSignal& CtiTableSignal::setLogType(const INT &i)
     return *this;
 }
 
-CtiTableSignal& CtiTableSignal::setAdditionalInfo(const string &str)
+CtiTableSignal& CtiTableSignal::setAdditionalInfo(const std::string &str)
 {
     _additional = str;
     return *this;

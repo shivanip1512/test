@@ -1,18 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_direct
-*
-* Date:   8/7/2001
-*
-* Author : Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_direct.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:16:05 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+
+
 #include "yukon.h"
 
 #include "tbl_direct.h"
@@ -69,64 +56,6 @@ void CtiTableDeviceDirectComm::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     rdr["deviceid"] >> _deviceID;
     rdr["portid"] >> PortID;
-}
-
-bool CtiTableDeviceDirectComm::Insert()
-{
-    static const std::string sql = "insert into " + getTableName() + " values (?, ?)";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       inserter(conn, sql);
-
-    inserter 
-        << getDeviceID()
-        << getPortID();
-
-    bool success = inserter.execute();
-
-    if ( success )
-    {
-        setDirty(false);
-    }
-
-    return success;
-}
-
-bool CtiTableDeviceDirectComm::Update()
-{
-    static const std::string sql = "update " + getTableName() +
-                                   " set "
-                                        "phonenumber = ?"
-                                   " where "
-                                        "deviceid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       updater(conn, sql);
-
-    updater 
-        << getPortID()
-        << getDeviceID();
-
-    bool success = updater.execute();
-
-    if ( success )
-    {
-        setDirty(false);
-    }
-
-    return success;
-}
-
-bool CtiTableDeviceDirectComm::Delete()
-{
-    static const std::string sql = "delete from " + getTableName() + " where deviceid = ?";
-
-    Cti::Database::DatabaseConnection   conn;
-    Cti::Database::DatabaseWriter       deleter(conn, sql);
-
-    deleter << getDeviceID();
-
-    return deleter.execute();
 }
 
 LONG CtiTableDeviceDirectComm::getDeviceID() const

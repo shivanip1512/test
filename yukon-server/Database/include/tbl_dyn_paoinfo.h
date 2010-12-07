@@ -402,8 +402,6 @@ protected:
 
     static const string _empty_string;
 
-private:
-
 public:
 
     typedef CtiMemDBObject Inherited;
@@ -423,10 +421,6 @@ public:
 
     bool Insert(Cti::Database::DatabaseConnection &conn);
     bool Update(Cti::Database::DatabaseConnection &conn, long &rowsAffected);
-
-    virtual bool Insert();
-    virtual bool Update();
-    virtual bool Delete();
 
     static string getSQLCoreStatement(CtiApplication_t _app_id);
 
