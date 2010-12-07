@@ -1,7 +1,8 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <cti:msgScope paths="capcontrol">
     <cti:url var="commentsURL" value="/spring/capcontrol/comments/"/>
     
@@ -139,7 +140,14 @@
                                         <div id="comment_${comment.id}" title="Click to edit." 
                                         <c:if test="${modifyPermission}">onclick="editComment(${comment.id})"</c:if>><spring:escapeBody htmlEscape="true">${comment.comment}</spring:escapeBody></div>
                                     </td>
-                                    <td>${comment.userName}</td>
+                                    <c:choose>
+                                    	<c:when test="${comment.userName == null}">
+                                    		<td><i:inline key="yukon.web.defaults.dashes"/></td>
+                                    	</c:when>
+                                    	<c:otherwise>
+                                    		<td>${comment.userName}</td>
+                                    	</c:otherwise>
+                                    </c:choose>
                                     <td><cti:formatDate value="${comment.date}" type="BOTH" /></td>
                                     <td>
                                         <c:choose>

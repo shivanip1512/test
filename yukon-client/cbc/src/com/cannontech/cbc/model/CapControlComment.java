@@ -10,7 +10,7 @@ import com.cannontech.yukon.cbc.CapControlCommand;
 public class CapControlComment {
     private int id;
     private int paoId;
-    private int userId;
+    private Integer userId;
     private Date date;
     private String comment;
     private boolean altered;
@@ -32,16 +32,20 @@ public class CapControlComment {
         this.paoId = paoId;
     }
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
     
     public String getUserName(){
-        YukonUserDao yukonUserDao = YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
-        return yukonUserDao.getLiteYukonUser(userId).getUsername();
+    	if (userId == null) {
+    		return null;
+    	}
+    	
+    	YukonUserDao yukonUserDao = YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
+		return yukonUserDao.getLiteYukonUser(userId).getUsername();
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
@@ -159,53 +163,56 @@ public class CapControlComment {
         return action;
     }
     
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((action == null) ? 0 : action.hashCode());
-        result = prime * result + (altered ? 1231 : 1237);
-        result = prime * result + ((comment == null) ? 0 : comment.hashCode());
-        result = prime * result + id;
-        result = prime * result + paoId;
-        result = prime * result + ((date == null) ? 0 : date.hashCode());
-        result = prime * result + userId;
-        return result;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((action == null) ? 0 : action.hashCode());
+		result = prime * result + (altered ? 1231 : 1237);
+		result = prime * result + ((comment == null) ? 0 : comment.hashCode());
+		result = prime * result + ((date == null) ? 0 : date.hashCode());
+		result = prime * result + id;
+		result = prime * result + paoId;
+		result = prime * result + ((userId == null) ? 0 : userId.hashCode());
+		return result;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final CapControlComment other = (CapControlComment) obj;
-        if (action == null) {
-            if (other.action != null)
-                return false;
-        } else if (!action.equals(other.action))
-            return false;
-        if (altered != other.altered)
-            return false;
-        if (comment == null) {
-            if (other.comment != null)
-                return false;
-        } else if (!comment.equals(other.comment))
-            return false;
-        if (id != other.id)
-            return false;
-        if (paoId != other.paoId)
-            return false;
-        if (date == null) {
-            if (other.date != null)
-                return false;
-        } else if (!date.equals(other.date))
-            return false;
-        if (userId != other.userId)
-            return false;
-        return true;
-    }
-
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CapControlComment other = (CapControlComment) obj;
+		if (action == null) {
+			if (other.action != null)
+				return false;
+		} else if (!action.equals(other.action))
+			return false;
+		if (altered != other.altered)
+			return false;
+		if (comment == null) {
+			if (other.comment != null)
+				return false;
+		} else if (!comment.equals(other.comment))
+			return false;
+		if (date == null) {
+			if (other.date != null)
+				return false;
+		} else if (!date.equals(other.date))
+			return false;
+		if (id != other.id)
+			return false;
+		if (paoId != other.paoId)
+			return false;
+		if (userId == null) {
+			if (other.userId != null)
+				return false;
+		} else if (!userId.equals(other.userId))
+			return false;
+		return true;
+	}
+    
 }
