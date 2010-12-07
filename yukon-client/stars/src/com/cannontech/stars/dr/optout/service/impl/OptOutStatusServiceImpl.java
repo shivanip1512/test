@@ -130,6 +130,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 		OptOutTemporaryOverride energyCompanyOptOutTemporaryOverride =
 		    optOutTemporaryOverrideDao.findCurrentSystemOptOutTemporaryOverrides(energyCompany.getEnergyCompanyID());
 		
+		// Check to see if there have been any program based temporary overrides.
 		if (programIdOptOutTemporaryOverrideMap.size() > 0) {
 		    Set<Integer> optOutOverrideAssignedProgramIds = programIdOptOutTemporaryOverrideMap.keySet();
 		    for (LMHardwareControlGroup lmHardwareControlGroup : lmHardwareControlGroups) {
@@ -158,6 +159,16 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 		    } 
 		    
 		    return true;
+
+		 // Check to see if there have been any energy company wide based temporary overrides.
+		 } else if (energyCompanyOptOutTemporaryOverride != null) {
+
+		    // Opt Outs are disabled energy company wide and therefore are disabled for this account.
+            OptOutEnabled optOutEnabled = OptOutEnabled.valueOf(energyCompanyOptOutTemporaryOverride.getOptOutValue());
+            if (optOutEnabled == OptOutEnabled.DISABLED) {
+                return false;
+            }
+            return  true;
 		    
 		// There were no temporary opt out overrides.  Use the role property value.
 		} else {
