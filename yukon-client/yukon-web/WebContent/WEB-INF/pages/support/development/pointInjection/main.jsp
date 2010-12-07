@@ -15,22 +15,22 @@ Event.observe(window, 'load', function() {
 
 function addRowHandler(selectedPointInfo) {
     var pointId = selectedPointInfo[0].pointId;
-    addRow(pointId);
+    var newRowData = {pointId: pointId, forceArchive: 'false'};
+    addRow(newRowData);
     if (!localStorage.pointInjectionIds) {
         localStorage.pointInjectionIds = new Array().toJSON();
     }
     var tempArray = localStorage.pointInjectionIds.evalJSON();
-    tempArray.push(pointId);
+    tempArray.push(newRowData);
     localStorage.pointInjectionIds = tempArray.toJSON();
     return true;
 }
 
-function addRow(pointId) {
+function addRow(newRowData) {
     var newRow = $("dummyRow").cloneNode(true);
     $('pointTableBody').appendChild(newRow);
-	var forceArchive = localStorage.getItem(pointId + 'forceArchive');
     new Ajax.Request("addRow",{
-        parameters: {'pointId': pointId, 'forceArchive': forceArchive},
+        parameters: {'pointId': newRowData.pointId, 'forceArchive': newRowData.forceArchive},
         onSuccess: function(transport) {
             var dummyHolder = document.createElement('div');
             dummyHolder.innerHTML = transport.responseText;
@@ -41,15 +41,24 @@ function addRow(pointId) {
 }
 
 function forceArchiveChecked(box, pointId) {
-	localStorage.setItem(pointId + 'forceArchive', box.checked);
+	var tempArray = localStorage.pointInjectionIds.evalJSON();
+	for (var index = 0; index < tempArray.length; index++) {
+		if (tempArray[index].pointId == pointId) {
+			tempArray[index].forceArchive = box.checked;
+			break;
+		}
+	}
+    localStorage.pointInjectionIds = tempArray.toJSON();
 }
 
 YEvent.observeSelectorClick('.removeRow', function(event) {
     var theRow = Event.findElement(event, 'tr');
     var pointId = $F(theRow.down('input[name=pointId]'));
+	var forceArchive = $F(theRow.down('input[name=forceArchive]'));
+    var rowToRemove = {pointId: pointId, forceArchive: forceArchive};
     theRow.remove();
     var tempArray = localStorage.pointInjectionIds.evalJSON();
-    tempArray = tempArray.without(pointId);
+    tempArray = tempArray.without(rowToRemove);
     localStorage.pointInjectionIds = tempArray.toJSON();
 });
 

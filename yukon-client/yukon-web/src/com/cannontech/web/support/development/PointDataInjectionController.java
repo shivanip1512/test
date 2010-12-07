@@ -45,7 +45,7 @@ public class PointDataInjectionController {
     }
     
     @RequestMapping("addRow")
-    public void addRow(int pointId, String forceArchive, ModelMap model) {
+    public void addRow(int pointId, boolean forceArchive, ModelMap model) {
         PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(pointId);
         model.addAttribute("paoPointIdentifier", paoPointIdentifier);
         PointValueQualityHolder pointValue = dynamicDataSource.getPointValue(pointId);
