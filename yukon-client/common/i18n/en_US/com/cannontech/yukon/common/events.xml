@@ -279,7 +279,14 @@
     <entry key="yukon.common.events.dr.loadGroup.loadGroupRestore">Load group {1} was restored</entry>
     <entry key="yukon.common.events.dr.loadGroup.loadGroupEnabled">Load group {1} was enabled</entry>
     <entry key="yukon.common.events.dr.loadGroup.loadGroupDisabled">Load group {1} was disabled</entry>
-    
+
+    <!-- Inventory Configuration -->
+    <entry key="yukon.common.events.dr.inventoryConfig.taskCreated">User {1} created task {2}</entry>
+    <entry key="yukon.common.events.dr.inventoryConfig.taskDeleted">User {1} deleted task {2}</entry>
+    <entry key="yukon.common.events.dr.inventoryConfig.itemConfigSucceeded">Config command sent to {1}</entry>
+    <entry key="yukon.common.events.dr.inventoryConfig.itemConfigError">Error "{2} ({4} -- {8})"/"{3}" on {1} .</entry>
+    <entry key="yukon.common.events.dr.inventoryConfig.itemConfigFailed">Config command to {1} failed</entry>
+
     <!-- Command Request Executor -->
     <entry key="yukon.common.events.porterRequests.commandFailedToTransmit">Command failed to transmit: command={2} type={1} error={3} user={4} id={7} contextId={8} </entry>
     <entry key="yukon.common.events.porterRequests.commandFailedToTransmit.2">Command</entry>

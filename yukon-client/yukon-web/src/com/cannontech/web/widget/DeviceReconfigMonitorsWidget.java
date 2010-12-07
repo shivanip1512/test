@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.common.events.loggers.DeviceReconfigEventLogService;
+import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
@@ -24,7 +24,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 public class DeviceReconfigMonitorsWidget extends WidgetControllerBase {
     
     private InventoryConfigTaskDao inventoryConfigTaskDao;
-    private DeviceReconfigEventLogService deviceReconfigEventLogService;
+    private InventoryConfigEventLogService inventoryConfigEventLogService;
     private EnergyCompanyDao energyCompanyDao;
 
     @Override
@@ -48,7 +48,7 @@ public class DeviceReconfigMonitorsWidget extends WidgetControllerBase {
         inventoryConfigTaskDao.delete(taskId);
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        deviceReconfigEventLogService.taskDeleted(userContext.getYukonUser(), name);
+        inventoryConfigEventLogService.taskDeleted(userContext.getYukonUser(), name);
         
         ModelAndView mav = render(request, response);
         return mav;
@@ -60,8 +60,8 @@ public class DeviceReconfigMonitorsWidget extends WidgetControllerBase {
     }
     
     @Autowired
-    public void setDeviceReconfigEventLogService(DeviceReconfigEventLogService deviceReconfigEventLogService) {
-        this.deviceReconfigEventLogService = deviceReconfigEventLogService;
+    public void setInventoryConfigEventLogService(InventoryConfigEventLogService inventoryConfigEventLogService) {
+        this.inventoryConfigEventLogService = inventoryConfigEventLogService;
     }
 
     @Autowired

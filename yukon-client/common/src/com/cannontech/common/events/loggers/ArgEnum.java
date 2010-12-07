@@ -33,7 +33,12 @@ public enum ArgEnum {
     taskName,
     thermostatLabel,
     username, 
-    workOrderNumber
+    workOrderNumber,
+    inventoryId,
+    errorDescription,
+    porter,
+    errorCode,
+    category
     ;
 
 }

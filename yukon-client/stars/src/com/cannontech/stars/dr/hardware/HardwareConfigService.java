@@ -18,6 +18,7 @@ import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
+import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -45,6 +46,7 @@ public class HardwareConfigService {
     private CommandRequestHardwareExecutor commandRequestHardwareExecutor;
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private YukonUserContextService yukonUserContextService;
+    private InventoryConfigEventLogService inventoryConfigEventLogService;
 
     private class EnergyCompanyRunnable implements Runnable {
         int energyCompanyId;
@@ -65,6 +67,12 @@ public class HardwareConfigService {
                         log.error("Could not execute command for inventory with id: " +
                                   hardware.getInventoryID() + " Error: " + error.toString());
                         errors.add(error);
+                    inventoryConfigEventLogService.itemConfigError(hardware.getManufacturerSerialNumber(),
+                                                                   hardware.getInventoryID(),
+                                                                   error.getDescription(),
+                                                                   error.getPorter(),
+                                                                   error.getErrorCode(),
+                                                                   error.getCategory());
                     }
 
                     @Override
@@ -153,13 +161,13 @@ public class HardwareConfigService {
                             Status status = Status.FAIL;  // fail if there are no commands
                             workProcessed = true;
                             int inventoryId = item.getInventoryId();
+                            LiteStarsLMHardware hardware = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
                             try {
                                 List<String> commands = hardwareConfigService.getConfigCommands(inventoryId,
                                                                                                 energyCompanyId,
                                                                                                 item.isSendInService(),
                                                                                                 user);
                                 log.debug(item.getInventoryId() + " needs " + commands.size() + " commands");
-                                LiteStarsLMHardware hardware = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
                                 if (!commands.isEmpty()) {
                                     status = Status.SUCCESS;
                                     for (String command : commands) {
@@ -183,10 +191,17 @@ public class HardwareConfigService {
                                 } else {
                                     log.debug("no commands");
                                 }
-                            } catch (WebClientException e) {
-                                log.error("error getting commands for inventory id " + inventoryId, e);
+                            } catch (WebClientException wce) {
+                                log.error("error getting commands for inventory id " + inventoryId, wce);
+                            } catch (Exception exception) {
+                                log.error("unexpected error configuration device", exception);
                             }
                             inventoryConfigTaskDao.markComplete(item, status);
+                            if (status == Status.SUCCESS) {
+                                inventoryConfigEventLogService.itemConfigSucceeded(hardware.getManufacturerSerialNumber(), inventoryId);
+                            } else {
+                                inventoryConfigEventLogService.itemConfigFailed(hardware.getManufacturerSerialNumber(), inventoryId);
+                            }
                         }
                     }
                 } else {
@@ -260,5 +275,11 @@ public class HardwareConfigService {
     public void setYukonUserContextService(
             YukonUserContextService yukonUserContextService) {
         this.yukonUserContextService = yukonUserContextService;
+    }
+
+    @Autowired
+    public void setInventoryConfigEventLogService(
+            InventoryConfigEventLogService inventoryConfigEventLogService) {
+        this.inventoryConfigEventLogService = inventoryConfigEventLogService;
     }
 }

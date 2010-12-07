@@ -106,7 +106,7 @@ public class YukonResultSet {
 
     public ReadablePeriod getPeriod(String columnLabel) throws SQLException {
         String periodStr = rs.getString(columnLabel);
-        return ISOPeriodFormat.standard().parseMutablePeriod(periodStr);
+        return ISOPeriodFormat.standard().parsePeriod(periodStr);
     }
 
     private static Map<Class<Enum<?>>, Map<String, Enum<?>>> enumValueLookup = 

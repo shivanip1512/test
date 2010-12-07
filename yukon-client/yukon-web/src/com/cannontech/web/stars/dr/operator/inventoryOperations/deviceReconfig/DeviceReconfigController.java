@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.collection.inventory.YukonCollection;
-import com.cannontech.common.events.loggers.DeviceReconfigEventLogService;
+import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.validator.SimpleValidator;
@@ -46,7 +46,7 @@ public class DeviceReconfigController {
 
     private InventoryCollectionFactoryImpl inventoryCollectionFactory;
     private CommandScheduleDao commandScheduleDao;
-    private DeviceReconfigEventLogService deviceReconfigEventLogService;
+    private InventoryConfigEventLogService inventoryConfigEventLogService;
     private InventoryConfigTaskDao inventoryConfigTaskDao;
     private MemoryCollectionProducer memoryCollectionProducer;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -106,7 +106,7 @@ public class DeviceReconfigController {
         inventoryConfigTaskDao.create(deviceReconfigOptions.getName(), sendInService, inventoryCollectionFactory.createCollection(request), energyCompanyId);
 
         /* Log Event */
-        deviceReconfigEventLogService.taskCreated(userContext.getYukonUser(), deviceReconfigOptions.getName());
+        inventoryConfigEventLogService.taskCreated(userContext.getYukonUser(), deviceReconfigOptions.getName());
         
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.deviceReconfig.creationSuccessful", deviceReconfigOptions.getName()));
         
@@ -158,8 +158,10 @@ public class DeviceReconfigController {
     }
     
     @RequestMapping(value="/operator/inventory/inventoryActions/deviceReconfig/delete", method=RequestMethod.POST)
-    public String delete(HttpServletRequest request, ModelMap modelMap, int taskId) throws ServletRequestBindingException {
+    public String delete(HttpServletRequest request, ModelMap modelMap, int taskId, YukonUserContext userContext) throws ServletRequestBindingException {
+        InventoryConfigTask task = inventoryConfigTaskDao.getById(taskId);
         inventoryConfigTaskDao.delete(taskId);
+        inventoryConfigEventLogService.taskDeleted(userContext.getYukonUser(), task.getTaskName());
         return "redirect:/spring/stars/operator/inventory/inventoryOperations/home";
     }
     
@@ -180,8 +182,8 @@ public class DeviceReconfigController {
     }
     
     @Autowired
-    public void setDeviceReconfigEventLogService(DeviceReconfigEventLogService deviceReconfigEventLogService) {
-        this.deviceReconfigEventLogService = deviceReconfigEventLogService;
+    public void setInventoryConfigEventLogService(InventoryConfigEventLogService inventoryConfigEventLogService) {
+        this.inventoryConfigEventLogService = inventoryConfigEventLogService;
     }
     
     @Autowired
