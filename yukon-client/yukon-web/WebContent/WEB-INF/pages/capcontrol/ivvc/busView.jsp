@@ -70,7 +70,7 @@
 		<cti:crumbLink title="${subBusName}" />
 	</cti:breadCrumbs>
 	
-	<cti:dataGrid tableStyle="width:100%;" cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;width:30%">
+	<cti:dataGrid cols="2" tableClasses="ivvcGridLayout">
 	
 		<cti:dataGridCell>
 			<tags:boxContainer2 nameKey="strategyDetails" arguments="${strategyName}" argumentSeparator=":" hideEnabled="true" showInitially="true">

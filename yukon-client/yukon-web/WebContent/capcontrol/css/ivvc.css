@@ -58,3 +58,17 @@ div.historyContainer {
     overflow: auto;
     overflow-x: hidden;
 }
+
+table.ivvcGridLayout td.first,
+table.ivvcGridLayout td.middle {
+	padding-right: 10px;
+	width: 20%;
+}
+
+table.ivvcGridLayout td.last {
+	width: 20%;
+}
+
+table.ivvcGridLayout tr {
+	vertical-align:top;
+}

@@ -103,7 +103,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         public CcEvent mapRow(YukonResultSet rs) throws SQLException {
             CcEvent ccEvent = new CcEvent();
             
-            ccEvent.setText(rs.getString("Text"));//  setPointId(rs.getInt("PointId"));
+            ccEvent.setText(rs.getString("Text"));
             ccEvent.setDateTime(rs.getDate("DateTime"));
             
             return ccEvent;
@@ -385,36 +385,40 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     
     @Override
     public List<CcEvent> getLatestEvents(int zoneId, int subBusId, int rowLimit) {       
-        final List<CcEventType> eventTypes = Lists.newArrayList( new CcEventType[] {CcEventType.BankStateUpdate, 
+        final List<CcEventType> bankEventTypes = Lists.newArrayList( new CcEventType[] {CcEventType.BankStateUpdate, 
                                                       CcEventType.CommandSent, 
                                                       CcEventType.ManualCommand});
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EVResults.Text,EVResults.DateTime");
-        sql.append("FROM (");
+        
+        sql.append("SELECT * FROM ( ");
         sql.append("  SELECT EV.Text,EV.DateTime,ROW_NUMBER() over (ORDER BY EV.DateTime desc) rn");
-        sql.append("  FROM CCEventLog EV ");
-        sql.append("  WHERE EV.EventType").eq(CcEventType.IvvcCommStatus);
-        sql.append("    AND EV.SubId").eq(subBusId);
-        sql.append("  UNION");
-        sql.append("  SELECT EV.Text,EV.DateTime,ROW_NUMBER() over (ORDER BY EV.DateTime desc) rn");
-        sql.append("  FROM CCEventLog EV");
-        sql.append("  JOIN Point P ON  EV.PointId = P.PointId");
-        sql.append("    AND EV.EventType").in(eventTypes);
-        sql.append("  JOIN YukonPAObject PAO ON P.PAObjectId = PAO.PAObjectId");
-        sql.append("  WHERE PAO.PAObjectId IN (SELECT DeviceId ");
-        sql.append("                           FROM CapBankToZoneMapping ");
-        sql.append("                           WHERE ZoneId").eq(zoneId);
-        sql.append("                           )");
-        sql.append("UNION ");
-        sql.append("  SELECT EV.Text,EV.DateTime,ROW_NUMBER() over (ORDER BY EV.DateTime desc) rn");
-        sql.append("  FROM CCEventLog EV");
-        sql.append("    JOIN Zone Z ON  EV.RegulatorId = Z.RegulatorId");
-        sql.append("      AND EV.EventType").eq(CcEventType.IvvcTapOperation);
-        sql.append("  WHERE Z.ZoneId").eq(zoneId); 
-        sql.append(") EVResults");
-        sql.append("WHERE EVResults.rn").lte(rowLimit);
-        sql.append("ORDER BY EVResults.DateTime desc;");
+        sql.append("  FROM CcEventLog EV");
+        sql.append("  WHERE EV.LogId IN ( ");
+        sql.append("    SELECT LogId");
+        sql.append("    FROM CcEventLog");
+        sql.append("    WHERE (EventType").eq(CcEventType.IvvcCommStatus);
+        sql.append("      AND SubId").eq(subBusId);
+        sql.append("    )");
+        sql.append("    UNION");
+        sql.append("    SELECT LogId");
+        sql.append("    FROM CCEventLog EV2");
+        sql.append("    JOIN Point P ON EV2.PointId = P.PointId AND EV2.EventType").in(bankEventTypes);
+        sql.append("    JOIN YukonPAObject PAO ON P.PAObjectId = PAO.PAObjectId");
+        sql.append("    WHERE PAO.PAObjectId IN (");
+        sql.append("      SELECT DeviceId");          
+        sql.append("      FROM CapBankToZoneMapping");
+        sql.append("      WHERE ZoneId").eq(zoneId);
+        sql.append("    )");
+        sql.append("    UNION");
+        sql.append("    SELECT LogId");
+        sql.append("    FROM CCEventLog EV3");
+        sql.append("    JOIN Zone Z ON EV3.RegulatorId = Z.RegulatorId AND EV3.EventType").eq(CcEventType.IvvcTapOperation);        
+        sql.append("    WHERE Z.ZoneId").eq(zoneId);
+        sql.append("  )");
+        sql.append(") numberedRows");
+        sql.append("WHERE numberedRows.rn").lte(rowLimit);
+        sql.append("ORDER BY numberedRows.DateTime desc");
 
         return yukonJdbcTemplate.query(sql,ccEventRowMapper);
     }

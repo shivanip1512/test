@@ -56,7 +56,7 @@
             return (key != 13);
 	    }
 	    
-    	function showZoneEditor(url) {
+    	function showZoneWizard(url) {
 			openSimpleDialog('tierContentPopup', url, 'Zone Wizard', null, null, 'get');
 		}
 	</script>
@@ -112,7 +112,7 @@
     	<cti:param name="zoneId" value="${zoneId}"/>
     </cti:url>
     
-	<cti:dataGrid tableStyle="width:100%;" cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:10px;width:30%">
+	<cti:dataGrid cols="2" tableClasses="ivvcGridLayout">
 	
 		<cti:dataGridCell>			
 			
@@ -349,7 +349,7 @@
 	<br>
 	
 	<cti:msg2 var="deltasTitle" key=".deltas.title"/>
-	<div style="padding-right:10px">
+	<div>
 		<tags:pagedBox title="${deltasTitle}" searchResult="${searchResults}" 
 					   baseUrl="${baseUrl}" showAllUrl="${baseUrl}">
 			<tags:alternateRowReset/>					
