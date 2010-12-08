@@ -73,7 +73,7 @@
                                             <tags:nameValue2 nameKey=".fileLabel">
                                                 <input type="file" id="fileUpload.dataFile" name="fileUpload.dataFile" size="40">
                                                 <input type="hidden" name="collectionType" value="fileUpload">
-                                                <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
+                                                <input type="hidden" name="fileUpload.energyCompanyId" value="${energyCompanyId}">
                                             </tags:nameValue2>
                                         </tags:nameValueContainer2>
                                         <div class="actionArea">

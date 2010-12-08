@@ -15,7 +15,6 @@ public class DataGridTag extends YukonTagSupport {
     private int numberOfColumns;
     private String tableClasses = "";
     private String tableStyle = "";
-    private String tableAlign = "";
     private String rowStyle = "";
     private String cellStyle = "";
     
@@ -24,10 +23,6 @@ public class DataGridTag extends YukonTagSupport {
         
         getJspBody().invoke(null);
         getJspContext().getOut().println("<table ");
-        
-        if(StringUtils.isNotBlank(tableAlign)) {
-            getJspContext().getOut().println("align=\"" + tableAlign + "\" ");
-        }
         
         if(StringUtils.isNotBlank(tableClasses)) {
             getJspContext().getOut().println("class=\"" + tableClasses + "\" ");
@@ -112,14 +107,6 @@ public class DataGridTag extends YukonTagSupport {
 
     public void setTableStyle(String tableStyle) {
         this.tableStyle = tableStyle;
-    }
-
-    public String getTableAlign() {
-        return tableAlign;
-    }
-
-    public void setTableAlign(String tableAlign) {
-        this.tableAlign = tableAlign;
     }
 
     public String getCellStyle() {

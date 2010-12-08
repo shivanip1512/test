@@ -1989,12 +1989,6 @@
         <description>Becomes the table element's style attribute.</description>
     </attribute>
     <attribute>
-        <name>tableAlign</name>
-        <required>false</required>
-        <rtexprvalue>true</rtexprvalue>
-        <description>Becomes the table element's align attribute.</description>
-    </attribute>
-    <attribute>
         <name>rowStyle</name>
         <required>false</required>
         <rtexprvalue>true</rtexprvalue>

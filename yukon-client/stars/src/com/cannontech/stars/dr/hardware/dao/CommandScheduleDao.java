@@ -13,7 +13,7 @@ public interface CommandScheduleDao {
 
     public void save(CommandSchedule schedule);
 
-    int delete(int scheduleId);
+    public int delete(int scheduleId);
 
     public void disable(int scheduleId);
     

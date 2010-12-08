@@ -12,12 +12,6 @@
     <c:set var="action" value="/spring/stars/operator/inventory/inventoryOperations/updateSchedule"/>
     <cti:msg2 var="confirmDeleteTitle" key=".confirmDeleteTitle"/>
     
-    <script>
-        function confirmDelete() {
-            $('confirmDeletePopup').show();
-        }
-    </script>
-    
     <form:form id="updateForm" commandName="schedule" action="${action}">
         <form:hidden path="commandSchedule.commandScheduleId"/>
         <form:hidden path="commandSchedule.startTimeCronString"/>
@@ -31,7 +25,7 @@
 
             <tags:nameValue2 nameKey=".duration">
                 <span><i:inline key=".hours"/></span>
-                <spring:bind path="hours">
+                <spring:bind path="runPeriodHours">
                     <%-- VIEW MODE --%>
                     <cti:displayForPageEditModes modes="VIEW">
                     ${status.value}
@@ -42,12 +36,12 @@
                         <c:if test="${status.error}">
                             <c:set var="inputClass" value="error"/>
                         </c:if>
-                        <form:input path="hours" size="3" cssClass="${inputClass}"/>
+                        <form:input path="runPeriodHours" size="3" cssClass="${inputClass}"/>
                     </cti:displayForPageEditModes>
                 </spring:bind>
                 
                 <span><i:inline key=".minutes"/></span>
-                <spring:bind path="minutes">
+                <spring:bind path="runPeriodMinutes">
                     <%-- VIEW MODE --%>
                     <cti:displayForPageEditModes modes="VIEW">
                     ${status.value}
@@ -58,19 +52,19 @@
                         <c:if test="${status.error}">
                             <c:set var="inputClass" value="error"/>
                         </c:if>
-                        <form:input path="minutes" size="3" cssClass="${inputClass}"/>
+                        <form:input path="runPeriodMinutes" size="3" cssClass="${inputClass}"/>
                     </cti:displayForPageEditModes>
                 </spring:bind>
                 
                 
-                <div><form:errors path="hours" cssClass="errorMessage"/></div>
-                <div><form:errors path="minutes" cssClass="errorMessage"/></div>
+                <div><form:errors path="runPeriodHours" cssClass="errorMessage"/></div>
+                <div><form:errors path="runPeriodMinutes" cssClass="errorMessage"/></div>
                 <br>
 
             </tags:nameValue2>
 
             <tags:nameValue2 nameKey=".delayPeriod">
-                <span><i:inline key=".seconds"/></span><tags:input path="seconds" size="2"/>
+                <span><i:inline key=".seconds"/></span><tags:input path="delayPeriodSeconds" size="2"/>
             </tags:nameValue2>
         </tags:nameValueContainer2>
         
@@ -79,7 +73,7 @@
         <div>
             <tags:slowInput2 key="save" formId="updateForm"/>
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:button key="delete" type="button" onclick="confirmDelete();"/>
+                <cti:button key="delete" type="button" onclick="javascript:$('confirmDeletePopup').show();"/>
             </cti:displayForPageEditModes>
             <cti:button key="cancel" type="submit" name="cancel"/>
         </div>

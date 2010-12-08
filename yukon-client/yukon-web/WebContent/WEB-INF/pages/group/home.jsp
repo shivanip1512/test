@@ -216,7 +216,6 @@
                                     </tags:nameValue>
                                 </tags:nameValueContainer>
                                 
-                                <br>
                                 <div class="actionArea">
                                     <input id="editGroupNameSaveButton" type="button" value="${changeNameButtonText}" 
                                             onclick="checkAndSubmitNewName('newGroupName', 'editGroupNameForm', 'editGroupNameSaveButton', 'editGroupNameWaitImg');">

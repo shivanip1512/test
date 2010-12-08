@@ -72,10 +72,6 @@ public class HttpExpressionLanguageResolverImpl implements HttpExpressionLanguag
         return ServletUtil.buildQueryStringFromMap(map, false);
     }
     
-    public static String convertMapToQueryString(Map<String, String> map) {
-        return ServletUtil.buildQueryStringFromMap(map, true);
-    }
-    
     private static final class LocalFunctionMapper extends FunctionMapper {
         public Method resolveFunction(String prefix, String localName) {
             if (!StringUtils.equals(prefix, "local")) return null;

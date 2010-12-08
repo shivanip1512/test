@@ -1,6 +1,6 @@
-function showInventoryCollection(popup, popupContent, url) {
+function showInventoryCollection(popup, popupContent, url, img) {
     
-    $('inventoryCollectionImg').src = '/WebConfig/yukon/Icons/indicator_arrows.gif'
+    img.src = '/WebConfig/yukon/Icons/indicator_arrows.gif';
     new Ajax.Updater(popupContent, url, {method: 'get', evalScripts: true, parameters: {},
         onComplete: function() {
             $(popup).show();

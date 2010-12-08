@@ -10,6 +10,10 @@ td.removeColumn, th.removeColumn {
 	text-align:center !important;
 }
 
+td.enabledColumn, th.enabledColumn {
+	text-align: right !important;
+}
+
 h2 { /*Page Header*/
   margin: 0;
 }

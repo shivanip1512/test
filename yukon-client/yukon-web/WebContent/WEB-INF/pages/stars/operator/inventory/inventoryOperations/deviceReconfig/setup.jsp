@@ -23,13 +23,11 @@
                 <tags:formElementContainer nameKey="configurationOptions">
                     <tags:nameValueContainer2>
                         <tags:inputNameValue nameKey=".name" path="name" size="45" maxlength="250"/>
+                        <tags:checkboxNameValue nameKey=".sendInServiceLabel" checkBoxDescriptionNameKey=".sendInService" path="sendInService"/>
                     </tags:nameValueContainer2>
                 </tags:formElementContainer>
                 
-                
-                <br>
-                
-                <div>
+                <div class="pageActionArea">
                     <cti:button key="save" type="submit"/>
                     <cti:button key="cancel" name="cancelButton" type="submit"/>
                 </div>
@@ -77,10 +75,10 @@
                                     <td style="text-align:right;">
                                         <c:choose>
                                             <c:when test="${schedule.enabled}">
-                                                <span class="okGreen"><i:inline key=".scheduleEnabled"/></span>
+                                                <span class="successMessage"><i:inline key=".scheduleEnabled"/></span>
                                             </c:when>
                                             <c:otherwise>
-                                                <span class="errorRed"><i:inline key=".scheduleDisabled"/></span>
+                                                <span class="errorMessage"><i:inline key=".scheduleDisabled"/></span>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>

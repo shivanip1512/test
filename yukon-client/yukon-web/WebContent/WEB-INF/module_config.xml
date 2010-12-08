@@ -1067,7 +1067,7 @@
                         <labelArgument>${accountNumber}</labelArgument>
                         <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
                         <pages>
-                            <page name="account.EDIT" type="DETAIL_WITH_INFO">
+                            <page name="account.EDIT" type="DETAIL_CHILD_WITH_INFO">
                                 <menu>account|accounts</menu>
                                 <link>/spring/stars/operator/account/accountEdit?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>

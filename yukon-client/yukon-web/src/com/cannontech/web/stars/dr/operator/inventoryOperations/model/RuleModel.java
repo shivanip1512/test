@@ -1,19 +1,36 @@
 package com.cannontech.web.stars.dr.operator.inventoryOperations.model;
 
+import java.util.Date;
+
 import com.cannontech.common.constants.YukonListEntry;
 
 public class RuleModel {
+    
     private FilterRuleType ruleType;
-    private String groupIds;
-    private String programIds;
-    private String fieldInstallDate;
-    private String programSignupDate;
-    private YukonListEntry deviceType;
-    private String serialNumberFrom;
-    private String serialNumberTo;
-    private String unenrolled;
     private String description;
 
+    /* Load Groups Rule */
+    private String groupIds;
+    
+    /* Programs Rule */
+    private String programIds;
+    
+    /* Field Install Date Rule */
+    private Date fieldInstallDate;
+    
+    /* Program Signup Date Rule */
+    private Date programSignupDate;
+    
+    /* Device Type Rule */
+    private YukonListEntry deviceType;
+    
+    /* Serial Number Range Rule */
+    private int serialNumberFrom;
+    private int serialNumberTo;
+    
+    /* Not Enrolled Rule */
+    private String unenrolled;
+    
     public RuleModel() {
         
     }
@@ -46,19 +63,19 @@ public class RuleModel {
         this.programIds = programIds;
     }
 
-    public String getFieldInstallDate() {
+    public Date getFieldInstallDate() {
         return fieldInstallDate;
     }
 
-    public void setFieldInstallDate(String fieldInstallDate) {
+    public void setFieldInstallDate(Date fieldInstallDate) {
         this.fieldInstallDate = fieldInstallDate;
     }
 
-    public String getProgramSignupDate() {
+    public Date getProgramSignupDate() {
         return programSignupDate;
     }
 
-    public void setProgramSignupDate(String programSignupDate) {
+    public void setProgramSignupDate(Date programSignupDate) {
         this.programSignupDate = programSignupDate;
     }
 
@@ -70,19 +87,19 @@ public class RuleModel {
         this.deviceType = deviceType;
     }
 
-    public String getSerialNumberFrom() {
+    public int getSerialNumberFrom() {
         return serialNumberFrom;
     }
 
-    public void setSerialNumberFrom(String serialNumberFrom) {
+    public void setSerialNumberFrom(int serialNumberFrom) {
         this.serialNumberFrom = serialNumberFrom;
     }
 
-    public String getSerialNumberTo() {
+    public int getSerialNumberTo() {
         return serialNumberTo;
     }
 
-    public void setSerialNumberTo(String serialNumberTo) {
+    public void setSerialNumberTo(int serialNumberTo) {
         this.serialNumberTo = serialNumberTo;
     }
 

@@ -21,7 +21,7 @@
                 <th><i:inline key="yukon.web.widgets.commandScheduleWidget.start"/></th>
                 <th><i:inline key="yukon.web.widgets.commandScheduleWidget.runPeriod"/></th>
                 <th><i:inline key="yukon.web.widgets.commandScheduleWidget.delayPeriod"/></th>
-                <th style="text-align:right;"><i:inline key="yukon.web.widgets.commandScheduleWidget.enabled"/></th>
+                <th class="enabledColumn"><i:inline key="yukon.web.widgets.commandScheduleWidget.enabled"/></th>
             </tr>
         
             <c:forEach var="schedule" items="${schedules}">
@@ -56,7 +56,7 @@
                         <span><cti:formatPeriod type="S" value="${schedule.delayPeriod}"/></span>
                     </td>
                     
-                    <td style="text-align:right;">
+                    <td class="enabledColumn">
                         <cti:msg2 key="yukon.web.widgets.commandScheduleWidget.${toggleEnabled}Title" var="enableTitle"/>
                         <tags:widgetActionRefreshImage method="${toggleEnabled}" imgSrc="${toggleEnabledImg}" imgSrcHover="${toggleEnabledImg}" scheduleId="${schedule.commandScheduleId}" title="${enableTitle}"/>
                     </td>
@@ -70,11 +70,8 @@
 </c:choose>
 
 <div class="actionArea">
-    <%-- CREATE NEW OUTAGE MONITOR FORM --%>
     <form id="createNewScheduleForm_${widgetParameters.widgetId}" action="/spring/stars/operator/inventory/inventoryOperations/commandSchedule" method="get">
         <input type="hidden" value="0" name="scheduleId">
-        <%--<tags:slowInput2 formId="createNewScheduleForm_${widgetParameters.widgetId}" key="create"/>--%>
-        
         <cti:button key="create" type="sumbit"/>
     </form>
 </div>

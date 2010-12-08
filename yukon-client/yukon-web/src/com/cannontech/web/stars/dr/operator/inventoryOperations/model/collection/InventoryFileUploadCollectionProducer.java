@@ -18,7 +18,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.cannontech.common.bulk.collection.inventory.YukonCollection;
+import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollectionType;
 import com.cannontech.common.bulk.iterator.CloseableIterator;
 import com.cannontech.common.bulk.iterator.CloseableIteratorWrapper;
@@ -35,7 +35,7 @@ import com.cannontech.web.common.collection.CollectionCreationException;
 import com.cannontech.web.common.collection.CollectionProducer;
 import com.google.common.collect.Maps;
 
-public class InventoryFileUploadCollectionProducer implements CollectionProducer<InventoryCollectionType, YukonCollection> {
+public class InventoryFileUploadCollectionProducer implements CollectionProducer<InventoryCollectionType, InventoryCollection> {
     
     private InventoryDao inventoryDao;
     private MemoryCollectionProducer memoryCollectionProducer;
@@ -52,7 +52,7 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
     }
     
     @Override
-    public YukonCollection createCollection(HttpServletRequest request) throws ServletRequestBindingException {
+    public InventoryCollection createCollection(HttpServletRequest request) throws ServletRequestBindingException {
 
         try {
             boolean isMultipart = ServletFileUpload.isMultipartContent(request);
@@ -73,9 +73,9 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
 
     }
 
-    private YukonCollection handleInitialRequest(HttpServletRequest request, MultipartFile dataFile) throws ServletRequestBindingException, IOException, FileNotFoundException {
-        int energyCompanyId = ServletRequestUtils.getRequiredIntParameter(request, "energyCompanyId");
-        YukonCollection collection;
+    private InventoryCollection handleInitialRequest(HttpServletRequest request, MultipartFile dataFile) throws ServletRequestBindingException, IOException, FileNotFoundException {
+        int energyCompanyId = ServletRequestUtils.getRequiredIntParameter(request, getSupportedType().getParameterName("energyCompanyId"));
+        InventoryCollection collection;
         
         InputStream inputStream = dataFile.getInputStream();
         

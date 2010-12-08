@@ -1,7 +1,5 @@
 package com.cannontech.web.stars.dr.operator.inventoryOperations.service.impl;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
@@ -11,15 +9,14 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
-import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.stars.dr.hardware.dao.impl.InventoryDaoImpl.InventoryIdentifierMapper;
+import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.inventoryOperations.model.FilterMode;
 import com.cannontech.web.stars.dr.operator.inventoryOperations.model.RuleModel;
@@ -30,7 +27,6 @@ import com.google.common.collect.Sets;
 public class InventoryOperationsFilterServiceImpl implements InventoryOperationsFilterService {
     
     private YukonJdbcTemplate yukonJdbcTemplate;
-    private DateFormattingService dateFormattingService;
     
     @Override
     public Set<InventoryIdentifier> getInventory(FilterMode filterMode, List<RuleModel> rules, DateTimeZone timeZone, YukonUserContext userContext) throws ParseException {
@@ -43,10 +39,10 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
         }
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT ib.inventoryId InventoryId, yle.YukonDefinitionId HardwareType");
+        sql.append("SELECT DISTINCT ib.inventoryId InventoryId, yle.YukonDefinitionId YukonDefinitionId");
         sql.append("FROM InventoryBase ib");
         sql.append(  "JOIN LMHardwareBase lmhb ON lmhb.inventoryId = ib.inventoryId");
-        sql.append(  "LEFT OUTER JOIN LmHardwareControlGroup lmhcg ON lmhcg.InventoryId = ib.InventoryId");
+        sql.append(  "LEFT JOIN LmHardwareControlGroup lmhcg ON lmhcg.InventoryId = ib.InventoryId");
         sql.append(  "JOIN YukonListEntry yle ON yle.EntryID = lmhb.LMHardwareTypeID");
         
         for (RuleModel rule : rules) {
@@ -55,17 +51,10 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
         
         sql.append("WHERE").append(whereClause);
         
-        List<InventoryIdentifier> inventory = yukonJdbcTemplate.query(sql, new ParameterizedRowMapper<InventoryIdentifier>() {
-            @Override
-            public InventoryIdentifier mapRow(ResultSet rs, int rowNum) throws SQLException {
-                int inventoryId = rs.getInt("InventoryId");
-                int hardwareType = rs.getInt("HardwareType");
-                
-                return new InventoryIdentifier(inventoryId, HardwareType.valueOf(hardwareType));
-            }
-        });
+        Set<InventoryIdentifier> result = Sets.newHashSet();
+        yukonJdbcTemplate.queryInto(sql, new InventoryIdentifierMapper(), result);
         
-        return Sets.newHashSet(inventory);
+        return result;
     }
     
     private SqlFragmentSource getFragmentForRule(RuleModel rule, DateTimeZone timeZone, YukonUserContext userContext) throws ParseException {
@@ -79,7 +68,7 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             
         case FIELD_INSTALL_DATE:
             
-            LocalDate localDate = new LocalDate(dateFormattingService.flexibleDateParser(rule.getFieldInstallDate(), userContext));
+            LocalDate localDate = new LocalDate(rule.getFieldInstallDate(), timeZone);
             Interval interval = localDate.toInterval(timeZone);
             sql.append("(ib.InstallDate").gte(interval.getStart());
             sql.append("AND ib.InstallDate").lt(interval.getEnd()).append(")");
@@ -90,7 +79,7 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             sql.append("(lmhcg.LmGroupId").in(groupIds);
             sql.append("AND lmhcg.GroupEnrollStart IS NOT NULL");
             sql.append("AND lmhcg.GroupEnrollStop IS NULL");
-            sql.append("AND lmhcg.Type").eq(1).append(")");
+            sql.append("AND lmhcg.Type").eq_k(LMHardwareControlGroup.ENROLLMENT_ENTRY).append(")");
             break;
             
         case PROGRAM:
@@ -98,11 +87,11 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             sql.append("(lmhcg.ProgramId").in(programIds);
             sql.append("AND lmhcg.GroupEnrollStart IS NOT NULL");
             sql.append("AND lmhcg.GroupEnrollStop IS NULL");
-            sql.append("AND lmhcg.Type").eq(1).append(")");
+            sql.append("AND lmhcg.Type").eq_k(LMHardwareControlGroup.ENROLLMENT_ENTRY).append(")");
             break;
             
         case PROGRAM_SIGNUP_DATE:
-            LocalDate programSignupDate = new LocalDate(dateFormattingService.flexibleDateParser(rule.getProgramSignupDate(), userContext));
+            LocalDate programSignupDate = new LocalDate(rule.getProgramSignupDate(), timeZone);
             Interval programSignupInterval = programSignupDate.toInterval(timeZone);
             sql.append("(lmhcg.GroupEnrollStart").gte(programSignupInterval.getStart());
             sql.append("AND lmhcg.GroupEnrollStart").lt(programSignupInterval.getEnd());
@@ -137,9 +126,4 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
     
-    @Autowired
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-
 }

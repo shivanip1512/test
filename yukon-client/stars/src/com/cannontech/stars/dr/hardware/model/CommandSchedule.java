@@ -6,8 +6,8 @@ import org.joda.time.ReadablePeriod;
 public class CommandSchedule {
     private int commandScheduleId;
     private String startTimeCronString;
-    private ReadablePeriod runPeriod = new Period();
-    private ReadablePeriod delayPeriod = new Period(2000);
+    private Period runPeriod = new Period();
+    private Period delayPeriod = new Period(2000);
     private boolean enabled = true;
     private int energyCompanyId;
 
@@ -27,20 +27,20 @@ public class CommandSchedule {
         this.startTimeCronString = startTimeCronString;
     }
 
-    public ReadablePeriod getRunPeriod() {
+    public Period getRunPeriod() {
         return runPeriod;
     }
 
     public void setRunPeriod(ReadablePeriod runPeriod) {
-        this.runPeriod = runPeriod;
+        this.runPeriod = runPeriod.toPeriod();
     }
 
-    public ReadablePeriod getDelayPeriod() {
+    public Period getDelayPeriod() {
         return delayPeriod;
     }
 
     public void setDelayPeriod(ReadablePeriod delayPeriod) {
-        this.delayPeriod = delayPeriod;
+        this.delayPeriod = delayPeriod.toPeriod();
     }
 
     public boolean isEnabled() {

@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,6 +22,7 @@ import com.cannontech.common.inventory.InventoryCategory;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -41,11 +43,10 @@ import com.cannontech.stars.dr.hardware.model.HardwareStatus;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
+import com.cannontech.stars.util.InventoryUtils;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 /**
  * Implementation class for InventoryDao
@@ -355,23 +356,32 @@ public class InventoryDaoImpl implements InventoryDao {
         @Override
         public InventoryIdentifier mapRow(YukonResultSet rs) throws SQLException {
             int inventoryId = rs.getInt("InventoryId");
-            int hardwareTypeDefinitionId = rs.getInt("YukonDefinitionId");
+            HardwareType type = rs.getEnum("YukonDefinitionId", HardwareType.class);
             
-            return new InventoryIdentifier(inventoryId, HardwareType.valueOf(hardwareTypeDefinitionId));
+            return new InventoryIdentifier(inventoryId, type);
         }
     }
     
     @Override
     public Set<InventoryIdentifier> getYukonInventory(Collection<Integer> inventoryIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT lmhb.inventoryId, yle.YukonDefinitionId");
-        sql.append("FROM LMHardwareBase lmhb");
-        sql.append(  "JOIN YukonListEntry yle ON yle.EntryID = lmhb.LMHardwareTypeID");
-        sql.append("WHERE lmhb.InventoryId").in(inventoryIds);
         
-        List<InventoryIdentifier> inventory = yukonJdbcTemplate.query(sql, new InventoryIdentifierMapper());
+        Set<InventoryIdentifier> result = new HashSet<InventoryIdentifier>();
         
-        return Sets.newHashSet(inventory);
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        
+        SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT lmhb.inventoryId, yle.YukonDefinitionId");
+                sql.append("FROM LMHardwareBase lmhb");
+                sql.append(  "JOIN YukonListEntry yle ON yle.EntryID = lmhb.LMHardwareTypeID");
+                sql.append("WHERE lmhb.InventoryId").in(subList);
+                return sql;
+            }
+        };
+        template.queryInto(generator, inventoryIds, new InventoryIdentifierMapper(), result);
+
+        return result;
     }
     
     @Override
@@ -391,12 +401,7 @@ public class InventoryDaoImpl implements InventoryDao {
     public List<DisplayableLmHardware> getDisplayableLMHardware(List<? extends YukonInventory> yukonInventory) {
         DisplayableLmHardwareRowMapper mapper = new DisplayableLmHardwareRowMapper();
         
-        List<Integer> inventoryIds = Lists.transform(yukonInventory, new Function<YukonInventory, Integer> () {
-            @Override
-            public Integer apply(YukonInventory from) {
-                return from.getInventoryIdentifier().getInventoryId();
-            }
-        });
+        Iterable<Integer> inventoryIds = InventoryUtils.convertYukonInventoryToIds(yukonInventory);
         
         SqlStatementBuilder sql = new SqlStatementBuilder(mapper.getBaseQuery().getSql());
         sql.append("WHERE lmhw.inventoryId").in(inventoryIds);

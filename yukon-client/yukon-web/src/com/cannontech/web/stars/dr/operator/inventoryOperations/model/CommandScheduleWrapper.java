@@ -1,16 +1,18 @@
 package com.cannontech.web.stars.dr.operator.inventoryOperations.model;
 
 import org.joda.time.DurationFieldType;
+import org.joda.time.Period;
+import org.joda.time.PeriodType;
 
 import com.cannontech.stars.dr.hardware.model.CommandSchedule;
 
 public class CommandScheduleWrapper {
     
+    private static final PeriodType HM_PERIOD_TYPE = PeriodType.time().withSecondsRemoved().withMillisRemoved();
     private CommandSchedule commandSchedule = new CommandSchedule();
-    private String hours;
-    private String minutes;
-    private String seconds;
-    private String startTime;
+    private int runPeriodHours;
+    private int runPeriodMinutes;
+    private int delayPeriodSeconds;
     
     public CommandSchedule getCommandSchedule() {
         return commandSchedule;
@@ -18,41 +20,34 @@ public class CommandScheduleWrapper {
     
     public void setCommandSchedule(CommandSchedule commandSchedule) {
         this.commandSchedule = commandSchedule;
-        setHours(Integer.toString(commandSchedule.getRunPeriod().get(DurationFieldType.hours())));
-        setMinutes(Integer.toString(commandSchedule.getRunPeriod().get(DurationFieldType.minutes())));
-        setSeconds(Integer.toString(commandSchedule.getDelayPeriod().get(DurationFieldType.seconds())));
+        Period usefulRunPeriod = commandSchedule.getRunPeriod().normalizedStandard(HM_PERIOD_TYPE);
+        setRunPeriodHours(usefulRunPeriod.getHours());
+        setRunPeriodMinutes(usefulRunPeriod.getMinutes());
+        setDelayPeriodSeconds(commandSchedule.getDelayPeriod().toStandardSeconds().getSeconds());
     }
     
-    public String getHours() {
-        return hours;
+    public int getRunPeriodHours() {
+        return runPeriodHours;
     }
     
-    public void setHours(String hours) {
-        this.hours = hours;
+    public void setRunPeriodHours(int runPeriodHours) {
+        this.runPeriodHours = runPeriodHours;
     }
     
-    public String getMinutes() {
-        return minutes;
+    public int getRunPeriodMinutes() {
+        return runPeriodMinutes;
     }
     
-    public void setMinutes(String minutes) {
-        this.minutes = minutes;
+    public void setRunPeriodMinutes(int runPeriodMinutes) {
+        this.runPeriodMinutes = runPeriodMinutes;
     }
     
-    public String getSeconds() {
-        return seconds;
+    public int getDelayPeriodSeconds() {
+        return delayPeriodSeconds;
     }
     
-    public void setSeconds(String seconds) {
-        this.seconds = seconds;
+    public void setDelayPeriodSeconds(int delayPeriodSeconds) {
+        this.delayPeriodSeconds = delayPeriodSeconds;
     }
     
-    public String getStartTime() {
-        return startTime;
-    }
-    
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
-    }
-
 }

@@ -4,14 +4,16 @@ import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
 
+import org.joda.time.ReadableDuration;
+import org.joda.time.ReadablePeriod;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.DateFormattingService.PeriodFormatEnum;
+import com.cannontech.core.service.DurationFormattingService;
+import com.cannontech.core.service.durationFormatter.DurationFormat;
 
-@Configurable("formatDateTagPrototype")
+@Configurable("formatPeriodTagPrototype")
 public class FormatPeriodTag extends YukonTagSupport {
-    private DateFormattingService dateFormattingService;
+    private DurationFormattingService durationFormattingService;
     private Object value;
     private String type;
     private String var;
@@ -19,13 +21,15 @@ public class FormatPeriodTag extends YukonTagSupport {
 
     @Override
     public void doTag() throws JspException, IOException {
-        PeriodFormatEnum enumType = PeriodFormatEnum.valueOf(type);
+        DurationFormat enumType = DurationFormat.valueOf(type);
 
         String formattedPeriod = "";
         if (value != null) {
-            formattedPeriod = dateFormattingService.formatPeriod(value,
-                                                               enumType,
-                                                               getUserContext());
+            if (value instanceof ReadablePeriod) {
+                formattedPeriod = durationFormattingService.formatPeriod((ReadablePeriod)value, enumType, getUserContext());
+            } else if (value instanceof ReadableDuration) {
+                formattedPeriod = durationFormattingService.formatDuration((ReadableDuration)value, enumType, getUserContext());
+            }
         } else {
             if (defaultText != null) {
                 formattedPeriod = defaultText;
@@ -57,7 +61,8 @@ public class FormatPeriodTag extends YukonTagSupport {
         this.defaultText = defaultText;
     }
 
-    public void setDateFormattingService(DateFormattingService dfs) {
-        this.dateFormattingService = dfs;
+    public void setDurationFormattingService(DurationFormattingService durationFormattingService) {
+        this.durationFormattingService = durationFormattingService;
     }
+    
 }

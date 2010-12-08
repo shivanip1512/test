@@ -19,8 +19,6 @@
         </c:forEach>
     </cti:url>
 
-    <cti:msg2 var="mag" key="yukon.web.components.image.inventoryCollection.imageUrl"/>
-    <cti:msg2 var="magOverDisabled" key="yukon.web.components.image.inventoryCollection.disabled.imageUrl"/>
     <cti:msg2 var="popupTitle" key="yukon.common.collection.inventory.selectedInventoryPopup.popupTitle"/>
 
     <tags:simplePopup id="${id}" title="${popupTitle}">
@@ -35,7 +33,7 @@
     <i:inline key="yukon.common.collection.inventory.selectedInventoryPopup.linkLabel"/>
 </span>
 <c:if test="${count > 0}">
-    <a href="javascript:showInventoryCollection('${id}', '${id}InnerDiv', '${selectedInventoryTableUrl}');" class="simpleLink hoverableImageContainer">
+    <a href="javascript:showInventoryCollection('${id}', '${id}InnerDiv', '${selectedInventoryTableUrl}', $('inventoryCollectionImg'));" class="simpleLink hoverableImageContainer">
 </c:if>
 <span class="smallLink"><i:inline key="${inventoryCollection.description}"/></span>
 <c:if test="${count > 0}">

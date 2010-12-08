@@ -12,7 +12,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 import com.cannontech.web.updater.deviceReconfig.handler.DeviceReconfigUpdaterHandler;
 
-public class DeviceReconfigMonitorBackingService  implements UpdateBackingService, InitializingBean {
+public class DeviceReconfigMonitorBackingService implements UpdateBackingService, InitializingBean {
 
     private List<DeviceReconfigUpdaterHandler> handlers;
     private Map<DeviceReconfigMonitorUpdaterType, DeviceReconfigUpdaterHandler> handlersMap;

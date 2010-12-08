@@ -9,11 +9,11 @@ import javax.servlet.jsp.tagext.SimpleTagSupport;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
-import com.cannontech.common.bulk.collection.inventory.YukonCollection;
+import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 
 public class InventoryCollectionTag extends SimpleTagSupport {
 
-    YukonCollection yukonCollection = null;
+    private InventoryCollection yukonCollection = null;
 
     @Override
     public void doTag() throws JspException, IOException {
@@ -31,7 +31,7 @@ public class InventoryCollectionTag extends SimpleTagSupport {
 
     }
     
-    public void setInventoryCollection(YukonCollection yukonCollection) {
+    public void setInventoryCollection(InventoryCollection yukonCollection) {
         this.yukonCollection = yukonCollection;
     }
     

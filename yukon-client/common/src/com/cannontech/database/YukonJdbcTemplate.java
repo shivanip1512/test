@@ -26,6 +26,12 @@ public class YukonJdbcTemplate extends SimpleJdbcTemplate implements
     }
     
     @Override
+    public <R> void queryInto(SqlFragmentSource sql, final YukonRowMapper<R> rowMapper, Collection<? super R> resultSink) {
+         CollectionRowCallbackHandler<R> rch = new CollectionRowCallbackHandler<R>(rowMapper, resultSink);
+         query(sql, rch);
+     }
+    
+    @Override
     public void query(SqlFragmentSource sql, RowCallbackHandler rch) throws DataAccessException {
         getJdbcOperations().query(sql.getSql(), sql.getArguments(), rch);
     }

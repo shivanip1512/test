@@ -12,7 +12,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.bulk.collection.inventory.YukonCollection;
+import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -132,11 +132,11 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     @Override
     @Transactional
     public InventoryConfigTask create(String taskName, boolean sendInService,
-            YukonCollection yukonCollection, int energyCompanyId) {
+            InventoryCollection inventoryCollection, int energyCompanyId) {
         InventoryConfigTask task = new InventoryConfigTask();
         task.setTaskName(taskName);
         task.setSendInService(sendInService);
-        task.setNumberOfItems((int) yukonCollection.getCount());
+        task.setNumberOfItems((int) inventoryCollection.getCount());
         task.setNumberOfItemsProcessed(0);
         task.setEnergyCompanyId(energyCompanyId);
         dbTemplate.save(task);
@@ -148,7 +148,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
         sql.append("VALUES (" + taskId + ", ?, '" + Status.UNPROCESSED + "')");
 
         List<Object[]> batchArgs = Lists.newArrayList();
-        for (YukonInventory inventory : yukonCollection) {
+        for (YukonInventory inventory : inventoryCollection) {
             batchArgs.add(new Object[] {inventory.getInventoryIdentifier().getInventoryId()});
         }
         yukonJdbcTemplate.batchUpdate(sql.getSql(), batchArgs);

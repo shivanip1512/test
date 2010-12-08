@@ -1,5 +1,7 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <c:if test="${not empty resultsLimitedTo}">
     <div class="errorRed" style="width:95%;text-align:right;">
@@ -9,24 +11,17 @@
 </c:if>
 
 <table class="compactResultsTable">
+    <tr>
+        <th><i:inline key="yukon.common.collection.inventory.serialNumber"/></th>
+        <th><i:inline key="yukon.common.collection.inventory.hardwareType"/></th>
+        <th><i:inline key="yukon.common.collection.inventory.label"/></th>
+    </tr>
     
-    <c:forEach var="inventoryInfoMap" items="${inventoryInfoList}" varStatus="status">
-    
-        <c:if test="${status.count == 1}">
-        
-            <tr>
-                <c:forEach var="info" items="${inventoryInfoMap}">
-                    <th>
-                        ${info.key}
-                    </th>
-                </c:forEach>
-            </tr>
-        
-        </c:if>
+    <c:forEach var="inventoryInfoRow" items="${inventoryInfoList}" varStatus="status">
     
         <tr>
-            <c:forEach var="info" items="${inventoryInfoMap}">
-                <td style="text-align:left;">${info.value}</td>
+            <c:forEach var="info" items="${inventoryInfoRow}">
+                <td style="text-align:left;"><spring:escapeBody htmlEscape="true">${info}</spring:escapeBody></td>
             </c:forEach>
         </tr>
         

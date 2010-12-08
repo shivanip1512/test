@@ -25,4 +25,5 @@ public interface YukonJdbcOperations extends SimpleJdbcOperations {
     public <T> T queryForObject(SqlFragmentSource sql, ParameterizedRowMapper<T> rm) throws DataAccessException;
     public <T> T queryForObject(SqlFragmentSource sql, YukonRowMapper<T> rm) throws DataAccessException;
     public int update(SqlFragmentSource sql) throws DataAccessException;
+    public <R> void queryInto(SqlFragmentSource sql, YukonRowMapper<R> rowMapper, Collection<? super R> resultSink);
 }

@@ -15,6 +15,7 @@
         <property name="customArgumentResolvers">
             <list>
                 <ref bean="deviceCollectionFactory"/>
+                <ref bean="inventoryCollectionFactory"/>
                 <ref bean="userContextArgumentResolver"/>
                 <ref bean="flashScopeArgumentResolver"/>
                 <ref bean="accountInfoFragmentArgumentResolver"/>
@@ -1109,6 +1110,10 @@
     
     <bean id="formatDateTagPrototype" class="com.cannontech.web.taglib.FormatDateTag">
         <property name="dateFormattingService" ref="dateFormattingService"/>
+    </bean>
+    
+    <bean id="formatPeriodTagPrototype" class="com.cannontech.web.taglib.FormatPeriodTag">
+        <property name="durationFormattingService" ref="durationFormattingService"/>
     </bean>
     
     <bean id="formatNotificationTagPrototype" class="com.cannontech.web.taglib.FormatNotificationTag"/>

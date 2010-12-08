@@ -37,7 +37,7 @@ public class CollectionFactoryImpl<E extends Enum<E>, T> implements CollectionFa
 
         String type = request.getParameter("collectionType");
         
-        Object collectionType = Enum.valueOf(enumType, type);
+        E collectionType = Enum.valueOf(enumType, type);
 
         if (collectionProducerMap.containsKey(collectionType)) {
             CollectionProducer<E, T> producer = collectionProducerMap.get(collectionType);

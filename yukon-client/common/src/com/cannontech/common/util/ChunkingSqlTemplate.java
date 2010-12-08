@@ -1,6 +1,7 @@
 package com.cannontech.common.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -59,6 +60,15 @@ public class ChunkingSqlTemplate {
     	return resultList;
     }
 
+    public <I, R> void queryInto(final SqlFragmentGenerator<I> sqlGenerator, final Iterable<I> input, 
+                                final YukonRowMapper<R> rowMapper, Collection<? super R> resultSink) {
+        
+        CollectionRowCallbackHandler<R> rch = 
+            new CollectionRowCallbackHandler<R>(rowMapper, resultSink);
+        
+        query(sqlGenerator, input, rch);
+    }
+    
     public <I> void query(final SqlFragmentGenerator<I> sqlGenerator, final Iterable<I> input, 
                              final RowCallbackHandler rch) {
         

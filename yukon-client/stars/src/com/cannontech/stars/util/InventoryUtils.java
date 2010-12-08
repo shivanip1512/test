@@ -1,9 +1,3 @@
-/*
- * Created on Jan 3, 2005
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.cannontech.stars.util;
 
 import java.util.Collections;
@@ -14,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.inventory.HardwareConfigType;
+import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PersistenceException;
@@ -22,15 +17,17 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 
-
-/**
- * @author yao
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 public class InventoryUtils {
+    
+    private static final Function<YukonInventory, Integer> yukonInventoryToIds = new Function<YukonInventory, Integer>() {
+        @Override
+        public Integer apply(YukonInventory from) {
+            return from.getInventoryIdentifier().getInventoryId();
+        }
+    };
 
 	public static final int SA205_UNUSED_ADDR = 3909;
 	
@@ -254,5 +251,9 @@ public class InventoryUtils {
     public static boolean supportConfiguration(int devTypeID) {
         int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry( devTypeID ).getYukonDefID();
         return (devTypeDefID != YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE);
+    }
+    
+    public static Iterable<Integer> convertYukonInventoryToIds(Iterable<? extends YukonInventory> inventory) {
+        return Iterables.transform(inventory, yukonInventoryToIds);
     }
 }

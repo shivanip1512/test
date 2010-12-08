@@ -31,7 +31,7 @@
                 <table>
                     <tr>        
                         <td class="actionCell">
-                            <form action="/spring/stars/operator/inventory/inventoryOperations/deviceReconfig/setup" method="get">
+                            <form action="deviceReconfig/setup" method="get">
                                 <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
                                 <cti:button key="deviceReconfig" type="submit" styleClass="buttonGroup" name="deviceReconfig"/>
                             </form>

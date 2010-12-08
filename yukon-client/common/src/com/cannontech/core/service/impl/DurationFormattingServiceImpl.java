@@ -18,7 +18,9 @@ import org.joda.time.DurationFieldType;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
+import org.joda.time.ReadableDuration;
 import org.joda.time.ReadableInstant;
+import org.joda.time.ReadablePeriod;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
@@ -51,6 +53,21 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
 																	DurationFieldType.weekyears(), 
 																	DurationFieldType.years());
 		
+	}
+	
+	@Override
+	public String formatPeriod(final ReadablePeriod period, final DurationFormat type, final YukonUserContext yukonUserContext) {
+	    return getFormattedDuration(type, new PeriodGenerator() {
+	        @Override
+	        public Period generatePeriod(PeriodType periodType) {
+	            return period.toPeriod().normalizedStandard(periodType);
+	        }
+	    }, yukonUserContext);
+	}
+	
+	@Override
+	public String formatDuration(final ReadableDuration duration, final DurationFormat type, final YukonUserContext yukonUserContext) {
+	    return formatDuration(duration.getMillis(), TimeUnit.MILLISECONDS, type, yukonUserContext);
 	}
 
     // DURATION VALUE

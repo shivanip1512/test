@@ -6,7 +6,7 @@ import java.util.List;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.google.common.collect.Lists;
 
-public abstract class ListBasedInventoryCollection implements YukonCollection {
+public abstract class ListBasedInventoryCollection implements InventoryCollection {
 
     @Override
     public Iterator<InventoryIdentifier> iterator() {
@@ -24,7 +24,7 @@ public abstract class ListBasedInventoryCollection implements YukonCollection {
     }
     
     @Override
-    public long getCount() {
+    public int getCount() {
         return getList().size();
     }
     

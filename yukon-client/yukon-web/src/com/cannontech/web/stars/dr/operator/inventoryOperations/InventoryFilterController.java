@@ -15,6 +15,7 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -22,12 +23,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.common.bulk.collection.inventory.YukonCollection;
+import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -127,7 +129,7 @@ public class InventoryFilterController {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String filterDescription = messageSourceAccessor.getMessage("yukon.common.collection.inventory.filterBased");
         
-        YukonCollection temporaryCollection = memoryCollectionProducer.createCollection(inventory.iterator(), filterDescription);
+        InventoryCollection temporaryCollection = memoryCollectionProducer.createCollection(inventory.iterator(), filterDescription);
         modelMap.addAttribute("inventoryCollection", temporaryCollection);
         modelMap.addAllAttributes(temporaryCollection.getCollectionParameters());
         return "redirect:inventoryActions";
@@ -139,8 +141,8 @@ public class InventoryFilterController {
     }
     
     @ModelAttribute(value="ruleTypes")
-    public FilterRuleType[] getRuleTypes() {
-        return FilterRuleType.values();
+    public List<FilterRuleType> getRuleTypes() {
+        return Arrays.asList(FilterRuleType.values());
     }
     
     @ModelAttribute(value="filterModes")
@@ -152,9 +154,16 @@ public class InventoryFilterController {
     /* Init Binder */
     @InitBinder
     public void initBinder(WebDataBinder binder) {
+        
         DateType dateValidationType = new DateType();
         binder.registerCustomEditor(Date.class, "filterRules.fieldInstallDate", dateValidationType.getPropertyEditor());
         binder.registerCustomEditor(Date.class, "filterRules.programSignupDate", dateValidationType.getPropertyEditor());
+        
+        if (binder.getTarget() != null) {
+            MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver("yukon.web.modules.operator.filterSelection.");
+            binder.setMessageCodesResolver(msgCodesResolver);
+        }
+        
         binder.registerCustomEditor(YukonListEntry.class, "filterRules.deviceType", new PropertyEditorSupport() {
             @Override
             public void setAsText(String deviceTypeEntryId) throws IllegalArgumentException {

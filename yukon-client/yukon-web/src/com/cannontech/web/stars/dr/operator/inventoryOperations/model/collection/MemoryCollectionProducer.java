@@ -15,114 +15,80 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
+import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollectionType;
 import com.cannontech.common.bulk.collection.inventory.ListBasedInventoryCollection;
-import com.cannontech.common.bulk.collection.inventory.YukonCollection;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.common.collection.CollectionCreationException;
 import com.cannontech.web.common.collection.CollectionProducer;
 import com.google.common.collect.Lists;
 
-public class MemoryCollectionProducer implements CollectionProducer<InventoryCollectionType, YukonCollection> {
+public class MemoryCollectionProducer implements CollectionProducer<InventoryCollectionType, InventoryCollection> {
     
-    private ConcurrentMap<String, NamedCollection> memoryMap = new ConcurrentHashMap<String, NamedCollection>();
+    private ConcurrentMap<String, InventoryCollection> memoryMap = new ConcurrentHashMap<String, InventoryCollection>();
     
-    private class NamedCollection {
-        private String name;
-        private List<InventoryIdentifier> collection;
-        public NamedCollection(String name, List<InventoryIdentifier> collection) {
-            this.name = name;
-            this.collection = collection;
-        }
-        public String getName() {
-            return name;
-        }
-        public void setName(String name) {
-            this.name = name;
-        }
-        public List<InventoryIdentifier> getCollection() {
-            return collection;
-        }
-        public void setCollection(List<InventoryIdentifier> collection) {
-            this.collection = collection;
-        }
-    };
-
     @Override
     public InventoryCollectionType getSupportedType() {
         return InventoryCollectionType.memory;
     }
     
-    public String getParameterName(String shortName) {
-        return getSupportedType() + "." + shortName;
+    private String getParameterName(String shortName) {
+        return getSupportedType().getParameterName(shortName);
     }
 
     @Override
-    public YukonCollection createCollection(HttpServletRequest request) throws ServletRequestBindingException, CollectionCreationException {
+    public InventoryCollection createCollection(HttpServletRequest request) throws ServletRequestBindingException, CollectionCreationException {
         String keyName = getSupportedType().getParameterName("key");
-        String descriptionName = getSupportedType().getParameterName("description");
         
-        String key = ServletRequestUtils.getStringParameter(request, keyName);
-        String description = ServletRequestUtils.getStringParameter(request, descriptionName);
+        String key = ServletRequestUtils.getRequiredStringParameter(request, keyName);
         
-        return buildMemoryCollection(memoryMap.get(key).getCollection(), key, description);
+        return memoryMap.get(key);
     }
     
-    public YukonCollection createCollection(Iterator<InventoryIdentifier> inventories, String descriptionHint) {
-        String key = UUID.randomUUID().toString();
+    public InventoryCollection createCollection(Iterator<InventoryIdentifier> inventories, final String descriptionHint) {
+        final String key = UUID.randomUUID().toString();
         
-        List<InventoryIdentifier> yukonInventory = Lists.newArrayList();
+        final List<InventoryIdentifier> inventoryList = Lists.newArrayList(inventories);
         
-        while (inventories.hasNext()) {
-            yukonInventory.add(inventories.next());
-        }
-        
-        NamedCollection namedCollection = new NamedCollection(descriptionHint, yukonInventory);
-        
-        memoryMap.put(key, namedCollection);
-        
-        return buildMemoryCollection(yukonInventory, key, descriptionHint);
-    }
-
-    public YukonCollection buildMemoryCollection(final List<InventoryIdentifier> inventory, final String key, final String descriptionHint) {
-        
-        return new ListBasedInventoryCollection() {
+        ListBasedInventoryCollection value = new ListBasedInventoryCollection() {
             
-            private String description = descriptionHint;
-
             public Map<String, String> getCollectionParameters() {
 
                 Map<String, String> paramMap = new HashMap<String, String>();
 
                 paramMap.put("collectionType", getSupportedType().name());
-                paramMap.put(getSupportedType().getParameterName("key"), key);
-                if (StringUtils.isNotBlank(description)) {
-                    paramMap.put(getParameterName("description"), description);
+                paramMap.put(getParameterName("key"), key);
+                if (StringUtils.isNotBlank(descriptionHint)) {
+                    paramMap.put(getParameterName("description"), descriptionHint);
                 }
 
                 return paramMap;
             }
 
             public List<InventoryIdentifier> getList() {
-                return inventory;
+                return inventoryList;
             }
             
             @Override
-            public long getCount() {
-                return inventory.size();
+            public int getCount() {
+                return inventoryList.size();
             }
 
             @Override
             public MessageSourceResolvable getDescription() {
-                if (description != null) {
-                    return new YukonMessageSourceResolvable("yukon.common.collection.inventory.description", description);
+                if (descriptionHint != null) {
+                    return new YukonMessageSourceResolvable("yukon.common.collection.inventory.description", descriptionHint);
                 } else {
                     return new YukonMessageSourceResolvable("yukon.common.collection.inventory.temporary");
                 }
             }
 
         };
+        memoryMap.put(key, value);
+        
+        return value;
+        
     }
-    
+
 }

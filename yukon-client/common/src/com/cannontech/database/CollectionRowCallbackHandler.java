@@ -18,6 +18,13 @@ public class CollectionRowCallbackHandler<T> extends AbstractRowCallbackHandler 
         this.collection = collection;
     }
 
+    public <F extends T> CollectionRowCallbackHandler(YukonRowMapper<F> rowMapper,
+                                        Collection<? super T> collection) {
+        super();
+        this.rowMapper = new YukonRowMapperAdapter<F>(rowMapper);
+        this.collection = collection;
+    }
+    
     @Override
     public void processRow(ResultSet rs, int rowNum) throws SQLException {
         T mapRow = rowMapper.mapRow(rs, rowNum);

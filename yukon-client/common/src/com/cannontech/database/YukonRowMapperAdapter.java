@@ -12,6 +12,10 @@ public final class YukonRowMapperAdapter<T> implements ParameterizedRowMapper<T>
     public YukonRowMapperAdapter(YukonRowMapper<T> rm) {
         this.rm = rm;
     }
+    
+    public static <F> YukonRowMapperAdapter<F> create(YukonRowMapper<F> rm) {
+        return new YukonRowMapperAdapter<F>(rm);
+    }
 
     @Override
     public T mapRow(ResultSet rs, int rowNum) throws SQLException {

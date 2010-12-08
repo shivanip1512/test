@@ -44,9 +44,12 @@
     <entry key="yukon.web.modules.operator.filterSelection.select.label">Select</entry>
     <entry key="yukon.web.modules.operator.filterSelection.cancel">Cancel</entry>
     <entry key="yukon.web.modules.operator.filterSelection.error.noInventory">Filter returned no inventory.</entry>
-    <entry key="yukon.web.modules.operator.filterSelection.error.invalidFieldInstallDate">Invalid field install date.</entry>
-    <entry key="yukon.web.modules.operator.filterSelection.error.invalidProgramSignupDate">Invalid program sign-up date.</entry>
-    <entry key="yukon.web.modules.operator.filterSelection.error.invalidSerialNumberRange">Invalid serial number range.</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.typeMismatch.fieldInstallDate">Field install date is not a valid date.</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.typeMismatch.programSignupDate">Program signup date is not a valid date.</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.error.invalidSerialNumberRange">Serial number range start must be less than or equal to range end.</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.error.serialNumberRangeLtZero">Serial number ranges must be greater than zero or equal to zero.</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.typeMismatch.serialNumberFrom">Serial number range start is not a valid number.</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.typeMismatch.serialNumberTo">Serial number range end is not a valid number.</entry>
     
     <entry key="yukon.web.modules.operator.filterSelection.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
     <entry key="yukon.web.modules.operator.filterSelection.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
@@ -72,6 +75,9 @@
     <entry key="yukon.common.collection.inventory.filterBased">Filter Based</entry>
     <entry key="yukon.common.collection.inventory.temporary">Temporary</entry>
     <entry key="yukon.common.collection.inventory.description">{0}</entry>
+    <entry key="yukon.common.collection.inventory.serialNumber">Serial Number</entry>
+    <entry key="yukon.common.collection.inventory.hardwareType">Type</entry>
+    <entry key="yukon.common.collection.inventory.label">Label</entry>
     
     <!-- /inventory/inventoryOperations/inventoryActions.jsp -->
     <entry key="yukon.web.modules.operator.inventoryActions.pageName">Inventory Actions</entry>
@@ -81,15 +87,14 @@
     <entry key="yukon.web.modules.operator.inventoryActions.instructions">Selecting any of these options will not immediately make any changes.  You will be directed to a page with additional options and/or opportunity to confirm your action.</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.deviceReconfigDescription">Setup device reconfiguration options.</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.deviceReconfig.label">Device Reconfiguration</entry>
-    <entry key="yukon.web.modules.operator.inventoryActions.serialNumber">Serial Number</entry>
-    <entry key="yukon.web.modules.operator.inventoryActions.hardwareType">Type</entry>
-    <entry key="yukon.web.modules.operator.inventoryActions.label">Label</entry>
     
     <!-- /inventory/inventoryOperations/deviceReconfig/setup.jsp -->
     <entry key="yukon.web.modules.operator.deviceReconfig.setupContainer.title">Device Reconfiguration Setup</entry>
     <entry key="yukon.web.modules.operator.deviceReconfig.configurationOptions.title">Configuration Options</entry>
     <entry key="yukon.web.modules.operator.deviceReconfig.pagingSettings.title">Current Command Scheduling</entry>
     <entry key="yukon.web.modules.operator.deviceReconfig.name">Name</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfig.sendInService">Send In-Service Command</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfig.sendInServiceLabel">In-Service Command</entry>
     <entry key="yukon.web.modules.operator.deviceReconfig.scheduleEnabled">Enabled</entry>
     <entry key="yukon.web.modules.operator.deviceReconfig.scheduleDisabled">Disabled</entry>
     <entry key="yukon.web.modules.operator.deviceReconfig.error.required.name">Name of the device reconfiguration task cannot be empty.</entry>
@@ -120,9 +125,9 @@
     <entry key="yukon.web.modules.operator.commandSchedule.error.lessThanZero.seconds">Seconds must be greater than zero.</entry>
     <entry key="yukon.web.modules.operator.commandSchedule.error.durationLessThanZero.hours">Duration must be greater than zero.</entry>
     <entry key="yukon.web.modules.operator.commandSchedule.error.durationLessThanZero.minutes">Duration must be greater than zero.</entry>
-    <entry key="yukon.web.modules.operator.commandSchedule.error.NaN.hours">Duration hours is not a valid number.</entry>
-    <entry key="yukon.web.modules.operator.commandSchedule.error.NaN.minutes">Duration minutes is not a valid number.</entry>
-    <entry key="yukon.web.modules.operator.commandSchedule.error.NaN.seconds">Delay seconds is not a valid number.</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.typeMismatch.runPeriodHours">Duration hours is not a valid number.</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.typeMismatch.runPeriodMinutes">Duration minutes is not a valid number.</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.typeMismatch.delayPeriodSeconds">Delay seconds is not a valid number.</entry>
     
     <!-- /inventory/inventoryOperations/deviceReconfig/status.jsp -->
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.pageName">Device Reconfiguration Results</entry>

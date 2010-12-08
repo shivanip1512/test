@@ -6,30 +6,28 @@ import java.util.Map;
 
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.common.inventory.InventoryIdentifier;
-
-public interface YukonCollection extends Iterable<InventoryIdentifier> {
+public interface YukonCollection<T> extends Iterable<T> {
 
     /**
      * Method to get the complete list of inventory in this collection - for large
      * collections this method may take a while to return the list
      * @return List of inventory indentifiers in this collection
      */
-    public List<InventoryIdentifier> getList();
+    public List<T> getList();
     
     /**
      * Method to get just the count of how many inventory are in the collection. Should be faster
      * than creating actual inventory and returning them if all you want is the count.
      * @return Count of how many inventory are in the collection
      */
-    public long getCount();
+    public int getCount();
 
     /**
      * Method to get an iterator for the inventory in this collection.
      * 
      * @return An iterator for the inventory in this collection
      */
-    public Iterator<InventoryIdentifier> iterator();
+    public Iterator<T> iterator();
     
     /**
      * Method to get a list of inventory from this collection
@@ -37,7 +35,7 @@ public interface YukonCollection extends Iterable<InventoryIdentifier> {
      * @param size - Number of inventory to get including the start index
      * @return A list of inventory from this collection
      */
-    public List<InventoryIdentifier> getSubList(int start, int size);
+    public List<T> getSubList(int start, int size);
 
     /**
      * Method used to get the current map of parameters for this inventory

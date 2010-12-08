@@ -2,7 +2,7 @@ package com.cannontech.stars.dr.hardware.dao;
 
 import java.util.List;
 
-import com.cannontech.common.bulk.collection.inventory.YukonCollection;
+import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem;
@@ -17,8 +17,7 @@ public interface InventoryConfigTaskDao {
 
     public List<InventoryConfigTask> getUnfinished(int energyCompanyId);
 
-    public InventoryConfigTask create(String taskName, boolean sendInService,
-    YukonCollection yukonCollection, int energyCompanyId);
+    public InventoryConfigTask create(String taskName, boolean sendInService, InventoryCollection yukonCollection, int energyCompanyId);
 
     public void update(InventoryConfigTask task);
 

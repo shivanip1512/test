@@ -5,20 +5,23 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.joda.time.ReadablePeriod;
+import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.events.loggers.CommandScheduleEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.util.SimplePeriodFormat;
+import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -104,8 +107,9 @@ public class CommandScheduleController {
         schedule.getCommandSchedule().setStartTimeCronString(cronExpression);
         
         /* Set Duration and Delay */
-        ReadablePeriod duration = SimplePeriodFormat.getConfigPeriodFormatter().parsePeriod(schedule.getHours() + "h" + schedule.getMinutes() + "m");
-        ReadablePeriod delay = SimplePeriodFormat.getConfigPeriodFormatter().parsePeriod(schedule.getSeconds() + "s");
+        Period duration = Period.hours(schedule.getRunPeriodHours()).withMinutes(schedule.getRunPeriodMinutes());
+        Period delay = Period.seconds(schedule.getDelayPeriodSeconds());
+        
         schedule.getCommandSchedule().setRunPeriod(duration);
         schedule.getCommandSchedule().setDelayPeriod(delay);
         int energyCompanyId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
@@ -146,7 +150,16 @@ public class CommandScheduleController {
         
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.commandSchedule.deleted"));
         
-        return "redirect:/spring/stars/operator/inventory/inventoryOperations/home";
+        return "redirect:home";
+    }
+    
+    /* INIT BINDER */
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        if (binder.getTarget() != null) {
+            MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver("yukon.web.modules.operator.commandSchedule.");
+            binder.setMessageCodesResolver(msgCodesResolver);
+        }
     }
     
     @Autowired

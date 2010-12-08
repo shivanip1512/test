@@ -101,7 +101,17 @@
                                         </c:when>
                                         
                                         <c:when test="${rule.ruleType eq 'SERIAL_NUMBER_RANGE'}">
-                                            <form:input path="filterRules[${row.index}].serialNumberFrom"/><i:inline key=".serialNumberRangeSeperator"/><form:input path="filterRules[${row.index}].serialNumberTo"/>
+                                            <spring:bind path="filterRules[${row.index}].serialNumberFrom">
+                                                <c:if test="${status.error}"><c:set var="inputFromClass" value="error"/></c:if>
+                                                <form:input path="filterRules[${row.index}].serialNumberFrom" cssClass="${inputFromClass}"/>
+                                            </spring:bind>
+                                            <i:inline key=".serialNumberRangeSeperator"/>
+                                            <spring:bind path="filterRules[${row.index}].serialNumberTo">
+                                                <c:if test="${status.error}"><c:set var="inputToClass" value="error"/></c:if>
+                                                <form:input path="filterRules[${row.index}].serialNumberTo" cssClass="${inputToClass}"/>
+                                            </spring:bind>
+                                            <div><form:errors path="filterRules[${row.index}].serialNumberFrom" cssClass="errorMessage"/></div>
+                                            <div><form:errors path="filterRules[${row.index}].serialNumberTo" cssClass="errorMessage"/></div>
                                         </c:when>
                                         
                                         <c:when test="${rule.ruleType eq 'UNENROLLED'}">
