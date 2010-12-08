@@ -1,6 +1,12 @@
 package com.cannontech.web.picker.v2;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.BooleanClause.Occur;
 
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.search.Searcher;
@@ -42,8 +48,37 @@ public abstract class LucenePicker<T> extends BasePicker<T> {
     	return baseCriteria;
     }
 
-    public YukonObjectCriteria combineCriteria(YukonObjectCriteria baseCriteria, Iterable<Integer> initialIds) {
-        throw new UnsupportedOperationException(this.getClass().getName() + " doesn't support initial ids");
+    public YukonObjectCriteria combineCriteria(YukonObjectCriteria baseCriteria,
+            Iterable<Integer> initialIds) {
+        final BooleanQuery query = new BooleanQuery(false);
+
+        if (baseCriteria != null) {
+            query.add(baseCriteria.getCriteria(), Occur.MUST);
+        }
+
+        final BooleanQuery idQuery = new BooleanQuery(false);
+
+        for (Integer id : initialIds) {
+            TermQuery termQuery = new TermQuery(new Term(getLuceneIdFieldName(), id.toString()));
+            idQuery.add(termQuery, BooleanClause.Occur.SHOULD);
+        }
+
+        query.add(idQuery, BooleanClause.Occur.MUST);
+
+        return new YukonObjectCriteria() {
+            @Override
+            public Query getCriteria() {
+                return query;
+            }
+        }; 
+    }
+
+    /**
+     * Subclasses need to override this method if the id field name is not the
+     * same as the database field.
+     */
+    protected String getLuceneIdFieldName() {
+        return getIdFieldName();
     }
 
     public void setCriteria(YukonObjectCriteria criteria) {

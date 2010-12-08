@@ -447,4 +447,27 @@ This page should be tested at 1024x768.
 </table>
 </tags:sectionContainer2>
 
+<tags:sectionContainer2 nameKey="rememberingPickers">
+  With this picker, you can make a selection and submit the form and the selection should be
+  reselected when the page reloads.
+  <br>
+  <br>
+
+  <form id="pickerSelectForm" action="/spring/support/development/pickerTest/main">
+    <c:if test="${!empty param.pickerType}">
+      <input type="hidden" name="pickerType" value="${param.pickerType}"/>
+    </c:if>
+    <tags:pickerDialog
+      id="rememberingPicker"
+      type="${pickerType}"
+      destinationFieldName="rememberingPickerInput"
+      linkType="selection"
+      selectionProperty="${itemNameProperty}"
+      allowEmptySelection="true"
+      multiSelectMode="true"
+      initialIds="${paramValues['rememberingPickerInput']}"/>
+    <input type="submit">
+  </form>
+</tags:sectionContainer2>
+
 </cti:standardPage>

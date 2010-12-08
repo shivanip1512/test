@@ -123,9 +123,5 @@
 </c:if>
 
 <script type="text/javascript">
-if (window.loadComplete) {
-    ${id}.init();
-} else {
-    Event.observe(window, 'load', ${id}.init.bind(${id}));
-}
+callAfterMainWindowLoad(${id}.init.bind(${id}));
 </script>

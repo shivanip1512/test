@@ -59,6 +59,11 @@ public class AssignedProgramPicker
         return outputColumns;
     }
 
+    @Override
+    protected String getDatabaseIdFieldName() {
+        return "p.programId";
+    }
+
     @Autowired
     public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
         this.applianceCategoryDao = applianceCategoryDao;

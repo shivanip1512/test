@@ -103,17 +103,6 @@ function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters, skipShow, m
         });
 }
 
-/*
- * This allows the picker (and anything else that might need it) to distinguish
- * between a tag being called on a main page (window.loadComplete will be false)
- * and a tag being used in page loaded as a result of an openSimpleDialog call
- * (which happens after the window has loaded completely).
- */
-window.loadComplete = false;
-Event.observe(window, 'load', function() {
-    window.loadComplete = true;
-});
-
 /**
  * Submit an HTML form and place the returned contents into a dialog box.
  * 

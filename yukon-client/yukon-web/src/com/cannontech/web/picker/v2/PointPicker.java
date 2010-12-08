@@ -26,6 +26,11 @@ public class PointPicker extends LucenePicker<UltraLightPoint> {
     }
 
     @Override
+    protected String getLuceneIdFieldName() {
+        return "pointid";
+    }
+
+    @Override
     public List<OutputColumn> getOutputColumns() {
         return outputColumns;
     }

@@ -368,3 +368,26 @@ Event.observe(window, 'load', function() {
         });
     });
 });
+
+/*
+ * This allows the picker (and anything else that might need it) to distinguish
+ * between a tag being called on a main page (window.loadComplete will be false)
+ * and a tag being used in page loaded as a result of an openSimpleDialog call
+ * (which happens after the window has loaded completely).
+ */
+window.loadComplete = false;
+Event.observe(window, 'load', function() {
+    window.loadComplete = true;
+});
+
+/**
+ * Use this method to call a function after a page has been completely loaded.  If this method
+ * is called after the window has already been loaded, the method is called immediately.
+ */
+function callAfterMainWindowLoad(func) {
+	if (window.loadComplete) {
+	    func();
+	} else {
+	    Event.observe(window, 'load', func);
+	}
+}

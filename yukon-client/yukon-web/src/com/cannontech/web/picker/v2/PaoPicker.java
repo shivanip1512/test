@@ -24,6 +24,11 @@ public class PaoPicker extends LucenePicker<UltraLightPao> {
     }
 
     @Override
+    protected String getLuceneIdFieldName() {
+        return "paoid";
+    }
+
+    @Override
     public List<OutputColumn> getOutputColumns() {
         return outputColumns;
     }
