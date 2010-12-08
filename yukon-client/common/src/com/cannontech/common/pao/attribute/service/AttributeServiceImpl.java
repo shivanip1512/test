@@ -22,7 +22,7 @@ import com.cannontech.common.pao.service.PointService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
-import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.google.common.collect.ImmutableSet;
@@ -45,7 +45,7 @@ public class AttributeServiceImpl implements AttributeService {
     	readableAttributes = ImmutableSet.<Attribute>copyOf(nonProfiledAttributes);
     }
 
-    public LitePoint getPointForAttribute(YukonPao pao, Attribute attribute) {
+    public LitePoint getPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         try {
             PaoPointIdentifier paoPointIdentifier = getPaoPointIdentifierForAttribute(pao, attribute);
 
@@ -57,7 +57,7 @@ public class AttributeServiceImpl implements AttributeService {
         }
     }
 
-    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) {
+    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
         AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
         try {
@@ -111,7 +111,7 @@ public class AttributeServiceImpl implements AttributeService {
         return pointService.pointExistsForPao(paoPointIdentifier);
     }
 
-    public PaoPointTemplate getPaoPointTemplateForAttribute(YukonPao pao, Attribute attribute) {
+    public PaoPointTemplate getPaoPointTemplateForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
         AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
         if (attributeDefinition.isPointTemplateAvailable()) {
@@ -120,7 +120,7 @@ public class AttributeServiceImpl implements AttributeService {
         throw new IllegalUseOfAttribute("Cannot create " + attribute + " on " + pao);
     }
     
-    public void createPointForAttribute(YukonPao pao, Attribute attribute) {
+    public void createPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         
 
         boolean pointExists = this.pointExistsForAttribute(pao, attribute);
@@ -128,7 +128,7 @@ public class AttributeServiceImpl implements AttributeService {
             PaoPointTemplate paoPointTemplate = getPaoPointTemplateForAttribute(pao, attribute);
             PointBase point = pointCreationService.createPoint(paoPointTemplate.getPaoIdentifier().getPaoId(), paoPointTemplate.getPointTemplate());
             try {
-                dbPersistentDao.performDBChange(point, Transaction.INSERT);
+                dbPersistentDao.performDBChange(point, TransactionType.INSERT);
             } catch (PersistenceException e) {
                 // TODO this should throw a different exception
                 throw new DataAccessException("Could not create point for pao: " + pao, e) {};

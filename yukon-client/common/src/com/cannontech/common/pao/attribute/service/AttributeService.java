@@ -29,7 +29,7 @@ public interface AttributeService {
      * @throws IllegalUseOfAttribute if nothing is mapped for a mappable attribute
      * @throws IllegalArgumentException if the pao does not have that attribute
      */
-    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute, IllegalArgumentException;
+    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
 
     /**
      * Method to get a set of attributes available for the given pao
@@ -73,14 +73,14 @@ public interface AttributeService {
      */
     public boolean pointExistsForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
     
-    public PaoPointTemplate getPaoPointTemplateForAttribute(YukonPao pao, Attribute attribute);
+    public PaoPointTemplate getPaoPointTemplateForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
     
     /**
      * Method used to create a point for the pao and given attribute
      * @param pao - Pao to create point for
      * @param attribute - Attribute the point will represent
      */
-    public void createPointForAttribute(YukonPao pao, Attribute attribute);
+    public void createPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
 
     public boolean isPointAttribute(PaoPointIdentifier paoPointIdentifier, Attribute usage);
     

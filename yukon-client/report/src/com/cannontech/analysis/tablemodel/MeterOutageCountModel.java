@@ -21,6 +21,7 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -211,8 +212,8 @@ public class MeterOutageCountModel extends ReportModelBase<MeterOutageCountModel
             try {
                 PaoPointIdentifier identifier = attributeService.getPaoPointIdentifierForAttribute(device, BuiltInAttribute.BLINK_COUNT);
                 identifiers.add(identifier);
-            } catch (IllegalArgumentException e) {
-                continue;  /* This device does not support the choosen attribute. */
+            } catch (IllegalUseOfAttribute e) {
+                continue;  /* This device does not support the chosen attribute. */
             }
         }
         ImmutableMultimap<PointIdentifier, PaoIdentifier> paoPointIdentifiersMap = PaoUtils.mapPaoPointIdentifiers(identifiers);

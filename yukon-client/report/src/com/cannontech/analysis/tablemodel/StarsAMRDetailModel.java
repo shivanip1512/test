@@ -22,6 +22,7 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -120,7 +121,7 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
             try {
                 PaoPointIdentifier identifier = attributeService.getPaoPointIdentifierForAttribute(device, BuiltInAttribute.USAGE);
                 identifiers.add(identifier);
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalUseOfAttribute e) {
                 continue;  /* This device does not support the choosen attribute. */
             }
         }

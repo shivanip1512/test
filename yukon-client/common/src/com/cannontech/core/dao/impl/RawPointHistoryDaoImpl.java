@@ -22,6 +22,7 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.point.PointQuality;
@@ -303,7 +304,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                 PaoPointIdentifier identifier = attributeService.getPaoPointIdentifierForAttribute(pao,
                                                                                                    attribute);
                 paoIdentifierLookup.put(identifier, pao.getPaoIdentifier());
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalUseOfAttribute e) {
                 LogHelper.debug(log, "unable to look up values for %s on %s: %s", attribute, pao, e.toString());
                 continue; //This device does not support the selected attribute.
             }

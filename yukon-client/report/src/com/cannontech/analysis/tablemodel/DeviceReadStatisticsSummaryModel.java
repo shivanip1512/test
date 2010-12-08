@@ -20,6 +20,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -118,7 +119,7 @@ public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<D
             try {
                 PaoPointIdentifier identifier = attributeService.getPaoPointIdentifierForAttribute(device, attribute);
                 identifiers.add(identifier);
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalUseOfAttribute e) {
                 continue;  /* This device does not support the choosen attribute. */
             }
         }
