@@ -31,7 +31,7 @@
         <webClassPathEntry>/third-party</webClassPathEntry>
         <webClassPathEntry>/third-party/SqlServer.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/activation.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/activemq-all-5.4.1.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/activemq-all-5.4.2.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/antlr-2.7.6rc1.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/asm-attrs.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/asm.jar</webClassPathEntry>

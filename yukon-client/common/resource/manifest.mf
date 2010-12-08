@@ -34,7 +34,7 @@ Class-Path: ./
  aspectjrt.jar 
  aspectjweaver.jar 
  joda-time-1.6.jar 
- activemq-all-5.4.1.jar 
+ activemq-all-5.4.2.jar 
  org.osgi.core-4.1.0.jar 
  org.springframework.integration-1.0.3.RELEASE.jar 
  org.springframework.integration.adapter-1.0.3.RELEASE.jar 

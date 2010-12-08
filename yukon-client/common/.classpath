@@ -216,6 +216,6 @@
 	<classpathentry kind="lib" path="/third-party/xbean-spring-3.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/org.osgi.core-4.1.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-beanutils-1.7.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/activemq-all-5.4.1.jar"/>
+	<classpathentry kind="lib" path="/third-party/activemq-all-5.4.2.jar" sourcepath="Z:/java/Third-Party Sources/apache-activemq-5.4.2-bin.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
