@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/8/2010 11:05:14 AM                        */
+/* Created on:     12/8/2010 11:54:03 AM                        */
 /*==============================================================*/
 
 
@@ -1593,6 +1593,7 @@ create table CCEventLog  (
    StationID            NUMBER                          not null,
    AreaID               NUMBER                          not null,
    SpAreaID             NUMBER                          not null,
+   RegulatorId          NUMBER                          not null,
    constraint PK_CCEventLog primary key (LogID)
 );
 

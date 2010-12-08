@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     12/8/2010 11:02:09 AM                        */
+/* Created on:     12/8/2010 11:56:09 AM                        */
 /*==============================================================*/
 
 
@@ -4319,6 +4319,7 @@ create table CCEventLog (
    StationID            numeric              not null,
    AreaID               numeric              not null,
    SpAreaID             numeric              not null,
+   RegulatorId          numeric              not null,
    constraint PK_CCEventLog primary key (LogID)
 )
 go

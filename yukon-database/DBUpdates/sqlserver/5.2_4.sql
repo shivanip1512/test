@@ -24,6 +24,17 @@ SET paoClass = 'CAPCONTROL'
 WHERE Type = 'PO_REGULATOR'; 
 /* End YUK-9291 */
 
+/* Start YUK-9284 */
+ALTER TABLE CCEventLog
+ADD RegulatorId NUMERIC;
+
+UPDATE CCEventLog
+SET RegulatorId = 0; 
+
+ALTER TABLE CCEventLog
+ALTER COLUMN RegulatorId NUMERIC NOT NULL;
+/* End YUK-9284 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
