@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/8/2010 11:54:03 AM                        */
+/* Created on:     12/8/2010 12:27:05 PM                        */
 /*==============================================================*/
 
 
@@ -1511,7 +1511,7 @@ create table CAPCONTROLAREA  (
 create table CAPCONTROLCOMMENT  (
    CommentID            INTEGER                         not null,
    PaoID                NUMBER                          not null,
-   UserID               NUMBER                          not null,
+   UserID               NUMBER,
    Action               VARCHAR2(50)                    not null,
    CommentTime          DATE                            not null,
    CapComment           VARCHAR2(500)                   not null,
@@ -10708,12 +10708,14 @@ alter table CAPCONTROLAREA
       references YukonPAObject (PAObjectID);
 
 alter table CAPCONTROLCOMMENT
-   add constraint FK_CAPCONTR_REFERENCE_YUKONPA2 foreign key (PaoID)
-      references YukonPAObject (PAObjectID);
+   add constraint FK_CapContCom_PAO foreign key (PaoID)
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table CAPCONTROLCOMMENT
-   add constraint FK_CAPCONTR_REFERENCE_YUKONUSE foreign key (UserID)
-      references YukonUser (UserID);
+   add constraint FK_CapContCom_YukonUser foreign key (UserID)
+      references YukonUser (UserID)
+      on delete set null;
 
 alter table CAPCONTROLSPECIALAREA
    add constraint FK_CAPCONTR_YUKONPAO2 foreign key (AreaID)

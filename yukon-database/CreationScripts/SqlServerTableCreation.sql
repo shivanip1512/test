@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     12/8/2010 11:56:09 AM                        */
+/* Created on:     12/8/2010 12:29:21 PM                        */
 /*==============================================================*/
 
 
@@ -4232,7 +4232,7 @@ go
 create table CAPCONTROLCOMMENT (
    CommentID            int                  not null,
    PaoID                numeric              not null,
-   UserID               numeric              not null,
+   UserID               numeric              null,
    Action               varchar(50)          not null,
    CommentTime          datetime             not null,
    CapComment           varchar(500)         not null,
@@ -13987,13 +13987,15 @@ alter table CAPCONTROLAREA
 go
 
 alter table CAPCONTROLCOMMENT
-   add constraint FK_CAPCONTR_REFERENCE_YUKONPA2 foreign key (PaoID)
+   add constraint FK_CapContCom_PAO foreign key (PaoID)
       references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table CAPCONTROLCOMMENT
-   add constraint FK_CAPCONTR_REFERENCE_YUKONUSE foreign key (UserID)
+   add constraint FK_CapContCom_YukonUser foreign key (UserID)
       references YukonUser (UserID)
+         on delete set null
 go
 
 alter table CAPCONTROLSPECIALAREA

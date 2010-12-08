@@ -35,6 +35,27 @@ ALTER TABLE CCEventLog
 MODIFY RegulatorId NUMBER NOT NULL;
 /* End YUK-9284 */
 
+/* Start YUK-9293 */
+ALTER TABLE CapControlComment
+MODIFY UserId NUMBER;
+
+ALTER TABLE CapControlComment 
+DROP CONSTRAINT FK_CAPCONTR_REFERENCE_YUKONPA2; 
+
+ALTER TABLE CapControlComment
+    ADD CONSTRAINT FK_CapContCom_PAO FOREIGN KEY (PaoId)
+        REFERENCES YukonPAObject (PAObjectId)
+            ON DELETE CASCADE;
+
+ALTER TABLE CapControlComment 
+DROP CONSTRAINT FK_CAPCONTR_REFERENCE_YUKONUSE; 
+
+ALTER TABLE CapControlComment
+    ADD CONSTRAINT FK_CapContCom_YukonUser FOREIGN KEY (UserId)
+        REFERENCES YukonUser (UserId)
+            ON DELETE SET NULL;
+/* End YUK-9293 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
