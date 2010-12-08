@@ -76,9 +76,11 @@ function dropDownChanged(questionKey) {
                 path="${pathPrefix}.textAnswer"/>
         </div>
     </div>
-    <script type="text/javascript">
-        dropDownChanged('${question.questionKey}');
-    </script>
+    <c:if test="${question.questionType == 'DROP_DOWN'}">
+        <script type="text/javascript">
+            dropDownChanged('${question.questionKey}');
+        </script>
+    </c:if>
 </c:forEach>
 
 <c:forEach var="surveyResult" varStatus="srStatus"

@@ -8,6 +8,7 @@
 <%@ attribute name="key" required="true" type="java.lang.String" description="Base i18n key. Available settings: .label (required), .labelBusy (optional), .description (optional)"%>
 <%@ attribute name="disableOtherButtons" required="false" type="java.lang.Boolean" description="Defaults to true. Disables all other buttons with formSubmit class on the page."%>
 <%@ attribute name="onsubmit" required="false" type="java.lang.String" description="Reference to a JavaScript function to call before form submission. Function MUST have return value of true for the form to submit, otherwise the button will revert and the form will remain unsubmitted."%>
+<%@ attribute name="type" %>
 <%@ tag body-content="empty" %>
 
 <cti:includeScript link="/JavaScript/slowInput2.js"/>
@@ -25,12 +26,16 @@
 	<c:set var="onsubmit" value="null"/>
 </c:if>
 
+<c:if test="${empty pageScope.type}">
+	<c:set var="type" value="button"/>
+</c:if>
+
 <span style="white-space:nowrap;">
 
 	<cti:msgScope paths=".${key},components.slowInput.${key}">
 
 		<%-- MAIN BUTTON --%>
-	    <button id="slowInput2Button_${uniqueId}" type="button" class="formSubmit" onclick="slowInput2ButtonPress('${uniqueId}', '${formId}', ${disableOtherButtons}, ${pageScope.onsubmit})">
+	    <button id="slowInput2Button_${uniqueId}" type="${pageScope.type}" class="formSubmit" onclick="slowInput2ButtonPress('${uniqueId}', '${formId}', ${disableOtherButtons}, ${pageScope.onsubmit})">
 			<cti:checkGlobalRolesAndProperties value="!I18N_DESIGN_MODE">
 				<cti:msg2 key=".label"/>
 			</cti:checkGlobalRolesAndProperties>

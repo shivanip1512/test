@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 
@@ -67,7 +68,7 @@ public class SurveyResultsSummaryModel extends
                 }
                 return retVal;
             }
-            if (result.getTextAnswer() != null) {
+            if (!StringUtils.isEmpty(result.getTextAnswer())) {
                 ModelRow retVal = otherAnswerRows.get(result.getTextAnswer());
                 if (retVal == null) {
                     retVal = new ModelRow(hist);

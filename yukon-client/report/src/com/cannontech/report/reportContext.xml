@@ -891,6 +891,13 @@
                     </property>
                 </bean>
                 <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="includeUnanswered"/>
+                    <property name="displayName" value="Include Unanswered"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.BooleanType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
                     <property name="field" value="programIds"/>
                     <property name="displayName" value="Program Ids"/>
                     <property name="type">
@@ -952,6 +959,13 @@
                 <bean class="com.cannontech.web.input.InputBase">
                     <property name="field" value="includeOtherAnswers"/>
                     <property name="displayName" value="Include Other Answers"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.BooleanType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="includeUnanswered"/>
+                    <property name="displayName" value="Include Unanswered"/>
                     <property name="type">
                       <bean class="com.cannontech.web.input.type.BooleanType"/>
                     </property>
