@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/8/2010 12:27:05 PM                        */
+/* Created on:     12/8/2010 3:24:56 PM                         */
 /*==============================================================*/
 
 
@@ -166,6 +166,8 @@ drop index Indx_HolSchName;
 drop index CstAccCstHrdB_FK;
 
 drop index HrdInst_CstHrdBs_FK;
+
+drop index Indx_InvConfTa_EC_TaskName_UNQ;
 
 drop index INDX_UNQ_LMCNTRTR_TRID;
 
@@ -427,6 +429,8 @@ drop table CommandRequestExec cascade constraints;
 
 drop table CommandRequestExecResult cascade constraints;
 
+drop table CommandSchedule cascade constraints;
+
 drop table Contact cascade constraints;
 
 drop table ContactNotifGroupMap cascade constraints;
@@ -652,6 +656,10 @@ drop table ImportPendingComm cascade constraints;
 drop table InterviewQuestion cascade constraints;
 
 drop table InventoryBase cascade constraints;
+
+drop table InventoryConfigTask cascade constraints;
+
+drop table InventoryConfigTaskItem cascade constraints;
 
 drop table InventoryToAcctThermostatSch cascade constraints;
 
@@ -2536,6 +2544,19 @@ create table CommandRequestExecResult  (
    DeviceId             NUMBER,
    RouteId              NUMBER,
    constraint PK_CommandRequestExecResult primary key (CommandRequestExecResultId)
+);
+
+/*==============================================================*/
+/* Table: CommandSchedule                                       */
+/*==============================================================*/
+create table CommandSchedule  (
+   CommandScheduleId    NUMBER                          not null,
+   StartTimeCronString  VARCHAR2(64)                    not null,
+   RunPeriod            VARCHAR2(32)                    not null,
+   DelayPeriod          VARCHAR2(32)                    not null,
+   Enabled              CHAR(1)                         not null,
+   EnergyCompanyId      NUMBER                          not null,
+   constraint PK_CommandSchedule primary key (CommandScheduleId)
 );
 
 /*==============================================================*/
@@ -5575,6 +5596,37 @@ create index CstAccCstHrdB_FK on InventoryBase (
 /*==============================================================*/
 create index HrdInst_CstHrdBs_FK on InventoryBase (
    InstallationCompanyID ASC
+);
+
+/*==============================================================*/
+/* Table: InventoryConfigTask                                   */
+/*==============================================================*/
+create table InventoryConfigTask  (
+   InventoryConfigTaskId NUMBER                          not null,
+   TaskName             VARCHAR2(255)                   not null,
+   SendInService        CHAR(1)                         not null,
+   NumberOfItems        NUMBER                          not null,
+   NumberOfItemsProcessed NUMBER                          not null,
+   EnergyCompanyId      NUMBER                          not null,
+   constraint PK_InvConfTask primary key (InventoryConfigTaskId)
+);
+
+/*==============================================================*/
+/* Index: Indx_InvConfTa_EC_TaskName_UNQ                        */
+/*==============================================================*/
+create unique index Indx_InvConfTa_EC_TaskName_UNQ on InventoryConfigTask (
+   TaskName ASC,
+   EnergyCompanyId ASC
+);
+
+/*==============================================================*/
+/* Table: InventoryConfigTaskItem                               */
+/*==============================================================*/
+create table InventoryConfigTaskItem  (
+   InventoryConfigTaskId NUMBER                          not null,
+   InventoryId          NUMBER                          not null,
+   Status               VARCHAR2(16)                    not null,
+   constraint PK_InvConfTaskItem primary key (InventoryConfigTaskId, InventoryId)
 );
 
 /*==============================================================*/
@@ -9879,6 +9931,7 @@ INSERT INTO YukonServices VALUES (9, 'Monitors', 'classpath:com/cannontech/servi
 INSERT INTO YukonServices VALUES (10, 'OptOut', 'classpath:com/cannontech/services/optout/optOutContext.xml', '(none)', '(none)', 'ServiceManager');
 INSERT INTO YukonServices VALUES (11, 'RawPointHistoryValidation', 'classpath:com/cannontech/services/validation/validationServerContext.xml', '(none)', '(none)', 'ServiceManager');
 INSERT INTO YukonServices VALUES (13, 'Eka', 'classpath:com/cannontech/services/rfn/rfnMeteringContext.xml', '(none)', '(none)', 'ServiceManager');
+INSERT INTO yukonServices VALUES (14, 'Inventory Management', 'classpath:com/cannontech/services/dr/inventoryContext.xml', '(none)', '(none)', 'ServiceManager'); 
 
 /*==============================================================*/
 /* Table: YukonUser                                             */
@@ -11023,6 +11076,11 @@ alter table CommandRequestExecResult
       references CommandRequestExec (CommandRequestExecId)
       on delete cascade;
 
+alter table CommandSchedule
+   add constraint FK_CommSche_EnergyComp foreign key (EnergyCompanyId)
+      references EnergyCompany (EnergyCompanyID)
+      on delete cascade;
+
 alter table Contact
    add constraint FK_CONTACT_REF_CNT_A_ADDRESS foreign key (AddressID)
       references Address (AddressID);
@@ -11674,6 +11732,21 @@ alter table InventoryBase
 alter table InventoryBase
    add constraint FK_InvB_YkLstEvlt foreign key (VoltageID)
       references YukonListEntry (EntryID);
+
+alter table InventoryConfigTask
+   add constraint FK_InvConfTask_EC foreign key (EnergyCompanyId)
+      references EnergyCompany (EnergyCompanyID)
+      on delete cascade;
+
+alter table InventoryConfigTaskItem
+   add constraint FK_InvConfTaskItem_InvBase foreign key (InventoryId)
+      references InventoryBase (InventoryID)
+      on delete cascade;
+
+alter table InventoryConfigTaskItem
+   add constraint FK_InvConfTaskItem_InvConfTask foreign key (InventoryConfigTaskId)
+      references InventoryConfigTask (InventoryConfigTaskId)
+      on delete cascade;
 
 alter table InventoryToAcctThermostatSch
    add constraint FK_InvToAccThermSch_AccThermSc foreign key (AcctThermostatScheduleId)
