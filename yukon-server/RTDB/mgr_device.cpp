@@ -1981,15 +1981,13 @@ void CtiDeviceManager::writeDynamicPaoInfo( void )
             vector<CtiTableDynamicPaoInfo *>::iterator itr;
             for( itr = dirty_info.begin(); itr != dirty_info.end(); itr++ )
             {
-                long rowsAffected = 0;
-
                 (*itr)->setOwner(_app_id);
 
-                status = (*itr)->Update(conn, rowsAffected);
+                status = (*itr)->Update(conn);
 
                 //  update didn't work, so we have to assign a new entry ID
                 //    this is clunky - entry ID is useless, since we key on Owner, PAO, and Key anyway
-                if( ! status || !rowsAffected )
+                if( ! status )
                 {
                     (*itr)->setEntryID(max_entryid + 1);
 

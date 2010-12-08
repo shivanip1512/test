@@ -420,7 +420,7 @@ public:
     bool hasRow() const;
 
     bool Insert(Cti::Database::DatabaseConnection &conn);
-    bool Update(Cti::Database::DatabaseConnection &conn, long &rowsAffected);
+    bool Update(Cti::Database::DatabaseConnection &conn);
 
     static string getSQLCoreStatement(CtiApplication_t _app_id);
 

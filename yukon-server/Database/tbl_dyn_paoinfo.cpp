@@ -502,7 +502,7 @@ bool CtiTableDynamicPaoInfo::Insert(Cti::Database::DatabaseConnection &conn)
     return success;
 }
 
-bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn, long &rowsAffected)
+bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn)
 {
     bool success = true;
 
@@ -546,8 +546,6 @@ bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn, lon
             << *tmp_key;
 
         success = executeUpdater(updater);
-        rowsAffected = updater.rowsAffected();
-
 
         if( success )
         {
