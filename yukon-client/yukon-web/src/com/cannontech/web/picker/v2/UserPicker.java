@@ -31,6 +31,11 @@ public class UserPicker extends LucenePicker<UltraLightYukonUser> {
     }
 
     @Override
+    protected String getLuceneIdFieldName() {
+        return "userid";
+    }
+
+    @Override
     public List<OutputColumn> getOutputColumns() {
         return outputColumns;
     }

@@ -23,6 +23,14 @@
         <c:set var="itemIdProperty" value="assignedProgramId"/>
         <c:set var="itemNameProperty" value="displayName"/>
     </c:when>
+    <c:when test="${pickerType == 'userPicker'}">
+        <c:set var="itemIdProperty" value="userId"/>
+        <c:set var="itemNameProperty" value="userName"/>
+    </c:when>
+    <c:when test="${pickerType == 'loginGroupPicker'}">
+        <c:set var="itemIdProperty" value="groupId"/>
+        <c:set var="itemNameProperty" value="groupName"/>
+    </c:when>
 </c:choose>
 
 <script type="text/javascript">
@@ -58,6 +66,8 @@ This page should be tested at 1024x768.
         <option value="pointPicker"<c:if test="${pickerType == 'pointPicker'}"> selected</c:if>>Point Picker</option>
         <option value="paoPicker"<c:if test="${pickerType == 'paoPicker'}"> selected</c:if>>PAO Picker (Lucene)</option>
         <option value="assignedProgramPicker"<c:if test="${pickerType == 'assignedProgramPicker'}"> selected</c:if>>Assigned Program Picker (Database)</option>
+        <option value="userPicker"<c:if test="${pickerType == 'userPicker'}"> selected</c:if>>User Picker (Lucene)</option>
+        <option value="loginGroupPicker"<c:if test="${pickerType == 'loginGroupPicker'}"> selected</c:if>>Login Group Picker (Lucene)</option>
     </select>
 </form>
 

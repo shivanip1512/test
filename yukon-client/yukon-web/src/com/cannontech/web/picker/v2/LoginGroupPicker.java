@@ -22,6 +22,11 @@ public class LoginGroupPicker extends LucenePicker<UltraLightLoginGroup> {
     }
 
     @Override
+    protected String getLuceneIdFieldName() {
+        return "groupid";
+    }
+
+    @Override
     public List<OutputColumn> getOutputColumns() {
         return outputColumns;
     }
