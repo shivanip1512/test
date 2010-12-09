@@ -5615,174 +5615,174 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                 }
                     //cCSubstationBuses->push_back(currentCCSubstationBus);
             }
+        }
+        {
+            static const string sqlNoID = "SELECT SBL.substationid, SBL.substationbusid, SBL.displayorder "
+                                          "FROM ccsubstationsubbuslist SBL";
 
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader dbRdr(connection);
+
+            if( subBusId > 0 )
             {
-                static const string sqlNoID = "SELECT SBL.substationid, SBL.substationbusid, SBL.displayorder "
-                                              "FROM ccsubstationsubbuslist SBL";
+                static const string sqlID = string(sqlNoID + " WHERE SBL.substationbusid = ?");
+                dbRdr.setCommandText(sqlID);
+                dbRdr << subBusId;
+            }
+            else
+            {
+                dbRdr.setCommandText(sqlNoID);
+            }
 
-                Cti::Database::DatabaseConnection connection;
-                Cti::Database::DatabaseReader dbRdr(connection);
+            dbRdr.execute();
 
-                if( subBusId > 0 )
+            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+            {
+                string loggedSQLstring = dbRdr.asString();
                 {
-                    static const string sqlID = string(sqlNoID + " WHERE SBL.substationbusid = ?");
-                    dbRdr.setCommandText(sqlID);
-                    dbRdr << subBusId;
-                }
-                else
-                {
-                    dbRdr.setCommandText(sqlNoID);
-                }
-
-                dbRdr.execute();
-
-                if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                {
-                    string loggedSQLstring = dbRdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
-                }
-
-                while ( dbRdr() )
-                {
-                    long currentSubstationId;
-                    long currentSubBusId;
-                    long displayOrder;
-                    dbRdr["substationid"] >> currentSubstationId;
-                    dbRdr["substationbusid"] >> currentSubBusId;
-                    dbRdr["displayorder"] >>displayOrder;
-                    currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
-                    if (currentCCSubstationBus != NULL)
-                    {
-
-                        currentCCSubstationBus->setParentId(currentSubstationId);
-                        currentCCSubstationBus->setDisplayOrder(displayOrder);
-                        CtiCCSubstationPtr currentCCSubstation = NULL;
-
-                        if (subBusId > 0)
-                            currentCCSubstation = findSubstationByPAObjectID(currentSubstationId);
-                        else
-                        {
-                            if (paobject_substation_map->find(currentSubstationId) != paobject_substation_map->end())
-                                currentCCSubstation = paobject_substation_map->find(currentSubstationId)->second;
-                        }
-
-                        if (currentCCSubstation != NULL)
-                        {
-                            currentCCSubstationBus->setParentName(currentCCSubstation->getPaoName());
-                            list <LONG>::const_iterator iterBus = currentCCSubstation->getCCSubIds()->begin();
-                            bool found = false;
-                            for( ;iterBus != currentCCSubstation->getCCSubIds()->end(); iterBus++)
-                            {
-                                if (*iterBus == currentSubBusId)
-                                {
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if(!found)
-                            {
-                                currentCCSubstation->getCCSubIds()->push_back(currentSubBusId);
-                            }
-                        }
-
-                        cCSubstationBuses->push_back(currentCCSubstationBus);
-                        subbus_substation_map->insert(make_pair(currentSubBusId, currentSubstationId));
-                    }
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << loggedSQLstring << endl;
                 }
             }
+
+            while ( dbRdr() )
             {
-                 static const string sqlNoID =  "SELECT SSA.paobjectid, SSA.seasonscheduleid, SSA.seasonname, "
-                                                  "SSA.strategyid, DS.seasonstartmonth, DS.seasonendmonth, "
-                                                  "DS.seasonstartday, DS.seasonendday "
-                                                "FROM capcontrolsubstationbus SSB, ccseasonstrategyassignment SSA, "
-                                                  "dateofseason DS "
-                                                "WHERE SSA.paobjectid = SSB.substationbusid AND "
-                                                  "SSA.seasonscheduleid = DS.seasonscheduleid AND "
-                                                  "SSA.seasonname = DS.seasonname";
+                long currentSubstationId;
+                long currentSubBusId;
+                long displayOrder;
+                dbRdr["substationid"] >> currentSubstationId;
+                dbRdr["substationbusid"] >> currentSubBusId;
+                dbRdr["displayorder"] >>displayOrder;
+                CtiCCSubstationBusPtr currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
+                if (currentCCSubstationBus != NULL)
+                {
 
-                 Cti::Database::DatabaseConnection connection;
-                 Cti::Database::DatabaseReader dbRdr(connection);
+                    currentCCSubstationBus->setParentId(currentSubstationId);
+                    currentCCSubstationBus->setDisplayOrder(displayOrder);
+                    CtiCCSubstationPtr currentCCSubstation = NULL;
 
-                 if( subBusId > 0 )
+                    if (subBusId > 0)
+                        currentCCSubstation = findSubstationByPAObjectID(currentSubstationId);
+                    else
+                    {
+                        if (paobject_substation_map->find(currentSubstationId) != paobject_substation_map->end())
+                            currentCCSubstation = paobject_substation_map->find(currentSubstationId)->second;
+                    }
+
+                    if (currentCCSubstation != NULL)
+                    {
+                        currentCCSubstationBus->setParentName(currentCCSubstation->getPaoName());
+                        list <LONG>::const_iterator iterBus = currentCCSubstation->getCCSubIds()->begin();
+                        bool found = false;
+                        for( ;iterBus != currentCCSubstation->getCCSubIds()->end(); iterBus++)
+                        {
+                            if (*iterBus == currentSubBusId)
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(!found)
+                        {
+                            currentCCSubstation->getCCSubIds()->push_back(currentSubBusId);
+                        }
+                    }
+
+                    cCSubstationBuses->push_back(currentCCSubstationBus);
+                    subbus_substation_map->insert(make_pair(currentSubBusId, currentSubstationId));
+                }
+            }
+        }
+        {
+             static const string sqlNoID =  "SELECT SSA.paobjectid, SSA.seasonscheduleid, SSA.seasonname, "
+                                              "SSA.strategyid, DS.seasonstartmonth, DS.seasonendmonth, "
+                                              "DS.seasonstartday, DS.seasonendday "
+                                            "FROM capcontrolsubstationbus SSB, ccseasonstrategyassignment SSA, "
+                                              "dateofseason DS "
+                                            "WHERE SSA.paobjectid = SSB.substationbusid AND "
+                                              "SSA.seasonscheduleid = DS.seasonscheduleid AND "
+                                              "SSA.seasonname = DS.seasonname";
+
+             Cti::Database::DatabaseConnection connection;
+             Cti::Database::DatabaseReader dbRdr(connection);
+
+             if( subBusId > 0 )
+             {
+                 static const string sqlID = string(sqlNoID + " AND SSA.paobjectid = ?");
+                 dbRdr.setCommandText(sqlID);
+                 dbRdr << subBusId;
+             }
+             else
+             {
+                 dbRdr.setCommandText(sqlNoID);
+             }
+
+             dbRdr.execute();
+
+             while ( dbRdr() )
+             {
+                 int startMon, startDay, endMon, endDay;
+                 dbRdr["seasonstartmonth"] >> startMon;
+                 dbRdr["seasonendmonth"] >> endMon;
+                 dbRdr["seasonstartday"] >> startDay;
+                 dbRdr["seasonendday"] >> endDay;
+
+                 CtiDate today = CtiDate();
+
+                 if (today  >= CtiDate(startDay, startMon, today.year()) &&
+                      today <= CtiDate(endDay, endMon, today.year())  )
                  {
-                     static const string sqlID = string(sqlNoID + " AND SSA.paobjectid = ?");
-                     dbRdr.setCommandText(sqlID);
-                     dbRdr << subBusId;
-                 }
-                 else
-                 {
-                     dbRdr.setCommandText(sqlNoID);
-                 }
+                     long busId, stratId;
+                     dbRdr["paobjectid"] >> busId;
+                     dbRdr["strategyid"] >> stratId;
 
-                 dbRdr.execute();
+                     CtiCCSubstationBusPtr currentCCSubstationBus = NULL;
 
-                 while ( dbRdr() )
-                 {
-                     int startMon, startDay, endMon, endDay;
-                     dbRdr["seasonstartmonth"] >> startMon;
-                     dbRdr["seasonendmonth"] >> endMon;
-                     dbRdr["seasonstartday"] >> startDay;
-                     dbRdr["seasonendday"] >> endDay;
-
-                     CtiDate today = CtiDate();
-
-                     if (today  >= CtiDate(startDay, startMon, today.year()) &&
-                          today <= CtiDate(endDay, endMon, today.year())  )
+                     if (subBusId > 0)
+                         currentCCSubstationBus = findSubBusByPAObjectID(busId);
+                     else
                      {
-                         long busId, stratId;
-                         dbRdr["paobjectid"] >> busId;
-                         dbRdr["strategyid"] >> stratId;
-
-                         currentCCSubstationBus = NULL;
-
-                         if (subBusId > 0)
-                             currentCCSubstationBus = findSubBusByPAObjectID(busId);
-                         else
-                         {
-                             if (paobject_subbus_map->find(busId) != paobject_subbus_map->end())
-                                 currentCCSubstationBus = paobject_subbus_map->find(busId)->second;
-                         }
-                          if (currentCCSubstationBus != NULL)
-                          {
-                              CtiCCSubstationPtr currentStation = NULL;
-                              currentStation = findSubstationByPAObjectID(currentCCSubstationBus->getParentId());
-                              if (currentStation != NULL)
-                              {
-                                  long strategyID = _strategyManager.getDefaultId();
-
-                                  if (currentStation->getSaEnabledFlag())
-                                  {
-                                      CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
-                                      if (spArea != NULL)
-                                      {
-                                          strategyID = spArea->getStrategy()->getStrategyId();
-                                      }
-                                  }
-                                  else
-                                  {
-                                      strategyID = stratId;
-                                  }
-
-                                  currentCCSubstationBus->setStrategy(strategyID);
-
-                                  if (currentCCSubstationBus->getStrategy()->getUnitType() == ControlStrategy::None)
-                                  {
-                                      cascadeStrategySettingsToChildren(0, currentStation->getParentId(), 0);
-                                  }
-
-                                  if (!stringCompareIgnoreCase(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
-                                  {
-                                      currentCCSubstationBus->figureNextCheckTime();
-                                  }
-                              }
-                          }
+                         if (paobject_subbus_map->find(busId) != paobject_subbus_map->end())
+                             currentCCSubstationBus = paobject_subbus_map->find(busId)->second;
                      }
-                 }
-            }
+                     if (currentCCSubstationBus != NULL)
+                     {
+                         CtiCCSubstationPtr currentStation = NULL;
+                         currentStation = findSubstationByPAObjectID(currentCCSubstationBus->getParentId());
+                         if (currentStation != NULL)
+                         {
+                             long strategyID = _strategyManager.getDefaultId();
 
+                             if (currentStation->getSaEnabledFlag())
+                             {
+                                 CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
+                                 if (spArea != NULL)
+                                 {
+                                     strategyID = spArea->getStrategy()->getStrategyId();
+                                 }
+                             }
+                             else
+                             {
+                                 strategyID = stratId;
+                             }
+
+                             currentCCSubstationBus->setStrategy(strategyID);
+
+                             if (currentCCSubstationBus->getStrategy()->getUnitType() == ControlStrategy::None)
+                             {
+                                 cascadeStrategySettingsToChildren(0, currentStation->getParentId(), 0);
+                             }
+
+                             if (!stringCompareIgnoreCase(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
+                             {
+                                 currentCCSubstationBus->figureNextCheckTime();
+                             }
+                         }
+                      }
+                 }
+             }
+        }
+        {
             //CHECK HOLIDAY SETTINGS
             CtiHolidayManager::getInstance().refresh();
             if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
@@ -5844,7 +5844,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                          dbRdr["paobjectid"] >> busId;
                          dbRdr["strategyid"] >> stratId;
 
-                         currentCCSubstationBus = NULL;
+                         CtiCCSubstationBusPtr currentCCSubstationBus = NULL;
 
                          if (subBusId > 0)
                              currentCCSubstationBus = findSubBusByPAObjectID(busId);
@@ -5906,7 +5906,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                     if (paobject_subbus_map->find(dualBusId) != paobject_subbus_map->end())
                     {
                         CtiCCSubstationBusPtr dualBus = NULL;
-                        currentCCSubstationBus = paobject_subbus_map->find(dualBusId)->second;
+                        CtiCCSubstationBusPtr currentCCSubstationBus = paobject_subbus_map->find(dualBusId)->second;
                         if (paobject_subbus_map->find(currentCCSubstationBus->getAltDualSubId()) != paobject_subbus_map->end())
                         {
                             dualBus = paobject_subbus_map->find(currentCCSubstationBus->getAltDualSubId())->second;
@@ -10603,76 +10603,77 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                     }
                 }
             }
+        }
+
+        {
+            //MONTHLY FAILS
+            static const string sql =  "SELECT CEL.pointid, CEL.datetime, CEL.spareaid, CEL.areaid, CEL.stationid, "
+                                         "CEL.subid, CEL.feederid "
+                                       "FROM cceventlog CEL "
+                                       "WHERE CEL.text LIKE 'Var:%Fail' AND CEL.datetime > ?";
+
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection, sql);
+
+            rdr << oneMonthAgo;
+
+            rdr.execute();
+
+            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                //MONTHLY FAILS
-                static const string sql =  "SELECT CEL.pointid, CEL.datetime, CEL.spareaid, CEL.areaid, CEL.stationid, "
-                                             "CEL.subid, CEL.feederid "
-                                           "FROM cceventlog CEL "
-                                           "WHERE CEL.text LIKE 'Var:%Fail' AND CEL.datetime > ?";
-
-                Cti::Database::DatabaseConnection connection;
-                Cti::Database::DatabaseReader rdr(connection, sql);
-
-                rdr << oneMonthAgo;
-
-                rdr.execute();
-
-                if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                string loggedSQLstring = rdr.asString();
                 {
-                    string loggedSQLstring = rdr.asString();
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                }
+            }
+
+            while ( rdr() )
+            {
+                CtiTime logDateTime;
+
+                LONG pointId, spareaid, areaid, stationid, subid, feederid;
+                rdr["pointid"] >> pointId;
+                rdr["datetime"] >> logDateTime;
+                rdr["spareaid"] >> spareaid;
+                rdr["areaid"] >> areaid;
+                rdr["stationid"] >> stationid;
+                rdr["subid"] >> subid;
+                rdr["feederid"] >> feederid;
+
+                CtiCCCapBankPtr cap = NULL;
+                multimap< long, CtiCCCapBankPtr >::iterator capBeginIter, capEndIter;
+                if (findCapBankByPointID(pointId, capBeginIter, capEndIter))
+                    cap = capBeginIter->second;
+
+                if (logDateTime >= userDefWindow && cap != NULL )
+                {
+                    cap->getOperationStats().incrementAllOpFails();
+                }
+                else if (logDateTime >= yesterday && cap != NULL )
+                {
+                    cap->getOperationStats().incrementDailyOpFails();
+                }
+                else if (logDateTime >= lastWeek && cap != NULL )
+                {
+                    if (cap != NULL) cap->getOperationStats().incrementWeeklyOpFails();
+                }
+                else if (logDateTime >= oneMonthAgo && cap != NULL )
+                {
+                    cap->getOperationStats().incrementMonthlyOpFails();
+                }
+                else if ( (_CC_DEBUG & CC_DEBUG_OPSTATS) &&
+                         (_CC_DEBUG & CC_DEBUG_EXTENDED) )
+                {
+                    if (cap != NULL)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) << " for CAPBANK: " << cap->getPaoName()<< endl;
                     }
-                }
-
-                while ( rdr() )
-                {
-                    CtiTime logDateTime;
-
-                    LONG pointId, spareaid, areaid, stationid, subid, feederid;
-                    rdr["pointid"] >> pointId;
-                    rdr["datetime"] >> logDateTime;
-                    rdr["spareaid"] >> spareaid;
-                    rdr["areaid"] >> areaid;
-                    rdr["stationid"] >> stationid;
-                    rdr["subid"] >> subid;
-                    rdr["feederid"] >> feederid;
-
-                    CtiCCCapBankPtr cap = NULL;
-                    multimap< long, CtiCCCapBankPtr >::iterator capBeginIter, capEndIter;
-                    if (findCapBankByPointID(pointId, capBeginIter, capEndIter))
-                        cap = capBeginIter->second;
-
-                    if (logDateTime >= userDefWindow && cap != NULL )
+                    else
                     {
-                        cap->getOperationStats().incrementAllOpFails();
-                    }
-                    else if (logDateTime >= yesterday && cap != NULL )
-                    {
-                        cap->getOperationStats().incrementDailyOpFails();
-                    }
-                    else if (logDateTime >= lastWeek && cap != NULL )
-                    {
-                        if (cap != NULL) cap->getOperationStats().incrementWeeklyOpFails();
-                    }
-                    else if (logDateTime >= oneMonthAgo && cap != NULL )
-                    {
-                        cap->getOperationStats().incrementMonthlyOpFails();
-                    }
-                    else if ( (_CC_DEBUG & CC_DEBUG_OPSTATS) &&
-                             (_CC_DEBUG & CC_DEBUG_EXTENDED) )
-                    {
-                        if (cap != NULL)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) << " for CAPBANK: " << cap->getPaoName()<< endl;
-                        }
-                        else
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) <<" CAPBANK with Bank Status PID: "<< pointId <<" no longer exists."<< endl;
-                        }
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) <<" CAPBANK with Bank Status PID: "<< pointId <<" no longer exists."<< endl;
                     }
                 }
             }

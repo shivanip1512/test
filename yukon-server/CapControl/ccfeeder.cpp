@@ -6989,6 +6989,13 @@ string CtiCCFeeder::createTextString(const string& controlMethod, int control, D
         text += "/Var: ";
         text += doubleToString(monitorValue, getDecimalPlaces());
     }
+    if (!stringCompareIgnoreCase(getParentControlUnits(),ControlStrategy::IntegratedVoltVarControlUnit))
+    {
+        text += "IVVC: ";
+        text += doubleToString(controlValue, getDecimalPlaces());
+        text += "/Var: ";
+        text += doubleToString(monitorValue, getDecimalPlaces());
+    }
     else
     {
         if (!stringCompareIgnoreCase(controlMethod,ControlStrategy::TimeOfDayControlMethod))
