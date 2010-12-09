@@ -9,7 +9,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -101,13 +100,7 @@ public class InventoryFilterController {
     /* Apply Filter */
     @RequestMapping(value = "applyFilter", method=RequestMethod.POST, params="apply")
     public String applyFilter(@ModelAttribute("filterModel") FilterModel filterModel, BindingResult bindingResult, FlashScope flashScope,
-                              HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext, String removeRule) throws ParseException {
-        
-        if(StringUtils.isNotBlank(removeRule)) {
-            filterModel.getFilterRules().remove(Integer.parseInt(removeRule));
-            setupFilterSelectionModelMap(modelMap, userContext);
-            return "operator/inventory/inventoryOperations/setupFilterRules.jsp";
-        }
+                              HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ParseException {
         
         filterModelValidator.validate(filterModel, bindingResult);
         if(bindingResult.hasErrors()) {
@@ -134,6 +127,15 @@ public class InventoryFilterController {
         modelMap.addAttribute("inventoryCollection", temporaryCollection);
         modelMap.addAllAttributes(temporaryCollection.getCollectionParameters());
         return "redirect:inventoryActions";
+    }
+    
+    /* Remove Rule - This guy as no 'params' in the method signature because the form had to be submitted via javascript for removes. */
+    @RequestMapping(value = "applyFilter", method=RequestMethod.POST)
+    public String remove(@ModelAttribute("filterModel") FilterModel filterModel, BindingResult bindingResult,
+                              ModelMap modelMap, YukonUserContext userContext, int removeRule) {
+        filterModel.getFilterRules().remove(removeRule);
+        setupFilterSelectionModelMap(modelMap, userContext);
+        return "operator/inventory/inventoryOperations/setupFilterRules.jsp";
     }
     
     public void setupFilterSelectionModelMap(ModelMap modelMap, YukonUserContext userContext) {

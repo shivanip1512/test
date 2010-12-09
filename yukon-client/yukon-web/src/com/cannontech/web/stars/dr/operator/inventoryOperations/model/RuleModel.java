@@ -25,8 +25,8 @@ public class RuleModel {
     private YukonListEntry deviceType;
     
     /* Serial Number Range Rule */
-    private int serialNumberFrom;
-    private int serialNumberTo;
+    private long serialNumberFrom;
+    private long serialNumberTo;
     
     /* Not Enrolled Rule */
     private String unenrolled;
@@ -87,19 +87,19 @@ public class RuleModel {
         this.deviceType = deviceType;
     }
 
-    public int getSerialNumberFrom() {
+    public long getSerialNumberFrom() {
         return serialNumberFrom;
     }
 
-    public void setSerialNumberFrom(int serialNumberFrom) {
+    public void setSerialNumberFrom(long serialNumberFrom) {
         this.serialNumberFrom = serialNumberFrom;
     }
 
-    public int getSerialNumberTo() {
+    public long getSerialNumberTo() {
         return serialNumberTo;
     }
 
-    public void setSerialNumberTo(int serialNumberTo) {
+    public void setSerialNumberTo(long serialNumberTo) {
         this.serialNumberTo = serialNumberTo;
     }
 
