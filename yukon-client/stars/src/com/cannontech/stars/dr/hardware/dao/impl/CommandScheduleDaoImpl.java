@@ -124,6 +124,15 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
         
         yukonJdbcTemplate.update(sql);
     }
+    
+    @Override
+    public void disableAll() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE CommandSchedule");
+        sql.append("SET Enabled").eq(YNBoolean.NO);
+        
+        yukonJdbcTemplate.update(sql);
+    }
 
     @PostConstruct
     public void init() {

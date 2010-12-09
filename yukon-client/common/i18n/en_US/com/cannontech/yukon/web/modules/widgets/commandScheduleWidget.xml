@@ -14,5 +14,6 @@
     <entry key="yukon.web.widgets.commandScheduleWidget.disableTitle">Click to disable.</entry>
     <entry key="yukon.web.widgets.commandScheduleWidget.noSchedules">No Schedule Entries</entry>
     <entry key="yukon.web.widgets.commandScheduleWidget.create.label">Create</entry>
+    <entry key="yukon.web.widgets.commandScheduleWidget.disableAll">Disable All</entry>
 
 </properties>

@@ -50,6 +50,17 @@ public class CommandScheduleWidget extends WidgetControllerBase {
         return mav;
     }
     
+    public ModelAndView disableAll(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        
+        commandScheduleDao.disableAll();
+        
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        commandScheduleEventLogService.allSchedulesDisabled(userContext.getYukonUser());
+        
+        ModelAndView mav = render(request, response);
+        return mav;
+    }
+    
     public ModelAndView enable(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         int scheduleId = WidgetParameterHelper.getRequiredIntParameter(request, "scheduleId");

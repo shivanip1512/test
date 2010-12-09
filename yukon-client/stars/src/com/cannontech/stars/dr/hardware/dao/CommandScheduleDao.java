@@ -18,4 +18,6 @@ public interface CommandScheduleDao {
     public void disable(int scheduleId);
     
     public void enable(int scheduleId);
+
+    public void disableAll();
 }

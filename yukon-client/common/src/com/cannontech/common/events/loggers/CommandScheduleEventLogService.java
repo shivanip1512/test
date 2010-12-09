@@ -22,4 +22,7 @@ public interface CommandScheduleEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.commandSchedule")
     public void scheduleDisabled(@Arg(ArgEnum.username) LiteYukonUser yukonUser, @Arg(ArgEnum.commandScheduleId) int commandScheduleId);
     
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.commandSchedule")
+    public void allSchedulesDisabled(@Arg(ArgEnum.username) LiteYukonUser yukonUser);
+    
 }

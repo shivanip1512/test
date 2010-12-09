@@ -71,6 +71,8 @@
 
 <div class="actionArea">
     <form id="createNewScheduleForm_${widgetParameters.widgetId}" action="/spring/stars/operator/inventory/inventoryOperations/commandSchedule" method="get">
+        <cti:msg2 key="yukon.web.widgets.commandScheduleWidget.disableAll" var="disableAllLabel"/>
+        <tags:widgetActionRefresh labelBusy="${disableAllLabel}" label="${disableAllLabel}" method="disableAll"/>
         <input type="hidden" value="0" name="scheduleId">
         <cti:button key="create" type="sumbit"/>
     </form>
