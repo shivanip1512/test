@@ -103,7 +103,6 @@
                         <tags:nameValue2 nameKey=".assignTo">
                             <tags:selectWithItems path="workOrderBase.serviceCompanyId" items="${allServiceCompanies}" 
                                                   itemValue="companyId" itemLabel="companyName"
-                                                  defaultItemValue="${0}" defaultItemLabel="NONE" 
                                                   onchange="assignedServiceCompanyChanged()"/>
                         </tags:nameValue2>
         
