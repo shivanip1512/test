@@ -151,7 +151,7 @@
                     <button disabled="disabled" class="formSubmit"><i:inline key=".select.label"/></button>
                 </c:when>
                 <c:otherwise>
-                    <tags:slowInput2 formId="selectionForm" key="select" />
+                    <cti:button key="select" type="submit" name="apply"/>
                 </c:otherwise>
             </c:choose>
             <cti:button key="cancel" type="submit" name="cancelButton"/>

@@ -52,6 +52,7 @@ import com.cannontech.web.stars.dr.operator.inventoryOperations.service.Inventor
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)
+@RequestMapping(value = "/operator/inventory/inventoryOperations/*")
 public class InventoryFilterController {
     
     private InventoryOperationsFilterService inventoryOperationsFilterService;
@@ -62,7 +63,7 @@ public class InventoryFilterController {
     private FilterModelValidator filterModelValidator;
     
     /* Setup Filter Rules */
-    @RequestMapping(value = "/operator/inventory/inventoryOperations/setupFilterRules")
+    @RequestMapping(value = "setupFilterRules")
     public String setupFilterRules(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext, String filterButton) 
             throws ServletRequestBindingException, CollectionCreationException {
         
@@ -73,7 +74,7 @@ public class InventoryFilterController {
     }
     
     /* Add Filter Rule */
-    @RequestMapping(value = "/operator/inventory/inventoryOperations/applyFilter", method=RequestMethod.POST, params="addButton")
+    @RequestMapping(value = "applyFilter", method=RequestMethod.POST, params="addButton")
     public String addFilterRow(@ModelAttribute("filterModel") FilterModel filterModel, 
                                HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext, String ruleType) {
 
@@ -92,13 +93,13 @@ public class InventoryFilterController {
     }
     
     /* Cancel */
-    @RequestMapping(value = "/operator/inventory/inventoryOperations/applyFilter", method=RequestMethod.POST, params="cancelButton")
-    public String addFilterRow(@ModelAttribute("filterModel") FilterModel filterModel) {
+    @RequestMapping(value = "applyFilter", method=RequestMethod.POST, params="cancelButton")
+    public String cancel(@ModelAttribute("filterModel") FilterModel filterModel) {
         return "redirect:home";
     }
     
     /* Apply Filter */
-    @RequestMapping(value = "/operator/inventory/inventoryOperations/applyFilter", method=RequestMethod.POST)
+    @RequestMapping(value = "applyFilter", method=RequestMethod.POST, params="apply")
     public String applyFilter(@ModelAttribute("filterModel") FilterModel filterModel, BindingResult bindingResult, FlashScope flashScope,
                               HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext, String removeRule) throws ParseException {
         

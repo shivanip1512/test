@@ -9,6 +9,7 @@
 <%@ attribute name="disableOtherButtons" required="false" type="java.lang.Boolean" description="Defaults to true. Disables all other buttons with formSubmit class on the page."%>
 <%@ attribute name="onsubmit" required="false" type="java.lang.String" description="Reference to a JavaScript function to call before form submission. Function MUST have return value of true for the form to submit, otherwise the button will revert and the form will remain unsubmitted."%>
 <%@ attribute name="type" %>
+<%@ attribute name="name" %>
 <%@ tag body-content="empty" %>
 
 <cti:includeScript link="/JavaScript/slowInput2.js"/>
@@ -35,7 +36,7 @@
 	<cti:msgScope paths=".${key},components.slowInput.${key}">
 
 		<%-- MAIN BUTTON --%>
-	    <button id="slowInput2Button_${uniqueId}" type="${pageScope.type}" class="formSubmit" onclick="slowInput2ButtonPress('${uniqueId}', '${formId}', ${disableOtherButtons}, ${pageScope.onsubmit})">
+	    <button id="slowInput2Button_${uniqueId}" type="${pageScope.type}" class="formSubmit" onclick="slowInput2ButtonPress('${uniqueId}', '${formId}', ${disableOtherButtons}, ${pageScope.onsubmit})" <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>>
 			<cti:checkGlobalRolesAndProperties value="!I18N_DESIGN_MODE">
 				<cti:msg2 key=".label"/>
 			</cti:checkGlobalRolesAndProperties>
@@ -60,7 +61,7 @@
 	    </button>
 	    
 	    <%-- BUSY BUTTON --%>
-	    <button id="slowInput2ButtonBusy_${uniqueId}" type="button" class="formSubmit" style="display:none;" disabled>
+	    <button id="slowInput2ButtonBusy_${uniqueId}" type="${pageScope.type}" class="formSubmit" style="display:none;" disabled <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>>
 	    	<cti:msg2 var="labelBusy" key=".labelBusy" blankIfMissing="true"/>
 	    	<c:choose>
 	    		<c:when test="${not empty labelBusy}">

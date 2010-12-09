@@ -5,6 +5,7 @@ button.buttonGroup {
 
 table.selectionTable {
     margin-top: 2px;
+    width: 100%;
 }
 
 table.selectionTable td.selectionTypeCol {
