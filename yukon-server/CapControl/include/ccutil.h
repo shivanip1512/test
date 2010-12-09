@@ -20,3 +20,4 @@ enum CapControlType
 };
 
 CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString);
+bool isQualityOk(unsigned quality);

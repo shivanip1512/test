@@ -1016,7 +1016,7 @@ void CtiCCCommandExecutor::syncCbcAndCapBankStates()
     //Logging Action
     string text = string("Manual CBC/CapBank State Sync.  Adjusting CapBank State from: ");
     text += capBank->getControlStatusText() + " to ";
-    text += ( capBank->getTwoWayPoints()->getCapacitorBankState() ? "Close." : "Open.");
+    text += ( capBank->getTwoWayPoints()->getPointValueByAttribute(PointAttribute::CapacitorBankState) ? "Close." : "Open.");
     string additional = string("Cap Bank: ");
     additional += capBank->getPaoName();
 
@@ -1029,7 +1029,7 @@ void CtiCCCommandExecutor::syncCbcAndCapBankStates()
         additional += ")";
     }
 
-    capBank->setControlStatus(capBank->getTwoWayPoints()->getCapacitorBankState());
+    capBank->setControlStatus(capBank->getTwoWayPoints()->getPointValueByAttribute(PointAttribute::CapacitorBankState));
 
     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
     CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
@@ -1126,7 +1126,7 @@ void CtiCCCommandExecutor::enableOvUv(std::vector<CtiSignalMsg*>& signals,
         CtiCCTwoWayPoints* points = capBank->getTwoWayPoints();
 
         int offset = 1;
-        unsigned char voltageValue = (unsigned char)points->getVoltageControl();
+        unsigned char voltageValue = (unsigned char)points->getPointValueByAttribute(PointAttribute::VoltageControl);
 
         /* Hardware Code
             struct
@@ -1234,7 +1234,7 @@ void CtiCCCommandExecutor::disableOvUv(std::vector<CtiSignalMsg*>& signals,
         CtiCCTwoWayPoints* points = capBank->getTwoWayPoints();
 
         int offset = 1;
-        unsigned char voltageValue = (unsigned char)points->getVoltageControl();
+        unsigned char voltageValue = (unsigned char)points->getPointValueByAttribute(PointAttribute::VoltageControl);
 
         /* Hardware Code
             struct
@@ -1347,7 +1347,7 @@ void CtiCCCommandExecutor::enableTempControl(std::vector<CtiSignalMsg*>& signals
     */
 
     int offsetOne = 26;
-    unsigned char seasonOneValue = (unsigned char)points->getTimeTempSeasonOne();
+    unsigned char seasonOneValue = (unsigned char)points->getPointValueByAttribute(PointAttribute::TimeTempSeasonOne);
 
     //Changing the MSB to 1
     seasonOneValue |= 0x80;
@@ -1360,7 +1360,7 @@ void CtiCCCommandExecutor::enableTempControl(std::vector<CtiSignalMsg*>& signals
     requests.push_back(reqMsg);
 
     int offsetTwo = 42;
-    unsigned char seasonTwoValue = points->getTimeTempSeasonTwo();
+    unsigned char seasonTwoValue = points->getPointValueByAttribute(PointAttribute::TimeTempSeasonTwo);
 
     //Changing the MSB to 1
     seasonTwoValue |= 0x80;
@@ -1443,7 +1443,7 @@ void CtiCCCommandExecutor::disableTempControl(std::vector<CtiSignalMsg*>& signal
     CtiCCTwoWayPoints* points = capBank->getTwoWayPoints();
 
     int offsetOne = 26;
-    unsigned char seasonOneValue = (unsigned char)points->getTimeTempSeasonOne();
+    unsigned char seasonOneValue = (unsigned char)points->getPointValueByAttribute(PointAttribute::TimeTempSeasonOne);
 
     //Zeroing the MSB
     seasonOneValue &= 0x7f;
@@ -1456,7 +1456,7 @@ void CtiCCCommandExecutor::disableTempControl(std::vector<CtiSignalMsg*>& signal
     requests.push_back(reqMsg);
 
     int offsetTwo = 42;
-    unsigned char seasonTwoValue = points->getTimeTempSeasonTwo();
+    unsigned char seasonTwoValue = points->getPointValueByAttribute(PointAttribute::TimeTempSeasonTwo);
 
     //Zeroing the MSB
     seasonTwoValue &= 0x7f;
@@ -1539,7 +1539,7 @@ void CtiCCCommandExecutor::enableVarControl(std::vector<CtiSignalMsg*>& signals,
     CtiCCTwoWayPoints* points = capBank->getTwoWayPoints();
 
     int offset = 68;
-    unsigned char varValue = (unsigned char)points->getVarControl();
+    unsigned char varValue = (unsigned char)points->getPointValueByAttribute(PointAttribute::VarControl);
 
     /* Hardware Code
         struct
@@ -1634,7 +1634,7 @@ void CtiCCCommandExecutor::disableVarControl(std::vector<CtiSignalMsg*>& signals
     CtiCCTwoWayPoints* points = capBank->getTwoWayPoints();
 
     int offset = 68;
-    unsigned char varValue = (unsigned char)points->getVarControl();
+    unsigned char varValue = (unsigned char)points->getPointValueByAttribute(PointAttribute::VarControl);
 
     /* Hardware Code
         struct
@@ -1743,7 +1743,7 @@ void CtiCCCommandExecutor::enableTimeControl(std::vector<CtiSignalMsg*>& signals
     */
 
     int offsetOne = 26;
-    unsigned char seasonOneValue = (unsigned char)points->getTimeTempSeasonOne();
+    unsigned char seasonOneValue = (unsigned char)points->getPointValueByAttribute(PointAttribute::TimeTempSeasonOne);
 
     //Changing the LSB to 1
     seasonOneValue |= 0x01;
@@ -1756,7 +1756,7 @@ void CtiCCCommandExecutor::enableTimeControl(std::vector<CtiSignalMsg*>& signals
     requests.push_back(reqMsg);
 
     int offsetTwo = 42;
-    unsigned char seasonTwoValue = points->getTimeTempSeasonTwo();
+    unsigned char seasonTwoValue = points->getPointValueByAttribute(PointAttribute::TimeTempSeasonTwo);
 
     //Changing the LSB to 1
     seasonTwoValue |= 0x01;
@@ -1840,7 +1840,7 @@ void CtiCCCommandExecutor::disableTimeControl(std::vector<CtiSignalMsg*>& signal
     CtiCCTwoWayPoints* points = capBank->getTwoWayPoints();
 
     int offsetOne = 26;
-    unsigned char seasonOneValue = (unsigned char)points->getTimeTempSeasonOne();
+    unsigned char seasonOneValue = (unsigned char)points->getPointValueByAttribute(PointAttribute::TimeTempSeasonOne);
 
     //Zeroing the LSB
     seasonOneValue &= 0xfe;
@@ -1853,7 +1853,7 @@ void CtiCCCommandExecutor::disableTimeControl(std::vector<CtiSignalMsg*>& signal
     requests.push_back(reqMsg);
 
     int offsetTwo = 42;
-    unsigned char seasonTwoValue = points->getTimeTempSeasonTwo();
+    unsigned char seasonTwoValue = points->getPointValueByAttribute(PointAttribute::TimeTempSeasonTwo);
 
     //Zeroing the LSB
     seasonTwoValue &= 0xfe;
