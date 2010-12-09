@@ -11,6 +11,7 @@ public enum ArgEnum {
     controlAreaName, 
     deviceLabel, 
     deviceName, 
+    energyCompanyName,
     fileName, 
     gearName, 
     loadGroupName,
@@ -25,6 +26,7 @@ public enum ArgEnum {
     pointValue, 
     programName, 
     remoteAddress, 
+    routeId,
     scenarioName, 
     scheduleName, 
     serialNumber, 
@@ -38,7 +40,7 @@ public enum ArgEnum {
     errorDescription,
     porter,
     errorCode,
-    category
+    category,
     ;
 
 }

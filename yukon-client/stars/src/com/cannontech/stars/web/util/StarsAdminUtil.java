@@ -20,6 +20,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
@@ -98,8 +99,10 @@ public class StarsAdminUtil {
 	
 	public static final String FIRST_TIME = "FIRST_TIME";
     private static final AuthenticationService authenticationService = (AuthenticationService) YukonSpringHook.getBean("authenticationService");
+    private static final StarsEventLogService starsEventLogService = (StarsEventLogService) YukonSpringHook.getBean("starsEventLogService");
 	
-	public static void updateDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeID) throws Exception {
+	public static void updateDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeID, StarsYukonUser user) throws Exception {
+	    int previousRouteId = energyCompany.getDefaultRouteID();
 		if (energyCompany.getDefaultRouteID() != routeID) {
 			if(routeID == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
 			    removeDefaultRoute(energyCompany);
@@ -208,7 +211,8 @@ public class StarsAdminUtil {
 			                                      energyCompany.getEnergyCompanyID());
 
 			// Logging Default Route Id
-			
+			starsEventLogService.energyCompanyDefaultRouteChanged(user.getYukonUser(), energyCompany.getName(),
+			                                                      previousRouteId, routeID);
 		}
 	}
 	

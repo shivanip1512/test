@@ -199,7 +199,7 @@ public class EventLogServiceImpl implements EventLogService {
                     
                     EventParameter eventParameter;
                     if (parameterName != null) {
-                        eventParameter = EventParameter.createNamed(parameterName.toString(), argumentMapper.javaType);
+                        eventParameter = EventParameter.createNamed(parameterName.toString(), argumentNumber, argumentMapper.javaType);
                     } else {
                         eventParameter = EventParameter.createDefault(argumentNumber, argumentMapper.javaType);
                     }

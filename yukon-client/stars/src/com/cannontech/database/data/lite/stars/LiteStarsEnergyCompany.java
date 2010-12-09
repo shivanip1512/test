@@ -283,9 +283,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     }
 
     /**
-     * This method gets the default route for the given energy company.  It will either use the 
-     * cached value stored in this class or try to figure out the default route from the database
-     * if the routeId is CtiUtilities.NONE_ZERO_ID(0).
+     * This method gets the default route.  It will either use the cached value stored in this class 
+     * or try to figure out the default route from the database if the routeId is CtiUtilities.NONE_ZERO_ID(0).
      */
     public int getDefaultRouteID() {
         if (dftRouteID == INVALID_ROUTE_ID) return dftRouteID;
@@ -315,13 +314,12 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                     sql2.append("JOIN LMGroupVersacom LMGV ON PAO.PAObjectId = LMGV.DeviceId");
 
                     SqlFragmentCollection lmGroupVersacomDeviceIdOred = SqlFragmentCollection.newOrCollection();
-                    for (int i = 0; i < serialGroupIds.size(); i++) {
+                    for (int serialGroupId : serialGroupIds) {
                         SqlStatementBuilder lmGroupVersecomSql = new SqlStatementBuilder();
-                        lmGroupVersecomSql.append("LMGV.DeviceId").eq(serialGroupIds.get(i));
+                        lmGroupVersecomSql.append("LMGV.DeviceId").eq(serialGroupId);
                         lmGroupVersacomDeviceIdOred.add(lmGroupVersecomSql);
                     }
                     sql2.append("WHERE").appendFragment(lmGroupVersacomDeviceIdOred);
-                    sql2.append("AND LMGV.SerialAddress").eq("0");
                     
                     List<Integer> versacomDefaultRouteIds = yukonJdbcTemplate.query(sql2, new IntegerRowMapper());
                     if (versacomDefaultRouteIds != null && versacomDefaultRouteIds.size() > 0) {
@@ -336,13 +334,12 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                     sql3.append("JOIN LMGroupExpresscom LMGE ON PAO.PAObjectId = LMGE.LMGroupId");
                     
                     SqlFragmentCollection lmGroupExpresscomLmGroupIdOred = SqlFragmentCollection.newOrCollection();
-                    for (int i = 0; i < serialGroupIds.size(); i++) {
+                    for (int serialGroupId : serialGroupIds) {
                         SqlStatementBuilder lmGroupExpresscomSql = new SqlStatementBuilder();
-                        lmGroupExpresscomSql.append("LMGE.LmGroupId").eq(serialGroupIds.get(i));
+                        lmGroupExpresscomSql.append("LMGE.LmGroupId").eq(serialGroupId);
                         lmGroupExpresscomLmGroupIdOred.add(lmGroupExpresscomSql);
                     }
                     sql3.append("WHERE").appendFragment(lmGroupExpresscomLmGroupIdOred);
-                    sql3.append("AND LMGE.SerialNumber").eq("0");
                     
                     List<Integer> expresscomDefaultRouteIds = yukonJdbcTemplate.query(sql3, new IntegerRowMapper());
                     if (expresscomDefaultRouteIds != null && expresscomDefaultRouteIds.size() > 0) {

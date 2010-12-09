@@ -13,6 +13,7 @@
     <entry key="yukon.common.events.controlAreaName">Control Area Name</entry>
     <entry key="yukon.common.events.deviceLabel">Device Label</entry>
     <entry key="yukon.common.events.deviceName">Device Name</entry>
+    <entry key="yukon.common.events.energyCompanyName">Energy Company Name</entry>
     <entry key="yukon.common.events.fileName">File Name</entry>
     <entry key="yukon.common.events.gearName">Gear Name</entry>
     <entry key="yukon.common.events.loadGroupName">Load Group Name</entry>
@@ -27,6 +28,7 @@
     <entry key="yukon.common.events.pointValue">Point Value</entry>
     <entry key="yukon.common.events.programName">Program Name</entry>
     <entry key="yukon.common.events.remoteAddress">Remote Address</entry>
+    <entry key="yukon.common.events.routeId">Route Id</entry>
     <entry key="yukon.common.events.scenarioName">Scenario Name</entry>
     <entry key="yukon.common.events.scheduleName">Schedule Name</entry>
     <entry key="yukon.common.events.serialNumber">Serial Number</entry>
@@ -309,6 +311,10 @@
     <entry key="yukon.common.events.system.rphValidation.helper.validationEnginePartialReset">The Validation Engine has been reset to reprocess all rows since {11}</entry>
     
     <!-- Stars -->
+    <entry key="yukon.common.events.stars.energyCompanySettings.energyCompanyDefaultRouteChanged">The user {1} changed the default route id from {7} to {8} for the energy company {2}.</entry>
+    <entry key="yukon.common.events.stars.energyCompanySettings.energyCompanyDefaultRouteChanged.7">Previous Default Route Id</entry>
+    <entry key="yukon.common.events.stars.energyCompanySettings.energyCompanyDefaultRouteChanged.8">New Default Route Id</entry>
+    
     <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsAttemptedByOperator">The user {1} is attempting to cancel all the opt outs in the system.  They are attempting this through the operator pages.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsAttemptedByApi">The user {1} is attempting to cancel all the opt outs in the system.  They are attempting this through the Api.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgramAttemptedByOperator">The user {1} is attempting to cancel all the opt outs in the system for the program {2}.  They are attempting this through the operator pages.</entry>

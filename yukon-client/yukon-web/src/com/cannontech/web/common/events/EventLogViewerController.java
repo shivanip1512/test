@@ -409,12 +409,14 @@ public class EventLogViewerController {
     }
 
     private MessageSourceResolvable getColumnKey(String eventLogType, EventParameter eventParameter) {
-        ArrayList<String> keys = Lists.newArrayListWithCapacity(2);
-        String key1 = eventLogResolvablePrefix + eventLogType + "." + eventParameter.getName();
+        ArrayList<String> keys = Lists.newArrayListWithCapacity(3);
+        String key1 = eventLogResolvablePrefix + eventLogType + "." + eventParameter.getArgumentNumber();
         keys.add(key1);
         if (eventParameter.isNamed()) {
-            String key2 = eventLogResolvablePrefix + eventParameter.getName();
+            String key2 = eventLogResolvablePrefix + eventLogType + "." + eventParameter.getAnnotatedName();
             keys.add(key2);
+            String key3 = eventLogResolvablePrefix + eventParameter.getAnnotatedName();
+            keys.add(key3);
         }
         
         String name = "unknown";

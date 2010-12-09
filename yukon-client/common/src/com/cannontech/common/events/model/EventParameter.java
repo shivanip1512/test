@@ -7,20 +7,21 @@ public class EventParameter {
     private String annotatedName;
     private int argumentNumber;
     
-    private EventParameter(String annotatedName, Class<?> mappedType, boolean named) {
+    private EventParameter(String annotatedName, int argumentNumber, Class<?> mappedType, boolean named) {
         this.annotatedName = annotatedName;
+        this.argumentNumber = argumentNumber;
         this.mappedType = mappedType;
         this.named = named;
     }
 
-    public EventParameter(int argumentNumber, Class<?> mappedClass, boolean named) {
+    private EventParameter(int argumentNumber, Class<?> mappedClass, boolean named) {
         this.argumentNumber = argumentNumber;
         this.mappedType = mappedClass;
         this.named = named;
     }
 
-    public static EventParameter createNamed(String annotatedName, Class<?> mappedClass) {
-        return new EventParameter(annotatedName, mappedClass, true);
+    public static EventParameter createNamed(String annotatedName, int argumentNumber, Class<?> mappedClass) {
+        return new EventParameter(annotatedName, argumentNumber, mappedClass, true);
     }
     
     public static EventParameter createDefault(int argumentNumber, Class<?> mappedClass) {

@@ -7,6 +7,14 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface StarsEventLogService {
 
+/* Energy Company Settings */
+    // Default Route Changed service level
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "stars.energyCompanySettings")
+    public void energyCompanyDefaultRouteChanged(@Arg(ArgEnum.username) LiteYukonUser user,
+                                                 @Arg(ArgEnum.energyCompanyName) String energyCompanyName,
+                                                 @Arg(ArgEnum.routeId) int oldRouteId,
+                                                 @Arg(ArgEnum.routeId) int newRouteId);
+    
 /* System Opt Outs */
     // Cancel All Opt Out
     @YukonEventLog(transactionality = ExecutorTransactionality.ASYNCHRONOUS, category = "stars.optOutAdmin")
