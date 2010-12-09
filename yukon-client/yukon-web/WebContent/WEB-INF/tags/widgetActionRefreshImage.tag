@@ -30,6 +30,7 @@
 		}
 
 		if (confirmed) {
+		    $('linkImg_${uniqueId}').hide();
 			${widgetParameters.jsWidget}.doActionRefresh('${method}', '${thisId}', 'n/a', '${uniqueId}');
 		}
 	}
@@ -40,7 +41,7 @@
 
 <span id="${thisId}">
 <a href="javascript:void(0);" title="${title}" style="text-decoration:none;background: white;" onclick="widgetActionRefreshImageConfirm_${uniqueId}();">
-	<img id="linkImg_${uniqueId}" src="${safe_imgSrc}" border="0" onClick="this.style.display='none';" onMouseOver="this.src='${safe_imgSrcHover}';" onMouseOut="this.src='${safe_imgSrc}';">
+	<img id="linkImg_${uniqueId}" src="${safe_imgSrc}" border="0" onMouseOver="this.src='${safe_imgSrcHover}';" onMouseOut="this.src='${safe_imgSrc}';">
 </a>
 <span class="widgetAction_waiting" style="display:none">
 <img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
