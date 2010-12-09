@@ -5,17 +5,16 @@ public class InventoryConfigTaskItem {
         UNPROCESSED, SUCCESS, FAIL
     }
 
-    private int inventoryConfigTaskId;
+    private InventoryConfigTask inventoryConfigTask;
     private int inventoryId;
-    private boolean sendInService;
     private Status status;
 
-    public int getInventoryConfigTaskId() {
-        return inventoryConfigTaskId;
+    public InventoryConfigTask getInventoryConfigTask() {
+        return inventoryConfigTask;
     }
 
-    public void setInventoryConfigTaskId(int inventoryConfigTaskId) {
-        this.inventoryConfigTaskId = inventoryConfigTaskId;
+    public void setInventoryConfigTask(InventoryConfigTask inventoryConfigTask) {
+        this.inventoryConfigTask = inventoryConfigTask;
     }
 
     public int getInventoryId() {
@@ -24,14 +23,6 @@ public class InventoryConfigTaskItem {
 
     public void setInventoryId(int inventoryId) {
         this.inventoryId = inventoryId;
-    }
-
-    public boolean isSendInService() {
-        return sendInService;
-    }
-
-    public void setSendInService(boolean sendInService) {
-        this.sendInService = sendInService;
     }
 
     public Status getStatus() {
@@ -44,7 +35,7 @@ public class InventoryConfigTaskItem {
 
     @Override
     public String toString() {
-        return "InventoryConfigTaskItem [inventoryConfigTaskId=" + inventoryConfigTaskId +
-        ", inventoryId=" + inventoryId +", sendInService=" + sendInService + ", status=" + status + "]";
+        return "InventoryConfigTaskItem [inventoryConfigTask=" + inventoryConfigTask +
+        ", inventoryId=" + inventoryId + ", status=" + status + "]";
     }
 }

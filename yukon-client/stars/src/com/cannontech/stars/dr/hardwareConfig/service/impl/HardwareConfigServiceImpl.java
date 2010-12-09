@@ -11,10 +11,9 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
@@ -33,8 +32,8 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
     private HardwareEventLogService hardwareEventLogService;
     private CustomerAccountDao customerAccountDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
-    private RolePropertyDao rolePropertyDao;
     private EnrollmentDao enrollmentDao;
+    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
 
     private static Logger log = YukonLogManager.getLogger(HardwareConfigServiceImpl.class);
     
@@ -74,11 +73,12 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
 
     @Override
     public List<String> getConfigCommands(int inventoryId, int energyCompanyId,
-            boolean includeInService, LiteYukonUser user) throws WebClientException {
-        boolean trackHardwareAddressing =
-            rolePropertyDao.checkProperty(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, user);
+            boolean includeInService) throws WebClientException {
         LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
         LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
+        boolean trackHardwareAddressing =
+            energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING,
+                                                                 energyCompany);
         List<String> retVal = Lists.newArrayList();
 
         if (enrollmentDao.isEnrolled(inventoryId)) {
@@ -146,12 +146,13 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
     }
 
     @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
+    public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
+        this.enrollmentDao = enrollmentDao;
     }
 
     @Autowired
-    public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
-        this.enrollmentDao = enrollmentDao;
+    public void setEnergyCompanyRolePropertyDao(
+            EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
+        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
     }
 }

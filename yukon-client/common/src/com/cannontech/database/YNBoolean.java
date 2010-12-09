@@ -6,7 +6,7 @@ public enum YNBoolean implements DatabaseRepresentationSource {
     YES {
         @Override
         public Object getDatabaseRepresentation() {
-            return "y";
+            return "Y";
         }
         
         @Override
@@ -17,7 +17,7 @@ public enum YNBoolean implements DatabaseRepresentationSource {
     NO{
         @Override
         public Object getDatabaseRepresentation() {
-            return "n";
+            return "N";
         }
         
         @Override

@@ -2,11 +2,13 @@ package com.cannontech.stars.dr.hardware;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Period;
 import org.joda.time.ReadablePeriod;
 import org.quartz.CronExpression;
@@ -17,13 +19,15 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
 import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.i18n.service.YukonUserContextService;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
@@ -33,7 +37,6 @@ import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem.Status;
 import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class HardwareConfigService {
@@ -45,12 +48,11 @@ public class HardwareConfigService {
     private EnergyCompanyDao energyCompanyDao;
     private CommandRequestHardwareExecutor commandRequestHardwareExecutor;
     private StarsInventoryBaseDao starsInventoryBaseDao;
-    private YukonUserContextService yukonUserContextService;
     private InventoryConfigEventLogService inventoryConfigEventLogService;
 
     private class EnergyCompanyRunnable implements Runnable {
         int energyCompanyId;
-        List<DeviceErrorDescription> errors = Lists.newArrayList();
+        boolean hadErrors;
 
         EnergyCompanyRunnable(int energyCompanyId) {
             this.energyCompanyId = energyCompanyId;
@@ -58,52 +60,32 @@ public class HardwareConfigService {
 
         void blockingCommandExecute(final LiteStarsLMHardware hardware, String command, LiteYukonUser user)
                 throws CommandCompletionException {
-            errors.clear();
             CommandCompletionCallback<CommandRequestRoute> callback =
                 new CommandCompletionCallbackAdapter<CommandRequestRoute>() {
                     @Override
-                    public void receivedIntermediateError(CommandRequestRoute command,
-                            DeviceErrorDescription error) {
-                        log.error("Could not execute command for inventory with id: " +
-                                  hardware.getInventoryID() + " Error: " + error.toString());
-                        errors.add(error);
-                    inventoryConfigEventLogService.itemConfigError(hardware.getManufacturerSerialNumber(),
-                                                                   hardware.getInventoryID(),
-                                                                   error.getDescription(),
-                                                                   error.getPorter(),
-                                                                   error.getErrorCode(),
-                                                                   error.getCategory());
-                    }
-
-                    @Override
                     public void receivedLastError(CommandRequestRoute command,
                             DeviceErrorDescription error) {
-                        receivedIntermediateError(command, error);
-                        log.debug("got last error for " + command.getCommand());
-                        synchronized (errors) {
-                            errors.notify();
-                        }
-                    }
-
-                    @Override
-                    public void receivedLastResultString(CommandRequestRoute command, String value) {
-                        log.debug("got last result string for " + command.getCommand());
-                        synchronized (errors) {
-                            errors.notify();
-                        }
+                        inventoryConfigEventLogService.itemConfigError(hardware.getManufacturerSerialNumber(),
+                                                                       hardware.getInventoryID(),
+                                                                       error.getDescription(),
+                                                                       error.getPorter(),
+                                                                       error.getErrorCode(),
+                                                                       error.getCategory());
+                        hadErrors = true;
                     }
             };
-            commandRequestHardwareExecutor.execute(hardware, command, user, callback);
-            synchronized (errors) {
-                boolean done = false;
-                while (!done) {
-                    try {
-                        errors.wait();
-                        done = true;
-                    } catch (InterruptedException e) {
-                        log.info("wait interrupted");
-                    }
-                }
+            hadErrors = false;
+            WaitableCommandCompletionCallback<CommandRequestRoute> waitableCallback =
+                new WaitableCommandCompletionCallback<CommandRequestRoute>(callback);
+            commandRequestHardwareExecutor.execute(hardware, command, user, waitableCallback);
+            try {
+                waitableCallback.waitForCompletion(60, 60);
+            } catch (InterruptedException interruptedException) {
+                hadErrors = true;
+                log.error("interrupted waiting for command completion", interruptedException);
+            } catch (TimeoutException timeoutException) {
+                hadErrors = true;
+                log.error("timed out waiting for command completion", timeoutException);
             }
         }
 
@@ -112,7 +94,8 @@ public class HardwareConfigService {
             while (true) {
                 log.debug("beginning of loop");
                 LiteYukonUser user = energyCompanyDao.getEnergyCompanyUser(energyCompanyId);
-                YukonUserContext userContext = yukonUserContextService.getEnergyCompanyDefaultUserContext(user);
+                LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
+                DateTimeZone timeZone = energyCompany.getDefaultDateTimeZone();
 
                 boolean workProcessed = false;
                 List<InventoryConfigTask> tasks = inventoryConfigTaskDao.getUnfinished(energyCompanyId);
@@ -124,9 +107,9 @@ public class HardwareConfigService {
                         try {
                             CronExpression startTimeCron = new CronExpression(schedule.getStartTimeCronString());
                             ReadablePeriod runPeriod = schedule.getRunPeriod();
-                            DateTime now = new DateTime(userContext.getJodaTimeZone());
+                            DateTime now = new DateTime(timeZone);
                             DateTime scheduleStartTime = new DateTime(startTimeCron.getNextValidTimeAfter(now.minus(runPeriod).toDate()),
-                                                                      userContext.getJodaTimeZone());
+                                                                      timeZone);
                             if (scheduleStartTime.isBefore(now)) {
                                 activeSchedules.add(schedule);
                             }
@@ -165,8 +148,7 @@ public class HardwareConfigService {
                             try {
                                 List<String> commands = hardwareConfigService.getConfigCommands(inventoryId,
                                                                                                 energyCompanyId,
-                                                                                                item.isSendInService(),
-                                                                                                user);
+                                                                                                item.getInventoryConfigTask().isSendInService());
                                 log.debug(item.getInventoryId() + " needs " + commands.size() + " commands");
                                 if (!commands.isEmpty()) {
                                     status = Status.SUCCESS;
@@ -174,8 +156,8 @@ public class HardwareConfigService {
                                         log.debug("processing command [" + command + "]");
                                         try {
                                             blockingCommandExecute(hardware, command, user);
-                                            if (!errors.isEmpty()) {
-                                                log.error(errors.size() + " error(s) executing command [" + command + "]");
+                                            if (hadErrors) {
+                                                log.error("error(s) executing command [" + command + "]");
                                                 status = Status.FAIL;
                                             }
                                         } catch (CommandCompletionException cce) {
@@ -269,12 +251,6 @@ public class HardwareConfigService {
     @Autowired
     public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
         this.starsInventoryBaseDao = starsInventoryBaseDao;
-    }
-
-    @Autowired
-    public void setYukonUserContextService(
-            YukonUserContextService yukonUserContextService) {
-        this.yukonUserContextService = yukonUserContextService;
     }
 
     @Autowired

@@ -2,7 +2,6 @@ package com.cannontech.stars.dr.hardwareConfig.service;
 
 import java.util.List;
 
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.user.YukonUserContext;
 
@@ -18,5 +17,5 @@ public interface HardwareConfigService {
      * @throws WebClientException 
      */
     public List<String> getConfigCommands(int inventoryId, int energyCompanyId,
-            boolean includeInService, LiteYukonUser user) throws WebClientException;
+            boolean includeInService) throws WebClientException;
 }

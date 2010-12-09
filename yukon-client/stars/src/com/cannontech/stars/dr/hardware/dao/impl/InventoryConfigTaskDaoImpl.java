@@ -75,10 +75,9 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
         public InventoryConfigTaskItem mapRow(YukonResultSet rs)
         throws SQLException {
             InventoryConfigTaskItem retVal = new InventoryConfigTaskItem();
-            retVal.setInventoryConfigTaskId(rs.getInt("inventoryConfigTaskId"));
+            retVal.setInventoryConfigTask(rowMapper.mapRow(rs));
             retVal.setInventoryId(rs.getInt("inventoryId"));
-            retVal.setSendInService(rs.getEnum("sendInService", YNBoolean.class).getBoolean());
-            retVal.setStatus(Status.valueOf(rs.getString("status")));
+            retVal.setStatus(rs.getEnum("status", Status.class));
             return retVal;
         }
     };
@@ -204,7 +203,8 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
         sql.append("FROM (");
-        sql.append(  "SELECT ti.inventoryConfigTaskId, inventoryId, status, sendInService,");
+        sql.append(  "SELECT ti.inventoryConfigTaskId, inventoryId, status, taskName,");
+        sql.append(    "sendInService, numberOfItems, numberOfItemsProcessed, energyCompanyId,");
         sql.append(    "ROW_NUMBER() OVER (ORDER BY inventoryId) AS rowNumber");
         sql.append(  "FROM inventoryConfigTaskItem ti");
         sql.append(    "JOIN inventoryConfigTask t ON ti.inventoryConfigTaskId = t.inventoryConfigTaskId");
@@ -251,14 +251,14 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE inventoryConfigTaskItem");
         sql.append("SET status = ").appendArgument(status);
-        sql.append("WHERE inventoryConfigTaskId").eq(taskItem.getInventoryConfigTaskId());
+        sql.append("WHERE inventoryConfigTaskId").eq(taskItem.getInventoryConfigTask().getInventoryConfigTaskId());
         sql.append(  "AND inventoryId").eq(taskItem.getInventoryId());
         yukonJdbcTemplate.update(sql);
 
         sql = new SqlStatementBuilder();
         sql.append("UPDATE inventoryConfigTask");
         sql.append("SET numberOfItemsProcessed = numberOfItemsProcessed + 1");
-        sql.append("WHERE inventoryConfigTaskId").eq(taskItem.getInventoryConfigTaskId());
+        sql.append("WHERE inventoryConfigTaskId").eq(taskItem.getInventoryConfigTask().getInventoryConfigTaskId());
         yukonJdbcTemplate.update(sql);
     }
 
