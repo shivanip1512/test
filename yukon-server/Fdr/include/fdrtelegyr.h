@@ -120,32 +120,38 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       double                              _hiReasonabilityFilter;
       long                                _linkStatusID;
 
-      bool processBadPoint( int groupid, int index );
+
+      //Database Loading and Translating
       bool loadTranslationLists( void );
-      bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false);
+      bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
+      bool translatePoint(CtiFDRPointSPtr & translationPoint);
       bool loadGroupLists( void );
+
+      //Data Processing
+      bool processBadPoint( int groupid, int index );
       bool processAnalog( APICLI_GET_MEA aPoint, int groupid, int group_type, int index );
       bool processDigital( APICLI_GET_IND aPoint, int groupid, int group_type, int index );
       bool processCounter( APICLI_GET_CNT aPoint, int groupid, int group_type, int index );
-      bool timeToReload( void );
-      bool isReloadTime( void );
-      bool connect( int controlCenterNumber, int &status );
-      bool contact( int &status );
-
-      void deleteGroups( void );
-      void threadFunctionGetDataFromTelegyr( void );
-      void buildAndRegisterGroups( void );
       void receivedAnalog( int arraySize, int group_num, int group_type, int first, int last, int result[] );
       void receivedDigital( int arraySize, int group_num, int group_type, int first, int last, int result[] );
       void receivedCounter( int arraySize, int group_num, int group_type, int first, int last, int result[] );
+
+      string decipherReason( int transmissionReason );
+      USHORT getQuality( SYS_DEP_INFO );
+      bool isReloadTime( void );
+      void threadFunctionGetDataFromTelegyr( void );
+
+      //API related
+      bool connect( int controlCenterNumber, int &status );
+      bool contact( int &status );
+      void buildAndRegisterGroups( void );
+      void deleteGroups( void );
       void halt( void );
 
       int noDataAction( int no_msg_count );
       int readConfig( void );
 
-      string decipherReason( int transmissionReason );
 
-      USHORT getQuality( SYS_DEP_INFO );
 };
 
 #endif // #ifndef __FDRTELEGYR_H__

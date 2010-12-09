@@ -1033,7 +1033,7 @@ bool CtiFDRTelegyr::loadGroupLists( void )
             for( ; myIterator != pointList->getMap().end(); ++myIterator )
             {
                foundPoint = true;
-               successful = translateSinglePoint(myIterator->second);
+               successful = translatePoint(myIterator->second);
             }
 
             for (std::vector< CtiTelegyrGroup >::iterator group = _groupList.begin(); group != _groupList.end(); group++)
@@ -1087,8 +1087,40 @@ bool CtiFDRTelegyr::loadGroupLists( void )
    return successful;
 }
 
-//** PCLINT note: Left Warning 578 here. Deemed unsafe for this late in 5.0
-bool CtiFDRTelegyr::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
+/**
+ * This function is called from fdrinterface to have us process
+ * a single point update. Telegyr does not support this so we
+ * are going to do a full reload. (This puts the functionality
+ * of FdrTelegry back to pre 4.2
+ *
+ * @param translationPoint
+ * @param send
+ *
+ * @return bool
+ */
+bool CtiFDRTelegyr::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
+{
+
+   loadTranslationLists();
+
+   //If we are connected, send call to delete groups, triggering a new build and register.
+   if (isConnected())
+   {
+      deleteGroups();
+      _reloadTimer = CtiTime::now();
+   }
+
+   return true;
+}
+
+/**
+ * Translate point and add it to a group
+ *
+ * @param translationPoint
+ *
+ * @return bool
+ */
+bool CtiFDRTelegyr::translatePoint(CtiFDRPointSPtr & translationPoint)
 {
    bool successful = false;
    bool foundGroup = false;
