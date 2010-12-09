@@ -129,7 +129,7 @@ public class InventoryFilterController {
         return "redirect:inventoryActions";
     }
     
-    /* Remove Rule - This guy as no 'params' in the method signature because the form had to be submitted via javascript for removes. */
+    /* Remove Rule - This guy as no 'params' in the @RequestMapping because the form had to be submitted via javascript for removes. */
     @RequestMapping(value = "applyFilter", method=RequestMethod.POST)
     public String remove(@ModelAttribute("filterModel") FilterModel filterModel, BindingResult bindingResult,
                               ModelMap modelMap, YukonUserContext userContext, int removeRule) {
