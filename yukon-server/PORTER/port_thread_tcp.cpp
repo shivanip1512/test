@@ -23,11 +23,11 @@ using namespace std;
 
 extern CtiDeviceManager DeviceManager;
 
+using Cti::Protocols::GpuffProtocol;
+using Cti::Timing::MillisecondTimer;
+
 namespace Cti    {
 namespace Porter {
-
-
-using Protocols::GpuffProtocol;
 
 /* Threads that handle each port for communications */
 VOID PortTcpThread(void *pid)
@@ -107,7 +107,7 @@ void TcpPortHandler::updateDeviceCommStatus(const long device_id, int status)
 
     if( dr && dr->device )
     {
-        processCommStatus(status, dr->id, dr->id, false, boost::static_pointer_cast<CtiDeviceBase>(dr->device));
+        processCommStatus(status, device_id, device_id, false, boost::static_pointer_cast<CtiDeviceBase>(dr->device));
     }
 }
 
@@ -293,15 +293,15 @@ void TcpPortHandler::updatePortProperties( void )
 void TcpPortHandler::sendOutbound( device_record &dr )
 {
     //  if we don't have a device or anything to send, there's nothing to do here
-    if( !dr.device || dr.work.xfer.getOutCount() == 0 )
+    if( !dr.device || dr.xfer.getOutCount() == 0 )
     {
         return;
     }
 
-    TcpConnectionManager::bytes buf(dr.work.xfer.getOutBuffer(),
-                                    dr.work.xfer.getOutBuffer() + dr.work.xfer.getOutCount());
+    TcpConnectionManager::bytes buf(dr.xfer.getOutBuffer(),
+                                    dr.xfer.getOutBuffer() + dr.xfer.getOutCount());
 
-    Connections::SocketAddress sa = getDeviceAddress(dr.id);
+    Connections::SocketAddress sa = getDeviceAddress(dr.device->getID());
 
     if( gConfigParms.getValueAsULong("PORTER_TCP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
@@ -319,23 +319,23 @@ void TcpPortHandler::sendOutbound( device_record &dr )
 
     try
     {
-        int bytes_sent = _connectionManager.send(dr.id, buf);
+        int bytes_sent = _connectionManager.send(dr.device->getID(), buf);
 
-        dr.work.xfer.setOutCount(bytes_sent);
+        dr.xfer.setOutCount(bytes_sent);
 
         traceOutbound(dr, 0);
 
-        dr.work.last_outbound = CtiTime::now();
+        dr.last_outbound = CtiTime::now();
     }
     catch( TcpConnectionManager::not_connected &ex )
     {
-        dr.work.status = ErrorDeviceNotConnected;
+        dr.status = ErrorDeviceNotConnected;
     }
     catch( TcpConnectionManager::write_error &ex )
     {
-        dr.work.status = TCPWRITEERROR;
+        dr.status = TCPWRITEERROR;
 
-        updateDeviceCommStatus(dr.id, TCPWRITEERROR);
+        updateDeviceCommStatus(dr.device->getID(), TCPWRITEERROR);
 
         traceOutbound(dr, TCPWRITEERROR);
     }
@@ -352,41 +352,42 @@ string TcpPortHandler::describePort( void ) const
 }
 
 
-bool TcpPortHandler::collectInbounds( void )
+bool TcpPortHandler::collectInbounds( const MillisecondTimer & timer, const unsigned long until)
 {
     bool data_received = false;
 
     TcpConnectionManager::id_set ready_devices, error_devices;
 
+    //  This code, as currently written, assumes that it will read from all ready_devices
+    //    and does not allow for breaking out when its timer is expired.
+    //  Even though the time to read from "ready" sockets should be negligible, this
+    //    behavior will need to change to fully adhere to the cooperative multitasking design of UnsolicitedHandler.
+
     _connectionManager.recv(ready_devices, error_devices);
 
     for each( long device_id in ready_devices )
     {
-        device_record *dr = getDeviceRecordById(device_id);
-
-        if( !dr )
+        if( device_record *dr = getDeviceRecordById(device_id) )
         {
-            continue;
-        }
+            packet *p = 0;
 
-        packet *p = 0;
-
-        if( isDnpDevice(*dr->device) )
-        {
-            while( p = findPacket(device_id, Protocol::DNP::DnpPacketFinder()) )
+            if( isDnpDevice(*dr->device) )
             {
-                p->protocol = packet::ProtocolTypeDnp;
+                while( p = findPacket(device_id, Protocol::DNP::DnpPacketFinder()) )
+                {
+                    p->protocol = packet::ProtocolTypeDnp;
 
-                addInboundWork(dr, p);
+                    addInboundWork(dr, p);
+                }
             }
-        }
-        else if( isGpuffDevice(*dr->device) )
-        {
-            while( p = findPacket(device_id, GpuffProtocol::GpuffPacketFinder()) )
+            else if( isGpuffDevice(*dr->device) )
             {
-                p->protocol = packet::ProtocolTypeGpuff;
+                while( p = findPacket(device_id, GpuffProtocol::GpuffPacketFinder()) )
+                {
+                    p->protocol = packet::ProtocolTypeGpuff;
 
-                addInboundWork(dr, p);
+                    addInboundWork(dr, p);
+                }
             }
         }
     }

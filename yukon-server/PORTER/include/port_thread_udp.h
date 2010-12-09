@@ -29,7 +29,7 @@ private:
     unsigned short _connected_port;
 
     typedef std::pair<unsigned short, unsigned short> dnp_address_pair;
-    typedef std::pair<unsigned short, unsigned short> uecp_address_pair;
+    //typedef std::pair<unsigned short, unsigned short> uecp_address_pair;  //  Not using UECP unsolicited inbounds
     typedef std::pair<unsigned short, unsigned long>  gpuff_type_serial_pair;
 
     static dnp_address_pair       makeDnpAddressPair     (const CtiDeviceSingle &device);
@@ -83,7 +83,7 @@ protected:
     virtual bool setupPort( void );
     virtual bool manageConnections( void );
     virtual void sendOutbound( device_record &dr );
-    virtual bool collectInbounds( void );
+    virtual bool collectInbounds( const Cti::Timing::MillisecondTimer & timer, const unsigned long until);
 
     virtual void loadDeviceProperties(const std::vector<const CtiDeviceSingle *> &devices);
 

@@ -26,13 +26,13 @@
 
 using namespace std;
 
+using Cti::Protocols::GpuffProtocol;
+using Cti::Timing::MillisecondTimer;
+
 extern CtiDeviceManager DeviceManager;
 
 namespace Cti    {
 namespace Porter {
-
-
-using Protocols::GpuffProtocol;
 
 /* Threads that handle each port for communications */
 VOID PortUdpThread(void *pid)
@@ -225,7 +225,7 @@ void UdpPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
     else if( isRdsDevice(device) )
     {
         loadStaticRdsIPAndPort(device);
-        
+
     }
 }
 
@@ -351,8 +351,8 @@ bool UdpPortHandler::tryBindSocket( void )
 
 void UdpPortHandler::updateDeviceIpAndPort(device_record &dr, const packet &p)
 {
-    u_long  old_device_ip   = getDeviceIp  (dr.id);
-    u_short old_device_port = getDevicePort(dr.id);
+    u_long  old_device_ip   = getDeviceIp  (dr.device->getID());
+    u_short old_device_port = getDevicePort(dr.device->getID());
 
     if( old_device_ip   != p.ip ||
         old_device_port != p.port )
@@ -363,18 +363,15 @@ void UdpPortHandler::updateDeviceIpAndPort(device_record &dr, const packet &p)
             dout << CtiTime() << " Cti::Porter::UdpPortHandler::updateDeviceRecord() - IP or port mismatch for device \"" << dr.device->getName() << "\", updating (" << old_device_ip << " != " << p.ip << " || " << old_device_port << " != " << p.port << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        setDeviceIp  (dr.id, p.ip);
-        setDevicePort(dr.id, p.port);
+        setDeviceIp  (dr.device->getID(), p.ip);
+        setDevicePort(dr.device->getID(), p.port);
 
-        if( dr.device )
-        {
-            dr.device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP,   ip_to_string(p.ip));
-            dr.device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port, p.port);
-        }
+        dr.device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP,   ip_to_string(p.ip));
+        dr.device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port, p.port);
     }
 
     //  sends IP and port as pointdata messages
-    sendDeviceIpAndPort(dr.device, getDeviceIp(dr.id), getDevicePort(dr.id));
+    sendDeviceIpAndPort(dr.device, getDeviceIp(dr.device->getID()), getDevicePort(dr.device->getID()));
 }
 
 
@@ -410,13 +407,13 @@ void UdpPortHandler::sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, u_l
 void UdpPortHandler::sendOutbound( device_record &dr )
 {
     //  if we don't have a device or anything to send, there's nothing to do here
-    if( !dr.device || dr.work.xfer.getOutCount() == 0 )
+    if( !dr.device || dr.xfer.getOutCount() == 0 )
     {
         return;
     }
 
-    u_long  device_ip   = getDeviceIp  (dr.id);
-    u_short device_port = getDevicePort(dr.id);
+    u_long  device_ip   = getDeviceIp  (dr.device->getID());
+    u_short device_port = getDevicePort(dr.device->getID());
 
     if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
@@ -425,9 +422,9 @@ void UdpPortHandler::sendOutbound( device_record &dr )
                           << ip_to_string(device_ip) << ":" << device_port << " "
                           << __FILE__ << " (" << __LINE__ << ")" << endl;
 
-        for( int xx = 0; xx < dr.work.xfer.getOutCount(); xx++ )
+        for( int xx = 0; xx < dr.xfer.getOutCount(); xx++ )
         {
-            dout << " " << CtiNumStr(dr.work.xfer.getOutBuffer()[xx]).hex().zpad(2).toString();
+            dout << " " << CtiNumStr(dr.xfer.getOutBuffer()[xx]).hex().zpad(2).toString();
         }
 
         dout << endl;
@@ -441,7 +438,7 @@ void UdpPortHandler::sendOutbound( device_record &dr )
 
     /* This is not tested until I get a Lantronix device. */
     vector<unsigned char> cipher;
-    _encodingFilter->encode((unsigned char *)dr.work.xfer.getOutBuffer(),dr.work.xfer.getOutCount(),cipher);
+    _encodingFilter->encode((unsigned char *)dr.xfer.getOutBuffer(),dr.xfer.getOutCount(),cipher);
 
     int err = sendto(_udp_socket, (const char*) &*cipher.begin(), cipher.size(), 0, (sockaddr *)&to, sizeof(to));
 
@@ -459,7 +456,7 @@ void UdpPortHandler::sendOutbound( device_record &dr )
     {
         traceOutbound(dr, 0);
 
-        dr.work.last_outbound = CtiTime::now();
+        dr.last_outbound = CtiTime::now();
     }
 }
 
@@ -474,10 +471,8 @@ string UdpPortHandler::describePort( void ) const
 }
 
 
-bool UdpPortHandler::collectInbounds( void )
+bool UdpPortHandler::collectInbounds( const MillisecondTimer & timer, const unsigned long until)
 {
-    bool data_received = false;
-
     const unsigned max_len = 16000;  //  should be big enough for any incoming packet
     boost::scoped_array<unsigned char> recv_buf(CTIDBG_new unsigned char[max_len]);
 
@@ -485,10 +480,13 @@ bool UdpPortHandler::collectInbounds( void )
     {
         distributePacket(p);
 
-        data_received = true;
+        if( timer.elapsed() > until )
+        {
+            return true;
+        }
     }
 
-    return data_received;
+    return false;
 }
 
 

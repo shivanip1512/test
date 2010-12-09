@@ -16,12 +16,14 @@
 
 using namespace std;
 
+using Cti::Timing::MillisecondTimer;
+
 extern CtiConnection VanGoghConnection;
 
 extern INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
 extern bool processCommStatus(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device);
 
-namespace Cti    {
+namespace Cti {
 namespace Porter {
 
 UnsolicitedMessenger UnsolicitedPortsQueue;
@@ -97,19 +99,31 @@ void UnsolicitedHandler::run( void )
     {
         initializeDeviceRecords();
 
+        MillisecondTimer loop_timer;
+
         while( !PorterQuit && !_shutdown )
         {
-            bool active = false;
+            bool work_remaining = false;
 
             try
             {
-                active |= handleDbChanges();
+                work_remaining |= handleDbChanges     (loop_timer, loop_timer.elapsed() + 10);
 
-                active |= manageDevices();
+                manageConnections();
 
-                active |= communicate();
+                work_remaining |= distributeRequests  (loop_timer, loop_timer.elapsed() + 10);
 
-                active |= sendResults();
+                work_remaining |= startPendingRequests(loop_timer, loop_timer.elapsed() + 10);
+
+                work_remaining |= generateOutbounds   (loop_timer, loop_timer.elapsed() + 10);
+
+                work_remaining |= collectInbounds     (loop_timer, loop_timer.elapsed() + 10);
+
+                work_remaining |= expireTimeouts      (loop_timer, loop_timer.elapsed() + 10);
+
+                work_remaining |= processInbounds     (loop_timer, loop_timer.elapsed() + 10);
+
+                work_remaining |= sendResults         (loop_timer, loop_timer.elapsed() + 10);
 
                 trace();
             }
@@ -119,14 +133,25 @@ void UnsolicitedHandler::run( void )
                 dout << CtiTime() << " **** EXCEPTION in " << describePort() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            if( active )
+            if( ! work_remaining )
             {
-                Sleep(50);
+                const unsigned long elapsed = loop_timer.elapsed();
+
+                if( _active_devices.empty() )
+                {
+                    if( elapsed < 500 )
+                    {
+                        Sleep(500 - elapsed);
+                    }
+                }
+                else if( elapsed < 100 )
+                {
+                    //  we're waiting for comms
+                    Sleep(100 - elapsed);
+                }
             }
-            else
-            {
-                Sleep(500);
-            }
+
+            loop_timer.reset();
         }
     }
 
@@ -165,84 +190,88 @@ const UnsolicitedHandler::device_record *UnsolicitedHandler::insertDeviceRecord(
         return 0;
     }
 
-    device_record *dr = CTIDBG_new device_record(device, device->getID());
+    device_record *dr = CTIDBG_new device_record(device);
 
-    _device_records[dr->id] = dr;
+    _device_records[device->getID()] = dr;
 
     return dr;
 }
 
 
-bool UnsolicitedHandler::handleDbChanges( void )
+bool UnsolicitedHandler::handleDbChanges(const MillisecondTimer &timer, const unsigned long until)
 {
-    bool anythingForUs = false;
-
-    //  limit the number we pull off each time through to make sure
-    //    we don't get stuck in a producer/consumer loop
-    size_t max_entries = _message_queue.size();
-
-    while( max_entries-- )
+    while( _message_queue.size() )
     {
-        auto_ptr<CtiMessage> msg(_message_queue.getQueue(1));  //  1 ms wait
-
-        if( msg.get() && msg->isA() == MSG_DBCHANGE )
+        //  1 ms max wait
+        if( CtiMessage *msg = _message_queue.getQueue(1) )
         {
-            anythingForUs |= handleDbChange(*static_cast<CtiDBChangeMsg *>(msg.get()));
+            if( msg->isA() == MSG_DBCHANGE )
+            {
+                handleDbChange(*static_cast<CtiDBChangeMsg *>(msg));
+            }
+
+            delete msg;
+        }
+
+        if( timer.elapsed() > until )
+        {
+            return _message_queue.size();  //  we ran out of time - do we have more work left?
         }
     }
 
-    return anythingForUs;
+    return false;
 }
 
 
-bool UnsolicitedHandler::handleDbChange(const CtiDBChangeMsg &dbchg)
+void UnsolicitedHandler::handleDbChange(const CtiDBChangeMsg &dbchg)
 {
-    if( !dbchg.getId() || dbchg.getDatabase() != ChangePAODb )
+    if( dbchg.getId() && dbchg.getDatabase() == ChangePAODb )
     {
-        return false;
-    }
-
-    switch( resolvePAOCategory(dbchg.getCategory()) )
-    {
-        case PAO_CATEGORY_DEVICE:   return handleDeviceChange(dbchg.getId(), dbchg.getTypeOfChange());
-        case PAO_CATEGORY_PORT:     return handlePortChange  (dbchg.getId(), dbchg.getTypeOfChange());
-        default:                    return false;
+        switch( resolvePAOCategory(dbchg.getCategory()) )
+        {
+            case PAO_CATEGORY_DEVICE:   return handleDeviceChange(dbchg.getId(), dbchg.getTypeOfChange());
+            case PAO_CATEGORY_PORT:     return handlePortChange  (dbchg.getId(), dbchg.getTypeOfChange());
+            default:                    return;
+        }
     }
 }
 
 
-bool UnsolicitedHandler::handleDeviceChange(long device_id, int change_type)
+void UnsolicitedHandler::handleDeviceChange(long device_id, int change_type)
 {
     switch( change_type )
     {
         case ChangeTypeDelete:  return deleteDeviceRecord(device_id);
         case ChangeTypeAdd:     return addDeviceRecord   (device_id);
         case ChangeTypeUpdate:  return updateDeviceRecord(device_id);
-        default:                return false;
+        default:                return;
     }
 }
 
 
-bool UnsolicitedHandler::deleteDeviceRecord(const long device_id)
+void UnsolicitedHandler::deleteDeviceRecord(const long device_id)
 {
-    device_record *dr = getDeviceRecordById(device_id);
-
-    if( dr )
+    if( device_record *dr = getDeviceRecordById(device_id) )
     {
         _device_records.erase(device_id);
 
-        purgeDeviceWork(dr, IDNF);
+        device_activity_map::iterator itr = _active_devices.find(dr);
+
+        if( itr != _active_devices.end() )
+        {
+            purgeDeviceWork(*itr, IDNF);
+
+            _active_devices.erase(itr);
+        }
 
         deleteDeviceProperties(*dr->device);
 
         delete dr;
     }
-
-    return dr;
 }
 
 
-bool UnsolicitedHandler::addDeviceRecord(const long device_id)
+void UnsolicitedHandler::addDeviceRecord(const long device_id)
 {
     CtiDeviceSPtr device = _deviceManager.getDeviceByID(device_id);
 
@@ -255,16 +284,12 @@ bool UnsolicitedHandler::addDeviceRecord(const long device_id)
             addDeviceProperties(*dr->device);
         }
     }
-
-    return true;
 }
 
 
-bool UnsolicitedHandler::updateDeviceRecord(const long device_id)
+void UnsolicitedHandler::updateDeviceRecord(const long device_id)
 {
-    device_record *dr = getDeviceRecordById(device_id);
-
-    if( dr && dr->device )
+    if( device_record *dr = getDeviceRecordById(device_id) )
     {
         if( dr->device->getPortID() != _port->getPortID() )
         {
@@ -274,7 +299,15 @@ bool UnsolicitedHandler::updateDeviceRecord(const long device_id)
 
         if( dr->device->isInhibited() )
         {
-            purgeDeviceWork(dr, DEVICEINHIBITED);
+            device_activity_map::iterator itr = _active_devices.find(dr);
+
+            if( itr != _active_devices.end() )
+            {
+                //  erases it from _active_devices
+                purgeDeviceWork(*itr, DEVICEINHIBITED);
+
+                _active_devices.erase(itr);
+            }
         }
 
         updateDeviceProperties(*dr->device);
@@ -284,36 +317,30 @@ bool UnsolicitedHandler::updateDeviceRecord(const long device_id)
         //  device isn't in our list - check to see if it just got added to our port
         return addDeviceRecord(device_id);
     }
-
-    return dr;
 }
 
 
-bool UnsolicitedHandler::handlePortChange(long port_id, int change_type)
+void UnsolicitedHandler::handlePortChange(long port_id, int change_type)
 {
-    if( port_id != _port->getPortID() )
+    if( port_id == _port->getPortID() )
     {
-        return false;
-    }
-
-    switch( change_type )
-    {
-        case ChangeTypeDelete:  return deletePort();
-        case ChangeTypeUpdate:  return updatePort();
-        default:                return false;
+        switch( change_type )
+        {
+            case ChangeTypeDelete:  return deletePort();
+            case ChangeTypeUpdate:  return updatePort();
+            default:                return;
+        }
     }
 }
 
 
-bool UnsolicitedHandler::deletePort(void)
+void UnsolicitedHandler::deletePort(void)
 {
     purgePortWork(BADPORT);
-
-    return _shutdown = true;
 }
 
 
-bool UnsolicitedHandler::updatePort(void)
+void UnsolicitedHandler::updatePort(void)
 {
     if( _port->isInhibited() )
     {
@@ -321,115 +348,102 @@ bool UnsolicitedHandler::updatePort(void)
     }
 
     updatePortProperties();
-
-    return true;
 }
 
 
 void UnsolicitedHandler::purgePortWork(int error_code)
 {
-    for each( device_record *dr in _active_devices )
+    for each( const device_activity_map::value_type &active_device in _active_devices )
     {
-        purgeDeviceWork(dr, error_code);
+        purgeDeviceWork(active_device, error_code);
     }
 
     _active_devices.clear();
 }
 
 
-void UnsolicitedHandler::purgeDeviceWork(device_record *dr, int error_code)
+void UnsolicitedHandler::purgeDeviceWork(const device_activity_map::value_type &active_device, int error_code)
 {
-    if( dr )
+    device_record &dr = *active_device.first;
+
+    //  first, purge all of the work
+    while( ! dr.outbound.empty() )
     {
-        while( !dr->work.outbound.empty() )
-        {
-            OUTMESS *om = dr->work.outbound.front();
+        INMESS im;
 
-            INMESS im;
+        OutEchoToIN(dr.outbound.front(), &im);
 
-            OutEchoToIN(dr->work.outbound.front(), &im);
+        ReturnResultMessage(error_code, &im, dr.outbound.front());
 
-            ReturnResultMessage(error_code, &im, om);
+        delete dr.outbound.front();
 
-            delete om;
-
-            dr->work.outbound.pop();
-        }
-
-        _active_devices.erase(dr);
+        dr.outbound.pop();
     }
+
+    while( ! dr.inbound.empty() )
+    {
+        delete dr.inbound.front();
+
+        dr.inbound.pop();
+    }
+
+    //  null out its entry in the activity list it was in
+    *active_device.second = 0;
 }
 
 
-bool UnsolicitedHandler::manageDevices(void)
+bool UnsolicitedHandler::distributeRequests(const MillisecondTimer &timer, const unsigned long until)
 {
-    bool active = false;
+    generateKeepalives(_request_queue);
 
-    active |= manageConnections();
-
-    active |= handleDeviceRequests();
-
-    return active;
-}
-
-
-bool UnsolicitedHandler::handleDeviceRequests(void)
-{
-    bool new_requests = false;
-
-    om_queue request_queue;
-
-    generateKeepalives(request_queue);
-
-    readPortQueue(_port, request_queue);
+    readPortQueue(_port, _request_queue);
 
     //  if we got work, attempt to distribute it to the device records
-    while( !request_queue.empty() )
+    while( ! _request_queue.empty() )
     {
-        OUTMESS *om = request_queue.front();
-        request_queue.pop();
-
-        if( !om )
+        if( OUTMESS *om = _request_queue.front() )
         {
-            continue;
+            handleDeviceRequest(om);
         }
 
-        if( _port->isInhibited() )
+        _request_queue.pop();
+
+        if( timer.elapsed() > until )
         {
-            //  return an error - this deletes the OM
-            INMESS im;
-            ReturnResultMessage(PORTINHIBITED, &im, om);
-            continue;
+            return ! _request_queue.empty();
         }
+    }
 
-        device_record *dr = getDeviceRecordById(om->DeviceID);
+    return false;
+}
 
-        if( !dr || !dr->device )
-        {
-            if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Porter::DNPUDP::getOutMessages - no device found for device id (" << om->DeviceID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
 
-            //  return an error - this deletes the OM
-            INMESS im;
-            ReturnResultMessage(IDNF, &im, om);
-            continue;
-        }
+void UnsolicitedHandler::handleDeviceRequest(OUTMESS *om)
+{
+    if( _port->isInhibited() )
+    {
+        //  return an error - this deletes the OM
+        INMESS im;
+        ReturnResultMessage(PORTINHIBITED, &im, om);
+        return;
+    }
+
+    if( device_record *dr = getDeviceRecordById(om->DeviceID) )
+    {
         if( dr->device->isInhibited() )
         {
             //  return an error - this deletes the OM
             INMESS im;
             ReturnResultMessage(DEVICEINHIBITED, &im, om);
-            continue;
+            return;
         }
-        if( isDeviceDisconnected(dr->id) )
+
+        if( isDeviceDisconnected(dr->device->getID()) )
         {
             //  return an error - this deletes the OM
             INMESS im;
             ReturnResultMessage(ErrorDeviceNotConnected, &im, om);
-            continue;
+            return;
         }
 
         if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
@@ -438,43 +452,55 @@ bool UnsolicitedHandler::handleDeviceRequests(void)
             dout << CtiTime() << " Porter::UnsolicitedHandler::getOutMessages - queueing work for \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        dr->work.outbound.push(om);
+        dr->outbound.push(om);
 
-        _active_devices.insert(dr);
-
-        new_requests = true;
+        if( _active_devices.find(dr) == _active_devices.end() )
+        {
+            _active_devices[dr] = _request_pending.insert(_request_pending.end(), dr);
+        }
     }
+    else
+    {
+        if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Porter::DNPUDP::getOutMessages - no device found for device id (" << om->DeviceID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
 
-    return new_requests;
+        //  return an error - this deletes the OM
+        INMESS im;
+        ReturnResultMessage(IDNF, &im, om);
+        return;
+    }
 }
 
 
-bool UnsolicitedHandler::generateKeepalives(om_queue &local_queue)
+void UnsolicitedHandler::generateKeepalives(om_queue &local_queue)
 {
-    bool keepalive_generated = false;
-
     const CtiTime TimeNow;
 
-    //  check all of our devices to see if we need to issue a keepalive
-    for each( const pair<long, device_record *> &dr_pair in _device_records )
+    if( _last_keepalive < TimeNow )
     {
-        device_record *dr = dr_pair.second;
+        _last_keepalive = TimeNow;
 
-        if( !dr || !dr->device || dr->device->isInhibited() )
+        //  check all of our devices to see if we need to issue a keepalive
+        for each( const pair<long, device_record *> &dr_pair in _device_records )
         {
-            continue;
-        }
+            device_record *dr = dr_pair.second;
 
-        if( isDnpDevice(*dr->device) &&
-            isDnpKeepaliveNeeded(*dr, TimeNow) )
-        {
-            generateDnpKeepalive(local_queue, *dr, TimeNow);
-            dr->work.last_keepalive = TimeNow;
-            keepalive_generated = true;
+            if( dr->device->isInhibited() )
+            {
+                continue;
+            }
+
+            if( isDnpDevice(*dr->device) &&
+                isDnpKeepaliveNeeded(*dr, TimeNow) )
+            {
+                generateDnpKeepalive(local_queue, *dr, TimeNow);
+                dr->last_keepalive = TimeNow;
+            }
         }
     }
-
-    return keepalive_generated;
 }
 
 
@@ -524,7 +550,7 @@ bool UnsolicitedHandler::isGpuffDevice(const CtiDeviceSingle &ds)
 
 bool UnsolicitedHandler::isDnpKeepaliveNeeded(const device_record &dr, const CtiTime &TimeNow)
 {
-    CtiTime last_communication = max(dr.work.last_outbound, dr.work.last_keepalive);
+    CtiTime last_communication = max(dr.last_outbound, dr.last_keepalive);
     u_long  keepalive_period   = gConfigParms.getValueAsULong("PORTER_DNPUDP_KEEPALIVE", 86400);
 
     return (last_communication + keepalive_period) < TimeNow;
@@ -547,7 +573,7 @@ void UnsolicitedHandler::generateDnpKeepalive(om_queue &local_queue, const devic
     delete_container(vg_list);
     delete_container(ret_list);
 
-    while( !om_list.empty() )
+    while( ! om_list.empty() )
     {
         local_queue.push(om_list.front());
 
@@ -556,51 +582,32 @@ void UnsolicitedHandler::generateDnpKeepalive(om_queue &local_queue, const devic
 }
 
 
-bool UnsolicitedHandler::generateOutbounds( void )
+bool UnsolicitedHandler::startPendingRequests(const MillisecondTimer &timer, const unsigned long until)
 {
-    bool areDevicesActive = false;
-
-    for each( device_record *dr in _active_devices )
+    while( ! _request_pending.empty() )
     {
-        if( !dr || !dr->device )
+        if( device_record *dr = _request_pending.front() )
         {
-            _active_devices.erase(dr);
-
-            continue;
-        }
-
-        //  should we look for new work?
-        if( dr->device->isTransactionComplete() )
-        {
-            if( !dr->work.outbound.empty() )
+            if( ! dr->outbound.empty() )
             {
-                //  clear all inbound in case of a new outbound - this isn't ideal...
-                //  what do we do with an unexpected inbound?  does that take priority over new outbounds?
-
-                while( !dr->work.inbound.empty() )
+                if( OUTMESS *om = dr->outbound.front() )
                 {
-                    delete dr->work.inbound.front();
-                    dr->work.inbound.pop();
-                }
+                    dr->device->recvCommRequest(om);
 
-                //  if we aren't doing anything else and we have an available outmessage, try to use it
-                if( dr->work.outbound.front() )
-                {
-                    dr->device->recvCommRequest(dr->work.outbound.front());
-
-                    dr->work.active = true;
-
-                    dr->work.pending_decode = false;
+                    _active_devices[dr] = _to_generate.insert(_to_generate.end(), dr);
                 }
                 else
                 {
                     //  null outmessage, needs to be removed
-                    dr->work.outbound.pop();
+                    dr->outbound.pop();
+
+                    //  but re-examine this device
+                    _active_devices[dr] = _request_pending.insert(_request_pending.end(), dr);
                 }
             }
-            else if( !dr->work.inbound.empty() )
+            else if( ! dr->inbound.empty() )
             {
-                //  no new outbound work, so the unexpected inbound can be processed
+                //  no new outbound work, so process the unexpected inbound
                 if( isDnpDevice(*dr->device) )
                 {
                     //  there is no outmessage, so we don't call recvCommRequest -
@@ -609,38 +616,85 @@ bool UnsolicitedHandler::generateOutbounds( void )
 
                     dnp_device->initUnsolicited();
 
-                    dr->work.active = true;
-
-                    dr->work.pending_decode = false;
+                    _active_devices[dr] = _to_generate.insert(_to_generate.end(), dr);
                 }
-            }
-        }
+                else if( isGpuffDevice(*dr->device) )
+                {
+                    //  GPUFF is unsolicited-only - decode inbounds right away
+                    _active_devices[dr] = _to_decode.insert(_to_decode.end(), dr);
+                }
+                else
+                {
+                    //  only DNP and GPUFF devices support unsolicited - erase any other inbounds
+                    while( !dr->inbound.empty() )
+                    {
+                        delete dr->inbound.front();
 
-        //  are we ready to generate anything?
-        if( !dr->work.pending_decode && !dr->device->isTransactionComplete() )
-        {
-            dr->device->generate(dr->work.xfer);
+                        dr->inbound.pop();
+                    }
 
-            dr->work.pending_decode = true;
-
-            sendOutbound(*dr);
-
-            if( dr->work.xfer.getInCountExpected() > 0 )
-            {
-                unsigned portDelay    = _port->getDelay(EXTRA_DELAY); // Additional timeout for the port.
-                unsigned cparmTimeout = gConfigParms.getValueAsInt("PORTER_DNPUDP_TIMEOUT", 10);
-                dr->work.timeout = CtiTime::now() + std::max(portDelay, cparmTimeout);
+                    _active_devices.erase(dr);
+                }
             }
             else
             {
-                dr->work.timeout = YUKONEOT;
+                //  no outbounds, no inbounds - this guy is done for now
+                _active_devices.erase(dr);
             }
         }
 
-        areDevicesActive |= (dr->work.pending_decode || dr->work.active);
+        _request_pending.pop_front();
+
+        if( timer.elapsed() > until )
+        {
+            return ! _request_pending.empty();
+        }
     }
 
-    return areDevicesActive;
+    return false;
+}
+
+
+bool UnsolicitedHandler::generateOutbounds(const MillisecondTimer &timer, const unsigned long until)
+{
+    while( ! _to_generate.empty() )
+    {
+        if( device_record *dr = _to_generate.front() )
+        {
+            dr->device->generate(dr->xfer);
+
+            sendOutbound(*dr);
+
+            if( dr->inbound.empty() )
+            {
+                _active_devices[dr] = _to_decode.insert(_to_decode.end(), dr);
+            }
+            else
+            {
+                unsigned portDelay    = _port->getDelay(EXTRA_DELAY); // Additional timeout for the port.
+                unsigned cparmTimeout = gConfigParms.getValueAsInt("PORTER_DNPUDP_TIMEOUT", 10);
+
+                const CtiTime timeout = CtiTime::now() + std::max(portDelay, cparmTimeout);
+
+                const device_list::iterator waiting_itr = _waiting_for_data.insert(_waiting_for_data.end(), dr);
+
+                _active_devices [dr] = waiting_itr;
+                _waiting_devices[dr] = waiting_itr;
+
+                //  insert because it's a multimap - we might have multiple entries for this timeout value
+                _timeouts.insert(make_pair(timeout, waiting_itr));
+            }
+        }
+
+        _to_generate.pop_front();
+
+        if( timer.elapsed() > until )
+        {
+            return ! _to_generate.empty();
+        }
+    }
+
+    return false;
 }
 
 
@@ -648,7 +702,7 @@ string UnsolicitedHandler::describeDevice( const device_record &dr ) const
 {
     ostringstream ostr;
 
-    ostr << dr.device->getName() << " (" << ip_to_string(getDeviceIp(dr.id)) << ":" << getDevicePort(dr.id) << ")";
+    ostr << dr.device->getName() << " (" << ip_to_string(getDeviceIp(dr.device->getID())) << ":" << getDevicePort(dr.device->getID()) << ")";
 
     return ostr.str();
 }
@@ -695,7 +749,7 @@ void UnsolicitedHandler::traceOutbound( const device_record &dr, int status )
 
     //  then print the formatted hex trace
     mTrace.setBrightGreen();
-    CtiPort::traceBytes(dr.work.xfer.getOutBuffer(), dr.work.xfer.getOutCount(), mTrace, _traceList);
+    CtiPort::traceBytes(dr.xfer.getOutBuffer(), dr.xfer.getOutCount(), mTrace, _traceList);
 }
 
 
@@ -719,7 +773,7 @@ void UnsolicitedHandler::traceInbound( unsigned long ip, unsigned short port, in
     _traceList.push_back(mTrace.replicateMessage());
 
     mTrace.setBrightCyan();
-    if( dr && dr->device )
+    if( dr )
     {
         msg = "  D: " + CtiNumStr(dr->device->getID()).spad(3) + " / " + describeDevice(*dr);
     }
@@ -817,163 +871,178 @@ void UnsolicitedHandler::addInboundWork(device_record *dr, packet *&p)
 {
     if( dr && p )
     {
-        dr->work.inbound.push(p);
+        dr->inbound.push(p);
 
         p = 0;
 
-        _active_devices.insert(dr);
+        //  check to see if the device was waiting for anything
+        device_activity_map::iterator itr = _waiting_devices.find(dr);
+
+        if( itr != _waiting_devices.end() )
+        {
+            device_list::iterator waiting_itr = itr->second;
+
+            //  we just got data - null out this device's entry so the timeout thread ignores it
+            *waiting_itr = 0;
+
+            _waiting_devices.erase(itr);
+
+            //  we just got work - we're ready to try a decode
+            _active_devices[dr] = _to_decode.insert(_to_decode.end(), dr);
+        }
+        else if( _active_devices.find(dr) == _active_devices.end() )
+        {
+            //  it's new work, so get him started next time the pending list is examined
+            _active_devices[dr] = _request_pending.insert(_request_pending.end(), dr);
+        }
     }
 }
 
 
-bool UnsolicitedHandler::processInbounds( void )
+bool UnsolicitedHandler::expireTimeouts(const MillisecondTimer &timer, const unsigned long until)
 {
-    bool devicesActive = false;
+    CtiTime now;
 
-    for each( device_record *dr in _active_devices )
+    while( ! _timeouts.empty() && _timeouts.begin()->first < now )
     {
-        if( !dr || !dr->device )
-        {
-            if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Porter::UnsolicitedHandler::processInbounds - dr == 0 || dr->device == 0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+        const CtiTime timeout = _timeouts.begin()->first;
+        device_list::iterator waiting_itr = _timeouts.begin()->second;
 
-            continue;
+        _timeouts.erase(_timeouts.begin());
+
+        if( device_record *dr = *waiting_itr )
+        {
+            _waiting_devices.erase(dr);
+
+            _active_devices[dr] = _to_decode.insert(_to_decode.end(), dr);
         }
 
-        if( isDnpDevice(*dr->device) )
+        _waiting_for_data.erase(waiting_itr);
+
+        if( timer.elapsed() > until )
         {
-            devicesActive |= processDnpInbound(*dr);
-        }
-        else if( isGpuffDevice(*dr->device) )
-        {
-            devicesActive |= processGpuffInbound(*dr);
+            return true;
         }
     }
 
-    return devicesActive;
+    return false;
 }
 
 
-bool UnsolicitedHandler::processDnpInbound(device_record &dr)
+bool UnsolicitedHandler::processInbounds(const MillisecondTimer &timer, const unsigned long until)
 {
-    //  are we doing anything?
-    if( dr.device->isTransactionComplete() )
+    while( ! _to_decode.empty() )
     {
-        return false;
-    }
-
-    int status = NORMAL;
-
-    if( dr.work.timeout < CtiTime::now() )
-    {
-        if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+        if( device_record *dr = _to_decode.front() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Porter::UnsolicitedHandler::processDnpInbound() - status = READTIMEOUT (" << dr.work.timeout << " < " << CtiTime::now().seconds() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        status = READTIMEOUT;
-
-        dr.work.xfer.setInCountActual(0UL);
-    }
-    else if( !dr.work.inbound.empty() )
-    {
-        packet *p = dr.work.inbound.front();
-
-        if( p )
-        {
-            if( p->len - p->used < dr.work.xfer.getInCountExpected() )
+            if( isGpuffDevice(*dr->device) )
             {
-                if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Porter::UnsolicitedHandler::processDnpInbound() - status = READTIMEOUT (" << (p->len - p->used) << " < " << dr.work.xfer.getInCountExpected() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                processGpuffInbound(*dr);
 
-                status = READTIMEOUT;
-
-                dr.work.xfer.setInCountActual(p->len - p->used);
+                _active_devices[dr] = _request_complete.insert(_request_complete.end(), dr);
             }
             else
             {
-                dr.work.xfer.setInCountActual(dr.work.xfer.getInCountExpected());
-            }
+                processDeviceSingleInbound(*dr);
 
-            memcpy(dr.work.xfer.getInBuffer(), p->data + p->used, dr.work.xfer.getInCountActual());
-
-            p->used += dr.work.xfer.getInCountActual();
-
-            if( p->used >= p->len )
-            {
-                //  we've used the packet up
-                delete p->data;
-                delete p;
-
-                dr.work.inbound.pop();
+                if( dr->device->isTransactionComplete() )
+                {
+                    _active_devices[dr] = _request_complete.insert(_request_complete.end(), dr);
+                }
+                else
+                {
+                    _active_devices[dr] = _to_generate.insert(_to_generate.end(), dr);
+                }
             }
         }
-        else
+
+        _to_decode.pop_front();
+
+        if( timer.elapsed() > until )
         {
-            dr.work.inbound.pop();
-        }
-    }
-    else if( dr.work.xfer.getInCountExpected() )
-    {
-        //  we are expecting input, but we don't have it yet, and we're not timed out yet either
-        return true;
-    }
-    else
-    {
-        dr.work.xfer.setInCountActual(0UL);
-    }
-
-    dr.work.status = dr.device->decode(dr.work.xfer, status);
-
-    dr.work.pending_decode = false;
-
-    if( status || dr.work.xfer.getInCountActual() )
-    {
-        int om_retry = 0;
-
-        traceInbound(getDeviceIp(dr.id), getDevicePort(dr.id), dr.work.status, dr.work.xfer.getInBuffer(), dr.work.xfer.getInCountActual(), &dr);
-
-        if( !dr.work.outbound.empty() && dr.work.outbound.front() )
-        {
-            om_retry = dr.work.outbound.front()->Retry;
-        }
-
-        processCommStatus(status, dr.id, dr.id, om_retry > 0, boost::static_pointer_cast<CtiDeviceBase>(dr.device));
-
-        if( status && !dr.device->isTransactionComplete() && !dr.work.outbound.empty() && dr.work.outbound.front() )
-        {
-            //  error, but we're going to keep going
-            //    this is the equivalent of a "retry" in the old school code
-            statisticsNewAttempt(dr.device->getPortID(), dr.id, dr.id, status, dr.work.outbound.front()->MessageFlags);
+            return ! _to_decode.empty();
         }
     }
 
-    return true;
+    return false;
 }
 
 
-bool UnsolicitedHandler::processGpuffInbound(device_record &dr)
+void UnsolicitedHandler::processDeviceSingleInbound(device_record &dr)
 {
-    if( dr.work.inbound.empty() )
+    if( dr.inbound.empty() )
     {
-        return false;
+        dr.xfer.setInCountActual(0UL);
+    }
+    else
+    {
+        //  all unsolicited protocols are packet-based - they cannot cross packet boundaries.
+        //    UDP packets must arrive as 1 or more whole packets.
+        //    TCP packets are broken up into packets by TcpPortHandler::collectInbounds() use of findPacket().
+        //  This all means we cannot use more than one packet per xfer request.
+        packet *p = dr.inbound.front();
+
+        const int bytes_used = std::min<int>(p->len - p->used, dr.xfer.getInCountExpected());
+
+        dr.xfer.setInCountActual(bytes_used);
+
+        memcpy(dr.xfer.getInBuffer(), p->data + p->used, bytes_used);
+
+        p->used += bytes_used;
+
+        if( p->used >= p->len )
+        {
+            //  we've used the packet up
+            delete p->data;
+            delete p;
+
+            dr.inbound.pop();
+        }
     }
 
-    packet *p = dr.work.inbound.front();
-
-    dr.work.inbound.pop();
-
-    if( !p )
+    if( ! dr.xfer.getNonBlockingReads() )
     {
-        return false;
+        if( dr.xfer.getInCountActual() < dr.xfer.getInCountExpected() )
+        {
+            dr.status = READTIMEOUT;
+        }
     }
+
+    dr.status = dr.device->decode(dr.xfer, dr.status);
+
+    if( dr.status || dr.xfer.getInCountActual() )
+    {
+        int om_retry = 0;
+
+        traceInbound(getDeviceIp(dr.device->getID()), getDevicePort(dr.device->getID()), dr.status, dr.xfer.getInBuffer(), dr.xfer.getInCountActual(), &dr);
+
+        if( !dr.outbound.empty() && dr.outbound.front() )
+        {
+            om_retry = dr.outbound.front()->Retry;
+        }
+
+        processCommStatus(dr.status, dr.device->getID(), dr.device->getID(), om_retry > 0, boost::static_pointer_cast<CtiDeviceBase>(dr.device));
+
+        if( dr.status && !dr.device->isTransactionComplete() && !dr.outbound.empty() && dr.outbound.front() )
+        {
+            //  error, but we're going to keep going
+            //    this is the equivalent of a "retry" in the old school code
+            statisticsNewAttempt(dr.device->getPortID(), dr.device->getID(), dr.device->getID(), dr.status, dr.outbound.front()->MessageFlags);
+        }
+    }
+}
+
+
+void UnsolicitedHandler::processGpuffInbound(device_record &dr)
+{
+    if( dr.inbound.empty() )
+    {
+        return;
+    }
+
+    packet *p = dr.inbound.front();
+
+    dr.inbound.pop();
 
     vector<CtiPointDataMsg *> points;
 
@@ -997,8 +1066,6 @@ bool UnsolicitedHandler::processGpuffInbound(device_record &dr)
 
     delete p->data;
     delete p;
-
-    return true;
 }
 
 
@@ -1087,86 +1154,58 @@ void UnsolicitedHandler::trace()
 }
 
 
-bool UnsolicitedHandler::communicate( void )
+bool UnsolicitedHandler::sendResults(const MillisecondTimer &timer, const unsigned long until)
 {
-    bool active = false;
-
-    active |= generateOutbounds();
-
-    active |= collectInbounds();
-
-    active |= processInbounds();
-
-    return active;
-}
-
-
-bool UnsolicitedHandler::sendResults( void )
-{
-    bool resultsSent = false;
-
-    for each( device_record *dr in _active_devices )
+    while( ! _request_complete.empty() )
     {
-        if( !dr || !dr->device )
+        if( device_record *dr = _request_complete.front() )
         {
-            if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+            dr->device->sendDispatchResults(VanGoghConnection);
+
+            //  we may be done with this transaction, but do we have anyone to send it back to?
+            if( ! dr->outbound.empty() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Porter::UnsolicitedHandler::sendResults - dr == 0 || dr->device == 0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                if( OUTMESS *om = dr->outbound.front() )
+                {
+                    //  om->Retry will never be nonzero for DNP devices - they handle retries internally
+                    processCommStatus(dr->status, dr->device->getID(), dr->device->getID(), om->Retry > 0, boost::static_pointer_cast<CtiDeviceBase>(dr->device));
+
+                    INMESS im;
+
+                    OutEchoToIN(om, &im);
+
+                    dr->device->sendCommResult(&im);
+
+                    //  if dr->status is nonzero, ReturnResultMessage() calls SendError(),
+                    //    which calls statisticsNewCompletion()...  so we don't need to call it if we're not in error
+                    if( !dr->status )
+                    {
+                        statisticsNewCompletion( om->Port, om->DeviceID, om->TargetID, dr->status, om->MessageFlags );
+                    }
+
+                    //  This method may delete the OM!
+                    ReturnResultMessage(dr->status, &im, om);
+
+                    //  If ReturnResultMessage doesn't delete the OM (i.e. wasn't an error condition), then we'll delete it
+                    delete om;
+                }
+
+                dr->outbound.pop();
             }
 
-            continue;
+            //  all done with this request - check to see if there's anything else waiting for us
+            _active_devices[dr] = _request_pending.insert(_request_pending.end(), dr);
         }
 
-        //  if we don't have any work or we're not done with this transaction yet
-        if( !dr->work.active || !dr->device->isTransactionComplete() )
+        _request_complete.pop_front();
+
+        if( timer.elapsed() > until )
         {
-            continue;
+            return ! _request_complete.empty();
         }
-
-        dr->device->sendDispatchResults(VanGoghConnection);
-
-        resultsSent = true;
-
-        dr->work.active = false;
-
-        //  we may be done with this transaction, but do we have anyone to send it back to?
-        if( dr->work.outbound.empty() )
-        {
-            continue;
-        }
-
-        OUTMESS *om = dr->work.outbound.front();
-
-        if( om )
-        {
-            //  om->Retry will never be nonzero for DNP devices - they handle retries internally
-            processCommStatus(dr->work.status, dr->id, dr->id, om->Retry > 0, boost::static_pointer_cast<CtiDeviceBase>(dr->device));
-
-            INMESS im;
-
-            OutEchoToIN(om, &im);
-
-            dr->device->sendCommResult(&im);
-
-            //  if dr->work.status is nonzero, ReturnResultMessage() calls SendError(),
-            //    which calls statisticsNewCompletion()...  so we don't need to call it if we're not in error
-            if( !dr->work.status )
-            {
-                statisticsNewCompletion( om->Port, om->DeviceID, om->TargetID, dr->work.status, om->MessageFlags );
-            }
-
-            //  This method may delete the OM!
-            ReturnResultMessage(dr->work.status, &im, om);
-
-            //  If ReturnResultMessage doesn't delete the OM (i.e. wasn't an error condition), then we'll delete it
-            delete om;
-        }
-
-        dr->work.outbound.pop();
     }
 
-    return resultsSent;
+    return false;
 }
 
 
@@ -1191,6 +1230,11 @@ void UnsolicitedMessenger::addClient(UnsolicitedHandler *client)
 
 void UnsolicitedMessenger::removeClient(UnsolicitedHandler *client)
 {
+    if( !client )
+    {
+        return;
+    }
+
     CtiLockGuard< CtiCriticalSection > lock(_client_mux);
 
     _clients.erase(client);
@@ -1208,10 +1252,7 @@ void UnsolicitedMessenger::sendMessageToClients(const CtiDBChangeMsg *msg)
 
     for each( UnsolicitedHandler *client in _clients )
     {
-        if( client )
-        {
-            client->receiveMessage(msg->replicateMessage());
-        }
+        client->receiveMessage(msg->replicateMessage());
     }
 }
 

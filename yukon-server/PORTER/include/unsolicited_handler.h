@@ -1,14 +1,18 @@
 #pragma once
-#include "yukon.h"
 
-#include <map>
-#include <queue>
 #include "boost/noncopyable.hpp"
 
 #include "port_base.h"
 #include "mgr_device.h"
 #include "dev_single.h"
 #include "msg_dbchg.h"
+
+#include "millisecond_timer.h"
+
+#include "queue.h"
+
+#include <map>
+#include <queue>
 
 namespace Cti    {
 namespace Porter {
@@ -35,49 +39,31 @@ protected:
             ProtocolTypeInvalid,
             ProtocolTypeDnp,
             ProtocolTypeGpuff,
-            ProtocolTypeUECP
+            //ProtocolTypeUecp  //  Not using UECP unsolicited inbounds
 
         } protocol;
     };
 
     struct device_record
     {
-        device_record(const CtiDeviceSPtr &device_, const long id_) :
+        device_record(const CtiDeviceSPtr &device_) :
             device(boost::static_pointer_cast<CtiDeviceSingle>(device_)),
-            id(id_)
+            status(NoError)
         {}
 
         const CtiDeviceSingleSPtr device;
 
-        const long id;
+        typedef std::queue< packet * > packet_queue;
 
-        struct device_work
-        {
-            device_work() :
-                status(NoError),
-                pending_decode(false),
-                active(false),
-                timeout(YUKONEOT)
-            {
-            }
+        //  always working on the first entry in the queue
+        om_queue     outbound;
+        packet_queue inbound;
 
-            typedef std::queue< packet * > packet_queue;
+        CtiXfer xfer;
+        int     status;
 
-            //  always working on the first entry in the queue
-            om_queue     outbound;
-            packet_queue inbound;
-
-            CtiXfer xfer;
-            int     status;
-
-            bool pending_decode;
-            bool active;
-
-            CtiTime timeout;
-            CtiTime last_outbound;
-            CtiTime last_keepalive;
-
-        } work;
+        CtiTime last_outbound;
+        CtiTime last_keepalive;
     };
 
 private:
@@ -86,49 +72,55 @@ private:
 
     CtiFIFOQueue< CtiMessage > _message_queue;
 
+    typedef std::list<device_record *> device_list;
+    typedef std::map <device_record *, device_list::iterator> device_activity_map;
+
     void startLog( void );
     void haltLog ( void );
 
     void initializeDeviceRecords( void );
     const device_record *insertDeviceRecord(const CtiDeviceSPtr &device);
 
-    bool addDeviceRecord   (const long device_id);
-    bool updateDeviceRecord(const long device_id);
-    bool deleteDeviceRecord(const long device_id);
+    void addDeviceRecord   (const long device_id);
+    void updateDeviceRecord(const long device_id);
+    void deleteDeviceRecord(const long device_id);
 
-    bool handleDbChanges( void );
+    bool handleDbChanges(const Cti::Timing::MillisecondTimer &timer, const unsigned long slice);
 
-    bool handleDbChange(const CtiDBChangeMsg &dbchg);
-    bool handleDeviceChange(long device_id, int change_type);
-    bool handlePortChange  (long port_id,   int change_type);
+    void handleDbChange(const CtiDBChangeMsg &dbchg);
+    void handleDeviceChange(long device_id, int change_type);
+    void handlePortChange  (long port_id,   int change_type);
 
-    bool deletePort( void );
-    bool updatePort( void );
+    void deletePort( void );
+    void updatePort( void );
 
-    void purgeDeviceWork(device_record *dr, int error_code);
+    void purgeDeviceWork(const device_activity_map::value_type &active_device, int error_code);
     void purgePortWork(int error_code);
 
-    bool manageDevices( void );
-    bool communicate( void );
+    bool distributeRequests(const Cti::Timing::MillisecondTimer &timer, const unsigned long slice);
+    void handleDeviceRequest(OUTMESS *om);
 
-    bool handleDeviceRequests( void );
+    bool startPendingRequests(const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
 
-    bool generateOutbounds( void );
+    bool generateOutbounds(const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
 
-    bool generateKeepalives( om_queue &local_queue );
+    void generateKeepalives( om_queue &local_queue );
     static bool isDnpKeepaliveNeeded( const device_record &dr, const CtiTime &TimeNow );
     static void generateDnpKeepalive( om_queue &local_queue, const device_record &dr, const CtiTime &TimeNow );
 
     void readPortQueue( CtiPortSPtr &port, om_queue &local_queue );
 
-    bool processInbounds( void );
-    bool processDnpInbound  (device_record &dr);
-    bool processGpuffInbound(device_record &dr);
+    bool expireTimeouts(const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
+
+    bool processInbounds(const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
+    void processGpuffInbound(device_record &dr);
+    void processDeviceSingleInbound(device_record &dr);
 
     void trace( void );
     string describeDevice( const device_record &dr ) const;
 
-    bool sendResults( void );
+    bool sendResults(const Cti::Timing::MillisecondTimer &timer, const unsigned long slice);
+    void sendResult(device_record &dr);
 
     static void sendDevicePointsFromProtocol(vector<CtiPointDataMsg *> &points, const CtiDeviceSingleSPtr &device, CtiConnection &connection);
 
@@ -139,7 +131,21 @@ private:
 
     device_record_map _device_records;
 
-    std::set< device_record * > _active_devices;
+    CtiTime _last_keepalive;
+
+    om_queue _request_queue;
+
+    device_list _request_pending;
+    device_list _to_generate;
+    device_list _waiting_for_data;
+    device_list _to_decode;
+    device_list _request_complete;
+
+    std::multimap<CtiTime, device_list::iterator> _timeouts;
+
+    device_activity_map _active_devices;
+
+    device_activity_map _waiting_devices;
 
     std::list< CtiMessage * > _traceList;
 
@@ -152,7 +158,7 @@ protected:
     virtual bool setupPort( void ) = 0;
     virtual bool manageConnections( void ) = 0;
     virtual void sendOutbound( device_record &dr ) = 0;
-    virtual bool collectInbounds( void ) = 0;
+    virtual bool collectInbounds( const Cti::Timing::MillisecondTimer & timer, const unsigned long until) = 0;
 
     virtual void loadDeviceProperties( const std::vector<const CtiDeviceSingle *> &devices ) = 0;
 
