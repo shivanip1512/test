@@ -183,7 +183,7 @@ function sendSystemEnableCommand (disable) {
             } else {
                 display_status(commandName, msgType, "Failed", "red");
             }
-        },
+        }
     });
 }
 
@@ -203,7 +203,7 @@ function sendResetOpCountCommand () {
                 } else {
                     display_status(commandName, msgType, "Failed", "red");
                 }
-            },
+            }
 	    });
 	}
 }
