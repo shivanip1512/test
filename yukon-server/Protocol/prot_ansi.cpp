@@ -483,7 +483,7 @@ int CtiProtocolANSI::recvOutbound( OUTMESS *OutMessage )
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
-   return( _header->numTablesRequested );   //just a val
+    return( getScanOperation() == loopBack ? 1 : _header->numTablesRequested );   //just a val
 }
 
 // needed on both sides
@@ -922,7 +922,7 @@ void CtiProtocolANSI::convertToTable(  )
                           _table01->printResult(getAnsiDeviceName());
                       }
 
-                      if ((int)getApplicationLayer().getAnsiDeviceType() == 2) //sentinel
+                      if ((int)getApplicationLayer().getAnsiDeviceType() == CtiANSIApplication::sentinel) //sentinel
                       {
                           getApplicationLayer().setFWVersionNumber(_table01->getFWVersionNumber());
                       }
@@ -2089,89 +2089,39 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
         {
             if ((int) demandSelect[x] != 255)
             {
-                if (_table12->getRawTimeBase(demandSelect[x]) == 4 &&
+                if ((_table12->getRawTimeBase(demandSelect[x]) == 4 ||
+                     _table12->getRawTimeBase(demandSelect[x]) == 2 ) &&
                     _table12->getRawIDCode(demandSelect[x]) == ansiOffset )
                 {
                     success = true;
-                    if (_table16->getDemandCtrlFlag(demandSelect[x]) )
+                    double multiplier = 1;
+                    if (_table15 != NULL)  
+                    {    
+                        multiplier *= _table15->getElecMultiplier((demandSelect[x]%20));
+                    }
+                    if(ansiDeviceType == CtiANSIApplication::sentinel || ansiDeviceType == CtiANSIApplication::focus)
                     {
-                        if (_table15 != NULL)
-                        {
-                            if(ansiDeviceType != 2)
-                            {
-                                *value = ((_table23->getDemandValue(x, ansiTOURate) *
-                                   _table15->getElecMultiplier((demandSelect[x]%20))) / 1000000000);
-                                *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
-                                if (_table52 != NULL)
-                                {
-                                    *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
-                                }
-                            }
-                            else  // 2 = sentinel
-                            {
-                                // will bring back value in KW/KVAR ...
-                                *value = (_table23->getDemandValue(x, ansiTOURate) *
-                                           _table15->getElecMultiplier((demandSelect[x]%20)) /
-                                          _table12->getResolvedMultiplier(demandSelect[x])) / 1000;
-                                *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
-                                if (_table52 != NULL)
-                                {
-                                    *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if(ansiDeviceType != 2)
-                            {
-                                *value = (_table23->getDemandValue(x, ansiTOURate)  / 1000000000);
-                                *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
-                                if (_table52 != NULL)
-                                {
-                                    *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
-                                }
-                            }
-                            else  // 2 = sentinel
-                            {
-                                // will bring back value in KW/KVAR ...
-                                 *value = (_table23->getDemandValue(x, ansiTOURate) /
-                                           _table12->getResolvedMultiplier(demandSelect[x])) / 1000;
-                                 *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
-                                 if (_table52 != NULL)
-                                 {
-                                     *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
-                                 }
-                            }
-
-                        }
-                        if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
-                        {
-                            CtiLockGuard< CtiLogger > doubt_guard( dout );
-                            dout << " *value =   "<<*value<<endl;
-                        }
+                         // 2 = sentinel
+                         multiplier /= (_table12->getResolvedMultiplier(demandSelect[x])/1000);
                     }
                     else
                     {
-                        if(ansiDeviceType != 2)
-                        {
-                            *value = _table23->getDemandValue(x, ansiTOURate);
-                            *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
-                            if (_table52 != NULL)
-                            {
-                                *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
-                            }
-                        }
-                        else  // 2 = sentinel
-                        {
-                            // will bring back value in KW/KVAR ...
-                            *value = (_table23->getDemandValue(x, ansiTOURate) /
-                                       _table12->getResolvedMultiplier(demandSelect[x]))/1000;
-                            *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
-                            if (_table52 != NULL)
-                            {
-                                *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
-                            }
-                        }
+                        multiplier /= 1000000000;
+                    }
+                    
+                    // will bring back value in KW/KVAR ...
+                    *value = _table23->getDemandValue(x, ansiTOURate) * multiplier ;
+                    *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
+                    if (_table52 != NULL)
+                    {
+                        *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
+                    }
+                    
+                    
+                    if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
+                    {
+                        CtiLockGuard< CtiLogger > doubt_guard( dout );
+                        dout << " *value =   "<<*value<<endl;
                     }
                     break;
                 }
@@ -2224,9 +2174,12 @@ bool CtiProtocolANSI::retreiveSummation( int offset, double *value )
                     {
                         if (_table12 != NULL)
                         {
-                            if (_table12->getRawTimeBase(summationSelect[x]) == 0 &&
+                            if ((_table12->getRawTimeBase(summationSelect[x]) == 0  || 
+                                _table12->getRawTimeBase(summationSelect[x]) == 3 || 
+                                _table12->getRawTimeBase(summationSelect[x]) == 2 )&&
                                 _table12->getRawIDCode(summationSelect[x]) == ansiOffset)
                             {
+                                double multiplier = 1;
                                 if (_table16 != NULL  && _table23 != NULL)
                                 {
                                     if (_table16->getConstantsFlag(summationSelect[x]) &&
@@ -2234,54 +2187,26 @@ bool CtiProtocolANSI::retreiveSummation( int offset, double *value )
                                     {
                                         if (_table15 != NULL)
                                         {
-                                            if(ansiDeviceType != 2)
-                                            {
-                                                *value = ((_table23->getSummationsValue(x, ansiTOURate) *
-                                                   _table15->getElecMultiplier(summationSelect[x])) / 1000000000);
-                                            }
-                                            else //sentinel = 2
-                                            {
-                                                // will bring back value in KWH/KVARH ...
-                                                 *value = ((_table23->getSummationsValue(x, ansiTOURate) *
-                                                   _table15->getElecMultiplier(summationSelect[x])) /
-                                                           _table12->getResolvedMultiplier(summationSelect[x])) / 1000;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if(ansiDeviceType != 2)
-                                            {
-                                                *value = (_table23->getSummationsValue(x, ansiTOURate) / 1000000000);
-                                            }
-                                            else  // 2 = sentinel
-                                            {
-                                                // will bring back value in KWH/KVARH ...
-                                                 *value = (_table23->getSummationsValue(x, ansiTOURate) /
-                                                           _table12->getResolvedMultiplier(summationSelect[x])) / 1000;
-                                            }
-                                        }
-                                        success = true;
-                                        if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
-                                        {
-                                            CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                            dout << " *value =   "<<*value<<endl;
+                                            multiplier *= _table15->getElecMultiplier(summationSelect[x]);
                                         }
                                     }
-                                    else
+                                    if(ansiDeviceType == CtiANSIApplication::kv2 || ansiDeviceType == CtiANSIApplication::kv)
                                     {
-                                        if(ansiDeviceType != 2)
-                                        {
-                                            *value = _table23->getSummationsValue(x, ansiTOURate);
-                                        }
-                                        else  // 2 = sentinel
-                                        {
-                                            // will bring back value in KW/KVAR ...
-                                            *value = (_table23->getSummationsValue(x, ansiTOURate) /
-                                                       _table12->getResolvedMultiplier(summationSelect[x]))/1000;
-                                        }
-                                        success = true;
+                                        multiplier /= 1000000000;
                                     }
                                 }
+                                if(ansiDeviceType == CtiANSIApplication::sentinel || ansiDeviceType == CtiANSIApplication::focus)
+                                {
+                                    multiplier /= (_table12->getResolvedMultiplier(summationSelect[x]) / 1000);
+                                }
+                                *value = _table23->getSummationsValue(x, ansiTOURate) * multiplier;
+                                success = true;
+                                if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
+                                {
+                                    CtiLockGuard< CtiLogger > doubt_guard( dout );
+                                    dout << " *value =   "<<*value<<endl;
+                                }
+                                
                                 break;
                             }
                         }
@@ -2330,98 +2255,35 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                     _table12->getRawIDCode(demandSelect[x]) == ansiOffset)
                 {
                     success = true;
+                    double multiplier = 1;
                     if (_table16->getDemandCtrlFlag(demandSelect[x]) )
                     {
                         if (_table15 != NULL)
                         {
-                            if(ansiDeviceType != 2)
-                            {
-                                *value = ((_frozenRegTable->getDemandResetDataTable()->getDemandValue(x, ansiTOURate) *
-                                   _table15->getElecMultiplier((demandSelect[x]%20))) / 1000000000);
-                                *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
-                                if (_table52 != NULL)
-                                {
-                                    *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
-                                }
-                            }
-                            else  // 2 = sentinel
-                            {
-                                // will bring back value in KW/KVAR ...
-                                *value = (_frozenRegTable->getDemandResetDataTable()->getDemandValue(x, ansiTOURate) *
-                                           _table15->getElecMultiplier((demandSelect[x]%20)) /
-                                          _table12->getResolvedMultiplier(demandSelect[x])) / 1000;
-                                *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
-                                if (isTimeUninitialized(*timestamp))
-                                {
-                                    *timestamp = _frozenRegTable->getEndDateTime();
-                                }
-                                if (_table52 != NULL)
-                                {
-                                    *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
-                                }
-                            }
+                            multiplier *= _table15->getElecMultiplier((demandSelect[x]%20));
                         }
-                        else
+                        if(ansiDeviceType == CtiANSIApplication::kv2 || ansiDeviceType == CtiANSIApplication::kv)
                         {
-                            if(ansiDeviceType != 2)
-                            {
-                                *value = (_frozenRegTable->getDemandResetDataTable()->getDemandValue(x, ansiTOURate)  / 1000000000);
-                                *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
-                                if (_table52 != NULL)
-                                {
-                                    *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
-                                }
-                            }
-                            else  // 2 = sentinel
-                            {
-                                // will bring back value in KW/KVAR ...
-                                 *value = (_frozenRegTable->getDemandResetDataTable()->getDemandValue(x, ansiTOURate) /
-                                           _table12->getResolvedMultiplier(demandSelect[x])) / 1000;
-                                 *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
-                                 if (isTimeUninitialized(*timestamp))
-                                 {
-                                     *timestamp = _frozenRegTable->getEndDateTime();
-                                 }
-                                 if (_table52 != NULL)
-                                 {
-                                     *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
-                                 }
-                            }
-
-                        }
-                        if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
-                        {
-                            CtiLockGuard< CtiLogger > doubt_guard( dout );
-                            dout << " *value =   "<<*value<<endl;
+                            multiplier /= 1000000000;
                         }
                     }
-                    else
+                    if(ansiDeviceType == CtiANSIApplication::sentinel || ansiDeviceType == CtiANSIApplication::focus)
                     {
-                        if(ansiDeviceType != 2)
-                        {
-                            *value = _frozenRegTable->getDemandResetDataTable()->getDemandValue(x, ansiTOURate);
-                            *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
-                            if (_table52 != NULL)
-                            {
-                                *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
-                            }
-                        }
-                        else  // 2 = sentinel
-                        {
-                            // will bring back value in KW/KVAR ...
-                            *value = (_frozenRegTable->getDemandResetDataTable()->getDemandValue(x, ansiTOURate) /
-                                       _table12->getResolvedMultiplier(demandSelect[x]))/1000;
-                            *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
+                        // will bring back value in KW/KVAR ...
+                        multiplier /= (_table12->getResolvedMultiplier(demandSelect[x])/1000);
+                        
+                    }
 
-                            if (isTimeUninitialized(*timestamp))
-                            {
-                                *timestamp = _frozenRegTable->getEndDateTime();
-                            }
-                            if (_table52 != NULL)
-                            {
-                                *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
-                            }
-                        }
+                    *value = _frozenRegTable->getDemandResetDataTable()->getDemandValue(x, ansiTOURate) * multiplier;
+                    *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
+                    if (_table52 != NULL)
+                    {
+                        *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
+                    }
+                    if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
+                    {
+                        CtiLockGuard< CtiLogger > doubt_guard( dout );
+                        dout << " *value =   "<<*value<<endl;
                     }
                     break;
                 }
@@ -2476,6 +2338,7 @@ bool CtiProtocolANSI::retreiveFrozenSummation( int offset, double *value, double
                             if (_table12->getRawTimeBase(summationSelect[x]) == 0 &&
                                 _table12->getRawIDCode(summationSelect[x]) == ansiOffset)
                             {
+                                double multiplier = 1;
                                 if (_table16 != NULL  && _table23 != NULL)
                                 {
                                     if (_table16->getConstantsFlag(summationSelect[x]) &&
@@ -2483,59 +2346,27 @@ bool CtiProtocolANSI::retreiveFrozenSummation( int offset, double *value, double
                                     {
                                         if (_table15 != NULL)
                                         {
-                                            if(ansiDeviceType != 2)
-                                            {
-                                                *value = ((_frozenRegTable->getDemandResetDataTable()->getSummationsValue(x, ansiTOURate) *
-                                                   _table15->getElecMultiplier(summationSelect[x])) / 1000000000);
-                                                *timestamp = _frozenRegTable->getEndDateTime();
-                                            }
-                                            else //sentinel = 2
-                                            {
-                                                // will bring back value in KWH/KVARH ...
-                                                 *value = ((_frozenRegTable->getDemandResetDataTable()->getSummationsValue(x, ansiTOURate) *
-                                                   _table15->getElecMultiplier(summationSelect[x])) /
-                                                           _table12->getResolvedMultiplier(summationSelect[x])) / 1000;
-                                                 *timestamp = _frozenRegTable->getEndDateTime();
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if(ansiDeviceType != 2)
-                                            {
-                                                *value = (_frozenRegTable->getDemandResetDataTable()->getSummationsValue(x, ansiTOURate) / 1000000000);
-                                                *timestamp = _frozenRegTable->getEndDateTime();
-                                            }
-                                            else  // 2 = sentinel
-                                            {
-                                                // will bring back value in KWH/KVARH ...
-                                                 *value = (_frozenRegTable->getDemandResetDataTable()->getSummationsValue(x, ansiTOURate) /
-                                                           _table12->getResolvedMultiplier(summationSelect[x])) / 1000;
-                                                 *timestamp = _frozenRegTable->getEndDateTime();
-                                            }
-                                        }
-                                        success = true;
-                                        if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
-                                        {
-                                            CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                            dout << " *value =   "<<*value<<endl;
+                                            multiplier *= _table15->getElecMultiplier(summationSelect[x]);
                                         }
                                     }
-                                    else
+                                    if(ansiDeviceType == CtiANSIApplication::kv2 || ansiDeviceType == CtiANSIApplication::kv)
                                     {
-                                        if(ansiDeviceType != 2)
-                                        {
-                                            *value = _frozenRegTable->getDemandResetDataTable()->getSummationsValue(x, ansiTOURate);
-                                            *timestamp = _frozenRegTable->getEndDateTime();
-                                        }
-                                        else  // 2 = sentinel
-                                        {
-                                            // will bring back value in KW/KVAR ...
-                                            *value = (_frozenRegTable->getDemandResetDataTable()->getSummationsValue(x, ansiTOURate) /
-                                                       _table12->getResolvedMultiplier(summationSelect[x]))/1000;
-                                            *timestamp = _frozenRegTable->getEndDateTime();
-                                        }
-                                        success = true;
+                                        multiplier /= 1000000000;
                                     }
+                                }
+                                if(ansiDeviceType == CtiANSIApplication::sentinel || ansiDeviceType == CtiANSIApplication::focus)
+                                {
+                                    multiplier /= (_table12->getResolvedMultiplier(summationSelect[x])/1000);
+                                }
+                                success = true;
+                                
+                                *value = _frozenRegTable->getDemandResetDataTable()->getSummationsValue(x, ansiTOURate) * multiplier;
+                                *timestamp = _frozenRegTable->getEndDateTime();
+                                
+                                if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
+                                {
+                                    CtiLockGuard< CtiLogger > doubt_guard( dout );
+                                    dout << " *value =   "<<*value<<endl;
                                 }
                                 break;
                             }
@@ -2569,7 +2400,7 @@ bool CtiProtocolANSI::retreivePresentValue( int offset, double *value )
     int ansiOffset;
     int ansiDeviceType = (int) getApplicationLayer().getAnsiDeviceType();
 
-    if (ansiDeviceType == 1) //if 1, kv2 gets info from mfg tbl 110
+    if (ansiDeviceType == CtiANSIApplication::kv2) //if 1, kv2 gets info from mfg tbl 110
     {
         try
         {
@@ -2615,30 +2446,22 @@ bool CtiProtocolANSI::retreivePresentValue( int offset, double *value )
                                 {
                                     if (_table16 != NULL  && _table28 != NULL)
                                     {
+                                        double multiplier = 1;
                                         if (_table16->getConstantsFlag(presentValueSelect[x]) &&
                                             !_table16->getConstToBeAppliedFlag(presentValueSelect[x]))
                                         {
                                             if (_table15 != NULL)
                                             {
-                                                *value = ((_table28->getPresentValue(x) *
-                                                       _table15->getElecMultiplier(presentValueSelect[x])) /*/ 1000000000*/);
-                                            }
-                                            else
-                                            {
-                                                *value = (_table28->getPresentValue(x) /*/ 1000000000*/);
-                                            }
-                                            success = true;
-                                            if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
-                                            {
-                                                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                                dout << " *value =   "<<*value<<endl;
+                                                multiplier *= _table15->getElecMultiplier(presentValueSelect[x]); /*/ 1000000000*/
                                             }
                                         }
-                                        else
+                                        *value = _table28->getPresentValue(x) * multiplier;
+                                        success = true;
+                                        if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
                                         {
-                                            *value = _table28->getPresentValue(x);
-                                            success = true;
-                                        }
+                                            CtiLockGuard< CtiLogger > doubt_guard( dout );
+                                            dout << " *value =   "<<*value<<endl;
+                                        }                                        
                                     }
                                     break;
                                 }
@@ -2673,20 +2496,10 @@ bool CtiProtocolANSI::retreivePresentDemand( int offset, double *value )
     int ansiQuadrant;
     int ansiDeviceType = (int) getApplicationLayer().getAnsiDeviceType();
 
-    if (ansiDeviceType == 1) //if 1, kv2 gets info from mfg tbl 110
+    if (ansiDeviceType == CtiANSIApplication::kv2) //if 1, kv2 gets info from mfg tbl 110
     {
         try
         {
-           /* success = retreiveKV2PresentValue(offset, value);
-            if (success)
-            {
-                if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
-                {
-                    CtiLockGuard< CtiLogger > doubt_guard( dout );
-                    dout << " *value =   "<<*value<<endl;
-                }
-            }*/
-
             {
                     CtiLockGuard< CtiLogger > doubt_guard( dout );
                     dout << " NOT IMPLEMENTED FOR KV2 YET"<<endl;
@@ -2725,29 +2538,21 @@ bool CtiProtocolANSI::retreivePresentDemand( int offset, double *value )
                                 {
                                     if (_table16 != NULL  && _table28 != NULL)
                                     {
+                                        double multiplier = 1;
                                         if (_table16->getConstantsFlag(presentDemandSelect[x]) &&
                                             !_table16->getConstToBeAppliedFlag(presentDemandSelect[x]))
                                         {
                                             if (_table15 != NULL)
                                             {
-                                                *value = ((_table28->getPresentDemand(x) *
-                                                       _table15->getElecMultiplier(presentDemandSelect[x])) /*/ 1000000000*/);
-                                            }
-                                            else
-                                            {
-                                                *value = (_table28->getPresentDemand(x) /*/ 1000000000*/);
-                                            }
-                                            success = true;
-                                            if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
-                                            {
-                                                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                                dout << " *value =   "<<*value<<endl;
+                                                multiplier *= _table15->getElecMultiplier(presentDemandSelect[x]); /*/ 1000000000*/
                                             }
                                         }
-                                        else
+                                        *value = _table28->getPresentDemand(x) * multiplier;
+                                        success = true;
+                                        if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
                                         {
-                                            *value = _table28->getPresentDemand(x);
-                                            success = true;
+                                            CtiLockGuard< CtiLogger > doubt_guard( dout );
+                                            dout << " *value =   "<<*value<<endl;
                                         }
                                     }
                                     break;
@@ -2780,7 +2585,7 @@ bool CtiProtocolANSI::retreiveBatteryLife( int offset, double *value )
 
     int ansiDeviceType = (int) getApplicationLayer().getAnsiDeviceType();
 
-    if (ansiDeviceType != 2) //if 0,1, kv,kv2 not supported
+    if (ansiDeviceType != CtiANSIApplication::sentinel) //if 0,1, kv,kv2 not supported
     {
         return success;
     }

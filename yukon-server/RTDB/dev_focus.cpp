@@ -32,10 +32,10 @@ int CtiDeviceFocus::buildSingleTableRequest(BYTE *aMsg, UINT tableId)
 
     //here is the password for the sentinel (should be changed to a cparm, I think)
     BYTE        password[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-    ANSI_TABLE_WANTS    table[1] = {tableId, 0, 60,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ};
-    BYTE scanOperation = 0; //0 = general scan
+    ANSI_TABLE_WANTS    table[1] = {0,0,60, ANSI_TABLE_TYPE_STANDARD,ANSI_OPERATION_READ};
+
+    BYTE scanOperation = 3; //3 = loopback
     UINT flags = 0;
-    // put the stuff in the buffer
     memcpy( aMsg, &header, sizeof (header));
     memcpy( (aMsg+sizeof(header)), &password, sizeof (password));
     memcpy ((aMsg+sizeof(header)+sizeof(password)),
@@ -109,20 +109,15 @@ int CtiDeviceFocus::buildScannerTableRequest (BYTE *aMsg, UINT flags)
             }
             setLastLPTime( CtiTime(CtiTime().seconds() - (86400 * 30)) );
         }
-    }
-    else
-    {
-        header.lastLoadProfileTime = 0;
-    }
-
-
-    if (useScanFlags())
-    {
         if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " " << getName() <<" lastLPTime "<<getLastLPTime()<< endl;
         }
+    }
+    else
+    {
+        header.lastLoadProfileTime = 0;
     }
 
     // lazyness so I don't have to continually remember to update this

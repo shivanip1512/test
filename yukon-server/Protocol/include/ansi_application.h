@@ -74,7 +74,6 @@
 #define ANSI_C12_21        0x02
 
 
-
 class IM_EX_PROT CtiANSIApplication
 {
    public:
@@ -289,5 +288,6 @@ class IM_EX_PROT CtiANSIApplication
        static const string SENTINELmeter;
 
 };
+
 
 #endif // #ifndef __ANSI_APPLICATION_H__

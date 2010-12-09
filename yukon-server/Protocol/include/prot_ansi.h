@@ -276,7 +276,8 @@ class IM_EX_PROT CtiProtocolANSI
       {
           generalScan = 0,
           generalPilScan,
-          demandReset
+          demandReset,
+          loopBack
       } ANSI_SCAN_OPERATION;
 
       void reinitialize( void );

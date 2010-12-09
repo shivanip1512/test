@@ -250,7 +250,6 @@ INT CtiDeviceAnsi::ExecuteRequest( CtiRequestMsg         *pReq,
                                   list< OUTMESS* >     &outList )
 {
     int nRet = NoError;
-    list< OUTMESS* > tmpOutList;
 
     //_parseFlags = parse.getFlags();
 
@@ -258,7 +257,7 @@ INT CtiDeviceAnsi::ExecuteRequest( CtiRequestMsg         *pReq,
     {
         case LoopbackRequest:
         {
-            nRet = executeLoopback( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+            nRet = executeLoopback( pReq, parse, OutMessage, vgList, retList, outList );
             break;
         }
         case ScanRequest:
@@ -325,35 +324,26 @@ INT CtiDeviceAnsi::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
     inMsgResultString = string((const char*)InMessage->Buffer.InMessage, InMessage->InLength);
 
-    if (getANSIProtocol().getScanOperation() == 2) //demand Reset
+    if (getANSIProtocol().getScanOperation() >= 2 ) //2= demand Reset, 3=loopback
     {
-        //if (InMessage->EventCode == NORMAL)
+        string returnString = getName() + " / " + (getANSIProtocol().getScanOperation() == 2 ? "demand reset " : "loopback ");
         if (findStringIgnoreCase(inMsgResultString, "successful"))
         {
-            retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                            InMessage->Return.CommandStr,
-                                            //string(),
-                                            getName() + " / demand reset successful",
-                                            InMessage->EventCode & 0x7fff,
-                                            InMessage->Return.RouteID,
-                                            InMessage->Return.MacroOffset,
-                                            InMessage->Return.Attempt,
-                                            InMessage->Return.GrpMsgID,
-                                            InMessage->Return.UserID);
+            returnString += " successful";
         }
         else
         {
-            retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                            InMessage->Return.CommandStr,
-                                            //string(),
-                                            getName() + " / demand reset failed",
-                                            InMessage->EventCode & 0x7fff,
-                                            InMessage->Return.RouteID,
-                                            InMessage->Return.MacroOffset,
-                                            InMessage->Return.Attempt,
-                                            InMessage->Return.GrpMsgID,
-                                            InMessage->Return.UserID);
+            returnString += " failed"; 
         }
+        retMsg = CTIDBG_new CtiReturnMsg(getID(),
+                InMessage->Return.CommandStr,
+                returnString,
+                InMessage->EventCode & 0x7fff,
+                InMessage->Return.RouteID,
+                InMessage->Return.MacroOffset,
+                InMessage->Return.Attempt,
+                InMessage->Return.GrpMsgID,
+                InMessage->Return.UserID);
     }
     else
     {
@@ -391,43 +381,39 @@ INT CtiDeviceAnsi::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         }
         else if (useScanFlags())
         {
-            //if (InMessage->EventCode == NORMAL)
-            //if (findStringIgnoreCase(inMsgResultString, "successful"))
-            {
-                unsigned long *lastLpTime;
-                lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
+           unsigned long *lastLpTime;
+           lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
 
-                try
-                {
+           try
+           {
 
-                if (lastLpTime != NULL && *lastLpTime != 0)
-                {
-                        if (CtiTime(*lastLpTime).isValid())
-                        {
-                    setLastLPTime(CtiTime(*lastLpTime));
-                    if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
-                    {
-                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                         dout << CtiTime() << " ResultDecode for " << getName() <<" lastLPTime: "<<getLastLPTime()<< endl;
-                     }
-                }
-                    }
-                else
-                {
-                    if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " ResultDecode for " << getName() <<" lastLPTime: 0 ERROR"<< endl;
-                    }
-                }
-            }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }
-            }
-            resetScanFlag(ScanRateGeneral);
+               if (lastLpTime != NULL && *lastLpTime != 0)
+               {
+                  if (CtiTime(*lastLpTime).isValid())
+                  {
+                       setLastLPTime(CtiTime(*lastLpTime));
+                       if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
+                       {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " ResultDecode for " << getName() <<" lastLPTime: "<<getLastLPTime()<< endl;
+                       }
+                  }
+               }
+               else
+               {
+                   if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
+                   {
+                       CtiLockGuard<CtiLogger> doubt_guard(dout);
+                       dout << CtiTime() << " ResultDecode for " << getName() <<" lastLPTime: 0 ERROR"<< endl;
+                   }
+               }
+           }
+           catch(...)
+           {
+               CtiLockGuard<CtiLogger> logger_guard(dout);
+               dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+           }
+           resetScanFlag(ScanRateGeneral);
         }
 
     }
@@ -449,11 +435,12 @@ INT CtiDeviceAnsi::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 }
 INT CtiDeviceAnsi::sendCommResult( INMESS *InMessage)
 {
-    if (getANSIProtocol().getScanOperation() == 2) //demand Reset
+    if (getANSIProtocol().getScanOperation() >= 2 ) //2= demand Reset, 3=loopback
     {
+        string returnString = (getANSIProtocol().getScanOperation() == 2 ? "demand reset " : "loopback ");
         if (InMessage->EventCode == NORMAL)
         {
-            string returnString("demand reset successful");
+            returnString += "successful";
             int sizeOfReturnString = returnString.length();
             memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
             InMessage->InLength = sizeOfReturnString;
@@ -462,7 +449,7 @@ INT CtiDeviceAnsi::sendCommResult( INMESS *InMessage)
         }
         else
         {
-            string returnString("demand reset failed");
+            returnString += "failed";
             int sizeOfReturnString = returnString.length();
             memcpy( InMessage->Buffer.InMessage, returnString.c_str(), sizeOfReturnString );
             InMessage->InLength = sizeOfReturnString;
@@ -470,8 +457,6 @@ INT CtiDeviceAnsi::sendCommResult( INMESS *InMessage)
     }
     else //general Scan
     {
-
-        //if (useScanFlags())
 
         if (InMessage->EventCode == NORMAL)
         {
@@ -528,7 +513,7 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
 
     _result_string = "";
 
-    if (getANSIProtocol().getScanOperation() == 2)
+    if (getANSIProtocol().getScanOperation() >= 2)
     {
         return;
     }
@@ -749,16 +734,14 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
 void CtiDeviceAnsi::createPointData(CtiPointAnalogSPtr pPoint, double value, double timestamp, unsigned int archiveFlag, list< CtiReturnMsg* > &retList)
 {
     CtiReturnMsg *msgPtr = CTIDBG_new CtiReturnMsg();
-    CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg();
+    CtiPointDataMsg *pData = NULL;
     
-    pData->setId( pPoint->getID() );
     value *= (pPoint->getMultiplier() != NULL ? pPoint->getMultiplier() : 1);
     value += (pPoint->getDataOffset() != NULL ? pPoint->getDataOffset() : 0) ;
     
-    _result_string += getName() + " / " + pPoint->getName() + ": " + CtiNumStr(value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
+    _result_string += getName() + " / " + pPoint->getName() + ": " + CtiNumStr(value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces()) + "\n";
 
-    pData->setValue( value );
-    pData->setQuality( NormalQuality );
+    pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), value, (int) NormalQuality, pPoint->getType());
     if (archiveFlag & CMD_FLAG_UPDATE)
     {
         pData->setTags(TAG_POINT_MUST_ARCHIVE);
@@ -771,15 +754,14 @@ void CtiDeviceAnsi::createPointData(CtiPointAnalogSPtr pPoint, double value, dou
     {
         pData->setTime( CtiTime() );
     }
-    pData->setType( pPoint->getType() );
 
     msgPtr->insert(pData);
     retList.push_back(msgPtr);
-    if (pData != NULL)
+   /* if (pData != NULL)
     {
         delete pData;
         pData = NULL;
-    }
+    }*/
 }
 void CtiDeviceAnsi::createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< CtiReturnMsg* > &retList)
 {
