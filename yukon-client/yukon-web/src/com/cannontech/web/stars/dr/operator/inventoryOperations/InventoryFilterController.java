@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.dr.operator.inventoryOperations;
 
-import java.beans.PropertyEditorSupport;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
@@ -23,14 +22,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
-import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -57,7 +54,6 @@ public class InventoryFilterController {
     private InventoryOperationsFilterService inventoryOperationsFilterService;
     private MemoryCollectionProducer memoryCollectionProducer;
     private StarsDatabaseCache starsDatabaseCache;
-    private YukonListDao yukonListDao;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private FilterModelValidator filterModelValidator;
     
@@ -83,7 +79,7 @@ public class InventoryFilterController {
         
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
         YukonSelectionList devTypeList = energyCompany.getYukonSelectionList(YukonSelectionListEnum.DEVICE_TYPE.getListName());
-        newRule.setDeviceType(devTypeList.getYukonListEntries().get(0));
+        newRule.setDeviceType(devTypeList.getYukonListEntries().get(0).getEntryID());
         
         filterModel.getFilterRules().add(newRule);
 
@@ -166,19 +162,6 @@ public class InventoryFilterController {
             MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver("yukon.web.modules.operator.filterSelection.");
             binder.setMessageCodesResolver(msgCodesResolver);
         }
-        
-        binder.registerCustomEditor(YukonListEntry.class, "filterRules.deviceType", new PropertyEditorSupport() {
-            @Override
-            public void setAsText(String deviceTypeEntryId) throws IllegalArgumentException {
-                YukonListEntry entry = yukonListDao.getYukonListEntry(Integer.parseInt(deviceTypeEntryId));
-                setValue(entry);
-            }
-            @Override
-            public String getAsText() {
-                YukonListEntry entry = (YukonListEntry) getValue();
-                return Integer.toString((entry.getEntryID()));
-            }
-        });
     }
     
     @Autowired
@@ -194,11 +177,6 @@ public class InventoryFilterController {
     @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setYukonListDao(YukonListDao yukonListDao) {
-        this.yukonListDao = yukonListDao;
     }
     
     @Autowired

@@ -63,7 +63,7 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
         switch (rule.getRuleType()) {
         
         case DEVICE_TYPE:
-            sql.append("yle.entryId").eq(rule.getDeviceType().getEntryID());
+            sql.append("yle.entryId").eq(rule.getDeviceType());
             break;
             
         case FIELD_INSTALL_DATE:

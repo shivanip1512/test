@@ -2,8 +2,6 @@ package com.cannontech.web.stars.dr.operator.inventoryOperations.model;
 
 import java.util.Date;
 
-import com.cannontech.common.constants.YukonListEntry;
-
 public class RuleModel {
     
     private FilterRuleType ruleType;
@@ -22,7 +20,7 @@ public class RuleModel {
     private Date programSignupDate;
     
     /* Device Type Rule */
-    private YukonListEntry deviceType;
+    private int deviceType;
     
     /* Serial Number Range Rule */
     private long serialNumberFrom;
@@ -79,11 +77,11 @@ public class RuleModel {
         this.programSignupDate = programSignupDate;
     }
 
-    public YukonListEntry getDeviceType() {
+    public int getDeviceType() {
         return deviceType;
     }
 
-    public void setDeviceType(YukonListEntry deviceType) {
+    public void setDeviceType(int deviceType) {
         this.deviceType = deviceType;
     }
 
