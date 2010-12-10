@@ -133,7 +133,7 @@ public class DeviceReconfigController {
     }
     
     @RequestMapping(value="/operator/inventory/inventoryOperations/deviceReconfig/newOperation", method=RequestMethod.GET)
-    public String newOperation(HttpServletRequest request, ModelMap modelMap, int taskId, String type, YukonUserContext userContext){
+    public String newOperation(HttpServletRequest request, ModelMap modelMap, int taskId, String type, YukonUserContext userContext) {
         
         InventoryConfigTask task = inventoryConfigTaskDao.getById(taskId);
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -199,4 +199,5 @@ public class DeviceReconfigController {
     public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
         this.energyCompanyDao = energyCompanyDao;
     }
+    
 }

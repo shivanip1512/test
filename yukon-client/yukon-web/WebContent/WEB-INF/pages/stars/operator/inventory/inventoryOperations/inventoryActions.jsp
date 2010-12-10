@@ -28,17 +28,19 @@
     
         <cti:dataGrid cols="1">
             <cti:dataGridCell>
-                <table>
-                    <tr>        
-                        <td class="actionCell">
-                            <form action="deviceReconfig/setup" method="get">
-                                <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-                                <cti:button key="deviceReconfig" type="submit" styleClass="buttonGroup" name="deviceReconfig"/>
-                            </form>
-                        </td>
-                        <td class="actionCell"><i:inline key=".deviceReconfigDescription"/></td>
-                    </tr>
-                </table>
+                <cti:checkRolesAndProperties value="DEVICE_RECONFIG">
+                    <table>
+                        <tr>
+                            <td class="actionCell">
+                                <form action="deviceReconfig/setup" method="get">
+                                    <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
+                                    <cti:button key="deviceReconfig" type="submit" styleClass="buttonGroup" name="deviceReconfig"/>
+                                </form>
+                            </td>
+                            <td class="actionCell"><i:inline key=".deviceReconfigDescription"/></td>
+                        </tr>
+                    </table>
+                </cti:checkRolesAndProperties>
             </cti:dataGridCell>
         </cti:dataGrid>
      

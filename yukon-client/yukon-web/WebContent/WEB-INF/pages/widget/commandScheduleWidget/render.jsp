@@ -4,8 +4,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-
-
 <c:choose>
     <c:when test="${empty schedules}">
         <div>
