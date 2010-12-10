@@ -119,6 +119,13 @@ ALTER TABLE InventoryConfigTaskItem
             ON DELETE CASCADE;
 /* End YUK-9300 */
 
+/* Start YUK-9318 */
+UPDATE YukonRoleProperty 
+SET KeyName = 'Inventory Configuration', 
+    Description = 'Controls access to Inventory Configuration Tool' 
+WHERE RolePropertyId = -20910;
+/* End YUK-9318 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

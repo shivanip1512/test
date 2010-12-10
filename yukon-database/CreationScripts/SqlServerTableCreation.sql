@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     12/8/2010 3:24:10 PM                         */
+/* Created on:     12/10/2010 3:50:14 PM                        */
 /*==============================================================*/
 
 
@@ -12830,7 +12830,7 @@ INSERT INTO YukonRoleProperty VALUES(-20906,-209,'Expresscom Restore First','fal
 INSERT INTO YukonRoleProperty VALUES(-20907,-209,'Allow Designation Codes','false','Toggles on or off the ability utilize service company zip codes.');
 INSERT INTO YukonRoleProperty VALUES(-20908,-209,'Multiple Warehouses','false','Allows for inventory to be assigned to multiple user-created warehouses instead of a single generic warehouse.');
 INSERT INTO YukonRoleProperty VALUES(-20909,-209,'Purchasing Access','false','Activates the purchasing section of the inventory module.'); 
-INSERT INTO YukonRoleProperty VALUES(-20910,-209,'Device Reconfiguration','false','Access to Device Reconfiguration Tool'); 
+INSERT INTO YukonRoleProperty VALUES(-20910,-209,'Inventory Configuration','false','Controls access to Inventory Configuration Tool');
 INSERT INTO YukonRoleProperty VALUES(-20911,-209,'Inventory Search','true','Enables you to use inventory searching.'); 
 
 /* operator work order management role properties */
