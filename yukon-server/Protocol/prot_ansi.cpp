@@ -2102,7 +2102,7 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
                     if(ansiDeviceType == CtiANSIApplication::sentinel || ansiDeviceType == CtiANSIApplication::focus)
                     {
                          // 2 = sentinel
-                         multiplier /= (_table12->getResolvedMultiplier(demandSelect[x])/1000);
+                         multiplier *= (_table12->getResolvedMultiplier(demandSelect[x])/1000);
                     }
                     else
                     {
@@ -2197,7 +2197,7 @@ bool CtiProtocolANSI::retreiveSummation( int offset, double *value )
                                 }
                                 if(ansiDeviceType == CtiANSIApplication::sentinel || ansiDeviceType == CtiANSIApplication::focus)
                                 {
-                                    multiplier /= (_table12->getResolvedMultiplier(summationSelect[x]) / 1000);
+                                    multiplier *= (_table12->getResolvedMultiplier(summationSelect[x]) / 1000);
                                 }
                                 *value = _table23->getSummationsValue(x, ansiTOURate) * multiplier;
                                 success = true;
@@ -2270,7 +2270,7 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                     if(ansiDeviceType == CtiANSIApplication::sentinel || ansiDeviceType == CtiANSIApplication::focus)
                     {
                         // will bring back value in KW/KVAR ...
-                        multiplier /= (_table12->getResolvedMultiplier(demandSelect[x])/1000);
+                        multiplier *= (_table12->getResolvedMultiplier(demandSelect[x])/1000);
                         
                     }
 
@@ -2356,7 +2356,7 @@ bool CtiProtocolANSI::retreiveFrozenSummation( int offset, double *value, double
                                 }
                                 if(ansiDeviceType == CtiANSIApplication::sentinel || ansiDeviceType == CtiANSIApplication::focus)
                                 {
-                                    multiplier /= (_table12->getResolvedMultiplier(summationSelect[x])/1000);
+                                    multiplier *= (_table12->getResolvedMultiplier(summationSelect[x])/1000);
                                 }
                                 success = true;
                                 
