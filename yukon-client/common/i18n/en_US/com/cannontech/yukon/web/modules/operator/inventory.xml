@@ -15,13 +15,13 @@
     <entry key="yukon.web.modules.operator.inventoryOperations.selectFileButton.label">Select by File Upload</entry>
     <entry key="yukon.web.modules.operator.inventoryOperations.selectFileDescription">Upload a CSV formatted file.</entry>
     <entry key="yukon.web.modules.operator.inventoryOperations.selectFilterButton.label">Select by Filter</entry>
-    <entry key="yukon.web.modules.operator.inventoryOperations.selectFilterDescription">Set various inventory parameters to select devices.</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.selectFilterDescription">Set various parameters to select inventory.</entry>
     <entry key="yukon.web.modules.operator.inventoryOperations.recentOperations.title">Recent Operations</entry>
     <entry key="yukon.web.modules.operator.inventoryOperations.recentOperations.name">Name</entry>
     <entry key="yukon.web.modules.operator.inventoryOperations.recentOperations.runSchedule">Run Schedule</entry>
     <entry key="yukon.web.modules.operator.inventoryOperations.recentOperations.duration">Duration</entry>
     <entry key="yukon.web.modules.operator.inventoryOperations.recentOperations.status">Status</entry>
-    <entry key="yukon.web.modules.operator.inventoryOperations.recentOperations.deviceCount">Device Count</entry>
+    <entry key="yukon.web.modules.operator.inventoryOperations.recentOperations.deviceCount">Inventory Count</entry>
     <entry key="yukon.web.modules.operator.inventoryOperations.noRecentOps">No Recent Operations</entry>
     <entry key="yukon.web.modules.operator.inventoryOperations.fileLabel">Inventory File</entry>
     <entry key="yukon.web.modules.operator.inventoryOperations.fileUploadTitle">Inventory File Chooser</entry>
@@ -85,11 +85,12 @@
     <entry key="yukon.web.modules.operator.inventoryActions.actionsContainer.title">Select An Action To Perform On Selected Inventory</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.instructionsLabel">Instructions:</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.instructions">Selecting any of these options will not immediately make any changes.  You will be directed to a page with additional options and/or opportunity to confirm your action.</entry>
-    <entry key="yukon.web.modules.operator.inventoryActions.deviceReconfigDescription">Setup device reconfiguration options.</entry>
-    <entry key="yukon.web.modules.operator.inventoryActions.deviceReconfig.label">Device Reconfiguration</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.deviceReconfigDescription">Setup inventory configuration options.</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.deviceReconfig.label">Inventory Configuration</entry>
     
     <!-- /inventory/inventoryOperations/deviceReconfig/setup.jsp -->
-    <entry key="yukon.web.modules.operator.deviceReconfig.setupContainer.title">Device Reconfiguration Setup</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfig.pageName">Inventory Configuration</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfig.setupContainer.title">Inventory Configuration Setup</entry>
     <entry key="yukon.web.modules.operator.deviceReconfig.configurationOptions.title">Configuration Options</entry>
     <entry key="yukon.web.modules.operator.deviceReconfig.pagingSettings.title">Current Command Scheduling</entry>
     <entry key="yukon.web.modules.operator.deviceReconfig.name">Name</entry>
@@ -97,10 +98,10 @@
     <entry key="yukon.web.modules.operator.deviceReconfig.sendInServiceLabel">In-Service Command</entry>
     <entry key="yukon.web.modules.operator.deviceReconfig.scheduleEnabled">Enabled</entry>
     <entry key="yukon.web.modules.operator.deviceReconfig.scheduleDisabled">Disabled</entry>
-    <entry key="yukon.web.modules.operator.deviceReconfig.error.required.name">Name of the device reconfiguration task cannot be empty.</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfig.error.required.name">Name of the inventory configuration task cannot be empty.</entry>
     <entry key="yukon.web.modules.operator.deviceReconfig.error.unavailable.name">Name already in use.</entry>
     <entry key="yukon.web.modules.operator.deviceReconfig.error.tooLong.name">Name must be 250 characters or less.</entry>
-    <entry key="yukon.web.modules.operator.deviceReconfig.creationSuccessful">Device Reconfiguration Task {0} created successfully.</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfig.creationSuccessful">Inventory Configuration Task {0} created successfully.</entry>
     
     <!-- /inventory/inventoryOperations/commandSchedule.jsp -->
     <entry key="yukon.web.modules.operator.commandSchedule.CREATE.pageName">Create Command Schedule</entry>
@@ -130,9 +131,9 @@
     <entry key="yukon.web.modules.operator.commandSchedule.typeMismatch.delayPeriodSeconds">Delay seconds is not a valid number.</entry>
     
     <!-- /inventory/inventoryOperations/deviceReconfig/status.jsp -->
-    <entry key="yukon.web.modules.operator.deviceReconfigStatus.pageName">Device Reconfiguration Results</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.pageName">Inventory Configuration Results</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.operator.deviceReconfigStatus.statusContainer.title">{0} Reconfiguration Result Details</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.statusContainer.title">{0} Configuration Result Details</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.progress">Progress</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.inProgress">In Progress</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.complete">Complete</entry>
@@ -140,6 +141,6 @@
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.failedCount">Failed To Paged</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.notesLabel">Note:</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.notes">Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.</entry>
-    <entry key="yukon.web.modules.operator.deviceReconfigStatus.newOperation">Choose A New Operation For These Devices</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.newOperation">Choose A New Operation For Inventory</entry>
     
 </properties>

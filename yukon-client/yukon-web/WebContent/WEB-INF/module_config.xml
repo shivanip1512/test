@@ -1315,7 +1315,7 @@
                                 <menu>inventory|inventoryOperations</menu>
                                 <link>/spring/stars/operator/inventory/inventoryOperations/inventoryActions?${local:convertMapToQueryHtml(inventoryCollection.collectionParameters)}</link>
                                 <pages>
-                                    <page name="deviceReconfig" type="DETAIL_CHILD">
+                                    <page name="deviceReconfig" type="BASIC">
                                         <menu>inventory|inventoryOperations</menu>
                                     </page>
                                 </pages>

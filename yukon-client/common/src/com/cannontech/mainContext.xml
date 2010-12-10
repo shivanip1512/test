@@ -148,7 +148,6 @@
                <value>classpath:com/cannontech/yukon/web/modules/consumer/root</value>
                <value>classpath:com/cannontech/yukon/web/modules/dr/optOut</value>
                <value>classpath:com/cannontech/yukon/web/modules/dr/root</value>
-               <value>classpath:com/cannontech/yukon/web/modules/dr/deviceReconfig</value>
                <value>classpath:com/cannontech/yukon/web/modules/widgets/disconnectMeterWidget</value>
                <value>classpath:com/cannontech/yukon/web/modules/widgets/rfnMeterDisconnectWidget</value>
                <value>classpath:com/cannontech/yukon/web/modules/widgets/touWidget</value>

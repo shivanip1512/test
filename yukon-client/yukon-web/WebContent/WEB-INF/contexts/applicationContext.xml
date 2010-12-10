@@ -596,7 +596,7 @@
     </bean>
     
     <bean id="deviceReconfigMonitorsWidget" class="com.cannontech.web.widget.DeviceReconfigMonitorsWidget">
-        <property name="title" value="Device Reconfiguration Tasks"/>
+        <property name="title" value="Inventory Configuration Tasks"/>
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="DEVICE_RECONFIG"/>
