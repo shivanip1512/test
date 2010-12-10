@@ -665,7 +665,7 @@ bool UnsolicitedHandler::generateOutbounds(const MillisecondTimer &timer, const 
 
             sendOutbound(*dr);
 
-            if( dr->inbound.empty() )
+            if( ! dr->inbound.empty() )
             {
                 _active_devices[dr] = _to_decode.insert(_to_decode.end(), dr);
             }
