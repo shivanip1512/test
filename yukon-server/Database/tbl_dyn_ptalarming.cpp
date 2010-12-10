@@ -183,8 +183,7 @@ bool CtiTableDynamicPointAlarming::Update(Cti::Database::DatabaseConnection &con
         << getPointID()
         << getAlarmCondition();
 
-    bool success      = updater.execute();
-    long rowsAffected = updater.rowsAffected();
+    bool success = executeUpdater(updater);
 
     if(isDebugLudicrous())
     {
@@ -193,19 +192,18 @@ bool CtiTableDynamicPointAlarming::Update(Cti::Database::DatabaseConnection &con
         dout << updater.asString() << endl;
     }
 
-    if( ! success )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << updater.asString() << endl;
-    }
-
-    if( success && rowsAffected > 0)
+    if( success )
     {
         setDirty(false);
     }
     else
     {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << updater.asString() << endl;
+        }
+
         success = Insert(conn);        // Try a vanilla insert if the update failed!
     }
 

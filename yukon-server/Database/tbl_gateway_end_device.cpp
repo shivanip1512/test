@@ -162,10 +162,9 @@ bool CtiTableGatewayEndDevice::Update()
         << getHardwareType()
         << getDataType();
 
-    bool success      = updater.execute();
-    long rowsAffected = updater.rowsAffected();
+    bool success = executeUpdater(updater);
 
-    if( success && rowsAffected > 0)
+    if( success )
     {
         setDirty(false);
     }
