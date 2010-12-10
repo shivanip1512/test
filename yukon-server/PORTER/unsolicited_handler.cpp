@@ -563,7 +563,7 @@ void UnsolicitedHandler::generateDnpKeepalive(om_queue &local_queue, const devic
     list<CtiMessage *> vg_list, ret_list;
     list<OUTMESS *> om_list;
 
-    dr.device->ExecuteRequest(&msg, parse, vg_list, ret_list, om_list);
+    dr.device->beginExecuteRequest(&msg, parse, vg_list, ret_list, om_list);
 
     for each(OUTMESS *om in om_list )
     {

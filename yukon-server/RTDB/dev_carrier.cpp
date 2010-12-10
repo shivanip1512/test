@@ -25,7 +25,7 @@ CarrierDevice &CarrierDevice::operator=(const CarrierDevice &aRef)
 
         CtiLockGuard<CtiMutex> guard(_classMutex);
 
-        CarrierSettings   = aRef.getCarrierSettings();
+        CarrierSettings   = aRef.CarrierSettings;
     }
 
     return *this;

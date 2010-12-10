@@ -75,12 +75,12 @@ void IM_EX_DEVDB attachRouteManagerToDevice(const long id, CtiDeviceSPtr device,
 }
 
 
-INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                *pReq,
-                                  CtiCommandParser             &parse,
-                                  list< CtiMessage* >    &vgList,
-                                  list< CtiMessage* >    &retList,
-                                  list< OUTMESS* >       &outList,
-                                  const OUTMESS                *OutTemplate)
+INT CtiDeviceBase::beginExecuteRequest(CtiRequestMsg                *pReq,
+                                       CtiCommandParser             &parse,
+                                       list< CtiMessage* >    &vgList,
+                                       list< CtiMessage* >    &retList,
+                                       list< OUTMESS* >       &outList,
+                                       const OUTMESS                *OutTemplate)
 {
     INT      status = NORMAL;
     LONG     Id;

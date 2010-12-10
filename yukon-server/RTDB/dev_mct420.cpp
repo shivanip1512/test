@@ -6,6 +6,7 @@
 #include "dev_mct420_commands.h"
 
 using namespace Cti::Devices::Commands;
+using Cti::Protocols::EmetconProtocol;
 
 namespace Cti {
 namespace Devices {
@@ -62,6 +63,71 @@ Mct420Device::read_key_store_t Mct420Device::initReadKeyStore()
 Mct420Device::ConfigPartsList Mct420Device::getPartsList()
 {
     return _config_parts;
+}
+
+
+int Mct420Device::executePutConfig( CtiRequestMsg        *pReq,
+                                    CtiCommandParser     &parse,
+                                    OUTMESS             *&OutMessage,
+                                    list< CtiMessage* >  &vgList,
+                                    list< CtiMessage* >  &retList,
+                                    list< OUTMESS* >     &outList )
+{
+    //  Load all the other stuff that is needed
+    OutMessage->TargetID  = getID();
+    OutMessage->Retry     = 2;
+
+    OutMessage->Request.RouteID   = getRouteID();
+    strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+    if( parse.isKeyValid("lcd_cycle_time") )
+    {
+        unsigned char meter_parameters = 0x00;  //  default, see sspec for details
+
+        OutMessage->Buffer.BSt.Function = FuncWrite_MeterParametersPos;
+        OutMessage->Buffer.BSt.Length   = FuncWrite_MeterParametersLen;
+        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
+
+        OutMessage->Sequence            = EmetconProtocol::PutConfig_Parameters;
+
+        OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+
+        const unsigned cycle_time = parse.getiValue("lcd_cycle_time");
+
+        if( cycle_time > 15 )
+        {
+            returnErrorMessage(BADPARAM, OutMessage, retList,
+                               "Invalid LCD cycle time (" + CtiNumStr(cycle_time) + "), must be 0-15");
+        }
+
+        OutMessage->Buffer.BSt.Message[1] = cycle_time;
+
+        if( parse.isKeyValid("transformer_ratio") )
+        {
+            int transformer_ratio = parse.getiValue("transformer_ratio");
+
+            if( transformer_ratio > 0 && transformer_ratio <= 255 )
+            {
+                OutMessage->Buffer.BSt.Message[2] = parse.getiValue("transformer_ratio");
+            }
+            else
+            {
+                returnErrorMessage(BADPARAM, OutMessage, retList,
+                                   "Invalid transformer ratio (" + CtiNumStr(transformer_ratio) + "), must be 1-255");
+            }
+        }
+        else
+        {
+            //  omit the multiplier ratio
+            OutMessage->Buffer.BSt.Length--;
+        }
+
+        return ExecutionComplete;
+    }
+    else
+    {
+        return Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
+    }
 }
 
 
@@ -184,6 +250,64 @@ string Mct420Device::decodeDisconnectStatus(const DSTRUCT &DSt)
 
     return resultStr;
 }
+
+
+int Mct420Device::decodeGetConfigMeterParameters(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    if( int status = decodeCheckErrorReturn(InMessage, retList, outList) )
+    {
+        return status;
+    }
+
+    // No error occured, we must do a real decode!
+
+    string resultString;
+    int transformer_ratio = -1;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    if( InMessage->Sequence == EmetconProtocol::GetConfig_MeterParameters )
+    {
+        resultString = getName() + " / Meter Parameters:\n";
+
+        const unsigned lcd_cycle_time = DSt->Message[0] & 0x0f;
+
+        resultString += "LCD cycle time: ";
+
+        if( lcd_cycle_time )
+        {
+            resultString += CtiNumStr(lcd_cycle_time) + " seconds\n";
+        }
+        else
+        {
+            resultString += "8 seconds (meter default)\n";
+        }
+
+        //  they did the long read, so assign the multiplier
+        if( DSt->Length >= 11 )
+        {
+            transformer_ratio = DSt->Message[10];
+        }
+    }
+    else if( InMessage->Sequence == EmetconProtocol::GetConfig_Multiplier )
+    {
+        transformer_ratio = DSt->Message[0];
+    }
+
+    if( transformer_ratio >= 0 )
+    {
+        resultString += getName() + " / Transformer ratio: " + CtiNumStr(transformer_ratio);
+    }
+
+    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, NoError, ReturnMsg, vgList, retList );
+
+    return NoError;
+}
+
 
 
 //  I wanted to keep devicetypes.h away from everything else...

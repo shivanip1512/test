@@ -25,9 +25,6 @@ private:
 
     typedef CtiDeviceSingle Inherited;
 
-    CtiTableDeviceRoute  getDeviceRoute() const;
-    CtiTableDeviceRoute &getDeviceRoute();
-
     static unsigned int _lpRetryMultiplier;
     static unsigned int _lpRetryMinimum;
     static unsigned int _lpRetryMaximum;
@@ -153,9 +150,6 @@ public:
     virtual ~DlcBaseDevice();
 
     DlcBaseDevice& operator=(const DlcBaseDevice& aRef);
-
-    CtiTableDeviceCarrier  getCarrierSettings() const;
-    CtiTableDeviceCarrier &getCarrierSettings();
 
     virtual string getSQLCoreStatement() const;
 

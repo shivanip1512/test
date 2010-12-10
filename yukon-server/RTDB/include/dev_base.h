@@ -174,8 +174,8 @@ public:
     virtual INT  ResultDecode (INMESS*, CtiTime&, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     virtual INT  ProcessResult(INMESS*, CtiTime&, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
-    // This one is a preprocessing method which calls the other ExecuteRequest method.
-    INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, const OUTMESS *OutTemplate = NULL);
+    // This is a preprocessing method which calls ExecuteRequest.
+    INT beginExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, const OUTMESS *OutTemplate = NULL);
 
     // This one is implemented in the child classes
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);

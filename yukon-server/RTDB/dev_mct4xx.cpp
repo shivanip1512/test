@@ -2532,7 +2532,7 @@ INT Mct4xxDevice::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow,
                 //  this may be NULL if it's a background request, but assign it anyway
                 newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
-                CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
+                beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
             }
             else
             {
@@ -2576,7 +2576,7 @@ INT Mct4xxDevice::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow,
 
                 newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
-                CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
+                beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
             }
             else
             {
@@ -3274,7 +3274,7 @@ INT Mct4xxDevice::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, li
                 //  this may be NULL if it's a background request, but assign it anyway
                 newReq.setConnectionHandle((void *)InMessage.Return.Connection);
 
-                CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
+                beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
 
                 CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 

@@ -212,5 +212,7 @@ std::string inputString[] = {
 "getvalue kwh update timeout 1800 select group '/Meters/Collection/'Test Group''",
 "control sa305 shed 30m update",
 "control sa205 shed 30m update",
+"putconfig emetcon parameters ratio 25 lcd cycle time 13",
+"putconfig emetcon parameters lcd cycle time 13",
 };
 

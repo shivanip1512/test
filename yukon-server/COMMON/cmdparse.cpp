@@ -2251,7 +2251,8 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     static const boost::regex  re_ied_mask (CtiString(" alarmmask " )+ str_anynum + CtiString(" ") + str_anynum);
     static const boost::regex  re_group_address("group (enable|disable)");
     static const boost::regex  re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
-    static const boost::regex  re_meter_parameters("(centron|parameters)( ratio [0-9]+)?( display( [0-9]x[0-9]+)( test [0-9]+s?)( errors (en|dis)able))");
+    static const boost::regex  re_mct410_meter_parameters("(centron|parameters)( ratio [0-9]+)?( display( [0-9]x[0-9]+)( test [0-9]+s?)( errors (en|dis)able))");
+    static const boost::regex  re_mct420_meter_parameters("parameters( ratio [0-9]+)? lcd cycle time [0-9]+");
     static const boost::regex  re_centron_reading("centron reading [0-9]+( [0-9]+)?");
 
     static const boost::regex  re_loadlimit(CtiString("load limit ") + str_floatnum + CtiString(" ") + str_num);
@@ -2485,7 +2486,25 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
         {
             CtiString temp;
 
-            if(!(token = CmdStr.match(re_meter_parameters)).empty())
+            if(!(token = CmdStr.match(re_mct420_meter_parameters)).empty())
+            {
+                CtiTokenizer cmdtok(token);
+
+                cmdtok();  //  move past "parameters"
+
+                //  it'll either be "ratio" or "lcd"
+                if( cmdtok() == "ratio" )
+                {
+                    _cmd["transformer_ratio"] = atoi(cmdtok().c_str());
+                    cmdtok();           // move to "lcd"
+                }
+
+                cmdtok();        // move past "cycle"
+                cmdtok();        // move past "time"
+
+                _cmd["lcd_cycle_time"] = atoi(cmdtok().c_str());
+            }
+            if(!(token = CmdStr.match(re_mct410_meter_parameters)).empty())
             {
                 CtiTokenizer cmdtok(token);
 

@@ -43,30 +43,9 @@ DlcBaseDevice& DlcBaseDevice::operator=(const DlcBaseDevice& aRef)
 
         CtiLockGuard<CtiMutex> guard(_classMutex);
 
-        DeviceRoutes = aRef.getDeviceRoute();
+        DeviceRoutes = aRef.DeviceRoutes;
     }
     return *this;
-}
-
-CtiTableDeviceRoute  DlcBaseDevice::getDeviceRoute() const
-{
-    return DeviceRoutes;
-}
-CtiTableDeviceRoute& DlcBaseDevice::getDeviceRoute()
-{
-    CtiLockGuard<CtiMutex> guard(_classMutex);
-    return DeviceRoutes;
-}
-
-CtiTableDeviceCarrier  DlcBaseDevice::getCarrierSettings() const
-{
-    return CarrierSettings;
-}
-
-CtiTableDeviceCarrier& DlcBaseDevice::getCarrierSettings()
-{
-    CtiLockGuard<CtiMutex> guard(_classMutex);
-    return CarrierSettings;
 }
 
 string DlcBaseDevice::getSQLCoreStatement() const
@@ -859,7 +838,7 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
                         //  we must trap any return messages to the client that this creates...
                         list<CtiMessage *> tmp_retlist;
 
-                        if( CtiDeviceBase::ExecuteRequest(arm_req, arm_parse, vgList, tmp_retlist, outList, pOut) )
+                        if( beginExecuteRequest(arm_req, arm_parse, vgList, tmp_retlist, outList, pOut) )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - error sending ARM to device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

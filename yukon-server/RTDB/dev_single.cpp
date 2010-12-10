@@ -770,7 +770,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
             size_t cnt = outList.size();
 
-            if( 0 != (status = ExecuteRequest(pReq, CtiCommandParser(pReq->CommandString()), vgList, retList, outList, OutTemplate)) )
+            if( 0 != (status = beginExecuteRequest(pReq, CtiCommandParser(pReq->CommandString()), vgList, retList, outList, OutTemplate)) )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);

@@ -1124,7 +1124,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
                 try
                 {
-                    status = Dev->ExecuteRequest(pExecReq, _currentParse, temp_vgList, temp_retList, temp_outList);    // Defined ONLY in dev_base.cpp
+                    status = Dev->beginExecuteRequest(pExecReq, _currentParse, temp_vgList, temp_retList, temp_outList);
                     reportClientRequests(Dev, _currentParse, pReq, pExecReq, temp_vgList, temp_retList);
                 }
                 catch(...)

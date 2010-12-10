@@ -792,6 +792,7 @@ INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
         }
 
         case EmetconProtocol::PutConfig_Install:
+        case EmetconProtocol::PutConfig_Parameters:
         case EmetconProtocol::PutConfig_Multiplier:
         case EmetconProtocol::PutConfig_Multiplier2:
         case EmetconProtocol::PutConfig_Multiplier3:
@@ -3433,6 +3434,8 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
 
         switch( InMessage->Sequence )
         {
+            case EmetconProtocol::PutConfig_Parameters:                 resultString = getName() + " / Meter parameters sent";  break;
+
             case EmetconProtocol::PutConfig_Multiplier:
             case EmetconProtocol::PutConfig_Multiplier2:
             case EmetconProtocol::PutConfig_Multiplier3:                resultString = getName() + " / Multiplier sent"; break;
@@ -3530,7 +3533,7 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
                         }
 
                         CtiCommandParser parse(pReq->CommandString());
-                        CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                        beginExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
 
                         delete pReq;
                     }
@@ -3546,7 +3549,7 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
                         }
 
                         CtiCommandParser parse(pReq->CommandString());
-                        CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                        beginExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
 
                         delete pReq;
                     }
@@ -3564,7 +3567,7 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
                             }
 
                             CtiCommandParser parse(pReq->CommandString());
-                            CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                            beginExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
 
                             delete pReq;
                         }
@@ -3583,7 +3586,7 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
                             }
 
                             CtiCommandParser parse(pReq->CommandString());
-                            CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                            beginExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
                             delete pReq;
                         }
                     }
@@ -3603,7 +3606,7 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
                                 }
 
                                 CtiCommandParser parse(pReq->CommandString());
-                                CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                                beginExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
                                 delete pReq;
                             }
 
@@ -3647,7 +3650,7 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
                             }
 
                             CtiCommandParser parse(pReq->CommandString());
-                            CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                            beginExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
                             delete pReq;
                         }
 
@@ -3665,7 +3668,7 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
                                     }
 
                                     CtiCommandParser parse(pReq->CommandString());
-                                    CtiDeviceBase::ExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
+                                    beginExecuteRequest(pReq, parse, vgList, retList, outList, OutTemplate);
                                     delete pReq;
                                 }
                             }

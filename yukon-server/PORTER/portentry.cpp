@@ -823,7 +823,7 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutMessage)
              *  We will execute based upon the data in the request....
              */
 
-            status = Dev->ExecuteRequest(pReq, CtiCommandParser(pReq->CommandString()), vgList, retList, outList, OutMessage);    // Defined ONLY in dev_base.cpp
+            status = Dev->beginExecuteRequest(pReq, CtiCommandParser(pReq->CommandString()), vgList, retList, outList, OutMessage);
 
             if(status != NORMAL)
             {

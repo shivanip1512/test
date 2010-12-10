@@ -490,7 +490,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
 
                 CtiCommandParser parse(newReq->CommandString());
 
-                CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
+                beginExecuteRequest(newReq, parse, vgList, retList, outList);
 
                 delete newReq;
 
@@ -522,7 +522,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
 
                             CtiCommandParser parse(newReq->CommandString());
 
-                            CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
+                            beginExecuteRequest(newReq, parse, vgList, retList, outList);
 
                             ++_postControlScanCount;
 
@@ -550,7 +550,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
 
                             CtiCommandParser parse(newReq->CommandString());
 
-                            CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
+                            beginExecuteRequest(newReq, parse, vgList, retList, outList);
 
                             ++_postControlScanCount;
 
@@ -588,7 +588,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
 
                     CtiCommandParser parse(newReq->CommandString());
 
-                    CtiDeviceBase::ExecuteRequest(newReq, parse, vgList, retList, outList);
+                    beginExecuteRequest(newReq, parse, vgList, retList, outList);
 
                     delete newReq;
                 }
@@ -610,7 +610,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
 
                         newReq->setConnectionHandle(0);  //  discard the return, we don't want to interrupt the scan
 
-                        CtiDeviceBase::ExecuteRequest(newReq, CtiCommandParser(newReq->CommandString()), vgList, retList, outList);
+                        beginExecuteRequest(newReq, CtiCommandParser(newReq->CommandString()), vgList, retList, outList);
 
                         delete newReq;
                     }
@@ -629,7 +629,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
 
                     newReq->setConnectionHandle((void *)InMessage->Return.Connection);
 
-                    CtiDeviceBase::ExecuteRequest(newReq, CtiCommandParser(newReq->CommandString()), vgList, retList, outList);
+                    beginExecuteRequest(newReq, CtiCommandParser(newReq->CommandString()), vgList, retList, outList);
 
                     delete newReq;
                 }
@@ -655,7 +655,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
 
                 newReq->setConnectionHandle((void *)InMessage->Return.Connection);
 
-                CtiDeviceBase::ExecuteRequest(newReq, CtiCommandParser(newReq->CommandString()), vgList, retList, outList);
+                beginExecuteRequest(newReq, CtiCommandParser(newReq->CommandString()), vgList, retList, outList);
 
                 delete newReq;
 

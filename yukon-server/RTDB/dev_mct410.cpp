@@ -931,7 +931,7 @@ INT Mct410Device::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, li
                     retList.push_back(ret);
 
                     //  same UserMessageID, no need to reset the in_progress flag
-                    retVal = CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
+                    retVal = beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
                 }
                 else
                 {
@@ -1027,7 +1027,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
         OutMessage->Buffer.BSt.Length   = FuncWrite_MeterParametersLen;
         OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
 
-        OutMessage->Sequence            = EmetconProtocol::PutConfig_Multiplier;
+        OutMessage->Sequence            = EmetconProtocol::PutConfig_Parameters;
 
         found = true;  //  default to true;  set to false in error cases
 
@@ -1310,8 +1310,8 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
 
                 outList.push_back(interest_om);
             }
-    else
-    {
+            else
+            {
                 delete interest_om;
             }
             nRet  = ExecutionComplete;
@@ -3428,7 +3428,7 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, l
                         newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
                         //  same UserMessageID, no need to reset the in_progress flag
-                        CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
+                        beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
                     }
                     else
                     {

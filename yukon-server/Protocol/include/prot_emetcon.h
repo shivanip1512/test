@@ -187,6 +187,7 @@ public:
         PutConfig_PhaseDetect,
         PutConfig_PhaseDetectClear,
         PutConfig_AlarmMask,
+        PutConfig_Parameters,
 
         PutConfig_ARMC,
         PutConfig_ARML,
