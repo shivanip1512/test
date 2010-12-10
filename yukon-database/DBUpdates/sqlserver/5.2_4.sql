@@ -123,3 +123,4 @@ ALTER TABLE InventoryConfigTaskItem
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.2', 'Matt K', '13-DEC-2010', 'Latest Update', 4);
