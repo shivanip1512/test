@@ -19,6 +19,7 @@ public:
    CtiDeviceFocus();
    virtual ~CtiDeviceFocus();
    virtual Cti::Protocols::Ansi::CtiProtocolANSI& getANSIProtocol( void );
+   virtual unsigned long updateLastLpTime();
 
    int buildScannerTableRequest (BYTE *ptr, UINT flags);
    int buildCommanderTableRequest (BYTE *ptr, UINT flags);

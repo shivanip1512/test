@@ -825,6 +825,11 @@ void CtiDeviceAnsi::createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< 
     }
 }
 
+unsigned long CtiDeviceAnsi::updateLastLpTime()
+{
+    return getANSIProtocol().getLPTime(getANSIProtocol().getTotalWantedLPBlockInts()-1);
+}
+
 bool isUnintializedTimeAndValue(double value, double timestamp)
 {
     CtiTime t1 =  CtiTime(timestamp);

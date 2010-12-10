@@ -54,12 +54,14 @@ public:
                        list< CtiMessage* >  &retList,
                        list< OUTMESS* >     &outList );
 
-   
-   virtual Cti::Protocols::Ansi::CtiProtocolANSI& getANSIProtocol( void ) = 0;
    virtual void processDispatchReturnMessage( list< CtiReturnMsg* > &retList, UINT archiveFlag );
+   virtual unsigned long updateLastLpTime();
+
+   virtual Cti::Protocols::Ansi::CtiProtocolANSI& getANSIProtocol( void ) = 0;
    virtual int buildScannerTableRequest (BYTE *ptr, UINT flags) = 0;
    virtual int buildCommanderTableRequest (BYTE *ptr, UINT flags) = 0;
    virtual int buildSingleTableRequest(BYTE *ptr, UINT tableId = 0);
+
    INT sendCommResult( INMESS *InMessage);
 
    struct WANTS_HEADER
