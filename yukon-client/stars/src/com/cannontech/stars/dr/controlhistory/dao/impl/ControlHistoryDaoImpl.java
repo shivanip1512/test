@@ -133,17 +133,16 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
 
     }
 
-    private Set<Holder> generateHolderListAndBuildInventoryIds(Set<Holder> holderList, 
-                                                                 final List<Integer> validGroups, 
-                                                                 final List<DistinctEnrollment> enrollments, 
-                                                                 final int inventoryId) {
+    private void generateHolderListAndBuildInventoryIds(Set<Holder> holderList, 
+                                                        final List<Integer> validGroups, 
+                                                        final List<DistinctEnrollment> enrollments, 
+                                                        final int inventoryId) {
         
         for (DistinctEnrollment enrollment : enrollments) {
             if (!validGroups.contains(enrollment.getGroupId()) ||
                 enrollment.getInventoryId() != inventoryId) {
                  continue;
             }
-   
             
             Holder holder = new Holder();
             holder.accountId = enrollment.getAccountId();
@@ -152,8 +151,6 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
             holder.programId = enrollment.getProgramId();
             holderList.add(holder);
         }
-        
-        return holderList;
     }
     
     @Autowired
