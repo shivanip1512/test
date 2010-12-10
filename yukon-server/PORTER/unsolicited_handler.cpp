@@ -592,6 +592,7 @@ bool UnsolicitedHandler::startPendingRequests(const MillisecondTimer &timer, con
             {
                 if( OUTMESS *om = dr->outbound.front() )
                 {
+                    //  this should pay attention to the status
                     dr->device->recvCommRequest(om);
 
                     _active_devices[dr] = _to_generate.insert(_to_generate.end(), dr);
@@ -661,11 +662,18 @@ bool UnsolicitedHandler::generateOutbounds(const MillisecondTimer &timer, const 
     {
         if( device_record *dr = _to_generate.front() )
         {
-            dr->device->generate(dr->xfer);
+            //  we should pay attention to generate()'s status
+            dr->status = dr->device->generate(dr->xfer);
 
-            sendOutbound(*dr);
+            if( dr->xfer.getOutCount() )
+            {
+                dr->status = sendOutbound(*dr);
 
-            if( ! dr->inbound.empty() )
+                traceOutbound(*dr, dr->status);
+            }
+
+            //  if we have data or an error, decode right away
+            if( ! dr->inbound.empty() || dr->status )
             {
                 _active_devices[dr] = _to_decode.insert(_to_decode.end(), dr);
             }
@@ -1008,6 +1016,7 @@ void UnsolicitedHandler::processDeviceSingleInbound(device_record &dr)
         }
     }
 
+    //  note that the decode could mask a comm status - this should be fixed to behave like portfield
     dr.status = dr.device->decode(dr.xfer, dr.status);
 
     if( dr.status || dr.xfer.getInCountActual() )

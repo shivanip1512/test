@@ -404,14 +404,8 @@ void UdpPortHandler::sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, u_l
 }
 
 
-void UdpPortHandler::sendOutbound( device_record &dr )
+int UdpPortHandler::sendOutbound( device_record &dr )
 {
-    //  if we don't have a device or anything to send, there's nothing to do here
-    if( !dr.device || dr.xfer.getOutCount() == 0 )
-    {
-        return;
-    }
-
     u_long  device_ip   = getDeviceIp  (dr.device->getID());
     u_short device_port = getDevicePort(dr.device->getID());
 
@@ -450,14 +444,12 @@ void UdpPortHandler::sendOutbound( device_record &dr )
             dout << CtiTime() << " Cti::Porter::UdpPortHandler::sendOutbound() - **** SENDTO: Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        traceOutbound(dr, WSAGetLastError());
+        return PORTWRITE;
     }
-    else
-    {
-        traceOutbound(dr, 0);
 
-        dr.last_outbound = CtiTime::now();
-    }
+    dr.last_outbound = CtiTime::now();
+
+    return NoError;
 }
 
 
@@ -766,7 +758,9 @@ UdpPortHandler::device_record *UdpPortHandler::getDeviceRecordByGpuffDeviceTypeS
 
 bool UdpPortHandler::isDeviceDisconnected( const long device_id ) const
 {
-    return _udp_socket == INVALID_SOCKET;
+    return _udp_socket == INVALID_SOCKET
+            || getDeviceIp  (device_id) < 0
+            || getDevicePort(device_id) < 0;
 }
 
 

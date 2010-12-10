@@ -37,7 +37,7 @@ protected:
 
     virtual bool setupPort( void );
     virtual bool manageConnections( void );
-    virtual void sendOutbound( device_record &dr );
+    virtual int  sendOutbound( device_record &dr );
     virtual bool collectInbounds(const Cti::Timing::MillisecondTimer & timer, const unsigned long until);
 
     virtual void loadDeviceProperties(const std::vector<const CtiDeviceSingle *> &devices);

@@ -290,14 +290,8 @@ void TcpPortHandler::updatePortProperties( void )
 }
 
 
-void TcpPortHandler::sendOutbound( device_record &dr )
+int TcpPortHandler::sendOutbound( device_record &dr )
 {
-    //  if we don't have a device or anything to send, there's nothing to do here
-    if( !dr.device || dr.xfer.getOutCount() == 0 )
-    {
-        return;
-    }
-
     TcpConnectionManager::bytes buf(dr.xfer.getOutBuffer(),
                                     dr.xfer.getOutBuffer() + dr.xfer.getOutCount());
 
@@ -323,22 +317,20 @@ void TcpPortHandler::sendOutbound( device_record &dr )
 
         dr.xfer.setOutCount(bytes_sent);
 
-        traceOutbound(dr, 0);
-
         dr.last_outbound = CtiTime::now();
     }
     catch( TcpConnectionManager::not_connected &ex )
     {
-        dr.status = ErrorDeviceNotConnected;
+        return ErrorDeviceNotConnected;
     }
     catch( TcpConnectionManager::write_error &ex )
     {
-        dr.status = TCPWRITEERROR;
-
         updateDeviceCommStatus(dr.device->getID(), TCPWRITEERROR);
 
-        traceOutbound(dr, TCPWRITEERROR);
+        return TCPWRITEERROR;
     }
+
+    return NoError;
 }
 
 
