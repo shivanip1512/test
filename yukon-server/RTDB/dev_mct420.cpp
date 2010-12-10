@@ -261,41 +261,19 @@ int Mct420Device::decodeGetConfigMeterParameters(INMESS *InMessage, CtiTime &Tim
 
     // No error occured, we must do a real decode!
 
-    string resultString;
-    int transformer_ratio = -1;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    if( InMessage->Sequence == EmetconProtocol::GetConfig_MeterParameters )
+    string resultString = getName() + " / Meter Parameters:\n";
+
+    resultString += "LCD cycle time: ";
+
+    if( const unsigned lcd_cycle_time = DSt->Message[0] & 0x0f )
     {
-        resultString = getName() + " / Meter Parameters:\n";
-
-        const unsigned lcd_cycle_time = DSt->Message[0] & 0x0f;
-
-        resultString += "LCD cycle time: ";
-
-        if( lcd_cycle_time )
-        {
-            resultString += CtiNumStr(lcd_cycle_time) + " seconds\n";
-        }
-        else
-        {
-            resultString += "8 seconds (meter default)\n";
-        }
-
-        //  they did the long read, so assign the multiplier
-        if( DSt->Length >= 11 )
-        {
-            transformer_ratio = DSt->Message[10];
-        }
+        resultString += CtiNumStr(lcd_cycle_time) + " seconds\n";
     }
-    else if( InMessage->Sequence == EmetconProtocol::GetConfig_Multiplier )
+    else
     {
-        transformer_ratio = DSt->Message[0];
-    }
-
-    if( transformer_ratio >= 0 )
-    {
-        resultString += getName() + " / Transformer ratio: " + CtiNumStr(transformer_ratio);
+        resultString += "8 seconds (meter default)\n";
     }
 
     CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
