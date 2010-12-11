@@ -28,9 +28,11 @@
     <entry key="yukon.web.modules.operator.workOrder.description">Description</entry>
 
     <!-- viewWorkOrder.jsp -->
-    <entry key="yukon.web.modules.operator.workOrder.EDIT.pageName">View Work Order</entry>
-    <entry key="yukon.web.modules.operator.workOrder.CREATE.pageName">Create Work Order</entry>
+    <entry key="yukon.web.modules.operator.workOrder.VIEW.pageName">View Work Order</entry>
+    <entry key="yukon.web.modules.operator.workOrder.VIEW.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.workOrder.EDIT.pageName">Edit Work Order</entry>
     <entry key="yukon.web.modules.operator.workOrder.EDIT.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.workOrder.CREATE.pageName">Create Work Order</entry> 
 
     <entry key="yukon.web.modules.operator.workOrder.pdfExport.label">Printable Work Order</entry>
     <entry key="yukon.web.modules.operator.workOrder.pdfExport.imageUrl">/WebConfig/yukon/Icons/pdf.gif</entry>

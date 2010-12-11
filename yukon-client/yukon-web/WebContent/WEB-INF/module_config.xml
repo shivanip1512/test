@@ -1260,20 +1260,16 @@
                                     <page name="workOrder.VIEW" type="DETAIL">
                                         <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
                                         <menu>account|accounts</menu>
-                                        <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>
-                                        <labelArgument>${workOrderNumber}</labelArgument>
+                                        <labelArgument>${workOrderDto.workOrderBase.orderNumber}</labelArgument>
                                     </page>
                                     <page name="workOrder.EDIT" type="DETAIL">
                                         <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
                                         <menu>account|accounts</menu>
-                                        <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>
-                                        <labelArgument>${workOrderNumber}</labelArgument>
+                                        <labelArgument>${workOrderDto.workOrderBase.orderNumber}</labelArgument>
                                     </page>
                                     <page name="workOrder.CREATE" type="DETAIL">
                                         <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
                                         <menu>account|accounts</menu>
-                                        <link>/spring/stars/operator/workOrder/viewWorkOrder?accountId=${accountId}</link>
-                                        <labelArgument>${workOrderNumber}</labelArgument>
                                     </page>
                                 </pages>
                             </page>
