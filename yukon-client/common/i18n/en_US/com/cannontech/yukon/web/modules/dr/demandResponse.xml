@@ -216,7 +216,7 @@
 
 <entry key="yukon.web.modules.dr.program.stopProgram.required.stopDate">A valid stop date is required if "stop now" not selected.</entry>
 <entry key="yukon.web.modules.dr.program.stopProgram.typeMismatch.stopDate">A valid stop date is required if "stop now" not selected.</entry>
-<entry key="yukon.web.modules.dr.program.stopProgram.stopTimeBeforeNow">Stop time must in the future.</entry>
+<entry key="yukon.web.modules.dr.program.stopProgram.stopTimeBeforeNow">Stop time must be in the future.</entry>
 
 <!-- start multiple programs -->
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.title">Start Programs</entry>
