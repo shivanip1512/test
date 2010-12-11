@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
 	<classpathentry kind="src" path="/calchist"/>
 	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

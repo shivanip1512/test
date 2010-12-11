@@ -1,7 +1,21 @@
 package com.cannontech.export;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Vector;
+
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.KeysAndValues;
+import com.cannontech.common.util.KeysAndValuesFile;
+import com.cannontech.common.util.LogWriter;
+import com.cannontech.database.PoolManager;
+import com.cannontech.export.record.IONEventLogRecord;
+import com.cannontech.spring.YukonSpringHook;
 
 public class IONEventLogFormat extends ExportFormatBase
 {
@@ -91,12 +105,11 @@ public class IONEventLogFormat extends ExportFormatBase
 	@Override
 	public void parseDatFile()
 	{
-		com.cannontech.common.util.KeysAndValuesFile kavFile = new com.cannontech.common.util.KeysAndValuesFile(com.cannontech.common.util.CtiUtilities.getConfigDirPath() + getDatFileName());
+		KeysAndValuesFile kavFile = new KeysAndValuesFile(CtiUtilities.getConfigDirPath() + getDatFileName());
 		
-		com.cannontech.common.util.KeysAndValues keysAndValues = kavFile.getKeysAndValues();
+		KeysAndValues keysAndValues = kavFile.getKeysAndValues();
 		
-		if( keysAndValues != null )
-		{
+		if( keysAndValues != null ) {
 			String keys[] = keysAndValues.getKeys();
 			String values[] = keysAndValues.getValues();
 			for (int i = 0; i < keys.length; i++)
@@ -104,7 +117,7 @@ public class IONEventLogFormat extends ExportFormatBase
 				if(keys[i].equalsIgnoreCase("DIR"))
 				{
 					setExportDirectory(values[i].toString());
-					java.io.File file = new java.io.File( getExportDirectory() );
+					File file = new File( getExportDirectory() );
 					file.mkdirs();
 				}
 				else if(keys[i].equalsIgnoreCase("FILE"))
@@ -127,9 +140,9 @@ public class IONEventLogFormat extends ExportFormatBase
 		else
 		{
 			// MODIFY THE LOG EVENT HERE!!!
-			logEvent("Usage:  format=<formatID> dir=<exportfileDirectory> file=<exportFileName> int=<RunTimeIntervalInMinutes>", com.cannontech.common.util.LogWriter.INFO);
-			logEvent("Ex.	  format=2 dir=c:/yukon/client/export/ file=export.csv int=30", com.cannontech.common.util.LogWriter.INFO);
-			logEvent("** All parameters will be defaulted to the above if not specified", com.cannontech.common.util.LogWriter.INFO);
+			logEvent("Usage:  format=<formatID> dir=<exportfileDirectory> file=<exportFileName> int=<RunTimeIntervalInMinutes>", LogWriter.INFO);
+			logEvent("Ex.	  format=2 dir=c:/yukon/client/export/ file=export.csv int=30", LogWriter.INFO);
+			logEvent("** All parameters will be defaulted to the above if not specified", LogWriter.INFO);
 		}
 		
 	}		
@@ -165,28 +178,32 @@ public class IONEventLogFormat extends ExportFormatBase
 	{
 		long timer = System.currentTimeMillis();
 	
-		StringBuffer sql = new StringBuffer("SELECT LOGID, SL.POINTID, DATETIME, ACTION, SL.DESCRIPTION, USERNAME, PAO.PAONAME, DA.SLAVEADDRESS, DMG.BILLINGGROUP ");
-		sql.append(" FROM SYSTEMLOG SL, POINT P, YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICEADDRESS DA ");
+		DeviceGroupEditorDao deviceGroupEditorDao = YukonSpringHook.getBean("deviceGroupEditorDao", DeviceGroupEditorDao.class);
+		StoredDeviceGroup billingGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.BILLING);
+		
+		StringBuffer sql = new StringBuffer("SELECT LOGID, SL.POINTID, DATETIME, ACTION, SL.DESCRIPTION, USERNAME, PAO.PAONAME, DA.SLAVEADDRESS, BILLINGGROUP.GroupName ");
+		sql.append(" FROM SYSTEMLOG SL JOIN POINT P on SL.POINTID = P.POINTID "); 
+		sql.append(" JOIN YUKONPAOBJECT PAO ON P.PAOBJECTID = PAO.PAOBJECTID ");
+		sql.append(" LEFT OUTER JOIN (SELECT dg.DeviceGroupId, GroupName, Permission, Type, YukonPaoId ");
+		sql.append(" FROM DEVICEGROUP dg JOIN DEVICEGROUPMEMBER dgm ON dg.DeviceGroupId = dgm.DeviceGroupID ");
+		sql.append(" WHERE ParentDeviceGroupId = "+ billingGroup.getId() + ") BillingGroup ON PAO.PAOBJECTID = BillingGroup.YukonPaoId ");
+		sql.append(" JOIN DEVICEADDRESS DA ON PAO.PAOBJECTID = DA.DEVICEID ");
 		sql.append(" WHERE P.POINTOFFSET = "+ VALID_POINTOFFSET);
-		sql.append(" AND SL.POINTID = P.POINTID ");
-		sql.append(" AND P.PAOBJECTID = PAO.PAOBJECTID ");
-		sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
-		sql.append(" AND PAO.PAOBJECTID = DA.DEVICEID ");		
 		sql.append(" AND LOGID > " + getLastID());
 		sql.append(" ORDER BY LOGID");
-					
+
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
 	
-		logEvent("ION Event Log for Max Log ID = " + getLastID(), com.cannontech.common.util.LogWriter.INFO);
+		logEvent("ION Event Log for Max Log ID = " + getLastID(), LogWriter.INFO);
 		
 		try
 		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 			if( conn == null )
 			{
-				logEvent(getClass() + ":  Error getting database connection.", com.cannontech.common.util.LogWriter.ERROR);
+				logEvent(getClass() + ":  Error getting database connection.", LogWriter.ERROR);
 				return;
 			}
 			else
@@ -194,7 +211,7 @@ public class IONEventLogFormat extends ExportFormatBase
 				pstmt = conn.prepareStatement(sql.toString());
 				rset = pstmt.executeQuery();
 	
-				logEvent(" *Start looping through return resultset", com.cannontech.common.util.LogWriter.INFO);
+				logEvent(" *Start looping through return resultset", LogWriter.INFO);
 	
 				int lastLogID = -1;
 				while (rset.next())
@@ -233,8 +250,8 @@ public class IONEventLogFormat extends ExportFormatBase
 //						String node = billGroup + "." + paoName + "_" + meterNum;
 						String node = billGroup + "." + paoName + "_" + String.valueOf(slaveAdd);
 						
-						com.cannontech.export.record.IONEventLogRecord ionRecord =
-							new com.cannontech.export.record.IONEventLogRecord(node, nLog, tsDate, priority,new Integer(logid), null, causeIon, causeValue, effectIon, effectValue);
+						IONEventLogRecord ionRecord =
+							new IONEventLogRecord(node, nLog, tsDate, priority,new Integer(logid), null, causeIon, causeValue, effectIon, effectValue);
 	
 						getRecordVector().addElement(ionRecord);
 					}
@@ -261,7 +278,7 @@ public class IONEventLogFormat extends ExportFormatBase
 				e2.printStackTrace();//sometin is up
 			}	
 		}
-		logEvent("@" + this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer) + " millis", com.cannontech.common.util.LogWriter.INFO);
+		logEvent("@" + this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer) + " millis", LogWriter.INFO);
 	}
 
 	/**
@@ -292,9 +309,9 @@ public class IONEventLogFormat extends ExportFormatBase
 	 * @param valueString java.lang.String
 	 * @return Vector
 	 */
-	private java.util.Vector getKeysAndValuesVector(String valueString)
+	private Vector<String> getKeysAndValuesVector(String valueString)
 	{
-		java.util.Vector keysAndValues = new java.util.Vector(4);
+		Vector<String> keysAndValues = new Vector<String>(4);
 		String tempString = new String(valueString);
 		int endIndex = -1;
 
@@ -337,12 +354,12 @@ public class IONEventLogFormat extends ExportFormatBase
 	 */
 	private IONDescription getIONDescription(String descString)
 	{
-		java.util.Vector descVector = getKeysAndValuesVector(descString);
+		Vector<String> descVector = getKeysAndValuesVector(descString);
 
 		IONDescription ion_desc = new IONDescription();
 		for( int i = 0; i < descVector.size(); i++)
 		{
-			String keyAndValue = (String)descVector.get(i);
+			String keyAndValue = descVector.get(i);
 			int separatorIndex = keyAndValue.indexOf('=');
 			if( separatorIndex < 0)
 				break;	//not sure what our other options are at this point.
@@ -373,12 +390,12 @@ public class IONEventLogFormat extends ExportFormatBase
 	 */
 	private IONAction getIONAction(String actionString)
 	{
-		java.util.Vector actionVector = getKeysAndValuesVector(actionString);
+		Vector<String> actionVector = getKeysAndValuesVector(actionString);
 
 		IONAction ion_action = new IONAction();
 		for( int i = 0; i < actionVector.size(); i++)
 		{
-			String keyAndValue = (String)actionVector.get(i);
+			String keyAndValue = actionVector.get(i);
 			int separatorIndex = keyAndValue.indexOf('=');
 			if( separatorIndex < 0)
 				break;	//not sure what our other options are at this point.
@@ -441,7 +458,7 @@ public class IONEventLogFormat extends ExportFormatBase
 			//Now, write a second backup file. yyyyMMdd_hhmmss_EXPORT_FILENAME
 			try {
 				SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_hhmmss");
-				java.io.FileWriter outputFileWriter = new java.io.FileWriter(getExportDirectory() + format.format(new Date()) + "_" + getExportFileName() );
+				FileWriter outputFileWriter = new FileWriter(getExportDirectory() + format.format(new Date()) + "_" + getExportFileName() );
 				outputFileWriter.write( getOutputAsStringBuffer().toString() );
 				outputFileWriter.flush();
 				outputFileWriter.close();		
