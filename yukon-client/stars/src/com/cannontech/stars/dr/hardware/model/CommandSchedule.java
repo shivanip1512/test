@@ -7,7 +7,7 @@ public class CommandSchedule {
     private int commandScheduleId;
     private String startTimeCronString;
     private Period runPeriod = new Period();
-    private Period delayPeriod = new Period(2000);
+    private Period delayPeriod = Period.seconds(2);
     private boolean enabled = true;
     private int energyCompanyId;
 

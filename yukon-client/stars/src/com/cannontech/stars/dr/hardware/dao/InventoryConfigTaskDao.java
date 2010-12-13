@@ -27,7 +27,7 @@ public interface InventoryConfigTaskDao {
 
     public int getFailedCount(int taskId);
 
-    public List<InventoryConfigTaskItem> getItems(int maxItems, int energyCompanyId);
+    public Iterable<InventoryConfigTaskItem> getItems(int maxItems, int energyCompanyId);
 
     public void markComplete(InventoryConfigTaskItem taskItem, InventoryConfigTaskItem.Status status);
 

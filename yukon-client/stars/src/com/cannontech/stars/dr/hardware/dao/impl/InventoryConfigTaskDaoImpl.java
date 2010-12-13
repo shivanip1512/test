@@ -2,7 +2,6 @@ package com.cannontech.stars.dr.hardware.dao.impl;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.inventory.YukonInventory;
+import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
@@ -172,7 +172,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
 
     @Override
     @Transactional(readOnly=true)
-    public List<InventoryConfigTaskItem> getItems(int maxItems, int energyCompanyId) {
+    public Iterable<InventoryConfigTaskItem> getItems(int maxItems, int energyCompanyId) {
         List<InventoryConfigTask> unfinishedTasks = getUnfinished(energyCompanyId);
         if (unfinishedTasks.isEmpty()) {
             return Collections.emptyList();
@@ -183,20 +183,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
             items.add(getItems(task, maxItems));
         }
 
-        List<InventoryConfigTaskItem> retVal = Lists.newArrayList();
-        while (!items.isEmpty() && retVal.size() < maxItems) {
-            Iterator<List<InventoryConfigTaskItem>> iter = items.iterator();
-            while (iter.hasNext() && retVal.size() < maxItems) {
-                List<InventoryConfigTaskItem> thisList = iter.next();
-                if (!thisList.isEmpty()) {
-                    retVal.add(thisList.remove(0));
-                }
-                if (thisList.isEmpty()) {
-                    iter.remove();
-                }
-            }
-        }
-        return retVal;
+        return IterableUtils.clipped(IterableUtils.collate(items), maxItems);
     }
 
     private List<InventoryConfigTaskItem> getItems(InventoryConfigTask task, int maxItems) {

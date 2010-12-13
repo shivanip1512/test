@@ -136,9 +136,8 @@ public class HardwareConfigService {
                             ? (int) Math.round(60.0 * 1000.0 / shortestDelayInMillis / 2.0) : 100;
                         numItems = Math.max(Math.min(numItems, 100), 1);
                         log.debug("getting no more than " + numItems + " items");
-                        List<InventoryConfigTaskItem> items =
+                        Iterable<InventoryConfigTaskItem> items =
                             inventoryConfigTaskDao.getItems(numItems, energyCompanyId);
-                        log.debug("got " + items.size() + " items");
                         for (InventoryConfigTaskItem item : items) {
                             log.debug("processing item " + item);
                             Status status = Status.FAIL;  // fail if there are no commands
