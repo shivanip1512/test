@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
 import org.joda.time.Period;
 import org.joda.time.ReadablePeriod;
 import org.quartz.CronExpression;
@@ -121,19 +122,18 @@ public class HardwareConfigService {
                     log.debug(activeSchedules.size() + " out of " + schedules.size() + " schedules active");
                     if (!activeSchedules.isEmpty()) {
                         // Grab approximately a minute's worth of work and process it.
-                        long shortestDelayInMillis = Long.MAX_VALUE;
+                        Duration shortestDelay = null;
                         for (CommandSchedule activeSchedule : activeSchedules) {
                             ReadablePeriod thisDelayPeriod = activeSchedule.getDelayPeriod();
-                            long thisDelayInMillis = new Period(thisDelayPeriod).toStandardDuration().getMillis();
-                            if (thisDelayInMillis < shortestDelayInMillis) {
-                                shortestDelayInMillis = thisDelayInMillis;
+                            Duration thisDelay = new Period(thisDelayPeriod).toStandardDuration();
+                            if (shortestDelay == null || thisDelay.isShorterThan(shortestDelay)) {
+                                shortestDelay = thisDelay;
                             }
                         }
-                        if (shortestDelayInMillis < 0) shortestDelayInMillis = 0;
-                        log.debug("using delay of " + shortestDelayInMillis + " ms");
-                        // (We're estimating 2 command per config.)
-                        int numItems = shortestDelayInMillis > 0
-                            ? (int) Math.round(60.0 * 1000.0 / shortestDelayInMillis / 2.0) : 100;
+                        log.debug("using delay of " + shortestDelay);
+                        // (We're estimating 2 commands per config.)
+                        int numItems = shortestDelay.isLongerThan(Duration.ZERO)
+                            ? (int) Math.round(60.0 * 1000.0 / shortestDelay.getMillis() / 2.0) : 100;
                         numItems = Math.max(Math.min(numItems, 100), 1);
                         log.debug("getting no more than " + numItems + " items");
                         Iterable<InventoryConfigTaskItem> items =
@@ -144,6 +144,7 @@ public class HardwareConfigService {
                             workProcessed = true;
                             int inventoryId = item.getInventoryId();
                             LiteStarsLMHardware hardware = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
+
                             try {
                                 List<String> commands = hardwareConfigService.getConfigCommands(inventoryId,
                                                                                                 energyCompanyId,
@@ -164,7 +165,7 @@ public class HardwareConfigService {
                                             status = Status.FAIL;
                                         }
                                         try {
-                                            Thread.sleep(shortestDelayInMillis);
+                                            Thread.sleep(shortestDelay.getMillis());
                                         } catch (InterruptedException ie) {
                                             log.info("sleep interrupted");
                                         }
