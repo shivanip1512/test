@@ -21,7 +21,7 @@ class UnsolicitedHandler : boost::noncopyable
 {
 private:
 
-    typedef std::queue< CtiOutMessage * > om_queue;
+    typedef std::list< CtiOutMessage * > om_list;
 
 protected:
 
@@ -48,19 +48,21 @@ protected:
     {
         device_record(const CtiDeviceSPtr &device_) :
             device(boost::static_pointer_cast<CtiDeviceSingle>(device_)),
-            status(NoError)
+            device_status(NoError),
+            comm_status(NoError)
         {}
 
         const CtiDeviceSingleSPtr device;
 
         typedef std::queue< packet * > packet_queue;
 
-        //  always working on the first entry in the queue
-        om_queue     outbound;
+        //  always working on the first OM in the list
+        om_list      outbound;
         packet_queue inbound;
 
         CtiXfer xfer;
-        int     status;
+        int     device_status;
+        int     comm_status;
 
         CtiTime last_outbound;
         CtiTime last_keepalive;
@@ -101,18 +103,19 @@ private:
     void handleDeviceRequest(OUTMESS *om);
 
     bool startPendingRequests(const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
+    void startPendingRequest(device_record *dr);
 
     bool generateOutbounds(const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
-
-    void generateKeepalives( om_queue &local_queue );
+    void generateKeepalives( om_list &local_queue );
     static bool isDnpKeepaliveNeeded( const device_record &dr, const CtiTime &TimeNow );
-    static void generateDnpKeepalive( om_queue &local_queue, const device_record &dr, const CtiTime &TimeNow );
-
-    void readPortQueue( CtiPortSPtr &port, om_queue &local_queue );
+    static void generateDnpKeepalive( om_list &local_queue, const device_record &dr, const CtiTime &TimeNow );
+    void readPortQueue( CtiPortSPtr &port, om_list &local_queue );
+    void tryGenerate(device_record *dr);
 
     bool expireTimeouts(const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
 
     bool processInbounds(const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
+    void processInbound(device_record *dr);
     void processGpuffInbound(device_record &dr);
     void processDeviceSingleInbound(device_record &dr);
 
@@ -120,7 +123,7 @@ private:
     string describeDevice( const device_record &dr ) const;
 
     bool sendResults(const Cti::Timing::MillisecondTimer &timer, const unsigned long slice);
-    void sendResult(device_record &dr);
+    void sendResult(device_record *dr);
 
     static void sendDevicePointsFromProtocol(vector<CtiPointDataMsg *> &points, const CtiDeviceSingleSPtr &device, CtiConnection &connection);
 
@@ -133,13 +136,16 @@ private:
 
     CtiTime _last_keepalive;
 
-    om_queue _request_queue;
+    om_list _request_queue;
 
     device_list _request_pending;
     device_list _to_generate;
     device_list _waiting_for_data;
     device_list _to_decode;
     device_list _request_complete;
+
+    template<class Element>
+    bool processQueue(std::list<Element> &queue, void (UnsolicitedHandler::*processElement)(Element), const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
 
     std::multimap<CtiTime, device_list::iterator> _timeouts;
 
