@@ -2,7 +2,12 @@ package com.cannontech.database.data.stars;
 
 import java.sql.SQLException;
 
+import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeHelper;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * <p>Title: LMProgramWebPublishing.java</p>
@@ -12,7 +17,7 @@ import com.cannontech.database.db.DBPersistent;
  * @author yao
  * @version 1.0
  */
-public class LMProgramWebPublishing extends DBPersistent {
+public class LMProgramWebPublishing extends DBPersistent implements CTIDbChange{
 	
 	private com.cannontech.database.db.stars.LMProgramWebPublishing lmProgramWebPublishing = null;
 	private com.cannontech.database.db.web.YukonWebConfiguration webConfiguration = null;
@@ -108,5 +113,15 @@ public class LMProgramWebPublishing extends DBPersistent {
 		com.cannontech.database.db.web.YukonWebConfiguration webConfiguration) {
 		this.webConfiguration = webConfiguration;
 	}
+
+    @Override
+    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+        DBChangeMsg[] msgs = {
+                DbChangeHelper.newDbChange(dbChangeType, DbChangeCategory.APPLIANCE_CATEGORY, 
+                                           lmProgramWebPublishing.getApplianceCategoryID())
+        };
+        
+        return msgs;
+    }
 
 }

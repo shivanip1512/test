@@ -364,6 +364,15 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         dftRouteID = CtiUtilities.NONE_ZERO_ID;
     }
     
+    /**
+     *  This method clears out both of the cache objects held by the appliance categories
+     */
+    public void resetApplianceCategoryList() {
+        programIdToAppCatIdMap.clear();
+        appCategoryMap.clear();
+        initApplianceCategories();
+    }
+    
     public TimeZone getDefaultTimeZone() {
         TimeZone timeZone;
         String timeZoneStr = energyCompanyRolePropertyDao.getPropertyStringValue(YukonRoleProperty.ENERGY_COMPANY_DEFAULT_TIME_ZONE, this);

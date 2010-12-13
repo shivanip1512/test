@@ -1,6 +1,11 @@
 package com.cannontech.database.data.stars.appliance;
 
+import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeHelper;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 
 /**
@@ -12,7 +17,7 @@ import com.cannontech.database.db.DBPersistent;
  * @version 1.0
  */
 
-public class ApplianceCategory extends DBPersistent {
+public class ApplianceCategory extends DBPersistent implements CTIDbChange {
 
     private com.cannontech.database.db.stars.appliance.ApplianceCategory applianceCategory = null;
     private com.cannontech.database.db.web.YukonWebConfiguration webConfiguration = null;
@@ -125,5 +130,15 @@ public class ApplianceCategory extends DBPersistent {
 	public void setEnergyCompanyID(Integer energyCompanyID) {
 		this.energyCompanyID = energyCompanyID;
 	}
+
+    @Override
+    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+        DBChangeMsg[] msgs = {
+                DbChangeHelper.newDbChange(dbChangeType, DbChangeCategory.APPLIANCE_CATEGORY, 
+                                           applianceCategory.getApplianceCategoryID())
+        };
+        
+        return msgs;
+    }
 
 }

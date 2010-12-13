@@ -78,6 +78,17 @@ public class LiteStarsEnergyCompanyFactory {
 
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY_DEFAULT_ROUTE,
                                                               defaultRouteEventListener);
+
+        
+        DatabaseChangeEventListener applianceCategoryEventListener = new DatabaseChangeEventListener() {
+            @Override
+            public void eventReceived(DatabaseChangeEvent event) {
+                energyCompany.resetApplianceCategoryList();
+            }
+        };
+
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.APPLIANCE_CATEGORY,
+                                                              applianceCategoryEventListener);
     }
     
     // DI Setter
