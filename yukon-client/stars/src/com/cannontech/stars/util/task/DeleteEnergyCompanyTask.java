@@ -303,7 +303,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			currentAction = "Deleting customer selection lists";
 			
 			List<YukonSelectionList> energyCompanySelectionLists = 
-			    yukonListDao.getSelectionListByEnergyCompanyId(energyCompany.getEnergyCompanyID());
+			    yukonListDao.getSelectionListsByEnergyCompanyId(energyCompany.getEnergyCompanyID());
 			for (YukonSelectionList cList : energyCompanySelectionLists) {
 				if (cList.getListID() == LiteStarsEnergyCompany.FAKE_LIST_ID) continue;
 				
