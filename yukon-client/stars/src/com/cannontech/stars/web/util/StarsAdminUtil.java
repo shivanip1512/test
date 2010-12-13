@@ -98,10 +98,10 @@ public class StarsAdminUtil {
 	public static final String SERVICE_COMPANY_TEMP = "SERVICE_COMPANY_TEMP";
 	
 	public static final String FIRST_TIME = "FIRST_TIME";
-    private static final AuthenticationService authenticationService = (AuthenticationService) YukonSpringHook.getBean("authenticationService");
-    private static final StarsEventLogService starsEventLogService = (StarsEventLogService) YukonSpringHook.getBean("starsEventLogService");
 	
 	public static void updateDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeID, StarsYukonUser user) throws Exception {
+	    StarsEventLogService starsEventLogService = (StarsEventLogService) YukonSpringHook.getBean("starsEventLogService");
+	    
 	    int previousRouteId = energyCompany.getDefaultRouteID();
 		if (energyCompany.getDefaultRouteID() != routeID) {
 			if(routeID == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
@@ -1049,7 +1049,9 @@ public class StarsAdminUtil {
 	public static LiteYukonUser createOperatorLogin(String username, String password, LoginStatusEnum status, LiteYukonGroup[] operGroups,
 		LiteStarsEnergyCompany energyCompany) throws Exception
 	{
+	    AuthenticationService authenticationService = (AuthenticationService) YukonSpringHook.getBean("authenticationService");
 	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+
 	    AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, null );
 		if (username.length() == 0)
 			throw new WebClientException( "Username cannot be empty" );
@@ -1101,6 +1103,8 @@ public class StarsAdminUtil {
 	public static void updateLogin(LiteYukonUser liteUser, String username, String password, LoginStatusEnum status,
 		LiteYukonGroup loginGroup, LiteStarsEnergyCompany energyCompany, boolean authTypeChange) throws Exception
 	{
+	    AuthenticationService authenticationService = (AuthenticationService) YukonSpringHook.getBean("authenticationService");
+	    
 		if (!liteUser.getUsername().equalsIgnoreCase(username) && DaoFactory.getYukonUserDao().getLiteYukonUser(username) != null)
 			throw new WebClientException( "Username '" + username + "' already exists" );
 		

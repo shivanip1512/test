@@ -1,7 +1,5 @@
 package com.cannontech.database.data.lite.stars;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.authorization.service.PaoPermissionService;
@@ -22,7 +20,6 @@ import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
-import com.google.common.collect.Maps;
 
 public class LiteStarsEnergyCompanyFactory {
     private AddressDao addressDao;
@@ -40,8 +37,6 @@ public class LiteStarsEnergyCompanyFactory {
 	private YukonGroupDao yukonGroupDao;
 	private YukonListDao yukonListDao;
 	
-	private static Map<Integer, LiteStarsEnergyCompany> energyCompanyCache = Maps.newHashMap();
-	
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
         LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany(energyCompany);
         applyPropertySetters(liteStarsEnergyCompany);
@@ -54,7 +49,7 @@ public class LiteStarsEnergyCompanyFactory {
         return energyCompany;
     }
     
-    private void applyPropertySetters(LiteStarsEnergyCompany energyCompany) {
+    private void applyPropertySetters(final LiteStarsEnergyCompany energyCompany) {
         energyCompany.setAddressDao(addressDao);
         energyCompany.setDbPersistentDao(dbPersistentDao);
         energyCompany.setEnergyCompanyRolePropertyDao(energyCompanyRolePropertyDao);
@@ -71,24 +66,18 @@ public class LiteStarsEnergyCompanyFactory {
 
         energyCompany.initialize();
 
-        // Add to energyCompanyCache
-        energyCompanyCache.put(energyCompany.getEnergyCompanyID(), energyCompany);
-
         // Adding Database Change listeners
         DatabaseChangeEventListener defaultRouteEventListener = new DatabaseChangeEventListener() {
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
-                
-                LiteStarsEnergyCompany liteStarsEnergyCompany = energyCompanyCache.get(event.getPrimaryKey());
-                if (liteStarsEnergyCompany != null) {
-                    liteStarsEnergyCompany.resetDefaultRouteId();
+                if (event.getPrimaryKey() == energyCompany.getEnergyCompanyID()) {
+                    energyCompany.resetDefaultRouteId();
                 }
-            }};
+            }
+        };
 
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY_DEFAULT_ROUTE,
                                                               defaultRouteEventListener);
-
-
     }
     
     // DI Setter
