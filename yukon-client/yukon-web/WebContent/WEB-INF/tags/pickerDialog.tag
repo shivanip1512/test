@@ -56,6 +56,8 @@
         </c:if>
         <c:if test="${!empty pageScope.allowEmptySelection}">
             ${id}.allowEmptySelection = ${pageScope.allowEmptySelection};
+        </c:if>
+        <c:if test="${pageScope.linkType == 'selection'}">
             ${id}.selectedAndMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedAnd"/>';
             ${id}.selectedMoreMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedMore"/>';
         </c:if>
