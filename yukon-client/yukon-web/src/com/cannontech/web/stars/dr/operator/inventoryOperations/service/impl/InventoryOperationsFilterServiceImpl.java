@@ -9,12 +9,18 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.BadSqlGrammarException;
 
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
+import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.stars.dr.hardware.dao.impl.InventoryDaoImpl.InventoryIdentifierMapper;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.user.YukonUserContext;
@@ -27,6 +33,7 @@ import com.google.common.collect.Sets;
 public class InventoryOperationsFilterServiceImpl implements InventoryOperationsFilterService {
     
     private YukonJdbcTemplate yukonJdbcTemplate;
+    private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     
     @Override
     public Set<InventoryIdentifier> getInventory(FilterMode filterMode, List<RuleModel> rules, DateTimeZone timeZone, YukonUserContext userContext) throws ParseException {
@@ -52,7 +59,20 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
         sql.append("WHERE").append(whereClause);
         
         Set<InventoryIdentifier> result = Sets.newHashSet();
-        yukonJdbcTemplate.queryInto(sql, new InventoryIdentifierMapper(), result);
+        
+        /* Catch BadSqlGrammarException for oracle and DataIntegrityViolationException for sql server
+         * when casting serial numbers as numeric when they have letters in them. */
+        try {
+            yukonJdbcTemplate.queryInto(sql, new InventoryIdentifierMapper(), result);
+        } catch (BadSqlGrammarException e) {
+            if (e.getCause().getMessage().contains("ORA-01722: invalid number")) {
+                throw new InvalidSerialNumberRangeDataException(e);
+            } else {
+                throw e;
+            }
+        } catch (DataIntegrityViolationException e) {
+            throw new InvalidSerialNumberRangeDataException(e);
+        }
         
         return result;
     }
@@ -100,9 +120,16 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             break;
             
         case SERIAL_NUMBER_RANGE:
-            sql.append("(lmhb.ManufacturerSerialNumber").gte(rule.getSerialNumberFrom()).append("AND");
-            sql.append("lmhb.ManufacturerSerialNumber").lte(rule.getSerialNumberTo()).append(")");
-            break;
+            VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
+            SqlBuilder oracleSql = builder.buildFor(DatabaseVendor.ORACLE11G, DatabaseVendor.ORACLE10G);
+            oracleSql.append("(CAST (lmhb.ManufacturerSerialNumber AS NUMBER(19))").gte(rule.getSerialNumberFrom()).append("AND");
+            oracleSql.append("CAST (lmhb.ManufacturerSerialNumber AS NUMBER(19))").lte(rule.getSerialNumberTo()).append(")");
+            
+            SqlBuilder otherSql =  builder.buildOther();
+            otherSql.append("(CAST (lmhb.ManufacturerSerialNumber AS BIGINT)").gte(rule.getSerialNumberFrom()).append("AND");
+            otherSql.append("CAST (lmhb.ManufacturerSerialNumber AS BIGINT)").lte(rule.getSerialNumberTo()).append(")");
+            
+            return builder;
             
         case UNENROLLED:
             sql.append("ib.InventoryId NOT IN (");
@@ -124,6 +151,11 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
+    
+    @Autowired
+    public void setVendorSpecificSqlBuilderFactory(VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory) {
+        this.vendorSpecificSqlBuilderFactory = vendorSpecificSqlBuilderFactory;
     }
     
 }

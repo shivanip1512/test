@@ -45,6 +45,7 @@ import com.cannontech.web.stars.dr.operator.inventoryOperations.model.FilterRule
 import com.cannontech.web.stars.dr.operator.inventoryOperations.model.RuleModel;
 import com.cannontech.web.stars.dr.operator.inventoryOperations.model.collection.MemoryCollectionProducer;
 import com.cannontech.web.stars.dr.operator.inventoryOperations.service.InventoryOperationsFilterService;
+import com.cannontech.web.stars.dr.operator.inventoryOperations.service.impl.InvalidSerialNumberRangeDataException;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)
@@ -106,9 +107,17 @@ public class InventoryFilterController {
             return "operator/inventory/inventoryOperations/setupFilterRules.jsp";
         }
         
+        Set<InventoryIdentifier> inventory = null;
+        
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-        Set<InventoryIdentifier> inventory = inventoryOperationsFilterService.getInventory(filterModel.getFilterMode(), 
-                                                                                           filterModel.getFilterRules(), energyCompany.getDefaultDateTimeZone(), userContext);
+        try {
+            inventory = inventoryOperationsFilterService.getInventory(filterModel.getFilterMode(), 
+                                filterModel.getFilterRules(), energyCompany.getDefaultDateTimeZone(), userContext);
+        } catch (InvalidSerialNumberRangeDataException e) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.filterSelection.error.invalidSerialNumbers"));
+            setupFilterSelectionModelMap(modelMap, userContext);
+            return "operator/inventory/inventoryOperations/setupFilterRules.jsp";
+        }
         
         if(inventory.isEmpty()) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.filterSelection.error.noInventory"));
