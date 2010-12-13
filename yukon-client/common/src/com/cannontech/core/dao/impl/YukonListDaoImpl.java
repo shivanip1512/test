@@ -82,6 +82,9 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
                 @Override
                 public YukonListEntry apply(Integer entryId) {
                     YukonListEntry yukonListEntry = findYukonListEntryFromDb(entryId);
+                    
+                    if (yukonListEntry == null)
+                        return NULL_ENTRY;
                     return yukonListEntry;
                 }
             });
@@ -91,6 +94,9 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
                 @Override
                 public YukonSelectionList apply(Integer listId) {
                     YukonSelectionList yukonSelectionList = findYukonSelectionListFromDb(listId);
+
+                    if (yukonSelectionList == null) 
+                        return NULL_LIST;
                     return yukonSelectionList;
                 }
             });
@@ -163,7 +169,7 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
         try {
             return yukonJdbcTemplate.queryForObject(sql, new YukonSelectionListRowMapper());
         } catch (EmptyResultDataAccessException e) {
-            return NULL_LIST;
+            return null;
         }
     }
     
@@ -180,12 +186,12 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
         try {
             return yukonJdbcTemplate.queryForObject(sql, new YukonListEntryRowMapper());
         } catch (EmptyResultDataAccessException e) {
-            return NULL_ENTRY;
+            return null;
         }
     }
 
     @Override
-    public List<YukonSelectionList> getSelectionListByEnergyCompanyId(int energyCompanyId) {
+    public List<YukonSelectionList> getSelectionListsByEnergyCompanyId(int energyCompanyId) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(selectYukonSelectionListSql);

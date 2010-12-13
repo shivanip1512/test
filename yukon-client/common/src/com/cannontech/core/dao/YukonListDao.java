@@ -60,7 +60,7 @@ public interface YukonListDao {
     /**
      * This method returns all the YukonSelectionList objects for a given energy company.
      */
-    public List<YukonSelectionList> getSelectionListByEnergyCompanyId(int energyCompanyId);
+    public List<YukonSelectionList> getSelectionListsByEnergyCompanyId(int energyCompanyId);
 
     /**
      * This method returns the YukonSelectionList associated with the energyCompanyId and listName.
