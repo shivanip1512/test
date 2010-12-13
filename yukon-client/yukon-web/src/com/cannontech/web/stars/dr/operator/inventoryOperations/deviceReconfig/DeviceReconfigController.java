@@ -69,11 +69,15 @@ public class DeviceReconfigController {
     @RequestMapping(value="/operator/inventory/inventoryOperations/deviceReconfig/setup", method=RequestMethod.GET)
     public void setup(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
         
-        inventoryCollectionFactory.addCollectionToModelMap(request, modelMap);
-        
         DeviceReconfigOptions deviceReconfigOptions = new DeviceReconfigOptions();
         modelMap.addAttribute("deviceReconfigOptions", deviceReconfigOptions);
 
+        setupModelMap(request, modelMap, userContext);
+    }
+    
+    private void setupModelMap(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
+        inventoryCollectionFactory.addCollectionToModelMap(request, modelMap);
+        
         LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
         List<CommandSchedule> schedules = commandScheduleDao.getAll(energyCompany.getEnergyCompanyID());
         modelMap.addAttribute("schedules", schedules);
@@ -89,9 +93,9 @@ public class DeviceReconfigController {
 
         if(bindingResult.hasErrors()) {
             /* Add errors to flash scope */
-            inventoryCollectionFactory.addCollectionToModelMap(request, modelMap);
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            setupModelMap(request, modelMap, userContext);
             return "operator/inventory/inventoryOperations/deviceReconfig/setup.jsp";
         }
 
@@ -99,9 +103,9 @@ public class DeviceReconfigController {
             inventoryConfigTaskDao.create(deviceReconfigOptions.getName(), deviceReconfigOptions.isSendInService(), inventoryCollectionFactory.createCollection(request), energyCompanyId);
         } catch (DataIntegrityViolationException e) {
             bindingResult.rejectValue("name", "yukon.web.modules.operator.deviceReconfig.error.unavailable.name");
-            inventoryCollectionFactory.addCollectionToModelMap(request, modelMap);
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            setupModelMap(request, modelMap, userContext);
             return "operator/inventory/inventoryOperations/deviceReconfig/setup.jsp";
         }
         
