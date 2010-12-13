@@ -1,5 +1,7 @@
 package com.cannontech.stars.dr.hardware.model;
 
+import org.apache.commons.lang.StringUtils;
+
 public class InventoryConfigTask {
     private int inventoryConfigTaskId;
     private String taskName;
@@ -54,6 +56,10 @@ public class InventoryConfigTask {
 
     public void setEnergyCompanyId(int energyCompanyId) {
         this.energyCompanyId = energyCompanyId;
+    }
+    
+    public String getDisplayName() {
+        return StringUtils.abbreviate(taskName, 35);
     }
 
     @Override

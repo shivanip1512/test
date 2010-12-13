@@ -33,8 +33,8 @@
                 <tr>
                     
                     <td>
-                        <a href="${statusUrl}">
-                            <spring:escapeBody htmlEscape="true">${task.taskName}</spring:escapeBody>
+                        <a href="${statusUrl}" title="<spring:escapeBody htmlEscape="true">${task.taskName}</spring:escapeBody>">
+                            <spring:escapeBody htmlEscape="true">${task.displayName}</spring:escapeBody>
                         </a>
                     </td>
                     
