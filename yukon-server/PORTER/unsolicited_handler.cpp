@@ -616,6 +616,9 @@ void Cti::Porter::UnsolicitedHandler::startPendingRequest(device_record *dr)
         //  no new outbound work, so process the unexpected inbound
         if( isDnpDevice(*dr->device) )
         {
+            //  push a null OM on there so can distinguish this request from anything else that comes in
+            dr->outbound.push_back(0);
+
             //  there is no outmessage, so we don't call recvCommRequest -
             //    we have to call the Device::DNP-specific initUnsolicited
             shared_ptr<Devices::DnpDevice> dnp_device = boost::static_pointer_cast<Devices::DnpDevice>(dr->device);
