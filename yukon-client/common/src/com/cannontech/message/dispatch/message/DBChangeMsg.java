@@ -63,7 +63,6 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
     public static final int CHANGE_WEB_CONFIG_DB = 33;
     public static final int CHANGE_STARS_PUBLISHED_PROGRAM_DB = 34;
     public static final int CHANGE_IVVC_ZONE = 35;
-    public static final int CHANGE_ENERGY_COMPANY_DEFAULT_ROUTE = 36;
 
     /*Possible values for the Categories field
      *NOTE: If you are using the CHANGE_PAO_DB database field you will
