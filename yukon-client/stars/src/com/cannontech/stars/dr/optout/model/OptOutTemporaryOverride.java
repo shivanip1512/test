@@ -64,6 +64,13 @@ public class OptOutTemporaryOverride {
         this.optOutValue = optOutValue;
     }
     
+    public OptOutEnabled getOptOutEnabled() {
+        if (OptOutTemporaryOverrideType.ENABLED == optOutType) {
+            return OptOutEnabled.valueOf(optOutValue);
+        }
+        return null;
+    }
+    
     public Integer getAssignedProgramId() {
         return assignedProgramId;
     }

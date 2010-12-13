@@ -106,7 +106,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
         // Check if a system wide temporary override has occurred for this time frame and use that
         // value if it exists.
         if (energyCompanyOptOutTemporaryOverride != null) {
-            optOutEnabled = OptOutEnabled.valueOf(energyCompanyOptOutTemporaryOverride.getOptOutValue());
+            optOutEnabled = energyCompanyOptOutTemporaryOverride.getOptOutEnabled();
         }
         
         return optOutEnabled;
@@ -141,7 +141,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 		                programIdOptOutTemporaryOverrideMap.get(lmHardwareControlGroup.getProgramId());
 		            
 		            // Opt Outs are disabled for this account.
-		            OptOutEnabled optOutEnabled = OptOutEnabled.valueOf(optOutTemporaryOverride.getOptOutValue());
+		            OptOutEnabled optOutEnabled = optOutTemporaryOverride.getOptOutEnabled();
 		            if (optOutEnabled == OptOutEnabled.DISABLED) {
 		                return false;
 		            }
@@ -150,7 +150,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 		        } else {
 		            if (energyCompanyOptOutTemporaryOverride != null) {
     		            // Opt Outs are disabled energy company wide and therefore are disabled for this account.
-    		            OptOutEnabled optOutEnabled = OptOutEnabled.valueOf(energyCompanyOptOutTemporaryOverride.getOptOutValue());
+    		            OptOutEnabled optOutEnabled = energyCompanyOptOutTemporaryOverride.getOptOutEnabled();
     		            if (optOutEnabled == OptOutEnabled.DISABLED) {
     		                return false;
     		            } 
@@ -160,11 +160,11 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 		    
 		    return true;
 
-        // Check to see if there have been any energy company wide based temporary overrides.
+        // Checking to see if there is an energy company wide override.  If there has been, check to 
+		// see if opt outs are enabled or disabled energy company wide.
         } else if (energyCompanyOptOutTemporaryOverride != null) {
 
-            // Opt Outs are disabled energy company wide and therefore are disabled for this account.
-            OptOutEnabled optOutEnabled = OptOutEnabled.valueOf(energyCompanyOptOutTemporaryOverride.getOptOutValue());
+            OptOutEnabled optOutEnabled = energyCompanyOptOutTemporaryOverride.getOptOutEnabled();
             if (optOutEnabled == OptOutEnabled.DISABLED) {
                 return false;
             }
@@ -197,7 +197,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 	    for (OptOutTemporaryOverride optOutTemporaryOverride : optOutTemporaryOverrides) {
 	        if (optOutTemporaryOverride.getAssignedProgramId() != null) {
 	            int assignedProgramId = optOutTemporaryOverride.getAssignedProgramId();
-	            OptOutEnabled optOutEnabled = OptOutEnabled.valueOf(optOutTemporaryOverride.getOptOutValue());
+	            OptOutEnabled optOutEnabled = optOutTemporaryOverride.getOptOutEnabled();
 	            
 	            programIdOptOutEnabledMap.put(assignedProgramId, optOutEnabled);
 	        }
