@@ -145,7 +145,7 @@ class IM_EX_CTIBASE PointAttribute
         PointAttribute(Attribute value, const std::string& name);
 
         Attribute _value;
-        std::string _name;
+        std::string _dbName;
 
         typedef std::map<std::string,PointAttribute*> AttributeMap;
         static AttributeMap nameToAttributeMap;

@@ -75,7 +75,7 @@ const PointAttribute& PointAttribute::valueOf(const std::string& name)
 
 std::string PointAttribute::name() const
 {
-    return _name;
+    return _dbName;
 }
 
 PointAttribute::Attribute PointAttribute::value() const
@@ -85,7 +85,7 @@ PointAttribute::Attribute PointAttribute::value() const
 
 PointAttribute::PointAttribute(Attribute value, const std::string& name)
 {
-    _name = name;
+    _dbName = name;
     _value = value;
 
     nameToAttributeMap[name] = this;

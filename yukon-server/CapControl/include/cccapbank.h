@@ -240,6 +240,7 @@ public:
     BOOL isQuestionableStatus();
     BOOL isFailedOrQuestionableStatus();
     bool isControlDeviceTwoWay();
+    int getPointIdByAttribute(const PointAttribute & attribute);
 
     Cti::CapControl::PointResponse getPointResponse(CtiCCMonitorPoint* point);
     std::vector<Cti::CapControl::PointResponse> getPointResponses();

@@ -3666,7 +3666,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                     {
                         CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)currentCapBank->getTwoWayPoints();
                         //NEED to check this value for a toggle, before setting status points.
-                        if (twoWayPts->getPointByAttribute(PointAttribute::IgnoredIndicator).getPointId() == pointID)
+                        if (currentCapBank->getPointIdByAttribute(PointAttribute::IgnoredIndicator) == pointID)
                         {
 
                             if (twoWayPts->getPointValueByAttribute(PointAttribute::IgnoredIndicator)!= value &&
@@ -3678,7 +3678,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                         }
                         if (twoWayPts->setTwoWayStatusPointValue(pointID, value, timestamp))
                         {
-                            if (twoWayPts->getPointByAttribute(PointAttribute::CapacitorBankState).getPointId() == pointID )
+                            if (currentCapBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) == pointID )
                             {
                                 if (currentCapBank->getReportedCBCState() != value &&
                                     currentCapBank->getReportedCBCState() >= 0 )
@@ -3795,7 +3795,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                         }
                         else if (twoWayPts->setTwoWayAnalogPointValue(pointID, value, timestamp))
                         {
-                            if (twoWayPts->getPointByAttribute(PointAttribute::UDPIpAddress).getPointId() == pointID)
+                            if (currentCapBank->getPointIdByAttribute(PointAttribute::UDPIpAddress) == pointID)
                             {
                                 currentCapBank->setIpAddress(twoWayPts->getPointValueByAttribute(PointAttribute::UDPIpAddress));
                             }
@@ -3803,7 +3803,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             {
                                 currentCapBank->setUDPPort(twoWayPts->getPointValueByAttribute(PointAttribute::UDPPortNumber));
                             }
-                            else if (twoWayPts->getPointByAttribute(PointAttribute::IgnoredReason).getPointId() == pointID)
+                            else if (currentCapBank->getPointIdByAttribute(PointAttribute::IgnoredReason) == pointID)
                             {
                                 currentCapBank->setIgnoredReason(value);
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);

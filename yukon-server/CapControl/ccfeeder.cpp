@@ -1747,7 +1747,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
 
     if  (capBank->getTwoWayPoints() != NULL)
     {
-        if (capBank->getTwoWayPoints()->getPointByAttribute(PointAttribute::CapacitorBankState).getPointId() > 0)
+        if (capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) > 0)
         {
             CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(), 
                                                                                capBank->getTwoWayPoints()->getPointByAttribute(PointAttribute::CapacitorBankState).getPointId(), 
@@ -2040,7 +2040,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
 
     if  (capBank->getTwoWayPoints() != NULL)
     {
-        if (capBank->getTwoWayPoints()->getPointByAttribute(PointAttribute::CapacitorBankState).getPointId() > 0)
+        if (capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) > 0)
         {
             CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(), 
                                                                                capBank->getTwoWayPoints()->getPointByAttribute(PointAttribute::CapacitorBankState).getPointId(), 
@@ -2157,7 +2157,7 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
 
     if  (capBank->getTwoWayPoints() != NULL)
     {
-        if (capBank->getTwoWayPoints()->getPointByAttribute(PointAttribute::CapacitorBankState).getPointId() > 0)
+        if (capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) > 0)
         {
             CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(), 
                                                                                capBank->getTwoWayPoints()->getPointByAttribute(PointAttribute::CapacitorBankState).getPointId(), 

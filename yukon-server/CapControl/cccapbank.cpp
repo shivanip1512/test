@@ -2616,6 +2616,11 @@ bool CtiCCCapBank::isControlDeviceTwoWay()
     }
 }
 
+int CtiCCCapBank::getPointIdByAttribute(const PointAttribute & attribute)
+{
+    return getTwoWayPoints()->getPointByAttribute(attribute).getPointId();
+}
+
 /* Public Static members */
 const string CtiCCCapBank::SwitchedOperationalState = "Switched";
 const string CtiCCCapBank::FixedOperationalState = "Fixed";
