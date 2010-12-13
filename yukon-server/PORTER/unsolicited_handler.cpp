@@ -683,8 +683,8 @@ void Cti::Porter::UnsolicitedHandler::tryGenerate(device_record *dr)
         traceOutbound(*dr, dr->comm_status);
     }
 
-    //  if we have data or an error, decode right away
-    if( ! dr->inbound.empty() || dr->comm_status )
+    //  if we have data, are expecting no data, or we have an error, decode right away
+    if( ! dr->inbound.empty() || ! dr->xfer.getInCountExpected() || dr->comm_status )
     {
         _active_devices[dr] = _to_decode.insert(_to_decode.end(), dr);
     }
