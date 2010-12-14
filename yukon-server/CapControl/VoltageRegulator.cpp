@@ -2,24 +2,11 @@
 
 #include "yukon.h"
 #include "VoltageRegulator.h"
+#include "ccutil.h"
 
 
 namespace Cti           {
 namespace CapControl    {
-
-
-MissingPointAttribute::MissingPointAttribute(const long ID, const PointAttribute & attribute)
-    : std::exception(),
-      _description("Missing Point Attribute: '")
-{
-    _description += attribute.name() + "' on Voltage Regulator with ID: " + CtiNumStr(ID);
-}
-
-
-const char * MissingPointAttribute::what( ) const
-{
-    return _description.c_str();
-}
 
 
 // If these strings change, remember to update them in resolveCapControlType()
@@ -115,7 +102,7 @@ LitePoint VoltageRegulator::getPointByAttribute(const PointAttribute & attribute
 
     if ( iter == _attributes.end() )
     {
-        throw MissingPointAttribute( getPaoId(), attribute );
+        throw MissingPointAttribute( getPaoId(), attribute, getPaoType() );
     }
 
     return iter->second;

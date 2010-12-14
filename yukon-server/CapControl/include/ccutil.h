@@ -3,7 +3,10 @@
 
 #include "devicetypes.h"
 #include "msg_pcrequest.h"
+#include "pointattribute.h"
 
+namespace Cti           {
+namespace CapControl    {
 enum CapControlType
 {
     Undefined = 0,
@@ -21,3 +24,18 @@ enum CapControlType
 
 CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString);
 bool isQualityOk(unsigned quality);
+
+class MissingPointAttribute : public std::exception
+{
+
+public:
+
+    MissingPointAttribute(const long ID, const PointAttribute & attribute, string paoType);
+
+    virtual const char * what( ) const;
+
+private:
+
+    std::string _description;
+};
+}}

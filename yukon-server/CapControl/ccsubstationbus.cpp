@@ -7490,7 +7490,7 @@ void CtiCCSubstationBus::updatePointResponseDeltas(std::set<long> pointIds)
         }
 
         //This checks for the case that we did not get a response from the bank in question.
-        if (pointIds.find(capBank->getTwoWayPoints()->getPointByAttribute(PointAttribute::CbcVoltage).getPointId()) == pointIds.end())
+        if (pointIds.find(capBank->getPointIdByAttribute(PointAttribute::CbcVoltage)) == pointIds.end())
         {
             return;
         }

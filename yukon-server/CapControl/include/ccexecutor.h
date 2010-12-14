@@ -127,8 +127,8 @@ class CtiCCCommandExecutor : public CtiCCExecutor
     private:
         //Helper Functions
         void voltageRegulatorKeepAliveHelper(Cti::CapControl::VoltageRegulatorManager::SharedPtr regulator, const int keepAliveTime, std::vector<CtiMessage*> &toDispatch, std::vector<CtiRequestMsg*> &requests);
-        void setParentOvUvFlags(int paoId, CapControlType type, bool ovuvFlag, CtiMultiMsg_vec& modifiedSubBuses);
-        void printOutEventLogsByIdAndType(int paoId, CapControlType type, const string& actionText, const string& userName,
+        void setParentOvUvFlags(int paoId, Cti::CapControl::CapControlType type, bool ovuvFlag, CtiMultiMsg_vec& modifiedSubBuses);
+        void printOutEventLogsByIdAndType(int paoId, Cti::CapControl::CapControlType type, const string& actionText, const string& userName,
                                           CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
 
         AttributeService* _attributeService;

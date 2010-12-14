@@ -1750,7 +1750,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
         if (capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) > 0)
         {
             CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(), 
-                                                                               capBank->getTwoWayPoints()->getPointByAttribute(PointAttribute::CapacitorBankState).getPointId(), 
+                                                                               capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState), 
                                                                                capBank->getControlStatus(), 
                                                                                CtiTime(), -1, 100 );
             hist->setMessagePriority( hist->getMessagePriority() + 2 );
@@ -2043,7 +2043,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
         if (capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) > 0)
         {
             CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(), 
-                                                                               capBank->getTwoWayPoints()->getPointByAttribute(PointAttribute::CapacitorBankState).getPointId(), 
+                                                                               capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState), 
                                                                                capBank->getControlStatus(), 
                                                                                CtiTime(), -1, 100 );
             hist->setMessagePriority( hist->getMessagePriority() + 2 );
@@ -2160,7 +2160,7 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
         if (capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState) > 0)
         {
             CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(), 
-                                                                               capBank->getTwoWayPoints()->getPointByAttribute(PointAttribute::CapacitorBankState).getPointId(), 
+                                                                               capBank->getPointIdByAttribute(PointAttribute::CapacitorBankState), 
                                                                                capBank->getControlStatus(), 
                                                                                CtiTime(), -1, 100 );
             hist->setMessagePriority( hist->getMessagePriority() + 2 );

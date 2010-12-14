@@ -3,6 +3,7 @@
 #include "yukon.h"
 #include "logger.h"
 #include "GangOperatedVoltageRegulator.h"
+#include "ccutil.h"
 
 
 namespace Cti           {

@@ -153,7 +153,7 @@ CtiCCCapBank::~CtiCCCapBank()
 CtiCCTwoWayPoints* CtiCCCapBank::getTwoWayPoints()
 {
     if ( _twoWayPoints == NULL )
-          _twoWayPoints = new CtiCCTwoWayPoints(_controldeviceid);
+          _twoWayPoints = new CtiCCTwoWayPoints(_controldeviceid, _controlDeviceType);
 
     return _twoWayPoints;
 
@@ -2618,7 +2618,7 @@ bool CtiCCCapBank::isControlDeviceTwoWay()
 
 int CtiCCCapBank::getPointIdByAttribute(const PointAttribute & attribute)
 {
-    return getTwoWayPoints()->getPointByAttribute(attribute).getPointId();
+    return getTwoWayPoints()->getPointIdByAttribute(attribute);
 }
 
 /* Public Static members */

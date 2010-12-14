@@ -3799,7 +3799,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             {
                                 currentCapBank->setIpAddress(twoWayPts->getPointValueByAttribute(PointAttribute::UDPIpAddress));
                             }
-                            else if (twoWayPts->getPointByAttribute(PointAttribute::UDPPortNumber).getPointId() == pointID)
+                            else if (currentCapBank->getPointIdByAttribute(PointAttribute::UDPPortNumber) == pointID)
                             {
                                 currentCapBank->setUDPPort(twoWayPts->getPointValueByAttribute(PointAttribute::UDPPortNumber));
                             }

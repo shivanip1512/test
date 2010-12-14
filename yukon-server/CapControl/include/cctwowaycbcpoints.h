@@ -43,10 +43,8 @@ class CtiCCTwoWayPoints
 
 public:
 
-  //RWDECLARE_COLLECTABLE( CtiCCTwoWayPoints )
 
-    CtiCCTwoWayPoints(long paoid);
-    CtiCCTwoWayPoints(Cti::RowReader& rdr);
+    CtiCCTwoWayPoints(long paoid, string paotype);
     CtiCCTwoWayPoints(const CtiCCTwoWayPoints& cap);
 
     virtual ~CtiCCTwoWayPoints();
@@ -64,6 +62,7 @@ public:
 
 
     LitePoint getPointByAttribute(const PointAttribute & attribute) const;
+    int getPointIdByAttribute(const PointAttribute & attribute) const;
     double getPointValueByAttribute(PointAttribute pointAttribute);
     CtiTime getPointTimeStampByAttribute(PointAttribute attribute);
 
@@ -83,10 +82,6 @@ public:
     void restore(Cti::RowReader& rdr);
     void setDynamicData(Cti::RowReader& rdr);
     CtiCCTwoWayPoints* replicate() const;
-
-    //Members inherited from RWCollectable
-    //void restoreGuts(RWvistream& );
-    //void saveGuts(RWvostream& ) const;
 
     CtiCCTwoWayPoints& operator=(const CtiCCTwoWayPoints& right);
 
@@ -115,105 +110,8 @@ private:
     PointAttribute getStatusAttribute(int offset);
 
     LONG _paoid;
-/*
-    LONG _capacitorBankStateId;
-    LONG _capacitorBankState;
-    LONG _reCloseBlockedId;
-    LONG _reCloseBlocked;
-    LONG _controlModeId;
-    LONG _controlMode;
-    LONG _autoVoltControlId;
-    LONG _autoVoltControl;
-    LONG _lastControlLocalId;
-    LONG _lastControlLocal;
-    LONG _lastControlRemoteId;
-    LONG _lastControlRemote;
-    LONG _lastControlOvUvId;
-    LONG _lastControlOvUv;
-    LONG _lastControlNeutralFaultId;
-    LONG _lastControlNeutralFault;
-    LONG _lastControlScheduledId;
-    LONG _lastControlScheduled;
-    LONG _lastControlDigitalId;
-    LONG _lastControlDigital;
-    LONG _lastControlAnalogId;
-    LONG _lastControlAnalog;
-    LONG _lastControlTemperatureId;
-    LONG _lastControlTemperature;
-    LONG _ovConditionId;
-    LONG _ovCondition;
-    LONG _uvConditionId;
-    LONG _uvCondition;
-    LONG _opFailedNeutralCurrentId;
-    LONG _opFailedNeutralCurrent;
-    LONG _neutralCurrentFaultId;
-    LONG _neutralCurrentFault;
-    LONG _badRelayId;
-    LONG _badRelay;
-    LONG _dailyMaxOpsId;
-    LONG _dailyMaxOps;
-    LONG _voltageDeltaAbnormalId;
-    LONG _voltageDeltaAbnormal;
-    LONG _tempAlarmId;
-    LONG _tempAlarm;
-    LONG _DSTActiveId;
-    LONG _DSTActive;
-    LONG _neutralLockoutId;
-    LONG _neutralLockout;
-    LONG _ignoredIndicatorId;
-    LONG _ignoredIndicator;
+    string _paotype;
 
-    //analog inputs
-    LONG _voltageId;
-    LONG _voltage;
-    LONG _highVoltageId;
-    LONG _highVoltage;
-    LONG _lowVoltageId;
-    LONG _lowVoltage;
-    LONG _deltaVoltageId;
-    LONG _deltaVoltage;
-    LONG _analogInput1Id;
-    LONG _analogInput1;
-    LONG _temperatureId;
-    LONG _temperature;
-    LONG _rssiId;
-    LONG _rssi;
-    LONG _ignoredReasonId;
-    LONG _ignoredReason;
-
-
-    //analog outputs
-    long _voltageControlId;
-    long _voltageControl;
-    LONG _ovSetPointId;
-    LONG _ovSetPoint;
-    LONG _uvSetPointId;
-    LONG _uvSetPoint;
-    LONG _ovuvTrackTimeId;
-    LONG _ovuvTrackTime;
-    LONG _neutralCurrentSensorId;
-    LONG _neutralCurrentSensor;
-    LONG _neutralCurrentAlarmSetPointId;
-    LONG _neutralCurrentAlarmSetPoint;
-    long _timeTempSeasonOneId;
-    long _timeTempSeasonOne;
-    long _timeTempSeasonTwoId;
-    long _timeTempSeasonTwo;
-    long _varControlId;
-    long _varControl;
-    LONG _udpIpAddressId;
-    ULONG _udpIpAddress;
-    LONG _udpPortNumberId;
-    LONG _udpPortNumber;
-
-
-    LONG _totalOpCountId;
-    LONG _totalOpCount;
-    LONG _ovCountId;
-    LONG _ovCount;
-    LONG _uvCountId;
-    LONG _uvCount;
-*/
     CtiTime _ovuvCountResetDate;
     CtiTime _lastOvUvDateTime;
     INT _lastControlReason;

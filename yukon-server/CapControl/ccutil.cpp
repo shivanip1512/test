@@ -17,6 +17,8 @@
  
 
 extern ULONG _MSG_PRIORITY;
+namespace Cti           {
+namespace CapControl    {
 
 CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString) 
 {
@@ -35,3 +37,17 @@ bool isQualityOk(unsigned quality)
     return false;
 }
 
+MissingPointAttribute::MissingPointAttribute(const long ID, const PointAttribute & attribute, string paoType)
+    : std::exception(),
+      _description("Missing Point Attribute: '")
+{
+    _description += attribute.name() + "' on "+ paoType +" with ID: " + CtiNumStr(ID);
+}
+
+
+const char * MissingPointAttribute::what( ) const
+{
+    return _description.c_str();
+}
+}
+}

@@ -22,21 +22,6 @@
 namespace Cti           {
 namespace CapControl    {
 
-class MissingPointAttribute : public std::exception
-{
-
-public:
-
-    MissingPointAttribute(const long ID, const PointAttribute & attribute);
-
-    virtual const char * what( ) const;
-
-private:
-
-    std::string _description;
-};
-
-
 class VoltageRegulator : public RWCollectable, public CapControlPao, public UpdatablePao
 {
 public:
