@@ -13,7 +13,6 @@ public enum DbChangeCategory {
     HOLIDAY_SCHEDULE("HolidaySchedule"),
     ENERGY_COMPANY("EnergyCompany"),
     ENERGY_COMPANY_DEFAULT_ROUTE("EnergyCompanyDefaultRoute"),
-    APPLIANCE_CATEGORY("EnergyCompanyApplianceCategory"),
     YUKON_USER("YukonUser"),
     CUSTOMER("Customer"),
     CI_CUSTOMER("CICustomer"),

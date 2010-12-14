@@ -134,7 +134,7 @@ public class ApplianceCategory extends DBPersistent implements CTIDbChange {
     @Override
     public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
         DBChangeMsg[] msgs = {
-                DbChangeHelper.newDbChange(dbChangeType, DbChangeCategory.APPLIANCE_CATEGORY, 
+                DbChangeHelper.newDbChange(dbChangeType, DbChangeCategory.APPLIANCE, 
                                            applianceCategory.getApplianceCategoryID())
         };
         

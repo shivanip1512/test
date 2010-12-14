@@ -87,7 +87,7 @@ public class LiteStarsEnergyCompanyFactory {
             }
         };
 
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.APPLIANCE_CATEGORY,
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.APPLIANCE,
                                                               applianceCategoryEventListener);
     }
     
