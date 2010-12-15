@@ -183,7 +183,7 @@
     <entry key="yukon.common.events.hardware.hardwareUpdateAttemptedThroughAccountImporter">The user {1} is attempting to update the device {2} on the account {3}.  They are attempting this through the Api.</entry>
     <entry key="yukon.common.events.hardware.hardwareDeletionAttemptedByOperator">The user {1} is attempting to delete the device {2}.  They are attempting this through the operator pages.</entry>
     <entry key="yukon.common.events.hardware.hardwareRemovalAttemptedThroughAccountImporter">The user {1} is attempting to delete the device {2}.  They are attempting this through the account importer.</entry>
-    <entry key="yukon.common.events.hardware.hardwareUpdateAttemptedByOperator">The user {1} is attempting to delete the device {3} from the account {2}.  They are attempting this through the api.</entry>
+    <entry key="yukon.common.events.hardware.hardwareUpdateAttemptedThroughApi">The user {1} is attempting to delete the device {3} from the account {2}.  They are attempting this through the api.</entry>
     
     <!-- Hardware Service Level -->
     <entry key="yukon.common.events.hardware.hardwareCreated">The user {1} has created the device {2}.</entry>
