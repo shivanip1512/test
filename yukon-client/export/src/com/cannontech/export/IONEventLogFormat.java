@@ -184,7 +184,7 @@ public class IONEventLogFormat extends ExportFormatBase
 		StringBuffer sql = new StringBuffer("SELECT LOGID, SL.POINTID, DATETIME, ACTION, SL.DESCRIPTION, USERNAME, PAO.PAONAME, DA.SLAVEADDRESS, BILLINGGROUP.GroupName ");
 		sql.append(" FROM SYSTEMLOG SL JOIN POINT P on SL.POINTID = P.POINTID "); 
 		sql.append(" JOIN YUKONPAOBJECT PAO ON P.PAOBJECTID = PAO.PAOBJECTID ");
-		sql.append(" LEFT OUTER JOIN (SELECT dg.DeviceGroupId, GroupName, Permission, Type, YukonPaoId ");
+		sql.append(" JOIN (SELECT dg.DeviceGroupId, GroupName, Permission, Type, YukonPaoId ");
 		sql.append(" FROM DEVICEGROUP dg JOIN DEVICEGROUPMEMBER dgm ON dg.DeviceGroupId = dgm.DeviceGroupID ");
 		sql.append(" WHERE ParentDeviceGroupId = "+ billingGroup.getId() + ") BillingGroup ON PAO.PAOBJECTID = BillingGroup.YukonPaoId ");
 		sql.append(" JOIN DEVICEADDRESS DA ON PAO.PAOBJECTID = DA.DEVICEID ");
