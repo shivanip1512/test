@@ -64,7 +64,7 @@ private:
     typedef CtiDeviceIED Inherited;
 
     CtiOutMessage _outbound;
-    unsigned char _inbound[32];
+    unsigned char _inbound[256];
 
     enum States
     {

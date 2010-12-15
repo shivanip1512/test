@@ -184,10 +184,10 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                     parse.setValue("rtm_command", TMS_ALL);
 
                     int cmd_len = 300;
-					int error_code = 0; 
-					error_code = CtiProtocolSA3rdParty::formatTMScmd(OutMessage->Buffer.OutMessage, &cmd_len, TMS_ALL, getAddress());
+                    int error_code = 0;
+                    error_code = CtiProtocolSA3rdParty::formatTMScmd(OutMessage->Buffer.OutMessage, &cmd_len, TMS_ALL, getAddress());
 
-					if( !error_code )
+                    if( !error_code )
                     {
                         OutMessage->OutLength = cmd_len * 2;
 
@@ -581,6 +581,16 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - No code length for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        if( _code_len > 200 || _code_len < 0 )
+                        {
+                            _state = State_Complete;
+
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint - invalid code length (" << _code_len << ") for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
                         }
                     }
                     else
