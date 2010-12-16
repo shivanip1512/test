@@ -101,7 +101,7 @@
     <entry key="yukon.web.modules.operator.optOut.main.decrementAllowanceDisabled.imageUrl">/WebConfig/yukon/Icons/gray_subtract_disabled.gif</entry>
     <entry key="yukon.web.modules.operator.optOut.main.decrementAllowanceDisabled.hoverText">The device has no allowances left.</entry>
 
-    <entry key="yukon.web.modules.operator.optOut.main.allowOne.confirm">Are you sure you want add an extra opt out for {0}?</entry>
+    <entry key="yukon.web.modules.operator.optOut.main.allowOne.confirm">Are you sure you want to add an extra opt out for {0}?</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.allowOne.imageUrl">/WebConfig/yukon/Icons/gray_add.gif</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.allowOne.hoverUrl">/WebConfig/yukon/Icons/gray_add_over.gif</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.allowOne.hoverText">Adds an extra opt out to the device.</entry>

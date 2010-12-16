@@ -30,7 +30,6 @@
 
     <entry key="yukon.web.modules.support.eventViewer.byType.noEventLogTypeSelected">No Event Log Type Selected</entry>
     <entry key="yukon.web.modules.support.eventViewer.byType.eventLogTypeTreeSectorIcon">No Event Log Type Selected</entry>
-    <entry key="yukon.web.modules.support.eventViewer.byType.noEventLogTypeSelected">No Event Log Type Selected</entry>
     
     <!--  Filter popup -->
     <entry key="yukon.web.modules.support.eventViewer.byType.eventLogFilters">Event Log Filters</entry>
@@ -38,7 +37,6 @@
     <entry key="yukon.web.modules.support.eventViewer.byType.showAll">Show All</entry>
     <entry key="yukon.web.modules.support.eventViewer.byType.noFilterOptionsAvailable">No filter options available.</entry>
     
-    <entry key="yukon.web.modules.support.eventViewer.byType.eventLogTypeTreeSector.confirm">Are you sure you want add an extra opt out for {0}?</entry>
     <entry key="yukon.web.modules.support.eventViewer.byType.eventLogTypeTreeSector.imageUrl">/WebConfig/yukon/Icons/folder.gif</entry>
     <entry key="yukon.web.modules.support.eventViewer.byType.eventLogTypeTreeSector.hoverUrl">/WebConfig/yukon/Icons/folder_over.gif</entry>
     <entry key="yukon.web.modules.support.eventViewer.byType.eventLogTypeTreeSector.hoverText">Allows you to select an event category type to review.</entry>
