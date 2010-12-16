@@ -4,7 +4,6 @@
 	<classpathentry exported="true" kind="src" path="/common"/>
 	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="src" path="/billing"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
