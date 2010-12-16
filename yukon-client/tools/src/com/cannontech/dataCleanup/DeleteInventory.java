@@ -68,7 +68,7 @@ public class DeleteInventory {
 
 		DeleteInventory deleteInventory = new DeleteInventory();
 
-		if (args.length > 0) {
+		if (args.length == 1) {
 			String filename = args[0];
 			deleteInventory.delete(filename);
 		} else {
