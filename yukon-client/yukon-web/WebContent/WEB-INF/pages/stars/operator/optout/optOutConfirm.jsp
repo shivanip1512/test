@@ -13,35 +13,38 @@ function createJSON() {
     $$('INPUT').each(function(input) {
         var item = createItem(input);
         if (item) {
-            var index = item['index'];
-            var hash2 = hash[index];
+            var index = item.get('index');
+            var hash2 = hash.get(index);
             if (!hash2) {
                 hash2 = $H();
-                hash[index] = hash2;
+                hash.set(index, hash2);
             }
-            hash2[item['type']] = item['value'];
+            hash2.set(item.get('type'), item.get('value'));
         }
     }); 
     
     var inputElement = document.createElement('input');
     inputElement.type = 'hidden';
     inputElement.name = 'jsonQuestions';
-    inputElement.value = hash.toJSON();
+    inputElement.value = Object.toJSON(hash);
     
     $('form').appendChild(inputElement);
 }    
 
+/**
+ * @returns {Hash|undefined(implied)}
+ */
 function createItem(element) {
     var id = $(element).id;
     if (id) {
         if (id.startsWith('question_') || id.startsWith('answer_')) {
             var split = id.split('_');
-            
-            var hash = $H();
-            hash['index'] = split[1];
-            hash['type'] = split[0];
-            hash['value'] = element.value;
-            return hash;                    
+
+            return $H({
+                'index': split[1],
+                'type': split[0],
+                'value': element.value
+            });                    
         }
     }
 }

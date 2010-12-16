@@ -1,6 +1,6 @@
 
 function checkPageExpire() {
-    var paoIds = $$("input[id^='paoId_']").pluck('value').toJSON();
+    var paoIds = Object.toJSON($$("input[id^='paoId_']").pluck('value'));
     var url = '/spring/capcontrol/pageExpire';
     
     new Ajax.Request(url, {

@@ -17,17 +17,17 @@ ExtTreeMaker.prototype = {
         this.treeLoader = null;
         
         // default tree attributes
-        this.treeAttributes = $H();
-        this.treeAttributes['id'] = this.id;
-        this.treeAttributes['useArrows'] = false;
-        this.treeAttributes['autoScroll'] = true;
-        this.treeAttributes['animate'] = false;
-        this.treeAttributes['enableDD'] = false;
-        this.treeAttributes['border'] = false;
-        this.treeAttributes['rootVisible'] = true;
-        this.treeAttributes['pathSeperator'] = '>';
-        
-        this.treeAttributes['frame'] = false;
+        this.treeAttributes = $H({
+            'id': this.id,
+            'useArrows': false,
+            'autoScroll': true,
+            'animate': false,
+            'enableDD': false,
+            'border': false,
+            'rootVisible': true,
+            'pathSeperator': '>',
+            'frame': false
+        });
 	},
     
     // setup loader and root for static data tree
@@ -36,7 +36,7 @@ ExtTreeMaker.prototype = {
         this.treeLoader = this.extTreeHelper.getStaticTreeLoader();
         this.root = this.extTreeHelper.getStaticTreeRoot(dataJson);
         
-        this.treeAttributes['loader'] = this.treeLoader;
+        this.treeAttributes.set('loader', this.treeLoader);
     },
     
     
@@ -46,7 +46,7 @@ ExtTreeMaker.prototype = {
         this.treeLoader = this.extTreeHelper.getAsyncExtTreeLoader(dataUrl, baseParams);
         this.root = this.extTreeHelper.getAsyncExtTreeRoot(rootAttributes);
         
-        this.treeAttributes['loader'] = this.treeLoader;
+        this.treeAttributes.set('loader', this.treeLoader);
     },
     
     
@@ -58,7 +58,7 @@ ExtTreeMaker.prototype = {
         // be nice to new users, loader and root MUST be set by now...
         if (this.treeLoader == null || this.root == null) {alert('Internal Error.\n\nNo treeLoader/root set.\n\nUse setupStaticDataLoader() or setupAsyncDataLoader()');return false;}
     
-        var tree = new Ext.tree.TreePanel(this.treeAttributes);
+        var tree = new Ext.tree.TreePanel(this.treeAttributes.toObject());
         tree.setRootNode(this.root);
         
         return tree;
@@ -81,15 +81,13 @@ ExtTreeMaker.prototype = {
     // Can be used to set the elemnt to render tree to. To be used if you don't want to specify 
     // using setAttributes(). Should be used before getTree() or showTree() if you plan to render to an element.
     setEl: function(el) {
-        this.treeAttributes['el'] = el;
+        this.treeAttributes.set('el', el);
     },
     
     // Provide a hash of tree panel attribute configs. Will override defaults. Should be used before
     // getTree() or showTree().
     setAttributes: function(attr) {
-
-        // override defaults - will "break" with prototype 1.6 (use update() instead!)
-        this.treeAttributes.merge($H(attr));
+        this.treeAttributes.update($H(attr));
     },
     
     // Convienence function, delegates to helper class

@@ -17,8 +17,9 @@
         
             var url = '/spring/bulk/processingExceptionErrorsRefresh';
             
-            var params = $H();
-            params['resultsId'] = '${resultsId}';
+            var params = $H({
+                'resultsId': '${resultsId}'
+            });
         
             var updater = new Ajax.Updater (theDiv, url, {
           

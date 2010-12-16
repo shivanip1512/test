@@ -53,11 +53,12 @@ public class LayoutController {
     private List<String> layoutScriptFiles = new ArrayList<String>(3);
     
     {
-        layoutScriptFiles.add("/JavaScript/prototype.js");
+    	layoutScriptFiles.add("/JavaScript/lib/prototype/1.7.0.0/prototype.js");
         layoutScriptFiles.add("/JavaScript/yukonGeneral.js");
+        layoutScriptFiles.add("/JavaScript/basicLogger.js");
         layoutScriptFiles.add("/JavaScript/CtiMenu.js");
         layoutScriptFiles.add("/JavaScript/dataUpdater.js");
-        layoutScriptFiles.add("/JavaScript/scriptaculous/effects.js");
+        layoutScriptFiles.add("/JavaScript/lib/scriptaculous/1.8.3/effects.js");
         layoutScriptFiles.add("/JavaScript/simpleCookies.js");
         layoutScriptFiles.add("/JavaScript/alert.js");
         layoutScriptFiles.add("/JavaScript/javaWebStartLauncher.js");

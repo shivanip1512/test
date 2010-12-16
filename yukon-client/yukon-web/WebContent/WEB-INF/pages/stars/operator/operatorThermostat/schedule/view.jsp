@@ -53,8 +53,18 @@
 	    function init() {
 	    
 	        schedules = $H('${scheduleJSONString}'.evalJSON());
+
+	        // convert raw objects to $H objects.  As of prototype 1.6 you cannot directly reference
+	        // hash members.  The code in thermostatSchedule.js assumes that the members of  schedules.season
+	        // have been constructed as a Hash
+	        for(i in schedules.get('season')){
+	            var tmp = schedules.get('season')[i];
+	            for(var j=0; j<tmp.length; j++){
+	                tmp[j] = $H(tmp[j]);
+	            }
+	        }
 	        
-	        $('schedules').value = schedules.toJSON();
+	        $('schedules').value = Object.toJSON(schedules);
 	        
 	        setCurrentSchedule(currentTimePeriod);
 	    }

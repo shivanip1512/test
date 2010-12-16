@@ -42,8 +42,9 @@
             
                 var url = '/spring/group/commander/' + kind;
                 
-                var params = $H();
-                params['resultKey'] = '${result.key}';
+                var params = $H({
+                    'resultKey': '${result.key}'
+                });
             
                 var updater = new Ajax.Updater (theDiv, url, {'parameters': params});
             }

@@ -8,27 +8,33 @@ ExtWindowMaker.prototype = {
     initialize: function() {
     
         // default window attributes
-        this.windowAttributes = $H();
-        this.windowAttributes['title'] = '';
-        this.windowAttributes['width'] = 400;
-        this.windowAttributes['height'] = 600;
-        this.windowAttributes['layout'] = 'border';
-        this.windowAttributes['modal'] = true;
-        this.windowAttributes['items'] = [];
-        this.windowAttributes['buttons'] = [];
+        this.windowAttributes = $H({
+            'title': '',
+            'width': 400,
+            'height': 600,
+            'layout': 'border',
+            'modal': true,
+            'items': [],
+            'buttons': []
+        });
     },
     
-    // Create a window and return it. Asks for most basic attributes of a window and sets them
-    // so using setAttributes() is not required if defaults are ok.
+    /* Create a window and return it. Asks for most basic attributes of a window and sets them
+     * so using setAttributes() is not required if defaults are ok.
+     * 
+     * @param	{String}	title Window Title
+     * @param	{Number}	width Window width in pixels
+     * @param	{Number}	height Window height in pixels
+     * 
+     * @returns	{Ext.Window} New instance of an Ext.Window
+     */
     getWindow: function(title, width, height) {
     
-        this.windowAttributes['title'] = title;
-        this.windowAttributes['width'] = width;
-        this.windowAttributes['height'] = height;
+        this.windowAttributes.set('title', title);
+        this.windowAttributes.set('width', width);
+        this.windowAttributes.set('height', height);
         
-        var window = new Ext.Window(this.windowAttributes);
-        
-        return window;
+        return new Ext.Window(this.windowAttributes.toObject());
     },
     
     // Convienence function. automatically shows window on creation.
@@ -40,22 +46,21 @@ ExtWindowMaker.prototype = {
         return window;
     },
 
-    // Provide a hash of window panel attribute configs. Will override defaults. Should be used before
-    // getWindow()
+    /* Provide a hash of window panel attribute configs. Will override defaults. Should be used before getWindow()
+     * @param	{Hash} 
+     */
     setAttributes: function(attr) {
-
-        // override defaults - will "break" with prototype 1.6 (use update() instead!)
-        this.windowAttributes.merge($H(attr));
+        this.windowAttributes.update($H(attr));
     },
     
     setItems: function(itemsList) {
 
-        this.windowAttributes['items'] = $A(itemsList);
+        this.windowAttributes.set('items', $A(itemsList));
     },
     
     setButtons: function(buttonsList) {
 
-        this.windowAttributes['buttons'] = $A(buttonsList);
+        this.windowAttributes.set('buttons', $A(buttonsList));
     }
     
         

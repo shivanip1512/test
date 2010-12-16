@@ -30,7 +30,7 @@ function createJSON() {
     var inputElement = document.createElement('input');
     inputElement.type = 'hidden';
     inputElement.name = 'jsonInventoryIds';
-    inputElement.value = array.toJSON();
+    inputElement.value = Object.toJSON(array);
     
     $('form').appendChild(inputElement);
 }

@@ -16,7 +16,7 @@
 <div class="notAuthorized">Note: <a href="/spring/bulk/bulkHome">Bulk Operations</a> is the preferred method of importing or updating meters.</div>
 <br>
 
-<cti:includeScript link="/JavaScript/scriptaculous/effects.js"/>
+<cti:includeScript link="/JavaScript/lib/scriptaculous/1.8.3/effects.js"/>
 <cti:includeScript link="/JavaScript/bulkImporter.js"/>
 
 <script type="text/javascript">

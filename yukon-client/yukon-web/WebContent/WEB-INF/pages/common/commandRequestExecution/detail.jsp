@@ -59,14 +59,14 @@
 			if (resultsFilterType == 'FAIL_STATS') {
 
 				url = '/spring/common/commandRequestExecutionResults/failureStatsReport';
-				params['commandRequestExecutionId'] = ${commandRequestExecutionId};
+				params.set('commandRequestExecutionId', ${commandRequestExecutionId});
 
 			// detail report (success/fail/all)
 			} else {
 
 				url = '/spring/common/commandRequestExecutionResults/detailsReport';
-				params['commandRequestExecutionId'] = ${commandRequestExecutionId};
-				params['resultsFilterType'] = resultsFilterType;
+				params.set('commandRequestExecutionId', ${commandRequestExecutionId});
+				params.set('resultsFilterType', resultsFilterType);
 				
 			}
 

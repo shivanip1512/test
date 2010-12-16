@@ -310,7 +310,7 @@
                                 ${addSubgroupText}
                             </a>
                             
-                            <tags:simplePopup id="${addSubGroupPopupId}" title="${addSubgroupText}" styleClass="groupEditorPopup"  onClose="showGroupPopup('${addSubGroupPopupId}');$('newEmptyGroupDiv').hide();">
+                            <tags:simplePopup id="${addSubGroupPopupId}" title="${addSubgroupText}" styleClass="groupEditorPopup"  onClose="showGroupPopup('${addSubGroupPopupId}');">
                             
                                 <form id="addSubGroupForm" method="post" action="/spring/group/editor/addChild" onsubmit="return changeGroupName();">
                                 	

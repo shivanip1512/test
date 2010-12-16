@@ -5,7 +5,7 @@
     value="/spring/stars/hardware/deviceactivation" />
 
 <script language="JavaScript" type="text/javascript"
-    src="/JavaScript/prototype.js"></script>
+    src="/JavaScript/lib/prototype/1.7.0.0/prototype.js"></script>
 <script langauge="JavaScript" type="text/javascript">
     Event.observe(window, 'load', function() {
         $("serialnumberinput").focus();

@@ -36,10 +36,11 @@
         var getReportStopDate = document.getElementsByName('getReportStopDate')[0].value;
     
         // parameters for the call
-        var params = $H();
-        params['deviceId'] = ${deviceId};
-        params['getReportStartDate'] = getReportStartDate;
-        params['getReportStopDate'] = getReportStopDate;
+        var params = $H({
+            'deviceId': ${deviceId},
+            'getReportStartDate': getReportStartDate,
+            'getReportStopDate': getReportStopDate
+        });
     
         // make ajax request to run a profile report
         new Ajax.Request(getReportUrl, {

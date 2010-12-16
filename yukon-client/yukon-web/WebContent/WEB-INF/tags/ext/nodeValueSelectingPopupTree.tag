@@ -34,7 +34,7 @@
     function recordNameValue_${id}(node, event) {
     
         // save group name
-        var nodeValue = $H(node.attributes['info'])['${nodeValueName}'];
+        var nodeValue = $H(node.attributes['info']).get('${nodeValueName}');
         $('${fieldId}').value = nodeValue;
         
         // highlight

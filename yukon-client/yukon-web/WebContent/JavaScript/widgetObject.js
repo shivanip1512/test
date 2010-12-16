@@ -43,9 +43,9 @@ JsWidgetObject.prototype = {
     $(actionButton).getElementsBySelector('input').each(function(it) {it.value = waitingLabel});
     $(this.container).getElementsBySelector('input').invoke('disable');
     
-    newParams = $H(this.linkInfo[key]);
+    newParams = $H(this.linkInfo.get(key));
     oldParams = this.getWidgetParameters();
-    oldParams.merge(newParams);
+    oldParams.update(newParams);
     
     var url = "/spring/widget/" + this.shortName + "/" + cmd;
     new Ajax.Updater(this.container, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
@@ -67,9 +67,9 @@ JsWidgetObject.prototype = {
       this.onSuccess();
     }
     
-    newParams = $H(this.linkInfo[key]);
+    newParams = $H(this.linkInfo.get(key));
     oldParams = this.getWidgetParameters();
-    oldParams.merge(newParams);
+    oldParams.update(newParams);
     
     var url = "/spring/widget/" + this.shortName + "/" + cmd;
     new Ajax.Updater(theContainer, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': localSuccess});
@@ -80,7 +80,7 @@ JsWidgetObject.prototype = {
   },
 
   setupLink: function(key, jsonData){
-  	this.linkInfo[key] = jsonData;
+  	this.linkInfo.set(key, jsonData);
   },
 
   doActionLinkRefresh: function(cmd, actionSpan, waitingLabel, key, container) {
@@ -88,9 +88,9 @@ JsWidgetObject.prototype = {
     $(actionSpan).getElementsBySelector('span').innerHTML = waitingLabel;
     $(this.container).getElementsBySelector('input').invoke('disable');
     
-    newParams = $H(this.linkInfo[key]);
+    newParams = $H(this.linkInfo.get(key));
     oldParams = this.getWidgetParameters();
-    oldParams.merge(newParams);
+    oldParams.update(newParams);
     
     var url = "/spring/widget/" + this.shortName + "/" + cmd;
     
@@ -102,6 +102,9 @@ JsWidgetObject.prototype = {
     $(this.container).getElementsBySelector('input').invoke('enable');
   },
   
+  /**
+   * @returns   {Hash}
+   */
   getWidgetParameters: function() {
     var container = $(this.container);
     var theseParameters = {};
@@ -137,15 +140,15 @@ JsWidgetObject.prototype = {
     }
     
     var mergedParameters = $H(this.parameters);
-    mergedParameters.merge(theseParameters);
+    mergedParameters.update(theseParameters);
     return mergedParameters;
   },
   
   
   doActionPopup: function(cmd, actionSpan, key, dialogId, width, height) {
-	    newParams = $H(this.linkInfo[key]);
+	    newParams = $H(this.linkInfo.get(key));
 	    oldParams = this.getWidgetParameters();
-	    oldParams.merge(newParams);
+	    oldParams.update(newParams);
 	    
 	    var url = "/spring/widget/" + this.shortName + "/" + cmd;
 

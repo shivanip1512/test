@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <cti:includeScript link="/JavaScript/dataUpdater.js"/>
-<cti:includeScript link="/JavaScript/scriptaculous/effects.js"/>
+<cti:includeScript link="/JavaScript/lib/scriptaculous/1.8.3/effects.js"/>
 <c:url var="updateUrl" value="/spring/updater/update" />
 
 <script type="text/javascript">

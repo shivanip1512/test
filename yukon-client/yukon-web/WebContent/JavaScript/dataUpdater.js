@@ -2,9 +2,9 @@
 
 var disableHighlight = false;
 var cannonDataUpdateRegistrations = $A();
+var _updaterTimeout = null;
 
 function initiateCannonDataUpdate(url, delayMs) {
-	
     var lastUpdate = 0;
     var failureCount = 0;
     var processResponseCallback = function(transport) {
@@ -62,32 +62,34 @@ function initiateCannonDataUpdate(url, delayMs) {
         });
         
         // find all of the callbacks
+        // cannonDataUpdateRegistrations is a $A {prototype array} of $H {prototype hash} objects
         cannonDataUpdateRegistrations.each(function(it) {
             
-            var idMap = $H(it['identifierMap']);
+            var idMap = $H(it.get('identifierMap'));
             var allIdentifierValues = $H();
             
             if( idMap.keys().length == 0 && someValueHasUpdated) {
             	//callback for any value change when no identifiers provided
-            	it.callback();
+            	it.get('callback')();
             	return;
             }
            
             idMap.keys().each(function(idFieldName) {
-            	var newData = responseStruc.data[idMap[idFieldName]];
+            	var newData = responseStruc.data[idMap.get(idFieldName)];
             	if(newData) {
-                    allIdentifierValues[idFieldName] = responseStruc.data[idMap[idFieldName]];
+                    allIdentifierValues.set(idFieldName, responseStruc.data[idMap.get(idFieldName)]);
             	}
             });
             
             if(allIdentifierValues.keys().length >0) {
-                it.callback(allIdentifierValues);
+                it.get('callback')(allIdentifierValues);
             } 
         });
         // save latest date
         lastUpdate = responseStruc.toDate;
         // schedule next update
-        setTimeout(doUpdate, delayMs);
+        _updaterTimeout ? clearTimeout(_updaterTimeout) : false;
+        _updaterTimeout = setTimeout(doUpdate, delayMs);
     };
     
     var failureCallback = function() {
@@ -98,45 +100,45 @@ function initiateCannonDataUpdate(url, delayMs) {
             $('cannonUpdaterErrorDiv').show();
         }
         // schedule another update incase the server comes back, but slow it down a bit
-        setTimeout(doUpdate, delayMs * 5);
+        _updaterTimeout ? clearTimeout(_updaterTimeout) : false;
+        _updaterTimeout = setTimeout(doUpdate, delayMs * 5);
     };
     var doUpdate = function() {
         // if none exist on this page, get out
         // build up JS object to be used for request
-        var requestData = $H();
-        requestData.fromDate = lastUpdate;
+        var requestData = $H({
+            'fromDate': lastUpdate
+        });
 
         // get all elements that have the cannonUpdater attribute on them
         var updatableElements = $$('span[cannonUpdater]');
         // create an array of strings, with the value of the cannonUpdater attribute for each element
         // use readAttribute to avoid IE weirdness
-        requestData.data = updatableElements.invoke('readAttribute', 'cannonUpdater');
+        requestData.set('data', updatableElements.invoke('readAttribute', 'cannonUpdater'));
         
         var updatableClassElements = $$('span[cannonClassUpdater]');
-        requestData.data = requestData.data.concat(updatableClassElements.invoke('readAttribute', 'cannonClassUpdater'));
+        requestData.set('data', requestData.get('data').concat(updatableClassElements.invoke('readAttribute', 'cannonClassUpdater')));
         
         var updatableColorElements = $$('span[cannonColorUpdater]');
-        requestData.data = requestData.data.concat(updatableColorElements.invoke('readAttribute', 'cannonColorUpdater'));
+        requestData.set('data', requestData.get('data').concat(updatableColorElements.invoke('readAttribute', 'cannonColorUpdater')));
         
         // add elements from JS registrations
         cannonDataUpdateRegistrations.each(function(it) {
         
-        	var idMap = it['identifierMap'];
-        	requestData.data = requestData.data.concat(idMap.values());
+        	var idMap = it.get('identifierMap');
+        	requestData.set('data', requestData.get('data').concat(idMap.values()));
         });
         
-        if (requestData.data.length == 0) {
+        if (requestData.get('data').length == 0) {
             // schedule next update
-            setTimeout(doUpdate, delayMs);
+            _updaterTimeout ? clearTimeout(_updaterTimeout) : false;
+            _updaterTimeout = setTimeout(doUpdate, delayMs);
             return;
         }
         
-        var requestJson = requestData.toJSON();
-        
-        
         new Ajax.Request(url, {
             method: 'post',
-            postBody: requestJson,
+            postBody: Object.toJSON(requestData),
             contentType: 'application/json',
             on200: processResponseCallback, // this odd combination seems to be the only
             onSuccess: failureCallback,     // way to detect that the server is shutdown
@@ -147,18 +149,27 @@ function initiateCannonDataUpdate(url, delayMs) {
         requestData = null;
         updatableElements = null;
     };
-    setTimeout(doUpdate, delayMs);
+    _updaterTimeout ? clearTimeout(_updaterTimeout) : false;
+    _updaterTimeout = setTimeout(doUpdate, delayMs);
 }
 
+/**
+ * @param	callback		{function}
+ * @param	identifierMap	{Object} cloned as a new Prototype Hash object
+ */
 function cannonDataUpdateRegistration(callback, identifierMap) {
 	// callback will include the formatted string as its one argument
-	var theData = $H();
-	theData['identifierMap'] = $H(identifierMap);
-	theData['callback'] = callback;
-	
-	cannonDataUpdateRegistrations.push(theData);    
+	cannonDataUpdateRegistrations.push($H({
+        'identifierMap': $H(identifierMap),
+        'callback': callback
+    }));
 }
 
+/**
+ * 
+ * @param callback		{function}
+ * @param identifier	{DOM id}
+ */
 function cannonDataUpdateEventRegistration(callback, identifier) {
 	var didIt = false;
 	var callbackWrapper = function(data) {
@@ -167,6 +178,6 @@ function cannonDataUpdateEventRegistration(callback, identifier) {
 		    callback();
 		}
 	};
-    cannonDataUpdateRegistration(callbackWrapper, $H({'boolean': identifier}));  
+    cannonDataUpdateRegistration(callbackWrapper, {'boolean': identifier});  
 }
 

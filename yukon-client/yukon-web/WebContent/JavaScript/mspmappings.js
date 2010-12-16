@@ -33,7 +33,7 @@ function SubstationToRouteMappings_updateRoutes(url) {
     var substationId = $("subSelectList").options[substationIndex].value;
     var array = $("routeIdSelectList").options;
     var array2 = $A(array).pluck("value");
-    var jsonObject = array2.toJSON();
+    var jsonObject = Object.toJSON(array2);
     new Ajax.Request(url, {"method": "post", "parameters": {"array": jsonObject, "substationid": substationId, "update": ""}});
 }
 

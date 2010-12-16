@@ -5,14 +5,14 @@ Event.observe(window, 'load', function() {
 		Event.observe(el, 'click', function() {
 
 			var h = getActionTdHash(el);
-        	var action = h['action'];
-        	var valueEl = h['valueEl'];
+        	var action = h.get('action');
+        	var valueEl = h.get('valueEl');
 
         	if (valueEl.value == action) {
-        		resetDeleteAccept(action, h['deleteImgEl'], h['acceptImgEl'])
+        		resetDeleteAccept(action, h.get('deleteImgEl'), h.get('acceptImgEl'));
 		        valueEl.value = '';
         	} else {
-        		toggleDeleteAccept(action, h['deleteImgEl'], h['acceptImgEl']);
+        		toggleDeleteAccept(action, h.get('deleteImgEl'), h.get('acceptImgEl'));
         		valueEl.value = action;
         	}
         });
@@ -26,14 +26,14 @@ function checkUncheckAll(action) {
 	$$('td.ACTION_TD').each(function(el) {
 
 		var h = getActionTdHash(el);
-    	var tdAction = h['action'];
-    	var valueEl = h['valueEl'];
+    	var tdAction = h.get('action');
+    	var valueEl = h.get('valueEl');
 
 		if (checkAllState.value == action) {
-			resetDeleteAccept(tdAction, h['deleteImgEl'], h['acceptImgEl']);
+			resetDeleteAccept(tdAction, h.get('deleteImgEl'), h.get('acceptImgEl'));
 			valueEl.value = '';
 		} else {
-        	toggleDeleteAccept(action, h['deleteImgEl'], h['acceptImgEl']);
+        	toggleDeleteAccept(action, h.get('deleteImgEl'), h.get('acceptImgEl'));
     		valueEl.value = action;
 		}
 	});
@@ -67,6 +67,11 @@ function toggleDeleteAccept(action, deleteImgEl, acceptImgEl) {
 	}
 }
 
+/**
+ * 
+ * @param el    {Element}
+ * @returns     {Hash} 
+ */
 function getActionTdHash(el) {
 
 	var descendants = el.descendants();
@@ -74,11 +79,10 @@ function getActionTdHash(el) {
 	var action = idParts[1];
 	var changeId = idParts[3];
 
-	var h = $H();
-	h['action'] = action;
-	h['deleteImgEl'] = $('ACTION_DELETE_IMG_' + changeId);
-	h['acceptImgEl'] = $('ACTION_ACCEPT_IMG_' + changeId);
-	h['valueEl'] = $('ACTION_' + changeId);
-
-	return h;
+	return $H({
+	    'action': action,
+	    'deleteImgEl': $('ACTION_DELETE_IMG_' + changeId),
+        'acceptImgEl': $('ACTION_ACCEPT_IMG_' + changeId),
+        'valueEl': $('ACTION_' + changeId)
+	});
 }

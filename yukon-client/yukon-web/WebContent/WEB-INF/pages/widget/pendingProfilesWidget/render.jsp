@@ -15,8 +15,9 @@
     
     // REFRESHER
     var refreshUrl = '/spring/widget/pendingProfilesWidget/refreshPending';
-    var refreshParams = $H();
-    refreshParams['deviceId'] = ${deviceId};
+    var refreshParams = $H({
+        'deviceId': ${deviceId}
+    });
     
     var refresher = new Ajax.PeriodicalUpdater('${divId}', refreshUrl, {method: 'post', frequency: 6, parameters: refreshParams, evalScripts: true});
     
@@ -25,9 +26,10 @@
     
         // stop - send request to refreshPending() with a stopRequestId parameter
         var stopUrl = '/spring/widget/pendingProfilesWidget/refreshPending';
-        var stopParams = $H();
-        stopParams['deviceId'] = ${deviceId};
-        stopParams['stopRequestId'] = requestId;
+        var stopParams = $H({
+            'deviceId': ${deviceId},
+            'stopRequestId': requestId
+        });
         
         new Ajax.Updater('${divId}',stopUrl, {
           

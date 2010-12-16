@@ -263,7 +263,7 @@ function alignTableColumnsByTable() {
         		var cells = tr.getElementsBySelector("td");
         		for (var index = 0; index < cells.length - 1; ++index) {
         			var cell = cells[index];
-        			cell.setStyle({'width': columnSizes[index]+'px'});
+        			cell.setStyle({width: columnSizes[index]+'px'});
         		}
         	});
     	});

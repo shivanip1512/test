@@ -17,7 +17,7 @@
             href="/WebConfig/yukon/styles/loginStyles.css"
             type="text/css">
         
-        <script type="text/javascript" src="/JavaScript/prototype.js"></script>
+        <script type="text/javascript" src="/JavaScript/lib/prototype/1.7.0.0/prototype.js"></script>
         <script type="text/javascript" src="/JavaScript/CtiMenu.js"></script>
 
     </head>

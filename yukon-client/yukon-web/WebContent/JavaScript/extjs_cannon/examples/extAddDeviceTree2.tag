@@ -86,7 +86,7 @@
                     })
                     
                 var rootAttributes = $H(${rootAttributes});
-                rootAttributes['id'] = "${treeId}_root";
+                rootAttributes.set('id', "${treeId}_root");
                 var root = new Ext.tree.AsyncTreeNode(rootAttributes);
                     
             </c:when>

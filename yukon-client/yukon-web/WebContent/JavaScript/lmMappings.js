@@ -24,10 +24,11 @@ var setMappedNameId = function() {
 		if (overwrite) {
 	
 			var url = '/spring/multispeak/setup/lmMappings/addOrUpdateMapping';
-			var params = $H();
-			params['strategyName'] = $('strategyName').value;
-			params['substationName'] = $('substationName').value;
-			params['mappedNameId'] = $('mappedNameId').value;
+			var params = $H({
+			    'strategyName': $('strategyName').value,
+			    'substationName': $('substationName').value,
+			    'mappedNameId': $('mappedNameId').value
+			});
 	    
 			new Ajax.Request(url, {
 				'parameters': params,
@@ -55,9 +56,10 @@ var setMappedNameId = function() {
 function getMappedName(callback) {
 
 	var url = '/spring/multispeak/setup/lmMappings/findMapping';
-	var params = $H();
-	params['strategyName'] = $('strategyName').value;
-	params['substationName'] = $('substationName').value;
+	var params = $H({
+	    'strategyName': $('strategyName').value,
+	    'substationName': $('substationName').value
+	});
 	
 	 new Ajax.Request(url, {
 	   'parameters': params,
@@ -105,9 +107,10 @@ function reloadAllMappingsTable(col, isReorder) {
 
 	// call reload
 	var url = '/spring/multispeak/setup/lmMappings/reloadAllMappingsTable';
-	var params = $H();
-	params['col'] = currentOrderByColum;
-	params['ascending'] = currentAscendingOrder;
+	var params = $H({
+	    'col': currentOrderByColum,
+	    'ascending': currentAscendingOrder
+	});
 	
 	new Ajax.Updater('allMappingsTableDiv', url, {
 	   'parameters': params,
@@ -127,8 +130,9 @@ function removeLmMapping(mspLMInterfaceMappingId) {
 	}
 	
 	var url = '/spring/multispeak/setup/lmMappings/removeMapping';
-	var params = $H();
-	params['mspLMInterfaceMappingId'] = mspLMInterfaceMappingId;
+	var params = $H({
+	    'mspLMInterfaceMappingId': mspLMInterfaceMappingId
+	});
 	
 	 new Ajax.Request(url, {
 	   'parameters': params,

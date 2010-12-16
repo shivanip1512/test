@@ -40,21 +40,20 @@ ExtTreeHelper.prototype = {
         return treeLoader;
     },
     
+    /**
+     * @param	rootAttributes	{Hash}
+     */
     getAsyncExtTreeRoot: function(rootAttributes) {
 
-        var defaultRootAttributes = $H();
-        defaultRootAttributes['id'] = 'root';
-        defaultRootAttributes['text'] = 'Root';
-        defaultRootAttributes['href'] = 'javascript:void(0);';
-        defaultRootAttributes['disabled'] = true;
-        
+        var defaultRootAttributes = $H({
+            'id': 'root',
+            'text': 'Root',
+            'href': 'javascript:void(0);',
+            'disabled': true
+        });
+
         // overrride defaults
-        rootAttributes.keys().each(function(key) {
-                defaultRootAttributes[key] = rootAttributes[key];
-            });
-            
-        var root = new Ext.tree.AsyncTreeNode(defaultRootAttributes);
-        return root;
+        return new Ext.tree.AsyncTreeNode(defaultRootAttributes.update(rootAttributes).toObject());
     },
     
     // Setup tree panel to save its state.

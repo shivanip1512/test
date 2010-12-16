@@ -57,19 +57,17 @@ function initiateCannonLogUpdate(url, periodSecs) {
     		setTimeout(doUpdate, periodSecs * 1000);
     	}else{
     
-    
 	        // if none exist on this page, get out
 	        // build up JS object to be used for request
-	        var requestData = $H();
-	        requestData.fileLength = fileLength;
-	        requestData.numLines = $('numLines').value;
-	        requestData.file = $('file').value;
+	        var requestData = $H({
+	            'fileLength': fileLength,
+	            'numLines': $('numLines').value,
+	            'file': $('file').value
+	        });
          
-        	var requestJson = requestData.toJSON();
-	        
 	        new Ajax.Request(url, {
    	         	method: 'post',
-            	postBody: requestJson,
+            	postBody: Object.toJSON(requestData),
             	contentType: 'application/json',
             	on200: processResponseCallback,
             	onSuccess: failureCallback,

@@ -33,7 +33,7 @@
         
 <cti:includeScript link="/JavaScript/yukonGeneral.js"/>
 <cti:includeScript link="/JavaScript/dynamicBillingFileGenerator.js"/>
-<cti:includeScript link="/JavaScript/scriptaculous/effects.js"/>
+<cti:includeScript link="/JavaScript/lib/scriptaculous/1.8.3/effects.js"/>
 
     <table class="widgetColumns">
         <tr>

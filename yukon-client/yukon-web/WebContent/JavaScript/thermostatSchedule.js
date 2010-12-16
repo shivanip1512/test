@@ -339,12 +339,12 @@ function setTempUnits(newUnit){
     for(var i = 0; i < timePeriods.size(); i++){
     	var timePeriod = timePeriods[i];
     	if(timePeriod != currentTimePeriod){ 	//current time period has been dealt with above
-	    	var timeTemps = schedules['season'][timePeriod];
+	    	var timeTemps = schedules.get('season').get(timePeriod);
 	    	for(var j = 0; j < 4; j++){
-	    		var coolTempF = getFahrenheitTemp(timeTemps[j].coolTemp, currentTempUnit);
-	    		timeTemps[j].coolTemp = getConvertedTemp(coolTempF, newUnit);
-	    		var heatTempF = getFahrenheitTemp(timeTemps[j].heatTemp, currentTempUnit);
-	    		timeTemps[j].heatTemp = getConvertedTemp(heatTempF, newUnit);
+	    		var coolTempF = getFahrenheitTemp(timeTemps[j].get('coolTemp'), currentTempUnit);
+	    		timeTemps[j].get('coolTemp') = getConvertedTemp(coolTempF, newUnit);
+	    		var heatTempF = getFahrenheitTemp(timeTemps[j].get('heatTemp'), currentTempUnit);
+	    		timeTemps[j].get('heatTemp') = getConvertedTemp(heatTempF, newUnit);
 	    	}
     	}
     }
@@ -388,48 +388,41 @@ function getCurrentSchedule(timePeriod) {
 
     // Get each time/temp/temp set from UI for cool AND heat
     for(var i=1;i<5;i++) {
-    	var timeTemp = $H();
-
-    	var time = $F('time' + i + 'min');
-        timeTemp.time = time;
-        
-        var tempC = $F('tempCin' + i);
-        timeTemp.coolTemp = tempC;
-
-        var tempH = $F('tempHin' + i);
-        timeTemp.heatTemp = tempH;
-
-        timeTempArray[i-1] = timeTemp;
+        timeTempArray[i-1] = $H({
+            'time': $F('time' + i + 'min'),
+            'coolTemp': $F('tempCin' + i),
+            'heatTemp': $F('tempHin' + i)
+        });
     }
 
     // Add array of cool time/temp to schedules for current timePeriod   
-    var timePeriodHash = schedules['season'];
+    var timePeriodHash = schedules.get('season');
     if(timePeriodHash == null) {
-    	timePeriodHash = $H();
+    	timePeriodHash = {};
     }
 
     timePeriodHash[timePeriod] = timeTempArray;
 
-    schedules['season'] = timePeriodHash; 
+    schedules.set('season', timePeriodHash); 
 
     // Store the json string into the form field        
-    $('schedules').value = schedules.toJSON();
+    $('schedules').value = Object.toJSON(schedules);
 
 }
 
 function setCurrentSchedule(timePeriod) {
 	
     // Get the array of time/temp for the current coolHeat setting and timePeriod
-    var timeTempArray = schedules['season'][timePeriod];
+    var timeTempArray = schedules.get('season')[timePeriod];
 
     // Set the time/temp values
     if(timeTempArray != null) {
         for(var i=1;i<5;i++) {
-            var timeVal = timeTempArray[i-1].time;
+            var timeVal = timeTempArray[i-1].get('time');
             $('time' + i + 'min').value = timeVal;
             $('time' + i).value = timeValToStr(timeVal);
-            $('tempCin' + i).value = timeTempArray[i-1].coolTemp;
-            $('tempHin' + i).value = timeTempArray[i-1].heatTemp;
+            $('tempCin' + i).value = timeTempArray[i-1].get('coolTemp');
+            $('tempHin' + i).value = timeTempArray[i-1].get('heatTemp');
         }
         
         // Update the slidey bar UI

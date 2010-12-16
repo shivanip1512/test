@@ -51,7 +51,7 @@
 
     function recordNameValue_${id}(node, event) {
     
-        var nodeValue = $H(node.attributes['info'])['${nodeValueName}'];
+        var nodeValue = $H(node.attributes['info']).get('${nodeValueName}');
         
         if (multiSelect) {
         

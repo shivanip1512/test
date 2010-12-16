@@ -46,10 +46,10 @@
             if (theDiv.visible()) {
             
                 var url = '/spring/group/groupMeterRead/' + kind;
-                
-                var params = $H();
-                params['resultKey'] = '${resultWrapper.result.key}';
-            
+
+                var params = $H({
+                    'resultKey': '${resultWrapper.result.key}'
+                });
                 var updater = new Ajax.Updater (theDiv, url, {'parameters': params});
             }
         }

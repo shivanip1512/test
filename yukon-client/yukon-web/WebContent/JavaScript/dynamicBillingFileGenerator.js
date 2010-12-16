@@ -194,24 +194,20 @@ function save(){
 	var selectedFields = $("selectedFields");
 	//save all options in the selected select tag into array
 	for( i = 0; i < selectedFields.length; i++){
-		
-		var currentField = $H();
-		var currentOption = $(selectedFields.options[i]);
-		
-		currentField.field = currentOption.text;
-		
-		currentField.format = getAttributeValue(currentOption, 'format');
-		currentField.maxLength = getAttributeValue(currentOption, 'maxLength');
-        currentField.padChar = getAttributeValue(currentOption, 'padChar');
-        currentField.padSide = getAttributeValue(currentOption, 'padSide');
-        currentField.readingType = getAttributeValue(currentOption, 'readingType');
-        currentField.roundingMode = getAttributeValue(currentOption, 'roundingMode');
-		
-		fieldArray.push(currentField);
+	    var currentOption = $(selectedFields.options[i]);
+	    fieldArray.push($H({
+		    'field': currentOption.text,
+		    'format': getAttributeValue(currentOption, 'format'),
+		    'maxLength': getAttributeValue(currentOption, 'maxLength'),
+		    'padChar': getAttributeValue(currentOption, 'padChar'),
+		    'padSide': getAttributeValue(currentOption, 'padSide'),
+		    'readingType': getAttributeValue(currentOption, 'readingType'),
+		    'roundingMode': getAttributeValue(currentOption, 'roundingMode')
+		}));
 	}
 	
 	// Set value of fieldArray to be submitted with form on save
-	$("fieldArray").value = fieldArray.toJSON();
+	$("fieldArray").value = Object.toJSON(fieldArray);
 
 }
 

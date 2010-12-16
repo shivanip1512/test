@@ -18,9 +18,14 @@ function alert_handleOnClick() {
     alert_showPopup();
 }
 
+/**
+ * @param data  {Hash|Object} Assumes 'count' and 'lastId' members
+ */
 function alert_handleCountUpdate(data) {
-    var alertCount = data.count;
-    var lastId = data.lastId;
+    //ensure that we have a Hash here (Hash accessors required as of 1.6)
+    var dataCopy = $H(data);
+    var alertCount = dataCopy.get('count');
+    var lastId = dataCopy.get('lastId');
     alert_updateCount(alertCount);
     var previousLastId = YukonClientPersistance.getState("alertMemory", "lastId", lastId);
     var remainingAlerts = $$('table#alertTable tbody tr').size();
@@ -78,7 +83,7 @@ function alert_clearAlert(alertId) {
     
     new Ajax.Request(clearAlertUrl, {
         'method': 'POST', 
-        'parameters': { 'jsonString': alertIds.toJSON()}
+        'parameters': { 'jsonString': Object.toJSON(alertIds)}
     });    
 }
 

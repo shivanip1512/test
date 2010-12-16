@@ -2,7 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
-<script type="text/javascript" src="/JavaScript/prototype.js"></script>
+<script type="text/javascript" src="/JavaScript/lib/prototype/1.7.0.0/prototype.js"></script>
 <script type="text/javascript" src="<cti:url value="/JavaScript/calendarControl.js" />"></script>
 
 <link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/calendarControl.css" />" type="text/css">

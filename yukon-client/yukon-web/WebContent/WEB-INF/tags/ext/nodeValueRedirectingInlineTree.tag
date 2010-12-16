@@ -21,7 +21,7 @@
     function redirectToNameValue_${id}(node, event) {
     
         // build url and redirect
-        var nodeValue = $H(node.attributes['info'])['${name}'];
+        var nodeValue = $H(node.attributes['info']).get('${name}');
         
         var url = '${hrefBase}' + '?${name}' + '=' + encodeURIComponent(nodeValue);
         

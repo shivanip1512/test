@@ -43,7 +43,7 @@
             return false;
         }
     
-        var nodeValue = $H(node.attributes['info'])['${nodeValueName}'];
+        var nodeValue = $H(node.attributes['info']).get('${nodeValueName}');
         
         var nodeValueIdx = nodeValues_${id}.indexOf(nodeValue);
         var nodeUI = node.getUI();

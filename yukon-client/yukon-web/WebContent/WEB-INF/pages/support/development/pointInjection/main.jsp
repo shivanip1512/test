@@ -18,11 +18,11 @@ function addRowHandler(selectedPointInfo) {
     var newRowData = {pointId: pointId, forceArchive: 'false'};
     addRow(newRowData);
     if (!localStorage.pointInjectionIds) {
-        localStorage.pointInjectionIds = new Array().toJSON();
+        localStorage.pointInjectionIds = Object.toJSON(new Array());
     }
     var tempArray = localStorage.pointInjectionIds.evalJSON();
     tempArray.push(newRowData);
-    localStorage.pointInjectionIds = tempArray.toJSON();
+    localStorage.pointInjectionIds = Object.toJSON(tempArray);
     return true;
 }
 
@@ -48,7 +48,7 @@ function forceArchiveChecked(box, pointId) {
 			break;
 		}
 	}
-    localStorage.pointInjectionIds = tempArray.toJSON();
+    localStorage.pointInjectionIds = Object.toJSON(tempArray);
 }
 
 YEvent.observeSelectorClick('.removeRow', function(event) {
@@ -59,7 +59,7 @@ YEvent.observeSelectorClick('.removeRow', function(event) {
     theRow.remove();
     var tempArray = localStorage.pointInjectionIds.evalJSON();
     tempArray = tempArray.without(rowToRemove);
-    localStorage.pointInjectionIds = tempArray.toJSON();
+    localStorage.pointInjectionIds = Object.toJSON(tempArray);
 });
 
 YEvent.observeSelectorClick('.sendData', function(event) {

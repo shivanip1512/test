@@ -21,8 +21,8 @@ function adjustDialogSizeAndPosition(dialogId) {
         naturalDialogSizes[dialogId] = dialogDimensions;
     }
     dialogDiv.setStyle({
-        'width': dialogDimensions.width,
-		'height': dialogDimensions.height
+        width: dialogDimensions.width + "px",
+		height: dialogDimensions.height + "px"
     });
 
     var viewportDimensions = getViewportDimensions();
@@ -33,22 +33,22 @@ function adjustDialogSizeAndPosition(dialogId) {
     if (dialogDimensions.width > viewportDimensions.width - minPadding) {
     	dialogDimensions.width = viewportDimensions.width - minPadding;
         dialogDiv.setStyle({
-            'width': dialogDimensions.width + "px"
+            width: dialogDimensions.width + "px"
         });
     }
     var newHeight = dialogDimensions.height;
     if (dialogDimensions.height > viewportDimensions.height - minPadding) {
     	dialogDimensions.height = viewportDimensions.height - minPadding;
     	dialogDiv.setStyle({
-    		'height': dialogDimensions.height + "px"
+    		height: dialogDimensions.height + "px"
     	});
     }
 
     var x = (viewportDimensions.width - dialogDimensions.width - 24) / 2;
     var y = (viewportDimensions.height - dialogDimensions.height - 24) / 4;
     dialogDiv.setStyle({
-        'top': y + "px",
-        'left': x + "px"
+        top: y + "px",
+        left: x + "px"
     });
 }
 
