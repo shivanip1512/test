@@ -9,6 +9,7 @@ public class InventoryConfigTask {
     private int numberOfItems;
     private int numberOfItemsProcessed;
     private int energyCompanyId;
+    private int userId;
 
     public int getInventoryConfigTaskId() {
         return inventoryConfigTaskId;
@@ -57,7 +58,15 @@ public class InventoryConfigTask {
     public void setEnergyCompanyId(int energyCompanyId) {
         this.energyCompanyId = energyCompanyId;
     }
-    
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
     public String getDisplayName() {
         return StringUtils.abbreviate(taskName, 35);
     }
@@ -67,6 +76,7 @@ public class InventoryConfigTask {
         return "InventoryConfigTask [inventoryConfigTaskId=" + inventoryConfigTaskId +
             ", numberOfItems=" + numberOfItems +
             ", numberOfItemsProcessed=" + numberOfItemsProcessed + ", taskName=" + taskName +
-            ", sendInService=" + sendInService + ", energyCompanyId=" + energyCompanyId + "]";
+            ", sendInService=" + sendInService + ", energyCompanyId=" + energyCompanyId +
+            ", userId=" + userId + "]";
     }
 }

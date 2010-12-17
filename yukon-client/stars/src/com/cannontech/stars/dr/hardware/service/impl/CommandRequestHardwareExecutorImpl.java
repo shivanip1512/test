@@ -1,5 +1,8 @@
 package com.cannontech.stars.dr.hardware.service.impl;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -7,6 +10,7 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
+import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
@@ -58,15 +62,7 @@ public class CommandRequestHardwareExecutorImpl implements
     public void execute(LiteStarsLMHardware hardware, String command, LiteYukonUser user,
             CommandCompletionCallback<CommandRequestRoute> callback)
             throws CommandCompletionException {
-        int routeId = hardware.getRouteID();
-
-        // Use the energy company default route if routeId is 0
-        if (routeId == CtiUtilities.NONE_ZERO_ID) {
-            LiteStarsEnergyCompany energyCompany = 
-                ecMappingDao.getInventoryEC(hardware.getInventoryID());
-            routeId = energyCompany.getDefaultRouteID();
-        }
-
+        int routeId = getRouteId(hardware);
         commandRequestRouteExecutor.execute(routeId, command, callback,
                                             DeviceRequestType.LM_HARDWARE_COMMAND, user);
     }
@@ -80,8 +76,32 @@ public class CommandRequestHardwareExecutorImpl implements
 		
 		this.execute(hardware, command, user);
 	}
-	
-	@Autowired
+
+	@Override
+    public void executeWithTemplate(CommandRequestExecutionTemplate<CommandRequestRoute> template,
+            LiteStarsLMHardware hardware, String command,
+            CommandCompletionCallback<CommandRequestRoute> callback)
+            throws CommandCompletionException {
+	    CommandRequestRoute commandRequest = new CommandRequestRoute();
+        commandRequest.setCommand(command);
+        commandRequest.setRouteId(getRouteId(hardware));
+        List<CommandRequestRoute> commands = Collections.singletonList(commandRequest);
+        template.execute(commands, callback);
+	}
+
+	private int getRouteId(LiteStarsLMHardware hardware) {
+        int routeId = hardware.getRouteID();
+
+        // Use the energy company default route if routeId is 0
+        if (routeId == CtiUtilities.NONE_ZERO_ID) {
+            LiteStarsEnergyCompany energyCompany = 
+                ecMappingDao.getInventoryEC(hardware.getInventoryID());
+            routeId = energyCompany.getDefaultRouteID();
+        }
+        return routeId;
+	}
+
+    @Autowired
 	public void setEcMappingDao(ECMappingDao ecMappingDao) {
 		this.ecMappingDao = ecMappingDao;
 	}

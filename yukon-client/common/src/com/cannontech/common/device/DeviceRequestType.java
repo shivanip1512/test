@@ -10,6 +10,7 @@ public enum DeviceRequestType {
     CONTROL_CONNECT_DISCONNECT_COMAMND("Connect/Disconnect Command", "A 'control connect' or 'control disconnect' command sent from the disconnect widget.", false),
     TOU_SCHEDULE_COMMAND("TOU Schedule Command", "A 'putconfig tou ...' command sent from the TOU widget.", false),
     LM_HARDWARE_COMMAND("LM Hardware Command", "A command sent to LM hardware.", false),
+    INVENTORY_RECONFIG("Inventory Reconfiguration", "A command sent to LM hardware as a result of inventory reconfiguration.", false),
     MOVE_IN_MOVE_OUT_USAGE_READ("Move In/Move Out Usage Reading", "Move In/Move Out Usage Reading", false),
     
     METER_OUTAGES_WIDGET_ATTRIBUTE_READ("Outage Widget Attribute Read", "Reads all meter attributes for display in the Meter Outages Widget.", false),

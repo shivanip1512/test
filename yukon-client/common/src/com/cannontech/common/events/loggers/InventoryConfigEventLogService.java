@@ -17,18 +17,14 @@ public interface InventoryConfigEventLogService {
     public void taskDeleted(@Arg(ArgEnum.username) LiteYukonUser yukonUser, @Arg(ArgEnum.taskName) String taskName);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.inventoryConfig")
-    public void itemConfigSucceeded(@Arg(ArgEnum.serialNumber) String serialNumber,
-            @Arg(ArgEnum.inventoryId) int inventoryId);
-
-    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.inventoryConfig")
-    public void itemConfigError(@Arg(ArgEnum.serialNumber) String serialNumber,
+    public void itemConfigSucceeded(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+            @Arg(ArgEnum.serialNumber) String serialNumber,
             @Arg(ArgEnum.inventoryId) int inventoryId,
-            @Arg(ArgEnum.porterUserErrorDescription) String errorDescription,
-            @Arg(ArgEnum.porterTechnicalErrorDescription) String porter,
-            @Arg(ArgEnum.porterErrorCode) Integer errorCode,
-            @Arg(ArgEnum.porterErrorCategory) String category);
+            @Arg(ArgEnum.commandRequestExecutionIdentifier) int commandRequestExecutionIdentifier);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.inventoryConfig")
-    public void itemConfigFailed(@Arg(ArgEnum.serialNumber) String serialNumber,
-            @Arg(ArgEnum.inventoryId) int inventoryId);
+    public void itemConfigFailed(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+            @Arg(ArgEnum.serialNumber) String serialNumber,
+            @Arg(ArgEnum.inventoryId) int inventoryId,
+            @Arg(ArgEnum.commandRequestExecutionIdentifier) int commandRequestExecutionIdentifier);
 }

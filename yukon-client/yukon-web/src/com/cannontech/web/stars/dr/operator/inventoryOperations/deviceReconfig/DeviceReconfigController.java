@@ -100,7 +100,7 @@ public class DeviceReconfigController {
         }
 
         try {
-            inventoryConfigTaskDao.create(deviceReconfigOptions.getName(), deviceReconfigOptions.isSendInService(), inventoryCollectionFactory.createCollection(request), energyCompanyId);
+            inventoryConfigTaskDao.create(deviceReconfigOptions.getName(), deviceReconfigOptions.isSendInService(), inventoryCollectionFactory.createCollection(request), energyCompanyId, userContext.getYukonUser());
         } catch (DataIntegrityViolationException e) {
             bindingResult.rejectValue("name", "yukon.web.modules.operator.deviceReconfig.error.unavailable.name");
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);

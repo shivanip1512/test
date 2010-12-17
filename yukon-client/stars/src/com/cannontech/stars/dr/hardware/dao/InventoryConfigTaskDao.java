@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem.Status;
@@ -17,7 +18,8 @@ public interface InventoryConfigTaskDao {
 
     public List<InventoryConfigTask> getUnfinished(int energyCompanyId);
 
-    public InventoryConfigTask create(String taskName, boolean sendInService, InventoryCollection yukonCollection, int energyCompanyId);
+    public InventoryConfigTask create(String taskName, boolean sendInService,
+            InventoryCollection yukonCollection, int energyCompanyId, LiteYukonUser user);
 
     public void update(InventoryConfigTask task);
 

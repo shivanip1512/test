@@ -42,6 +42,7 @@ public class CommandRequestExecutionDefaults {
         b.put(CONTROL_CONNECT_DISCONNECT_COMAMND,                 new CommandRequestExecutionInfo(true, 14, false));
         b.put(TOU_SCHEDULE_COMMAND,                               new CommandRequestExecutionInfo(true, 14, false));
         b.put(LM_HARDWARE_COMMAND,                                new CommandRequestExecutionInfo(false, 14, false));
+        b.put(INVENTORY_RECONFIG,                                 new CommandRequestExecutionInfo(false, 14, false));
         b.put(MOVE_IN_MOVE_OUT_USAGE_READ,                        new CommandRequestExecutionInfo(false, 14, false));
         b.put(METER_OUTAGES_WIDGET_ATTRIBUTE_READ,                new CommandRequestExecutionInfo(false, 14, false));
         b.put(METER_READINGS_WIDGET_ATTRIBUTE_READ,               new CommandRequestExecutionInfo(false, 14, false));

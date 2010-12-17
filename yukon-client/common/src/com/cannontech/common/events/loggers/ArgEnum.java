@@ -37,9 +37,6 @@ public enum ArgEnum {
     username, 
     workOrderNumber,
     inventoryId,
-    porterUserErrorDescription,
-    porterTechnicalErrorDescription,
-    porterErrorCode,
-    porterErrorCategory,
+    commandRequestExecutionIdentifier,
     ;
 }

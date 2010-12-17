@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.hardware.service;
 
 import com.cannontech.common.device.commands.CommandCompletionCallback;
+import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -31,6 +32,17 @@ public interface CommandRequestHardwareExecutor {
      * @throws CommandCompletionException
      */
     public void execute(LiteStarsLMHardware hardware, String command, LiteYukonUser user,
+            CommandCompletionCallback<CommandRequestRoute> callback)
+            throws CommandCompletionException;
+
+    /**
+     * Execute a command asynchronously, using the specified execution template and callback for
+     * command completion. As in the other method, this method will use the hardware's route if it
+     * isn't 0 or the energy company default route otherwise.
+     * @throws CommandCompletionException
+     */
+    public void executeWithTemplate(CommandRequestExecutionTemplate<CommandRequestRoute> template,
+            LiteStarsLMHardware hardware, String command,
             CommandCompletionCallback<CommandRequestRoute> callback)
             throws CommandCompletionException;
 
