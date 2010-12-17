@@ -32,7 +32,7 @@ import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
-import com.cannontech.web.stars.dr.operator.hardware.service.HardwareService;
+import com.cannontech.web.stars.dr.operator.hardware.service.HardwareUiService;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 import com.google.common.collect.ListMultimap;
@@ -42,7 +42,7 @@ import com.google.common.collect.Multimap;
 public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 
 	private InventoryDao inventoryDao;
-	private HardwareService hardwareService;
+	private HardwareUiService hardwareUiService;
 	private YukonUserContextMessageSourceResolver messageSourceResolver;
 	private AccountThermostatScheduleDao accountThermostatScheduleDao;
 	private DateFormattingService dateFormattingService;
@@ -51,7 +51,7 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	public List<Integer> setupModelMapForThermostats(String thermostatIds, AccountInfoFragment accountInfoFragment, ModelMap modelMap) {
 		
 		List<Integer> thermostatIdsList = ServletUtil.getIntegerListFromString(thermostatIds);
-		hardwareService.validateInventoryAgainstAccount(thermostatIdsList, accountInfoFragment.getAccountId());
+		hardwareUiService.validateInventoryAgainstAccount(thermostatIdsList, accountInfoFragment.getAccountId());
 		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
 		modelMap.addAttribute("thermostatIds", thermostatIds);
 		
@@ -284,8 +284,8 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	}
 	
 	@Autowired
-	public void setHardwareService(HardwareService hardwareService) {
-	    this.hardwareService = hardwareService;
+	public void setHardwareUiService(HardwareUiService hardwareUiService) {
+	    this.hardwareUiService = hardwareUiService;
 	}
 	
 	@Autowired

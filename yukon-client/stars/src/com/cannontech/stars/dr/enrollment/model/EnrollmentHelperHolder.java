@@ -5,14 +5,14 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 
 
-public class EnrollmentHelperAdapter {
+public class EnrollmentHelperHolder {
     
 	private EnrollmentHelper enrollmentHelper;
 	private CustomerAccount customerAccount;
 	private LMHardwareBase lmHardwareBase;
 	private LiteStarsEnergyCompany liteStarsEnergyCompany;
 	
-	public EnrollmentHelperAdapter(EnrollmentHelper enrollmentHelper,
+	public EnrollmentHelperHolder(EnrollmentHelper enrollmentHelper,
 			CustomerAccount customerAccount, LMHardwareBase lmHardwareBase, LiteStarsEnergyCompany liteStarsEnergyCompany) {
 		super();
 		this.enrollmentHelper = enrollmentHelper;

@@ -37,7 +37,7 @@ import com.cannontech.stars.dr.enrollment.model.EnrolledDevicePrograms;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEventLoggingData;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
-import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperAdapter;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperHolder;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
@@ -158,14 +158,14 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     }
 
     public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
-    	EnrollmentHelperAdapter enrollmentHelperAdapter = buildEnrollmentHelperAdapter(enrollmentHelper, enrollmentEnum, user);
-    	doEnrollment(enrollmentHelperAdapter, enrollmentEnum, user);    	
+    	EnrollmentHelperHolder enrollmentHelperHolder = buildEnrollmentHelperAdapter(enrollmentHelper, enrollmentEnum, user);
+    	doEnrollment(enrollmentHelperHolder, enrollmentEnum, user);    	
     }
     
-    public void doEnrollment(EnrollmentHelperAdapter enrollmentHelperAdapter, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
+    public void doEnrollment(EnrollmentHelperHolder enrollmentHelperHolder, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
 
-        CustomerAccount customerAccount = enrollmentHelperAdapter.getCustomerAccount();
-        EnrollmentHelper enrollmentHelper = enrollmentHelperAdapter.getEnrollmentHelper();
+        CustomerAccount customerAccount = enrollmentHelperHolder.getCustomerAccount();
+        EnrollmentHelper enrollmentHelper = enrollmentHelperHolder.getEnrollmentHelper();
         
         // Get the current enrollments.  This list will be updated to reflect
         // the desired enrollment data then passed to applyEnrollments which
@@ -173,11 +173,11 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         List<ProgramEnrollment> enrollmentData = 
             enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
         
-        LiteStarsEnergyCompany energyCompany = enrollmentHelperAdapter.getLiteStarsEnergyCompany();        
+        LiteStarsEnergyCompany energyCompany = enrollmentHelperHolder.getLiteStarsEnergyCompany();        
         String trackHwAddr = energyCompany.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
         boolean useHardwareAddressing = Boolean.parseBoolean(trackHwAddr);
         
-        ProgramEnrollment programEnrollment = buildProgrameEnrollment(enrollmentHelperAdapter, enrollmentEnum);
+        ProgramEnrollment programEnrollment = buildProgrameEnrollment(enrollmentHelperHolder, enrollmentEnum);
         
         if (enrollmentEnum == EnrollmentEnum.ENROLL) {
             addProgramEnrollment(enrollmentData, programEnrollment, enrollmentHelper.isSeasonalLoad(), useHardwareAddressing);
@@ -251,11 +251,11 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         }
     }
 
-    private ProgramEnrollment buildProgrameEnrollment(EnrollmentHelperAdapter enrollmentHelperAdapter, EnrollmentEnum enrollmentEnum){
+    private ProgramEnrollment buildProgrameEnrollment(EnrollmentHelperHolder enrollmentHelperHolder, EnrollmentEnum enrollmentEnum){
 
-    	LMHardwareBase lmHardwareBase = enrollmentHelperAdapter.getLmHardwareBase();
-    	EnrollmentHelper enrollmentHelper = enrollmentHelperAdapter.getEnrollmentHelper();
-        LiteStarsEnergyCompany energyCompany = enrollmentHelperAdapter.getLiteStarsEnergyCompany();
+    	LMHardwareBase lmHardwareBase = enrollmentHelperHolder.getLmHardwareBase();
+    	EnrollmentHelper enrollmentHelper = enrollmentHelperHolder.getEnrollmentHelper();
+        LiteStarsEnergyCompany energyCompany = enrollmentHelperHolder.getLiteStarsEnergyCompany();
 
         /* This part of the method will get all the energy company ids that can have 
          * an appliance category this energy company can use.
@@ -452,7 +452,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 		return enrolledDeviceProgramsList;
 	}
 	
-    private EnrollmentHelperAdapter buildEnrollmentHelperAdapter(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user) {
+    private EnrollmentHelperHolder buildEnrollmentHelperAdapter(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user) {
     	CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(enrollmentHelper.getAccountNumber(), user);
     	
     	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
@@ -475,8 +475,8 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         }
 		
 		LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(liteInventoryBase.getInventoryID());
-    	EnrollmentHelperAdapter enrollmentHelperAdapter = new EnrollmentHelperAdapter(enrollmentHelper, customerAccount, lmHardwareBase, energyCompany);
-    	return enrollmentHelperAdapter;
+    	EnrollmentHelperHolder enrollmentHelperHolder = new EnrollmentHelperHolder(enrollmentHelper, customerAccount, lmHardwareBase, energyCompany);
+    	return enrollmentHelperHolder;
     }
 
 	@Autowired

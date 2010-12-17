@@ -13,10 +13,10 @@ import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
 import com.cannontech.web.stars.dr.operator.hardware.model.SwitchAssignment;
-import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareServiceImpl.HardwareHistory;
+import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareUiServiceImpl.HardwareHistory;
 import com.google.common.collect.ListMultimap;
 
-public interface HardwareService {
+public interface HardwareUiService {
 
     /**
      * Returns a HarwareDto for the given hardware id.
@@ -28,12 +28,6 @@ public interface HardwareService {
      * to spawn an event.
      */
     public boolean updateHardware(YukonUserContext userContext, HardwareDto hardwareDto) throws ObjectInOtherEnergyCompanyException;
-
-    /**
-     * If delete is true: deletes the hardware, otherwise just removes it from the 
-     * account and places it back in general inventory.
-     */
-    public void deleteHardware(YukonUserContext userContext, boolean delete, int inventoryId, int accountId, LiteStarsEnergyCompany energyCompany) throws Exception;
 
     /**
      * Creates and returns a SimpleDevice for an LCR-3102 with the given device name

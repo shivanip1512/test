@@ -28,7 +28,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
-import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperAdapter;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperHolder;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
@@ -220,8 +220,8 @@ public class DeleteLMHardwareAction implements ActionBase {
 	    			LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(deleteHw.getInventoryID());
 	    			enrollmentHelper.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
 	    			
-	    			EnrollmentHelperAdapter enrollmentHelperAdapter = new EnrollmentHelperAdapter(enrollmentHelper, customerAccount, lmHardwareBase, energyCompany);
-	    			enrollmentHelperService.doEnrollment(enrollmentHelperAdapter, EnrollmentEnum.UNENROLL, energyCompany.getUser());
+	    			EnrollmentHelperHolder enrollmentHelperHolder = new EnrollmentHelperHolder(enrollmentHelper, customerAccount, lmHardwareBase, energyCompany);
+	    			enrollmentHelperService.doEnrollment(enrollmentHelperHolder, EnrollmentEnum.UNENROLL, energyCompany.getUser());
     			}
     			
 			} catch (NotFoundException e) {

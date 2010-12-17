@@ -9,7 +9,7 @@ import com.cannontech.stars.dr.enrollment.model.EnrolledDevicePrograms;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEventLoggingData;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
-import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperAdapter;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperHolder;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.user.YukonUserContext;
 
@@ -31,7 +31,7 @@ public interface EnrollmentHelperService {
 
 	public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user);
 	
-    public void doEnrollment(EnrollmentHelperAdapter enrollmentHelperAdapter, EnrollmentEnum enrollmentEnum, LiteYukonUser user);
+    public void doEnrollment(EnrollmentHelperHolder enrollmentHelperHolder, EnrollmentEnum enrollmentEnum, LiteYukonUser user);
 
     /**
      * Return EnrolledDevicePrograms (serial number + list of program names) objects for a given account.

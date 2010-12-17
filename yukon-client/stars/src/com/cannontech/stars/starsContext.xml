@@ -273,6 +273,8 @@
     <bean id="optOutSurveyDao" class="com.cannontech.stars.dr.optout.dao.impl.OptOutSurveyDaoImpl"/>
     <bean id="optOutSurveyService" class="com.cannontech.stars.dr.optout.service.impl.OptOutSurveyServiceImpl"/>
 
+	<bean id="hardwareService" class="com.cannontech.stars.dr.hardware.service.impl.HardwareServiceImpl"/>
+	    
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableInventoryEnrollmentDaoImpl"/>
     
     <bean 

@@ -18,13 +18,13 @@ import com.cannontech.stars.dr.hardware.dao.impl.InventoryBaseDaoImpl;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
-import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareServiceImpl;
+import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareUiServiceImpl;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
 public class HardwareServiceTest {
 
-    private HardwareServiceImpl hardwareService;
+    private HardwareUiServiceImpl hardwareUiService;
     
     private InventoryBaseDao inventoryBaseDao;
     private StarsSearchDao starsSearchDao;
@@ -32,7 +32,7 @@ public class HardwareServiceTest {
     @Before
     public void setUp() {
         
-        hardwareService = new HardwareServiceImpl() {
+    	hardwareUiService = new HardwareUiServiceImpl() {
            @Override
            public HardwareDto getHardwareDto(int inventoryId, int energyCompanyId, int accountId) {
                HardwareDto dto = new HardwareDto();
@@ -66,14 +66,14 @@ public class HardwareServiceTest {
             }
          };
          
-         hardwareService.setInventoryBaseDao(inventoryBaseDao);
-         hardwareService.setStarsSearchDao(starsSearchDao);
+         hardwareUiService.setInventoryBaseDao(inventoryBaseDao);
+         hardwareUiService.setStarsSearchDao(starsSearchDao);
     }
     
     @Test
     public void testGetHardwareMapForAccount() {
         
-        ListMultimap<LMHardwareClass, HardwareDto> map = hardwareService.getHardwareMapForAccount(0, 0);
+        ListMultimap<LMHardwareClass, HardwareDto> map = hardwareUiService.getHardwareMapForAccount(0, 0);
         Assert.assertNotNull(map);
         Assert.assertTrue("Map should not be empty", !map.isEmpty());
         
@@ -89,7 +89,7 @@ public class HardwareServiceTest {
     
     @Test
     public void testGetHardwareTypeById_ForYukonMeter() {
-        HardwareType type = hardwareService.getHardwareTypeById(0);
+        HardwareType type = hardwareUiService.getHardwareTypeById(0);
         Assert.assertEquals(type, HardwareType.YUKON_METER);
     }
     
@@ -100,7 +100,7 @@ public class HardwareServiceTest {
         
         boolean foundDuplicate = false;
         try {
-            hardwareService.checkSerialNumber(possibleDuplicate);
+        	hardwareUiService.checkSerialNumber(possibleDuplicate);
         } catch (ObjectInOtherEnergyCompanyException e) {/* Ignore */}
         catch (StarsDeviceSerialNumberAlreadyExistsException e) {
             foundDuplicate = true;
@@ -111,7 +111,7 @@ public class HardwareServiceTest {
         foundDuplicate = false;
         
         try {
-            hardwareService.checkSerialNumber(possibleDuplicate);
+        	hardwareUiService.checkSerialNumber(possibleDuplicate);
         } catch (ObjectInOtherEnergyCompanyException e) {/* Ignore */}
         catch (StarsDeviceSerialNumberAlreadyExistsException e) {
             foundDuplicate = true;

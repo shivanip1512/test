@@ -46,7 +46,7 @@ import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
-import com.cannontech.web.stars.dr.operator.hardware.service.HardwareService;
+import com.cannontech.web.stars.dr.operator.hardware.service.HardwareUiService;
 import com.cannontech.web.stars.dr.operator.model.DisplayableApplianceListEntry;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.service.DisplayableApplianceService;
@@ -62,7 +62,7 @@ public class OperatorApplianceController {
     private ApplianceCategoryDao applianceCategoryDao;
     private DisplayableApplianceService displayableApplianceService;
     private DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao;
-    private HardwareService hardwareService;
+    private HardwareUiService hardwareUiService;
     private LMHardwareBaseDao lmHardwareBaseDao;
     private ProgramDao programDao;
     private RolePropertyDao rolePropertyDao;
@@ -231,7 +231,7 @@ public class OperatorApplianceController {
         // Hardware Summary
         if (liteStarsAppliance.getInventoryID() > 0) {
             HardwareDto hardwareDto = 
-                hardwareService.getHardwareDto(liteStarsAppliance.getInventoryID(),
+                hardwareUiService.getHardwareDto(liteStarsAppliance.getInventoryID(),
                                                accountInfoFragment.getEnergyCompanyId(), 
                                                accountInfoFragment.getAccountId());
             modelMap.addAttribute("hardware", hardwareDto);
@@ -447,8 +447,8 @@ public class OperatorApplianceController {
     }
     
     @Autowired
-    public void setHardwareService(HardwareService hardwareService) {
-        this.hardwareService = hardwareService;
+    public void setHardwareUiService(HardwareUiService hardwareUiService) {
+        this.hardwareUiService = hardwareUiService;
     }
 
     @Autowired

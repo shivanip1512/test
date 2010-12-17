@@ -35,7 +35,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
-import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperAdapter;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperHolder;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
@@ -451,8 +451,8 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         LMHardwareBase lmHardwareBase = hardwareBaseDao.getById(liteInv.getInventoryID());
         enrollmentHelper.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
         
-        EnrollmentHelperAdapter enrollmentHelperAdapter = new EnrollmentHelperAdapter(enrollmentHelper, customerAccount, lmHardwareBase, energyCompany);
-        enrollmentService.doEnrollment(enrollmentHelperAdapter, EnrollmentEnum.UNENROLL, user);        
+        EnrollmentHelperHolder enrollmentHelperHolder = new EnrollmentHelperHolder(enrollmentHelper, customerAccount, lmHardwareBase, energyCompany);
+        enrollmentService.doEnrollment(enrollmentHelperHolder, EnrollmentEnum.UNENROLL, user);        
     }
     
     // adds the UnInstall hardware event

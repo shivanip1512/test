@@ -1693,7 +1693,7 @@
     
     <bean id="zoneDtoValidator" class="com.cannontech.web.capcontrol.ivvc.validators.ZoneDtoValidator"/>
     
-    <bean id="hardwareService" class="com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareServiceImpl"/>
+    <bean id="hardwareUiService" class="com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareUiServiceImpl"/>
     <bean id="hardwareDtoValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.HardwareDtoValidator"/>
     <bean id="serialNumberValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.SerialNumberValidator"/>
     <bean id="meterConfigValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.MeterConfigValidator"/>
