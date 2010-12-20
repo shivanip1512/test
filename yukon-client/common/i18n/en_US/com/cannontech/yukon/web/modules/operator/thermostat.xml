@@ -133,6 +133,7 @@
     <entry key="yukon.web.modules.operator.thermostatSchedule.saveScheduleText">Changes have been made to this schedule. To disregard these changes, click OK. To return to the page to save your changes, click Cancel.</entry>
     <entry key="yukon.web.modules.operator.thermostatSchedule.modeChangeText"><![CDATA[You have chosen to change your thermostat scheduling mode.  If you have changed this setting locally on your thermostat, it will be replaced by this setting when you submit your schedule.  Do you wish to proceed?]]></entry>
     <entry key="yukon.web.modules.operator.thermostatSchedule.scheduleNameTooLong">Schedule name exceeds maximum length of 60.</entry>
+    <entry key="yukon.web.modules.operator.thermostatSchedule.saveSuccessful">* Schedule Saved Successfully</entry>
     
     <!--  operatorThermostat/schedule/confirm.jsp -->
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.pageName">Thermostat Schedule Confirm</entry>

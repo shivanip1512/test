@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
@@ -41,6 +43,7 @@ public class ThermostatAdminScheduleController {
     private RolePropertyDao rolePropertyDao;   
     private OperatorThermostatHelper operatorThermostatHelper;
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @RequestMapping(value = "/admin/thermostat/schedule/view", method = RequestMethod.GET)
     public String view(String type, YukonUserContext yukonUserContext, ModelMap map) {
@@ -118,6 +121,12 @@ public class ThermostatAdminScheduleController {
         accountThermostatScheduleDao.save(ats);
 
         map.addAttribute("type", type);
+        
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
+        String confirmMsg = messageSourceAccessor.getMessage("yukon.web.modules.operator.thermostatSchedule.saveSuccessful");
+        
+        map.addAttribute("confirmMsg", confirmMsg);
+        
         return "redirect:/operator/Admin/ThermSchedule.jsp";
     }
     
@@ -141,4 +150,10 @@ public class ThermostatAdminScheduleController {
     public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
 		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
 	}
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
+    }
+    
 }

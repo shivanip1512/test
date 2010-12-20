@@ -37,8 +37,9 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> <br>
               <span class="TitleHeader">ADMINISTRATION - DEFAULT THERMOSTAT SCHEDULE</span><br>
-              <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-              <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
+              <c:if test="${!empty param.confirmMsg}">
+                  <br><span class="ConfirmMsg">${param.confirmMsg}</span><br>
+              </c:if>
 
               <!--  'type' parameter is passed through automatically to include request -->
               <cti:url var="scheduleUrl" value="/spring/stars/admin/thermostat/schedule/view" />
