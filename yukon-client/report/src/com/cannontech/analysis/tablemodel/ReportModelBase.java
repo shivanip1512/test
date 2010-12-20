@@ -58,7 +58,7 @@ import com.google.common.collect.Lists;
  */
 public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTableModel implements Reportable
 {
-	public enum ReportFilter{ NONE("", null),
+	public enum ReportFilter{ NONE("", ReportFilterType.NONE),
 			METER("Meter Number", ReportFilterType.METERNUMBER),
 			DEVICE("Device", ReportFilterType.DEVICENAME),
 			GROUPS("Groups", ReportFilterType.DEVICEGROUP),
@@ -113,6 +113,11 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 	}
 	
 	private enum ReportFilterType {
+	    NONE {
+	        @Override
+	        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
+	        }
+	    },
 		METERNUMBER {
 	        @Override
 	        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
