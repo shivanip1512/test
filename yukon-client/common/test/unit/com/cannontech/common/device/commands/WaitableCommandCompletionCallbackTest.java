@@ -25,9 +25,10 @@ public class WaitableCommandCompletionCallbackTest {
         final AtomicInteger interruptCount = new AtomicInteger(0);
         Runnable runnable = new Runnable() {
             public void run() {
-                WaitableCommandCompletionCallback<Object> completionCallback = new WaitableCommandCompletionCallback<Object>(new CollectingCommandCompletionCallback());
+                WaitableCommandCompletionCallback<Object> completionCallback =
+                    new WaitableCommandCompletionCallback<Object>(new CollectingCommandCompletionCallback(), 10, 20);
                 try {
-                    completionCallback.waitForCompletion(10, 20);
+                    completionCallback.waitForCompletion();
                     fail("completed normally");
                 } catch (InterruptedException e) {
                     System.out.println("InterruptedException");

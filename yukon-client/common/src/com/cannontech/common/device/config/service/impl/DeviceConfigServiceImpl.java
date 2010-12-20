@@ -22,6 +22,7 @@ import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.commands.VerifyConfigCommandResult;
+import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.VerifyResult;
@@ -51,7 +52,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     private TemporaryDeviceGroupService temporaryDeviceGroupService;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    
+    private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
+
     private String sendConfigCommand(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback, String command, DeviceRequestType type, LiteYukonUser user) {
         List<SimpleDevice> unsupportedDevices = new ArrayList<SimpleDevice>();
         List<SimpleDevice> supportedDevices = new ArrayList<SimpleDevice>();
@@ -159,12 +161,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 result.setExceptionReason(reason);
             }
         };
-        
-        WaitableCommandCompletionCallback<CommandRequestDevice> waitableCallback = new WaitableCommandCompletionCallback<CommandRequestDevice>(commandCompletionCallback);
-        
+
+        WaitableCommandCompletionCallback<CommandRequestDevice> waitableCallback =
+            waitableCommandCompletionCallbackFactory.createWaitable(commandCompletionCallback);
+
         commandRequestExecutor.execute(requests, waitableCallback, DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY, user);
         try {
-            waitableCallback.waitForCompletion(60, 120);
+            waitableCallback.waitForCompletion();
         } catch (InterruptedException e) {
             result.setExceptionReason(e.getMessage());
             log.error(e);
@@ -243,5 +246,11 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Autowired
     public void setMeterDao(MeterDao meterDao) {
         this.meterDao = meterDao;
+    }
+
+    @Autowired
+    public void setWaitableCommandCompletionCallbackFactory(
+            WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory) {
+        this.waitableCommandCompletionCallbackFactory = waitableCommandCompletionCallbackFactory;
     }
 }

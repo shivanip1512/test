@@ -10,7 +10,7 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 
-public class WaitableCommandCompletionCallback<T> implements CommandCompletionCallback<T> {
+public final class WaitableCommandCompletionCallback<T> implements CommandCompletionCallback<T> {
 
     private final Object lock = new Object();
     private Logger log = YukonLogManager.getLogger(WaitableCommandCompletionCallback.class);
@@ -20,9 +20,14 @@ public class WaitableCommandCompletionCallback<T> implements CommandCompletionCa
     private CommandCompletionCallback<T> delegate;
     private volatile boolean complete;
 
+    private long betweenResultsMax;
+    private long totalMax;
 
-    public WaitableCommandCompletionCallback(CommandCompletionCallback<T> delegate) {
+    public WaitableCommandCompletionCallback(CommandCompletionCallback<T> delegate,
+            long betweenResultsMax, long totalMax) {
         this.delegate = delegate;
+        this.betweenResultsMax = betweenResultsMax;
+        this.totalMax = totalMax;
     }
 
     private void kick() {
@@ -32,7 +37,7 @@ public class WaitableCommandCompletionCallback<T> implements CommandCompletionCa
         }
     }
 
-    public void waitForCompletion(long betweenResultsMax, long totalMax) throws InterruptedException, TimeoutException {
+    public void waitForCompletion() throws InterruptedException, TimeoutException {
     	
     	long startTime = System.currentTimeMillis();
         this.latestFinishTime = startTime + TimeUnit.MILLISECONDS.convert(totalMax, TimeUnit.SECONDS);

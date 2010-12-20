@@ -25,6 +25,7 @@ import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
+import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
@@ -60,6 +61,7 @@ public class HardwareConfigService {
     private CommandRequestRouteExecutor commandRequestRouteExecutor;
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private InventoryConfigEventLogService inventoryConfigEventLogService;
+    private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
 
     public class EnergyCompanyRunnable implements Runnable {
         int energyCompanyId;
@@ -82,11 +84,11 @@ public class HardwareConfigService {
             };
             hadErrors = false;
             WaitableCommandCompletionCallback<CommandRequestRoute> waitableCallback =
-                new WaitableCommandCompletionCallback<CommandRequestRoute>(callback);
+                waitableCommandCompletionCallbackFactory.createWaitable(callback);
             commandRequestHardwareExecutor.executeWithTemplate(template, hardware, command,
                                                                waitableCallback);
             try {
-                waitableCallback.waitForCompletion(60, 60);
+                waitableCallback.waitForCompletion();
             } catch (InterruptedException interruptedException) {
                 hadErrors = true;
                 log.error("interrupted waiting for command completion", interruptedException);
@@ -149,14 +151,14 @@ public class HardwareConfigService {
         }
 
         public boolean processItems() {
-            log.debug("beginning of loop, ecId = " + energyCompanyId);
+            log.trace("processing a chunk of work for ecId = " + energyCompanyId);
             LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
             DateTimeZone timeZone = energyCompany.getDefaultDateTimeZone();
 
             boolean workProcessed = false;
             List<InventoryConfigTask> tasks = inventoryConfigTaskDao.getUnfinished(energyCompanyId);
             if (!tasks.isEmpty()) {
-                log.debug("tasks not empty");
+                log.trace("tasks not empty");
                 List<CommandSchedule> schedules = commandScheduleDao.getAllEnabled(energyCompanyId);
                 List<CommandSchedule> activeSchedules = Lists.newArrayList();
                 for (CommandSchedule schedule : schedules) {
@@ -185,21 +187,24 @@ public class HardwareConfigService {
                             delayBetweenCommands = thisDelay;
                         }
                     }
-                    log.debug("using delay of " + delayBetweenCommands);
+                    log.trace("using delay of " + delayBetweenCommands);
                     // (We're estimating 2 commands per configuration.)
                     int numItems = delayBetweenCommands.isLongerThan(Duration.ZERO)
                         ? (int) Math.round(60.0 * 1000.0 / delayBetweenCommands.getMillis() / 2.0) : 100;
                     numItems = Math.max(Math.min(numItems, 100), 1);
-                    log.debug("getting no more than " + numItems + " items");
+                    log.trace("getting no more than " + numItems + " items");
                     Iterable<InventoryConfigTaskItem> items =
                         inventoryConfigTaskDao.getItems(numItems, energyCompanyId);
+                    int actualNumItems = 0;
                     for (InventoryConfigTaskItem item : items) {
+                        actualNumItems++;
                         processItem(item, delayBetweenCommands);
                         workProcessed = true;
                     }
+                    log.debug("proccessed " + actualNumItems + " items");
                 }
             } else {
-                log.debug("no unfinished tasks");
+                log.trace("no unfinished tasks");
             }
             return workProcessed;
         }
@@ -276,5 +281,11 @@ public class HardwareConfigService {
     public void setInventoryConfigEventLogService(
             InventoryConfigEventLogService inventoryConfigEventLogService) {
         this.inventoryConfigEventLogService = inventoryConfigEventLogService;
+    }
+
+    @Autowired
+    public void setWaitableCommandCompletionCallbackFactory(
+            WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory) {
+        this.waitableCommandCompletionCallbackFactory = waitableCommandCompletionCallbackFactory;
     }
 }

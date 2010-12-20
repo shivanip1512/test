@@ -15,7 +15,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
@@ -43,6 +42,7 @@ import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
@@ -83,19 +83,12 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 	private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
 	private NextValueHelper nextValueHelper;
 	private CommandRequestExecutorEventLogService commandRequestExecutorEventLogService;
+	private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
     
     private Map<CommandCompletionCallback<? super T>, CommandResultMessageListener> msgListeners = new ConcurrentHashMap<CommandCompletionCallback<? super T>, CommandResultMessageListener>();
     
     private static final Logger log = YukonLogManager.getLogger(CommandRequestExecutorBase.class);
-    private int betweenResultsMaxDelay = 60;
-    private int totalMaxDelay = 180;
     private static final int CANCEL_PRIORITY = 8;
-    
-    @PostConstruct
-    public void initialize() {
-        betweenResultsMaxDelay = configurationSource.getInteger("COMMAND_REQUEST_EXECUTOR_BETWEEN_RESULTS_MAX_DELAY", betweenResultsMaxDelay);
-        totalMaxDelay = configurationSource.getInteger("COMMAND_REQUEST_EXECUTOR_TOTAL_MAX_DELAY", totalMaxDelay);
-    }
 
     // COMMAND RESULT MESSAGE LISTENER
     private final class CommandResultMessageListener implements MessageListener {
@@ -299,13 +292,13 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     public CommandResultHolder execute(List<T> commands, DeviceRequestType type, LiteYukonUser user) throws CommandCompletionException {
         
         CollectingCommandCompletionCallback callback = new CollectingCommandCompletionCallback();
-        WaitableCommandCompletionCallback<Object> waitableCallback = new WaitableCommandCompletionCallback<Object>(callback);
+        WaitableCommandCompletionCallback<Object> waitableCallback = waitableCommandCompletionCallbackFactory.createWaitable(callback);
 
         CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = execute(commands, waitableCallback, type, user);
         callback.setCommandRequestExecutionIdentifier(commandRequestExecutionIdentifier);
 
         try {
-            waitableCallback.waitForCompletion(betweenResultsMaxDelay,totalMaxDelay);
+            waitableCallback.waitForCompletion();
             return callback;
         } catch (InterruptedException e) {
             throw new CommandCompletionException("Interrupted while block for command completion", e);
@@ -649,30 +642,10 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 	}
     
     @ManagedAttribute
-    public int getBetweenResultsMaxDelay() {
-        return betweenResultsMaxDelay;
-    }
-
-    @ManagedAttribute
-    public void setBetweenResultsMaxDelay(int betweenResultsMaxDelay) {
-        this.betweenResultsMaxDelay = betweenResultsMaxDelay;
-    }
-    
-    @ManagedAttribute
     public int getPendingRequestCount() {
         return msgListeners.size();
     }
 
-    @ManagedAttribute
-    public int getTotalMaxDelay() {
-        return totalMaxDelay;
-    }
-
-    @ManagedAttribute
-    public void setTotalMaxDelay(int totalMaxDelay) {
-        this.totalMaxDelay = totalMaxDelay;
-    }
-    
     @Autowired
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
@@ -682,4 +655,10 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     public void setCommandRequestExecutorEventLogService(CommandRequestExecutorEventLogService commandRequestExecutorEventLogService) {
 		this.commandRequestExecutorEventLogService = commandRequestExecutorEventLogService;
 	}
+
+    @Autowired
+    public void setWaitableCommandCompletionCallbackFactory(
+            WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory) {
+        this.waitableCommandCompletionCallbackFactory = waitableCommandCompletionCallbackFactory;
+    }
 }

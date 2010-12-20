@@ -35,7 +35,9 @@
     
     <bean id="commandRequestExecutionResultDao" class="com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionResultDaoImpl">
     </bean>
-    
+
+    <bean class="com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory"/>
+
     <bean id="attributeService" class="com.cannontech.common.pao.attribute.service.AttributeServiceImpl" scope="singleton"/>
     
     <bean id="devicePointService" class="com.cannontech.common.pao.service.PointServiceImpl" scope="singleton"/>
