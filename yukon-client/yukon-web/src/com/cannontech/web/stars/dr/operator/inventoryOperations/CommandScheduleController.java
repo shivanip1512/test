@@ -23,11 +23,11 @@ import com.cannontech.common.events.loggers.CommandScheduleEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
 import com.cannontech.stars.dr.hardware.model.CommandSchedule;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
@@ -43,7 +43,6 @@ public class CommandScheduleController {
     private CronExpressionTagService cronExpressionTagService;
     private CommandScheduleValidator validator;
     private CommandScheduleEventLogService commandScheduleEventLogService;
-    private EnergyCompanyDao energyCompanyDao;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     /* Command Schedule Edit/Creation page */
@@ -112,7 +111,7 @@ public class CommandScheduleController {
         
         schedule.getCommandSchedule().setRunPeriod(duration);
         schedule.getCommandSchedule().setDelayPeriod(delay);
-        int energyCompanyId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
+        int energyCompanyId = ServletUtils.getStarsYukonUser(request).getEnergyCompanyID();
         schedule.getCommandSchedule().setEnergyCompanyId(energyCompanyId);
 
         commandScheduleDao.save(schedule.getCommandSchedule());
@@ -182,11 +181,6 @@ public class CommandScheduleController {
         this.commandScheduleEventLogService = commandScheduleEventLogService;
     }
 
-    @Autowired
-    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-        this.energyCompanyDao = energyCompanyDao;
-    }
-    
     @Autowired
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
