@@ -17,9 +17,6 @@
         <property name="starsCustAccountInformationDao" ref="starsCustAccountInformationDao"/>
     </bean>
 
-    <bean id="adminDeleteCustomerAccounts" class="com.cannontech.web.stars.action.admin.DeleteCustomerAccountsController" 
-          parent="starsAdminActionController"/>
-	
 	<bean id="adminUpdateAddress" class="com.cannontech.web.stars.action.admin.UpdateAddressController" 
           parent="starsAdminActionController"/>
 	

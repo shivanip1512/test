@@ -1247,6 +1247,31 @@
                 
                 <value>DENY|/spring/support/**|!OPERATOR_ADMINISTRATOR</value>
                 
+                <!-- Allow explicit access to each Admin page.  Default DENY to all pages unless ADMIN_CONFIG_ENERGY_COMPANY -->
+                <!-- These should be removed with the rewrite of Energy Company configuration pages. -->
+                <!-- Authorization should be handled on the controller side (with the rewrite). -->
+                <value>ALLOW|/operator/Admin/Address.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
+                <value>ALLOW|/operator/Admin/ConfigEnergyCompany.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
+                <value>ALLOW|/operator/Admin/CustomerFAQ.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
+                <value>ALLOW|/operator/Admin/EnergyCompany.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
+                <value>ALLOW|/operator/Admin/InterviewQuestion.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
+                <value>ALLOW|/operator/Admin/ManageMembers.jsp|ADMIN_MANAGE_MEMBERS</value>
+                <value>ALLOW|/operator/Admin/Message.jsp|WEB_CLIENT</value> <!-- Using WebClient to allow "full" access to  -->
+                <value>ALLOW|/operator/Admin/NewCodes.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
+                <value>ALLOW|/operator/Admin/NewEnergyCompany.jsp|ADMIN_CREATE_ENERGY_COMPANY</value>
+                <value>ALLOW|/operator/Admin/OperatorLogin.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
+                <value>ALLOW|/operator/Admin/Progress.jsp|WEB_CLIENT</value> <!-- Using WebClient to allow "full" access to  -->
+                <value>ALLOW|/operator/Admin/Routes.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
+                <value>ALLOW|/operator/Admin/SelectionList.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
+                <value>ALLOW|/operator/Admin/ServiceCompany.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
+                <value>ALLOW|/operator/Admin/SettlementConfig.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
+                <value>ALLOW|/operator/Admin/Substation.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
+                <value>ALLOW|/operator/Admin/SwitchCommands.jsp|ADMIN_VIEW_BATCH_COMMANDS</value>
+                <value>ALLOW|/operator/Admin/ThermSchedule.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
+                <value>ALLOW|/operator/Admin/Warehouse.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
+                <value>DENY|/operator/Admin/**|*</value>
+                
+                
                 <value>ALLOW|/**|WEB_CLIENT</value>
                 <value>DENY|/**|*</value>
                 <!-- DO NOT REMOVE -->

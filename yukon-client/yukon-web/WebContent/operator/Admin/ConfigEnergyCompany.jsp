@@ -66,11 +66,6 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
-function confirmDeleteAccount(form) {
-	if (form.AcctNo.value == "*")
-		return confirm("Are you sure you want to delete all customer accounts?");
-	return true;
-}
 
 function confirmDeleteAppCat() {
 	return confirm("If you delete an appliance category, all the programs and appliances under this category will also be deleted. Are you sure you want to continue?");

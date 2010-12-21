@@ -1,6 +1,11 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%
+	if (!DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) {
+	    response.sendRedirect("../Operations.jsp");
+	    return;
+	}
+
 	if (request.getParameter("failed") != null)
 		errorMsg = "Failed to log into member energy company";
 %>
