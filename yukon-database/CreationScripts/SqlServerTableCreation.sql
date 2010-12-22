@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     12/22/2010 3:33:32 PM                        */
+/* Created on:     12/22/2010 5:17:11 PM                        */
 /*==============================================================*/
 
 
@@ -8565,6 +8565,7 @@ create table InventoryConfigTask (
    NumberOfItems        numeric              not null,
    NumberOfItemsProcessed numeric              not null,
    EnergyCompanyId      numeric              not null,
+   UserId               numeric              not null,
    constraint PK_InvConfTask primary key (InventoryConfigTaskId)
 )
 go
@@ -15279,6 +15280,12 @@ go
 alter table InventoryConfigTask
    add constraint FK_InvConfTask_EC foreign key (EnergyCompanyId)
       references EnergyCompany (EnergyCompanyID)
+         on delete cascade
+go
+
+alter table InventoryConfigTask
+   add constraint FK_InvConfTask_YukonUser foreign key (UserId)
+      references YukonUser (UserID)
          on delete cascade
 go
 

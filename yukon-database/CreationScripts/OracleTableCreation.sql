@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/22/2010 3:49:07 PM                        */
+/* Created on:     12/22/2010 5:14:00 PM                        */
 /*==============================================================*/
 
 
@@ -5608,6 +5608,7 @@ create table InventoryConfigTask  (
    NumberOfItems        NUMBER                          not null,
    NumberOfItemsProcessed NUMBER                          not null,
    EnergyCompanyId      NUMBER                          not null,
+   UserId               NUMBER                          not null,
    constraint PK_InvConfTask primary key (InventoryConfigTaskId)
 );
 
@@ -11737,6 +11738,11 @@ alter table InventoryBase
 alter table InventoryConfigTask
    add constraint FK_InvConfTask_EC foreign key (EnergyCompanyId)
       references EnergyCompany (EnergyCompanyID)
+      on delete cascade;
+
+alter table InventoryConfigTask
+   add constraint FK_InvConfTask_YukonUser foreign key (UserId)
+      references YukonUser (UserID)
       on delete cascade;
 
 alter table InventoryConfigTaskItem
