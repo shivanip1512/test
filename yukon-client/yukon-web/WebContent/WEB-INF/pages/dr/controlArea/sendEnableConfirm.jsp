@@ -20,8 +20,7 @@
         <input type="hidden" name="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
         <input type="hidden" name="isEnabled" value="${isEnabled}"/>
         <div class="actionArea">
-            <input type="submit" value="<cti:msg key="yukon.web.modules.dr.controlArea.sendEnableConfirm.okButton"/>"
-                onclick="submitFormViaAjax('drDialog', 'sendEnableForm')"/>
+            <input type="submit" value="<cti:msg key="yukon.web.modules.dr.controlArea.sendEnableConfirm.okButton"/>"/>
             <input type="button" value="<cti:msg key="yukon.web.modules.dr.controlArea.sendEnableConfirm.cancelButton"/>"
                 onclick="parent.$('drDialog').hide()"/>
         </div>
