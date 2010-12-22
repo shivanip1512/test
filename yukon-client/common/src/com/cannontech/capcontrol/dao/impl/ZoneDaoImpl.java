@@ -448,6 +448,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sqlBuilder.append("JOIN CCFeederSubAssignment FSA ON FSA.FeederId = FBL.FeederId");
         sqlBuilder.append("WHERE DMPR.BankId");
         sqlBuilder.in(bankIds);
+        sqlBuilder.append("ORDER BY PAOC.PAOName, PAO2.PAOName");
         
         return yukonJdbcTemplate.query(sqlBuilder, pointDeltaRowMapper);
     }

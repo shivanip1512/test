@@ -165,7 +165,7 @@ public class ZoneDetailController {
     }
     
     private void setupDeltas(ModelMap model, HttpServletRequest request, CapControlCache cache, Zone zone) {
-        List<Integer> bankIds = zoneService.getCapBankIdsForSubBusId(zone.getSubstationBusId());
+        List<Integer> bankIds = zoneService.getCapBankIdsForZoneId(zone.getId());
         
         List<CapBankPointDelta> pointDeltas = zoneService.getAllPointDeltasForBankIds(bankIds);
         
