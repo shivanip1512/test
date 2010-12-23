@@ -17,7 +17,6 @@ import com.cannontech.stars.dr.displayable.dao.DisplayableProgramDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableControlHistory;
 import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
 import com.cannontech.stars.dr.displayable.model.DisplayableControlHistory.DisplayableControlHistoryType;
-import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
@@ -83,23 +82,18 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
             displayableControlHistoryList.add(displayableControlHistory);
         }
         
-        Collections.sort(displayableControlHistoryList,DEVICE_LABLE_COMPARATOR);
+        Collections.sort(displayableControlHistoryList, DEVICE_LABEL_COMPARATOR);
         DisplayableProgram displayableProgram = new DisplayableProgram(program, displayableControlHistoryList);
         return displayableProgram;
     }
     
-    private static Comparator<DisplayableControlHistory> DEVICE_LABLE_COMPARATOR = 
-        Ordering.from(String.CASE_INSENSITIVE_ORDER).onResultOf(new Function<InventoryBase, String>() {
-            @Override
-            public String apply(InventoryBase from) {
-                return from.getDeviceLabel();
-            }
-        })
+    private static Comparator<DisplayableControlHistory> DEVICE_LABEL_COMPARATOR = 
+        Ordering.from(String.CASE_INSENSITIVE_ORDER)
         .nullsLast()
-        .onResultOf(new Function<DisplayableControlHistory, InventoryBase> () {
+        .onResultOf(new Function<DisplayableControlHistory, String> () {
             @Override
-            public InventoryBase apply(DisplayableControlHistory from) {
-                return from.getControlHistory().getInventory();
+            public String apply(DisplayableControlHistory from) {
+                return from.getControlHistory().getDisplayName();
             }
         });
 
