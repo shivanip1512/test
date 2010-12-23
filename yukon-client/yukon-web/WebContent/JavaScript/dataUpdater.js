@@ -88,7 +88,9 @@ function initiateCannonDataUpdate(url, delayMs) {
         // save latest date
         lastUpdate = responseStruc.toDate;
         // schedule next update
-        _updaterTimeout ? clearTimeout(_updaterTimeout) : false;
+        if(_updaterTimeout) {
+            clearTimeout(_updaterTimeout);
+        }
         _updaterTimeout = setTimeout(doUpdate, delayMs);
     };
     
@@ -100,7 +102,9 @@ function initiateCannonDataUpdate(url, delayMs) {
             $('cannonUpdaterErrorDiv').show();
         }
         // schedule another update incase the server comes back, but slow it down a bit
-        _updaterTimeout ? clearTimeout(_updaterTimeout) : false;
+        if(_updaterTimeout) {
+            clearTimeout(_updaterTimeout);
+        }
         _updaterTimeout = setTimeout(doUpdate, delayMs * 5);
     };
     var doUpdate = function() {
@@ -131,7 +135,9 @@ function initiateCannonDataUpdate(url, delayMs) {
         
         if (requestData.get('data').length == 0) {
             // schedule next update
-            _updaterTimeout ? clearTimeout(_updaterTimeout) : false;
+            if(_updaterTimeout) {
+                clearTimeout(_updaterTimeout);
+            }
             _updaterTimeout = setTimeout(doUpdate, delayMs);
             return;
         }
@@ -149,7 +155,9 @@ function initiateCannonDataUpdate(url, delayMs) {
         requestData = null;
         updatableElements = null;
     };
-    _updaterTimeout ? clearTimeout(_updaterTimeout) : false;
+    if(_updaterTimeout) {
+        clearTimeout(_updaterTimeout);
+    }
     _updaterTimeout = setTimeout(doUpdate, delayMs);
 }
 

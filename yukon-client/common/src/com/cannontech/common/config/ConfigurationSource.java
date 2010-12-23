@@ -51,6 +51,14 @@ public interface ConfigurationSource {
     public boolean getBoolean(String key, boolean defaultValue);
     
     /**
+     * Returns boolean value of key from the configuration file. Returns false if
+     * the key did not exist in the file.
+     * @param key
+     * @return the boolean value of the key, or defaultValue if the key didn't exist
+     */
+    public boolean getBoolean(MasterConfigBooleanKeysEnum developmentMode);
+
+    /**
      * <p>Uses the {@link SimplePeriodFormat#getConfigPeriodFormatterWithFallback(DurationFieldType)} style 
      * to convert the string in the configuration
      * file to a period. This format supports simple letter suffixes to indicate the Period.</p>
@@ -122,5 +130,6 @@ public interface ConfigurationSource {
      * @param defaultValue Duration value to return if the key does not exist
      */
     public Duration getDuration(String key, ReadableDuration defaultValue);
+
     
 }

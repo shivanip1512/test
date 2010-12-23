@@ -382,6 +382,16 @@
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+        <name>force</name>
+        <required>false</required>
+        <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>component</name>
+        <required>false</required>
+        <rtexprvalue>false</rtexprvalue>
+    </attribute>
   </tag>
   
   <tag>

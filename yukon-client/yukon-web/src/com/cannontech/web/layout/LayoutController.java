@@ -8,8 +8,10 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
@@ -23,6 +25,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.web.taglib.JSLibrary;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -42,6 +47,8 @@ import com.cannontech.web.menu.renderer.StandardMenuRenderer;
 import com.cannontech.web.taglib.StandardPageInfo;
 import com.cannontech.web.taglib.StandardPageTag;
 import com.cannontech.web.taglib.Writable;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 
 @Controller
 public class LayoutController {
@@ -49,21 +56,27 @@ public class LayoutController {
     private CommonModuleBuilder moduleBuilder;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private PageDetailProducer pageDetailProducer;
+    private ConfigurationSource configurationSource;
 
-    private List<String> layoutScriptFiles = new ArrayList<String>(3);
+    private List<String> layoutScriptFiles;
     
-    {
-    	layoutScriptFiles.add("/JavaScript/lib/prototype/1.7.0.0/prototype.js");
-        layoutScriptFiles.add("/JavaScript/yukonGeneral.js");
-        layoutScriptFiles.add("/JavaScript/basicLogger.js");
-        layoutScriptFiles.add("/JavaScript/CtiMenu.js");
-        layoutScriptFiles.add("/JavaScript/dataUpdater.js");
-        layoutScriptFiles.add("/JavaScript/lib/scriptaculous/1.8.3/effects.js");
-        layoutScriptFiles.add("/JavaScript/simpleCookies.js");
-        layoutScriptFiles.add("/JavaScript/alert.js");
-        layoutScriptFiles.add("/JavaScript/javaWebStartLauncher.js");
+    @PostConstruct
+    public void initialize() {
+        Builder<String> builder = ImmutableList.builder();
+    	builder.add(JSLibrary.PROTOTYPE.getDefaultInclude());
+        builder.add("/JavaScript/yukonGeneral.js");
+        if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
+            builder.add("/JavaScript/basicLogger.js");
+        }
+        builder.add("/JavaScript/CtiMenu.js");
+        builder.add("/JavaScript/dataUpdater.js");
+        builder.add(JSLibrary.SCRIPTACULOUS.getPath() + "effects.js");
+        builder.add("/JavaScript/simpleCookies.js");
+        builder.add("/JavaScript/alert.js");
+        builder.add("/JavaScript/javaWebStartLauncher.js");
+        layoutScriptFiles = builder.build();
     }
-
+    
     @RequestMapping("/")
     public String display(HttpServletRequest request, HttpServletResponse response, ModelMap map, Locale locale) throws JspException {
 
@@ -245,5 +258,10 @@ public class LayoutController {
     @Autowired
     public void setPageDetailProducer(PageDetailProducer pageDetailProducer) {
         this.pageDetailProducer = pageDetailProducer;
+    }
+    
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
     }
 }

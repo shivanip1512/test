@@ -18,7 +18,7 @@ public class WebSecurityChecker {
     
     public void checkDevelopmentMode() {
         final LiteYukonUser user = getYukonUser();
-        boolean result = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE.name(), false);
+        boolean result = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
         if (!result) {
             throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
         }

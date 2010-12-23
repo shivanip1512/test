@@ -2,7 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <cti:url var="url" value="/spring/stars/hardware/deviceactivation" />
 
-<script language="JavaScript" type="text/javascript" src="/JavaScript/lib/prototype/1.7.0.0/prototype.js"></script>
+<cti:includeScript link="PROTOTYPE" force="true"/>
 <script language="JavaScript">
     var counter = 4;
 

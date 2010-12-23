@@ -46,8 +46,7 @@
 <link href="../editor/css/greybox/greybox.css" rel="stylesheet" type="text/css" media="all" /> 
 <script type="text/javascript" src="../JavaScript/GreyBox/AmiJS.js"></script>
 <script type="text/javascript" src="../JavaScript/GreyBox/greybox.js"></script>
-<script type="text/JavaScript" src="../JavaScript/lib/prototype/1.7.0.0/prototype.js"></script>
-
+<cti:includeScript link="PROTOTYPE" force="true"/>
 
 
 

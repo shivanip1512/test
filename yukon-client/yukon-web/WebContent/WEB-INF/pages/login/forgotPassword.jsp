@@ -17,11 +17,12 @@
             href="/WebConfig/yukon/styles/loginStyles.css"
             type="text/css">
         
-        <script type="text/javascript" src="/JavaScript/lib/prototype/1.7.0.0/prototype.js"></script>
+       
+        <cti:includeScript link="PROTOTYPE" force="true"/>
         <script type="text/javascript" src="/JavaScript/CtiMenu.js"></script>
 
     </head>
-
+    
 	<script type='text/javascript' language=''>
 		<!--
 		var ctiMenu = new CtiMenu('subMenu');

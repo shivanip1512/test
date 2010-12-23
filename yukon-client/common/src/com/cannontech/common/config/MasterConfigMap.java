@@ -123,6 +123,11 @@ public class MasterConfigMap implements ConfigurationSource {
     }
     
     @Override
+    public boolean getBoolean(MasterConfigBooleanKeysEnum key) {
+        return getBoolean(key.name(), false);
+    }
+    
+    @Override
     public Period getPeriod(String key, ReadablePeriod defaultValue) {
         String string = getString(key);
         if (StringUtils.isBlank(string)) {
