@@ -549,7 +549,6 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::addAllCBCPointsToRegMsg(std::set<long>& po
 
 void CtiCCTwoWayPoints::setDynamicData(Cti::RowReader& rdr)
 {
-    INT lastControl;
     INT condition = 0;
     string tempBoolString;
     CtiTime timeNow;
@@ -634,14 +633,14 @@ void CtiCCTwoWayPoints::setDynamicData(Cti::RowReader& rdr)
     _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UDPPortNumber), tempLong, timeNow);
 
 
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlLocal), lastControl & 0x01, timeNow);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlRemote), lastControl & 0x02, timeNow);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlOvUv), lastControl & 0x04, timeNow);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlNeutralFault), lastControl & 0x08, timeNow);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlScheduled), lastControl & 0x10, timeNow);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlDigital), lastControl & 0x20, timeNow);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlAnalog), lastControl & 0x40, timeNow);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlTemperature), lastControl & 0x80, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlLocal), _lastControlReason & 0x01, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlRemote), _lastControlReason & 0x02, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlOvUv), _lastControlReason & 0x04, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlNeutralFault), _lastControlReason & 0x08, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlScheduled), _lastControlReason & 0x10, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlDigital), _lastControlReason & 0x20, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlAnalog), _lastControlReason & 0x40, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlTemperature), _lastControlReason & 0x80, timeNow);
 
 
     _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UvCondition), condition & 0x01, timeNow);
