@@ -1,7 +1,6 @@
 package com.cannontech.common.mock;
 
 import com.cannontech.core.dao.RoleDao;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
@@ -45,12 +44,6 @@ public class RoleDaoAdapter implements RoleDao {
     @Override
     public LiteYukonRoleProperty getRoleProperty(int propid) {
         throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    public boolean updateGroupRoleProperty(LiteYukonGroup group,
-            YukonRoleProperty property, String newVal) {
-        return false;
     }
 
     @Override
