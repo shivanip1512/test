@@ -99,6 +99,38 @@ public class OperatorThermostatManualController {
 				            FlashScope flashScope,
 					        AccountInfoFragment accountInfoFragment) {
 
+		doSave(thermostatIds, mode, fan, temperatureUnit, userContext, request, modelMap, flashScope, accountInfoFragment);
+		
+        return "redirect:view";
+    }
+	
+	// RUN PROGRAM
+	@RequestMapping
+    public String runProgram(String thermostatIds,
+				    		String mode, 
+				    		String fan, 
+				    		String temperatureUnit, 
+				    		YukonUserContext userContext,
+				            HttpServletRequest request, 
+				            ModelMap modelMap,
+				            FlashScope flashScope,
+					        AccountInfoFragment accountInfoFragment) {
+
+		doSave(thermostatIds, mode, fan, temperatureUnit, userContext, request, modelMap, flashScope, accountInfoFragment);
+		
+        return "redirect:/spring/stars/operator/thermostatSchedule/view";
+    }
+	
+    private void doSave(String thermostatIds,
+				    		String mode, 
+				    		String fan, 
+				    		String temperatureUnit, 
+				    		YukonUserContext userContext,
+				            HttpServletRequest request, 
+				            ModelMap modelMap,
+				            FlashScope flashScope,
+					        AccountInfoFragment accountInfoFragment) {
+
 		List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
 		CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         
@@ -181,8 +213,6 @@ public class OperatorThermostatManualController {
         MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(message.getDisplayKey(), thermostatLabelString);
         
     	flashScope.setMessage(messageResolvable, message.isFailed() ? FlashScopeMessageType.ERROR : FlashScopeMessageType.CONFIRM);
-
-        return "redirect:view";
     }
 	
 	@Autowired

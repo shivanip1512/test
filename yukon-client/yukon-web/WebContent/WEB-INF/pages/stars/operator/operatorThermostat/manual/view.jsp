@@ -228,7 +228,7 @@
 				                
 				                <%-- RUN PROGRAM BUTTON --%>
 				                <br><br>
-				                <form action="/spring/stars/operator/thermostatManual/save" method="post" >
+				                <form action="/spring/stars/operator/thermostatManual/runProgram" method="post" >
 				                	<input name="accountId" type="hidden" value="${accountId}" />
 				                    <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
 				                    <cti:msg var="runProgramText" key="yukon.web.modules.operator.thermostatManual.runProgram" />
