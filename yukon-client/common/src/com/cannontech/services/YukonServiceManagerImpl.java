@@ -32,7 +32,7 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
     @PostConstruct
     public void loadCustomServices() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ServiceID, ServiceName, ServiceClass, ParamNames, ParamValues"); 
+        sql.append("SELECT ServiceID, ServiceName, ServiceClass"); 
         sql.append("FROM YukonServices");
         sql.append("WHERE ServiceID > 0 and AppName = ").appendArgument(CtiUtilities.getApplicationName());
         

@@ -211,25 +211,11 @@ public class PriceServer implements Runnable{
 		return runIntervalInSeconds;
 	}
 
-	private void setRunIntervalInSeconds(int seconds)
-	{
-		if( seconds < 60)
-			runIntervalInSeconds = 60;
-		else if (seconds > 300)
-			runIntervalInSeconds = 300;
-		else
-			runIntervalInSeconds = seconds;
-		CTILogger.info("RunTime Interval set to: " + runIntervalInSeconds + " seconds.");
-	}
-	
-
 	/** 
 	 * Start us
 	 */
 	public void start()
 	{
-//		retrieveParameters();
-//		loadParameters();
 		init();
 		priceThread = new Thread( this, "PriceServer" );
 		priceThread.start();
@@ -356,51 +342,4 @@ public class PriceServer implements Runnable{
 			}
 		}
 	}
-/*	private void retrieveParameters()
-	{
-		StringBuffer sql = new StringBuffer	("SELECT PARAMNAMES, PARAMVALUES FROM YUKONSERVICES " +
-			" WHERE SERVICEID = 6 ");
-
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement stmt = null;
-		java.sql.ResultSet rset = null;
-
-		try
-		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-
-			if( conn == null )
-			{
-				CTILogger.info("Error getting database connection.");
-				return null;
-			}
-			else
-			{
-				stmt = conn.prepareStatement(sql.toString());
-				rset = stmt.executeQuery();
-				groupIDs = new Vector();
-				while( rset.next())
-					groupIDs.add(new Integer( rset.getInt(1) ) );
-			}
-		}
-	
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				if( stmt != null )
-					stmt.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();
-			}
-		}
-	}*/
 }
