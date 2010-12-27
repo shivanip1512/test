@@ -510,7 +510,9 @@ public class OperatorAccountController {
          */
         final boolean ignoreLogin = !hasEditLoginPrivileges(userContext.getYukonUser()) 
             || (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID && StringUtils.isBlank(accountGeneral.getLoginBackingBean().getUsername()))
-            || (residentialUser.getUserID() != UserUtils.USER_DEFAULT_ID && !didLoginChange(residentialUser, accountGeneral.getLoginBackingBean(), originalLoginGroup));
+            || (residentialUser.getUserID() != UserUtils.USER_DEFAULT_ID && 
+                    (originalLoginGroup == null || 
+                     !didLoginChange(residentialUser, accountGeneral.getLoginBackingBean(), originalLoginGroup)));
 		
 		/* UpdatableAccount */
 		final UpdatableAccount updatableAccount = new UpdatableAccount();
