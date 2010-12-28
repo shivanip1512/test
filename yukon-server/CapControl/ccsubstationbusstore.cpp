@@ -56,7 +56,6 @@ using namespace Cti::CapControl;
 using Database::DatabaseDaoFactory;
 using Cti::ThreadStatusKeeper;
 
-
 CtiTime timeSaver;
 
 /*---------------------------------------------------------------------------
@@ -341,7 +340,7 @@ CtiCCState_vec* CtiCCSubstationBusStore::getCCCapBankStates(ULONG secondsFrom190
   This member exists mostly for efficiency in updating subbuses when point
   data shows up.
 ----------------------------------------------------------------------------*/
-bool CtiCCSubstationBusStore::findSpecialAreaByPointID(long point_id, multimap< long, CtiCCSpecialPtr >::iterator &begin, multimap< long, CtiCCSpecialPtr >::iterator &end)
+bool CtiCCSubstationBusStore::findSpecialAreaByPointID(long point_id, SpecialAreaMultiMap::iterator &begin, SpecialAreaMultiMap::iterator &end)
 {
     begin = _pointid_specialarea_map.lower_bound(point_id);
     end   = _pointid_specialarea_map.upper_bound(point_id);
@@ -349,7 +348,7 @@ bool CtiCCSubstationBusStore::findSpecialAreaByPointID(long point_id, multimap< 
     return begin != end;
 }
 
-bool CtiCCSubstationBusStore::findAreaByPointID(long point_id, multimap< long, CtiCCAreaPtr >::iterator &begin, multimap< long, CtiCCAreaPtr >::iterator &end)
+bool CtiCCSubstationBusStore::findAreaByPointID(long point_id, AreaMultiMap::iterator &begin, AreaMultiMap::iterator &end)
 {
     begin = _pointid_area_map.lower_bound(point_id);
     end   = _pointid_area_map.upper_bound(point_id);
@@ -357,7 +356,7 @@ bool CtiCCSubstationBusStore::findAreaByPointID(long point_id, multimap< long, C
     return begin != end;
 }
 
-bool CtiCCSubstationBusStore::findSubstationByPointID(long point_id, multimap< long, CtiCCSubstationPtr >::iterator &begin, multimap< long, CtiCCSubstationPtr >::iterator &end)
+bool CtiCCSubstationBusStore::findSubstationByPointID(long point_id, SubstationMultiMap::iterator &begin, SubstationMultiMap::iterator &end)
 {
     begin = _pointid_station_map.lower_bound(point_id);
     end   = _pointid_station_map.upper_bound(point_id);
@@ -365,7 +364,7 @@ bool CtiCCSubstationBusStore::findSubstationByPointID(long point_id, multimap< l
     return begin != end;
 }
 
-bool CtiCCSubstationBusStore::findSubBusByPointID(long point_id, multimap< long, CtiCCSubstationBusPtr >::iterator &begin, multimap< long, CtiCCSubstationBusPtr >::iterator &end)
+bool CtiCCSubstationBusStore::findSubBusByPointID(long point_id, SubBusMultiMap::iterator &begin, SubBusMultiMap::iterator &end)
 {
     begin = _pointid_subbus_map.lower_bound(point_id);
     end   = _pointid_subbus_map.upper_bound(point_id);
@@ -374,7 +373,7 @@ bool CtiCCSubstationBusStore::findSubBusByPointID(long point_id, multimap< long,
 }
 
 
-bool CtiCCSubstationBusStore::findFeederByPointID(long point_id, multimap< long, CtiCCFeederPtr >::iterator &begin, multimap< long, CtiCCFeederPtr >::iterator &end)
+bool CtiCCSubstationBusStore::findFeederByPointID(long point_id, FeederMultiMap::iterator &begin, FeederMultiMap::iterator &end)
 {
     begin = _pointid_feeder_map.lower_bound(point_id);
     end   = _pointid_feeder_map.upper_bound(point_id);
@@ -382,7 +381,7 @@ bool CtiCCSubstationBusStore::findFeederByPointID(long point_id, multimap< long,
     return begin != end;
 }
 
-bool CtiCCSubstationBusStore::findCapBankByPointID(long point_id, multimap< long, CtiCCCapBankPtr >::iterator &begin, multimap< long, CtiCCCapBankPtr >::iterator &end)
+bool CtiCCSubstationBusStore::findCapBankByPointID(long point_id, CapBankMultiMap::iterator &begin, CapBankMultiMap::iterator &end)
 {
     begin = _pointid_capbank_map.lower_bound(point_id);
     end   = _pointid_capbank_map.upper_bound(point_id);
@@ -426,35 +425,35 @@ int CtiCCSubstationBusStore::getNbrOfCapBanksWithPointID(long point_id)
 }
 CtiCCAreaPtr CtiCCSubstationBusStore::findAreaByPAObjectID(long paobject_id)
 {
-    map< long, CtiCCAreaPtr >::iterator iter = _paobject_area_map.find(paobject_id);
+    AreaMap::iterator iter = _paobject_area_map.find(paobject_id);
     return (iter == _paobject_area_map.end() ? NULL : iter->second);
 }
 CtiCCSpecialPtr CtiCCSubstationBusStore::findSpecialAreaByPAObjectID(long paobject_id)
 {
-    map< long, CtiCCSpecialPtr >::iterator iter = _paobject_specialarea_map.find(paobject_id);
+    SpecialAreaMap::iterator iter = _paobject_specialarea_map.find(paobject_id);
     return (iter == _paobject_specialarea_map.end() ? NULL : iter->second);
 }
 CtiCCSubstationPtr CtiCCSubstationBusStore::findSubstationByPAObjectID(long paobject_id)
 {
-    map< long, CtiCCSubstationPtr >::iterator iter = _paobject_substation_map.find(paobject_id);
+    SubstationMap::iterator iter = _paobject_substation_map.find(paobject_id);
     return (iter == _paobject_substation_map.end() ? NULL : iter->second);
 }
 
 CtiCCSubstationBusPtr CtiCCSubstationBusStore::findSubBusByPAObjectID(long paobject_id)
 {
-    map< long, CtiCCSubstationBusPtr >::iterator iter = _paobject_subbus_map.find(paobject_id);
+    SubBusMap::iterator iter = _paobject_subbus_map.find(paobject_id);
     return (iter == _paobject_subbus_map.end() ? NULL : iter->second);
 }
 
 CtiCCFeederPtr CtiCCSubstationBusStore::findFeederByPAObjectID(long paobject_id)
 {
-    map< long, CtiCCFeederPtr >::iterator iter = _paobject_feeder_map.find(paobject_id);
+    FeederMap::iterator iter = _paobject_feeder_map.find(paobject_id);
     return (iter == _paobject_feeder_map.end() ? NULL : iter->second);
 }
 
 CtiCCCapBankPtr CtiCCSubstationBusStore::findCapBankByPAObjectID(long paobject_id)
 {
-    map< long, CtiCCCapBankPtr >::iterator iter = _paobject_capbank_map.find(paobject_id);
+    CapBankMap::iterator iter = _paobject_capbank_map.find(paobject_id);
     return (iter == _paobject_capbank_map.end() ? NULL : iter->second);
 }
 
@@ -4326,10 +4325,10 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
     Reloads a single substation from the database.
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
-                                  map< long, CtiCCSubstationPtr > *paobject_substation_map,
+                                  SubstationMap *paobject_substation_map,
                                   map <long, CtiCCAreaPtr> *paobject_area_map,
                                   map <long, CtiCCSpecialPtr> *paobject_specialarea_map,
-                                  multimap< long, CtiCCSubstationPtr > *pointid_station_map,
+                                  SubstationMultiMap *pointid_station_map,
                                   map< long, long> *substation_area_map,
                                   multimap< long, long> *substation_specialarea_map,
                                   CtiCCSubstation_vec *ccSubstations)
@@ -4710,8 +4709,8 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
     Reloads a single subbus from the database.
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
-                                  map< long, CtiCCAreaPtr > *paobject_area_map,
-                                  multimap< long, CtiCCAreaPtr > *pointid_area_map,
+                                  AreaMap *paobject_area_map,
+                                  AreaMultiMap *pointid_area_map,
                                   CtiCCArea_vec *ccGeoAreas)
 {
     CtiCCAreaPtr areaToUpdate = NULL;
@@ -5080,8 +5079,8 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
     Reloads a single subbus from the database.
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId,
-                                  map< long, CtiCCSpecialPtr > *paobject_specialarea_map,
-                                  multimap< long, CtiCCSpecialPtr > *pointid_specialarea_map,
+                                  SpecialAreaMap *paobject_specialarea_map,
+                                  SpecialAreaMultiMap *pointid_specialarea_map,
                                   CtiCCSpArea_vec *ccSpecialAreas)
 {
     CtiCCSpecialPtr spAreaToUpdate = NULL;
@@ -5469,9 +5468,9 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId,
     Reloads a single subbus from the database.
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
-                                                       map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
-                                                       map< long, CtiCCSubstationPtr > *paobject_substation_map,
-                                                       multimap< long, CtiCCSubstationBusPtr > *pointid_subbus_map,
+                                                       SubBusMap *paobject_subbus_map,
+                                                       SubstationMap *paobject_substation_map,
+                                                       SubBusMultiMap *pointid_subbus_map,
                                                        multimap<long, long> *altsub_sub_idmap,
                                                        map< long, long> *subbus_substation_map,
                                                        CtiCCSubstationBus_vec *cCSubstationBuses )
@@ -6187,9 +6186,9 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
 }
 
 void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
-                                                       map< long, CtiCCFeederPtr > *paobject_feeder_map,
-                                                       map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
-                                                       multimap< long, CtiCCFeederPtr > *pointid_feeder_map,
+                                                       FeederMap *paobject_feeder_map,
+                                                       SubBusMap *paobject_subbus_map,
+                                                       FeederMultiMap *pointid_feeder_map,
                                                        map< long, long> *feeder_subbus_map )
 {
     CtiCCFeederPtr feederToUpdate = NULL;
@@ -6820,10 +6819,10 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
     }
 }
 
-void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
-                                                        map< long, CtiCCFeederPtr > *paobject_feeder_map,
-                                                        map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
-                                                        multimap< long, CtiCCCapBankPtr > *pointid_capbank_map,
+void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, CapBankMap *paobject_capbank_map,
+                                                        FeederMap *paobject_feeder_map,
+                                                        SubBusMap *paobject_subbus_map,
+                                                        CapBankMultiMap *pointid_capbank_map,
                                                        map< long, long> *capbank_subbus_map,
                                                        map< long, long> *capbank_feeder_map,
                                                        map< long, long> *feeder_subbus_map,
@@ -7358,12 +7357,12 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
 }
 
 
-void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(long paoId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
-                                                        map< long, CtiCCFeederPtr > *paobject_feeder_map,
-                                                        map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
-                                                        map< long, CtiCCSubstationPtr > *paobject_substation_map,
-                                                        map< long, CtiCCAreaPtr > *paobject_area_map,
-                                                        map< long, CtiCCSpecialPtr > *paobject_specialarea_map )
+void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(long paoId, CapBankMap *paobject_capbank_map,
+                                                        FeederMap *paobject_feeder_map,
+                                                        SubBusMap *paobject_subbus_map,
+                                                        SubstationMap *paobject_substation_map,
+                                                        AreaMap *paobject_area_map,
+                                                        SpecialAreaMap *paobject_specialarea_map )
 {
     try
     {
@@ -7463,10 +7462,10 @@ void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(long paoId, map< 
 }
 
 
-void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
-                                                        map< long, CtiCCFeederPtr > *paobject_feeder_map,
-                                                        map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
-                                                        multimap< long, CtiCCCapBankPtr > *pointid_capbank_map)
+void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, CapBankMap *paobject_capbank_map,
+                                                        FeederMap *paobject_feeder_map,
+                                                        SubBusMap *paobject_subbus_map,
+                                                        CapBankMultiMap *pointid_capbank_map)
 {
     try
     {
@@ -8039,7 +8038,7 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
                 int ptCount = getNbrOfSubstationsWithPointID(pointid);
                 if (ptCount > 1)
                 {
-                    multimap< long, CtiCCSubstationPtr >::iterator iter1 = _pointid_station_map.lower_bound(pointid);
+                    SubstationMultiMap::iterator iter1 = _pointid_station_map.lower_bound(pointid);
                     while (iter1 != _pointid_station_map.end() || iter1 != _pointid_station_map.upper_bound(pointid))
                     {
                        if (((CtiCCSubstationPtr)iter1->second)->getPaoId() == substationToDelete->getPaoId())
@@ -8134,7 +8133,7 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
                     int ptCount = getNbrOfAreasWithPointID(pointid);
                     if (ptCount > 1)
                     {
-                        multimap< long, CtiCCAreaPtr >::iterator iter1 = _pointid_area_map.lower_bound(pointid);
+                        AreaMultiMap::iterator iter1 = _pointid_area_map.lower_bound(pointid);
                         while (iter1 != _pointid_area_map.end() || iter1 != _pointid_area_map.upper_bound(pointid))
                         {
                            if (((CtiCCAreaPtr)iter1->second)->getPaoId() == areaToDelete->getPaoId())
@@ -8240,7 +8239,7 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
                     int ptCount = getNbrOfSpecialAreasWithPointID(pointid);
                     if (ptCount > 1)
                     {
-                        multimap< long, CtiCCSpecialPtr >::iterator iter1 = _pointid_specialarea_map.lower_bound(pointid);
+                        SpecialAreaMultiMap::iterator iter1 = _pointid_specialarea_map.lower_bound(pointid);
                         while (iter1 != _pointid_specialarea_map.end() || iter1 != _pointid_specialarea_map.upper_bound(pointid))
                         {
                            if (((CtiCCSpecialPtr)iter1->second)->getPaoId() == spAreaToDelete->getPaoId())
@@ -8351,7 +8350,7 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
                 int ptCount = getNbrOfSubBusesWithPointID(pointid);
                 if (ptCount > 1)
                 {
-                    multimap< long, CtiCCSubstationBusPtr >::iterator iter1 = _pointid_subbus_map.lower_bound(pointid);
+                    SubBusMultiMap::iterator iter1 = _pointid_subbus_map.lower_bound(pointid);
                     while (iter1 != _pointid_subbus_map.end() || iter1 != _pointid_subbus_map.upper_bound(pointid))
                     {
                        if (((CtiCCSubstationBusPtr)iter1->second)->getPaoId() == subToDelete->getPaoId())
@@ -8487,7 +8486,7 @@ void CtiCCSubstationBusStore::deleteFeeder(long feederId)
             int ptCount = getNbrOfFeedersWithPointID(pointid);
             if (ptCount > 1)
             {
-                multimap< long, CtiCCFeederPtr >::iterator iter1 = _pointid_feeder_map.lower_bound(pointid);
+                FeederMultiMap::iterator iter1 = _pointid_feeder_map.lower_bound(pointid);
                 while (iter1 != _pointid_feeder_map.end() || iter1 != _pointid_feeder_map.upper_bound(pointid))
                 {
                     if (((CtiCCFeederPtr)iter1->second)->getPaoId() == feederToDelete->getPaoId())
@@ -8559,7 +8558,7 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
                 int ptCount = getNbrOfCapBanksWithPointID(pointid);
                 if (ptCount > 1)
                 {
-                    multimap< long, CtiCCCapBankPtr >::iterator iter1 = _pointid_capbank_map.lower_bound(pointid);
+                    CapBankMultiMap::iterator iter1 = _pointid_capbank_map.lower_bound(pointid);
                     while (iter1 != _pointid_capbank_map.end() || iter1 != _pointid_capbank_map.upper_bound(pointid))
                     {
                         if (((CtiCCCapBankPtr)iter1->second)->getPaoId() == capBankToDelete->getPaoId())
@@ -8579,7 +8578,7 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
             {
                 if (_pointid_capbank_map.size() > 0)
                 {
-                    multimap< long, CtiCCCapBankPtr >::iterator iter = _pointid_capbank_map.begin();
+                    CapBankMultiMap::iterator iter = _pointid_capbank_map.begin();
                     while (iter != _pointid_capbank_map.end())
                     {
                         {
@@ -8617,7 +8616,7 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
                 {
                     if (_paobject_capbank_map.size() > 0)
                     {
-                        map< long, CtiCCCapBankPtr >::iterator iter = _paobject_capbank_map.begin();
+                        CapBankMap::iterator iter = _paobject_capbank_map.begin();
                         while (iter != _paobject_capbank_map.end())
                         {
                             {
@@ -10533,7 +10532,7 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                 rdr["feederid"] >> feederid;
 
                 CtiCCCapBankPtr cap = NULL;
-                multimap< long, CtiCCCapBankPtr >::iterator capBeginIter, capEndIter;
+                CapBankMultiMap::iterator capBeginIter, capEndIter;
                 if (findCapBankByPointID(pointId, capBeginIter, capEndIter))
                     cap = capBeginIter->second;
 
@@ -10627,7 +10626,7 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                 rdr["feederid"] >> feederid;
 
                 CtiCCCapBankPtr cap = NULL;
-                multimap< long, CtiCCCapBankPtr >::iterator capBeginIter, capEndIter;
+                CapBankMultiMap::iterator capBeginIter, capEndIter;
                 if (findCapBankByPointID(pointId, capBeginIter, capEndIter))
                     cap = capBeginIter->second;
 

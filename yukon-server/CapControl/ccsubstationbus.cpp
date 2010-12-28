@@ -9264,7 +9264,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(
             while (iter != controlid_action_map.end())
             {
                 {
-                    multimap< long, CtiCCCapBankPtr >::iterator bankIter, end;
+                    CapBankMultiMap::iterator bankIter, end;
                     if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(iter->first, bankIter, end))
                     {
                         CtiCCCapBankPtr bank = bankIter->second;
