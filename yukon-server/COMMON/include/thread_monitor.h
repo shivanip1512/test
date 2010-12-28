@@ -72,7 +72,8 @@ public:
    enum TickleTiming
    {
        StandardTickleTime =  30,    //Time between responses
-       StandardMonitorTime = 300    //Time until dead
+       StandardMonitorTime = 300,   //Time until dead
+       ExtendedMonitorTime = 330
    };
 
    State getState(void);

@@ -30,11 +30,14 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "utility.h"
 #include "database_connection.h"
 #include "database_reader.h"
+#include "ThreadStatusKeeper.h"
 
 #include "calclogicsvc.h"
 #include "calcthread.h"
 
 #define CHECK_RATE_SECONDS  30     // 30 second check for db change, on a change some re-loading is done, this slows the max rate down.
+
+using Cti::ThreadStatusKeeper;
 
 BOOL UserQuit = FALSE;
 bool _shutdownOnThreadTimeout = false;
@@ -157,11 +160,12 @@ void CtiCalcLogicService::Run( )
 
     }
 
-
     SetStatus(SERVICE_START_PENDING, 33, 5000 );
 
     try
     {
+        ThreadStatusKeeper threadStatus("CalcLogicSvc main");
+
         if( !_ok )
         {
             {
@@ -179,8 +183,7 @@ void CtiCalcLogicService::Run( )
         _conxion = NULL;
         ULONG attempts = 0;
 
-        CtiTime rwnow, announceTime, pingTime;
-        announceTime = nextScheduledTimeAlignedOnRate( CtiTime(), 300);
+        CtiTime rwnow, pingTime;
         pingTime = nextScheduledTimeAlignedOnRate( CtiTime(), 3660);
 
         while( !UserQuit )
@@ -450,18 +453,10 @@ void CtiCalcLogicService::Run( )
                         }
                     }
 
-                    rwnow = rwnow.now();
-
-                    if(rwnow > announceTime)
-                    {
-                        announceTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " CalcLogicSvc main thread is active. TID: " << rwThreadId() << endl;
-                        }
-
-                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc main", CtiThreadRegData::Action, 330, &CtiCalcLogicService::mainComplain, 0) );
-
+                    // I think this is what we want instead... I believe it preserves existing functionality, but
+                    // may require additional eyes to be sure.
+                    if( threadStatus.monitorCheck( CtiThreadMonitor::ExtendedMonitorTime ) )
+                    {    
                         if(_conxion)
                         {
                             if( _dispatchPingedFailed != CtiTime(YUKONEOT) )
@@ -484,9 +479,9 @@ void CtiCalcLogicService::Run( )
                                     }
                                     _registerForPoints();                       // re-register if we haven't seen data since last ping.
                                 }
-
+                        
                                 _dispatchPingedFailed = pingTime - 30;   // This is the future. Dispatch needs to answer us in this amount of time.
-
+                        
                                 CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::AreYouThere, 15);
                                 pCmd->setUser(CompileInfo.project);
                                 if(_conxion) _conxion->WriteConnQue( pCmd );
@@ -555,7 +550,6 @@ void CtiCalcLogicService::Run( )
                 }
             } // end for userquit
 
-
             try
             {
                 //  interrupt the calculation and i/o threads, and tell it to come back home
@@ -566,7 +560,7 @@ void CtiCalcLogicService::Run( )
                     dropDispatchConnection();
                 }
 
-                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc main", CtiThreadRegData::LogOut ) );
+                threadStatus.forceTickle(CtiThreadRegData::LogOut, 0);
 
                 calcThreadFunc.requestInterrupt( );
 
@@ -622,10 +616,6 @@ void CtiCalcLogicService::Run( )
         if(_conxion) _conxion->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
         if(_conxion) _conxion->ShutdownConnection();
 
-        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc main", CtiThreadRegData::LogOut ) );
-        ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
-        ThreadMonitor.join();
-
         SetStatus(SERVICE_STOP_PENDING, 75, 5000 );
         dropDispatchConnection();
 
@@ -649,6 +639,9 @@ void CtiCalcLogicService::Run( )
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
+    ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
+    ThreadMonitor.join();
+
     // stop dout thread
     dout.interrupt(CtiThread::SHUTDOWN);
     dout.join();
@@ -663,8 +656,9 @@ void CtiCalcLogicService::_outputThread( void )
     int entries = 0;
     BOOL interrupted = FALSE;
     CtiMultiMsg *toSend;
-    CtiTime rwnow, announceTime, tickleTime;
     bool junkbool = false;
+
+    ThreadStatusKeeper threadStatus("CalcLogicSvc _outputThread");
 
     try
     {
@@ -685,27 +679,13 @@ void CtiCalcLogicService::_outputThread( void )
                 else if( !entries || !_conxion )
                     _pSelf.sleep( 500 );
 
-                rwnow = rwnow.now();
-
-                if(rwnow > tickleTime)
+                if(!_shutdownOnThreadTimeout)
                 {
-                    tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
-                    if( rwnow > announceTime )
-                    {
-                        announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " _outputThread active. TID: " << rwThreadId() << endl;
-                    }
-
-                    if(!_shutdownOnThreadTimeout)
-                    {
-                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _outputThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalcLogicService::outComplain, 0) );
-                    }
-                    else
-                    {
-                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _outputThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalcLogicService::sendUserQuit, CTIDBG_new string("CalcLogic _outputThread")) );
-                    }
-
+                    threadStatus.monitorCheck();
+                }
+                else
+                {
+                    threadStatus.monitorCheck(&CtiCalcLogicService::sendUserQuit);
                 }
             } while( !entries && !interrupted );
 
@@ -742,7 +722,6 @@ void CtiCalcLogicService::_outputThread( void )
                 }
             }
         }
-        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _outputThread", CtiThreadRegData::LogOut ) );
     }
     catch(...)
     {
@@ -764,7 +743,8 @@ void CtiCalcLogicService::_inputThread( void )
         RWRunnableSelf  _pSelf = rwRunnable( );
         RWCollectable   *incomingMsg;
         BOOL            interrupted = FALSE;
-        CtiTime rwnow, announceTime, tickleTime;
+
+        ThreadStatusKeeper threadStatus("CalcLogicSvc _inputThread");
 
         while( !interrupted )
         {
@@ -779,25 +759,13 @@ void CtiCalcLogicService::_inputThread( void )
                     }
                     else
                     {
-                        rwnow = rwnow.now();
-                        if(rwnow > tickleTime)
+                        if(!_shutdownOnThreadTimeout)
                         {
-                            tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
-                            if( rwnow > announceTime )
-                            {
-                                announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " _inputThread active. TID: " << rwThreadId() << endl;
-                            }
-
-                            if(!_shutdownOnThreadTimeout)
-                            {
-                                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalcLogicService::inComplain, 0) );
-                            }
-                            else
-                            {
-                                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalcLogicService::sendUserQuit, CTIDBG_new string("CalcLogic _inputThread")) );
-                            }
+                            threadStatus.monitorCheck();
+                        }
+                        else
+                        {
+                            threadStatus.monitorCheck(&CtiCalcLogicService::sendUserQuit);
                         }
                     }
                 }
@@ -812,25 +780,13 @@ void CtiCalcLogicService::_inputThread( void )
 
             try
             {
-                rwnow = rwnow.now();
-                if(rwnow > tickleTime)
+                if(!_shutdownOnThreadTimeout)
                 {
-                    tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
-                    if( rwnow > announceTime )
-                    {
-                        announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " _inputThread active. TID: " << rwThreadId() << endl;
-                    }
-
-                    if(!_shutdownOnThreadTimeout)
-                    {
-                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalcLogicService::inComplain, 0) );
-                    }
-                    else
-                    {
-                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalcLogicService::sendUserQuit, CTIDBG_new string("CalcLogic _inputThread")) );
-                    }
+                    threadStatus.monitorCheck();
+                }
+                else
+                {
+                    threadStatus.monitorCheck(&CtiCalcLogicService::sendUserQuit);
                 }
             }
             catch(...)
@@ -869,7 +825,6 @@ void CtiCalcLogicService::_inputThread( void )
                 }
             }
         }
-        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::LogOut ) );
     }
     catch(...)
     {

@@ -83,6 +83,7 @@ xfer.obj \
 verification_objects.obj \
 thread_register_data.obj \
 thread_monitor.obj \
+ThreadStatusKeeper.obj \
 timeperiod.obj \
 xml_object.obj \
 LitePoint.obj \
@@ -278,7 +279,8 @@ dbaccess.obj:	yukon.h precompiled.h types.h ctidbgmem.h dlldefs.h \
 		cticonnect.h netports.h dsm2err.h words.h sema.h logger.h \
 		thread.h CtiPCPtrQueue.h cparms.h rwutil.h \
 		database_connection.h database_reader.h row_reader.h \
-		boost_time.h boostutil.h configkey.h configval.h ctistring.h
+		boost_time.h boostutil.h configkey.h configval.h ctistring.h \
+		database_writer.h row_writer.h
 debug_timer.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		debug_timer.h dlldefs.h logger.h thread.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -497,6 +499,16 @@ thread.obj:	yukon.h precompiled.h types.h ctidbgmem.h dllbase.h \
 		os2_2w32.h dlldefs.h cticalls.h dsm2.h mutex.h guard.h \
 		utility.h ctitime.h queues.h numstr.h sorted_vector.h \
 		cticonnect.h netports.h dsm2err.h words.h thread.h
+threadstatuskeeper.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
+		ThreadStatusKeeper.h ctitime.h dlldefs.h \
+		thread_register_data.h boost_time.h cticalls.h os2_2w32.h \
+		boostutil.h utility.h queues.h numstr.h sorted_vector.h \
+		thread_monitor.h smartmap.h dllbase.h dsm2.h mutex.h guard.h \
+		cticonnect.h netports.h dsm2err.h words.h \
+		readers_writer_lock.h critical_section.h cparms.h rwutil.h \
+		database_connection.h dbaccess.h sema.h database_reader.h \
+		row_reader.h configkey.h configval.h queue.h logger.h \
+		thread.h CtiPCPtrQueue.h
 thread_listener.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		thread_listener.h thread.h mutex.h dlldefs.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \

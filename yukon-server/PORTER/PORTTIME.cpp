@@ -1,49 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   PORTTIME
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2008/11/17 17:34:40 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-/*---------------------------------------------------------------------
-    Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
-
-    Programmer:
-        William R. Ockert
-
-    FileName:
-        PORTTIME.C
-
-    Purpose:
-        Routines to handle time syncronization in various remotes and devices
-
-    The following procedures are contained in this module:
-        TimeSyncThread              SendTime
-        LoadXTimeMessage            LoadBTimeMessage
-        LoadIlexTimeMessage         WWVClockSync
-        WWVReceiversetup            WWVBufferRead
-        WWVBufferWrite
-
-    Initial Date:
-        Unknown
-
-    Revision History:
-        Unknown prior to 8-93
-        8-24-93     Updated to use time sync semaphore          WRO
-        9-7-93      Converted to 32 bit                         WRO
-        12-1-93     Added Support for UCT-10 WWV Clock          TRH
-        1-13-94     Changed potential * bug in WWV routines     TRH
-
-   -------------------------------------------------------------------- */
 #if !defined (NOMINMAX)
 #define NOMINMAX
 #endif
@@ -91,10 +47,13 @@
 #include "trx_info.h"
 #include "trx_711.h"
 #include "thread_monitor.h"
+#include "ThreadStatusKeeper.h"
 
 #include "prot_welco.h"
 #include "prot_lmi.h"
+
 using namespace std;
+using Cti::ThreadStatusKeeper;
 
 extern ULONG TimeSyncRate;
 
@@ -832,7 +791,10 @@ VOID TimeSyncThread (PVOID Arg)
     struct timeb TimeB;
     ULONG EventWait;
     DWORD dwWait = 0;
-    CtiTime nowTime, lastTickleTime, lastReportTime;
+
+    ThreadStatusKeeper threadStatus("Time Sync Thread");
+
+    CtiTime nowTime;
 
     /* See if we should even be running */
     if(TimeSyncRate <= 0)
@@ -845,7 +807,6 @@ VOID TimeSyncThread (PVOID Arg)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " TimeSyncThread started as TID:  " << CurrentTID() << " Sync every " << TimeSyncRate << " seconds" << endl;
     }
-
 
     /* Let the port routines get started */
     if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[ P_QUIT_EVENT ], 60000L) )
@@ -864,21 +825,7 @@ VOID TimeSyncThread (PVOID Arg)
     /* loop doing time sync at 150 seconds after the hour */
     for(; PorterQuit != TRUE ;)
     {
-        if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
-        {
-            if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
-            {
-                lastReportTime = lastReportTime.now();
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Time Sync Thread active. TID:  " << rwThreadId() << endl;
-            }
-
-            CtiThreadRegData *data;
-            //This is an odd duck, it can sleep for 1 hour at a time (currently set time), we will wait for 1 hour + 5 minutes
-            data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Time Sync Thread", CtiThreadRegData::None, TimeSyncRate + CtiThreadMonitor::StandardMonitorTime );
-            ThreadMonitor.tickle( data );
-            lastTickleTime = lastTickleTime.now();
-        }
+        threadStatus.monitorCheck(TimeSyncRate + CtiThreadMonitor::StandardMonitorTime, CtiThreadRegData::None);
 
         /* Figure out how long to wait */
         nowTime = nowTime.now();

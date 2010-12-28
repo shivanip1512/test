@@ -33,6 +33,7 @@
 #include "ctistring.h"
 #include "PointResponse.h"
 #include "PointResponseDao.h"
+#include "ThreadStatusKeeper.h"
 
 #include <string>
 
@@ -53,7 +54,7 @@ using namespace std;
 using namespace Cti::CapControl;
 
 using Database::DatabaseDaoFactory;
-
+using Cti::ThreadStatusKeeper;
 
 
 CtiTime timeSaver;
@@ -2460,9 +2461,7 @@ void CtiCCSubstationBusStore::doResetThr()
     }
 
     CtiTime lastPeriodicDatabaseRefresh = CtiTime();
-    CtiTime rwnow;
-    CtiTime announceTime((unsigned long) 0);
-    CtiTime tickleTime((unsigned long) 0);
+    ThreadStatusKeeper threadStatus("CapControl doResetThr");
 
     while(TRUE)
     {
@@ -2482,27 +2481,13 @@ void CtiCCSubstationBusStore::doResetThr()
             lastPeriodicDatabaseRefresh = CtiTime();
         }
 
-        rwnow = rwnow.now();
-        if(rwnow.seconds() > tickleTime.seconds())
-        {
-            tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
-            if( rwnow.seconds() > announceTime.seconds() )
-            {
-                announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " CapControl doResetThr. TID: " << rwThreadId() << endl;
-            }
-
-           ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doResetThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
-        }
+        threadStatus.monitorCheck();
 
         {
             rwRunnable().serviceCancellation();
             rwRunnable().sleep(500);
         }
     }
-
-    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doResetThr", CtiThreadRegData::LogOut ) );
 }
 
 /*---------------------------------------------------------------------------

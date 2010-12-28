@@ -17,12 +17,14 @@
 #include "cparms.h"
 #include "numstr.h"
 #include "mgr_holiday.h"
+#include "ThreadStatusKeeper.h"
 
 #include "calcthread.h"
 #include "database_writer.h"
 #include "database_reader.h"
 
 using namespace std;
+using Cti::ThreadStatusKeeper;
 
 extern ULONG _CALC_DEBUG;
 extern BOOL  UserQuit;
@@ -161,30 +163,17 @@ void CtiCalculateThread::periodicThread( void )
         BOOL interrupted = FALSE, messageInMulti;
         clock_t now;
 
-        CtiTime rwnow, announceTime, tickleTime;
-
+        ThreadStatusKeeper threadStatus("CalcLogicSvc periodicThread");
 
         while( !interrupted )
         {
-            rwnow = rwnow.now();
-            if(rwnow > tickleTime)
+            if(!_shutdownOnThreadTimeout)
             {
-                tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
-                if( rwnow > announceTime )
-                {
-                    announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " periodicThread thread active. TID: " << rwThreadId() << endl;
-                }
-
-                if(!_shutdownOnThreadTimeout)
-                {
-                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc periodicThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalculateThread::periodicComplain, 0) );
-                }
-                else
-                {
-                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc periodicThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalculateThread::sendUserQuit, CTIDBG_new string("CalcLogic _inputThread")) );
-                }
+                threadStatus.monitorCheck();
+            }
+            else
+            {
+                threadStatus.monitorCheck(&CtiCalculateThread::sendUserQuit);
             }
 
             //  while it's still the same second /and/ i haven't been interrupted
@@ -290,7 +279,6 @@ void CtiCalculateThread::periodicThread( void )
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime( ) << " periodicThread interrupted. TID: " << rwThreadId() << endl;
         }
-        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc periodicThread", CtiThreadRegData::LogOut ));
     }
     catch(...)
     {
@@ -317,32 +305,20 @@ void CtiCalculateThread::onUpdateThread( void )
         int calcQuality;
         CtiTime calcTime;
 
-        CtiTime rwnow, announceTime, tickleTime;
+        ThreadStatusKeeper threadStatus("CalcLogicSvc onUpdateThread");
 
         while( !interrupted )
         {
             //  this is the cleanest way to do it;  i know it's a do-while, but that gets rid of an unnecessary if statement
             do
             {
-                rwnow = rwnow.now();
-                if(rwnow > tickleTime)
+                if(!_shutdownOnThreadTimeout)
                 {
-                    tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
-                    if( rwnow > announceTime )
-                    {
-                        announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " onUpdateThread thread active. TID: " << rwThreadId() << endl;
-                    }
-
-                    if(!_shutdownOnThreadTimeout)
-                    {
-                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdateThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalculateThread::onUpdateComplain, 0) );
-                    }
-                    else
-                    {
-                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdateThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalculateThread::sendUserQuit, CTIDBG_new string("CalcLogic _inputThread")) );
-                    }
+                    threadStatus.monitorCheck();
+                }
+                else
+                {
+                    threadStatus.monitorCheck(&CtiCalculateThread::sendUserQuit);
                 }
 
                 if( _auSelf.serviceInterrupt( ) )
@@ -508,7 +484,6 @@ void CtiCalculateThread::onUpdateThread( void )
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime( ) << " onUpdateThread interrupted. TID: " << rwThreadId() << endl;
         }
-        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdateThread", CtiThreadRegData::LogOut ) );
     }
     catch(...)
     {
@@ -536,7 +511,8 @@ void CtiCalculateThread::historicalThread( void )
         int calcQuality;
         CtiTime nextCalcTime;
 
-        CtiTime rwnow, announceTime, tickleTime, lastTime, start;
+        CtiTime rwnow, lastTime, start;
+        ThreadStatusKeeper threadStatus("CalcLogicSvc HistoricalThread");
 
         strcpy(var, "CALC_HISTORICAL_FREQUENCY_IN_SECONDS");
         if( 0 != (frequencyInSeconds = gConfigParms.getValueAsInt(var,0)) )
@@ -568,25 +544,13 @@ void CtiCalculateThread::historicalThread( void )
         {
             do
             {
-                rwnow = rwnow.now();
-                if(rwnow > tickleTime)
+                if(!_shutdownOnThreadTimeout)
                 {
-                    tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
-                    if( rwnow > announceTime )
-                    {
-                        announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " HistoricalThread thread active. TID: " << rwThreadId() << endl;
-                    }
-
-                    if(!_shutdownOnThreadTimeout)
-                    {
-                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc HistoricalThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, 0, 0) );
-                    }
-                    else
-                    {
-                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc HistoricalThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalculateThread::sendUserQuit, CTIDBG_new string("CalcLogic _inputThread")) );
-                    }
+                    threadStatus.monitorCheck();
+                }
+                else
+                {
+                    threadStatus.monitorCheck(&CtiCalculateThread::sendUserQuit);
                 }
 
                 if( _auSelf.serviceInterrupt( ) )
@@ -753,7 +717,6 @@ void CtiCalculateThread::historicalThread( void )
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime( ) << " historical interrupted. TID: " << rwThreadId() << endl;
         }
-        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc historicalThread", CtiThreadRegData::LogOut ) );
     }
     catch(...)
     {
@@ -780,9 +743,11 @@ void CtiCalculateThread::baselineThread( void )
         int initialDays = 30;//30 days
         char var[256];
 
+        ThreadStatusKeeper threadStatus("CalcLogicSvc BaselineThread");
+
         int calcQuality;
         CtiTime nextCalcTime(4,16,0);//Today at 4:16 AM
-        CtiTime rwnow, announceTime, tickleTime, lastTime, start;
+        CtiTime rwnow, lastTime, start;
 
         if( nextCalcTime < rwnow.now() )
         {
@@ -807,25 +772,13 @@ void CtiCalculateThread::baselineThread( void )
         {
             do
             {
-                rwnow = rwnow.now();
-                if(rwnow > tickleTime)
+                if(!_shutdownOnThreadTimeout)
                 {
-                    tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
-                    if( rwnow > announceTime )
-                    {
-                        announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " BaselineThread thread active. TID: " << rwThreadId() << endl;
-                    }
-
-                    if(!_shutdownOnThreadTimeout)
-                    {
-                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc BaselineThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, 0, 0) );
-                    }
-                    else
-                    {
-                        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc BaselineThread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCalculateThread::sendUserQuit, CTIDBG_new string("CalcLogic _inputThread")) );
-                    }
+                    threadStatus.monitorCheck();
+                }
+                else
+                {
+                    threadStatus.monitorCheck(&CtiCalculateThread::sendUserQuit);
                 }
 
                 if( _auSelf.serviceInterrupt( ) )
@@ -1154,7 +1107,6 @@ void CtiCalculateThread::baselineThread( void )
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime( ) << " historical interrupted. TID: " << rwThreadId() << endl;
         }
-        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CalcLogicSvc historicalThread", CtiThreadRegData::LogOut ) );
     }
     catch(...)
     {

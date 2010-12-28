@@ -83,7 +83,6 @@ class CtiCapController : public MessageListener
         void readClientMsgQueue();
         void checkBusForNeededControl(CtiCCArea* currentArea, CtiCCSubstation* currentSubstation, CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
                                 CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
-        void doThreadMonitorCheck(CtiTime &rwnow, CtiTime &announceTime, CtiTime &tickleTime, string threadName);
 
         DispatchConnectionPtr getDispatchConnection();
         CtiConnectionPtr getPILConnection();

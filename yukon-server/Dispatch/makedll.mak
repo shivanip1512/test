@@ -196,9 +196,9 @@ ctivangogh.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		config_device.h rte_base.h tbl_pao_lite.h tbl_rtcomm.h \
 		tbl_base.h tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
 		tbl_static_paoinfo.h tbl_dyn_ptalarming.h thread_monitor.h \
-		thread_register_data.h mgr_ptclients.h ptconnect.h slctpnt.h \
-		database_writer.h row_writer.h dllvg.h dllyukon.h ctidate.h \
-		debug_timer.h millisecond_timer.h
+		thread_register_data.h ThreadStatusKeeper.h mgr_ptclients.h \
+		ptconnect.h slctpnt.h database_writer.h row_writer.h dllvg.h \
+		dllyukon.h ctidate.h debug_timer.h millisecond_timer.h
 dispmain.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctitime.h \
 		dlldefs.h dispsvc.h cservice.h dllvg.h CServiceConfig.h \
 		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \
@@ -411,23 +411,6 @@ tagmanager.obj:	yukon.h precompiled.h types.h ctidbgmem.h dbaccess.h \
 		msg_multi.h msg_pdata.h pointtypes.h queue.h cparms.h \
 		configkey.h configval.h tbl_dyn_pttag.h ctibase.h ctinexus.h \
 		dbmemobject.h tbl_tag.h tbl_taglog.h
-test.obj:	yukon.h precompiled.h types.h ctidbgmem.h thread.h mutex.h \
-		dlldefs.h guard.h utility.h ctitime.h queues.h cticalls.h \
-		os2_2w32.h numstr.h sorted_vector.h queue.h cparms.h rwutil.h \
-		database_connection.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h netports.h dsm2err.h words.h sema.h \
-		database_reader.h row_reader.h boost_time.h boostutil.h \
-		configkey.h configval.h logger.h CtiPCPtrQueue.h exchange.h \
-		message.h collectable.h mgr_point.h smartmap.h \
-		readers_writer_lock.h critical_section.h fifo_multiset.h \
-		pt_base.h dbmemobject.h resolvers.h pointtypes.h \
-		db_entry_defines.h pointdefs.h pt_dyn_base.h tbl_pt_base.h \
-		desolvers.h tbl_pt_property.h tbl_pt_trigger.h msg_cmd.h \
-		msg_dbchg.h msg_reg.h msg_pcreturn.h msg_multi.h msg_pdata.h \
-		msg_pcrequest.h msg_signal.h msg_ptreg.h msg_tag.h \
-		msg_commerrorhistory.h msg_lmcontrolhistory.h connection.h \
-		counter.h msg_notif_email.h msg_notif_email_attachment.h \
-		thread_monitor.h thread_register_data.h ctidate.h
 test2.obj:	yukon.h precompiled.h types.h ctidbgmem.h queue.h cparms.h \
 		dlldefs.h rwutil.h database_connection.h dbaccess.h dllbase.h \
 		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \

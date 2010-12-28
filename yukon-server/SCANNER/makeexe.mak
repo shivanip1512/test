@@ -202,7 +202,7 @@ scanner.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		tbl_dv_idlcremote.h trx_info.h trx_711.h prot_welco.h \
 		msg_cmd.h msg_dbchg.h c_port_interface.h configparms.h \
 		dllyukon.h thread_monitor.h thread_register_data.h \
-		millisecond_timer.h
+		ThreadStatusKeeper.h millisecond_timer.h
 scansvc.obj:	yukon.h precompiled.h types.h ctidbgmem.h scanglob.h \
 		dlldefs.h scansvc.h cservice.h
 #ENDUPDATE#

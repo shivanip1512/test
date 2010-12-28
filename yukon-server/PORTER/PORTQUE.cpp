@@ -1,48 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   PORTQUE
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.73 $
-* DATE         :  $Date: 2008/11/17 17:34:40 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-
-/*---------------------------------------------------------------------
-    Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
-
-    Programmer:
-        William R. Ockert
-
-    FileName:
-        PORTQUE.C
-
-    Purpose:
-        Routines to take Queing and Actin Shed requests and form them into
-        messages for the CCU-711, Routines to process queue results, and
-        routines to oversee the process.
-
-    The following procedures are contained in this module:
-        QueueThread                 CCUResponseDecode
-        KickerThread                CCUQueueFlush
-        QueueFlush
-
-    Initial Date:
-        Unknown
-
-    Revision History:
-        Unknown prior to 8-93
-        9-7-93   Converted to 32 bit                                WRO
-        11-15-93 Removed logging of persistant DLC fault message    WRO
-        02-03-94 Fixed various broadcast issues                     WRO
-
-   -------------------------------------------------------------------- */
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -64,6 +20,7 @@
 #include "porter.h"
 #include "elogger.h"
 #include "thread_monitor.h"
+#include "ThreadStatusKeeper.h"
 
 #include "portglob.h"
 #include "portdecl.h"
@@ -80,6 +37,7 @@
 #include "prot_emetcon.h"
 
 using namespace std;
+using Cti::ThreadStatusKeeper;
 
 extern CtiPortManager            PortManager;
 extern map<long, CtiPortShare *> PortShareManager;
@@ -1301,7 +1259,8 @@ VOID KickerThread (VOID *Arg)
     USHORT Port, Remote;
     ULONG i;
     UINT sanity = 0;
-    CtiTime lastTickleTime, lastReportTime;
+
+    ThreadStatusKeeper threadStatus("CCU Kicker Thread");
 
     /* make it clear who isn't the boss */
     CTISetPriority(PRTYC_REGULAR, THREAD_PRIORITY_LOWEST);
@@ -1341,20 +1300,7 @@ VOID KickerThread (VOID *Arg)
             for_each(ccu_devices.begin(), ccu_devices.end(), kick());
         }
 
-        if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
-        {
-            if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
-            {
-                lastReportTime = lastReportTime.now();
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " CCU Kicker thread active. TID:  " << rwThreadId() << endl;
-            }
-
-            CtiThreadRegData *data;
-            data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "CCU Kicker Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
-            ThreadMonitor.tickle( data );
-            lastTickleTime = lastTickleTime.now();
-        }
+        threadStatus.monitorCheck(CtiThreadRegData::None);
     }
 }
 

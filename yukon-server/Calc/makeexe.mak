@@ -223,13 +223,14 @@ calclogicsvc.obj:	yukon.h precompiled.h types.h ctidbgmem.h id_calc.h \
 		boost_time.h boostutil.h msg_multi.h msg_pdata.h pointdefs.h \
 		pointtypes.h msg_cmd.h msg_reg.h msg_signal.h msg_ptreg.h \
 		msg_dbchg.h configparms.h cparms.h configkey.h configval.h \
-		logger.h thread.h CtiPCPtrQueue.h calclogicsvc.h connection.h \
-		exchange.h queue.h cservice.h calcthread.h hashkey.h \
-		hash_functions.h calc.h ctiqueues.h calccomponent.h ctidate.h \
-		pointstore.h rtdb.h regression.h tbl_pt_limit.h dbmemobject.h \
-		resolvers.h db_entry_defines.h desolvers.h thread_monitor.h \
-		smartmap.h readers_writer_lock.h critical_section.h \
-		thread_register_data.h
+		logger.h thread.h CtiPCPtrQueue.h ThreadStatusKeeper.h \
+		thread_register_data.h thread_monitor.h smartmap.h \
+		readers_writer_lock.h critical_section.h queue.h \
+		calclogicsvc.h connection.h exchange.h cservice.h \
+		calcthread.h hashkey.h hash_functions.h calc.h ctiqueues.h \
+		calccomponent.h ctidate.h pointstore.h rtdb.h regression.h \
+		tbl_pt_limit.h dbmemobject.h resolvers.h db_entry_defines.h \
+		desolvers.h
 calcthread.obj:	yukon.h precompiled.h types.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h \
 		guard.h utility.h ctitime.h queues.h numstr.h sorted_vector.h \
@@ -238,12 +239,13 @@ calcthread.obj:	yukon.h precompiled.h types.h ctidbgmem.h dbaccess.h \
 		database_connection.h database_reader.h row_reader.h \
 		boost_time.h boostutil.h msg_multi.h msg_pdata.h pointdefs.h \
 		logger.h thread.h CtiPCPtrQueue.h cparms.h configkey.h \
-		configval.h mgr_holiday.h ctidate.h calcthread.h hashkey.h \
-		hash_functions.h calc.h ctiqueues.h calccomponent.h \
+		configval.h mgr_holiday.h ctidate.h ThreadStatusKeeper.h \
+		thread_register_data.h thread_monitor.h smartmap.h \
+		readers_writer_lock.h critical_section.h queue.h calcthread.h \
+		hashkey.h hash_functions.h calc.h ctiqueues.h calccomponent.h \
 		pointstore.h rtdb.h regression.h tbl_pt_limit.h dbmemobject.h \
-		resolvers.h db_entry_defines.h desolvers.h thread_monitor.h \
-		smartmap.h readers_writer_lock.h critical_section.h queue.h \
-		thread_register_data.h database_writer.h row_writer.h
+		resolvers.h db_entry_defines.h desolvers.h database_writer.h \
+		row_writer.h
 calc_logic.obj:	yukon.h precompiled.h types.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h \
 		guard.h utility.h ctitime.h queues.h numstr.h sorted_vector.h \

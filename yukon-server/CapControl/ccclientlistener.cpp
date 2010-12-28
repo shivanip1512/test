@@ -1,14 +1,3 @@
-/*-----------------------------------------------------------------------------
-    Filename:  ccclientlistener.cpp
-
-    Programmer:  Josh Wolberg
-
-    Description: Source file for CtiCCClientListener
-
-    Initial Date:  9/04/2001
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "ccclientlistener.h"
@@ -20,10 +9,13 @@
 #include "logger.h"
 #include "utility.h"
 #include "thread_monitor.h"
+#include "ThreadStatusKeeper.h"
 
 #include <rw/toolpro/inetaddr.h>
 
 extern ULONG _CC_DEBUG;
+
+using Cti::ThreadStatusKeeper;
 
 CtiCCClientListener* CtiCCClientListener::_instance = NULL;
 
@@ -281,9 +273,7 @@ void CtiCCClientListener::_listen()
 
 void CtiCCClientListener::_check()
 {
-    CtiTime rwnow;
-    CtiTime announceTime((unsigned long) 0);
-    CtiTime tickleTime((unsigned long) 0);
+    ThreadStatusKeeper threadStatus("CapControl _clientCheck");
 
     do
     {
@@ -320,24 +310,10 @@ void CtiCCClientListener::_check()
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
         rwSleep(500);
-        rwnow = rwnow.now();
-        if(rwnow.seconds() > tickleTime.seconds())
-        {
-            tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
-            if( rwnow.seconds() > announceTime.seconds() )
-            {
-                announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " CapControl _clientCheck. TID: " << rwThreadId() << endl;
-            }
 
-            ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl _clientCheck", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
-        }
-
+        threadStatus.monitorCheck();
 
     } while ( !_doquit );
-
-    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl _clientCheck", CtiThreadRegData::LogOut ) );
 
     {
         RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );

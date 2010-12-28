@@ -1,45 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   PORTPERF
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-** REVISION     :  $Revision: 1.49.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:44 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-
-/*---------------------------------------------------------------------
-    Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
-
-    Programmer:
-        William R. Ockert
-
-    FileName:
-        PORTPERF.C
-
-    Purpose:
-        Perform midnight and roll statistic updates
-
-    The following procedures are contained in this module:
-        PerfThread                      PerfUpdateThread
-
-    Initial Date:
-        Unknown
-
-    Revision History:
-        Unknown prior to 8-93
-        9-7-93   Converted to 32 bit                                WRO
-        11-1-93  Modified to keep statistics temporarily in memory  TRH
-        2-28-94  Added enviroment variables for update frequency    WRO
-        6-11-96  Fixed Remote previous day statistics               WRO
-
-   -------------------------------------------------------------------- */
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
@@ -53,6 +12,7 @@
 #include "portglob.h"
 #include "cparms.h"
 #include "thread_monitor.h"
+#include "ThreadStatusKeeper.h"
 
 #include "dsm2.h"
 #include "dbaccess.h"
@@ -73,7 +33,6 @@ static CtiCriticalSection event_mux;
 
 static void processCollectedStats(bool force);
 static void statisticsRecord();
-static void ticklePerfThreadMonitor();
 
 struct statistics_event_t
 {
@@ -113,7 +72,7 @@ VOID PerfUpdateThread (PVOID Arg)
 {
     ULONG PerfUpdateRate = 3600L;
 
-    CtiTime now, lastTickleTime, lastReportTime;
+    CtiTime now;
     LONG delay;
 
     /* set the priority of this guy high */
@@ -121,6 +80,8 @@ VOID PerfUpdateThread (PVOID Arg)
 
     try
     {
+        ThreadStatusKeeper threadStatus("Perf Update Thread");
+
         for(;!PorterQuit;)
         {
             PerfUpdateRate = gConfigParms.getValueAsULong("PORTER_DEVICESTATUPDATERATE", 3600L);
@@ -131,18 +92,8 @@ VOID PerfUpdateThread (PVOID Arg)
             do
             {
                 Sleep(1000);
-                if(lastTickleTime.seconds() < (now.seconds() - CtiThreadMonitor::StandardTickleTime))
-                {
-                    if(lastReportTime.seconds() < (now.seconds() - CtiThreadMonitor::StandardMonitorTime))
-                    {
-                        lastReportTime = lastReportTime.now();
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Perf Update Thread. TID:  " << rwThreadId() << endl;
-                    }
 
-                    ticklePerfThreadMonitor();
-                    lastTickleTime = lastTickleTime.now();
-                }
+                threadStatus.monitorCheck(CtiThreadRegData::None);
 
                 if(active_event_queue->empty())
                 {
@@ -383,6 +334,7 @@ void statisticsRecord()
 
         // Ok, now we stuff the dirtyStatCol out on the DB.  WITHOUT BLOCKING OPERATIONS!
         {
+            ThreadStatusKeeper threadStatus("Perf Update Thread");
             Cti::Database::DatabaseConnection conn;
 
             int sCount = 0, total = dirty_stats.size();
@@ -398,7 +350,7 @@ void statisticsRecord()
 
                 if( !(++sCount % 1000) )
                 {
-                    ticklePerfThreadMonitor();
+                    threadStatus.forceTickle(CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime);
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " statisticsRecord() : committed " << sCount << " / " << total << " statistics records." << endl;
                 }
@@ -422,7 +374,7 @@ void statisticsRecord()
 
                     if( !(++sCount % 1000) )
                     {
-                        ticklePerfThreadMonitor();
+                        threadStatus.forceTickle(CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime);
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " statisticsRecord() : InsertDaily : committed " << sCount << " / " << total << " statistics records." << endl;
                     }
@@ -692,9 +644,4 @@ void processCollectedStats(bool force)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " processCollectedStats() : complete, processed " << sCount << " / " << total << " statistics events." << endl;
     }
-}
-
-void ticklePerfThreadMonitor()
-{
-    ThreadMonitor.tickle(new CtiThreadRegData(GetCurrentThreadId(), "Perf Update Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime));
 }

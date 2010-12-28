@@ -1,15 +1,3 @@
-/*-----------------------------------------------------------------------------
-    Filename:  mgr_paosched.cpp
-
-    Programmer:  Julie Richter
-
-    Description:
-
-    Initial Date:  1/27/2005
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2005
------------------------------------------------------------------------------*/
-
 #include "yukon.h"
 #include "mgr_paosched.h"
 #include "pao_event.h"
@@ -22,6 +10,7 @@
 #include "database_connection.h"
 #include "database_reader.h"
 #include "database_writer.h"
+#include "ThreadStatusKeeper.h"
 
 #include <stdlib.h>
 
@@ -34,6 +23,9 @@
 extern ULONG _CC_DEBUG;
 extern BOOL CC_TERMINATE_THREAD_TEST;
 using namespace std;
+
+using Cti::ThreadStatusKeeper;
+
 /* The singleton instance of CtiPAOScheduleManager */
 CtiPAOScheduleManager* CtiPAOScheduleManager::_instance = NULL;
 
@@ -151,9 +143,9 @@ void CtiPAOScheduleManager::doResetThr()
     {
         Sleep(1000);
         CtiTime lastPeriodicDatabaseRefresh = CtiTime();
+        
+        ThreadStatusKeeper threadStatus("CapControl mgrPAOSchedule doResetThr");
 
-        CtiTime rwnow, announceTime, tickleTime;
-        tickleTime.now();
         while (TRUE)
         {
             {
@@ -174,19 +166,7 @@ void CtiPAOScheduleManager::doResetThr()
                 }
             }
 
-
-            rwnow = rwnow.now();
-            if(rwnow.seconds() > tickleTime.seconds())
-            {
-                tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
-                if( rwnow.seconds() > announceTime.seconds() )
-                {
-                    announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " CapControl mgrPAOSchedule doResetThr. TID: " << rwThreadId() << endl;
-                }
-                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule doResetThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
-            }
+            threadStatus.monitorCheck();
 
             for (int i = 0; i < 10; ++i)
             {
@@ -194,7 +174,6 @@ void CtiPAOScheduleManager::doResetThr()
                 rwRunnable().sleep(500);
             }
         }
-        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule doResetThr", CtiThreadRegData::LogOut ) );
     }
     catch(RWCancellation& )
     {
@@ -211,6 +190,8 @@ void CtiPAOScheduleManager::mainLoop()
 {
     try
     {
+        ThreadStatusKeeper threadStatus("CapControl mgrPAOSchedule mainLoop");
+
         {
             RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
             refreshSchedulesFromDB();
@@ -221,10 +202,6 @@ void CtiPAOScheduleManager::mainLoop()
         std::list <CtiPAOSchedule*> mySchedules; // I dont own these
         std::list <CtiPAOSchedule*> updateSchedules; // I dont own these
         std::list <CtiPAOEvent*> myEvents; // I do own these
-
-        CtiTime rwnow;
-        CtiTime announceTime((unsigned long) 0);
-        CtiTime tickleTime((unsigned long) 0);
 
         CtiPAOSchedule *currentSched = NULL;
         CtiPAOEvent *currentEvent = NULL;
@@ -322,23 +299,9 @@ void CtiPAOScheduleManager::mainLoop()
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
-            rwnow = rwnow.now();
-            if(rwnow.seconds() > tickleTime.seconds())
-            {
-                tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
-                if( rwnow.seconds() > announceTime.seconds() )
-                {
-                    announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " CapControl mgrPAOSchedule mainLoop TID: " << rwThreadId() << endl;
-                }
 
-                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule mainLoop", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
-            }
-
+            threadStatus.monitorCheck();
         }
-
-        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl mgrPAOSchedule mainLoop", CtiThreadRegData::LogOut ) );
     }
     catch(RWCancellation& )
     {

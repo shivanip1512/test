@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   scanner
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.82.2.2 $
-* DATE         :  $Date: 2008/11/21 16:14:53 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 // These next few are required for Win32
@@ -66,6 +53,7 @@
 #include "utility.h"
 #include "dllyukon.h"
 #include "thread_monitor.h"
+#include "ThreadStatusKeeper.h"
 #include "database_connection.h"
 
 #include "millisecond_timer.h"
@@ -77,6 +65,7 @@
 #define MAX_SCAN_TYPE   4
 
 using namespace std;
+using Cti::ThreadStatusKeeper;
 
 static INT      ScannerReloadRate = 86400;
 static CtiTime  LastPorterOutTime;
@@ -736,24 +725,12 @@ VOID ResultThread (VOID *Arg)
         }
     }
 
-    CtiTime lastTickleTime((unsigned long) 0); //We always always want this to happen in the first loop
-    CtiTime lastReportTime((unsigned long) 0); //Ditto
+    ThreadStatusKeeper threadStatus("Scanner Result Thread");
 
     /* perform the wait loop forever */
     for(;!ScannerQuit;)
     {
-        if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
-        {
-            if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
-            {
-                lastReportTime = lastReportTime.now();
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Scanner Result Thread Active. TID:  " << rwThreadId() << endl;
-            }
-
-            ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "Scanner Result Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime ) );
-            lastTickleTime = lastTickleTime.now();
-        }
+        threadStatus.monitorCheck(CtiThreadRegData::None);
 
         /* Release the Lock Semaphore */
         if(dwWait == 1) ReleaseMutex(hScannerSyncs[S_LOCK_MUTEX]);
@@ -1334,24 +1311,12 @@ void DispatchMsgHandlerThread(VOID *Arg)
     CtiTime         TimeNow;
     CtiTime         LastTime;
 
-    CtiTime lastTickleTime((unsigned long) 0); //We always always want this to happen in the first loop
-    CtiTime lastReportTime((unsigned long) 0); //Ditto
+    ThreadStatusKeeper threadStatus("Scanner DispatchMsgHandlerThread");
 
     /* perform the wait loop forever */
     for( ; !ScannerQuit ; )
     {
-        if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
-        {
-            if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
-            {
-                lastReportTime = lastReportTime.now();
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Scanner DispatchMsgHandlerThread Active. TID:  " << rwThreadId() << endl;
-            }
-
-            ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "Scanner DispatchMsgHandlerThread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime ) );
-            lastTickleTime = lastTickleTime.now();
-        }
+        threadStatus.monitorCheck(CtiThreadRegData::None);
 
         CtiMessage *MsgPtr = VanGoghConnection.ReadConnQue(5000L);
 
@@ -1476,8 +1441,7 @@ void DatabaseHandlerThread(VOID *Arg)
 {
     BOOL    bServerClosing = FALSE;
 
-    CtiTime lastTickleTime((unsigned long) 0); //We always always want this to happen in the first loop
-    CtiTime lastReportTime((unsigned long) 0); //Ditto
+    ThreadStatusKeeper threadStatus("Scanner DatabaseHandlerThread");
 
     CtiTime TimeNow;
     CtiTime RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, ScannerReloadRate );
@@ -1489,18 +1453,7 @@ void DatabaseHandlerThread(VOID *Arg)
     /* perform the wait loop forever */
     for( ; !ScannerQuit ; )
     {
-        if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
-        {
-            if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
-            {
-                lastReportTime = lastReportTime.now();
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Scanner DatabaseHandlerThread Active. TID:  " << rwThreadId() << endl;
-            }
-
-            ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "Scanner DatabaseHandlerThread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime ) );
-            lastTickleTime = lastTickleTime.now();
-        }
+        threadStatus.monitorCheck(CtiThreadRegData::None);
 
         if( WAIT_OBJECT_0 == WaitForSingleObject(hScannerSyncs[S_QUIT_EVENT], 1000) )
         {

@@ -1,17 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   portgw
-*
-* Date:   6/12/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:44 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <iostream>
@@ -37,7 +23,10 @@
 #include "port_base.h"
 #include "queue.h"
 #include "thread_monitor.h"
+#include "ThreadStatusKeeper.h"
+
 using namespace std;
+using Cti::ThreadStatusKeeper;
 
 extern CtiPortManager PortManager;
 extern CtiDeviceManager DeviceManager;
@@ -70,29 +59,18 @@ static void ReturnDataToClient(CtiDeviceGatewayStat::OpCol_t &reportableOperatio
 
 void GWTimeSyncThread (void *Dummy)
 {
-    CtiTime now, lastTickleTime, lastReportTime;
+    CtiTime now;
     CtiTime midnightnext = now + 60;
     CtiTime querynext = now + 60;
     UINT sanity = 0;
+
+    ThreadStatusKeeper threadStatus("Porter GW Time Sync Thread");
 
     while(!PorterQuit)
     {
         now = now.now();
 
-        if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
-        {
-            if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
-            {
-                lastReportTime = lastReportTime.now();
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Porter GW Time Sync Thread active. TID:  " << rwThreadId() << endl;
-            }
-
-            CtiThreadRegData *data;
-            data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Time Sync Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
-            ThreadMonitor.tickle( data );
-            lastTickleTime = lastTickleTime.now();
-        }
+        threadStatus.monitorCheck(CtiThreadRegData::None);
 
         if(now > querynext && gwMap.size() > 0)
         {
@@ -166,25 +144,14 @@ void GWTimeSyncThread (void *Dummy)
 
 void KeepAliveThread (void *Dummy)
 {
-    CtiTime now, lastTickleTime, lastReportTime;
+    CtiTime now;
     UINT sanity = 0;
+
+    ThreadStatusKeeper threadStatus("Porter GW Keepalive Thread");
 
     while(!PorterQuit)
     {
-        if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
-        {
-            if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
-            {
-                lastReportTime = lastReportTime.now();
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Porter GW Keepalive Thread active. TID:  " << rwThreadId() << endl;
-            }
-
-            CtiThreadRegData *data;
-            data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Keepalive Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
-            ThreadMonitor.tickle( data );
-            lastTickleTime = lastTickleTime.now();
-        }
+        threadStatus.monitorCheck(CtiThreadRegData::None);
 
         now = now.now();
 
@@ -402,12 +369,13 @@ VOID PorterGWThread(void *pid)
     BYTE           ReadPriority;
     ULONG          ReadLength;
     ULONG          QueEntries;
-    CtiTime         lastQueueReportTime, lastTickleTime, lastReportTime;
+    CtiTime        lastQueueReportTime;
+
+    ThreadStatusKeeper threadStatus("Porter GW Thread");
 
     LONG portid = (LONG)pid;      // NASTY CAST HERE!!!
     CtiDeviceSPtr Device;
     CtiPortSPtr Port( PortManager.PortGetEqual( portid ) );      // Bump the reference count on the shared object!
-
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -448,20 +416,7 @@ VOID PorterGWThread(void *pid)
     {
         try
         {
-            if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
-            {
-                if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
-                {
-                    lastReportTime = lastReportTime.now();
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Porter GW Thread active. TID:  " << rwThreadId() << endl;
-                }
-
-                CtiThreadRegData *data;
-                data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
-                ThreadMonitor.tickle( data );
-                lastTickleTime = lastTickleTime.now();
-            }
+            threadStatus.monitorCheck(CtiThreadRegData::None);
 
             OutMessage = GatewayOutMessageQueue.getQueue( 2500 );
 
@@ -505,7 +460,6 @@ VOID PorterGWThread(void *pid)
             dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
-
 
     {
         CtiLockGuard< CtiMutex > guard(gwmux, 15000);
@@ -602,7 +556,8 @@ int ExecuteParse( CtiCommandParser &parse, CtiOutMessage *&OutMessage )
 void GWResultThread (void *Dummy)
 {
     UINT sanity = 0;
-    CtiTime lastTickleTime, lastReportTime;
+
+    ThreadStatusKeeper threadStatus("Porter GW Result Thread");
 
     HANDLE  hArray[] = {
         hPorterEvents[P_QUIT_EVENT],
@@ -612,23 +567,9 @@ void GWResultThread (void *Dummy)
     UINT  tidbitCnt = 0;
     DWORD dwSleepTime = 30000;
 
-
     while(!PorterQuit)
     {
-        if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
-        {
-            if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
-            {
-                lastReportTime = lastReportTime.now();
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Porter GW Result Thread active. TID:  " << rwThreadId() << endl;
-            }
-
-            CtiThreadRegData *data;
-            data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Result Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
-            ThreadMonitor.tickle( data );
-            lastTickleTime = lastTickleTime.now();
-        }
+        threadStatus.monitorCheck(CtiThreadRegData::None);
 
         DWORD dwWait = WaitForMultipleObjects(sizeof(hArray) / sizeof(HANDLE), hArray, FALSE, dwSleepTime);
 

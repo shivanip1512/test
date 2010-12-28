@@ -1,19 +1,3 @@
-/*-----------------------------------------------------------------------------
-    Filename:  capcontroller.cpp
-
-    Programmer:  Josh Wolberg
-
-    Description:    Source file for CtiCapController
-                    Once started CtiCapController is reponsible
-                    for determining if and when to run the
-                    schedules provided by the CtiCCSubstationBusStore.
-                    It runs schedules in collaboration with
-                    CtiCCScheduleRunner.
-
-    Initial Date:  8/31/2001
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "dbaccess.h"
@@ -46,6 +30,7 @@
 #include "utility.h"
 #include "ctitime.h"
 #include "ControlStrategy.h"
+#include "ThreadStatusKeeper.h"
 
 #include "ccclientconn.h"
 #include "ccclientlistener.h"
@@ -67,6 +52,7 @@ extern BOOL  _ENABLE_IVVC;
 extern BOOL  _AUTO_VOLT_REDUCTION;
 extern LONG  _VOLT_REDUCTION_SYSTEM_POINTID;
 
+using Cti::ThreadStatusKeeper;
 
 //DLLEXPORT BOOL  bGCtrlC = FALSE;
 
@@ -280,10 +266,7 @@ void CtiCapController::stop()
 
 void CtiCapController::messageSender()
 {
-
-    CtiTime rwnow;
-    CtiTime announceTime((unsigned long) 0);
-    CtiTime tickleTime((unsigned long) 0);
+    ThreadStatusKeeper threadStatus("CapControl messageSender");
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     {
@@ -415,20 +398,13 @@ void CtiCapController::messageSender()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
-        doThreadMonitorCheck(rwnow, announceTime, tickleTime, "CapControl messageSender");
-
+        threadStatus.monitorCheck();
     };
-
-    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl messageSender", CtiThreadRegData::LogOut ) );
-
 }
 
 void CtiCapController::incomingMessageProcessor()
 {
-
-    CtiTime timeNow;
-    CtiTime announceTime((unsigned long) 0);
-    CtiTime tickleTime((unsigned long) 0);
+    ThreadStatusKeeper threadKeeper("CapControl Incoming Message Thread");
 
     while(TRUE)
     {
@@ -461,22 +437,8 @@ void CtiCapController::incomingMessageProcessor()
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
 
-        timeNow = timeNow.now();
-        if(timeNow.seconds() > tickleTime.seconds())
-        {
-            tickleTime = nextScheduledTimeAlignedOnRate( timeNow, CtiThreadMonitor::StandardTickleTime );
-            if( timeNow.seconds() > announceTime.seconds() )
-            {
-                announceTime = nextScheduledTimeAlignedOnRate( timeNow, CtiThreadMonitor::StandardMonitorTime );
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " CapControl Incoming Message Thread. TID: " << rwThreadId() << endl;
-            }
-
-           ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl Incoming Message Thread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
-        }
+        threadKeeper.monitorCheck();
     };
-
-    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl Incoming Message Thread", CtiThreadRegData::LogOut ) );
 }
 
 void CtiCapController::processNewMessage(CtiMessage* message)
@@ -525,9 +487,8 @@ void CtiCapController::controlLoop()
         BOOL waitToBroadCastEverything = FALSE;
         BOOL startUpSendStats = TRUE;
 
-        CtiTime rwnow;
-        CtiTime announceTime((unsigned long) 0);
-        CtiTime tickleTime((unsigned long) 0);
+        ThreadStatusKeeper threadStatus("CapControl controlLoop");
+
         CtiTime fifteenMinCheck = nextScheduledTimeAlignedOnRate( currentDateTime,  900);
 
         long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::CapControl);
@@ -777,7 +738,7 @@ void CtiCapController::controlLoop()
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
-                        doThreadMonitorCheck(rwnow, announceTime, tickleTime, "CapControl controlLoop");
+                        threadStatus.monitorCheck();
                         if(pointID!=0)
                         {
                             CtiThreadMonitor::State next;
@@ -955,8 +916,6 @@ void CtiCapController::controlLoop()
                 dout << CtiTime() << " - Exception while updating Voltage Regulators.  " << __FILE__ << " at: " << __LINE__ << endl;
             }
         }
-
-        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl controlLoop", CtiThreadRegData::LogOut ) );
     }
     catch(RWCancellation& )
     {
@@ -980,25 +939,7 @@ void CtiCapController::controlLoop()
         dout << CtiTime() << " - Control Loop thread terminated unexpectedly." << endl;
     }
 }
-void CtiCapController::doThreadMonitorCheck(CtiTime &rwnow, CtiTime &announceTime, CtiTime &tickleTime,
-                                            string threadName)
-{
 
-     rwnow = rwnow.now();
-     if(rwnow.seconds() > tickleTime.seconds())
-     {
-         tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
-         if( rwnow.seconds() > announceTime.seconds() )
-         {
-             announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
-             CtiLockGuard<CtiLogger> doubt_guard(dout);
-             dout << CtiTime() << " "<< threadName <<" TID: " << rwThreadId() << endl;
-         }
-
-        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), threadName, CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
-     }
-
-}
 void CtiCapController::checkBusForNeededControl(CtiCCAreaPtr currentArea,  CtiCCSubstation* currentStation, CtiCCSubstationBusPtr currentSubstationBus, const CtiTime& currentDateTime,
                             CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
 {
@@ -1315,9 +1256,7 @@ void CtiCapController::outClientMsgs()
 {
     try
     {
-        CtiTime rwnow;
-        CtiTime announceTime((unsigned long) 0);
-        CtiTime tickleTime((unsigned long) 0);
+        ThreadStatusKeeper threadStatus("CapControl outClientMsgs");
 
         while (TRUE)
         {
@@ -1346,10 +1285,8 @@ void CtiCapController::outClientMsgs()
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
 
-            doThreadMonitorCheck(rwnow, announceTime, tickleTime, "CapControl outClientMsgs");
-        };
-
-        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl outClientMsgs", CtiThreadRegData::LogOut ) );
+            threadStatus.monitorCheck();
+        }
     }
     catch(RWCancellation& )
     {
