@@ -58,6 +58,7 @@
 			</tags:nameValueContainer2>
 			
 			<%-- NOTIFICATIONS TABLE --%>
+            <c:if test="${mode == 'EDIT' || not empty contactDto.otherNotifications}">
 			<br>
 			<table class="resultsTable">
 			
@@ -99,7 +100,7 @@
 						
 						<td <c:if test="${newNotification}">colspan="2"</c:if>><tags:input path="otherNotifications[${notifRow.index}].notificationValue"></tags:input></td>
 						
-						<c:if test="${!newNotification}">
+						<c:if test="${mode == 'EDIT' && !newNotification}">
 							<td style="text-align:center;">
 								<img src="${delete}" onclick="removeNotification(this)" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
 							</td>
@@ -120,12 +121,14 @@
 				</cti:displayForPageEditModes>
 				
 			</table>
-			
+            </c:if>
 		</tags:formElementContainer>
         
 		<%-- BUTTONS --%>
 		<br>
-		<tags:slowInput2 formId="contactsUpdateForm" key="save"/>
+        <cti:displayForPageEditModes modes="EDIT,CREATE">
+    		<tags:slowInput2 formId="contactsUpdateForm" key="save"/>
+        </cti:displayForPageEditModes>
 		<tags:slowInput2 formId="contactListForm" key="cancel"/>
 
 	</form:form>

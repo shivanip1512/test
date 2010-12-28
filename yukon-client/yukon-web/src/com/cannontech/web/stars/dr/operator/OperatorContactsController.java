@@ -94,14 +94,16 @@ public class OperatorContactsController {
     						  YukonUserContext userContext,
     						  AccountInfoFragment accountInfoFragment) {
 		
-		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
-		modelMap.addAttribute("mode", PageEditMode.EDIT);
+	    boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
 		
 		// contactDto
 		ContactDto contactDto = operatorAccountService.getContactDto(contactId, userContext);
 		if (contactDto == null) {
+		    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
 			contactDto = operatorAccountService.getBlankContactDto(4);
 			modelMap.addAttribute("mode", PageEditMode.CREATE);
+		} else {
+		    modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
 		}
 		modelMap.addAttribute("contactDto", contactDto);
 		

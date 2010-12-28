@@ -1090,6 +1090,12 @@
                                         <labelArgument>${firstName}</labelArgument>
                                         <labelArgument>${lastName}</labelArgument>
                                     </page>
+                                    <page name="contact.VIEW" type="DETAIL">
+                                        <menu>account|accounts</menu>
+                                        <link>/spring/stars/operator/contacts/contactEdit?accountId=${accountId}&amp;contactId=${contactId}</link>
+                                        <labelArgument>${firstName}</labelArgument>
+                                        <labelArgument>${lastName}</labelArgument>
+                                    </page>
                                 </pages>
                             </page>
                             <page name="residence" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">

@@ -51,11 +51,7 @@
 			
 				<td class="nameCol">
 				
-					<cti:displayForPageEditModes modes="VIEW">
-						${contact.lastName}, ${contact.firstName}
-					</cti:displayForPageEditModes>
-				
-					<cti:displayForPageEditModes modes="EDIT,CREATE">
+					<cti:displayForPageEditModes modes="EDIT,CREATE,VIEW">
 						<cti:url var="contactEditUrl" value="/spring/stars/operator/contacts/contactEdit">
 							<cti:param name="accountId" value="${accountId}"/>
 							<cti:param name="contactId" value="${contact.contactId}"/>
