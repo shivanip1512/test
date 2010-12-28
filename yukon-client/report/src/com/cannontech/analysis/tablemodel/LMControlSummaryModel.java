@@ -203,18 +203,15 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                                 double oneHour = Duration.standardHours(1).getMillis();
                                 double totalControlHours =
                                     CustomerControlTotals.getTotalControlTime().getMillis()/oneHour;
-                                totals[TOTAL_CONTROL_HOURS] += 
-                                    new Double(decFormat.format(1.0 * totalControlHours));
+                                totals[TOTAL_CONTROL_HOURS] += new Double(totalControlHours);
     
                                 double totalOptOutHours = 
                                     CustomerControlTotals.getTotalOptOutTime().getMillis()/oneHour;
-                                totals[TOTAL_OPT_OUT_HOURS] += 
-                                    new Double(decFormat.format(1.0 * totalOptOutHours));
+                                totals[TOTAL_OPT_OUT_HOURS] += new Double(totalOptOutHours);
     
                                 double totalOptOutHoursDuringControl = 
                                     CustomerControlTotals.getTotalControlDuringOptOutTime().getMillis()/oneHour;
-                                totals[TOTAL_OPT_OUT_HOURS_DURING_CONTROL] += 
-                                    new Double(decFormat.format(1.0 * totalOptOutHoursDuringControl));
+                                totals[TOTAL_OPT_OUT_HOURS_DURING_CONTROL] += new Double(totalOptOutHoursDuringControl);
     
                                 totals[TOTAL_OPT_OUT_EVENTS] += CustomerControlTotals.getTotalOptOutEvents();
                                 
@@ -253,12 +250,12 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                         row.totalOptOutHours = 0.0;
                         row.totalOptOutHoursDuringControl = 0.0;
                     } else {
-                        row.controlHours = totals[TOTAL_CONTROL_HOURS];
+                        row.controlHours = new Double(decFormat.format(1.0 * totals[TOTAL_CONTROL_HOURS]));
                         row.enrolledCustomers = (int)totals[ENROLLED_CUSTOMERS].doubleValue();
                         row.enrolledInventory = (int)totals[ENROLLED_INVENTORY].doubleValue();
                         row.optOutEvents = (int)totals[TOTAL_OPT_OUT_EVENTS].doubleValue();
-                        row.totalOptOutHours = totals[TOTAL_OPT_OUT_HOURS];
-                        row.totalOptOutHoursDuringControl = totals[TOTAL_OPT_OUT_HOURS_DURING_CONTROL];
+                        row.totalOptOutHours = new Double(decFormat.format(1.0 * totals[TOTAL_OPT_OUT_HOURS]));
+                        row.totalOptOutHoursDuringControl = new Double(decFormat.format(1.0 * totals[TOTAL_OPT_OUT_HOURS_DURING_CONTROL]));
                     }
                     data.add(row);
                 }

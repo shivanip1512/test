@@ -434,6 +434,22 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
             
         }
         
+        // Getting the opt out counts and the overall opt out duration
+        Duration totalOptedOutDuration = Duration.ZERO;
+        int optOutCount = 0;
+        OpenInterval summaryInterval = OpenInterval.createClosed(startDateTime, stopDateTime);
+
+        for(LMHardwareControlGroup optOut : optOuts) {
+            OpenInterval summaryOptOutInterval = optOut.getOptOutInterval().overlap(summaryInterval);
+            Duration summaryBasedOptOutDuration = summaryOptOutInterval.toClosedInterval().toDuration();
+
+            optOutCount++;
+            totalOptedOutDuration = totalOptedOutDuration.plus(summaryBasedOptOutDuration);
+        }
+
+        totals.setTotalOptOutTime(totalOptedOutDuration);
+        totals.setTotalOptOutEvents(optOutCount);
+        
         return totals;
     }
     
@@ -454,8 +470,6 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
         }
 
         Duration totalOptedOutControlDuration = Duration.ZERO;
-        Duration totalOptedOutDuration = Duration.ZERO;
-        int optOutCount = 0;
         OpenInterval openStartToNow = OpenInterval.createOpenStart(new Instant());
         OpenInterval summaryInterval = OpenInterval.createClosed(startDateTime, stopDateTime);
         
@@ -463,11 +477,6 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
 
             // Get the portion of the opt out that occurred during our time period.
             OpenInterval summaryOptOutInterval = optOut.getOptOutInterval().overlap(summaryInterval);
-            Duration summaryBasedOptOutDuration =
-                summaryOptOutInterval.toClosedInterval().toDuration();
-
-            optOutCount++;
-            totalOptedOutDuration = totalOptedOutDuration.plus(summaryBasedOptOutDuration);
             Duration optedOutDuration = Duration.ZERO;
             
             for (ControlHistoryEntry enrolledControlHistoryEntry : enrolledControlHistoryEntries) {
@@ -486,8 +495,6 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
         CustomerControlTotals customerControlTotals = new CustomerControlTotals();
         customerControlTotals.setTotalControlTime(projectedControlHistoryDuration.minus(totalOptedOutControlDuration));
         customerControlTotals.setTotalControlDuringOptOutTime(totalOptedOutControlDuration);
-        customerControlTotals.setTotalOptOutTime(totalOptedOutDuration);
-        customerControlTotals.setTotalOptOutEvents(optOutCount);
         
         return customerControlTotals;
     }
