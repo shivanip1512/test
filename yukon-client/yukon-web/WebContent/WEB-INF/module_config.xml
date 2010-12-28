@@ -1116,6 +1116,12 @@
                                         <link>/spring/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
                                         <labelArgument>${callNumber}</labelArgument>
                                     </page>
+                                    <page name="viewCall.VIEW" type="DETAIL">
+                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
+                                        <menu>account|accounts</menu>
+                                        <link>/spring/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
+                                        <labelArgument>${callNumber}</labelArgument>
+                                    </page>
                                 </pages>
                             </page>
                             <page name="metering" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">

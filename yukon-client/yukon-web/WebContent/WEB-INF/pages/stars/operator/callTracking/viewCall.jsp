@@ -58,7 +58,9 @@
 		<br>
 		
 		<%-- buttons --%>
-		<tags:slowInput2 formId="callReportUpdateForm" key="save" onsubmit="combineDateAndTimeFieldsAndSubmit"/>
+        <cti:displayForPageEditModes modes="EDIT,CREATE">
+    		<tags:slowInput2 formId="callReportUpdateForm" key="save" onsubmit="combineDateAndTimeFieldsAndSubmit"/>
+        </cti:displayForPageEditModes>
 		<tags:slowInput2 formId="viewAllForm" key="cancel"/>
 		
 	</form:form>

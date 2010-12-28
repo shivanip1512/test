@@ -16,8 +16,10 @@
 
 	<!-- viewCall.jsp -->
     <entry key="yukon.web.modules.operator.viewCall.EDIT.pageName">View Call</entry>
+    <entry key="yukon.web.modules.operator.viewCall.VIEW.pageName">View Call</entry>
     <entry key="yukon.web.modules.operator.viewCall.CREATE.pageName">Create Call</entry>
     <entry key="yukon.web.modules.operator.viewCall.EDIT.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.viewCall.VIEW.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.operator.viewCall.callContainer.title">Call</entry>
     <entry key="yukon.web.modules.operator.viewCall.callNumber">Tracking Number</entry>
     <entry key="yukon.web.modules.operator.viewCall.date">Date/Time</entry>

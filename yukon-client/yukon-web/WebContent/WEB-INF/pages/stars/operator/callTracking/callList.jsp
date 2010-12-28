@@ -47,17 +47,12 @@
 			<tr>
 				<td>
 					<%-- callNumber with edit link --%>
-					<cti:displayForPageEditModes modes="EDIT,CREATE">
+					<cti:displayForPageEditModes modes="EDIT,CREATE,VIEW">
 						<cti:url var="viewCallUrl" value="/spring/stars/operator/callTracking/viewCall">
 							<cti:param name="accountId">${accountId}</cti:param>
 							<cti:param name="callId">${callReportWrapper.callReport.callId}</cti:param>
 						</cti:url>
 						<a href="${viewCallUrl}"><spring:escapeBody htmlEscape="true">${callReportWrapper.callReport.callNumber}</spring:escapeBody></a>
-					</cti:displayForPageEditModes>
-					
-					<%-- callNumber without edit link --%>
-					<cti:displayForPageEditModes modes="VIEW">
-						${callReportWrapper.callReport.callNumber}
 					</cti:displayForPageEditModes>
 				</td>
 				<td><cti:formatDate value="${callReportWrapper.callReport.dateTaken}" type="BOTH"/></td>

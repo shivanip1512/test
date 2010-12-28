@@ -82,18 +82,20 @@ public class OperatorCallTrackingController {
 							YukonUserContext userContext,
 							AccountInfoFragment accountInfoFragment) {
 		
-		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
-		setupViewCallModelMap(accountInfoFragment, modelMap, userContext, callId);
+	 // pageEditMode
+        boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+        setupViewCallModelMap(accountInfoFragment, modelMap, userContext, callId);
 		
 		CallReport callReport;
 		if (callId == null) {
+		    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
 			callReport = new CallReport();
 			callReport.setAccountId(accountInfoFragment.getAccountId());
 			callReport.setDateTaken(new Date());
 			modelMap.addAttribute("mode", PageEditMode.CREATE);
 		} else {
 			callReport = callReportDao.getCallReportByCallId(callId);
-			modelMap.addAttribute("mode", PageEditMode.EDIT);
+			modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
 		}
 		modelMap.addAttribute("callReport", callReport);
 		
