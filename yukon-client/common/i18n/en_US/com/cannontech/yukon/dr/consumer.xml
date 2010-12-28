@@ -252,7 +252,8 @@
     <!--  thermostatScheduleConfirm.jsp -->
     <entry key="yukon.dr.consumer.thermostatScheduleConfirm.header">Thermostat - Schedule Confirm</entry>
     <entry key="yukon.dr.consumer.thermostatScheduleConfirm.introText">The following schedule options will be sent to your thermostat:</entry>
-    <entry key="yukon.dr.consumer.thermostatScheduleConfirm.scheduleText.timeCoolHeat">{0} - Cool: {1} Heat: {2}</entry>
+    <entry key="yukon.dr.consumer.thermostatScheduleConfirm.scheduleText.timeCoolHeatFahrenheit">{0} - Cool: {1} °F Heat: {2} °F</entry>
+    <entry key="yukon.dr.consumer.thermostatScheduleConfirm.scheduleText.timeCoolHeatCelsius">{0} - Cool: {1} °C Heat: {2} °C</entry>
     <entry key="yukon.dr.consumer.thermostatScheduleConfirm.confirmText">Do you wish to send this schedule to your thermostat?</entry>
     <entry key="yukon.dr.consumer.thermostatScheduleConfirm.ok">Continue</entry>
     <entry key="yukon.dr.consumer.thermostatScheduleConfirm.cancel">Cancel</entry>

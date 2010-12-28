@@ -144,7 +144,8 @@
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.cancelText.save">Operation canceled. The schedule options were not sent to your thermostat.</entry>
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.cancelText.saveApply">Operation canceled. The schedule options were not saved.</entry>
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.cancelText.emptyName">The thermostat schedule name cannot be blank.</entry>
-    <entry key="yukon.dr.operator.thermostatScheduleConfirm.scheduleText.timeCoolHeat">{0} - Cool: {1} Heat: {2}</entry>
+    <entry key="yukon.dr.operator.thermostatScheduleConfirm.scheduleText.timeCoolHeatFahrenheit">{0} - Cool: {1} °F Heat: {2} °F</entry>
+    <entry key="yukon.dr.operator.thermostatScheduleConfirm.scheduleText.timeCoolHeatCelsius">{0} - Cool: {1} °C Heat: {2} °C</entry>
 	<entry key="yukon.web.modules.operator.thermostatScheduleConfirm.confirmText.saveApply">Do you wish to send this schedule to your thermostat?</entry>
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.confirmText.save">Do you wish to save this schedule?</entry>
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.ok.label">Continue</entry>

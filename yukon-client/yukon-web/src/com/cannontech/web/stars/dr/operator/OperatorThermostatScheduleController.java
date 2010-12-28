@@ -225,7 +225,8 @@ public class OperatorThermostatScheduleController {
         ats.setScheduleEntries(atsEntries);
 
         // Build up confirmation display object, containing printable representations of the thermostat schedule entries
-        String i18nKey = "yukon.dr.operator.thermostatScheduleConfirm.scheduleText.timeCoolHeat";
+        String i18nKey = (isFahrenheit) ? "yukon.dr.operator.thermostatScheduleConfirm.scheduleText.timeCoolHeatFahrenheit" : 
+        								  "yukon.dr.operator.thermostatScheduleConfirm.scheduleText.timeCoolHeatCelsius";
         List<ThermostatScheduleDisplay> scheduleDisplays = operatorThermostatHelper.getScheduleDisplays(yukonUserContext, type, thermostatScheduleMode, ats, isFahrenheit, i18nKey);
 
     	// Pass all of the parameters through to confirm page
