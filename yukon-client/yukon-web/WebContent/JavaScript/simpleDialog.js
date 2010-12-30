@@ -20,11 +20,13 @@ function adjustDialogSizeAndPosition(dialogId) {
         }
         naturalDialogSizes[dialogId] = dialogDimensions;
     }
-    dialogDiv.setStyle({
-        width: dialogDimensions.width + "px",
-		height: dialogDimensions.height + "px"
-    });
-
+    
+    //format the arguments for prototype 1.6 changes
+    var width = (/auto/).test(dialogDimensions.width) ? dialogDimensions.width : ((/px/).test(dialogDimensions.width) ? dialogDimensions.width : (dialogDimensions.width + "px"));
+    var height = (/auto/).test(dialogDimensions.height) ? dialogDimensions.height : ((/px/).test(dialogDimensions.height) ? dialogDimensions.height : (dialogDimensions.height + "px"));
+    
+    dialogDiv.setStyle({ width: width, height: height });
+    
     var viewportDimensions = getViewportDimensions();
     var dialogDimensions = dialogDiv.getDimensions();
 

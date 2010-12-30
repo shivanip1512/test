@@ -11,6 +11,8 @@
 
 <cti:includeCss link="/WebConfig/yukon/styles/operator/survey.css"/>
 
+<div id="rsvErrors" class="userMessage ERROR hidden"></div>
+
 <c:set var="baseKey" value="yukon.web.surveys.${survey.surveyKey}"/>
 <script type="text/javascript">
 var answerMessagesById = {};
@@ -19,6 +21,33 @@ var answerMessagesById = {};
         answerMessagesById[${answer.surveyQuestionAnswerId}] = '<cti:msg2 javaScriptEscape="true" key="${baseKey}.${question.questionKey}.${answer.answerKey}"/>';
     </c:forEach>
 </c:forEach>
+
+Event.observe(window, 'load', function() {
+    new RSV({
+        formID: 'reportConfig',
+        errorFieldClass: 'errorField',
+        displayType: 'display-html',
+        rules: [
+            "if:startDate!='',if:stopDate!='',function,checkDates"
+        ]
+    });
+});
+
+function checkDates() {
+    if($("stopDate").value == '') {
+        return true;
+    }
+
+    //convert to date objects and compare
+    var start = new Date($("startDate").value);
+    var stop = new Date($("stopDate").value);
+
+    if(start < stop) {
+        return true;
+    }
+    
+    return [[document.getElementById("startDate"), "The Start Date must occur before the End Date."]]
+}
 
 function reportTypeChanged() {
 	if ($F('reportTypeSelect') === 'detail') {
