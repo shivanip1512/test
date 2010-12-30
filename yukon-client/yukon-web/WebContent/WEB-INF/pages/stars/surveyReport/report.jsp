@@ -71,4 +71,26 @@
     </c:forEach>
 </table>
 
+<cti:url var="submitUrl" value="/spring/stars/surveyReport/config"/>
+<form:form action="${submitUrl}" commandName="reportConfig">
+    <form:hidden path="accountNumber"/>
+    <c:forEach var="answer" items="${reportConfig.answerIds}">
+        <input type="hidden" value="${answer}" name="answerId"/>
+    </c:forEach>
+    <form:hidden path="deviceSerialNumber"/>
+    <form:hidden path="includeOtherAnswers"/>
+    <form:hidden path="includeUnanswered"/>
+    <c:forEach var="program" items="${reportConfig.programIds}">
+        <input type="hidden" value="${program}" name="programIds"/>
+    </c:forEach>
+    <form:hidden path="questionId"/>
+    <form:hidden path="reportType"/>
+    <form:hidden path="startDate"/>
+    <form:hidden path="stopDate"/>
+    <form:hidden path="surveyId"/>
+
+    <div class="pageActionArea">
+        <input type="submit" value="<cti:msg2 key=".configureReport"/>">
+    </div>
+</form:form>
 </cti:standardPage>

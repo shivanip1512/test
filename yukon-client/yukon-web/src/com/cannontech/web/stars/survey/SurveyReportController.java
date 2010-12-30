@@ -106,12 +106,15 @@ public class SurveyReportController {
 
     @RequestMapping
     public String config(ModelMap model, int surveyId,
+            @ModelAttribute ReportConfig reportConfig,
             YukonUserContext userContext) {
         Survey survey = verifyEnergyCompany(surveyId, userContext);
         model.addAttribute("survey", survey);
-        ReportConfig reportConfig = new ReportConfig();
+        if(reportConfig == null) {
+            reportConfig = new ReportConfig();
+        }
         reportConfig.setSurveyId(surveyId);
-        model.addAttribute("reportConfig", reportConfig);
+//        model.addAttribute("reportConfig", reportConfig);
         return config(model, survey, userContext);
     }
 

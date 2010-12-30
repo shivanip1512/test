@@ -158,6 +158,7 @@
 
 <entry key="yukon.web.modules.survey.report.pageName">Report</entry>
 <entry key="yukon.web.modules.survey.report.pageDescription">{0}</entry>
+<entry key="yukon.web.modules.survey.report.configureReport">Reconfigure Report</entry>
 
 <entry key="yukon.web.modules.survey.report.question">Question</entry>
 <entry key="yukon.web.modules.survey.report.startDate">Start Date</entry>
