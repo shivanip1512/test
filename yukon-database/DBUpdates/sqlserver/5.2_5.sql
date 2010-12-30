@@ -10,7 +10,7 @@ INSERT INTO YukonRoleProperty VALUES(-20168,-201,'Serial Number Validation','NUM
 DELETE FROM InventoryConfigTask;
 
 ALTER TABLE InventoryConfigTask
-ADD UserId NUMBER NOT NULL;
+ADD UserId NUMERIC NOT NULL;
 
 ALTER TABLE InventoryConfigTask 
     ADD CONSTRAINT FK_InvConfTask_YukonUser FOREIGN KEY (UserId) 
