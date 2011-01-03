@@ -90,7 +90,7 @@
     <form:hidden path="surveyId"/>
 
     <div class="pageActionArea">
-        <input type="submit" value="<cti:msg2 key=".configureReport"/>">
+        <cti:button type="submit" key="configureReport"/>
     </div>
 </form:form>
 </cti:standardPage>

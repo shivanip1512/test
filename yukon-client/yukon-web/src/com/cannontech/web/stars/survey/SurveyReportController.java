@@ -114,7 +114,6 @@ public class SurveyReportController {
             reportConfig = new ReportConfig();
         }
         reportConfig.setSurveyId(surveyId);
-//        model.addAttribute("reportConfig", reportConfig);
         return config(model, survey, userContext);
     }
 
