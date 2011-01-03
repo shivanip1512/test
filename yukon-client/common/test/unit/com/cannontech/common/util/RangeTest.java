@@ -18,6 +18,10 @@ public class RangeTest {
     private Range<Integer> from5Exclusive_to10Exclusive = new Range<Integer>(5, false, 10, false);
     private Range<Integer> from5Exclusive_to10Inclusive = new Range<Integer>(5, false, 10, true);
     private Range<Integer> from5Inclusive_to10Exclusive = new Range<Integer>(5, true, 10, false);
+    private Range<Integer> from5Inclusive_to5Inclusive = new Range<Integer>(5, true, 5, true);
+    private Range<Integer> from5Inclusive_to5Exclusive = new Range<Integer>(5, true, 5, false);
+    private Range<Integer> from5Exclusive_to5Exclusive = new Range<Integer>(5, false, 5, false);
+    private Range<Integer> from5Exclusive_to5Inclusive = new Range<Integer>(5, false, 5, true);
 
     private Range<Integer> inverted = new Range<Integer>(10, false, 5, false);
 
@@ -51,11 +55,19 @@ public class RangeTest {
     }
 
     @Test
-    public void testInverted() {
-        assertTrue(inverted.isInverted());
-        assertFalse(from5Inclusive_toUnbounded.isInverted());
+    public void testEmpty() {
+        assertTrue(inverted.isEmpty());
+        assertFalse(from5Inclusive_toUnbounded.isEmpty());
+        assertFalse(from5Exclusive_toUnbounded.isEmpty());
+        assertFalse(fromUnbounded_to5Inclusive.isEmpty());
+        assertFalse(fromUnbounded_to5Exclusive.isEmpty());
 
-        // Nothing should intersect an inverted range.
+        assertFalse(from5Inclusive_to5Inclusive.isEmpty());
+        assertTrue(from5Inclusive_to5Exclusive.isEmpty());
+        assertTrue(from5Exclusive_to5Exclusive.isEmpty());
+        assertTrue(from5Exclusive_to5Inclusive.isEmpty());
+
+        // Nothing should intersect an empty range.
         assertFalse(inverted.intersects(0));
         assertFalse(inverted.intersects(5));
         assertFalse(inverted.intersects(7));

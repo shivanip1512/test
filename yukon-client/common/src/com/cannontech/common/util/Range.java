@@ -96,9 +96,17 @@ public class Range<T extends Comparable<T>> {
         return min == null && max == null;
     }
 
-    public boolean isInverted() {
-        return min != null && max != null && min.compareTo(max) > 0;
-    }
+	public boolean isEmpty() {
+		if (min == null || max == null) {
+			return false;
+		}
+
+		if (min.equals(max)) {
+			return !(includesMinValue && includesMaxValue);
+		}
+
+		return min.compareTo(max) > 0;
+	}
 
     public String toString() {
         return min + " " + (includesMinValue ? "inclusive" : "exclusive")

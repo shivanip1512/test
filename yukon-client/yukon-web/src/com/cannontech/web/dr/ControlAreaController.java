@@ -113,7 +113,7 @@ public class ControlAreaController {
             @Override
             protected void doValidation(ControlAreaListBackingBean target,
                     Errors errors) {
-                if (target.priority.isInverted()) {
+                if (target.priority.isEmpty()) {
                     errors.reject("priorityFromAfterTo");
                 }
             }

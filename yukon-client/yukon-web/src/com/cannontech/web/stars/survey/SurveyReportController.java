@@ -90,7 +90,7 @@ public class SurveyReportController {
         protected void doValidation(ReportConfig reportConfig, Errors errors) {
             Date start = reportConfig.getStartDate();
             Date end = reportConfig.getStopDate();
-            if (start != null && end != null && start.after(end)) {
+            if (start != null && end != null && !start.before(end)) {
                 errors.reject("startTimeNotBeforeStopTime");
             }
             if (question.getQuestionType() == QuestionType.DROP_DOWN) {

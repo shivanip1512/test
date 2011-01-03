@@ -76,7 +76,7 @@ public class LoadGroupControllerHelper {
             @Override
             protected void doValidation(LoadGroupListBackingBean target,
                     Errors errors) {
-                if (target.lastAction.isInverted()) {
+                if (target.lastAction.isEmpty()) {
                     errors.reject("lastActionFromTimeAfterToTime");
                 }
             }

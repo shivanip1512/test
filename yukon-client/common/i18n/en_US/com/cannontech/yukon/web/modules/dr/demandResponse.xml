@@ -128,9 +128,7 @@
 <!-- control area filter error messages -->
 <entry key="yukon.web.modules.dr.controlArea.typeMismatch.java.util.Date">Invalid date</entry>
 <entry key="yukon.web.modules.dr.controlArea.typeMismatch.java.lang.Integer">Must be an integer.</entry>
-<entry key="yukon.web.modules.dr.controlArea.startFromTimeAfterToTime">Beginning of date range for Start must be before end.</entry>
-<entry key="yukon.web.modules.dr.controlArea.stopFromTimeAfterToTime">Beginning of date range for Stop must be before end.</entry>
-<entry key="yukon.web.modules.dr.controlArea.priorityFromAfterTo">Minimum priority must be less than maximum.</entry>
+<entry key="yukon.web.modules.dr.controlArea.priorityFromAfterTo">Minimum priority must be less than or equal to the maximum.</entry>
 
 <!--  Program Field Values -->
 <entry key="yukon.web.modules.dr.program.value.STATE.ACTIVE">Active</entry>
@@ -337,7 +335,7 @@
 
 <!-- load group filter error messages -->
 <entry key="yukon.web.modules.dr.loadGroup.typeMismatch.java.util.Date">Invalid date</entry>
-<entry key="yukon.web.modules.dr.loadGroup.lastActionFromTimeAfterToTime">Beginning of date range for Last Action must be before end.</entry>
+<entry key="yukon.web.modules.dr.loadGroup.lastActionFromTimeAfterToTime">Beginning of date range for Last Action must be before or equal to end.</entry>
 
 <!-- Demand Response Home -->
 <entry key="yukon.web.modules.dr.home.pageTitle">Demand Response</entry>
@@ -519,10 +517,9 @@
 <entry key="yukon.web.modules.dr.programList.heading.loadCapacity">Load Capacity</entry>
 <entry key="yukon.web.modules.dr.programList.typeMismatch.java.util.Date">Invalid date</entry>
 <entry key="yukon.web.modules.dr.programList.typeMismatch.java.lang.Integer">Must be an integer.</entry>
-<entry key="yukon.web.modules.dr.programList.startFromTimeAfterToTime">Beginning of date range for Start must be before end.</entry>
-<entry key="yukon.web.modules.dr.programList.stopFromTimeAfterToTime">Beginning of date range for Stop must be before end</entry>
-<entry key="yukon.web.modules.dr.programList.priorityFromAfterTo">Minimum priority must be less than maximum.</entry>
-<entry key="yukon.web.modules.dr.programList.lastActionFromTimeAfterToTime">Beginning of date range for Last Action must be before end.</entry>
+<entry key="yukon.web.modules.dr.programList.startFromTimeAfterToTime">Beginning of date range for Start must be before or equal to end.</entry>
+<entry key="yukon.web.modules.dr.programList.stopFromTimeAfterToTime">Beginning of date range for Stop must be before or equal to end</entry>
+<entry key="yukon.web.modules.dr.programList.priorityFromAfterTo">Minimum priority must be less than or equal to the maximum.</entry>
 
 
 <!-- Program Detail -->
