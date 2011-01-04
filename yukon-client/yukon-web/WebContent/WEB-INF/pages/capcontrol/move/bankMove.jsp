@@ -5,7 +5,7 @@
 <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/YukonGeneralStyles.css" >
 <link rel="stylesheet" type="text/css" href="/capcontrol/css/CapcontrolGeneralStyles.css" >
 
-<cti:includeScript link="PROTOTYPE" force="true"/>
+<cti:includeScript link="PROTOTYPE"/>
 <script type="text/javascript" src="/capcontrol/js/capcontrolGeneral.js" ></script>
 
 <cti:url var="executeURL" value="/spring/capcontrol/commandexecutor?action=executeCommandTier"/>

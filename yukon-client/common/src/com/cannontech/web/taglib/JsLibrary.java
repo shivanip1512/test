@@ -17,33 +17,24 @@ package com.cannontech.web.taglib;
  *                                  documentation to determine the single file include.
  *  
  */
-public enum JSLibrary {
-    PROTOTYPE("/JavaScript/lib/prototype/1.7.0.0/", "prototype.js"),
-    SCRIPTACULOUS("/JavaScript/lib/scriptaculous/1.8.3/", "scriptaculous.js"),
-    OVERLIB("/JavaScript/ol/", "overlib_mini.js"),
-    RSV("/JavaScript/lib/prototype/plugins/rsv/2.5.1/", "prototype.rsv.js"),
+public enum JsLibrary {
+    PROTOTYPE("/JavaScript/lib/prototype/1.7.0.0/prototype.js"),
+    SCRIPTACULOUS("/JavaScript/lib/scriptaculous/1.8.3/scriptaculous.js"),
+    SCRIPTACULOUS_EFFECTS("/JavaScript/lib/scriptaculous/1.8.3/effects.js"),
+    OVERLIB("/JavaScript/ol/overlib_mini.js"),
+    RSV("/JavaScript/lib/prototype/plugins/rsv/2.5.1/prototype.rsv.js"),
     
     // --DEPRECATED VERSIONS --//
-    PROTOTYPE_150("/JavaScript/", "prototype150.js");
+    PROTOTYPE_150("/JavaScript/prototype150.js");
     //-- END DEPRECATED VERSIONS --//
     
     private String path = "";  //path to library
-    private String defaultComponent = ""; //default library component file
     
-    JSLibrary(String path, String defaultComponent) {
+    JsLibrary(String path) {
         this.path = path;
-        this.defaultComponent = defaultComponent;
     }
     
     public String getPath() {
         return path;
-    }
-    
-    public String getDefaultComponent() {
-        return defaultComponent;
-    }
-    
-    public String getDefaultInclude() {
-        return path + defaultComponent;
     }
 }

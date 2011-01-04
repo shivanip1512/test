@@ -4,7 +4,7 @@
 <cti:url var="verificationUrl"
     value="/spring/stars/hardware/deviceverification" />
 
-<cti:includeScript link="PROTOTYPE" force="true"/>
+<cti:includeScript link="PROTOTYPE"/>
 <script langauge="JavaScript" type="text/javascript">
     Event.observe(window, 'load', function() {
         $("accountnumberinput").focus();

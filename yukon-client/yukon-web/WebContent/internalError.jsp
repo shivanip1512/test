@@ -52,7 +52,7 @@ String friendlyExceptionMessage = ErrorHelperFilter.getFriendlyExceptionMessage(
 <html>
 <head>
 <title>Yukon Error Page</title>
-<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/StandardStyles.css"/>" type="text/css">
+<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/StandardStyles.css"/>" type="text/css">
 <cti:css key="yukon.web.error.errorStyles"/>
 
 </head>
@@ -84,7 +84,7 @@ String friendlyExceptionMessage = ErrorHelperFilter.getFriendlyExceptionMessage(
     </div>
 <% } %>
 <% if (showStack) { %>
-<cti:includeScript link="PROTOTYPE" force="true"/>
+<cti:includeScript link="PROTOTYPE"/>
 <script type="text/javascript">
 function showStack( chkBox ) {
 	var elem = $('stackTrace');
