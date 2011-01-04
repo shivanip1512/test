@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
-import com.cannontech.web.taglib.JSLibrary;
+import com.cannontech.web.taglib.JsLibrary;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -63,14 +63,14 @@ public class LayoutController {
     @PostConstruct
     public void initialize() {
         Builder<String> builder = ImmutableList.builder();
-    	builder.add(JSLibrary.PROTOTYPE.getDefaultInclude());
+    	builder.add(JsLibrary.PROTOTYPE.getPath());
         builder.add("/JavaScript/yukonGeneral.js");
         if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
             builder.add("/JavaScript/basicLogger.js");
         }
         builder.add("/JavaScript/CtiMenu.js");
         builder.add("/JavaScript/dataUpdater.js");
-        builder.add(JSLibrary.SCRIPTACULOUS.getPath() + "effects.js");
+        builder.add(JsLibrary.SCRIPTACULOUS.getPath());
         builder.add("/JavaScript/simpleCookies.js");
         builder.add("/JavaScript/alert.js");
         builder.add("/JavaScript/javaWebStartLauncher.js");
@@ -216,6 +216,17 @@ public class LayoutController {
     @ModelAttribute("yukonVersion")
     public String getYukonVersion() {
         return VersionTools.getYUKON_VERSION();
+    }
+    
+    @ModelAttribute("yukonBuild")
+    public String getyukonBuild() {
+        Map<String, String> buildInfo = VersionTools.getYukonBuild();
+        if (buildInfo.containsKey("JOB_NAME") && buildInfo.containsKey("BUILD_NUMBER")) {
+            return "<a href=\"http://hudson.cooperpowereas.net/job/" + buildInfo.get("JOB_NAME") + "/" 
+            + buildInfo.get("BUILD_NUMBER") + "\">" + buildInfo.get("BUILD_NUMBER") + "</a>";
+        } else {
+            return "";
+        }
     }
     
     private ModuleBase getModuleBase(String moduleName) throws JspException {
