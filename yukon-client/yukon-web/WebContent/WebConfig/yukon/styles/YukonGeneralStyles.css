@@ -1138,6 +1138,11 @@ div.userMessage.ERROR {
 	background-image: url(../Icons/error.gif);
 }
 
+div.ecInfoFragment {
+	margin-top:8px;
+	font-size:11px;
+}
+
 div.accountInfoFragment {
 
 	margin-top:8px;

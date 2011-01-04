@@ -19,6 +19,7 @@
                 <ref bean="userContextArgumentResolver"/>
                 <ref bean="flashScopeArgumentResolver"/>
                 <ref bean="accountInfoFragmentArgumentResolver"/>
+                <ref bean="energyCompanyInfoFragmentArgumentResolver"/>
                 <ref bean="enumArgumentResolver"/>
             </list>
         </property>
@@ -1431,6 +1432,7 @@
     <bean id="filterModelValidator" class="com.cannontech.web.stars.dr.operator.inventoryOperations.FilterModelValidator"/>
 
     <!-- OPERATOR -->
+    <bean id="energyCompanyInfoService" class="com.cannontech.web.stars.dr.operator.service.impl.EnergyCompanyInfoServiceImpl"/>
     <bean id="operatorAccountService" class="com.cannontech.web.stars.dr.operator.service.impl.OperatorAccountServiceImpl"/>
     <bean id="operatorThermostatHelperImpl" class="com.cannontech.web.stars.dr.operator.service.impl.OperatorThermostatHelperImpl"/>
     <bean id="accountGeneralValidator" class="com.cannontech.web.stars.dr.operator.validator.AccountGeneralValidator"/>
@@ -1715,6 +1717,8 @@
     <bean id="flashScopeArgumentResolver" class="com.cannontech.web.common.flashScope.FlashScopeArgumentResolver"/>
     
     <bean id="accountInfoFragmentArgumentResolver" class="com.cannontech.web.stars.dr.operator.general.AccountInfoFragmentArgumentResolver"/>
+    
+    <bean id="energyCompanyInfoFragmentArgumentResolver" class="com.cannontech.web.stars.dr.operator.energyCompany.EnergyCompanyInfoFragmentArgumentResolver"/>
     
     <bean id="zoneDtoValidator" class="com.cannontech.web.capcontrol.ivvc.validators.ZoneDtoValidator"/>
     

@@ -1039,6 +1039,13 @@
                         </option>
                     </options>
                 </option>
+                <option name="energyCompany">
+                    <options>
+                        <option name="home">
+                            <link>/spring/stars/operator/energyCompany/home</link>
+                        </option>
+                    </options>
+                </option>
                 <dynamicOptions id="faq" bean="operatorFaqMenuOption">
                     <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ADMIN_FAQ" />
                 </dynamicOptions>
@@ -1333,6 +1340,74 @@
                             <page name="deviceReconfigStatus" type="DETAIL_CHILD">
                                 <menu>inventory|inventoryOperations</menu>
                                 <labelArgument>${taskName}</labelArgument>
+                            </page>
+                        </pages>
+                    </page>
+                </pages>
+            </page>
+            <page name="energyCompanyOperations" type="BASIC">
+                <menu>energyCompany|home</menu>
+                <link>/spring/stars/operator/energyCompany/home</link>
+                <pages>
+                    <page name="generalInfo.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
+                        <menu>energyCompany|home</menu>
+                        <link>/spring/stars/operator/energyCompany/generalInfo?ecId=${ecId}</link>
+                        <labelArgument>${energyCompanyName}</labelArgument>
+                        <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
+                        <pages>
+                            <page name="generalInfo.EDIT" type="DETAIL_CHILD_WITH_INFO">
+                                <menu>energyCompany|home</menu>
+                                <link>/spring/stars/operator/energyCompany/generalInfo?ecId=${ecId}</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
+                            </page>
+                            <page name="applianceCategories.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompany|home</menu>
+                                <link>/spring/stars/operator/energyCompany/applianceCategories</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
+                            </page>
+                            <page name="serviceAndStorage.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompany|home</menu>
+                                <link>/spring/stars/operator/energyCompany/serviceAndStorage</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
+                            </page>
+                            <page name="substations.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompany|home</menu>
+                                <link>/spring/stars/operator/energyCompany/substations</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
+                            </page>
+                            <page name="routes.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompany|home</menu>
+                                <link>/spring/stars/operator/energyCompany/routes</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
+                            </page>
+                            <page name="lists.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompany|home</menu>
+                                <link>/spring/stars/operator/energyCompany/lists</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
+                            </page>
+                            <page name="schedules.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompany|home</menu>
+                                <link>/spring/stars/operator/energyCompany/schedules</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
+                            </page>
+                            <page name="settlement.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompany|home</menu>
+                                <link>/spring/stars/operator/energyCompany/settlement</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
+                            </page>
+                            <page name="faqs.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompany|home</menu>
+                                <link>/spring/stars/operator/energyCompany/faqs</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
                             </page>
                         </pages>
                     </page>
