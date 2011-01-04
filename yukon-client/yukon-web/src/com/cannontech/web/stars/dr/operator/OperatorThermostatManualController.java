@@ -99,7 +99,7 @@ public class OperatorThermostatManualController {
 				            FlashScope flashScope,
 					        AccountInfoFragment accountInfoFragment) {
 
-		doSave(thermostatIds, mode, fan, temperatureUnit, userContext, request, modelMap, flashScope, accountInfoFragment);
+		executeManualEvent(thermostatIds, mode, fan, temperatureUnit, userContext, request, modelMap, flashScope, accountInfoFragment);
 		
         return "redirect:view";
     }
@@ -116,12 +116,12 @@ public class OperatorThermostatManualController {
 				            FlashScope flashScope,
 					        AccountInfoFragment accountInfoFragment) {
 
-		doSave(thermostatIds, mode, fan, temperatureUnit, userContext, request, modelMap, flashScope, accountInfoFragment);
+		executeManualEvent(thermostatIds, mode, fan, temperatureUnit, userContext, request, modelMap, flashScope, accountInfoFragment);
 		
         return "redirect:/spring/stars/operator/thermostatSchedule/view";
     }
 	
-    private void doSave(String thermostatIds,
+    private void executeManualEvent(String thermostatIds,
 				    		String mode, 
 				    		String fan, 
 				    		String temperatureUnit, 

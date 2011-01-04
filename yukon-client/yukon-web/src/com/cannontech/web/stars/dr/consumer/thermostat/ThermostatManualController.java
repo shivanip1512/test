@@ -124,7 +124,25 @@ public class ThermostatManualController extends AbstractThermostatController {
             String mode, String fan, String temperatureUnit, YukonUserContext userContext,
             HttpServletRequest request, ModelMap map) throws Exception {
 
-        CustomerAccount account = getCustomerAccount(request);
+        executeManualEvent(thermostatIds, mode, fan, temperatureUnit, userContext, request, map);
+
+        return "redirect:/spring/stars/consumer/manualComplete";
+    }
+    
+    @RequestMapping(value = "/consumer/thermostat/runProgram", method = RequestMethod.POST)
+    public String runProgram(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+            String mode, String fan, String temperatureUnit, YukonUserContext userContext,
+            HttpServletRequest request, ModelMap map) throws Exception {
+
+        executeManualEvent(thermostatIds, mode, fan, temperatureUnit, userContext, request, map);
+
+        return "redirect:/spring/stars/consumer/runProgramComplete";
+    }
+
+	private void executeManualEvent(List<Integer> thermostatIds, String mode,
+			String fan, String temperatureUnit, YukonUserContext userContext,
+			HttpServletRequest request, ModelMap map) {
+		CustomerAccount account = getCustomerAccount(request);
 
         // Log thermostat manual event save attempt
         for (int thermostatId : thermostatIds) {
@@ -211,15 +229,33 @@ public class ThermostatManualController extends AbstractThermostatController {
 
         // Manually put thermsotatIds into model for redirect
         map.addAttribute("thermostatIds", thermostatIds.toString());
-
-        return "redirect:/spring/stars/consumer/manualComplete";
-    }
+	}
 
     @RequestMapping(value = "/consumer/manualComplete", method = RequestMethod.GET)
     public String manualComplete(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
             String message, LiteYukonUser user, ModelMap map) throws Exception {
 
-        accountCheckerService.checkInventory(user, 
+        setupManualCompletePage(thermostatIds, message, user, map);
+
+        map.addAttribute("viewUrl", "/spring/stars/consumer/thermostat/view");
+        
+        return "consumer/actionComplete.jsp";
+    }
+    
+    @RequestMapping(value = "/consumer/runProgramComplete", method = RequestMethod.GET)
+    public String runProgramComplete(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+            String message, LiteYukonUser user, ModelMap map) throws Exception {
+
+        setupManualCompletePage(thermostatIds, message, user, map);
+
+        map.addAttribute("viewUrl", "/spring/stars/consumer/thermostat/schedule/view");
+        
+        return "consumer/actionComplete.jsp";
+    }
+
+	private void setupManualCompletePage(List<Integer> thermostatIds,
+			String message, LiteYukonUser user, ModelMap map) {
+		accountCheckerService.checkInventory(user, 
                                              thermostatIds.toArray(new Integer[thermostatIds.size()]));
         
         ThermostatManualEventResult resultMessage = ThermostatManualEventResult.valueOf(message);
@@ -236,11 +272,7 @@ public class ThermostatManualController extends AbstractThermostatController {
 
         map.addAttribute("message", resolvable);
         map.addAttribute("thermostatIds", thermostatIds);
-
-        map.addAttribute("viewUrl", "/spring/stars/consumer/thermostat/view");
-
-        return "consumer/actionComplete.jsp";
-    }
+	}
 
     @Autowired
     public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
