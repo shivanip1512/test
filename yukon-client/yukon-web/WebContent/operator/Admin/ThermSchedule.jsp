@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 
@@ -37,8 +38,8 @@
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> <br>
               <span class="TitleHeader">ADMINISTRATION - DEFAULT THERMOSTAT SCHEDULE</span><br>
-              <c:if test="${!empty param.confirmMsg}">
-                  <br><span class="ConfirmMsg">${param.confirmMsg}</span><br>
+              <c:if test="${param.saveSuccessful}">
+                  <br><span class="ConfirmMsg"><cti:msg key="yukon.web.modules.operator.thermostatSchedule.saveSuccessful"/></span><br>
               </c:if>
 
               <!--  'type' parameter is passed through automatically to include request -->
