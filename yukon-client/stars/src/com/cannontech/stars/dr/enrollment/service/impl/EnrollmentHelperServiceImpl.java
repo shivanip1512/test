@@ -158,7 +158,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     }
 
     public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
-    	EnrollmentHelperHolder enrollmentHelperHolder = buildEnrollmentHelperAdapter(enrollmentHelper, enrollmentEnum, user);
+    	EnrollmentHelperHolder enrollmentHelperHolder = buildEnrollmentHelperHolder(enrollmentHelper, enrollmentEnum, user);
     	doEnrollment(enrollmentHelperHolder, enrollmentEnum, user);    	
     }
     
@@ -452,7 +452,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 		return enrolledDeviceProgramsList;
 	}
 	
-    private EnrollmentHelperHolder buildEnrollmentHelperAdapter(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user) {
+    private EnrollmentHelperHolder buildEnrollmentHelperHolder(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user) {
     	CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(enrollmentHelper.getAccountNumber(), user);
     	
     	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
