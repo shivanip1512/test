@@ -25,37 +25,38 @@ submitForm = function() {
 <cti:flashScopeMessages/>
 
 <cti:url var="submitUrl" value="/spring/stars/optOutSurvey/save"/>
-<form:form id="inputForm" commandName="optOutSurvey" action="${submitUrl}"
+<form:form id="inputForm" commandName="optOutSurveyDto" action="${submitUrl}"
     onsubmit="return submitForm()">
     <form:hidden path="optOutSurveyId"/>
-    <c:forEach var="programId" items="${optOutSurvey.programIds}">
-        <input type="hidden" name="programIds" value="${programId}"/>
-    </c:forEach>
-    <form:hidden path="surveyId"/>
     <form:hidden path="energyCompanyId"/>
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".programs">
-            <c:forEach var="programId" items="${optOutSurvey.programIds}" end="2">
-                <spring:escapeBody htmlEscape="true">${programNamesById[programId]}</spring:escapeBody><br>
-            </c:forEach>
-            <c:if test="${fn:length(optOutSurvey.programIds) > 3}">
-                <i:inline key=".ellipsis"/>
-            </c:if>
+            <tags:bind path="programIds">
+                <tags:pickerDialog type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
+                    id="programPicker" selectionProperty="paoName"
+                    destinationFieldName="programIds" initialIds="${optOutSurveyDto.programIds}"
+                    multiSelectMode="true" linkType="selection" useInitialIdsIfEmpty="true"
+                    extraArgs="${optOutSurveyDto.energyCompanyId}"/>
+            </tags:bind>
         </tags:nameValue2>
 
         <tags:nameValue2 nameKey=".survey">
-            <spring:escapeBody htmlEscape="true">${survey.surveyName}</spring:escapeBody>
+            <tags:bind path="surveyId">
+                <tags:pickerDialog type="surveyPicker" id="surveyPicker" selectionProperty="surveyName"
+                    destinationFieldName="surveyId" initialId="${optOutSurveyDto.surveyId}"
+                    immediateSelectMode="true" linkType="selection" useInitialIdsIfEmpty="true"/>
+            </tags:bind>
         </tags:nameValue2>
 
         <tags:nameValue2 nameKey=".startDate">
-            <tags:dateTimeInput path="startDate" fieldValue="${optOutSurvey.startDate}"/>
+            <tags:dateTimeInput path="startDate" fieldValue="${optOutSurveyDto.startDate}"/>
         </tags:nameValue2>
 
         <tags:nameValue2 nameKey=".stopDate" labelForId="specifyStopDateCheckbox">
             <form:checkbox id="specifyStopDateCheckbox" path="specifyStopDate"
                 onclick="specifyStopDateChecked()"/>
             <label for="specifyStopDateCheckbox"><i:inline key=".specifyStopDate"/></label>
-            <tags:dateTimeInput path="stopDate" fieldValue="${optOutSurvey.stopDate}"/>
+            <tags:dateTimeInput path="stopDate" fieldValue="${optOutSurveyDto.stopDate}"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
 

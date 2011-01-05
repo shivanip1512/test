@@ -13,9 +13,14 @@
     <cti:includeCss link="/WebConfig/yukon/styles/operator/survey.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
+    <cti:includeScript link="/JavaScript/picker.js"/>
+    <cti:includeScript link="/JavaScript/simpleDialog.js"/>
+    <cti:includeScript link="/JavaScript/tableCreation.js"/>
     <cti:msg2 var="programListTitle" key=".programListTitle" javaScriptEscape="true"/>
+    <cti:msg2 var="addSurveyTitle" key=".addSurveyTitle" javaScriptEscape="true"/>
 	<script type="text/javascript">
 	    var programListTitle = '${programListTitle}';
+        var addSurveyTitle = '${addSurveyTitle}';
 	</script>
 
     <c:set var="baseUrl" value="/spring/stars/optOutSurvey/list"/>
@@ -81,31 +86,11 @@
             </table>
         </c:if>
 
-        <script type="text/javascript">
-        function chooseSurvey(programIds) {
-        	surveyPicker.show()
-        	return true;
-        }
-
-        function addOptOutSurvey(surveyid) {
-            openSimpleDialog('ajaxDialog', $('addForm').action,
-                    '<spring:escapeBody javaScriptEscape="true"><cti:msg2 key=".addDialogTitle"/></spring:escapeBody>',
-                     $('addForm').serialize(true));
-            return true;
-        }
-        </script>
-
         <cti:url var="addUrl" value="/spring/stars/optOutSurvey/edit"/>
         <form id="addForm" action="${addUrl}">
             <div class="actionArea">
-	            <tags:pickerDialog type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker" id="programPicker"
-	                destinationFieldName="programIds" endAction="chooseSurvey"
-	                multiSelectMode="true" linkType="button" nameKey="add"
-	                extraArgs="${energyCompanyId}"/>
-                <tags:pickerDialog type="surveyPicker" id="surveyPicker"
-                    destinationFieldName="surveyId" endAction="addOptOutSurvey"
-                    styleClass="simpleLink" immediateSelectMode="true"
-                    linkType="none"/>
+                <cti:url var="addUrl" value="/spring/stars/optOutSurvey/edit"/>
+                <cti:button key="add" onclick="openSimpleDialog('ajaxDialog', '${addUrl}', addSurveyTitle)"/>
             </div>
         </form>
     </tags:pagedBox>

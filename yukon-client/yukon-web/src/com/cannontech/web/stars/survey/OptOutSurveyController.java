@@ -1,7 +1,6 @@
 package com.cannontech.web.stars.survey;
 
 import java.beans.PropertyEditor;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +11,8 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,6 +22,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Survey;
+import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.PaoDao;
@@ -51,6 +53,17 @@ public class OptOutSurveyController {
     private EnergyCompanyDao energyCompanyDao;
     private PaoDao paoDao;
     private DatePropertyEditorFactory datePropertyEditorFactory;
+    
+    private Validator validator = new SimpleValidator<OptOutSurveyDto>(OptOutSurveyDto.class) {
+        @Override
+        protected void doValidation(OptOutSurveyDto target, Errors errors) {
+            if (target.getSurveyId() == 0) {
+                errors.rejectValue("surveyId", "yukon.web.error.required");
+            }
+            if (target.getProgramIds() == null || target.getProgramIds().length == 0) {
+                errors.rejectValue("programIds", "yukon.web.error.required");
+            }
+        }};
 
     @RequestMapping
     public String list(ModelMap model,
@@ -128,15 +141,7 @@ public class OptOutSurveyController {
         OptOutSurveyDto optOutSurveyDto = null;
         if (optOutSurveyId == null || optOutSurveyId == 0) {
             optOutSurveyDto = new OptOutSurveyDto();
-            if (surveyId == 0) {
-                throw new RuntimeException("survey id required");
-            }
-            if (programIds == null || programIds.length == 0) {
-                throw new RuntimeException("at least one login group id required");
-            }
             optOutSurveyDto.setStartDate(new Date());
-            optOutSurveyDto.setSurveyId(surveyId);
-            optOutSurveyDto.setProgramIds(programIds);
             LiteEnergyCompany energyCompany =
                 energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
             optOutSurveyDto.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
@@ -151,14 +156,7 @@ public class OptOutSurveyController {
 
     private String edit(ModelMap model, OptOutSurveyDto optOutSurveyDto,
             YukonUserContext userContext) {
-        model.addAttribute("optOutSurvey", optOutSurveyDto);
-
-        Map<Integer, String> programNamesById =
-            paoDao.getYukonPAONames(Arrays.asList(optOutSurveyDto.getProgramIds()));
-        model.addAttribute("programNamesById", programNamesById);
-
-        Survey survey = surveyDao.getSurveyById(optOutSurveyDto.getSurveyId());
-        model.addAttribute("survey", survey);
+        model.addAttribute("optOutSurveyDto", optOutSurveyDto);
 
         return "optOutSurvey/edit.jsp";
     }
@@ -170,6 +168,7 @@ public class OptOutSurveyController {
             FlashScope flashScope) {
         verifyEditable(optOutSurveyDto.getEnergyCompanyId(), userContext);
 
+        validator.validate(optOutSurveyDto, bindingResult);
         if (!bindingResult.hasErrors()) {
             optOutSurveyDao.saveOptOutSurvey(optOutSurveyDto.getOptOutSurvey());
         }

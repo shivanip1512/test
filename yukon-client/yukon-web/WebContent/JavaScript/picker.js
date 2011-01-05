@@ -55,6 +55,7 @@ Picker.prototype = {
 		this.resultAreaFixedId = 'picker_' + this.pickerId + '_resultAreaFixed';
 		this.errorHolderId = 'picker_' + this.pickerId + '_errorHolder';
 		this.primed = false;
+		this.useInitialIdsIfEmpty = false;
 	},
 
 	/**
@@ -157,6 +158,10 @@ Picker.prototype = {
 				this.showSelectedLink = $(showSelectedImg.parentNode);
 				this.showSelectedLink.hide();
 			}
+	        if (this.selectionProperty) {
+	            this.selectionLabel = $('picker_' + this.pickerId + '_label').getElementsBySelector('span')[0];
+	            this.originalSelectionLabel = this.selectionLabel.innerHTML;
+	        }
 		}
 
 		var initialIds = [];
@@ -170,6 +175,8 @@ Picker.prototype = {
 
 		if (initialIds && initialIds.length > 0) {
 			this.prime(false, initialIds);
+		} else if (this.useInitialIdsIfEmpty) {
+		    this.selectedItems = [];
 		}
 	},
 
@@ -230,6 +237,7 @@ Picker.prototype = {
 			this.ssInput.value =
 				Picker.rememberedSearches[this.memoryGroup];
 		}
+		this.nothingSelectedDiv.hide();
 		$(this.pickerId).show();
 		this.ssInput.focus();
 		this.doSearch();
@@ -247,10 +255,6 @@ Picker.prototype = {
 		this.allPagesSelected = $('picker_' + this.pickerId + '_allPagesSelected');
 		this.clearEntireSelectionLink = $('picker_' + this.pickerId + '_clearEntireSelection');
 		this.entireSelectionCleared = $('picker_' + this.pickerId + '_entireSelectionCleared');
-		if (this.selectionProperty) {
-			this.selectionLabel = $('picker_' + this.pickerId + '_label').getElementsBySelector('span')[0];
-			this.originalSelectionLabel = this.selectionLabel.innerHTML;
-		}
 		this.outputColumns = json.outputColumns;
 		this.idFieldName = json.idFieldName;
 
@@ -281,7 +285,7 @@ Picker.prototype = {
 		var json = transport.responseText.evalJSON();
 		if (json.hits && json.hits.resultList) {
 			this.selectedItems = json.hits.resultList;
-			this.showSelectedLink.show();
+			if (this.showSelectedLink) this.showSelectedLink.show();
 		}
 		this.updateOutsideFields(true);
 	},

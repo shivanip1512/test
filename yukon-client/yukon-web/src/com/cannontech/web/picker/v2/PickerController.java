@@ -64,6 +64,7 @@ public class PickerController {
         JSONObject object = new JSONObject();
         object.put("hits", JSONObject.fromBean(hits));
 
+        response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         out.print(object.toString());
         out.close();
@@ -108,6 +109,7 @@ public class PickerController {
                                              hits.getHitCount());
         object.put("allPagesSelected", messageSourceAccessor.getMessage(resolvable));
 
+        response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         out.print(object.toString());
         out.close();

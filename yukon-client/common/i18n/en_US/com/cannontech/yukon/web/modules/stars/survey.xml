@@ -201,6 +201,7 @@
 <entry key="yukon.web.modules.dr.surveyList.virtualProgramName">Virtual Program {0}</entry>
 <entry key="yukon.web.modules.dr.surveyList.programName">Name</entry>
 
+<entry key="yukon.web.modules.dr.surveyList.addSurveyTitle">Add Opt Out Survey</entry>
 <entry key="yukon.web.modules.dr.surveyList.edit.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
 <entry key="yukon.web.modules.dr.surveyList.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.gif</entry>
 <entry key="yukon.web.modules.dr.surveyList.edit.hoverText">Edit Opt Out Survey.</entry>

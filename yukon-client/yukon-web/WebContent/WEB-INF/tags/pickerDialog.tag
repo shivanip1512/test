@@ -15,7 +15,9 @@
 <%@ attribute name="anchorStyleClass" description="Class to style the anchor with"%>
 <%@ attribute name="selectionProperty" description="Required with a linkType of 'selection', used to determine name of property from selected item to display in label.  Not used with other linkType values."%>
 <%@ attribute name="allowEmptySelection" description="Allow an empty selection.  Only valid when 'multiSelectMode' is true."%>
+<%@ attribute name="initialId" description="Id of item selected at the start." rtexprvalue="true"%>
 <%@ attribute name="initialIds" type="java.lang.Object" description="Ids of items selected at the start." rtexprvalue="true"%>
+<%@ attribute name="useInitialIdsIfEmpty" type="java.lang.Boolean" description="Clears selection if initial id(s) is empty." rtexprvalue="true"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -61,6 +63,9 @@
             ${id}.selectedAndMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedAnd"/>';
             ${id}.selectedMoreMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedMore"/>';
         </c:if>
+        <c:if test="${pageScope.useInitialIdsIfEmpty}">
+            ${id}.useInitialIdsIfEmpty = true;
+        </c:if>
     }
 </script>
 
@@ -77,10 +82,13 @@
 </c:if>
 
 <span id="picker_${id}_inputArea">
-<c:if test="${!empty initialIds}">
+<c:if test="${!empty pageScope.initialIds}">
     <c:forEach var="initialId" items="${initialIds}">
         <input type="hidden" name="${destinationFieldName}" value="${initialId}">
     </c:forEach>
+</c:if>
+<c:if test="${!empty pageScope.initialId}">
+    <input type="hidden" name="${destinationFieldName}" value="${initialId}">
 </c:if>
 </span>
 
