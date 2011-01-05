@@ -81,8 +81,8 @@ public class SurveyResultsDetailModel extends
                                               startDate, getStopDateAsInstant(),
                                               accountNumber, deviceSerialNumber);
 
-        Multimap<SurveyResult, OptOutEvent> optOutsBySurveyResult =
-            optOutEventDao.getOptOutsBySurveyResult(surveyResults);
+        Map<SurveyResult, Map<Integer, OptOutEvent>> optOutsBySurveyResult =
+            optOutEventDao.getOptOutsBySurveyResultAndInventoryId(surveyResults);
         List<Integer> inventoryIds = Lists.newArrayList();
         List<Integer> accountIds = Lists.newArrayList();
         for (SurveyResult result : surveyResults) {
@@ -98,9 +98,7 @@ public class SurveyResultsDetailModel extends
             if (accountId != null && accountId != 0) {
                 accountIds.add(result.getAccountId());
             }
-            for (OptOutEvent event : optOutsBySurveyResult.get(result)) {
-                inventoryIds.add(event.getInventoryId());
-            }
+            inventoryIds.addAll(optOutsBySurveyResult.get(result).keySet());
         }
 
         Survey survey = surveyDao.getSurveyById(surveyId);
@@ -132,32 +130,31 @@ public class SurveyResultsDetailModel extends
                 }
             }
 
-            for (OptOutEvent event : optOutsBySurveyResult.get(result)) {
-                ModelRow row = new ModelRow();
-                row.accountNumber = result.getAccountNumber();
-                HardwareSummary hardwareSummary = hardwareSummariesById.get(event.getInventoryId());
-                row.serialNumber = hardwareSummary.getSerialNumber();
-                row.altTrackingNumber = "";
-                CustomerAccountWithNames account = accountsByAccountId.get(result.getAccountId());
-                if (account != null) {
-                    row.altTrackingNumber = account.getAlternateTrackingNumber();
-                }
-                row.reason = getReason(result, baseKey);
-                row.scheduledDate = event.getScheduledDate().toDate();
-                row.startDate = event.getStartDate().toDate();
-                row.endDate = event.getStopDate().toDate();
+            OptOutEvent event = optOutsBySurveyResult.get(result).get(result.getInventoryId());
+            ModelRow row = new ModelRow();
+            row.accountNumber = result.getAccountNumber();
+            HardwareSummary hardwareSummary = hardwareSummariesById.get(event.getInventoryId());
+            row.serialNumber = hardwareSummary.getSerialNumber();
+            row.altTrackingNumber = "";
+            CustomerAccountWithNames account = accountsByAccountId.get(result.getAccountId());
+            if (account != null) {
+                row.altTrackingNumber = account.getAlternateTrackingNumber();
+            }
+            row.reason = getReason(result, baseKey);
+            row.scheduledDate = event.getScheduledDate().toDate();
+            row.startDate = event.getStartDate().toDate();
+            row.endDate = event.getStopDate().toDate();
 
-                if (programsControlledDuringOptOut.isEmpty()) {
-                    row.loadProgram = noControlDuringOptOut;
-                    row.gear = "";
-                    data.add(row);
-                } else {
-                    for (ProgramControlHistory hist : programsControlledDuringOptOut) {
-                        ModelRow programRow = new ModelRow(row);
-                        programRow.loadProgram = hist.getProgramName();
-                        programRow.gear = hist.getGearName();
-                        data.add(programRow);
-                    }
+            if (programsControlledDuringOptOut.isEmpty()) {
+                row.loadProgram = noControlDuringOptOut;
+                row.gear = "";
+                data.add(row);
+            } else {
+                for (ProgramControlHistory hist : programsControlledDuringOptOut) {
+                    ModelRow programRow = new ModelRow(row);
+                    programRow.loadProgram = hist.getProgramName();
+                    programRow.gear = hist.getGearName();
+                    data.add(programRow);
                 }
             }
         }

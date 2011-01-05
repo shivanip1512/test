@@ -702,7 +702,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 
 	@Override
-    public Multimap<SurveyResult, OptOutEvent> getOptOutsBySurveyResult(
+    public Map<SurveyResult, Map<Integer, OptOutEvent>> getOptOutsBySurveyResultAndInventoryId(
             Iterable<SurveyResult> surveyResults) {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
 
@@ -738,8 +738,16 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
                 }
         };
 
-        Multimap<SurveyResult, OptOutEvent> retVal =
+        Multimap<SurveyResult, OptOutEvent> eventsBySurveyResult =
             template.multimappedQuery(sqlGenerator, surveyResults, mappingRowMapper, typeMapper);
+        Map<SurveyResult, Map<Integer, OptOutEvent>> retVal = Maps.newHashMap();
+        for (SurveyResult result : eventsBySurveyResult.keySet()) {
+            Map<Integer, OptOutEvent> eventsByInventoryId = Maps.newHashMap();
+            retVal.put(result, eventsByInventoryId);
+            for (OptOutEvent event : eventsBySurveyResult.get(result)) {
+                eventsByInventoryId.put(event.getInventoryId(), event);
+            }
+        }
 
         return retVal;
     }

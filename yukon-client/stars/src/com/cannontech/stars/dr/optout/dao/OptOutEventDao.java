@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.optout.dao;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -220,6 +221,6 @@ public interface OptOutEventDao {
 	/**
 	 * Get a map of SurveyResult to OptOutEvent mapping. 
 	 */
-    public Multimap<SurveyResult, OptOutEvent> getOptOutsBySurveyResult(
+    public Map<SurveyResult, Map<Integer, OptOutEvent>> getOptOutsBySurveyResultAndInventoryId(
             Iterable<SurveyResult> surveyResults);
 }

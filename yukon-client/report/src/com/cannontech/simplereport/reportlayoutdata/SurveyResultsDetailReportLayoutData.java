@@ -11,7 +11,7 @@ public class SurveyResultsDetailReportLayoutData implements ReportLayoutData {
             new ColumnLayoutData("Reason", "reason", 100),
             new ColumnLayoutData("Scheduled Date", "scheduledDate", 85, "DATEHM"),
             new ColumnLayoutData("Start Date", "startDate", 85, "DATEHM"),
-            new ColumnLayoutData("End Date", "stopDate", 85, "DATEHM"),
+            new ColumnLayoutData("End Date", "endDate", 85, "DATEHM"),
             new ColumnLayoutData("Load Program", "loadProgram", 100),
             new ColumnLayoutData("Gear", "gear", 100)
     };
