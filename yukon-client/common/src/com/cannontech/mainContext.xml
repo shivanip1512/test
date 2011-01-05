@@ -200,6 +200,7 @@
                <value>classpath:com/cannontech/yukon/web/modules/operator/thermostat</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/workOrder</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/inventory</value>
+               <value>classpath:com/cannontech/yukon/web/modules/operator/energyCompany</value>
                <value>classpath:com/cannontech/yukon/web/modules/multispeak/root</value>
                <value>classpath:com/cannontech/yukon/web/modules/multispeak/lmMappings</value>
 			   <value>classpath:com/cannontech/yukon/web/modules/multispeak/mspSetup</value>
