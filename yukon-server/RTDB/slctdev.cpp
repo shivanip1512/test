@@ -384,7 +384,6 @@ DLLEXPORT CtiRouteBase* RouteFactory(Cti::RowReader &rdr)
                 Route = (CtiRouteBase*) CTIDBG_new CtiRouteExpresscom;
                 break;
             }
-            case RouteTypeRepeater:
             case RouteTypeInvalid:
             default:
             {

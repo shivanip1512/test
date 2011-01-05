@@ -639,7 +639,6 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                         case RouteTypeCCU:         // These route types may be considered default routes
                         case RouteTypeTCU:
                         case RouteTypeLCU:
-                        case RouteTypeRepeater:
                         case RouteTypeVersacom:
                         case RouteTypeExpresscom:
                         case RouteTypeTap:

@@ -211,7 +211,6 @@ void attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RM)
                 case RouteTypeCCU:
                 case RouteTypeTCU:
                 case RouteTypeLCU:
-                case RouteTypeRepeater:
                 case RouteTypeVersacom:
                 case RouteTypeExpresscom:
                 case RouteTypeTap:
@@ -564,7 +563,7 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
             case TYPE_CCU721:
             {
                 using Cti::Devices::Ccu721Device;
-                Cti::Devices::CCU721SPtr ccu = boost::static_pointer_cast<Ccu721Device>(RemoteDevice);
+                Cti::Devices::Ccu721SPtr ccu = boost::static_pointer_cast<Ccu721Device>(RemoteDevice);
 
                 //  don't lock dout while we do this - the CCU locks internally, and we want to avoid acquiring any muxes out of order
                 string queue_report = ccu->queueReport();

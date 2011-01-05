@@ -378,7 +378,6 @@ string desolveRouteType( INT aType )
         case RouteTypeTCU:          Ret = "tcu";    break;
         case RouteTypeMacro:        Ret = "macro";  break;
         case RouteTypeLCU:          Ret = "lcu";    break;
-        case RouteTypeRepeater:     Ret = "repeater";   break;
         case RouteTypeVersacom:     Ret = "versacom";   break;
         case RouteTypeExpresscom:   Ret = "expresscom"; break;
         case RouteTypeTap:          Ret = "tap paging"; break;

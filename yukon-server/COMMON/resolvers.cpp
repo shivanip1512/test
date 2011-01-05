@@ -51,10 +51,6 @@ INT resolveRouteType( const string& _rwsTemp)
     {
         Ret = RouteTypeLCU;
     }
-    else if(rwsTemp == "repeater")
-    {
-        Ret = RouteTypeRepeater;
-    }
     else if(rwsTemp == "versacom")
     {
         Ret = RouteTypeVersacom;

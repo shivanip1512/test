@@ -99,7 +99,7 @@ public:
     int processInbound(const OUTMESS *om, INMESS *im);
 };
 
-typedef boost::shared_ptr<Ccu721Device> CCU721SPtr;
+typedef boost::shared_ptr<Ccu721Device> Ccu721SPtr;
 
 }
 }

@@ -396,7 +396,6 @@ enum CtiRoute_t
     RouteTypeTCU,
     RouteTypeMacro,
     RouteTypeLCU,
-    RouteTypeRepeater,
     RouteTypeVersacom,
     RouteTypeExpresscom,
     RouteTypeTap,

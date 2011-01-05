@@ -1166,7 +1166,7 @@ struct kick
         if( ccu_device->getType() == TYPE_CCU721 )
         {
             using Cti::Devices::Ccu721Device;
-            Cti::Devices::CCU721SPtr ccu = boost::static_pointer_cast<Ccu721Device>(ccu_device);
+            Cti::Devices::Ccu721SPtr ccu = boost::static_pointer_cast<Ccu721Device>(ccu_device);
 
             OUTMESS *OutMessage = CTIDBG_new OUTMESS;
 

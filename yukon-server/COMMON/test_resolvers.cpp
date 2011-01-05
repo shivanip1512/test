@@ -40,7 +40,6 @@ BOOST_AUTO_TEST_CASE(test_resolveRouteType)
     BOOST_CHECK_EQUAL(resolveRouteType("tcu"),   RouteTypeTCU);
     BOOST_CHECK_EQUAL(resolveRouteType("macrO"), RouteTypeMacro);
     BOOST_CHECK_EQUAL(resolveRouteType("lcu"),   RouteTypeLCU);
-    BOOST_CHECK_EQUAL(resolveRouteType("repeater"), RouteTypeRepeater);
     BOOST_CHECK_EQUAL(resolveRouteType("versacom"), RouteTypeVersacom);
     BOOST_CHECK_EQUAL(resolveRouteType("tap paging"),     RouteTypeTap);
     BOOST_CHECK_EQUAL(resolveRouteType("tappaging"),      RouteTypeTap);
