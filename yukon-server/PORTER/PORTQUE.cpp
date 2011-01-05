@@ -158,11 +158,11 @@ struct buildLGRPQ
                                 CtiPortSPtr port = PortManager.PortGetEqual(ccu_device->getPortID());
                                 if( port )
                                 {
-                                    ULONG reqCount = 0, priority = 0;
+                                    ULONG reqCount = 0;
                                     ULONG requestID = QUEUED_MSG_REQ_ID_BASE + ccu_device->getAddress();
                                     HCTIQUEUE portQueue = port->getPortQueueHandle();
 
-                                    GetRequestCountAndPriority(portQueue, requestID, reqCount, priority);
+                                    GetRequestCount(portQueue, requestID, reqCount);
 
                                     if( reqCount > 0 )
                                     {
@@ -1348,7 +1348,6 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
     ULONG Count;
     OUTMESS *MyOutMessage, *OutMessage = 0;
     ULONG i, j;
-    REQUESTDATA QueueResult;
     USHORT Offset;
     USHORT SETLPos, QueTabEnt;
     BYTE Priority = 7;
@@ -1374,7 +1373,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
             /* This is a no no so throw em away (for now) */
             for(i = 0; i < Count; i++)
             {
-                if(ReadQueue (pInfo->QueueHandle, &QueueResult, &Length, (PVOID *) &MyOutMessage, 0, DCWW_WAIT, &Priority))
+                if(ReadQueue (pInfo->QueueHandle, &Length, (PVOID *) &MyOutMessage, 0, DCWW_WAIT, &Priority))
                 {
                     _snprintf(tempstr, 99,"Error Reading Queue\n");
                     {
@@ -1422,7 +1421,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
         for(i = 1; i <= Count && !pInfo->getStatus(INLGRPQ); i++)       /* limit to one Lgrpq per ccu on queue at a time */
         {
             /* get the client submitted entry from the queue */
-            if(ReadQueue (pInfo->QueueHandle, &QueueResult, &Length, (PVOID *) &MyOutMessage, 0, DCWW_WAIT, &Priority))
+            if(ReadQueue (pInfo->QueueHandle, &Length, (PVOID *) &MyOutMessage, 0, DCWW_WAIT, &Priority))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1667,7 +1666,6 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
     ULONG Count;
     OUTMESS *MyOutMessage, *OutMessage;
     USHORT Lastset;
-    REQUESTDATA QueueResult;
     USHORT Offset;
     BYTE Priority;
 
@@ -1687,7 +1685,7 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
     while(Count)
     {
         /* get the entry from the queue */
-        if(ReadQueue (pInfo->ActinQueueHandle, &QueueResult, &Length, (PVOID *) &MyOutMessage, 0, DCWW_WAIT, &Priority))
+        if(ReadQueue (pInfo->ActinQueueHandle, &Length, (PVOID *) &MyOutMessage, 0, DCWW_WAIT, &Priority))
         {
             _snprintf(tempstr, 99,"Error Reading Actin Queue\n");
             {

@@ -841,14 +841,13 @@ void UnsolicitedHandler::readPortQueue(CtiPortSPtr &port, om_list &local_queue)
 {
     unsigned long entries = 0;
     bool printed = false;
-    REQUESTDATA rq;
     unsigned long size;
     unsigned char priority;
     OUTMESS *om;
 
     unsigned long max_entries = port->queueCount();
 
-    while( max_entries-- && port->readQueue( &rq, &size, (PPVOID)&om, DCWW_NOWAIT, &priority, &entries) == NORMAL )
+    while( max_entries-- && port->readQueue( &size, (PPVOID)&om, DCWW_NOWAIT, &priority, &entries) == NORMAL )
     {
         port->incQueueSubmittal(1, CtiTime());
 

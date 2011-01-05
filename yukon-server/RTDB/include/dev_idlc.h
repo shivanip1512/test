@@ -188,13 +188,13 @@ public:
                 CtiTransmitter711Info *p711 = CTIDBG_new CtiTransmitter711Info(getType());
 
                 /* create the queue */
-                if(CreateQueue (&p711->QueueHandle, QUE_PRIORITY))
+                if(CreateQueue (&p711->QueueHandle))
                 {
                     printf ("Error Creating CCU Queue\n");
                 }
 
                 /* create the queue */
-                if(CreateQueue (&p711->ActinQueueHandle, QUE_PRIORITY))
+                if(CreateQueue (&p711->ActinQueueHandle))
                 {
                     printf ("Error Creating Actin Queue\n");
                 }

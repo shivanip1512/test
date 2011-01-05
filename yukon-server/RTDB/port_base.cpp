@@ -341,7 +341,7 @@ INT CtiPort::queueInit(HANDLE hQuit)
         CtiLockGuard<CtiMutex> guard(_classMutex);
 
         /* create the queue for this port */
-        if( (status = CreateQueue (&_portQueue, QUE_PRIORITY, hQuit)) != NORMAL )
+        if( (status = CreateQueue (&_portQueue, hQuit)) != NORMAL )
         {
             CloseQueue( _portQueue );
             _portQueue = NULL;
@@ -1278,7 +1278,7 @@ INT CtiPort::searchPortQueueForConnectedDeviceUID(BOOL (*myFunc)(void*, void*))
 }
 
 
-INT CtiPort::readQueue( PREQUESTDATA RequestData, PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Priority, ULONG *pElementCount )
+INT CtiPort::readQueue( PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Priority, ULONG* pElementCount)
 {
     bool readPortQueue = true;
     static CtiTime lastQueueReportTime;
@@ -1298,7 +1298,7 @@ INT CtiPort::readQueue( PREQUESTDATA RequestData, PULONG DataSize, PPVOID Data, 
              */
             // We are sharing the port and the share toggle is set to select a shared queue entry.
             setShareToggle(false);    // Indicates that the next queue read should look for an UN-flagged (MSGFLG_PORT_SHARING) OM (One from Yukon that is)
-            status = ReadQueue(_portShareQueue, RequestData, DataSize, Data, Element, WaitFlag, Priority, pElementCount);
+            status = ReadQueue(_portShareQueue, DataSize, Data, Element, WaitFlag, Priority, pElementCount);
 
             if(!status) readPortQueue = false; // We pulled one from the share queue.
         }
@@ -1312,7 +1312,7 @@ INT CtiPort::readQueue( PREQUESTDATA RequestData, PULONG DataSize, PPVOID Data, 
     if(readPortQueue && _portQueue)
     {
         setShareToggle(true);    // Indicates that the next queue read should look for a flagged (MSGFLG_PORT_SHARING) OM (One NOT from Yukon that is)
-        status = ReadQueue(_portQueue, RequestData, DataSize, Data, Element, WaitFlag, Priority, pElementCount);
+        status = ReadQueue(_portQueue, DataSize, Data, Element, WaitFlag, Priority, pElementCount);
 
         if(pElementCount && *pElementCount > 5000 && CtiTime() > lastQueueReportTime)  // Ok, we may have an issue here....
         {
@@ -1422,7 +1422,6 @@ INT CtiPort::requeueToParent(OUTMESS *&OutMessage)
             _parentPort->writeQueue( NewOutMessage->Request.GrpMsgID, sizeof(*NewOutMessage), (char *)NewOutMessage, NewOutMessage->Priority );
         }
 
-        REQUESTDATA    ReadResult;
         BYTE           ReadPriority;
         ULONG          QueEntries;
         ULONG          ReadLength;
@@ -1432,7 +1431,7 @@ INT CtiPort::requeueToParent(OUTMESS *&OutMessage)
         while(queueCount())
         {
             // Move the OM from the pool queue to the child queue.
-            if( readQueue( &ReadResult, &ReadLength, (PPVOID) &NewOutMessage, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
+            if( readQueue( &ReadLength, (PPVOID) &NewOutMessage, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
             {
                 _parentPort->writeQueue( NewOutMessage->Request.GrpMsgID, sizeof(*NewOutMessage), (char *) NewOutMessage, NewOutMessage->Priority );
                 {
@@ -1650,10 +1649,9 @@ int CtiPort::getWorkCount(long requestID)
         }
         else
         {
-            ULONG priority;
             if(_portQueue != NULL)
             {
-                GetRequestCountAndPriority(_portQueue, requestID, workCount, priority);
+                GetRequestCount(_portQueue, requestID, workCount);
             }
         }
     }
@@ -1719,7 +1717,7 @@ INT CtiPort::writeShareQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Pri
         CtiLockGuard<CtiMutex> guard(_classMutex);
 
         /* create the queue for this port */
-        if( (status = CreateQueue (&_portShareQueue, QUE_PRIORITY, hQuit)) != NORMAL )
+        if( (status = CreateQueue (&_portShareQueue, hQuit)) != NORMAL )
         {
             CloseQueue( _portShareQueue );
             _portShareQueue = NULL;

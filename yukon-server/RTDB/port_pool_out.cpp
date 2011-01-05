@@ -282,14 +282,13 @@ INT CtiPortPoolDialout::allocateQueueEntsToChildPort()
                             if(qloc > 0)
                             {
                                 OUTMESS        *OutMessage;
-                                REQUESTDATA    ReadResult;
                                 BYTE           ReadPriority;
                                 ULONG          QueEntries;
                                 ULONG          ReadLength;
 
                                 setQueueSlot(qloc);
                                 // Move the OM from the pool queue to the child queue.
-                                if( readQueue( &ReadResult, &ReadLength, (PPVOID) &OutMessage, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
+                                if( readQueue( &ReadLength, (PPVOID) &OutMessage, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
                                 {
                                     childport->writeQueue( OutMessage->Request.GrpMsgID, sizeof(*OutMessage), (char *) OutMessage, OutMessage->Priority );
 

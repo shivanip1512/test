@@ -115,7 +115,7 @@ public:
 
     HCTIQUEUE&  getPortQueueHandle();
     INT writeQueue(ULONG Request, LONG  DataSize, PVOID Data, ULONG Priority, HANDLE hQuit = NULL);
-    INT readQueue( PREQUESTDATA RequestData, PULONG  DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Priority, ULONG *pElementCount );
+    INT readQueue( PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Priority, ULONG* pElementCount);
     INT searchQueue( void *ptr, BOOL (*myFunc)(void*, void*), bool useFirstElement = true );
 
     INT queueInit(HANDLE hQuit);     // Sets up the PortQueue

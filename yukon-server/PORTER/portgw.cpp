@@ -365,7 +365,6 @@ VOID PorterGWThread(void *pid)
     UINT sanity=0;
     INT status;
     OUTMESS        *OutMessage;
-    REQUESTDATA    ReadResult;
     BYTE           ReadPriority;
     ULONG          ReadLength;
     ULONG          QueEntries;

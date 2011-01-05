@@ -208,77 +208,51 @@ void SystemMsgThread::executePortEntryRequest(CtiRequestMsg *msg, CtiCommandPars
 
 void SystemMsgThread::executeRequestCount(CtiRequestMsg *msg, CtiCommandParser &parse)
 {
-    unsigned int entries = 0;
-    string resultString;
-    ULONG requestID = msg->GroupMessageId();
-    ULONG rCount, priority;
-    CtiDeviceSPtr tempDev;
-    CtiPortSPtr port;
-    vector <long> queuedDevices;
-    Cti::DeviceQueueInterface* queueInterface;
-    vector <CtiPortManager::ptr_type> portList;
-    CtiConnection  *Conn = NULL;
-    CtiQueueDataMsg *response = NULL;
-
-    if( _pPortManager != NULL && _pDevManager != NULL )
+    if( _pPortManager && _pDevManager )
     {
-        if( requestID != 0 )
+        if( ULONG requestID = msg->GroupMessageId() )
         {
-            getPorts(portList);
-
-            vector<CtiPortManager::ptr_type>::iterator portIter;
-            for( portIter = portList.begin(); portIter != portList.end(); portIter ++ )
+            if( CtiConnection *Conn = (CtiConnection*)msg->getConnectionHandle() )
             {
-                port = *portIter;
+                unsigned int entries = msg->OptionsField(); // set by Pil.
 
-                if( port )
+                vector<CtiPortManager::ptr_type> portList;
+
+                getPorts(portList);
+
+                for each( CtiPortSPtr port in portList )
                 {
-                    entries += port->getWorkCount(requestID);
-                    queuedDevices = port->getQueuedWorkDevices();
-
-                    vector<long>::iterator devIter;
-                    for( devIter = queuedDevices.begin(); devIter!= queuedDevices.end(); devIter++ )
+                    if( port )
                     {
-                        tempDev = _pDevManager->getDeviceByID(*devIter);
+                        entries += port->getWorkCount(requestID);
 
-                        if( tempDev )
+                        for each( const long deviceId in port->getQueuedWorkDevices() )
                         {
-                            queueInterface = tempDev->getDeviceQueueHandler();
-
-                            if( queueInterface != NULL )
+                            if( CtiDeviceSPtr tempDev = _pDevManager->getDeviceByID(deviceId) )
                             {
-                                queueInterface->getQueueRequestInfo(requestID, rCount, priority);
-                                entries += rCount;
+                                if( Cti::DeviceQueueInterface* queueInterface = tempDev->getDeviceQueueHandler() )
+                                {
+                                    entries += queueInterface->getRequestCount(requestID);
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            entries += msg->OptionsField(); // set by Pil.
-            response = CTIDBG_new CtiQueueDataMsg(0, 0, 0, requestID, entries, msg->UserMessageId());
+                CtiQueueDataMsg *response = new CtiQueueDataMsg(0, 0, 0, requestID, entries, msg->UserMessageId());
+
+                if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
+                {
+                    response->dump();
+                }
+
+                Conn->WriteConnQue(response);
+            }
         }
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Request count recieved with no request ID " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-
-    if( response != NULL )
-    {
-        if( (Conn = ((CtiConnection*)msg->getConnectionHandle())) != NULL )
-        {
-            if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
-            {
-                response->dump();
-            }
-
-            Conn->WriteConnQue(response);
-        }
-        else
-        {
-            delete response;
         }
     }
 }

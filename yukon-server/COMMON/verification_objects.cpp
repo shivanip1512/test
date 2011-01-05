@@ -76,7 +76,7 @@ CtiVerificationWork::CtiVerificationWork(Protocol p, const CtiOutMessage &om, co
     _codeDisposition(CodeStatus_Uninitialized)
 {
     _transmitter_id = om.DeviceID;
-    _retry          = (om.Retry > 0)?true:false;
+    _retry          = om.Retry > 0;
     _sequence       = om.VerificationSequence;
 }
 

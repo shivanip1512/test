@@ -30,8 +30,8 @@ CtiFDRClientConnection::CtiFDRClientConnection(SOCKET aSocket, CtiFDRSocketLayer
 
 
 CtiFDRClientConnection::~CtiFDRClientConnection( )
-{   
-} 
+{
+}
 
 HCTIQUEUE & CtiFDRClientConnection::getQueueHandle()
 {
@@ -39,14 +39,14 @@ HCTIQUEUE & CtiFDRClientConnection::getQueueHandle()
 }
 
 
-int CtiFDRClientConnection::init () 
+int CtiFDRClientConnection::init ()
 {
     int retVal;
 
-    iThreadSend = rwMakeThreadFunction(*this, 
+    iThreadSend = rwMakeThreadFunction(*this,
                                             &CtiFDRClientConnection::threadFunctionSendDataTo);
 
-    iThreadHeartbeat = rwMakeThreadFunction(*this, 
+    iThreadHeartbeat = rwMakeThreadFunction(*this,
                                           &CtiFDRClientConnection::threadFunctionSendHeartbeat);
 
     // this will be zero only if the client and server are using the same socket
@@ -62,18 +62,18 @@ int CtiFDRClientConnection::init ()
     return retVal;
 }
 
-int CtiFDRClientConnection::run () 
+int CtiFDRClientConnection::run ()
 {
     iThreadSend.start();
     iThreadHeartbeat.start();
     return NORMAL;
 }
 
-int CtiFDRClientConnection::stop () 
+int CtiFDRClientConnection::stop ()
 {
     closeAndFailConnection();
-    iThreadSend.requestCancellation();    
-    iThreadHeartbeat.requestCancellation();    
+    iThreadSend.requestCancellation();
+    iThreadHeartbeat.requestCancellation();
     return NORMAL;
 }
 
@@ -82,7 +82,7 @@ int CtiFDRClientConnection::stop ()
 * Function Name: CtiFDR_ACS::sendDataToACSThreadFunction( void )
 *
 * Description: thread accesses the socket to send data
-* 
+*
 ***************************************************************************
 */
 void CtiFDRClientConnection::threadFunctionSendDataTo( void )
@@ -90,7 +90,6 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
     RWRunnableSelf  pSelf = rwRunnable( );
     CHAR *buffer=NULL;
     ULONG bytesSent,bytesRead;
-    REQUESTDATA queueResult;
     UCHAR priority;
     int retVal = NORMAL;
     int queueReturn;
@@ -103,12 +102,11 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
         while (getParent() == NULL)
         {
             pSelf.serviceCancellation( );
-            pSelf.sleep (250);  
+            pSelf.sleep (250);
         }
 
         // Create the queue for handling incoming messages
-        if (CreateQueue (&iQueueHandle,
-                         QUE_PRIORITY))
+        if (CreateQueue (&iQueueHandle))
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Unable to allocate space for " << getParent()->getName() << " out queue" << endl;
@@ -119,7 +117,7 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
             while (getParent()->getConnectionSem() == NULL)
             {
                 pSelf.serviceCancellation( );
-                pSelf.sleep (250);  
+                pSelf.sleep (250);
             }
 
             if (getParent()->getConnectionSem() != NULL)
@@ -127,7 +125,7 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
                 // we're ready to fly now
                 setConnectionStatus(CtiFDRSocketConnection::Ok);
 
-    
+
                 if (getParent()->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -178,7 +176,6 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
                     bytesRead = 0;
 
                     queueReturn = ReadQueue (iQueueHandle,
-                                   &queueResult,
                                    &bytesRead,
                                    (PVOID *) &buffer,
                                    0,
@@ -188,7 +185,7 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
                     // only try to send if the connection is available
                     if (getConnectionStatus() ==  CtiFDRSocketConnection::Ok)
                     {
-                        if (bytesRead == 0 && queueReturn != ERROR_QUE_EMPTY) 
+                        if (bytesRead == 0 && queueReturn != ERROR_QUE_EMPTY)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " Error reading from " << getParent()->getName() << " out queue" << queueReturn << endl;
@@ -268,7 +265,7 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
                 dout << CtiTime() << " Unable to open connection semaphore for " << getParent()->getName() << " loading interface failed" << endl;
             }
         }
-    }   
+    }
 
     catch ( RWCancellation &cancellationMsg )
     {
@@ -296,14 +293,14 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
 * Function Name: CtiFDR_ACS::sendHeartbeatToACSThreadFunction( void )
 *
 * Description: thread that sends NULL messages to ACS
-* 
+*
 ***************************************************************************
 */
 void CtiFDRClientConnection::threadFunctionSendHeartbeat( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
     string timestamp;
-	CHAR *heartbeat=NULL;
+    CHAR *heartbeat=NULL;
 
     try
     {
@@ -311,7 +308,7 @@ void CtiFDRClientConnection::threadFunctionSendHeartbeat( void )
         while (getParent() == NULL || iQueueHandle == NULL)
         {
             pSelf.serviceCancellation( );
-            pSelf.sleep (500);  
+            pSelf.sleep (500);
         }
 
         if (getParent()->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -333,7 +330,7 @@ void CtiFDRClientConnection::threadFunctionSendHeartbeat( void )
 
                 if (heartbeat != NULL)
                 {
-                    // Ship it to the TCP/IP interface thread 
+                    // Ship it to the TCP/IP interface thread
                     if (WriteQueue (iQueueHandle,
                                     0,
                                     getParent()->getMessageSize(heartbeat),
@@ -378,7 +375,7 @@ void CtiFDRClientConnection::threadFunctionSendHeartbeat( void )
     }
 }
 
-int CtiFDRClientConnection::initializeConnection (SOCKADDR_IN aAddr) 
+int CtiFDRClientConnection::initializeConnection (SOCKADDR_IN aAddr)
 {
     int retVal = NORMAL;
     SOCKET tmpConnection;
@@ -393,7 +390,7 @@ int CtiFDRClientConnection::initializeConnection (SOCKADDR_IN aAddr)
     if (tmpConnection == INVALID_SOCKET)
     {
         shutdown(tmpConnection, 2);
-        closesocket(tmpConnection);     
+        closesocket(tmpConnection);
         retVal = SOCKET_ERROR;
     }
     else
@@ -402,7 +399,7 @@ int CtiFDRClientConnection::initializeConnection (SOCKADDR_IN aAddr)
         if (setsockopt(tmpConnection, SOL_SOCKET, SO_REUSEADDR, (char*)&ka, sizeof(BOOL)))
         {
             shutdown(tmpConnection, 2);
-            retVal = closesocket(tmpConnection);     
+            retVal = closesocket(tmpConnection);
             tmpConnection = NULL;
             retVal = SOCKET_ERROR;
         }
@@ -441,7 +438,7 @@ int CtiFDRClientConnection::initializeConnection (SOCKADDR_IN aAddr)
             if (retVal == SOCKET_ERROR)
             {
                 shutdown(tmpConnection, 2);
-                closesocket(tmpConnection);     
+                closesocket(tmpConnection);
                 tmpConnection = NULL;
             }
             else
@@ -467,25 +464,25 @@ INT CtiFDRClientConnection::writeSocket (CHAR *aBuffer, ULONG length, ULONG &aBy
     {
         // send the data
         while((bytesSent = send(getConnection(), aBuffer, length, 0)) == SOCKET_ERROR &&
-	      WSAGetLastError() == WSAEWOULDBLOCK)
-	{
-	    rwRunnable().yield();
-	}
+          WSAGetLastError() == WSAEWOULDBLOCK)
+        {
+            rwRunnable().yield();
+        }
 
         if (bytesSent == SOCKET_ERROR)
         {
-	    CtiLockGuard<CtiLogger> dout_guard(dout);
-	    dout << CtiTime() << " Socket Error on write, WSAGetLastError() == " << WSAGetLastError() << endl;
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << CtiTime() << " Socket Error on write, WSAGetLastError() == " << WSAGetLastError() << endl;
 
             retVal =  SOCKET_ERROR;
         }
-	else if( bytesSent != length)
-	{
-	    CtiLockGuard<CtiLogger> dout_guard(dout);
-	    dout << CtiTime() << " Socket Error on write, wrote " << bytesSent << " bytes, intended to write " << length << ", WSAGetLastError() == " << WSAGetLastError() << endl;
-	    
-	    retVal = SOCKET_ERROR;
-	}
+        else if( bytesSent != length)
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << CtiTime() << " Socket Error on write, wrote " << bytesSent << " bytes, intended to write " << length << ", WSAGetLastError() == " << WSAGetLastError() << endl;
+
+            retVal = SOCKET_ERROR;
+        }
         else
         {
             aBytesWritten = bytesSent;

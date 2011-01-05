@@ -18,14 +18,16 @@ void CCU711DeviceQueueInterface::set711Info(CtiTransmitter711Info *pInfo)
     _p711Info = pInfo;
 }
 
-void CCU711DeviceQueueInterface::getQueueRequestInfo(ULONG requestID, ULONG &count, ULONG &priority)
+unsigned long CCU711DeviceQueueInterface::getRequestCount(unsigned long requestID)
 {
-    count = 0;
-    priority = 0;
-    if( requestID > 0 && _p711Info != NULL )
+    unsigned long count = 0;
+
+    if( requestID && _p711Info )
     {
-        GetRequestCountAndPriority(_p711Info->QueueHandle, requestID, count,  priority);
+        GetRequestCount(_p711Info->QueueHandle, requestID, count);
     }
+
+    return count;
 }
 
 void CCU711DeviceQueueInterface::retrieveQueueEntries(bool (*myFindFunc)(void*, void*), void *findParameter, std::list<void*>& entries)

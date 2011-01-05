@@ -43,7 +43,6 @@ VOID PortPoolDialoutThread(void *pid)
     CtiPortSPtr    ParentPort( PortManager.PortGetEqual( portid ) );      // Bump the reference count on the shared object!
 
     OUTMESS        *OutMessage = 0;
-    REQUESTDATA    ReadResult;
     BYTE           ReadPriority;
     ULONG          MSecs, QueEntries, ReadLength;
 
@@ -89,7 +88,7 @@ VOID PortPoolDialoutThread(void *pid)
             continue;
         }
 
-        if((status = ParentPort->readQueue( &ReadResult, &ReadLength, (PPVOID) &OutMessage, DCWW_WAIT, &ReadPriority, &QueEntries)) != NORMAL )
+        if((status = ParentPort->readQueue( &ReadLength, (PPVOID) &OutMessage, DCWW_WAIT, &ReadPriority, &QueEntries)) != NORMAL )
         {
             /*
              *  This is a Read from the CTI queueing structures which will originate from

@@ -3888,11 +3888,10 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &devi
 
             if(qEnt > 0)
             {
-                REQUESTDATA    ReadResult;
                 BYTE           ReadPriority;
 
                 Port->setQueueSlot(qEnt);
-                if(Port->readQueue( &ReadResult, &ReadLength, (PPVOID)&pOutMessage, DCWW_NOWAIT, &ReadPriority, &QueueCount))
+                if(Port->readQueue( &ReadLength, (PPVOID)&pOutMessage, DCWW_NOWAIT, &ReadPriority, &QueueCount))
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -4308,7 +4307,6 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries, boo
 {
     INT status;
     ULONG ReadLength;
-    REQUESTDATA ReadResult;
     BYTE ReadPriority;
 
     OutMessage = 0;         // Don't let us return with a bogus value!
@@ -4325,7 +4323,7 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries, boo
      *  OutMessage pointer, and fills it from it's queue entries!
      */
 
-    if((status = Port->readQueue( &ReadResult, &ReadLength, (PPVOID) &OutMessage, DCWW_NOWAIT, &ReadPriority, &QueEntries)) != NORMAL )
+    if((status = Port->readQueue( &ReadLength, (PPVOID) &OutMessage, DCWW_NOWAIT, &ReadPriority, &QueEntries)) != NORMAL )
     {
         if(status == ERROR_QUE_EMPTY)
         {
@@ -4455,11 +4453,10 @@ CtiOutMessage *GetLGRippleGroupAreaBitMatch(CtiPortSPtr Port, CtiOutMessage *&Ou
             dout << CtiTime() << " Additional RIPPLE'd queue entry found for port " << Port->getName() << endl;
         }
 
-        REQUESTDATA    ReadResult;
         BYTE           ReadPriority;
 
         Port->setQueueSlot(slot);
-        if(Port->readQueue( &ReadResult, &ReadLength, (PPVOID)&match, DCWW_NOWAIT, &ReadPriority, &QueueCount))
+        if(Port->readQueue( &ReadLength, (PPVOID)&match, DCWW_NOWAIT, &ReadPriority, &QueueCount))
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);

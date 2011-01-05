@@ -9,14 +9,14 @@ CCU721DeviceQueueInterface::CCU721DeviceQueueInterface(Protocol::Klondike &klond
 {
 }
 
-void CCU721DeviceQueueInterface::getQueueRequestInfo(ULONG requestID, ULONG &count, ULONG &priority)
+unsigned long CCU721DeviceQueueInterface::getRequestCount(unsigned long requestID)
 {
-    count = 0;
-    priority = 0;  //  priority is unused
     if( requestID > 0 )
     {
-        count = _klondike.getQueueCount(requestID);
+        return _klondike.getQueueCount(requestID);
     }
+
+    return 0;
 }
 
 void CCU721DeviceQueueInterface::retrieveQueueEntries(bool (*myFindFunc)(void*, void*), void *findParameter, std::list<void*>& entries)

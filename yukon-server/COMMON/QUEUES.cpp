@@ -35,81 +35,11 @@ static void DefibBlockSem(HCTIQUEUE QueueHandle)
     return;
 }
 
-/* Routine to return the starting position of a RequestID, returns 0 if not found */
-IM_EX_CTIBASE INT GetIndividualRequestStartPos(HCTIQUEUE QueueHandle, ULONG RequestID, UINT &StartPos)
-{
-    INT retVal = NORMAL;
-
-    StartPos = 0;
-    UINT tempPos = 0;
-    QUEUEENT *Entry = NULL;
-
-    int dlcnt = 0;
-    while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
-        }
-
-        //autopsy(__FILE__, __LINE__);
-
-        if(++dlcnt > 10)
-        {
-            DefibBlockSem(QueueHandle);
-        }
-    }
-
-    std::map<long, REQUESTSTATUS>::iterator iter = QueueHandle->RequestInfo.find(RequestID);
-    if(iter != QueueHandle->RequestInfo.end())
-    {
-        for(int i = iter->second.Priority + 1; i <= MAXPRIORITY; i++)
-        {
-            tempPos += QueueHandle->NumElements[i];
-        }
-
-        /* Walk up the priorities until we find one that has a last */
-        for(int i = iter->second.Priority + 1; i <= MAXPRIORITY; i++)
-        {
-            if(QueueHandle->Last[i] != NULL)
-            {
-                Entry = QueueHandle->Last[i];
-                break;
-            }
-        }
-        if(Entry == NULL)
-        {
-            Entry = QueueHandle->First;
-        }
-
-        INT pos = 1;
-        while(Entry != NULL && Entry->Request != RequestID)
-        {
-            Entry = Entry->Next;
-            pos++;
-        }
-
-        if(Entry != NULL)
-        {
-            StartPos = tempPos + pos;
-        }
-        else
-        {
-            retVal = ERROR_QUE_ELEMENT_NOT_EXIST;
-        }
-    }
-
-    CTIReleaseMutexSem (QueueHandle->BlockSem);
-
-    return retVal;
-}
-
-/* Routine to return the count and priority of requests for a RequestID, returns 0 if not found */
-IM_EX_CTIBASE INT GetRequestCountAndPriority(HCTIQUEUE QueueHandle, ULONG RequestID, ULONG &Count, ULONG &Priority)
+/* Routine to return the number of requests for a RequestID, returns 0 if not found */
+IM_EX_CTIBASE INT GetRequestCount(HCTIQUEUE QueueHandle, ULONG RequestID, ULONG &Count)
 {
     int retVal = NORMAL;
     Count = 0;
-    Priority = 0;
     QUEUEENT *Entry = NULL;
 
     int dlcnt = 0;
@@ -128,11 +58,10 @@ IM_EX_CTIBASE INT GetRequestCountAndPriority(HCTIQUEUE QueueHandle, ULONG Reques
         }
     }
 
-    std::map<long, REQUESTSTATUS>::iterator iter = QueueHandle->RequestInfo.find(RequestID);
-    if(iter != QueueHandle->RequestInfo.end())
+    request_count_t::iterator iter = QueueHandle->RequestCount.find(RequestID);
+    if(iter != QueueHandle->RequestCount.end())
     {
-        Count = iter->second.Count;
-        Priority = iter->second.Priority;
+        Count = iter->second;
     }
     else
     {
@@ -144,304 +73,10 @@ IM_EX_CTIBASE INT GetRequestCountAndPriority(HCTIQUEUE QueueHandle, ULONG Reques
     return retVal;
 }
 
-/* Routine to change priorities */
-IM_EX_CTIBASE INT AdjustPriority(HCTIQUEUE QueueHandle, ULONG RequestID, INT &NumberFound, ULONG TopPriority, INT Count)
-{
-    INT foundCount = 0;
-    PQUEUEENT PrevEntry = NULL;
-    PQUEUEENT CurEntry = NULL;
-
-    if(QueueHandle == (HCTIQUEUE) NULL)
-    {
-        return(ERROR_QUE_INVALID_HANDLE);
-    }
-
-    /* Now figure out where it goes... */
-    if(QueueHandle->Type & QUE_PRIORITY)
-    {
-        if(TopPriority > MAXPRIORITY)
-        {
-            TopPriority = MAXPRIORITY;
-        }
-        /* get the block semaphore */
-        int dlcnt = 0;
-        while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
-            }
-
-            //autopsy(__FILE__, __LINE__);
-
-            if(++dlcnt > 10)
-            {
-                DefibBlockSem(QueueHandle);
-            }
-        }
-
-        CurEntry = QueueHandle->First;
-        std::map<long, REQUESTSTATUS>::iterator iter = QueueHandle->RequestInfo.find(RequestID);
-        if(iter != QueueHandle->RequestInfo.end() && Count >= (iter->second.Count/2))
-        {
-            if(iter->second.Priority < TopPriority)
-            {
-                iter->second.Priority++;
-            }
-        }
-        else
-        {
-            // According to RequestInfo, this guy doesnt exist... lets not loop.
-            CurEntry = NULL;
-        }
-        while(CurEntry != NULL)
-        {
-            if(CurEntry->Request != RequestID)
-            {
-                PrevEntry = CurEntry;
-                CurEntry = CurEntry->Next;
-            }
-            else if(CurEntry->Priority < TopPriority) //The request ID matches, make sure we can add to its priority
-            {
-                BYTE newPriority = CurEntry->Priority + 1;
-                BYTE oldPriority = CurEntry->Priority; //Prevents lots of -> calls
-
-                foundCount ++;
-                CurEntry->Priority = newPriority;
-                QueueHandle->NumElements[newPriority]++;
-                QueueHandle->NumElements[oldPriority]--;
-                if(PrevEntry != NULL)
-                {
-                    PrevEntry->Next = CurEntry->Next;
-                }
-                if(CurEntry = QueueHandle->Last[oldPriority])
-                {
-                    if(PrevEntry != NULL && PrevEntry->Priority == oldPriority)
-                    {
-                        QueueHandle->Last[oldPriority] = PrevEntry;
-                    }
-                    else
-                    {
-                        QueueHandle->Last[oldPriority] = NULL;
-                    }
-                }
-
-                /* Walk up the priorities until we find one that has a last */
-                int i = newPriority;
-                for(i = newPriority; i < MAXPRIORITY; i++)
-                {
-                    if(QueueHandle->Last[i] != NULL)
-                    {
-                        break;
-                    }
-                }
-                if(QueueHandle->Last[i] == NULL)
-                {
-                    /* Must be the top and highest */
-                    CurEntry->Next = QueueHandle->First;
-                    QueueHandle->First = CurEntry;
-                    QueueHandle->Last[newPriority]= CurEntry;
-                }
-                else
-                {
-                    CurEntry->Next = QueueHandle->Last[i]->Next;
-                    QueueHandle->Last[i]->Next = CurEntry;
-                    QueueHandle->Last[newPriority] = CurEntry;
-                }
-
-                // The Previous entry stays the same in this case, the Cur entry changes
-                if( Count > 0 && foundCount == Count)
-                {
-                    CurEntry = NULL; //We need to stop now
-                }
-                else if(PrevEntry != NULL)
-                {
-                    CurEntry = PrevEntry->Next;
-                }
-                else //PrevEntry == NULL
-                {
-                    PrevEntry = CurEntry;
-                    CurEntry = PrevEntry->Next;
-                }
-            }
-        }
-
-        CTIReleaseMutexSem (QueueHandle->BlockSem);
-    }
-    NumberFound = foundCount;
-
-    return(NO_ERROR);
-}
-
-/* Routine to Cancel Entries */
-/*IM_EX_CTIBASE INT CancelEntriesByRequestID(HCTIQUEUE QueueHandle, ULONG RequestID, INT &NumberFound)
-{
-    INT foundCount = 0;
-    PQUEUEENT PrevEntry = NULL;
-    PQUEUEENT CurEntry = NULL;
-
-    if(QueueHandle == (HCTIQUEUE) NULL)
-    {
-        return(ERROR_QUE_INVALID_HANDLE);
-    }
-
-    // get the block semaphore
-    int dlcnt = 0;
-    while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
-        }
-
-        //autopsy(__FILE__, __LINE__);
-
-        if(++dlcnt > 10)
-        {
-            DefibBlockSem(QueueHandle);
-        }
-    }
-
-    CurEntry = QueueHandle->First;
-    while(CurEntry != NULL)
-    {
-        if(CurEntry->Request != RequestID)
-        {
-            PrevEntry = CurEntry;
-            CurEntry = CurEntry->Next;
-        }
-        else
-        {
-            BYTE newPriority = CurEntry->Priority + 1;
-            BYTE oldPriority = CurEntry->Priority; //Prevents lots of -> calls
-
-            foundCount ++;
-            PrevEntry->Next = CurEntry->Next;
-            CurEntry->Priority = newPriority;
-            if(CurEntry = QueueHandle->Last[oldPriority])
-            {
-                if(PrevEntry->Priority == oldPriority)
-                {
-                    QueueHandle->Last[oldPriority] = PrevEntry;
-                }
-                else
-                {
-                    QueueHandle->Last[oldPriority] = NULL;
-                }
-            }
-
-            // Walk up the priorities until we find one that has a last
-            for(int i = newPriority; i < MAXPRIORITY; i++)
-            {
-                if(QueueHandle->Last[i] != NULL)
-                {
-                    break;
-                }
-            }
-            if(QueueHandle->Last[i] == NULL)
-            {
-                // Must be the top and highest
-                CurEntry->Next = QueueHandle->First;
-                QueueHandle->First = CurEntry;
-                QueueHandle->Last[newPriority]= CurEntry;
-            }
-            else
-            {
-                CurEntry->Next = QueueHandle->Last[i]->Next;
-                QueueHandle->Last[i]->Next = CurEntry;
-                QueueHandle->Last[newPriority] = CurEntry;
-            }
-        }
-    }
-
-    CTIReleaseMutexSem (QueueHandle->BlockSem);
-    NumberFound = foundCount;
-
-    return(NO_ERROR);
-}
-*/
-
-IM_EX_CTIBASE bool VerifyRequestCount (HCTIQUEUE QueueHandle)
-{
-    bool isCorrect = true;
-
-    if(!CTIRequestMutexSem (QueueHandle->BlockSem, 5000))
-    {
-        QUEUEENT *Entry = QueueHandle->First;
-        std::map<long, long> trueCount;
-
-        while(Entry != NULL)
-        {
-            std::map<long, long>::iterator iter = trueCount.find(Entry->Request);
-            if(iter != trueCount.end())
-            {
-                iter->second++;
-            }
-            else
-            {
-                trueCount.insert(std::map<long, long>::value_type(Entry->Request, 1));
-            }
-        }
-
-        std::map<long, long>::iterator trueIter = trueCount.begin();
-        std::map<long, REQUESTSTATUS>::iterator requestIter = QueueHandle->RequestInfo.begin();
-        // This is the dirty method. It also works well and makes no assumptions about the map structure.
-        while(trueIter != trueCount.end())
-        {
-            requestIter = QueueHandle->RequestInfo.find(trueIter->first);
-            if(requestIter != QueueHandle->RequestInfo.end())
-            {
-                if(requestIter->second.Count != trueIter->second)
-                {
-                    isCorrect = false;
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** CHECKPOINT **** Entry Incorrect" << trueIter->second << " != " << requestIter->second.Count << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-            else
-            {
-                isCorrect = false;
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** CHECKPOINT **** Missing Entry " << trueIter->first << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            trueIter++;
-        }
-
-        requestIter = QueueHandle->RequestInfo.begin();
-        // This is the dirty method. It also works well and makes no assumptions about the map structure.
-        while(requestIter != QueueHandle->RequestInfo.end())
-        {
-            trueIter = trueCount.find(requestIter->first);
-            if(trueIter == trueCount.end())
-            {
-                isCorrect = false;
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** CHECKPOINT **** Extra Entry " << requestIter->first << " " << requestIter->second.Count << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            requestIter++;
-        }
-    }
-
-    return isCorrect;
-}
-
 /* Routine to create a queue */
-IM_EX_CTIBASE INT CreateQueue (PHCTIQUEUE QueueHandle, ULONG Type, HANDLE QuitHandle)
+IM_EX_CTIBASE INT CreateQueue (PHCTIQUEUE QueueHandle, HANDLE QuitHandle /*=NULL*/)
 {
     ULONG i;
-
-    /* Check that we know the type */
-    if((Type & ~(QUE_LIFO | QUE_PRIORITY | QUE_CONVERT_ADDRESS)))
-    {
-        return(ERROR_QUE_UNABLE_TO_INIT);
-    }
-
-    /* Now make sure we do not conflict */
-    if((Type & QUE_LIFO) && (Type & QUE_PRIORITY))
-    {
-        return(ERROR_QUE_UNABLE_TO_INIT);
-    }
 
     /* Parameters are ok so get create the poor bugger */
     if((*QueueHandle = (QUEUESTRUCT*)CTIDBG_new QUEUESTRUCT) == NULL)
@@ -465,8 +100,6 @@ IM_EX_CTIBASE INT CreateQueue (PHCTIQUEUE QueueHandle, ULONG Type, HANDLE QuitHa
         return(ERROR_QUE_UNABLE_TO_INIT);
     }
 
-    (*QueueHandle)->Type = Type;
-
     (*QueueHandle)->First = NULL;
 
     for(i = 0; i <= MAXPRIORITY; i++)
@@ -477,7 +110,7 @@ IM_EX_CTIBASE INT CreateQueue (PHCTIQUEUE QueueHandle, ULONG Type, HANDLE QuitHa
     (*QueueHandle)->Elements = 0;
     (*QueueHandle)->Element = 1;
 
-    (*QueueHandle)->RequestInfo.clear();
+    (*QueueHandle)->RequestCount.clear();
 
     return(NO_ERROR);
 }
@@ -528,7 +161,7 @@ IM_EX_CTIBASE INT WriteQueue (HCTIQUEUE QueueHandle,
     }
 
     /* Check the priority */
-    if((QueueHandle->Type & QUE_PRIORITY) && Priority > MAXPRIORITY)
+    if(Priority > MAXPRIORITY)
     {
         return(ERROR_QUE_INVALID_PRIORITY);
     }
@@ -578,77 +211,42 @@ IM_EX_CTIBASE INT WriteQueue (HCTIQUEUE QueueHandle,
         QueueHandle->Element = 1;
     }
 
-    /* Now figure out where it goes... */
-    if(QueueHandle->Type & QUE_PRIORITY)
+    if(QueueHandle->Last[Priority] != NULL)
     {
-        /* Priority Queue */
-        if(QueueHandle->Last[Priority] != NULL)
-        {
-            Entry->Next = QueueHandle->Last[Priority]->Next;
-            QueueHandle->Last[Priority]->Next = Entry;
-            QueueHandle->Last[Priority] = Entry;
-            QueueHandle->NumElements[Priority]++;
-        }
-        else
-        {
-            QueueHandle->NumElements[Priority] = 1;
-            /* Walk up the priorities until we find one that has a last */
-            for(i = Priority + 1; i <= MAXPRIORITY; i++)
-            {
-                if(QueueHandle->Last[i] != NULL)
-                {
-                    break;
-                }
-            }
-
-            /* At highest with elements or top */
-            if(i > MAXPRIORITY)
-            {
-                i = MAXPRIORITY;
-            }
-            if(QueueHandle->Last[i] == NULL)
-            {
-                /* Must be the top and highest */
-                Entry->Next = QueueHandle->First;
-                QueueHandle->First = Entry;
-                QueueHandle->Last[Priority]= Entry;
-            }
-            else
-            {
-                Entry->Next = QueueHandle->Last[i]->Next;
-                QueueHandle->Last[i]->Next = Entry;
-                QueueHandle->Last[Priority] = Entry;
-            }
-        }
-
-    }
-    else if(QueueHandle->Type & QUE_LIFO)
-    {
-        /* LIFO Queue */
-        if(QueueHandle->First == NULL)
-        {
-            QueueHandle->First = Entry;
-            QueueHandle->Last[0] = Entry;
-        }
-        else
-        {
-            Entry->Next = QueueHandle->First;
-            QueueHandle->First = Entry;
-        }
+        Entry->Next = QueueHandle->Last[Priority]->Next;
+        QueueHandle->Last[Priority]->Next = Entry;
+        QueueHandle->Last[Priority] = Entry;
+        QueueHandle->NumElements[Priority]++;
     }
     else
     {
-        /* FIFO queue */
-        Entry->Next = NULL;
-        if(QueueHandle->First == NULL)
+        QueueHandle->NumElements[Priority] = 1;
+        /* Walk up the priorities until we find one that has a last */
+        for(i = Priority + 1; i <= MAXPRIORITY; i++)
         {
+            if(QueueHandle->Last[i] != NULL)
+            {
+                break;
+            }
+        }
+
+        /* At highest with elements or top */
+        if(i > MAXPRIORITY)
+        {
+            i = MAXPRIORITY;
+        }
+        if(QueueHandle->Last[i] == NULL)
+        {
+            /* Must be the top and highest */
+            Entry->Next = QueueHandle->First;
             QueueHandle->First = Entry;
-            QueueHandle->Last[0] = Entry;
+            QueueHandle->Last[Priority]= Entry;
         }
         else
         {
-            QueueHandle->Last[0]->Next = Entry;
-            QueueHandle->Last[0] = Entry;
+            Entry->Next = QueueHandle->Last[i]->Next;
+            QueueHandle->Last[i]->Next = Entry;
+            QueueHandle->Last[Priority] = Entry;
         }
     }
 
@@ -662,15 +260,14 @@ IM_EX_CTIBASE INT WriteQueue (HCTIQUEUE QueueHandle,
         CTIPostEventSem (QueueHandle->WaitArray[0]);
     }
 
-    std::map<long, REQUESTSTATUS>::iterator iter = QueueHandle->RequestInfo.find(Request);
-    if( iter != QueueHandle->RequestInfo.end() )
+    request_count_t::iterator iter = QueueHandle->RequestCount.find(Request);
+    if( iter != QueueHandle->RequestCount.end() )
     {
-        iter->second.Count++;
+        iter->second++;
     }
     else
     {
-        REQUESTSTATUS tempData = {1, Priority};
-        QueueHandle->RequestInfo.insert(std::map<long, REQUESTSTATUS>::value_type(Request, tempData));
+        QueueHandle->RequestCount[Request] = 1;
     }
 
     if(pElementCount != NULL)
@@ -700,12 +297,11 @@ IM_EX_CTIBASE INT QueryQueue (HCTIQUEUE QueueHandle, PULONG Elements)
 
 /* Routine to peek at first element on queue */
 IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
-                             PREQUESTDATA RequestData,
                              PULONG DataSize,
                              PPVOID Data,
                              PULONG Element,
                              BOOL32 WaitFlag,
-                             PBYTE  Priority)
+                             PBYTE Priority)
 
 {
     PQUEUEENT Entry;
@@ -804,7 +400,6 @@ IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
     }
 
     /* Otherwise put it in there */
-    *RequestData = Entry->RequestData;
     *DataSize = Entry->DataSize;
     *Data = Entry->Data;
     *Priority = Entry->Priority;
@@ -817,7 +412,7 @@ IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
 
 
 /* Routine to read an entry from the queue */
-INT ReadQueue (HCTIQUEUE QueueHandle, PREQUESTDATA RequestData, PULONG  DataSize, PPVOID Data, ULONG Element, BOOL32 WaitFlag, PBYTE Priority, ULONG *pElementCount)
+INT ReadQueue (HCTIQUEUE QueueHandle, PULONG DataSize, PPVOID Data, ULONG Element, BOOL32 WaitFlag, PBYTE Priority, ULONG* pElementCount /*=NULL*/)
 {
     PQUEUEENT Entry;
     PQUEUEENT Previous = NULL;
@@ -923,7 +518,6 @@ INT ReadQueue (HCTIQUEUE QueueHandle, PREQUESTDATA RequestData, PULONG  DataSize
     }
 
     /* Otherwise put it in there */
-    *RequestData   = Entry->RequestData;
     *DataSize      = Entry->DataSize;
     *Data          = Entry->Data;
     *Priority      = Entry->Priority;
@@ -997,7 +591,7 @@ IM_EX_CTIBASE INT PurgeQueue (HCTIQUEUE QueueHandle)
         }
 
         QueueHandle->Elements = 0;
-        QueueHandle->RequestInfo.clear();
+        QueueHandle->RequestCount.clear();
     }
     catch(...)
     {
@@ -1070,106 +664,6 @@ IM_EX_CTIBASE INT SearchQueue( HCTIQUEUE QueueHandle, void *ptr, BOOL (*myFunc)(
 
     return element;
 }
-
-/*
-IM_EX_CTIBASE INT SearchQueue (HCTIQUEUE     QueueHandle,
-                               PVOID         CompareData,
-                               ULONG         CompareDataSize,
-                               ULONG         CompareDataOffset,
-                               PREQUESTDATA  RequestData,
-                               PULONG        DataSize,
-                               PPVOID        Data,
-                               PULONG        Element,
-                               PBYTE         Priority,
-                               PPVOID        Stupid)
-
-{
-    PQUEUEENT Entry;
-
-    if(QueueHandle == (HCTIQUEUE) NULL)
-    {
-        return(ERROR_QUE_INVALID_HANDLE);
-    }
-
-
-    if(!(QueueHandle->Elements))
-    {
-        return(ERROR_QUE_EMPTY);
-    }
-
-    // get the exclusion semaphore
-#if 1
-    int dlcnt = 0;
-    while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
-        }
-
-        // autopsy(__FILE__, __LINE__);
-
-        if(++dlcnt > 10)
-        {
-            DefibBlockSem(QueueHandle);
-        }
-    }
-#else
-    if(CTIRequestMutexSem (QueueHandle->BlockSem, SEM_INDEFINITE_WAIT))
-    {
-        return(ERROR_QUE_UNABLE_TO_ACCESS);
-    }
-#endif
-
-    try
-    {
-        // We the man so unless there has been a fubar...
-        if(QueueHandle->First == NULL)
-        {
-            CTIReleaseMutexSem (QueueHandle->BlockSem);
-            return(ERROR_QUE_EMPTY);
-        }
-
-        Entry = QueueHandle->First;
-
-        if(!(*Element))
-        {
-            while(Entry != NULL)
-            {
-                if(!(memcmp ((PCHAR)Entry->Data + CompareDataOffset, (PCHAR)CompareData, CompareDataSize)))
-                {
-                    break;
-                }
-
-                Entry = Entry->Next;
-
-                if(Entry == NULL)
-                {
-                    CTIReleaseMutexSem (QueueHandle->BlockSem);
-                    return(ERROR_QUE_ELEMENT_NOT_EXIST);
-                }
-            }
-        }
-
-        // Otherwise put it in there
-        *RequestData = Entry->RequestData;
-        *DataSize    = Entry->DataSize;
-        *Data        = Entry->Data;
-        *Priority    = Entry->Priority;
-        *Element     = Entry->Element;
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    CTIReleaseMutexSem (QueueHandle->BlockSem);
-
-    return(NO_ERROR);
-}
-/*
-
 
 /*
  *  This function sweeps through the queue removing any queue entries which return bool true from myFindFunc.
@@ -1247,42 +741,31 @@ void RemoveQueueEntry(HCTIQUEUE QueueHandle, PQUEUEENT Entry, PQUEUEENT Previous
         Previous->Next = Entry->Next;
     }
 
-    if(QueueHandle->Type & QUE_PRIORITY)
+    if(QueueHandle->Last[Entry->Priority] == Entry)
     {
-        if(QueueHandle->Last[Entry->Priority] == Entry)
+        if(Previous != NULL && Previous->Priority == Entry->Priority)
         {
-            if(Previous != NULL && Previous->Priority == Entry->Priority)
-            {
-                QueueHandle->Last[Entry->Priority] = Previous;
-            }
-            else
-            {
-                QueueHandle->Last[Entry->Priority] = NULL;
-            }
+            QueueHandle->Last[Entry->Priority] = Previous;
         }
-        QueueHandle->NumElements[Entry->Priority]--;
-    }
-    else
-    {
-        if(QueueHandle->Last[0] == Entry)
+        else
         {
-            QueueHandle->Last[0] = NULL;
+            QueueHandle->Last[Entry->Priority] = NULL;
         }
     }
+    QueueHandle->NumElements[Entry->Priority]--;
 
     free (Entry);
 
     QueueHandle->Elements--;
 
-    std::map<long, REQUESTSTATUS>::iterator iter = QueueHandle->RequestInfo.find(request);
-    if( iter != QueueHandle->RequestInfo.end() )
+    request_count_t::iterator iter = QueueHandle->RequestCount.find(request);
+    if( iter != QueueHandle->RequestCount.end() )
     {
-        iter->second.Count--;
+        iter->second--;
 
-        if( iter->second.Count <= 0 )
+        if( iter->second <= 0 )
         {
-            QueueHandle->RequestInfo.erase(iter);
-            iter = QueueHandle->RequestInfo.end();
+            QueueHandle->RequestCount.erase(iter);
         }
     }
 
