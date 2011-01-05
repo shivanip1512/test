@@ -8,11 +8,6 @@
     <entry key="yukon.web.modules.operator.energyCompanyOperations.create.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
     <entry key="yukon.web.modules.operator.energyCompanyOperations.create.label">Create</entry>
 
-    <!-- ecInfoFragment.jsp -->
-    <entry key="yukon.web.modules.operator.energyCompanyInfoFragment.phoneWithSymbol">{0} (P)</entry>
-    <entry key="yukon.web.modules.operator.energyCompanyInfoFragment.phoneWithSymbol">{0} (P)</entry>
-    <entry key="yukon.web.modules.operator.energyCompanyInfoFragment.faxWithSymbol">{0} (F)</entry>
-    
     <!-- generalInfo.jsp -->
     <entry key="yukon.web.modules.operator.generalInfo.CREATE.pageName">Create Energy Company</entry>
     <entry key="yukon.web.modules.operator.generalInfo.EDIT.pageName">Edit General Info</entry>

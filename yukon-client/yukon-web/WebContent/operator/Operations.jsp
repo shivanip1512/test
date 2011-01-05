@@ -308,6 +308,10 @@
 
 	<tags:operationSection sectionName="Administration" sectionImageName="AdministrationLogo">
 		
+        <tags:sectionLink>
+            <a href="/spring/stars/operator/energyCompany/home">Admin Operations</a>
+        </tags:sectionLink>
+        
 			<cti:checkProperty property="operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY"> 
 	            <tags:sectionLink>
 	            	<a href="Admin/ConfigEnergyCompany.jsp">Config Energy Company</a>
