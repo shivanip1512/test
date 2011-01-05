@@ -11,6 +11,8 @@ namespace CapControl {
 class DaoFactory
 {
     public:
+        typedef boost::shared_ptr<DaoFactory> SharedPtr;
+
         virtual PointResponseDaoPtr getPointResponseDao()=0;
 };
 

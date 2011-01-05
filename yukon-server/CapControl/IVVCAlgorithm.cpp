@@ -836,7 +836,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
     // We still need the bus watt and var points.
 
     long busWattPointId = subbus->getCurrentWattLoadPointId();
-    list<long> busVarPointIds = subbus->getCurrentVarLoadPoints();
+    PointIdList busVarPointIds = subbus->getCurrentVarLoadPoints();
 
     if (busWattPointId > 0)
     {
@@ -1048,7 +1048,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
     double varValue = 0.0;
 
-    std::list<long> pointIds = subbus->getCurrentVarLoadPoints();
+    PointIdList pointIds = subbus->getCurrentVarLoadPoints();
     for each (long pointId in pointIds)
     {
         iter = pointValues.find(pointId);

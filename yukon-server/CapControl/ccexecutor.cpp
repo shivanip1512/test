@@ -14,9 +14,6 @@
 #include "utility.h"
 #include "ccutil.h"
 
-#include <list>
-
-using namespace std;
 using Cti::CapControl::DynamicCommandExecutor;
 using Cti::CapControl::VoltageRegulatorManager;
 
@@ -2072,7 +2069,7 @@ void CtiCCCommandExecutor::SendTimeSync()
         additional1 += currentArea->getPaoName();
 
         pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
-        std::list <long>::iterator subIter = currentArea->getSubStationList()->begin();
+        PaoIdList::iterator subIter = currentArea->getSubStationList()->begin();
 
         while (subIter != currentArea->getSubStationList()->end())
         {
@@ -2143,7 +2140,7 @@ void CtiCCCommandExecutor::SendTimeSync()
             additional1 += currentSpArea->getPaoName();
 
             pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
-            std::list <long>::iterator subIter = currentSpArea->getSubstationIds()->begin();
+            PaoIdList::iterator subIter = currentSpArea->getSubstationIds()->begin();
 
             while (subIter != currentSpArea->getSubstationIds()->end())
             {
@@ -2428,13 +2425,13 @@ void CtiCCCommandExecutor::setParentOvUvFlags(int paoId, CapControlType type, bo
             CtiCCSpecialPtr sArea = store->findSpecialAreaByPAObjectID(paoId);
             sArea->setOvUvDisabledFlag(ovuvFlag);
 
-            std::list<long>* stationIds = sArea->getSubstationIds();
+            PaoIdList* stationIds = sArea->getSubstationIds();
             for each(long stationId in *stationIds)
             {
                 CtiCCSubstationPtr station = store->findSubstationByPAObjectID(stationId);
                 station->setOvUvDisabledFlag(ovuvFlag);
 
-                std::list<long>* subBusIds = station->getCCSubIds();
+                PaoIdList* subBusIds = station->getCCSubIds();
                 for each(long subBusId in *subBusIds)
                 {
                     CtiCCSubstationBusPtr subBus = store->findSubBusByPAObjectID(subBusId);
@@ -2455,13 +2452,13 @@ void CtiCCCommandExecutor::setParentOvUvFlags(int paoId, CapControlType type, bo
             CtiCCAreaPtr area = store->findAreaByPAObjectID(paoId);
             area->setOvUvDisabledFlag(ovuvFlag);
 
-            std::list<long>* stationIds = area->getSubStationList();
+            PaoIdList* stationIds = area->getSubStationList();
             for each(long stationId in *stationIds)
             {
                 CtiCCSubstationPtr station = store->findSubstationByPAObjectID(stationId);
                 station->setOvUvDisabledFlag(ovuvFlag);
 
-                std::list<long>* subBusIds = station->getCCSubIds();
+                PaoIdList* subBusIds = station->getCCSubIds();
                 for each(long subBusId in *subBusIds)
                 {
                     CtiCCSubstationBusPtr subBus = store->findSubBusByPAObjectID(subBusId);
@@ -2482,7 +2479,7 @@ void CtiCCCommandExecutor::setParentOvUvFlags(int paoId, CapControlType type, bo
             CtiCCSubstationPtr station = store->findSubstationByPAObjectID(paoId);
             station->setOvUvDisabledFlag(ovuvFlag);
 
-            std::list<long>* subBusIds = station->getCCSubIds();
+            PaoIdList* subBusIds = station->getCCSubIds();
             for each(long subBusId in *subBusIds)
             {
                 CtiCCSubstationBusPtr subBus = store->findSubBusByPAObjectID(subBusId);
@@ -3394,7 +3391,7 @@ void CtiCCCommandExecutor::ControlAllCapBanks(LONG paoId, int control)
     }
     else if (area != NULL && !area->getDisableFlag())
     {
-        std::list <long>::iterator subIter = area->getSubStationList()->begin();
+        PaoIdList::iterator subIter = area->getSubStationList()->begin();
 
         while (subIter != area->getSubStationList()->end())
         {
@@ -3430,7 +3427,7 @@ void CtiCCCommandExecutor::ControlAllCapBanks(LONG paoId, int control)
     }
     else if (spArea != NULL && !spArea->getDisableFlag())
     {
-        std::list <long>::iterator subIter = spArea->getSubstationIds()->begin();
+        PaoIdList::iterator subIter = spArea->getSubstationIds()->begin();
 
         while (subIter != spArea->getSubstationIds()->end())
         {
@@ -3731,7 +3728,7 @@ void CtiCCCommandExecutor::EnableArea()
             //To make sure they are not already on a conflicting different enabled Special Area
             BOOL refusalFlag = FALSE;
             string refusalText = "Special Area is not enabled!";
-            std::list <long>::iterator subIter = currentSpArea->getSubstationIds()->begin();
+            PaoIdList::iterator subIter = currentSpArea->getSubstationIds()->begin();
             while (subIter != currentSpArea->getSubstationIds()->end())
             {
                 CtiCCSubstationPtr currentSubstation = NULL;
@@ -3773,7 +3770,7 @@ void CtiCCCommandExecutor::EnableArea()
                 currentSpArea->setDisableFlag(FALSE);
                 store->UpdateSpecialAreaDisableFlagInDB(currentSpArea);
 
-                std::list <long>::iterator subIter = currentSpArea->getSubstationIds()->begin();
+                PaoIdList::iterator subIter = currentSpArea->getSubstationIds()->begin();
 
                 while (subIter != currentSpArea->getSubstationIds()->end())
                 {
@@ -3920,7 +3917,7 @@ void CtiCCCommandExecutor::DisableArea()
             currentSpArea->setDisableFlag(TRUE);
             store->UpdateSpecialAreaDisableFlagInDB(currentSpArea);
 
-            std::list <long>::iterator subIter = currentSpArea->getSubstationIds()->begin();
+            PaoIdList::iterator subIter = currentSpArea->getSubstationIds()->begin();
 
             while (subIter != currentSpArea->getSubstationIds()->end())
             {
@@ -4129,8 +4126,8 @@ void CtiCCCommandExecutor::AutoEnableOvUvByArea()
         CtiCCSubstationBusPtr currentSubstationBus = NULL;
         CtiCCFeederPtr currentFeeder = NULL;
 
-        std::list<long>::iterator subIter;
-        std::list<long>* stationList = NULL;
+        PaoIdList::iterator subIter;
+        PaoIdList* stationList = NULL;
 
         if(isAreaFlag)
         {
@@ -4316,8 +4313,8 @@ void CtiCCCommandExecutor::AutoDisableOvUvByArea()
         CtiCCFeederPtr currentFeeder = NULL;
 
 
-        std::list <long>::iterator subIter;
-        std::list<long>* stationList = NULL;
+        PaoIdList::iterator subIter;
+        PaoIdList* stationList = NULL;
 
         if(isAreaFlag)
         {
@@ -4488,7 +4485,7 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubstation(BOOL disableFlag)
         }
 
 
-        std::list <long>::iterator busIter;
+        PaoIdList::iterator busIter;
         if (disableFlag)
             currentStation->setOvUvDisabledFlag(TRUE);
         else
@@ -7186,7 +7183,7 @@ void CtiCCCommandExecutor::ResetAllSystemOpCounts()
         CtiCCAreaPtr currentArea = (CtiCCArea*)ccAreas.at(i);
         if ( currentArea != NULL && ! currentArea->getDisableFlag())
         {
-            std::list <long>::iterator subIter = currentArea->getSubStationList()->begin();
+            PaoIdList::iterator subIter = currentArea->getSubStationList()->begin();
 
             while (subIter != currentArea->getSubStationList()->end())
             {

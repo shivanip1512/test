@@ -1,20 +1,4 @@
-
-/*---------------------------------------------------------------------------
-        Filename:  ccsubstationbus.h
-
-        Programmer:  Josh Wolberg
-
-        Description:    Header file for CtiCCSubstationBus
-                        CtiCCSubstationBus maintains the state and handles
-                        the persistence of strategies for Cap Control.
-
-        Initial Date:  8/27/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-
-#ifndef CTICCAREAIMPL_H
-#define CTICCAREAIMPL_H
+#pragma once
 
 #include <list>
 using std::list;
@@ -39,9 +23,6 @@ using std::list;
 #include "ccmonitorpoint.h"
 #include "Controllable.h"
 
-typedef std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBus_vec;
-
-
 class CtiCCArea : public RWCollectable, public Controllable
 {
 
@@ -64,7 +45,7 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     DOUBLE getPFactor() const;
     DOUBLE getEstPFactor() const;
     BOOL getChildVoltReductionFlag() const;
-    std::list<long>* getSubStationList(){return &_subStationIds;};
+    PaoIdList* getSubStationList(){return &_subStationIds;};
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
     list <LONG>* getPointIds() {return &_pointIds;};
@@ -109,8 +90,8 @@ private:
     BOOL _reEnableAreaFlag;
     BOOL _childVoltReductionFlag;
 
-    std::list<long> _subStationIds;
-    std::list <long> _pointIds;
+    PaoIdList _subStationIds;
+    PointIdList _pointIds;
 
     CtiCCOperationStats _operationStats;
     CtiCCConfirmationStats _confirmationStats;
@@ -121,11 +102,6 @@ private:
     BOOL _areaUpdatedFlag;
 
     void restore(Cti::RowReader& rdr);
-
-
 };
 
-
-//typedef shared_ptr<CtiCCArea> CtiCCAreaPtr;
 typedef CtiCCArea* CtiCCAreaPtr;
-#endif

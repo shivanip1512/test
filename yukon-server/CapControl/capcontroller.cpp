@@ -36,13 +36,6 @@
 #include "ccclientlistener.h"
 #include <rw/thr/prodcons.h>
 
-
-#include <vector>
-#include <list>
-using std::vector;
-using std::multimap;
-using std::list;
-
 extern void refreshGlobalCParms();
 
 extern ULONG _CC_DEBUG;
@@ -3142,8 +3135,8 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
 
 
                 // check for alt sub bus id, and update all sub's alt values
-                multimap<long,long>::iterator it;
-                pair<multimap<long,long>::iterator,multimap<long,long>::iterator> ret;
+                PaoIdToPointIdMultiMap::iterator it;
+                pair<PaoIdToPointIdMultiMap::iterator,PaoIdToPointIdMultiMap::iterator> ret;
 
                 ret = store->getSubsWithAltSubID(currentSubstationBus->getPaoId());
                 for (it = ret.first; it != ret.second; it++)

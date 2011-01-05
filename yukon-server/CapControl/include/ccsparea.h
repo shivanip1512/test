@@ -1,30 +1,9 @@
-
-/*---------------------------------------------------------------------------
-        Filename:  ccspecial.h
-
-        Programmer:  Josh Wolberg
-
-        Description:    Header file for CtiCCSpecial
-                        CtiCCSpecial maintains the state and handles
-                        the persistence of strategies for Cap Control.
-
-        Initial Date:  8/27/2007
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-
-#ifndef CTICCSPECIALIMPL_H
-#define CTICCSPECIALIMPL_H
-
-#include <list>
-using std::list;
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
-#include <list>
-#include <vector>
 
 #include "dbaccess.h"
 #include "connection.h"
@@ -33,6 +12,7 @@ using std::list;
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
 #include "StrategyManager.h"
+#include "cctypes.h"
 #include "ccOperationStats.h"
 #include "ccConfirmationStats.h"
 #include "Controllable.h"
@@ -42,6 +22,8 @@ namespace Database {
     class DatabaseConnection;
 }
 }
+
+using Cti::CapControl::PointIdList;
 
 class CtiCCSpecial : public RWCollectable, public Controllable
 {
@@ -101,7 +83,7 @@ private:
     std::list <LONG> _substationIds;
     BOOL _isSpecial;
 
-    std::list <long> _pointIds;
+    PointIdList _pointIds;
 
     CtiCCOperationStats _operationStats;
     CtiCCConfirmationStats _confirmationStats;
@@ -114,8 +96,5 @@ private:
 
 };
 
-
-//typedef shared_ptr<CtiCCSpecial> CtiCCSpecialPtr;
 typedef CtiCCSpecial* CtiCCSpecialPtr;
-#endif
 

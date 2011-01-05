@@ -1,22 +1,5 @@
-/*-----------------------------------------------------------------------------
-    Filename:  capcontroller.h
-
-    Programmer:  Josh Wolberg
-
-    Description:    Header file for CtiCapController
-                    Once started CtiCapController is reponsible
-                    for determining if and when to adjust the
-                    substation buses provided by the CtiCCSubstationBusStore.
-
-    Initial Date:  8/31/2001
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
-
+#pragma once
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTICAPCONTROLLER_H
-#define CTICAPCONTROLLER_H
 
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/runfunc.h>
@@ -138,4 +121,3 @@ class CtiCapController : public MessageListener
         int control_loop_inmsg_delay;
         int control_loop_outmsg_delay;
 };
-#endif

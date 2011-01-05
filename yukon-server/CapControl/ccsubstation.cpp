@@ -1,18 +1,3 @@
-
-
-/*---------------------------------------------------------------------------
-        Filename:  ccsubstation.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiCCSubstation.
-                        CtiCCSubstation maintains the state and handles
-                        the persistence of substation buses for Cap Control.
-
-        Initial Date:  8/28/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <rw/tpsrtvec.h>
@@ -671,7 +656,7 @@ void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
-    std::list <long>::iterator busIter;
+    PaoIdList::iterator busIter;
 
 
     busIter = getCCSubIds()->begin();
@@ -712,7 +697,7 @@ CtiCCSubstation& CtiCCSubstation::checkAndUpdateRecentlyControlledFlag()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
-    std::list <long>::iterator busIter;
+    PaoIdList::iterator busIter;
 
     int numberOfSubBusesPending = 0;
 
@@ -744,7 +729,7 @@ CtiCCSubstation& CtiCCSubstation::checkAndUpdateChildVoltReductionFlags()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
-    std::list <long>::iterator busIter;
+    PaoIdList::iterator busIter;
 
     int numberOfSubBusesVoltReducting = 0;
 

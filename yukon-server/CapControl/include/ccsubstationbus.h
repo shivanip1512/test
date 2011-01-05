@@ -1,30 +1,9 @@
-/*---------------------------------------------------------------------------
-        Filename:  ccsubstationbus.h
-
-        Programmer:  Josh Wolberg
-
-        Description:    Header file for CtiCCSubstationBus
-                        CtiCCSubstationBus maintains the state and handles
-                        the persistence of strategies for Cap Control.
-
-        Initial Date:  8/27/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-
-#ifndef CTICCSUBSTATIONBUSIMPL_H
-#define CTICCSUBSTATIONBUSIMPL_H
-
-#include <list>
-using std::list;
-using boost::shared_ptr;
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
-#include <list>
-#include <vector>
 
 #include "dbaccess.h"
 #include "connection.h"
@@ -44,6 +23,9 @@ namespace Database {
     class DatabaseConnection;
 }
 }
+
+using Cti::CapControl::PointIdList;
+using Cti::CapControl::PaoIdList;
 
 typedef std::vector<CtiCCFeederPtr> CtiFeeder_vec;
 //For Sorted Vector, the vector will use this to determine position in the vector.
@@ -83,7 +65,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     LONG getParentId() const;
 
-    std::list<long> getCurrentVarLoadPoints() const;
+    PointIdList getCurrentVarLoadPoints() const;
     LONG getCurrentVarLoadPointId() const;
     DOUBLE getCurrentVarLoadPointValue() const;
     DOUBLE getRawCurrentVarLoadPointValue() const;
@@ -149,7 +131,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getDisableBusPointId() const;
     BOOL getSendMoreTimeControlledCommandsFlag() const;
 
-
     const string& getSolution() const;
     DOUBLE getTargetVarValue() const;
     const string& getParentControlUnits() const;
@@ -186,7 +167,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
 // OK!
     LONG getControlSendRetries() const;
-
 
     CtiCCSubstationBus& setCurrentVarLoadPointId(LONG currentvarid);
     CtiCCSubstationBus& setCurrentVarLoadPointValue(DOUBLE currentvarval, CtiTime timestamp);
@@ -351,7 +331,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& verifyControlledStatusFlags();
     LONG getNextTODStartTime();
 
-    list <LONG>* getPointIds() {return &_pointIds;};
+    std::list <LONG>* getPointIds() {return &_pointIds;};
 
     CtiCCSubstationBus& setVerificationAlreadyStartedFlag(BOOL verificationFlag);
     void setVerificationStrategy(int verificationStrategy);
@@ -376,10 +356,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     std::vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
 
-
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
-
 
     //Members inherited from RWCollectable
     void saveGuts(RWvostream& ) const;
@@ -472,7 +450,6 @@ private:
     string _parentName;
     LONG _displayOrder;
 
-
     DOUBLE _altSubVoltVal;
     DOUBLE _altSubVarVal;
     DOUBLE _altSubWattVal;
@@ -501,7 +478,6 @@ private:
     CtiTime _lastWattPointTime;
     CtiTime _lastVoltPointTime;
 
-
     CtiCCOperationStats _operationStats;
     CtiCCConfirmationStats _confirmationStats;
 
@@ -512,9 +488,7 @@ private:
     void restore(Cti::RowReader& rdr);
     string doubleToString(DOUBLE doubleVal);
 
-
-    std::list <long> _pointIds;
-    //vector <long> _multipleMonitorPoints;
+    PointIdList _pointIds;
     std::vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
 
     bool performDataOldAndFallBackNecessaryCheckOnFeeders();
@@ -526,7 +500,5 @@ private:
     CtiRegression regressionC;
 };
 
-
-//typedef shared_ptr<CtiCCSubstationBus> CtiCCSubstationBusPtr;
 typedef CtiCCSubstationBus* CtiCCSubstationBusPtr;
-#endif
+typedef std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBus_vec;

@@ -1,17 +1,3 @@
-
-/*---------------------------------------------------------------------------
-        Filename:  ccsubstationbus.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiCCArea.
-                        CtiCCArea maintains the state and handles
-                        the persistence of substation buses for Cap Control.
-
-        Initial Date:  8/28/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <rw/tpsrtvec.h>
@@ -119,7 +105,7 @@ void CtiCCArea::saveGuts(RWvostream& ostrm ) const
     ostrm <<  _ovUvDisabledFlag;
     ostrm << _subStationIds.size();
 
-    std::list<long>::const_iterator iter = _subStationIds.begin();
+    PaoIdList::const_iterator iter = _subStationIds.begin();
     for( ; iter != _subStationIds.end();iter++)
     {
         ostrm << (long)*iter;
@@ -500,7 +486,7 @@ void CtiCCArea::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capM
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    std::list <long>::iterator subIter = getSubStationList()->begin();;
+    PaoIdList::iterator subIter = getSubStationList()->begin();;
     CtiCCSubstationPtr currentSubstation = NULL;
 
     while (subIter != getSubStationList()->end())
@@ -520,7 +506,7 @@ CtiCCArea& CtiCCArea::checkAndUpdateChildVoltReductionFlags()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    std::list <long>::iterator subIter = getSubStationList()->begin();;
+    PaoIdList::iterator subIter = getSubStationList()->begin();;
     CtiCCSubstationPtr currentStation = NULL;
 
     int numberOfStationsVoltReducting = 0;

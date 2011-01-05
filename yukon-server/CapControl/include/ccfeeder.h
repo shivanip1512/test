@@ -1,19 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  ccfeeder.h
-
-        Programmer:  Josh Wolberg
-
-        Description:    Header file for CtiCCFeeder
-                        CtiCCFeeder maintains the state and handles
-                        the persistence of strategies for Cap Control.
-
-        Initial Date:  8/27/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-
-#ifndef CTICCFEEDERIMPL_H
-#define CTICCFEEDERIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -22,7 +7,6 @@
 #include <rw/sortvec.h>
 #include <list>
 
-
 #include "dbaccess.h"
 #include "connection.h"
 #include "types.h"
@@ -30,6 +14,7 @@
 #include "ccmonitorpoint.h"
 #include "ccoriginalparent.h"
 #include "cccapbank.h"
+#include "cctypes.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
 #include "StrategyManager.h"
@@ -42,6 +27,8 @@ namespace Database {
     class DatabaseConnection;
 }
 }
+
+using Cti::CapControl::PointIdList;
 
 //For Sorted Vector, the vector will use this to determine position in the vector.
 struct CtiCCCapBank_less
@@ -491,7 +478,7 @@ private:
     void restore(Cti::RowReader& rdr);
     string doubleToString(DOUBLE doubleVal, LONG decimalPlaces);
 
-    std::list <long> _pointIds;
+    PointIdList _pointIds;
     std::vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
 
     bool checkForRateOfChange(const CtiRegression& reg, const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC);
@@ -502,4 +489,3 @@ private:
 };
 
 typedef CtiCCFeeder* CtiCCFeederPtr;
-#endif

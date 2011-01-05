@@ -29,7 +29,6 @@
 
 using namespace Cti::CapControl;
 
-using std::multimap;
 typedef std::set<RWCollectable*> CtiMultiMsg_set;
 using std::pair;
 
@@ -88,23 +87,32 @@ private:
     CtiTime timestamp;
 };
 
-typedef map     < long, CtiCCSpecialPtr > SpecialAreaMap;
-typedef multimap< long, CtiCCSpecialPtr > SpecialAreaMultiMap;
+typedef std::map     < long, CtiCCSpecialPtr > SpecialAreaMap;
+typedef std::multimap< long, CtiCCSpecialPtr > SpecialAreaMultiMap;
 
-typedef map     < long, CtiCCAreaPtr > AreaMap;
-typedef multimap< long, CtiCCAreaPtr > AreaMultiMap;
+typedef std::map     < long, CtiCCAreaPtr > AreaMap;
+typedef std::multimap< long, CtiCCAreaPtr > AreaMultiMap;
 
-typedef map     < long, CtiCCSubstationPtr > SubstationMap;
-typedef multimap< long, CtiCCSubstationPtr > SubstationMultiMap;
+typedef std::map     < long, CtiCCSubstationPtr > SubstationMap;
+typedef std::multimap< long, CtiCCSubstationPtr > SubstationMultiMap;
 
-typedef map     < long, CtiCCSubstationBusPtr > SubBusMap;
-typedef multimap< long, CtiCCSubstationBusPtr > SubBusMultiMap;
+typedef std::map     < long, CtiCCSubstationBusPtr > SubBusMap;
+typedef std::multimap< long, CtiCCSubstationBusPtr > SubBusMultiMap;
 
-typedef map     < long, CtiCCFeederPtr > FeederMap;
-typedef multimap< long, CtiCCFeederPtr > FeederMultiMap;
+typedef std::map     < long, CtiCCFeederPtr > FeederMap;
+typedef std::multimap< long, CtiCCFeederPtr > FeederMultiMap;
 
-typedef map     < long, CtiCCCapBankPtr > CapBankMap;
-typedef multimap< long, CtiCCCapBankPtr > CapBankMultiMap;
+typedef std::map     < long, CtiCCCapBankPtr > CapBankMap;
+typedef std::multimap< long, CtiCCCapBankPtr > CapBankMultiMap;
+
+typedef std::map     < long, long > ChildToParentMap;
+typedef std::multimap< long, long > ChildToParentMultiMap;
+
+typedef std::map     < long, MaxKvarObject > KvarMap;
+
+typedef std::multimap< long, long > PaoIdToPointIdMultiMap;
+
+typedef std::list<CtiCCCapBankPtr> CapBankList;
 
 class CtiCCSubstationBusStore : public PointDataListener
 {
@@ -180,7 +188,7 @@ public:
     int getNbrOfSubBusesWithPointID(long point_id);
     int getNbrOfSubstationsWithPointID(long point_id);
     int getNbrOfSubsWithAltSubID(long altSubId);
-    pair<multimap<long,long>::iterator,multimap<long,long>::iterator> getSubsWithAltSubID(int altSubId);
+    pair<PaoIdToPointIdMultiMap::iterator, PaoIdToPointIdMultiMap::iterator> getSubsWithAltSubID(int altSubId);
     int getNbrOfFeedersWithPointID(long point_id);
     int getNbrOfCapBanksWithPointID(long point_id);
 
@@ -192,7 +200,7 @@ public:
     CtiCCCapBankPtr findCapBankByPAObjectID(long paobject_id);
 
     long findAreaIDbySubstationID(long substationId);
-    bool findSpecialAreaIDbySubstationID(long substationId, multimap< long, long>::iterator &begin, multimap< long, long >::iterator &end);
+    bool findSpecialAreaIDbySubstationID(long substationId, ChildToParentMultiMap::iterator &begin, ChildToParentMultiMap::iterator &end);
     long findSubstationIDbySubBusID(long subBusId);
     long findSubBusIDbyFeederID(long feederId);
     long findSubBusIDbyCapBankID(long capBankId);
@@ -203,7 +211,6 @@ public:
 
     void insertItemsIntoMap(int mapType, long* first, long* second);
     void removeItemsFromMap(int mapType, long first);
-
 
     void deleteCapBank(long capBankId);
     void deleteFeeder(long feederId);
@@ -216,10 +223,10 @@ public:
                                    FeederMap *paobject_feeder_map,
                                    SubBusMap *paobject_subbus_map,
                                    CapBankMultiMap *pointid_capbank_map,
-                                   map< long, long> *capbank_subbus_map,
-                                   map< long, long> *capbank_feeder_map,
-                                   map< long, long> *feeder_subbus_map,
-                                   map< long, long> *cbc_capbank_map);
+                                   ChildToParentMap *capbank_subbus_map,
+                                   ChildToParentMap *capbank_feeder_map,
+                                   ChildToParentMap *feeder_subbus_map,
+                                   ChildToParentMap *cbc_capbank_map);
     void reloadMonitorPointsFromDatabase(long capBankId, CapBankMap *paobject_capbank_map,
                                    FeederMap *paobject_feeder_map,
                                    SubBusMap *paobject_subbus_map,
@@ -228,20 +235,20 @@ public:
                                   FeederMap *paobject_feeder_map,
                                   SubBusMap *paobject_subbus_map,
                                   FeederMultiMap *pointid_feeder_map,
-                                  map< long, long> *feeder_subbus_map);
+                                  ChildToParentMap *feeder_subbus_map);
     void reloadSubBusFromDatabase(long subBusId,
                                   SubBusMap *paobject_subbus_map,
                                   SubstationMap *paobject_substation_map,
                                   SubBusMultiMap *pointid_subbus_map,
-                                  multimap<long, long> *altsub_sub_idmap,
-                                  map< long, long> *subbus_substation_map,
+                                  PaoIdToPointIdMultiMap *altsub_sub_idmap,
+                                  ChildToParentMap *subbus_substation_map,
                                   CtiCCSubstationBus_vec *cCSubstationBuses );
     void reloadSubstationFromDatabase(long substationId, SubstationMap *paobject_substation_map,
-                                      map <long, CtiCCAreaPtr> *paobject_area_map,
-                                      map <long, CtiCCSpecialPtr> *paobject_specialarea_map,
+                                      AreaMap *paobject_area_map,
+                                      SpecialAreaMap *paobject_specialarea_map,
                                       SubstationMultiMap *pointid_station_map,
-                                      map< long, long> *substation_area_map,
-                                      multimap< long, long> *substation_specialarea_map,
+                                      ChildToParentMap *substation_area_map,
+                                      ChildToParentMultiMap *substation_specialarea_map,
                                       CtiCCSubstation_vec *ccSubstations);
     void reloadAreaFromDatabase(long areaId,
                                   AreaMap *paobject_area_map,
@@ -255,7 +262,7 @@ public:
     bool reloadStrategyFromDatabase(long strategyId);
     void reloadMiscFromDatabase();
     void reloadMapOfBanksToControlByLikeDay(long subbusId, long feederId,
-                                      map< long, long> *controlid_action_map,
+                                      ChildToParentMap *controlid_action_map,
                                       CtiTime &lastSendTime, int fallBackConstant);
     void reloadOperationStatsFromDatabase(long paoId, CapBankMap *paobject_capbank_map,
                                                         FeederMap *paobject_feeder_map,
@@ -271,7 +278,6 @@ public:
     void resetAllConfirmationStats();
     void reCalculateConfirmationStatsFromDatabase( );
     void reCalculateAllStats( );
-
 
     template<class T>
     void setOperationSuccessPercents(const T &object, CCStatsObject userDef, CCStatsObject daily, CCStatsObject weekly, CCStatsObject monthly)
@@ -307,6 +313,7 @@ public:
         object->getConfirmationStats().setMonthlyCommFail( monthly.getFailCount() );
 
     };
+
     template<class T>
     void incrementConfirmationPercentTotals(const T &object, CCStatsObject &userDef, CCStatsObject &daily,
                                                           CCStatsObject &weekly, CCStatsObject &monthly)
@@ -333,6 +340,7 @@ public:
             monthly.incrementOpCount(1);
         }
     };
+
     template<class T>
     void incrementOperationPercentTotals(const T &object, CCStatsObject &userDef, CCStatsObject &daily,
                                                           CCStatsObject &weekly, CCStatsObject &monthly)
@@ -362,17 +370,17 @@ public:
     void cascadeStrategySettingsToChildren(LONG spAreaId, LONG areaId, LONG subBusId);
 
 
-    void locateOrphans(list<long> *orphanCaps, list<long> *orphanFeeders, map<long, CtiCCCapBankPtr> paobject_capbank_map,
-                       map<long, CtiCCFeederPtr> paobject_feeder_map, map<long, long> capbank_feeder_map, map<long, long> feeder_subbus_map);
+    void locateOrphans(PaoIdList *orphanCaps, PaoIdList *orphanFeeders, CapBankMap paobject_capbank_map,
+                       FeederMap paobject_feeder_map, ChildToParentMap capbank_feeder_map, ChildToParentMap feeder_subbus_map);
     BOOL isCapBankOrphan(long capBankId);
     BOOL isFeederOrphan(long feederId);
     void removeFromOrphanList(long ccId);
 
 
     list <CC_DBRELOAD_INFO> getDBReloadList() { return _reloadList; };
-    list <CtiCCCapBankPtr> getUnsolicitedCapBankList() {return _unsolicitedCapBanks;};
-    list <CtiCCCapBankPtr> getUnexpecteedUnsolicitedList() {return _unexpectedUnsolicited;};
-    list <CtiCCCapBankPtr> getRejectedControlCapBankList() {return _rejectedCapBanks;};
+    CapBankList getUnsolicitedCapBankList() {return _unsolicitedCapBanks;};
+    CapBankList getUnexpecteedUnsolicitedList() {return _unexpectedUnsolicited;};
+    CapBankList getRejectedControlCapBankList() {return _rejectedCapBanks;};
 
     void insertDBReloadList(CC_DBRELOAD_INFO x);
     void checkDBReloadList();
@@ -475,11 +483,11 @@ protected:
     void addFeederToPaoMap(CtiCCFeederPtr feeder);
 
 public:
-    std::vector<CtiCCSubstationBusPtr> getSubBusesByAreaId(int areaId);
-    std::vector<CtiCCSubstationBusPtr> getSubBusesBySpecialAreaId(int areaId);
-    std::vector<CtiCCSubstationBusPtr> getSubBusesByStationId(int stationId);
-    std::vector<CtiCCSubstationBusPtr> getSubBusesByFeederId(int feederId);
-    std::vector<CtiCCSubstationBusPtr> getSubBusesByCapControlByIdAndType(int paoId, CapControlType type);
+    CtiCCSubstationBus_vec getSubBusesByAreaId(int areaId);
+    CtiCCSubstationBus_vec getSubBusesBySpecialAreaId(int areaId);
+    CtiCCSubstationBus_vec getSubBusesByStationId(int stationId);
+    CtiCCSubstationBus_vec getSubBusesByFeederId(int feederId);
+    CtiCCSubstationBus_vec getSubBusesByCapControlByIdAndType(int paoId, CapControlType type);
 
     CtiCCCapBankPtr getCapBankByPaoId(int paoId);
     std::vector<CtiCCCapBankPtr> getCapBanksByPaoId(int paoId);
@@ -600,33 +608,34 @@ private:
 
     StrategyManager _strategyManager;
 
-    Cti::CapControl::ZoneManager _zoneManager;
+    ZoneManager _zoneManager;
 
 protected:
     boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager> _voltageRegulatorManager;
 
 private:
-    multimap< long, long > _substation_specialarea_map;
-    map< long, long > _substation_area_map;
-    map< long, long > _subbus_substation_map;
-    map< long, long > _feeder_subbus_map;
-    map< long, long > _capbank_subbus_map;
-    map< long, long > _capbank_feeder_map;
-    map< long, long > _cbc_capbank_map;
+    ChildToParentMultiMap _substation_specialarea_map;
 
-    multimap< long, long > _altsub_sub_idmap;
+    ChildToParentMap _substation_area_map;
+    ChildToParentMap _subbus_substation_map;
+    ChildToParentMap _feeder_subbus_map;
+    ChildToParentMap _capbank_subbus_map;
+    ChildToParentMap _capbank_feeder_map;
+    ChildToParentMap _cbc_capbank_map;
 
-    list <CtiCCCapBankPtr> _unsolicitedCapBanks;
-    list <CtiCCCapBankPtr> _unexpectedUnsolicited;
-    list <CtiCCCapBankPtr> _rejectedCapBanks;
+    PaoIdToPointIdMultiMap _altsub_sub_idmap;
+
+    CapBankList _unsolicitedCapBanks;
+    CapBankList _unexpectedUnsolicited;
+    CapBankList _rejectedCapBanks;
 
     list <CC_DBRELOAD_INFO> _reloadList;
-    list <long> _orphanedCapBanks;
-    list <long> _orphanedFeeders;
+    PaoIdList _orphanedCapBanks;
+    PaoIdList _orphanedFeeders;
 
-    map< long, MaxKvarObject > _maxKvarMap;
+    KvarMap _maxKvarMap;
 
-    boost::shared_ptr<Cti::CapControl::DaoFactory> _daoFactory;
+    DaoFactory::SharedPtr _daoFactory;
 
     mutable RWRecursiveLock<RWMutexLock> _storeMutex;
 
@@ -635,7 +644,7 @@ public:
     Cti::CapControl::ZoneManager & getZoneManager();
     bool reloadZoneFromDatabase(const long zoneId);
 
-    boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager>  getVoltageRegulatorManager();
+    boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager> getVoltageRegulatorManager();
     bool reloadVoltageRegulatorFromDatabase(const long regulatorId);
 
 };

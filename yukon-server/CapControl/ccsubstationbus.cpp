@@ -497,9 +497,9 @@ LONG CtiCCSubstationBus::getCurrentVarLoadPointId() const
  *
  * @return list<long>
  */
-std::list<long> CtiCCSubstationBus::getCurrentVarLoadPoints() const
+PointIdList CtiCCSubstationBus::getCurrentVarLoadPoints() const
 {
-    list<long> points;
+    PointIdList points;
     int pointId = 0;
 
     if (getUsePhaseData())
@@ -8899,9 +8899,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
 {
     CtiRequestMsg* request = NULL;
 
-    map <long, long> controlid_action_map;
-    controlid_action_map.clear();
-
     if( !getDisableFlag() &&
         currentDateTime.seconds() >= getLastOperationTime().seconds() + getStrategy()->getControlDelayTime() )
     {
@@ -9605,8 +9602,8 @@ int CtiCCSubstationBus::getAlterateBusIdForPrimary() const
     int paoId = getPaoId();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    multimap<long,long>::iterator it;
-    pair<multimap<long,long>::iterator,multimap<long,long>::iterator> ret;
+    PaoIdToPointIdMultiMap::iterator it;
+    pair<PaoIdToPointIdMultiMap::iterator, PaoIdToPointIdMultiMap::iterator> ret;
 
     ret = store->getSubsWithAltSubID(paoId);
     for (it = ret.first; it != ret.second; it++)

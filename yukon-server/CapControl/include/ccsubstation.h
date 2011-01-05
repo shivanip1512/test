@@ -1,31 +1,9 @@
-
-
-/*---------------------------------------------------------------------------
-        Filename:  ccsubstation.h
-
-        Programmer:  Josh Wolberg
-
-        Description:    Header file for CtiCCSubstationBus
-                        CtiCCSubstationBus maintains the state and handles
-                        the persistence of strategies for Cap Control.
-
-        Initial Date:  8/27/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-
-#ifndef CTICCSUBSTATIONIMPL_H
-#define CTICCSUBSTATIONIMPL_H
-
-#include <list>
-using std::list;
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
-#include <list>
-#include <vector>
 
 #include "dbaccess.h"
 #include "connection.h"
@@ -134,14 +112,12 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
-    std::list <long> _subBusIds;
-    std::list <long> _pointIds;
+    PaoIdList _subBusIds;
+    PointIdList _pointIds;
 
     void restore(Cti::RowReader& rdr);
 
 
 };
 
-//typedef shared_ptr<CtiCCSubstation> CtiCCSubstationPtr;
 typedef CtiCCSubstation* CtiCCSubstationPtr;
-#endif

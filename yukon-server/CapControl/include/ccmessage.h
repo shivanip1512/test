@@ -1,18 +1,5 @@
-/*-----------------------------------------------------------------------------
-    Filename:  ccmessage.h
-
-    Programmer:  Josh Wolberg
-
-    Description:    Header file for message classes.
-
-    Initial Date:  8/30/2001
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
------------------------------------------------------------------------------*/
+#pragma once
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CCMESSAGE_H
-#define CCMESSAGE_H
 
 #include <rw/collstr.h>
 #include <rw/collect.h>
@@ -26,17 +13,16 @@
 #include "ccstate.h"
 #include "VoltageRegulator.h"
 
-
 typedef std::vector<CtiCCSubstationPtr> CtiCCSubstation_vec;
 typedef std::vector<CtiCCAreaPtr> CtiCCArea_vec;
 typedef std::vector<CtiCCSpecialPtr> CtiCCSpArea_vec;
-typedef std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBus_vec;
 typedef std::vector<CtiCCStatePtr> CtiCCState_vec;
 
 typedef std::set<CtiCCSubstationPtr> CtiCCSubstation_set;
 typedef std::set<CtiCCAreaPtr> CtiCCArea_set;
 typedef std::set<CtiCCSpecialPtr> CtiCCSpArea_set;
 typedef std::set<CtiCCSubstationBusPtr> CtiCCSubstationBus_set;
+
 enum CtiCCEventType_t
 {
     capBankStateUpdate = 0,  //operation confirmed
@@ -645,6 +631,4 @@ private:
 
     std::vector<Cti::CapControl::VoltageRegulator *> regulators;
 };
-
-#endif
 
