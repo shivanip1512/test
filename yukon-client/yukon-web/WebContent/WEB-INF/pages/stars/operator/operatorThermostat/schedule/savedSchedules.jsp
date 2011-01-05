@@ -1,8 +1,10 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
     
 <cti:standardPage module="operator" page="thermostatSavedSchedules">
 
@@ -46,11 +48,24 @@
 				    
 				    <cti:msg2 var="createNewText" key=".createNewSchedule" />
 				    <input type="submit" name="createNew" value="${createNewText}">
-				    
-				    <cti:msg2 var="deleteText" key=".deleteSchedule" />
-				    <input type="submit" name="delete" value="${deleteText}">
-		      	
-		      	</c:otherwise>
+
+				    <input type="button" onclick="$('deleteConfirmDialog').show()"
+				    	value="<i:inline key=".deleteSchedule"/>" class="formSubmit">
+
+				    <!-- Delete Hardware Popup -->
+					<i:simplePopup styleClass="mediumSimplePopup" titleKey=".deleteConfirm" 
+								   id="deleteConfirmDialog">
+						<h1 class="dialogQuestion">
+				            <i:inline key=".deleteMessage"/>
+				        </h1>
+				        <div class="actionArea">
+						    <cti:msg2 var="deleteButtonText" key=".delete" />
+					    	<input type="submit" name="delete" value="${deleteButtonText}">
+							<cti:button key="cancel" onclick="javascript:$('deleteConfirmDialog').hide();"/>
+						</div>
+					</i:simplePopup>
+
+			</c:otherwise>
 	      	
 	      	</c:choose>
 		      	

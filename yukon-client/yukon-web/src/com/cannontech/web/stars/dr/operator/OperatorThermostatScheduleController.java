@@ -395,7 +395,7 @@ public class OperatorThermostatScheduleController {
     }
 	
 	// VIEW SAVED SCHEDULED
-	@RequestMapping(params="view")
+	@RequestMapping(params="view", value="viewSavedSchedule")
 	public String viewSavedSchedule(int thermostatId, Integer scheduleId, ModelMap modelMap, AccountInfoFragment accountInfoFragment) {
 		
 		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
@@ -406,7 +406,7 @@ public class OperatorThermostatScheduleController {
 	}
 	
 	// CREATE NEW SAVED SCHEDULE
-	@RequestMapping(params="createNew")
+	@RequestMapping(params="createNew", value="viewSavedSchedule")
     public String createNewSchedule(int thermostatId, 
     								LiteYukonUser user, 
     								ModelMap modelMap, 
@@ -421,7 +421,7 @@ public class OperatorThermostatScheduleController {
     }
 
 	// DELETE SAVED SCHEDULE
-	@RequestMapping(params="delete")
+	@RequestMapping(params="delete", value="viewSavedSchedule")
     public String viewSavedSchedule(int thermostatId, 
     								int scheduleId, 
     								LiteYukonUser user, 

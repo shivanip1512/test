@@ -196,7 +196,11 @@
 	<entry key="yukon.web.modules.operator.thermostatSavedSchedules.savedSchedulesUiContainerHeader.title">Saved Schedules</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.chooseSchedule">Select a schedule to view:</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.viewSchedule">View Schedule</entry>
+    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.delete">Delete</entry>
+    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.cancel">Cancel</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.deleteSchedule">Delete Schedule</entry>
+    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.deleteConfirm">Confirm Delete</entry>
+    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.deleteMessage">Are you sure you want to delete this schedule?</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.createNewSchedule">Create New Schedule</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.noSchedules">There are no saved schedules.</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.scheduleDeleted">Schedule "{0}" Deleted.</entry>
