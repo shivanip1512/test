@@ -1,32 +1,14 @@
-/*---------------------------------------------------------------------------
-        Filename:  ccstatscounters.h
-        
-        Programmer:  Julie Richter
-                
-        Description:    Header file for CCStatsObject
-                        
-
-        Initial Date:  2/24/2009
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2009
----------------------------------------------------------------------------*/
-
-#ifndef CCSTATSOBJECT_H
-#define CCSTATSOBJECT_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
-#include <list>
-
+#include <rw/thr/recursiv.h>
 
 #include "msg_cmd.h"
 #include "dbaccess.h"
 #include "observe.h"
 #include "types.h"
-
-
 
 class CCStatsObject
 {
@@ -54,7 +36,4 @@ private:
     DOUBLE _total;  
     LONG _failCount;  
 };
-
-
-#endif
 

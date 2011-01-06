@@ -1,31 +1,10 @@
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   mgr_paosched
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mgr_mcsched.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/05/19 20:04:07 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
+#pragma once
 #pragma warning( disable : 4786)
-
-#ifndef __MGR_PAOSCHED_H__
-#define __MGR_PAOSCHED_H__
-
-#include <list>
-using std::list;
 
 #include <rw/thr/thread.h>
 
 #include "pao_schedule.h"
 #include "pao_event.h"
-
 
 class CtiPAOScheduleManager 
 {
@@ -101,6 +80,3 @@ private:
     mutable RWRecursiveLock<RWMutexLock> _mutex;
 
 };
-
-
-#endif

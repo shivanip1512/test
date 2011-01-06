@@ -1207,7 +1207,7 @@ CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, ULO
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Substation: "<<station->getPaoName()<< " Parent: "<< station->getParentId() <<" SAEnabled ?"<<station->getSaEnabledFlag() << " SAEnId : " << station->getSaEnabledId()<< endl;
             }
-            std::list <LONG>::const_iterator iterBus = station->getCCSubIds()->begin();
+            Cti::CapControl::PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
             while (iterBus  != station->getCCSubIds()->end())
             {
                 LONG busId = *iterBus;

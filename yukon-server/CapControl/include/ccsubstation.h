@@ -51,11 +51,11 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     LONG getVoltReductionControlId() const;
     BOOL getChildVoltReductionFlag() const;
 
-    list <LONG>* getCCSubIds(){return &_subBusIds;};
+    Cti::CapControl::PaoIdList* getCCSubIds(){return &_subBusIds;};
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
 
-    list <LONG>* getPointIds() {return &_pointIds; };
+    Cti::CapControl::PointIdList* getPointIds() {return &_pointIds; };
 
     CtiCCSubstation& setOvUvDisabledFlag(BOOL flag);
     CtiCCSubstation& setVoltReductionFlag(BOOL flag);
@@ -112,8 +112,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
-    PaoIdList _subBusIds;
-    PointIdList _pointIds;
+    Cti::CapControl::PaoIdList _subBusIds;
+    Cti::CapControl::PointIdList _pointIds;
 
     void restore(Cti::RowReader& rdr);
 

@@ -326,7 +326,7 @@ void CtiCapController::messageSender()
             CtiCCSubstation_set stationChanges;
             CtiCCArea_set areaChanges;
 
-            SubBusMap::iterator busIter = store->getPAOSubMap()->begin();
+            PaoIdToSubBusMap::iterator busIter = store->getPAOSubMap()->begin();
             for ( ; busIter != store->getPAOSubMap()->end() ; busIter++)
             {
                 CtiCCSubstationBusPtr currentSubstationBus = busIter->second;CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
@@ -591,7 +591,7 @@ void CtiCapController::controlLoop()
 
                     areaChanges.clear();
                     stationChanges.clear();
-                    SubBusMap::iterator busIter = store->getPAOSubMap()->begin();
+                    PaoIdToSubBusMap::iterator busIter = store->getPAOSubMap()->begin();
                     for ( ;busIter != store->getPAOSubMap()->end(); busIter++)
                     {
                         RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
@@ -1693,7 +1693,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
             CtiCCSubstation_vec stationChanges;
             CtiCCArea_vec areaChanges;
 
-            AreaMap::iterator areaIter = store->getPAOAreaMap()->begin();
+            PaoIdToAreaMap::iterator areaIter = store->getPAOAreaMap()->begin();
             for ( ; areaIter != store->getPAOAreaMap()->end() ; areaIter++)
             {
                 CtiCCAreaPtr currentArea = areaIter->second;
@@ -1724,7 +1724,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                     regMsg->insert(currentArea->getOperationStats().getMonthlyOpSuccessPercentId());
                 }
             }
-            SpecialAreaMap::iterator spAreaIter = store->getPAOSpecialAreaMap()->begin();
+            PaoIdToSpecialAreaMap::iterator spAreaIter = store->getPAOSpecialAreaMap()->begin();
             for ( ; spAreaIter != store->getPAOSpecialAreaMap()->end() ; spAreaIter++)
             {
                 CtiCCSpecialPtr currentSpArea = spAreaIter->second;
@@ -1755,7 +1755,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                 }
 
             }
-            SubstationMap::iterator stationIter = store->getPAOStationMap()->begin();
+            PaoIdToSubstationMap::iterator stationIter = store->getPAOStationMap()->begin();
             for ( ; stationIter != store->getPAOStationMap()->end() ; stationIter++)
             {
                 CtiCCSubstation* currentStation = stationIter->second;
@@ -1787,7 +1787,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                 }
 
             }
-            SubBusMap::iterator busIter = store->getPAOSubMap()->begin();
+            PaoIdToSubBusMap::iterator busIter = store->getPAOSubMap()->begin();
             for ( ; busIter != store->getPAOSubMap()->end() ; busIter++)
             {
                 CtiCCSubstationBusPtr currentSubstationBus = busIter->second;
@@ -2071,11 +2071,11 @@ void CtiCapController::parseMessage(RWCollectable *message)
                             CtiCCSubstationBusStore::getInstance()->setWasSubBusDeletedFlag(TRUE);
                         }
 
-                        CapControlType objType = Undefined;
+                        Cti::CapControl::CapControlType objType = Cti::CapControl::Undefined;
                         long changeId = dbChange->getId();
                         if (dbChange->getDatabase() == ChangeCBCStrategyDb)
                         {
-                            objType = Strategy;
+                            objType = Cti::CapControl::Strategy;
                         }
                         else if (dbChange->getDatabase() == ChangePAODb && !(stringCompareIgnoreCase(dbChange->getObjectType(),"cap bank")))
                         {
@@ -2084,7 +2084,7 @@ void CtiCapController::parseMessage(RWCollectable *message)
                                  CtiLockGuard<CtiLogger> logger_guard(dout);
                                  dout << CtiTime() << " capBank DB change message received for Cap: "<<dbChange->getId() << endl;
                             }
-                            objType = CapBank;
+                            objType = Cti::CapControl::CapBank;
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_VIRTUAL_SYSTEM)
                         {
@@ -2096,35 +2096,35 @@ void CtiCapController::parseMessage(RWCollectable *message)
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SPECIALAREA)
                         {
-                            objType = SpecialArea;
+                            objType = Cti::CapControl::SpecialArea;
 
                             CtiPAOScheduleManager::getInstance()->setValid(false);
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_AREA)
                         {
-                            objType = Area;
+                            objType = Cti::CapControl::Area;
 
                             CtiPAOScheduleManager::getInstance()->setValid(false);
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION)
                         {
-                            objType = Substation;
+                            objType = Cti::CapControl::Substation;
 
                             CtiPAOScheduleManager::getInstance()->setValid(false);
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION_BUS)
                         {
-                            objType = SubBus;
+                            objType = Cti::CapControl::SubBus;
 
                             CtiPAOScheduleManager::getInstance()->setValid(false);
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_FEEDER)
                         {
-                            objType =  Feeder;
+                            objType =  Cti::CapControl::Feeder;
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_VOLTAGEREGULATOR)
                         {
-                            objType =  VoltageRegulatorType;
+                            objType =  Cti::CapControl::VoltageRegulatorType;
                         }
                         else if (dbChange->getDatabase() == ChangePAOScheduleDB)
                         {
@@ -2132,39 +2132,39 @@ void CtiCapController::parseMessage(RWCollectable *message)
                         }
                         else if (dbChange->getDatabase() == ChangePointDb)
                         {
-                            SubBusMultiMap::iterator      subBusBegin,  subBusEnd;
-                            FeederMultiMap::iterator      feederBegin,  feederEnd;
-                            CapBankMultiMap::iterator     capBankBegin, capBankEnd;
-                            AreaMultiMap::iterator        areaBegin,    areaEnd;
-                            SpecialAreaMultiMap::iterator sAreaBegin,   sAreaEnd;
+                            PointIdToSubBusMultiMap::iterator      subBusBegin,  subBusEnd;
+                            PointIdToFeederMultiMap::iterator      feederBegin,  feederEnd;
+                            PointIdToCapBankMultiMap::iterator     capBankBegin, capBankEnd;
+                            PointIdToAreaMultiMap::iterator        areaBegin,    areaEnd;
+                            PointIdToSpecialAreaMultiMap::iterator sAreaBegin,   sAreaEnd;
                             if (CtiCCSubstationBusStore::getInstance()->findSubBusByPointID(dbChange->getId(), subBusBegin, subBusEnd))
                             {
                                 CtiCCSubstationBusPtr sub = subBusBegin->second;
-                                objType = SubBus;
+                                objType = Cti::CapControl::SubBus;
                                 changeId = sub->getPaoId();
                             }
                             else if (CtiCCSubstationBusStore::getInstance()->findFeederByPointID(dbChange->getId(), feederBegin, feederEnd))
                             {
                                 CtiCCFeederPtr feed = feederBegin->second;
-                                objType = Feeder;
+                                objType = Cti::CapControl::Feeder;
                                 changeId = feed->getPaoId();
                             }
                             else if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(dbChange->getId(), capBankBegin, capBankEnd))
                             {
                                 CtiCCCapBankPtr cap = capBankBegin->second;
-                                objType = CapBank;
+                                objType = Cti::CapControl::CapBank;
                                 changeId = cap->getPaoId();
                             }
                             else if (CtiCCSubstationBusStore::getInstance()->findAreaByPointID(dbChange->getId(), areaBegin, areaEnd))
                             {
                                 CtiCCAreaPtr area = areaBegin->second;
-                                objType = Area;
+                                objType = Cti::CapControl::Area;
                                 changeId = area->getPaoId();
                             }
                             else if (CtiCCSubstationBusStore::getInstance()->findSpecialAreaByPointID(dbChange->getId(), sAreaBegin, sAreaEnd))
                             {
                                 CtiCCSpecialPtr specialArea = sAreaBegin->second;
-                                objType = SpecialArea;
+                                objType = Cti::CapControl::SpecialArea;
                                 changeId = specialArea->getPaoId();
                             }
                         }
@@ -2192,7 +2192,7 @@ void CtiCapController::parseMessage(RWCollectable *message)
                                 }
 
                                 CtiCCCapBankPtr cap = CtiCCSubstationBusStore::getInstance()->findCapBankByPAObjectID(capBankId);
-                                objType = CapBank;
+                                objType = Cti::CapControl::CapBank;
                                 changeId = cap->getPaoId();
                                 if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                                 {
@@ -2201,7 +2201,7 @@ void CtiCapController::parseMessage(RWCollectable *message)
                                 }
                             }
                         }
-                        else if (objType == Undefined)
+                        else if (objType == Cti::CapControl::Undefined)
                         {
                             CtiCCSubstationBusStore::getInstance()->setValid(false);
                             CtiPAOScheduleManager::getInstance()->setValid(false);
@@ -2225,7 +2225,7 @@ void CtiCapController::parseMessage(RWCollectable *message)
                             dout << CtiTime() << " IVVC - Zone Change received. Reloading All Zones." << endl;
                         }
 
-                        CC_DBRELOAD_INFO reloadInfo = {dbChange->getId(), dbChange->getTypeOfChange(), ZoneType};
+                        CC_DBRELOAD_INFO reloadInfo = {dbChange->getId(), dbChange->getTypeOfChange(), Cti::CapControl::ZoneType};
                         CtiCCSubstationBusStore::getInstance()->insertDBReloadList(reloadInfo);
                     }
                 }
@@ -2672,7 +2672,7 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
         CapControlPointDataHandler pointHandler = store->getPointDataHandler();
         pointHandler.processIncomingPointData(message);
 
-        if (!isQualityOk(quality))
+        if (!Cti::CapControl::isQualityOk(quality))
         {
             return;
         }
@@ -2755,7 +2755,7 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
 
 
     CtiCCAreaPtr currentArea = NULL;
-    AreaMultiMap::iterator areaIter, end;
+    PointIdToAreaMultiMap::iterator areaIter, end;
     store->findAreaByPointID(pointID, areaIter, end);
 
     while (areaIter != end)
@@ -2804,7 +2804,7 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
 
 
     CtiCCSpecialPtr currentSpArea = NULL;
-    SpecialAreaMultiMap::iterator saIter, end;
+    PointIdToSpecialAreaMultiMap::iterator saIter, end;
     store->findSpecialAreaByPointID(pointID, saIter, end);
 
     while (saIter != end)
@@ -2854,7 +2854,7 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
 
     CtiCCSubstation* currentStation = NULL;
     CtiCCAreaPtr currentArea = NULL;
-    SubstationMultiMap::iterator stationIter, end;
+    PointIdToSubstationMultiMap::iterator stationIter, end;
     store->findSubstationByPointID(pointID, stationIter, end);
 
     while (stationIter != end)
@@ -2920,7 +2920,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
     CtiCCSubstation* currentStation = NULL;
     CtiCCAreaPtr currentArea = NULL;
 
-    SubBusMultiMap::iterator subIter, end;
+    PointIdToSubBusMultiMap::iterator subIter, end;
     store->findSubBusByPointID(pointID, subIter, end);
 
     while (subIter != end)
@@ -3136,7 +3136,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
 
                 // check for alt sub bus id, and update all sub's alt values
                 PaoIdToPointIdMultiMap::iterator it;
-                pair<PaoIdToPointIdMultiMap::iterator,PaoIdToPointIdMultiMap::iterator> ret;
+                std::pair<PaoIdToPointIdMultiMap::iterator,PaoIdToPointIdMultiMap::iterator> ret;
 
                 ret = store->getSubsWithAltSubID(currentSubstationBus->getPaoId());
                 for (it = ret.first; it != ret.second; it++)
@@ -3245,7 +3245,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
     CtiCCFeederPtr currentFeeder = NULL;
-    FeederMultiMap::iterator feedIter, end;
+    PointIdToFeederMultiMap::iterator feedIter, end;
     store->findFeederByPointID(pointID, feedIter, end);
 
     while (feedIter != end)
@@ -3482,7 +3482,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
     CtiCCFeederPtr currentFeeder = NULL;
     CtiCCCapBankPtr currentCapBank = NULL;
-    CapBankMultiMap::iterator capIter, end;
+    PointIdToCapBankMultiMap::iterator capIter, end;
     store->findCapBankByPointID(pointID, capIter, end);
 
     while (capIter != end)

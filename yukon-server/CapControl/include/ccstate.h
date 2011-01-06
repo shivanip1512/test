@@ -1,18 +1,4 @@
-/*---------------------------------------------------------------------------
-        Filename:  ccstate.h
-        
-        Programmer:  Josh Wolberg
-        
-        Description:    Header file for CtiCCState
-                        CtiCCState is a copy of each entry in the state table
-
-        Initial Date:  9/04/2001
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-
-#ifndef CTICCSTATEIMPL_H
-#define CTICCSTATEIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -21,8 +7,6 @@
 
 #include "connection.h"
 #include "observe.h"
-
-using boost::shared_ptr;
 
 class CtiCCState : public RWCollectable
 {
@@ -62,6 +46,4 @@ private:
     void restore(Cti::RowReader& rdr);
 };
 
-//typedef shared_ptr<CtiCCState> CtiCCStatePtr; 
 typedef CtiCCState* CtiCCStatePtr; 
-#endif

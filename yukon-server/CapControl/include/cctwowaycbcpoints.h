@@ -1,27 +1,9 @@
-
-/*---------------------------------------------------------------------------
-        Filename:  cctwowaycbcpoints.h
-
-        Programmer:  Julie Richter
-
-        Description:    Header file for CtiCCTwoWayPoints
-                        CtiCCTwoWayPoints maintains the state and handles
-                        the persistence of cap banks for Cap Control.
-
-        Initial Date:  8/30/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-
-#ifndef CtiCCTwoWayPointsIMPL_H
-#define CtiCCTwoWayPointsIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
-#include <list>
-
 
 #include "msg_cmd.h"
 #include "msg_ptreg.h"
@@ -99,10 +81,10 @@ private:
     AttributePoint    _attributes;
     PointValueHolder  _pointValues;
 
-    map <int, PointAttribute> _statusOffsetAttribute;
-    map <int, PointAttribute> _analogOffsetAttribute;
-    map <int, PointAttribute> _accumulatorOffsetAttribute;
-    map <int, CtiPointType_t> _pointidPointtypeMap;
+    std::map <int, PointAttribute> _statusOffsetAttribute;
+    std::map <int, PointAttribute> _analogOffsetAttribute;
+    std::map <int, PointAttribute> _accumulatorOffsetAttribute;
+    std::map <int, CtiPointType_t> _pointidPointtypeMap;
 
     PointAttribute getAttribute(int pointtype, int offset);
     PointAttribute getAnalogAttribute(int offset);
@@ -123,4 +105,3 @@ private:
 };
 
 typedef CtiCCTwoWayPoints* CtiCCTwoWayPointsPtr;
-#endif

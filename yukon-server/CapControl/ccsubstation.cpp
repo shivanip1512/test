@@ -18,6 +18,8 @@
 
 extern ULONG _CC_DEBUG;
 
+using Cti::CapControl::PaoIdList;
+
 RWDEFINE_COLLECTABLE( CtiCCSubstation, CTICCSUBSTATION_ID )
 
 /*---------------------------------------------------------------------------
@@ -95,7 +97,7 @@ void CtiCCSubstation::saveGuts(RWvostream& ostrm ) const
           << _ovUvDisabledFlag;
 
     ostrm << _subBusIds.size();
-    std::list<LONG>::const_iterator iter = _subBusIds.begin();
+    Cti::CapControl::PaoIdList::const_iterator iter = _subBusIds.begin();
 
     for( ; iter != _subBusIds.end(); iter++)
     {
@@ -657,7 +659,6 @@ void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
     PaoIdList::iterator busIter;
-
 
     busIter = getCCSubIds()->begin();
 

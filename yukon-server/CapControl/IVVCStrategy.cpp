@@ -364,9 +364,9 @@ void IVVCStrategy::execute()
         for (PaoToStateMap::iterator b = _paoStateMap.begin(), e = _paoStateMap.end(); b != e; ++b)
         {
             int paoId = b->first;
-            CapControlType type = store->determineTypeById(paoId);
+            Cti::CapControl::CapControlType type = store->determineTypeById(paoId);
 
-            if ( type == SubBus )     // if we are a CtiCCSubstationBus object - needs condition obviously!
+            if ( type == Cti::CapControl::SubBus )     // if we are a CtiCCSubstationBus object - needs condition obviously!
             {
                 b->second.second->setPaoId(paoId);
                 runList.push_back( b->second.second );  // add our IVVCState object to the list of objects to execute.

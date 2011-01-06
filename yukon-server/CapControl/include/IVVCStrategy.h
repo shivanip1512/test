@@ -1,11 +1,7 @@
 #pragma once
 
 #include <string>
-#include <map>
 #include <utility>
-#include <list>
-
-#include <boost/shared_ptr.hpp>
 
 #include "IVVCAlgorithm.h"
 #include "guard.h"

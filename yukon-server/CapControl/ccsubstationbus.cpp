@@ -24,6 +24,7 @@
 #include "PointResponse.h"
 
 using Cti::CapControl::PointResponse;
+using Cti::CapControl::PointIdList;
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
@@ -2491,7 +2492,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
         {
             if (getStrategy()->getEndDaySettings().compare("Trip") == 0)
             {
-                bool flag = CtiCCSubstationBusStore::getInstance()->isAnyBankClosed(getPaoId(),SubBus);
+                bool flag = CtiCCSubstationBusStore::getInstance()->isAnyBankClosed(getPaoId(),Cti::CapControl::SubBus);
                 if (flag == false)
                 {
                     keepGoing = maxOperationsHitDisableBus();
@@ -2499,7 +2500,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
             }
             else if (getStrategy()->getEndDaySettings().compare("Close") == 0)
             {
-                bool flag = CtiCCSubstationBusStore::getInstance()->isAnyBankOpen(getPaoId(),SubBus);
+                bool flag = CtiCCSubstationBusStore::getInstance()->isAnyBankOpen(getPaoId(),Cti::CapControl::SubBus);
                 if (flag == false)
                 {
                     keepGoing = maxOperationsHitDisableBus();
@@ -9261,7 +9262,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(
             while (iter != controlid_action_map.end())
             {
                 {
-                    CapBankMultiMap::iterator bankIter, end;
+                    PointIdToCapBankMultiMap::iterator bankIter, end;
                     if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(iter->first, bankIter, end))
                     {
                         CtiCCCapBankPtr bank = bankIter->second;
@@ -9603,7 +9604,7 @@ int CtiCCSubstationBus::getAlterateBusIdForPrimary() const
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
     PaoIdToPointIdMultiMap::iterator it;
-    pair<PaoIdToPointIdMultiMap::iterator, PaoIdToPointIdMultiMap::iterator> ret;
+    std::pair<PaoIdToPointIdMultiMap::iterator, PaoIdToPointIdMultiMap::iterator> ret;
 
     ret = store->getSubsWithAltSubID(paoId);
     for (it = ret.first; it != ret.second; it++)

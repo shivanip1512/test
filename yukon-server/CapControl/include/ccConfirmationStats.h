@@ -1,36 +1,15 @@
-
-
-
-/*---------------------------------------------------------------------------
-        Filename:  ccoperationstats.h
-        
-        Programmer:  Julie Richter
-                
-        Description:    Header file for CtiCCOperationStats
-                        CtiCCOperationStats maintains the state and handles
-                        the persistence of cap banks for Cap Control.
-
-        Initial Date:  8/30/2001
-        
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
-
-#ifndef CtiCCConfirmationStatsIMPL_H
-#define CtiCCConfirmationStatsIMPL_H
+#pragma once
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
-#include <list>
-
 
 #include "msg_cmd.h"
 #include "dbaccess.h"
 #include "observe.h"
 #include "types.h"
 #include "ccoperationstats.h"  
-          
           
 class CtiCCConfirmationStats  
 {
@@ -138,4 +117,3 @@ private:
 };
 
 typedef CtiCCConfirmationStats* CtiCCConfirmationStatsPtr;
-#endif

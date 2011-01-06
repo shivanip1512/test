@@ -22,6 +22,12 @@ using Cti::CapControl::PointResponse;
 using Cti::CapControl::VoltageRegulator;
 using Cti::CapControl::VoltageRegulatorManager;
 
+using Cti::CapControl::ZoneManager;
+using Cti::CapControl::Zone;
+
+using Cti::CapControl::PaoIdList;
+using Cti::CapControl::PointIdList;
+
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern ULONG _POINT_AGE;
 extern ULONG _POST_CONTROL_WAIT;
@@ -70,7 +76,7 @@ bool IVVCAlgorithm::checkConfigAllZonesHaveRegulator(IVVCStatePtr state, CtiCCSu
 
             regulator->updateFlags( ((_IVVC_MIN_TAP_PERIOD_MINUTES * 60) / 2) );
         }
-        catch ( const NoVoltageRegulator & noRegulator )
+        catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
         {
             ++missingRegulatorCount;
 
@@ -813,7 +819,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
             }
         }
     }
-    catch ( const NoVoltageRegulator & noRegulator )
+    catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
     {
         configurationError = true;
 
@@ -822,7 +828,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
             dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
         }
     }
-    catch ( const MissingPointAttribute & missingAttribute )
+    catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
     {
         configurationError = true;
 
@@ -1010,13 +1016,13 @@ bool IVVCAlgorithm::isVoltageRegulatorInRemoteMode(const long regulatorID) const
 
         regulator->getPointValue( point.getPointId(), value );
     }
-    catch ( const NoVoltageRegulator & noRegulator )
+    catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
 
         dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
     }
-    catch ( const MissingPointAttribute & missingAttribute )
+    catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
 
@@ -1339,13 +1345,13 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
                 zonePointValues.insert( *found );
             }
         }
-        catch ( const NoVoltageRegulator & noRegulator )
+        catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
 
             dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
         }
-        catch ( const MissingPointAttribute & missingAttribute )
+        catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
 

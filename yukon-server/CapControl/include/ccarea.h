@@ -1,14 +1,9 @@
 #pragma once
 
-#include <list>
-using std::list;
-
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
-#include <list>
-#include <vector>
 
 #include "dbaccess.h"
 #include "connection.h"
@@ -45,10 +40,10 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     DOUBLE getPFactor() const;
     DOUBLE getEstPFactor() const;
     BOOL getChildVoltReductionFlag() const;
-    PaoIdList* getSubStationList(){return &_subStationIds;};
+    Cti::CapControl::PaoIdList* getSubStationList(){return &_subStationIds;};
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
-    list <LONG>* getPointIds() {return &_pointIds;};
+    Cti::CapControl::PointIdList* getPointIds() {return &_pointIds;};
     BOOL getAreaUpdatedFlag() const;
 
     void deleteCCSubs(long subId);
@@ -90,8 +85,8 @@ private:
     BOOL _reEnableAreaFlag;
     BOOL _childVoltReductionFlag;
 
-    PaoIdList _subStationIds;
-    PointIdList _pointIds;
+    Cti::CapControl::PaoIdList _subStationIds;
+    Cti::CapControl::PointIdList _pointIds;
 
     CtiCCOperationStats _operationStats;
     CtiCCConfirmationStats _confirmationStats;

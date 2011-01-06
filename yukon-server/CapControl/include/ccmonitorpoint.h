@@ -2,7 +2,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <list>
 
 #include "msg_cmd.h"
 #include "dbaccess.h"

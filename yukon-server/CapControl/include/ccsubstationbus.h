@@ -24,9 +24,6 @@ namespace Database {
 }
 }
 
-using Cti::CapControl::PointIdList;
-using Cti::CapControl::PaoIdList;
-
 typedef std::vector<CtiCCFeederPtr> CtiFeeder_vec;
 //For Sorted Vector, the vector will use this to determine position in the vector.
 struct CtiFeeder_less
@@ -65,7 +62,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     LONG getParentId() const;
 
-    PointIdList getCurrentVarLoadPoints() const;
+    Cti::CapControl::PointIdList getCurrentVarLoadPoints() const;
     LONG getCurrentVarLoadPointId() const;
     DOUBLE getCurrentVarLoadPointValue() const;
     DOUBLE getRawCurrentVarLoadPointValue() const;
@@ -331,7 +328,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& verifyControlledStatusFlags();
     LONG getNextTODStartTime();
 
-    std::list <LONG>* getPointIds() {return &_pointIds;};
+    Cti::CapControl::PointIdList* getPointIds() {return &_pointIds;};
 
     CtiCCSubstationBus& setVerificationAlreadyStartedFlag(BOOL verificationFlag);
     void setVerificationStrategy(int verificationStrategy);
@@ -488,7 +485,7 @@ private:
     void restore(Cti::RowReader& rdr);
     string doubleToString(DOUBLE doubleVal);
 
-    PointIdList _pointIds;
+    Cti::CapControl::PointIdList _pointIds;
     std::vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
 
     bool performDataOldAndFallBackNecessaryCheckOnFeeders();

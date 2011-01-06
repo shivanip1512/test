@@ -27,10 +27,7 @@
 #include "AttributeService.h"
 #include "DatabaseDaoFactory.h"
 
-using namespace Cti::CapControl;
-
 typedef std::set<RWCollectable*> CtiMultiMsg_set;
-using std::pair;
 
 struct CC_DBRELOAD_INFO
 {
@@ -87,28 +84,28 @@ private:
     CtiTime timestamp;
 };
 
-typedef std::map     < long, CtiCCSpecialPtr > SpecialAreaMap;
-typedef std::multimap< long, CtiCCSpecialPtr > SpecialAreaMultiMap;
+typedef std::map     < long, CtiCCSpecialPtr > PaoIdToSpecialAreaMap;
+typedef std::multimap< long, CtiCCSpecialPtr > PointIdToSpecialAreaMultiMap;
 
-typedef std::map     < long, CtiCCAreaPtr > AreaMap;
-typedef std::multimap< long, CtiCCAreaPtr > AreaMultiMap;
+typedef std::map     < long, CtiCCAreaPtr > PaoIdToAreaMap;
+typedef std::multimap< long, CtiCCAreaPtr > PointIdToAreaMultiMap;
 
-typedef std::map     < long, CtiCCSubstationPtr > SubstationMap;
-typedef std::multimap< long, CtiCCSubstationPtr > SubstationMultiMap;
+typedef std::map     < long, CtiCCSubstationPtr > PaoIdToSubstationMap;
+typedef std::multimap< long, CtiCCSubstationPtr > PointIdToSubstationMultiMap;
 
-typedef std::map     < long, CtiCCSubstationBusPtr > SubBusMap;
-typedef std::multimap< long, CtiCCSubstationBusPtr > SubBusMultiMap;
+typedef std::map     < long, CtiCCSubstationBusPtr > PaoIdToSubBusMap;
+typedef std::multimap< long, CtiCCSubstationBusPtr > PointIdToSubBusMultiMap;
 
-typedef std::map     < long, CtiCCFeederPtr > FeederMap;
-typedef std::multimap< long, CtiCCFeederPtr > FeederMultiMap;
+typedef std::map     < long, CtiCCFeederPtr > PaoIdToFeederMap;
+typedef std::multimap< long, CtiCCFeederPtr > PointIdToFeederMultiMap;
 
-typedef std::map     < long, CtiCCCapBankPtr > CapBankMap;
-typedef std::multimap< long, CtiCCCapBankPtr > CapBankMultiMap;
+typedef std::map     < long, CtiCCCapBankPtr > PaoIdToCapBankMap;
+typedef std::multimap< long, CtiCCCapBankPtr > PointIdToCapBankMultiMap;
 
 typedef std::map     < long, long > ChildToParentMap;
 typedef std::multimap< long, long > ChildToParentMultiMap;
 
-typedef std::map     < long, MaxKvarObject > KvarMap;
+typedef std::map     < long, MaxKvarObject > CapBankIdToKvarMap;
 
 typedef std::multimap< long, long > PaoIdToPointIdMultiMap;
 
@@ -177,18 +174,18 @@ public:
 
     bool InsertCCEventLogInDB(CtiCCEventLogMsg* msg);
 
-    bool findSpecialAreaByPointID(long point_id, SpecialAreaMultiMap::iterator &begin, SpecialAreaMultiMap::iterator &end);
-    bool findAreaByPointID       (long point_id, AreaMultiMap::iterator        &begin, AreaMultiMap::iterator        &end);
-    bool findSubBusByPointID     (long point_id, SubBusMultiMap::iterator      &begin, SubBusMultiMap::iterator      &end);
-    bool findSubstationByPointID (long point_id, SubstationMultiMap::iterator  &begin, SubstationMultiMap::iterator  &end);
-    bool findFeederByPointID     (long point_id, FeederMultiMap::iterator      &begin, FeederMultiMap::iterator      &end);
-    bool findCapBankByPointID    (long point_id, CapBankMultiMap::iterator     &begin, CapBankMultiMap::iterator     &end);
+    bool findSpecialAreaByPointID(long point_id, PointIdToSpecialAreaMultiMap::iterator &begin, PointIdToSpecialAreaMultiMap::iterator &end);
+    bool findAreaByPointID       (long point_id, PointIdToAreaMultiMap::iterator        &begin, PointIdToAreaMultiMap::iterator        &end);
+    bool findSubBusByPointID     (long point_id, PointIdToSubBusMultiMap::iterator      &begin, PointIdToSubBusMultiMap::iterator      &end);
+    bool findSubstationByPointID (long point_id, PointIdToSubstationMultiMap::iterator  &begin, PointIdToSubstationMultiMap::iterator  &end);
+    bool findFeederByPointID     (long point_id, PointIdToFeederMultiMap::iterator      &begin, PointIdToFeederMultiMap::iterator      &end);
+    bool findCapBankByPointID    (long point_id, PointIdToCapBankMultiMap::iterator     &begin, PointIdToCapBankMultiMap::iterator     &end);
     int getNbrOfAreasWithPointID (long point_id);
     int getNbrOfSpecialAreasWithPointID(long point_id) ;
     int getNbrOfSubBusesWithPointID(long point_id);
     int getNbrOfSubstationsWithPointID(long point_id);
     int getNbrOfSubsWithAltSubID(long altSubId);
-    pair<PaoIdToPointIdMultiMap::iterator, PaoIdToPointIdMultiMap::iterator> getSubsWithAltSubID(int altSubId);
+    std::pair<PaoIdToPointIdMultiMap::iterator, PaoIdToPointIdMultiMap::iterator> getSubsWithAltSubID(int altSubId);
     int getNbrOfFeedersWithPointID(long point_id);
     int getNbrOfCapBanksWithPointID(long point_id);
 
@@ -219,44 +216,44 @@ public:
     void deleteArea(long areaId);
     void deleteSpecialArea(long areaId);
 
-    void reloadCapBankFromDatabase(long capBankId, CapBankMap *paobject_capbank_map,
-                                   FeederMap *paobject_feeder_map,
-                                   SubBusMap *paobject_subbus_map,
-                                   CapBankMultiMap *pointid_capbank_map,
+    void reloadCapBankFromDatabase(long capBankId, PaoIdToCapBankMap *paobject_capbank_map,
+                                   PaoIdToFeederMap *paobject_feeder_map,
+                                   PaoIdToSubBusMap *paobject_subbus_map,
+                                   PointIdToCapBankMultiMap *pointid_capbank_map,
                                    ChildToParentMap *capbank_subbus_map,
                                    ChildToParentMap *capbank_feeder_map,
                                    ChildToParentMap *feeder_subbus_map,
                                    ChildToParentMap *cbc_capbank_map);
-    void reloadMonitorPointsFromDatabase(long capBankId, CapBankMap *paobject_capbank_map,
-                                   FeederMap *paobject_feeder_map,
-                                   SubBusMap *paobject_subbus_map,
-                                   CapBankMultiMap *pointid_capbank_map);
+    void reloadMonitorPointsFromDatabase(long capBankId, PaoIdToCapBankMap *paobject_capbank_map,
+                                   PaoIdToFeederMap *paobject_feeder_map,
+                                   PaoIdToSubBusMap *paobject_subbus_map,
+                                   PointIdToCapBankMultiMap *pointid_capbank_map);
     void reloadFeederFromDatabase(long feederId,
-                                  FeederMap *paobject_feeder_map,
-                                  SubBusMap *paobject_subbus_map,
-                                  FeederMultiMap *pointid_feeder_map,
+                                  PaoIdToFeederMap *paobject_feeder_map,
+                                  PaoIdToSubBusMap *paobject_subbus_map,
+                                  PointIdToFeederMultiMap *pointid_feeder_map,
                                   ChildToParentMap *feeder_subbus_map);
     void reloadSubBusFromDatabase(long subBusId,
-                                  SubBusMap *paobject_subbus_map,
-                                  SubstationMap *paobject_substation_map,
-                                  SubBusMultiMap *pointid_subbus_map,
+                                  PaoIdToSubBusMap *paobject_subbus_map,
+                                  PaoIdToSubstationMap *paobject_substation_map,
+                                  PointIdToSubBusMultiMap *pointid_subbus_map,
                                   PaoIdToPointIdMultiMap *altsub_sub_idmap,
                                   ChildToParentMap *subbus_substation_map,
                                   CtiCCSubstationBus_vec *cCSubstationBuses );
-    void reloadSubstationFromDatabase(long substationId, SubstationMap *paobject_substation_map,
-                                      AreaMap *paobject_area_map,
-                                      SpecialAreaMap *paobject_specialarea_map,
-                                      SubstationMultiMap *pointid_station_map,
+    void reloadSubstationFromDatabase(long substationId, PaoIdToSubstationMap *paobject_substation_map,
+                                      PaoIdToAreaMap *paobject_area_map,
+                                      PaoIdToSpecialAreaMap *paobject_specialarea_map,
+                                      PointIdToSubstationMultiMap *pointid_station_map,
                                       ChildToParentMap *substation_area_map,
                                       ChildToParentMultiMap *substation_specialarea_map,
                                       CtiCCSubstation_vec *ccSubstations);
     void reloadAreaFromDatabase(long areaId,
-                                  AreaMap *paobject_area_map,
-                                  AreaMultiMap *pointid_area_map,
+                                  PaoIdToAreaMap *paobject_area_map,
+                                  PointIdToAreaMultiMap *pointid_area_map,
                                   CtiCCArea_vec *ccGeoAreas);
     void reloadSpecialAreaFromDatabase(long areaId,
-                                  SpecialAreaMap *paobject_specialarea_map,
-                                  SpecialAreaMultiMap *pointid_specialarea_map,
+                                  PaoIdToSpecialAreaMap *paobject_specialarea_map,
+                                  PointIdToSpecialAreaMultiMap *pointid_specialarea_map,
                                   CtiCCSpArea_vec *ccSpecialAreas);
     void reloadTimeOfDayStrategyFromDatabase(long strategyId);
     bool reloadStrategyFromDatabase(long strategyId);
@@ -264,12 +261,12 @@ public:
     void reloadMapOfBanksToControlByLikeDay(long subbusId, long feederId,
                                       ChildToParentMap *controlid_action_map,
                                       CtiTime &lastSendTime, int fallBackConstant);
-    void reloadOperationStatsFromDatabase(long paoId, CapBankMap *paobject_capbank_map,
-                                                        FeederMap *paobject_feeder_map,
-                                                        SubBusMap *paobject_subbus_map,
-                                                        SubstationMap *paobject_substation_map,
-                                                        AreaMap *paobject_area_map,
-                                                        SpecialAreaMap *paobject_specialarea_map );
+    void reloadOperationStatsFromDatabase(long paoId, PaoIdToCapBankMap *paobject_capbank_map,
+                                                        PaoIdToFeederMap *paobject_feeder_map,
+                                                        PaoIdToSubBusMap *paobject_subbus_map,
+                                                        PaoIdToSubstationMap *paobject_substation_map,
+                                                        PaoIdToAreaMap *paobject_area_map,
+                                                        PaoIdToSpecialAreaMap *paobject_specialarea_map );
     void reloadAndAssignHolidayStrategysFromDatabase(long strategyId);
     void reloadStrategyParametersFromDatabase(long strategyId);
 
@@ -370,8 +367,8 @@ public:
     void cascadeStrategySettingsToChildren(LONG spAreaId, LONG areaId, LONG subBusId);
 
 
-    void locateOrphans(PaoIdList *orphanCaps, PaoIdList *orphanFeeders, CapBankMap paobject_capbank_map,
-                       FeederMap paobject_feeder_map, ChildToParentMap capbank_feeder_map, ChildToParentMap feeder_subbus_map);
+    void locateOrphans(Cti::CapControl::PaoIdList *orphanCaps, Cti::CapControl::PaoIdList *orphanFeeders, PaoIdToCapBankMap paobject_capbank_map,
+                       PaoIdToFeederMap paobject_feeder_map, ChildToParentMap capbank_feeder_map, ChildToParentMap feeder_subbus_map);
     BOOL isCapBankOrphan(long capBankId);
     BOOL isFeederOrphan(long feederId);
     void removeFromOrphanList(long ccId);
@@ -402,14 +399,14 @@ public:
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
     void handleVoltageRegulatorDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
-    void updateModifiedStationsAndBusesSets(list <LONG>* stationIdList, ULONG &msgBitMask, ULONG &msgSubsBitMask,
+    void updateModifiedStationsAndBusesSets(Cti::CapControl::PaoIdList* stationIdList, ULONG &msgBitMask, ULONG &msgSubsBitMask,
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet);
     void registerForAdditionalPoints(CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet);
     void initializeAllPeakTimeFlagsAndMonitorPoints(BOOL setTargetVarFlag = FALSE);
     void createAndSendClientMessages( ULONG &msgBitMask, ULONG &msgSubsBitMask, CtiMultiMsg_set &modifiedSubsSet,
                                       CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages);
-    void addSubstationObjectsToSet(list <LONG> *subBusIds, CtiMultiMsg_set &modifiedSubsSet);
-    void addSubBusObjectsToSet(list <LONG> *subBusIds, CtiMultiMsg_set &modifiedSubsSet);
+    void addSubstationObjectsToSet(Cti::CapControl::PaoIdList *subBusIds, CtiMultiMsg_set &modifiedSubsSet);
+    void addSubBusObjectsToSet(Cti::CapControl::PaoIdList *subBusIds, CtiMultiMsg_set &modifiedSubsSet);
     void updateSubstationObjectSet(LONG substationId, CtiMultiMsg_set &modifiedStationsSet);
     void updateAreaObjectSet(LONG areaId, CtiMultiMsg_set &modifiedAreasSet);
     void clearDBReloadList();
@@ -444,10 +441,10 @@ public:
     const CtiTime& getLinkDropOutTime() const;
     void  setLinkDropOutTime(const CtiTime& dropOutTime);
 
-    SubBusMap* getPAOSubMap();
-    AreaMap* getPAOAreaMap();
-    SubstationMap* getPAOStationMap();
-    SpecialAreaMap* getPAOSpecialAreaMap();
+    PaoIdToSubBusMap* getPAOSubMap();
+    PaoIdToAreaMap* getPAOAreaMap();
+    PaoIdToSubstationMap* getPAOStationMap();
+    PaoIdToSpecialAreaMap* getPAOSpecialAreaMap();
 
     static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
     static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE2;
@@ -487,18 +484,18 @@ public:
     CtiCCSubstationBus_vec getSubBusesBySpecialAreaId(int areaId);
     CtiCCSubstationBus_vec getSubBusesByStationId(int stationId);
     CtiCCSubstationBus_vec getSubBusesByFeederId(int feederId);
-    CtiCCSubstationBus_vec getSubBusesByCapControlByIdAndType(int paoId, CapControlType type);
+    CtiCCSubstationBus_vec getSubBusesByCapControlByIdAndType(int paoId, Cti::CapControl::CapControlType type);
 
     CtiCCCapBankPtr getCapBankByPaoId(int paoId);
     std::vector<CtiCCCapBankPtr> getCapBanksByPaoId(int paoId);
-    std::vector<CtiCCCapBankPtr> getCapBanksByPaoIdAndType(int paoId, CapControlType type);
-    CapControlType determineTypeById(int paoId);
+    std::vector<CtiCCCapBankPtr> getCapBanksByPaoIdAndType(int paoId, Cti::CapControl::CapControlType type);
+    Cti::CapControl::CapControlType determineTypeById(int paoId);
 
     CapControlPointDataHandler& getPointDataHandler();
     virtual bool handlePointDataByPaoId(int paoId, CtiPointDataMsg* message);
 
-    bool isAnyBankOpen(int paoId, CapControlType type);
-    bool isAnyBankClosed(int paoId, CapControlType type);
+    bool isAnyBankOpen(int paoId, Cti::CapControl::CapControlType type);
+    bool isAnyBankClosed(int paoId, Cti::CapControl::CapControlType type);
 
     //Setter for unit tests.
     void setAttributeService(AttributeService attributeService);
@@ -592,23 +589,23 @@ private:
 
     static const string m3iAMFMNullString;
 
-    SpecialAreaMap _paobject_specialarea_map;
-    AreaMap        _paobject_area_map;
-    SubstationMap  _paobject_substation_map;
-    SubBusMap      _paobject_subbus_map;
-    FeederMap      _paobject_feeder_map;
-    CapBankMap     _paobject_capbank_map;
+    PaoIdToSpecialAreaMap _paobject_specialarea_map;
+    PaoIdToAreaMap        _paobject_area_map;
+    PaoIdToSubstationMap  _paobject_substation_map;
+    PaoIdToSubBusMap      _paobject_subbus_map;
+    PaoIdToFeederMap      _paobject_feeder_map;
+    PaoIdToCapBankMap     _paobject_capbank_map;
 
-    SpecialAreaMultiMap _pointid_specialarea_map;
-    AreaMultiMap        _pointid_area_map;
-    SubstationMultiMap  _pointid_station_map;
-    SubBusMultiMap      _pointid_subbus_map;
-    FeederMultiMap      _pointid_feeder_map;
-    CapBankMultiMap     _pointid_capbank_map;
+    PointIdToSpecialAreaMultiMap _pointid_specialarea_map;
+    PointIdToAreaMultiMap        _pointid_area_map;
+    PointIdToSubstationMultiMap  _pointid_station_map;
+    PointIdToSubBusMultiMap      _pointid_subbus_map;
+    PointIdToFeederMultiMap      _pointid_feeder_map;
+    PointIdToCapBankMultiMap     _pointid_capbank_map;
 
     StrategyManager _strategyManager;
 
-    ZoneManager _zoneManager;
+    Cti::CapControl::ZoneManager _zoneManager;
 
 protected:
     boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager> _voltageRegulatorManager;
@@ -630,12 +627,12 @@ private:
     CapBankList _rejectedCapBanks;
 
     list <CC_DBRELOAD_INFO> _reloadList;
-    PaoIdList _orphanedCapBanks;
-    PaoIdList _orphanedFeeders;
+    Cti::CapControl::PaoIdList _orphanedCapBanks;
+    Cti::CapControl::PaoIdList _orphanedFeeders;
 
-    KvarMap _maxKvarMap;
+    CapBankIdToKvarMap _maxKvarMap;
 
-    DaoFactory::SharedPtr _daoFactory;
+    Cti::CapControl::DaoFactory::SharedPtr _daoFactory;
 
     mutable RWRecursiveLock<RWMutexLock> _storeMutex;
 

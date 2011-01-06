@@ -4,7 +4,6 @@
 #include <rw/vstream.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
-#include <list>
 
 #include "msg_cmd.h"
 #include "msg_pdata.h"
@@ -15,6 +14,7 @@
 #include "ccoriginalparent.h"
 #include "dbaccess.h"
 #include "observe.h"
+#include "cctypes.h"
 #include "ctitime.h"
 #include "ctidate.h"
 #include "CapControlPao.h"
@@ -27,8 +27,6 @@ namespace Database {
     class DatabaseConnection;
 }
 }
-
-using boost::shared_ptr;
 
 typedef enum
 {
@@ -153,7 +151,7 @@ public:
     int  getVCtrlIndex() const;
     int getAssumedOrigVerificationState() const;
 
-    std::list <LONG>* getPointIds() {return &_pointIds;};
+    Cti::CapControl::PointIdList* getPointIds() {return &_pointIds;};
     std::vector <CtiCCMonitorPointPtr>& getMonitorPoint() {return _monitorPoint;};
 
     CtiCCCapBank& setParentId(LONG parentId);
@@ -402,7 +400,7 @@ private:
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
-    std::list <LONG> _pointIds;
+    Cti::CapControl::PointIdList _pointIds;
     std::vector <CtiCCMonitorPoint*>  _monitorPoint; //normally this is just one, but if display order is > 1 then we have more
                                                     // than one monitor point attached to a capbank!!!
 
@@ -411,5 +409,4 @@ private:
     void restore(Cti::RowReader& rdr);
 };
 
-//typedef shared_ptr<CtiCCCapBank> CtiCCCapBankPtr;
 typedef CtiCCCapBank* CtiCCCapBankPtr;

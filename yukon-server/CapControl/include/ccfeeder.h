@@ -5,7 +5,6 @@
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
 #include <rw/sortvec.h>
-#include <list>
 
 #include "dbaccess.h"
 #include "connection.h"
@@ -27,8 +26,6 @@ namespace Database {
     class DatabaseConnection;
 }
 }
-
-using Cti::CapControl::PointIdList;
 
 //For Sorted Vector, the vector will use this to determine position in the vector.
 struct CtiCCCapBank_less
@@ -324,7 +321,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiRequestMsg*  createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                           CtiMultiMsg_vec& pilMessages, CtiCCCapBank* currentCapBank, int control);
 
-    std::list <LONG>* getPointIds() {return &_pointIds;};
+    Cti::CapControl::PointIdList* getPointIds() {return &_pointIds;};
 
     BOOL isVerificationAlreadyControlled(long minConfirmPercent, long quality, DOUBLE varAValueBeforeControl,
                              DOUBLE varBValueBeforeControl, DOUBLE varCValueBeforeControl,
@@ -478,7 +475,7 @@ private:
     void restore(Cti::RowReader& rdr);
     string doubleToString(DOUBLE doubleVal, LONG decimalPlaces);
 
-    PointIdList _pointIds;
+    Cti::CapControl::PointIdList _pointIds;
     std::vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
 
     bool checkForRateOfChange(const CtiRegression& reg, const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC);

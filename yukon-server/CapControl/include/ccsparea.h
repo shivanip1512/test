@@ -23,8 +23,6 @@ namespace Database {
 }
 }
 
-using Cti::CapControl::PointIdList;
-
 class CtiCCSpecial : public RWCollectable, public Controllable
 {
 
@@ -53,8 +51,8 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     CtiCCSpecial& setPFactor(DOUBLE pfactor);
     CtiCCSpecial& setEstPFactor(DOUBLE estpfactor);
 
-    list <LONG>* getSubstationIds() {return &_substationIds;};
-    list <LONG>* getPointIds() {return &_pointIds;};
+    Cti::CapControl::PaoIdList* getSubstationIds() {return &_substationIds;};
+    Cti::CapControl::PointIdList* getPointIds() {return &_pointIds;};
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
 
@@ -80,10 +78,10 @@ private:
     string _additionalFlags;
     BOOL _ovUvDisabledFlag;
 
-    std::list <LONG> _substationIds;
+    Cti::CapControl::PaoIdList _substationIds;
     BOOL _isSpecial;
 
-    PointIdList _pointIds;
+    Cti::CapControl::PointIdList _pointIds;
 
     CtiCCOperationStats _operationStats;
     CtiCCConfirmationStats _confirmationStats;

@@ -27,6 +27,7 @@
 
 using Cti::CapControl::PointResponse;
 using Cti::CapControl::PointResponseManager;
+using Cti::CapControl::createPorterRequestMsg;
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
@@ -6731,11 +6732,11 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded(CtiMultiMsg_vec& pointChanges)
 
         if (getStrategy()->getEndDaySettings().compare("Trip") == 0)
         {
-            endOfDayOverride = CtiCCSubstationBusStore::getInstance()->isAnyBankClosed(getPaoId(),Feeder);
+            endOfDayOverride = CtiCCSubstationBusStore::getInstance()->isAnyBankClosed(getPaoId(),Cti::CapControl::Feeder);
         }
         else if (getStrategy()->getEndDaySettings().compare("Close") == 0)
         {
-            endOfDayOverride = CtiCCSubstationBusStore::getInstance()->isAnyBankOpen(getPaoId(),Feeder);
+            endOfDayOverride = CtiCCSubstationBusStore::getInstance()->isAnyBankOpen(getPaoId(),Cti::CapControl::Feeder);
         }
 
         if (endOfDayOverride == false)
@@ -7067,7 +7068,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededFallBackControl(const CtiTime& current
             int capCount = 0;
             long ptId = iter->first;
 
-            CapBankMultiMap::iterator bankIter, end;
+            PointIdToCapBankMultiMap::iterator bankIter, end;
             if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(iter->first, bankIter, end))
             {
                 CtiCCCapBankPtr bank = bankIter->second;

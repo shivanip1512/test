@@ -6,10 +6,6 @@
 #include "ctitime.h"
 #include "msg_pdata.h"
 
-#include <map>
-
-using std::map;
-
 class PointValueHolder
 {
     public:

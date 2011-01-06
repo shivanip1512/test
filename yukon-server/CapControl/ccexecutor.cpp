@@ -16,6 +16,8 @@
 
 using Cti::CapControl::DynamicCommandExecutor;
 using Cti::CapControl::VoltageRegulatorManager;
+using Cti::CapControl::PaoIdList; 
+using Cti::CapControl::createPorterRequestMsg;
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
@@ -2019,7 +2021,7 @@ void CtiCCCommandExecutor::SendTimeSync()
         additional1 += currentStation->getPaoName();
         pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
 
-        list <LONG>::const_iterator iterBus = currentStation->getCCSubIds()->begin();
+        Cti::CapControl::PaoIdList::const_iterator iterBus = currentStation->getCCSubIds()->begin();
         while (iterBus  != currentStation->getCCSubIds()->end())
         {
             LONG busId = *iterBus;
@@ -2078,7 +2080,7 @@ void CtiCCCommandExecutor::SendTimeSync()
 
             if (currentStation != NULL)
             {
-                list <LONG>::const_iterator iterBus = currentStation->getCCSubIds()->begin();
+                Cti::CapControl::PaoIdList::const_iterator iterBus = currentStation->getCCSubIds()->begin();
                 while (iterBus  != currentStation->getCCSubIds()->end())
                 {
                     LONG busId = *iterBus;
@@ -2149,7 +2151,7 @@ void CtiCCCommandExecutor::SendTimeSync()
 
                 if (currentStation != NULL)
                 {
-                    list <LONG>::const_iterator iterBus = currentStation->getCCSubIds()->begin();
+                    Cti::CapControl::PaoIdList::const_iterator iterBus = currentStation->getCCSubIds()->begin();
                     while (iterBus  != currentStation->getCCSubIds()->end())
                     {
                         LONG busId = *iterBus;
@@ -2327,10 +2329,10 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
     CtiCCSubstation_vec& ccStations = *store->getCCSubstations(CtiTime().seconds());
 
     //Find the object type
-    CapControlType type = store->determineTypeById(paoId);
+    Cti::CapControl::CapControlType type = store->determineTypeById(paoId);
 
     //Special Case for SpecialAreas. If it is disabled, no commands go out.
-    if (type == SpecialArea)
+    if (type == Cti::CapControl::SpecialArea)
     {
         CtiCCSpecialPtr sArea = store->findSpecialAreaByPAObjectID(paoId);
 
@@ -2349,7 +2351,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
         }
     }
 
-    if (type == Undefined)
+    if (type == Cti::CapControl::Undefined)
     {
         //Error
         return;
@@ -2413,14 +2415,14 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
 
 }
 
-void CtiCCCommandExecutor::setParentOvUvFlags(int paoId, CapControlType type, bool ovuvFlag, CtiMultiMsg_vec& modifiedSubBuses)
+void CtiCCCommandExecutor::setParentOvUvFlags(int paoId, Cti::CapControl::CapControlType type, bool ovuvFlag, CtiMultiMsg_vec& modifiedSubBuses)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     switch (type)
     {
-        case SpecialArea:
+        case Cti::CapControl::SpecialArea:
         {
             CtiCCSpecialPtr sArea = store->findSpecialAreaByPAObjectID(paoId);
             sArea->setOvUvDisabledFlag(ovuvFlag);
@@ -2447,7 +2449,7 @@ void CtiCCCommandExecutor::setParentOvUvFlags(int paoId, CapControlType type, bo
             }
             break;
         }
-        case Area:
+        case Cti::CapControl::Area:
         {
             CtiCCAreaPtr area = store->findAreaByPAObjectID(paoId);
             area->setOvUvDisabledFlag(ovuvFlag);
@@ -2474,7 +2476,7 @@ void CtiCCCommandExecutor::setParentOvUvFlags(int paoId, CapControlType type, bo
             }
             break;
         }
-        case Substation:
+        case Cti::CapControl::Substation:
         {
             CtiCCSubstationPtr station = store->findSubstationByPAObjectID(paoId);
             station->setOvUvDisabledFlag(ovuvFlag);
@@ -2494,7 +2496,7 @@ void CtiCCCommandExecutor::setParentOvUvFlags(int paoId, CapControlType type, bo
             }
             break;
         }
-        case SubBus:
+        case Cti::CapControl::SubBus:
         {
             CtiCCSubstationBusPtr subBus = store->findSubBusByPAObjectID(paoId);
             subBus->setOvUvDisabledFlag(ovuvFlag);
@@ -2507,7 +2509,7 @@ void CtiCCCommandExecutor::setParentOvUvFlags(int paoId, CapControlType type, bo
             }
             break;
         }
-        case Feeder:
+        case Cti::CapControl::Feeder:
         {
             CtiCCFeederPtr feeder = store->findFeederByPAObjectID(paoId);
             feeder->setOvUvDisabledFlag(ovuvFlag);
@@ -2517,7 +2519,7 @@ void CtiCCCommandExecutor::setParentOvUvFlags(int paoId, CapControlType type, bo
             modifiedSubBuses.push_back(subBus);
             break;
         }
-        case CapBank:
+        case Cti::CapControl::CapBank:
         default:
         {
             //No parents need to be updated.
@@ -2526,7 +2528,7 @@ void CtiCCCommandExecutor::setParentOvUvFlags(int paoId, CapControlType type, bo
     }
 }
 
-void CtiCCCommandExecutor::printOutEventLogsByIdAndType(int paoId, CapControlType type, const string& actionText, const string& userName,
+void CtiCCCommandExecutor::printOutEventLogsByIdAndType(int paoId, Cti::CapControl::CapControlType type, const string& actionText, const string& userName,
                                                         CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -2540,7 +2542,7 @@ void CtiCCCommandExecutor::printOutEventLogsByIdAndType(int paoId, CapControlTyp
     //Print out to the event logs what happened here.
     switch (type)
     {
-        case SpecialArea:
+        case Cti::CapControl::SpecialArea:
         {
             CtiCCSpecialPtr area = store->findSpecialAreaByPAObjectID(paoId);
             if (area == NULL)
@@ -2556,7 +2558,7 @@ void CtiCCCommandExecutor::printOutEventLogsByIdAndType(int paoId, CapControlTyp
 
             break;
         }
-        case Area:
+        case Cti::CapControl::Area:
         {
             CtiCCAreaPtr area = store->findAreaByPAObjectID(paoId);
             if (area == NULL)
@@ -2572,7 +2574,7 @@ void CtiCCCommandExecutor::printOutEventLogsByIdAndType(int paoId, CapControlTyp
 
             break;
         }
-        case Substation:
+        case Cti::CapControl::Substation:
         {
             CtiCCSubstationPtr station = store->findSubstationByPAObjectID(paoId);
             if (station == NULL)
@@ -2588,7 +2590,7 @@ void CtiCCCommandExecutor::printOutEventLogsByIdAndType(int paoId, CapControlTyp
 
             break;
         }
-        case SubBus:
+        case Cti::CapControl::SubBus:
         {
             CtiCCSubstationBusPtr subBus = store->findSubBusByPAObjectID(paoId);
             CtiCCSubstationPtr station = store->findSubstationByPAObjectID(subBus->getParentId());
@@ -2606,7 +2608,7 @@ void CtiCCCommandExecutor::printOutEventLogsByIdAndType(int paoId, CapControlTyp
 
             break;
         }
-        case Feeder:
+        case Cti::CapControl::Feeder:
         {
             CtiCCFeederPtr feeder = store->findFeederByPAObjectID(paoId);
             CtiCCSubstationBusPtr subBus = store->findSubBusByPAObjectID(feeder->getParentId());
@@ -2625,7 +2627,7 @@ void CtiCCCommandExecutor::printOutEventLogsByIdAndType(int paoId, CapControlTyp
 
             break;
         }
-        case CapBank:
+        case Cti::CapControl::CapBank:
         default:
         {
             found = false;
@@ -3367,7 +3369,7 @@ void CtiCCCommandExecutor::ControlAllCapBanks(LONG paoId, int control)
     }
     else if (station != NULL && !station->getDisableFlag())
     {
-        list <LONG>::const_iterator iterBus = station->getCCSubIds()->begin();
+        Cti::CapControl::PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
         while (iterBus  != station->getCCSubIds()->end())
         {
             LONG busId = *iterBus;
@@ -3400,7 +3402,7 @@ void CtiCCCommandExecutor::ControlAllCapBanks(LONG paoId, int control)
 
             if (station != NULL && !station->getDisableFlag())
             {
-                list <LONG>::const_iterator iterBus = station->getCCSubIds()->begin();
+                Cti::CapControl::PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
                 while (iterBus  != station->getCCSubIds()->end())
                 {
                     LONG busId = *iterBus;
@@ -3436,7 +3438,7 @@ void CtiCCCommandExecutor::ControlAllCapBanks(LONG paoId, int control)
 
             if (station != NULL && !station->getDisableFlag())
             {
-                list <LONG>::const_iterator iterBus = station->getCCSubIds()->begin();
+                Cti::CapControl::PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
                 while (iterBus  != station->getCCSubIds()->end())
                 {
                     LONG busId = *iterBus;
@@ -5676,14 +5678,14 @@ void CtiCCCommandExecutor::ConfirmArea()
         ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL,0, currentArea->getPaoId(), 0, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
 
-        list <LONG>::const_iterator iter = currentArea->getSubStationList()->begin();
+        Cti::CapControl::PaoIdList::const_iterator iter = currentArea->getSubStationList()->begin();
         while (iter != currentArea->getSubStationList()->end())
         {
             LONG stationId = *iter;
             CtiCCSubstation *station = store->findSubstationByPAObjectID(stationId);
             if (station != NULL)
             {
-                list <LONG>::const_iterator iterBus = station->getCCSubIds()->begin();
+                Cti::CapControl::PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
                 while (iterBus  != station->getCCSubIds()->end())
                 {
                     LONG busId = *iterBus;
@@ -5763,14 +5765,14 @@ void CtiCCCommandExecutor::ConfirmArea()
                 pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
                 ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSpArea->getPaoId(), 0, 0, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-                list <LONG>::const_iterator iter = currentSpArea->getSubstationIds()->begin();
+                Cti::CapControl::PaoIdList::const_iterator iter = currentSpArea->getSubstationIds()->begin();
                 while (iter != currentSpArea->getSubstationIds()->end())
                 {
                     LONG stationId = *iter;
                     CtiCCSubstation *station = store->findSubstationByPAObjectID(stationId);
                     if (station != NULL)
                     {
-                        list <LONG>::const_iterator iterBus = station->getCCSubIds()->begin();
+                        Cti::CapControl::PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
                         while (iterBus  != station->getCCSubIds()->end())
                         {
                             LONG busId = *iterBus;
@@ -5831,7 +5833,7 @@ void CtiCCCommandExecutor::ConfirmArea()
                 pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
                 ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, station->getParentId(), station->getPaoId(), 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-                list <LONG>::const_iterator iterBus = station->getCCSubIds()->begin();
+                Cti::CapControl::PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
                 while (iterBus  != station->getCCSubIds()->end())
                 {
                     LONG busId = *iterBus;
@@ -6947,7 +6949,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
     CtiCCSubstation* currentStation = store->findSubstationByPAObjectID(paoId);
     if (currentStation != NULL)
     {
-        list <LONG>::const_iterator iterBus = currentStation->getCCSubIds()->begin();
+        Cti::CapControl::PaoIdList::const_iterator iterBus = currentStation->getCCSubIds()->begin();
         while (iterBus  != currentStation->getCCSubIds()->end())
         {
             LONG busId = *iterBus;
@@ -7192,7 +7194,7 @@ void CtiCCCommandExecutor::ResetAllSystemOpCounts()
 
                 if (currentStation != NULL)
                 {
-                    list <LONG>::const_iterator iterBus = currentStation->getCCSubIds()->begin();
+                    Cti::CapControl::PaoIdList::const_iterator iterBus = currentStation->getCCSubIds()->begin();
                     while (iterBus  != currentStation->getCCSubIds()->end())
                     {
                         LONG busId = *iterBus;
@@ -8119,14 +8121,14 @@ void CtiCCCommandExecutor::sendVoltageRegulatorCommands(const LONG command)
             break;
         }
     }
-    catch ( const NoVoltageRegulator & noRegulator )
+    catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
 
         dout << CtiTime() << " - " << commandName << " command failed.\n"
              << CtiTime() << " - ** " << noRegulator.what() << std::endl;
     }
-    catch ( const MissingPointAttribute & missingAttribute )
+    catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
 
@@ -8200,11 +8202,11 @@ void CtiCCCommandExecutor::sendVoltageRegulatorRemoteControl(const LONG         
 
     if ( commandType == CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE )
     {
-        regulator->setOperatingMode(VoltageRegulator::RemoteMode);
+        regulator->setOperatingMode(Cti::CapControl::VoltageRegulator::RemoteMode);
     }
     else
     {
-        regulator->setOperatingMode(VoltageRegulator::LocalMode);
+        regulator->setOperatingMode(Cti::CapControl::VoltageRegulator::LocalMode);
         text = "Disable Remote Control";
         enableString = " 1";
 
@@ -8249,14 +8251,14 @@ void CtiCCCommandExecutor::sendVoltageRegulatorTapPosition(const LONG           
         case CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_RAISE:
         {
             text = "Raise Tap Position";
-            regulator->notifyTapOperation( VoltageRegulator::RaiseTap, CtiTime() );
+            regulator->notifyTapOperation( Cti::CapControl::VoltageRegulator::RaiseTap, CtiTime() );
             point = regulator->getPointByAttribute( PointAttribute::TapUp );
             break;
         }
         case CtiCCCommand::VOLTAGE_REGULATOR_TAP_POSITION_LOWER:
         {
             text = "Lower Tap Position";
-            regulator->notifyTapOperation( VoltageRegulator::LowerTap, CtiTime() );
+            regulator->notifyTapOperation( Cti::CapControl::VoltageRegulator::LowerTap, CtiTime() );
             point = regulator->getPointByAttribute( PointAttribute::TapDown );
             break;
         }

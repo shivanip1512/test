@@ -113,7 +113,7 @@ void CtiCCSpecial::saveGuts(RWvostream& ostrm ) const
     CapControlPao::saveGuts(ostrm);
 
     ostrm << _substationIds.size();
-    std::list<LONG>::const_iterator iter = _substationIds.begin();
+    Cti::CapControl::PaoIdList::const_iterator iter = _substationIds.begin();
 
     for(LONG i=0;i<_substationIds.size();i++)
     {

@@ -5,10 +5,6 @@
 #include "PointDataRequestFactory.h"
 #include "ZoneManager.h"
 
-using Cti::CapControl::Zone;
-using Cti::CapControl::ZoneLoader;
-using Cti::CapControl::ZoneManager;
-
 class IVVCStrategy;
 
 class IVVCAlgorithm
@@ -40,7 +36,7 @@ class IVVCAlgorithm
                                   const double Kp, const double powerFactor, const double targetPowerFactor);
 
         void tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, const PointValueMap & pointValues);
-        void tapOpZoneNormalization(const long parentID, const ZoneManager &zoneManager, IVVCState::TapOperationZoneMap &tapOp);
+        void tapOpZoneNormalization(const long parentID, const Cti::CapControl::ZoneManager &zoneManager, IVVCState::TapOperationZoneMap &tapOp);
 
         virtual void operateBank(long bankId, CtiCCSubstationBusPtr subbus, DispatchConnectionPtr dispatchConnection);
         virtual void sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, CtiMultiMsg* ccEvents);

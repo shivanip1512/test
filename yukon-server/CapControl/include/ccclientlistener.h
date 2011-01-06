@@ -1,23 +1,9 @@
-/*-----------------------------------------------------------------------------
-    Filename:  ccclientlistener.h
-
-    Programmer:  Josh Wolberg
-
-    Description: Header file for CtiCCClientListener
-
-    Initial Date:  8/16/2000
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000
------------------------------------------------------------------------------*/
+#pragma once
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef CTICCCLIENTLISTENER_H
-#define CTICCCLIENTLISTENER_H
 
 #include <rw/toolpro/sockaddr.h>
 #include <rw/toolpro/sockport.h>
 #include <rw/thr/thread.h>
-#include <vector>
 
 #include "ccclientconn.h"
 #include "ccstate.h"
@@ -58,6 +44,3 @@ private:
     void _listen( );
     void _check( );
 };
-
-#endif
-
