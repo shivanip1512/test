@@ -22,8 +22,10 @@ public interface StarsInventoryBaseDao {
 	 * @return LiteInventoryBase
 	 * @throws NotFoundException
 	 */
-    public LiteInventoryBase getByInventoryId(int inventoryId) throws NotFoundException;
-    
+    public LiteInventoryBase getByInventoryId(int inventoryId);
+
+    public LiteStarsLMHardware getHardwareByInventoryId(int inventoryId);
+
     /**
      * Finds Inventory by Device Id. Throws NotFoundException if the Inventory is not in the database.
      * 
@@ -31,7 +33,7 @@ public interface StarsInventoryBaseDao {
      * @return LiteInventoryBase
      * @throws NotFoundException
      */
-    public LiteInventoryBase getByDeviceId(int deviceId) throws NotFoundException;
+    public LiteInventoryBase getByDeviceId(int deviceId);
     
     public List<LiteInventoryBase> getByIds(Collection<Integer> inventoryIds);
 

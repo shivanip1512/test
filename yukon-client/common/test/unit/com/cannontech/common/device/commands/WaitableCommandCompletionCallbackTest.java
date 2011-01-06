@@ -8,17 +8,11 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 
 public class WaitableCommandCompletionCallbackTest {
-
-    @Before
-    public void setUp() throws Exception {
-    }
-
     @Test
     public void testWaitForCompletion() {
         final AtomicInteger timeoutCount = new AtomicInteger(0);

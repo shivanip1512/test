@@ -102,11 +102,6 @@
         <property name="concurrentExecutor" ref="globalScheduledExecutor"/>
     </bean>
 
-    <bean class="java.util.concurrent.Executors" factory-method="newScheduledThreadPool">
-        <qualifier value="hardwareConfig"/>
-        <constructor-arg value="64"/>
-    </bean>
-
     <bean id="longRunningExecutor" class="com.cannontech.common.util.ExecutorDelegate"
         destroy-method="shutdown">
         <constructor-arg>

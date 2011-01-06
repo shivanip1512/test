@@ -1,7 +1,9 @@
 package com.cannontech.stars.dr.hardware;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -12,11 +14,11 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.joda.time.Period;
 import org.joda.time.ReadablePeriod;
 import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
@@ -31,7 +33,6 @@ import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallb
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
 import com.cannontech.core.dao.EnergyCompanyDao;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -51,27 +52,26 @@ import com.google.common.collect.Lists;
 public class HardwareConfigService {
     private static Logger log = YukonLogManager.getLogger(HardwareConfigService.class);
 
-    private ScheduledExecutorService executor;
+    private ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
     private CommandScheduleDao commandScheduleDao;
     private InventoryConfigTaskDao inventoryConfigTaskDao;
     private com.cannontech.stars.dr.hardwareConfig.service.HardwareConfigService hardwareConfigService;
     private EnergyCompanyDao energyCompanyDao;
-    private YukonUserDao yukonUserDao;
     private CommandRequestHardwareExecutor commandRequestHardwareExecutor;
     private CommandRequestRouteExecutor commandRequestRouteExecutor;
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private InventoryConfigEventLogService inventoryConfigEventLogService;
     private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
 
-    public class EnergyCompanyRunnable implements Runnable {
+    private class EnergyCompanyRunnable implements Runnable {
         int energyCompanyId;
         boolean hadErrors;
 
-        EnergyCompanyRunnable(int energyCompanyId) {
+        private EnergyCompanyRunnable(int energyCompanyId) {
             this.energyCompanyId = energyCompanyId;
         }
 
-        void blockingCommandExecute(CommandRequestExecutionTemplate<CommandRequestRoute> template,
+        private void blockingCommandExecute(CommandRequestExecutionTemplate<CommandRequestRoute> template,
                 final LiteStarsLMHardware hardware, String command, LiteYukonUser user)
                 throws CommandCompletionException {
             CommandCompletionCallback<CommandRequestRoute> callback =
@@ -98,12 +98,13 @@ public class HardwareConfigService {
             }
         }
 
-        public void processItem(InventoryConfigTaskItem item, Duration delayBetweenCommands) {
+        private void processItem(InventoryConfigTaskItem item, Duration delayBetweenCommands)
+                throws InterruptedException {
             log.trace("processing item " + item);
-            Status status = Status.FAIL;  // fail if there are no commands
+            Status status = Status.FAIL;
             int inventoryId = item.getInventoryId();
-            LiteStarsLMHardware hardware = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
-            LiteYukonUser user = yukonUserDao.getLiteYukonUser(item.getInventoryConfigTask().getUserId());
+            LiteStarsLMHardware hardware = starsInventoryBaseDao.getHardwareByInventoryId(inventoryId);
+            LiteYukonUser user = item.getInventoryConfigTask().getUser();
 
             CommandRequestExecutionTemplate<CommandRequestRoute> template =
                 commandRequestRouteExecutor.getExecutionTemplate(DeviceRequestType.INVENTORY_RECONFIG, user);
@@ -116,29 +117,36 @@ public class HardwareConfigService {
                     status = Status.SUCCESS;
                     for (String command : commands) {
                         log.trace("processing command [" + command + "]");
-                        try {
-                            blockingCommandExecute(template, hardware, command, user);
-                            if (hadErrors) {
-                                log.error("error(s) executing command [" + command + "]");
-                                status = Status.FAIL;
-                            }
-                        } catch (CommandCompletionException cce) {
-                            log.error("exception executing command [" + command + "]");
+                        blockingCommandExecute(template, hardware, command, user);
+                        if (hadErrors) {
+                            log.error("error(s) executing command [" + command +
+                                      "]; inventory id=" + inventoryId +
+                                      "; CMRE id=" + template.getContextId().getId());
                             status = Status.FAIL;
+                            break;
                         }
-                        try {
-                            Thread.sleep(delayBetweenCommands.getMillis());
-                        } catch (InterruptedException ie) {
-                            log.info("sleep interrupted");
-                        }
+                        Thread.sleep(delayBetweenCommands.getMillis());
                     }
                 } else {
                     log.debug("no commands");
                 }
+            } catch (CommandCompletionException cce) {
+                log.error("exception executing command; inventory id=" + inventoryId +
+                          "; CMRE id=" + template.getContextId().getId() +
+                          "; msg=[" + cce.getMessage() + "]");
+                status = Status.FAIL;
             } catch (WebClientException wce) {
-                log.error("error getting commands for inventory id " + inventoryId, wce);
+                log.error("error getting commands; inventory id=" + inventoryId +
+                          "; CMRE id=" + template.getContextId().getId() +
+                          "; msg=[" + wce.getMessage() + "]");
+                status = Status.FAIL;
+            } catch (InterruptedException ie) {
+                throw ie;
             } catch (Exception exception) {
-                log.error("unexpected error configuration device", exception);
+                log.error("unexpected error configuring device; inventory id=" + inventoryId +
+                          "; CMRE id=" + template.getContextId().getId() +
+                          "; msg=[" + exception.getMessage() + "]");
+                status = Status.FAIL;
             }
             inventoryConfigTaskDao.markComplete(item, status);
             if (status == Status.SUCCESS) {
@@ -150,25 +158,26 @@ public class HardwareConfigService {
             }
         }
 
-        public boolean processItems() {
+        private boolean processItems() throws InterruptedException {
             log.trace("processing a chunk of work for ecId = " + energyCompanyId);
             LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
             DateTimeZone timeZone = energyCompany.getDefaultDateTimeZone();
 
             boolean workProcessed = false;
             List<InventoryConfigTask> tasks = inventoryConfigTaskDao.getUnfinished(energyCompanyId);
+            log.trace("tasks has " + tasks.size() + " items");
             if (!tasks.isEmpty()) {
-                log.trace("tasks not empty");
                 List<CommandSchedule> schedules = commandScheduleDao.getAllEnabled(energyCompanyId);
                 List<CommandSchedule> activeSchedules = Lists.newArrayList();
+                DateTime now = new DateTime(timeZone);
                 for (CommandSchedule schedule : schedules) {
                     try {
                         CronExpression startTimeCron = new CronExpression(schedule.getStartTimeCronString());
                         ReadablePeriod runPeriod = schedule.getRunPeriod();
-                        DateTime now = new DateTime(timeZone);
-                        DateTime scheduleStartTime = new DateTime(startTimeCron.getNextValidTimeAfter(now.minus(runPeriod).toDate()),
-                                                                  timeZone);
-                        if (scheduleStartTime.isBefore(now)) {
+                        Date earliestPossibleStartTime = now.minus(runPeriod).toDate();
+                        Instant scheduleStart =
+                            new Instant(startTimeCron.getNextValidTimeAfter(earliestPossibleStartTime).getTime());
+                        if (scheduleStart.isBefore(now)) {
                             activeSchedules.add(schedule);
                         }
                     } catch (ParseException parseException) {
@@ -203,16 +212,18 @@ public class HardwareConfigService {
                     }
                     log.debug("proccessed " + actualNumItems + " items");
                 }
-            } else {
-                log.trace("no unfinished tasks");
             }
             return workProcessed;
         }
 
         @Override
         public void run() {
-            while (processItems()) {
-                // Stuff in processItems; it returns false if there is nothing to do at the moment.
+            try {
+                while (processItems()) {
+                    // Stuff in processItems; it returns false if there is nothing to do at the moment.
+                }
+            } catch (InterruptedException ie) {
+                log.info("interrupted");
             }
         }
     }
@@ -227,11 +238,6 @@ public class HardwareConfigService {
             Runnable task = new EnergyCompanyRunnable(energyCompany.getEnergyCompanyID());
             executor.scheduleWithFixedDelay(task, 1, 1, TimeUnit.MINUTES);
         }
-    }
-
-    @Autowired
-    public void setExecutor(@Qualifier("hardwareConfig") ScheduledExecutorService executor) {
-        this.executor = executor;
     }
 
     @Autowired
@@ -254,11 +260,6 @@ public class HardwareConfigService {
     @Autowired
     public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
         this.energyCompanyDao = energyCompanyDao;
-    }
-
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
     }
 
     @Autowired

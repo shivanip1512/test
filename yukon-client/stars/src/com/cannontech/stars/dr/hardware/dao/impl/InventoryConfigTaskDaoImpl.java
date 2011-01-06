@@ -16,6 +16,7 @@ import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YNBoolean;
@@ -33,6 +34,7 @@ import com.google.common.collect.Lists;
 public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
+    private YukonUserDao yukonUserDao;
 
     private SimpleTableAccessTemplate<InventoryConfigTask> dbTemplate;
     private final static FieldMapper<InventoryConfigTask> fieldMapper = new FieldMapper<InventoryConfigTask>() {
@@ -55,10 +57,10 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
             parameterHolder.addValue("numberOfItems", task.getNumberOfItems());
             parameterHolder.addValue("numberOfItemsProcessed", task.getNumberOfItemsProcessed());
             parameterHolder.addValue("energyCompanyId", task.getEnergyCompanyId());
-            parameterHolder.addValue("userId", task.getUserId());
+            parameterHolder.addValue("userId", task.getUser().getUserID());
         }
     };
-    private final static YukonRowMapper<InventoryConfigTask> rowMapper = new YukonRowMapper<InventoryConfigTask>() {
+    private final YukonRowMapper<InventoryConfigTask> rowMapper = new YukonRowMapper<InventoryConfigTask>() {
         @Override
         public InventoryConfigTask mapRow(YukonResultSet rs)
                 throws SQLException {
@@ -69,11 +71,11 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
             retVal.setNumberOfItems(rs.getInt("numberOfItems"));
             retVal.setNumberOfItemsProcessed(rs.getInt("numberOfItemsProcessed"));
             retVal.setEnergyCompanyId(rs.getInt("energyCompanyId"));
-            retVal.setUserId(rs.getInt("userId"));
+            retVal.setUser(yukonUserDao.getLiteYukonUser(rs.getInt("userId")));
             return retVal;
         }
     };
-    private final static YukonRowMapper<InventoryConfigTaskItem> itemRowMapper = new YukonRowMapper<InventoryConfigTaskItem>() {
+    private final YukonRowMapper<InventoryConfigTaskItem> itemRowMapper = new YukonRowMapper<InventoryConfigTaskItem>() {
         @Override
         public InventoryConfigTaskItem mapRow(YukonResultSet rs)
         throws SQLException {
@@ -141,7 +143,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
         task.setNumberOfItems((int) inventoryCollection.getCount());
         task.setNumberOfItemsProcessed(0);
         task.setEnergyCompanyId(energyCompanyId);
-        task.setUserId(user.getUserID());
+        task.setUser(user);
         dbTemplate.save(task);
         int taskId = task.getInventoryConfigTaskId();
 
@@ -271,5 +273,10 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     @Autowired
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
+    }
+
+    @Autowired
+    public void setYukonUserDao(YukonUserDao yukonUserDao) {
+        this.yukonUserDao = yukonUserDao;
     }
 }

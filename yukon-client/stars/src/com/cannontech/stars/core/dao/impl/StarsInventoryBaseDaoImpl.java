@@ -95,7 +95,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
 
     @Override
     @Transactional(readOnly = true)
-    public LiteInventoryBase getByInventoryId(final int inventoryId) throws NotFoundException {
+    public LiteInventoryBase getByInventoryId(final int inventoryId) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(selectInventorySql);
         sql.append("WHERE ib.InventoryId = ").appendArgument(inventoryId);
@@ -110,7 +110,12 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
 
         return liteInv;
     }
-    
+
+    @Override
+    public LiteStarsLMHardware getHardwareByInventoryId(int inventoryId) {
+        return (LiteStarsLMHardware) getByInventoryId(inventoryId);
+    }
+
     @Override
     public Integer findMeterAssignment(int lmHardwareId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -160,7 +165,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     
     @Override
     @Transactional(readOnly = true)
-    public LiteInventoryBase getByDeviceId(final int deviceId) throws NotFoundException {
+    public LiteInventoryBase getByDeviceId(final int deviceId) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append(selectInventorySql);
     	sql.append("WHERE ib.DeviceId = ").appendArgument(deviceId);

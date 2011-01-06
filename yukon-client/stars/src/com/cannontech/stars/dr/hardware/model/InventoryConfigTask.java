@@ -2,6 +2,8 @@ package com.cannontech.stars.dr.hardware.model;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
+
 public class InventoryConfigTask {
     private int inventoryConfigTaskId;
     private String taskName;
@@ -9,7 +11,7 @@ public class InventoryConfigTask {
     private int numberOfItems;
     private int numberOfItemsProcessed;
     private int energyCompanyId;
-    private int userId;
+    private LiteYukonUser user;
 
     public int getInventoryConfigTaskId() {
         return inventoryConfigTaskId;
@@ -59,12 +61,12 @@ public class InventoryConfigTask {
         this.energyCompanyId = energyCompanyId;
     }
 
-    public int getUserId() {
-        return userId;
+    public LiteYukonUser getUser() {
+        return user;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUser(LiteYukonUser user) {
+        this.user = user;
     }
 
     public String getDisplayName() {
@@ -77,6 +79,6 @@ public class InventoryConfigTask {
             ", numberOfItems=" + numberOfItems +
             ", numberOfItemsProcessed=" + numberOfItemsProcessed + ", taskName=" + taskName +
             ", sendInService=" + sendInService + ", energyCompanyId=" + energyCompanyId +
-            ", userId=" + userId + "]";
+            ", userId=" + user.getUserID() + "]";
     }
 }
