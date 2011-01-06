@@ -10,7 +10,9 @@ public enum ThermostatManualEventResult {
     CONSUMER_MANUAL_PROGRAM_SUCCESS(false), 
     CONSUMER_MULTIPLE_ERROR(true),
     OPERATOR_NO_SERIAL_ERROR(true), 
-    CONSUMER_NO_SERIAL_ERROR(true);
+    CONSUMER_NO_SERIAL_ERROR(true),
+    CONSUMER_MANUAL_INVALID_TEMP_HIGH(true),
+    CONSUMER_MANUAL_INVALID_TEMP_LOW(true);
 
     // this key prefix can be found in the following file:
     // com.cannontech.yukon.dr.consumer.xml

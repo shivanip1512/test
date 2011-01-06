@@ -184,7 +184,9 @@
     <entry key="yukon.dr.consumer.manualevent.result.OPERATOR_NO_SERIAL_ERROR">The serial # of thermostat {0} cannot be empty. Manual option is not sent.</entry>
     <entry key="yukon.dr.consumer.manualevent.result.CONSUMER_NO_SERIAL_ERROR">Cannot send manual option to {0}. Please contact your utility company to report this problem.</entry>
     <entry key="yukon.dr.consumer.manualevent.result.CONSUMER_MULTIPLE_ERROR">There was a problem sending the manual option to one or more of the thermostats you selected. Please contact your utility company to report this problem.</entry>
-
+    <entry key="yukon.dr.consumer.manualevent.result.CONSUMER_MANUAL_INVALID_TEMP_LOW">This temperature is too low for the selected device(s) and mode.</entry>
+    <entry key="yukon.dr.consumer.manualevent.result.CONSUMER_MANUAL_INVALID_TEMP_HIGH">This temperature is too high for the selected device(s) and mode.</entry>
+    
     <entry key="yukon.dr.consumer.scheduleUpdate.result.OPERATOR_UNAVAILABLE_ERROR">Thermostat {0} is currently out of service. Schedule is not sent.</entry>
     <entry key="yukon.dr.consumer.scheduleUpdate.result.OPERATOR_NO_SERIAL_ERROR">The serial # of thermostat {0} cannot be empty. Schedule is not sent.</entry>
     <entry key="yukon.dr.consumer.scheduleUpdate.result.CONSUMER_NO_SERIAL_ERROR">Cannot send schedule to {0}. Please contact your utility company to report this problem.</entry>
