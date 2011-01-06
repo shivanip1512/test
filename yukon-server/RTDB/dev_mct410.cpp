@@ -4197,20 +4197,20 @@ string Mct410Device::decodeDisconnectConfig(const DSTRUCT &DSt)
         //    the new value won't be available via getDynamicInfo() until after this decode
         config_byte = DSt.Message[11];
 
-        //  threshhold is in units of Wh/minute, so we convert it into kW
-        resultStr += "Disconnect verification threshhold: " + CtiNumStr((float)DSt.Message[12] / 16.667, 3) + string(" kW (" + CtiNumStr(DSt.Message[12]) + " Wh/minute)\n");
+        //  threshold is in units of Wh/minute, so we convert it into kW
+        resultStr += "Disconnect verification threshold: " + CtiNumStr((float)DSt.Message[12] / 16.667, 3) + string(" kW (" + CtiNumStr(DSt.Message[12]) + " Wh/minute)\n");
     }
     else if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
     {
         config_byte = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
     }
 
-    point_info demand_threshhold = getData(DSt.Message + 5, 2, ValueType_DynamicDemand);
+    point_info demand_threshold = getData(DSt.Message + 5, 2, ValueType_DynamicDemand);
 
     //  adjust for the demand interval
-    demand_threshhold.value *= 3600 / getDemandInterval();
+    demand_threshold.value *= 3600 / getDemandInterval();
     //  adjust for the 0.1 kWh factor of getData()
-    demand_threshhold.value /= 10.0;
+    demand_threshold.value /= 10.0;
 
     //  no need to check if it's not supported
     if( isSupported(Feature_DisconnectCollar) )
@@ -4221,7 +4221,7 @@ string Mct410Device::decodeDisconnectConfig(const DSTRUCT &DSt)
         }
     }
 
-    resultStr += decodeDisconnectDemandLimitConfig(config_byte, demand_threshhold.value);
+    resultStr += decodeDisconnectDemandLimitConfig(config_byte, demand_threshold.value);
 
     //  include the cycle information
     if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_Disconnect_Cycle )

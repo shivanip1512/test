@@ -85,44 +85,44 @@ BOOST_AUTO_TEST_CASE(test_dev_mct420_decodeDisconnectConfig)
     {
         //  MCT-420CL
         {TYPEMCT420CL,  0x00, "Disconnect load limit connect delay: 34 minutes\n"
-                              "Disconnect verification threshhold: 12.300 kW (205 Wh/minute)\n"
+                              "Disconnect verification threshold: 12.300 kW (205 Wh/minute)\n"
                               "Disconnect demand threshold disabled\n"
                               "Disconnect cycling mode disabled\n"},
         {TYPEMCT420CL,  0x04, "Disconnect load limit connect delay: 34 minutes\n"
-                              "Disconnect verification threshhold: 12.300 kW (205 Wh/minute)\n"
+                              "Disconnect verification threshold: 12.300 kW (205 Wh/minute)\n"
                               "Disconnect demand threshold disabled\n"
                               "Disconnect cycling mode disabled\n"},
 
         //  MCT-420CLD
         {TYPEMCT420CLD, 0x00, "Disconnect load limit connect delay: 34 minutes\n"
-                              "Disconnect verification threshhold: 12.300 kW (205 Wh/minute)\n"
+                              "Disconnect verification threshold: 12.300 kW (205 Wh/minute)\n"
                               "Disconnect demand threshold disabled\n"
                               "Disconnect cycling mode disabled\n"},
         {TYPEMCT420CLD, 0x04, "Disconnect load limit connect delay: 34 minutes\n"
-                              "Disconnect verification threshhold: 12.300 kW (205 Wh/minute)\n"
+                              "Disconnect verification threshold: 12.300 kW (205 Wh/minute)\n"
                               "Disconnect demand threshold disabled\n"
                               "Disconnect cycling mode disabled\n"},
 
         //  MCT-420FL
         {TYPEMCT420FL,  0x00, "Disconnect receiver address: 131844\n"
                               "Disconnect load limit connect delay: 34 minutes\n"
-                              "Disconnect verification threshhold: 12.300 kW (205 Wh/minute)\n"
+                              "Disconnect verification threshold: 12.300 kW (205 Wh/minute)\n"
                               "Disconnect demand threshold disabled\n"
                               "Disconnect cycling mode disabled\n"},
         {TYPEMCT420FL,  0x04, "Disconnect receiver address: 131844\n"
                               "Disconnect load limit connect delay: 34 minutes\n"
-                              "Disconnect verification threshhold: 12.300 kW (205 Wh/minute)\n"
+                              "Disconnect verification threshold: 12.300 kW (205 Wh/minute)\n"
                               "Autoreconnect enabled\n"
                               "Disconnect demand threshold disabled\n"
                               "Disconnect cycling mode disabled\n"},
 
         //  MCT-420FLD
         {TYPEMCT420FLD, 0x00, "Disconnect load limit connect delay: 34 minutes\n"
-                              "Disconnect verification threshhold: 12.300 kW (205 Wh/minute)\n"
+                              "Disconnect verification threshold: 12.300 kW (205 Wh/minute)\n"
                               "Disconnect demand threshold disabled\n"
                               "Disconnect cycling mode disabled\n"},
         {TYPEMCT420FLD, 0x04, "Disconnect load limit connect delay: 34 minutes\n"
-                              "Disconnect verification threshhold: 12.300 kW (205 Wh/minute)\n"
+                              "Disconnect verification threshold: 12.300 kW (205 Wh/minute)\n"
                               "Disconnect demand threshold disabled\n"
                               "Disconnect cycling mode disabled\n"},
     };

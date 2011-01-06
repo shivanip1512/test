@@ -830,12 +830,12 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectConfig)
         //  if the message length is >= 13, the config byte is in the message
         {20, 13, 0x00,        "Disconnect receiver address: 131844\n"
                               "Disconnect load limit connect delay: 34 minutes\n"
-                              "Disconnect verification threshhold: 12.300 kW (205 Wh/minute)\n"
+                              "Disconnect verification threshold: 12.300 kW (205 Wh/minute)\n"
                               "Disconnect demand threshold disabled\n"
                               "Disconnect cycling mode disabled\n"},
         {20, 13, 0x04,        "Disconnect receiver address: 131844\n"
                               "Disconnect load limit connect delay: 34 minutes\n"
-                              "Disconnect verification threshhold: 12.300 kW (205 Wh/minute)\n"
+                              "Disconnect verification threshold: 12.300 kW (205 Wh/minute)\n"
                               "Autoreconnect enabled\n"
                               "Disconnect demand threshold disabled\n"
                               "Disconnect cycling mode disabled\n"},
