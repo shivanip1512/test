@@ -43,10 +43,12 @@ public class SurveyResultsDetailModel extends
 
     private final static MessageSourceResolvable noControlDuringOptOut =
         new YukonMessageSourceResolvable("yukon.web.modules.survey.report.noControlDuringOptOut");
+    private final static MessageSourceResolvable hardwareNotFound =
+        new YukonMessageSourceResolvable("yukon.web.modules.survey.report.hardwareNotFound");
 
     public static class ModelRow {
         public String accountNumber;
-        public String serialNumber;
+        public Object serialNumber;
         public String altTrackingNumber;
         public Object reason;
         public Date scheduledDate;
@@ -134,7 +136,7 @@ public class SurveyResultsDetailModel extends
             ModelRow row = new ModelRow();
             row.accountNumber = result.getAccountNumber();
             HardwareSummary hardwareSummary = hardwareSummariesById.get(event.getInventoryId());
-            row.serialNumber = hardwareSummary.getSerialNumber();
+            row.serialNumber = hardwareSummary == null ? hardwareNotFound : hardwareSummary.getSerialNumber();
             row.altTrackingNumber = "";
             CustomerAccountWithNames account = accountsByAccountId.get(result.getAccountId());
             if (account != null) {

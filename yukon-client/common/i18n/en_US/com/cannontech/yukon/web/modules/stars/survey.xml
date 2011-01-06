@@ -167,6 +167,9 @@
 <entry key="yukon.web.modules.survey.report.noEndDate">None</entry>
 <entry key="yukon.web.modules.survey.report.unanswered">Unanswered</entry>
 <entry key="yukon.web.modules.survey.report.noControlDuringOptOut">No Control</entry>
+<!-- This key is used in place of the serial number when a piece of hardware cannot be found
+     (probably because it was deleted). -->
+<entry key="yukon.web.modules.survey.report.hardwareNotFound">N/A</entry>
 <entry key="yukon.web.modules.survey.report.export">Export:</entry>
 <entry key="yukon.web.modules.survey.report.csvReport.imageUrl">/WebConfig/yukon/Icons/excel.gif</entry>
 <entry key="yukon.web.modules.survey.report.csvReport.hoverText">Generate CSV report.</entry>
