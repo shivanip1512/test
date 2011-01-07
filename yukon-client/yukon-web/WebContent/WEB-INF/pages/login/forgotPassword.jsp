@@ -18,7 +18,7 @@
             type="text/css">
         
        
-        <cti:includeScript link="PROTOTYPE"/>
+        <cti:includeScript link="PROTOTYPE" force="true"/>
         <script type="text/javascript" src="/JavaScript/CtiMenu.js"></script>
 
     </head>

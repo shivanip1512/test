@@ -102,8 +102,9 @@ gearChanged = function() {
 }
 
 updateProgramState = function(index) {
+  //assumes data is of type Hash
     return function(data) {
-        if (data.state.startsWith('running')) {
+        if (data.get('state').startsWith('running')) {
             $('startProgramCheckbox' + index).disable();
             $('startProgramCheckbox' + index).checked = false;
             $('programGear' + index).disable();

@@ -10,12 +10,13 @@ import com.cannontech.web.taglib.JsLibrary;
 
 public class IncludeScriptTag extends SimpleTagSupport {
     private String link;
+    private boolean force = false;          //force a <script> tag to be written to the output
 
     public void doTag() throws JspException {
         StandardPageTag spTag = StandardPageTag.find(getJspContext());
         if (spTag != null) {
             spTag.addScriptFile(resolveLink());
-        } else {
+        } else if(this.force) {
             //Beware of multiple includes!
             JspWriter out = getJspContext().getOut();
             try {
@@ -35,6 +36,14 @@ public class IncludeScriptTag extends SimpleTagSupport {
         } catch(IllegalArgumentException e) {
             return this.link;
         }
+    }
+    
+    public boolean getForce() {
+        return this.force;
+    }
+    
+    public void setForce(boolean force) {
+        this.force = force;
     }
     
     public String getLink() {

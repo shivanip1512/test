@@ -240,9 +240,10 @@ function closeTierContentPopup() {
 }
 
 function updateStateColorGenerator(id) {
+  //assumes data is of type Hash
     return function(data) {
         var anchorTag = $(id);
-        var state = data.value;
+        var state = data.get('value');
         var color;
         if (state.indexOf('Pending') != -1) {
             color = '#F09100';
@@ -256,11 +257,12 @@ function updateStateColorGenerator(id) {
 }
 
 function updateWarningImage(id) {
+  //assumes data is of type Hash
     return function(data) {
         var alertSpan = $(id + '_alert');
         var okSpan = $(id + '_ok');
         
-        var isWarning = eval(data.value);
+        var isWarning = eval(data.get('value'));
         if (isWarning) {
             okSpan.hide();
             alertSpan.show();
@@ -272,11 +274,12 @@ function updateWarningImage(id) {
 }
 
 function updateDualBusImage(id) {
+  //assumes data is of type Hash
     return function(data) {
         var primarySpan = $(id + '_primary');
         var alternateSpan = $(id + '_alternate');
         
-        var icon = data.value;
+        var icon = data.get('value');
         
         if (icon == 'Primary') {
         	primarySpan.show();
@@ -292,13 +295,14 @@ function updateDualBusImage(id) {
 }
 
 function updateCapBankWarningImage(id) {
+  //assumes data is of type Hash
     return function(data) {
         var yellowSpan = $(id + '_yellow');
         var greenSpan = $(id + '_green');
         var yellowLocalSpan = $(id + '_yellow_local');
         var greenLocalSpan = $(id + '_green_local');
         
-        var icon = data.value;
+        var icon = data.get('value');
         
         if (icon == 'GreenRemote') {
             yellowSpan.hide();
@@ -325,12 +329,13 @@ function updateCapBankWarningImage(id) {
 }
 
 function updateRegulatorModeIndicator(id){
+  //assumes data is of type Hash
 	return function(data) {
         var yellowLocalSpan = $(id + '_local_warning');
         var greenLocalSpan = $(id + '_local_normal');
         var greenNormalSpan = $(id + '_normal');
         
-        var icon = data.value;
+        var icon = data.get('value');
         
         if (icon == 'none') {
             yellowLocalSpan.hide();
@@ -349,6 +354,7 @@ function updateRegulatorModeIndicator(id){
 }
 
 function updateRegulatorTapIndicator(id){
+  //assumes data is of type Hash
 	return function(data) {
         var lowerTapSpan = $(id + '_lower');
         var raiseTapSpan = $(id + '_raise');
@@ -357,7 +363,7 @@ function updateRegulatorTapIndicator(id){
         var timeSpan = $(id + '_time');
         var defaultSpan = $(id + '_default');
         
-        var icon = data.value;
+        var icon = data.get('value');
         
         //Hide all
     	lowerTapSpan.hide();
@@ -386,8 +392,9 @@ function updateRegulatorTapIndicator(id){
 }
 
 function updateVerificationImage(spanId) {
+  //assumes data is of type Hash
     return function(data) {
-        var isVerification = eval(data.value);
+        var isVerification = eval(data.get('value'));
         if (isVerification) {
             $(spanId).show();
         } else {

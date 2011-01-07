@@ -44,8 +44,9 @@ singleProgramChecked = function(boxChecked) {
 }
 
 updateProgramState = function(index) {
+  //assumes data is of type Hash
     return function(data) {
-        if (data.state.startsWith('running') || data.state.startsWith('scheduled')) {
+        if (data.get('state').startsWith('running') || data.get('state').startsWith('scheduled')) {
             $('stopProgramCheckbox' + index).enable();
         } else {
             $('stopProgramCheckbox' + index).disable();

@@ -23,9 +23,10 @@
 <script type="text/javascript">
 
 	function setTrClassByJobState(jobId) {
+	  //assumes data is of type Hash
 	    return function(data) {
 	        var trEl = $('tr_' + jobId);
-	        var state = data['state'];
+	        var state = data.get('state');
 	        if (state == 'DISABLED') {
 				trEl.className = 'subtleGray';
 				$('disableTd_' + jobId).hide();

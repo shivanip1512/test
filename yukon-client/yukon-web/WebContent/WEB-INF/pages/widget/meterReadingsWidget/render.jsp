@@ -59,8 +59,8 @@ function ${widgetParameters.widgetId}_usageSelection() {
 function ${widgetParameters.widgetId}_prependPrevious(allIdentifierValues) {
 
     // get formatted results
-    var valueIdentifier = allIdentifierValues['valueIdentifier'];
-    var fullIdentifier = allIdentifierValues['fullIdentifier'];
+    var valueIdentifier = allIdentifierValues.get('valueIdentifier');
+    var fullIdentifier = allIdentifierValues.get('fullIdentifier');
 
     // adjust the drop down (won't add duplicates)
     yukonGeneral_addOtpionToTopOfSelect($('${widgetParameters.widgetId}'+'_prevSelect'),valueIdentifier,fullIdentifier);
@@ -70,7 +70,7 @@ function ${widgetParameters.widgetId}_prependPrevious(allIdentifierValues) {
 }
 
 function ${widgetParameters.widgetId}_updateCurrent(allIdentifierValues) {
-    ${widgetParameters.widgetId}_currentUsage = allIdentifierValues['valueIdentifier'];
+    ${widgetParameters.widgetId}_currentUsage = allIdentifierValues.get('valueIdentifier');
     // update difference
     ${widgetParameters.widgetId}_updateDifference();
 }

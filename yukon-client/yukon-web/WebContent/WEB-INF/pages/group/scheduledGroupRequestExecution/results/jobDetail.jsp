@@ -58,8 +58,9 @@
 	<script type="text/javascript">
 	
 		function toggleLastRunLink() {
+		  //assumes data is of type Hash
 		    return function(data) {
-		        var creCount = data['value'];
+		        var creCount = data.get('value');
 		        if (creCount > 0) {
 			        $('noLastRunSpan').hide();
 			        $('hasLastRunSpan').show();

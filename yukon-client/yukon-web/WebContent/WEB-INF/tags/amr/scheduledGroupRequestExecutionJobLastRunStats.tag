@@ -13,16 +13,14 @@
 <script type="text/javascript">
 
 	function toggleViewStats_${id}() {
-		
+
+	    //assumes data is of type Hash
 		return function(data) {
-
-			var requestCount = data['requestCount'];
-
+			var requestCount = data.get('requestCount');
 			var statsDivName = 'statsDiv_' + '${id}';
 			var noStatsDivName = 'noStatsDiv_' + '${id}';
 
 			if ($(statsDivName) != undefined && $(noStatsDivName) != undefined) { // function is called before these may exists, avoid js error
-			
 				if (requestCount > 0) {
 					$(statsDivName).show();
 					$(noStatsDivName).hide();

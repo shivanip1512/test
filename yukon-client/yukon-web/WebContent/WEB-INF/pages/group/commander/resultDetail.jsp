@@ -30,7 +30,7 @@
         
         function showCmdCanceldMsg() {
             return function(data) {
-                if (data['isCanceled'] == 'true') {
+                if (data.get('isCanceled') == 'true') {
                     $('cmdCanceldMsg').show();
                 }
             };

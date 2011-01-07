@@ -4,7 +4,7 @@
 <cti:url var="activationUrl"
     value="/spring/stars/hardware/deviceactivation" />
 
-<cti:includeScript link="PROTOTYPE"/>
+<cti:includeScript link="PROTOTYPE" force="true"/>
 <script langauge="JavaScript" type="text/javascript">
     Event.observe(window, 'load', function() {
         $("serialnumberinput").focus();

@@ -65,7 +65,7 @@
 <jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"/>
 <jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsAppliance"/>
 
-<cti:includeScript link="PROTOTYPE"/>
+<cti:includeScript link="PROTOTYPE" force="true"/>
 <script language="JavaScript" type="text/javascript"  src="/JavaScript/yukonGeneral.js"></script>
  
 <%

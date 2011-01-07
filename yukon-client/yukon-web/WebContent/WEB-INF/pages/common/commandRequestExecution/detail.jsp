@@ -90,10 +90,9 @@
     	}
 
 		function countUpdateCallback() {
-			
+		  //assumes data is of type Hash
 			return function(data) {
-
-				var isComplete = data['isComplete'];
+				var isComplete = data.get('isComplete');
 				
 				if ($('creProgressBarDiv') != undefined && $('creStopTimeDiv') != undefined) { 
 					if (isComplete == 'true') {

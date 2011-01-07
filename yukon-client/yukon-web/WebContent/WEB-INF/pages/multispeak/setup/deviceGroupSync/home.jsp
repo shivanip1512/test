@@ -12,9 +12,9 @@
 	<script type="text/javascript">
 	
 		function toggleSyncNowControls() {
+		  //assumes data is of type Hash
 			return function(data) {
-		        var value = data['value'];
-		        if (value == 'true') {
+		        if (data.get('value') == 'true') {
 		            $('deviceGroupSyncTypeSelect').disable();
 		            $('startButton').disabled = true;
 		        } else {

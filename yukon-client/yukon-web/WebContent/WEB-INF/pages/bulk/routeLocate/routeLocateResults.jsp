@@ -40,10 +40,10 @@
     
         function enableButton() {
 
+          //assumes data is of type Hash
             return function(data) {
-            
-                var isComplete = data['isComplete'];
-                var isCanceled = data['isCanceled'];
+                var isComplete = data.get('isComplete');
+                var isCanceled = data.get('isCanceled');
 
                 if (isComplete == 'true') {
                     $('setViewRoutesButton').enable();

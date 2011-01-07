@@ -3,10 +3,9 @@
 // bottom of page, this occurs sometimes =\
 
 function updateProgressBar(pbarId, totalCount, completionCallback) {
-
+  //assumes data is of type Hash
     return function(data) {
-    
-        var completedCount = data['completedCount'];
+        var completedCount = data.get('completedCount');
         
         var percentDone = Math.floor((completedCount / totalCount) * 100);
         if (totalCount == 0) {
@@ -27,29 +26,26 @@ function updateProgressBar(pbarId, totalCount, completionCallback) {
 }
 
 function abortProgressBar(pbarId) {
-
+  //assumes data is of type Hash
     return function(data) {
-
-        if (data['isAborted'] == 'true') {
+        if (data.get('isAborted') == 'true') {
             $('progressBorder_' + pbarId).style.backgroundImage = "url('/WebConfig/yukon/Icons/progressbar_red.gif')";
         }
     };
 }
 
 function updateProgressStatus(pDescId) {
-
+  //assumes data is of type Hash
     return function(data) {
-    
-    	var statusText = data['statusText'];
+    	var statusText = data.get('statusText');
     	$('progressStatus_' + pDescId).innerHTML = statusText;
     };
 }
 
 function toggleElementsWhenTrue(elementsToToggle, show) {
-    
+  //assumes data is of type Hash
     return function(data) {
-        
-        var value = data['value'];
+        var value = data.get('value');
         
         if (value == 'true') {
             

@@ -8,10 +8,9 @@
 <script type="text/javascript">
 
     function toggleConnectButons() {
-    
+      //assumes data is of type Hash
         return function(data) {
-        
-            var rawValue = data['rawValue'];
+            var rawValue = data.get('rawValue');
             
             // connected states
             if (rawValue == 0 || rawValue == 2) {

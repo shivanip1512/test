@@ -84,7 +84,7 @@ String friendlyExceptionMessage = ErrorHelperFilter.getFriendlyExceptionMessage(
     </div>
 <% } %>
 <% if (showStack) { %>
-<cti:includeScript link="PROTOTYPE"/>
+<cti:includeScript link="PROTOTYPE" force="true"/>
 <script type="text/javascript">
 function showStack( chkBox ) {
 	var elem = $('stackTrace');
