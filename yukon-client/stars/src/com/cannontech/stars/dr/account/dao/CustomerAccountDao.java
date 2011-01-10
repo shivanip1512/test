@@ -21,6 +21,12 @@ public interface CustomerAccountDao {
     
     public CustomerAccount getByAccountNumber(String accountNumber, LiteYukonUser user);
     
+    /**
+     * Returns a list all customer accounts for user, 
+     *  including Primary and Additional contact relationships.
+     * @param user
+     * @return
+     */
     public List<CustomerAccount> getByUser(LiteYukonUser user);
     
     public List<CustomerAccount> getAll();
@@ -58,14 +64,6 @@ public interface CustomerAccountDao {
      * @return Total number of accounts
      */
     public int getTotalNumberOfAccounts(LiteStarsEnergyCompany energyCompany);
-
-    /**
-     * This method gets a list of accounts that a user is apart of as an additional contact.
-     * 
-     * @param user
-     * @return
-     */
-    public List<CustomerAccount> getAccountByAdditionalContactUser(LiteYukonUser user);
 
     /**
      * Returns the LiteYukonUser of the account.

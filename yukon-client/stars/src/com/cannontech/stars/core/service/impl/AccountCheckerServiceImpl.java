@@ -17,7 +17,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.AccountCheckerService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
@@ -33,7 +32,6 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     private CustomerAccountDao customerAccountDao;
     private InventoryBaseDao inventoryBaseDao;
     private ContactDao contactDao;
-    private ApplianceCategoryDao applianceCategoryDao;
     private ApplianceDao applianceDao;
     private ProgramDao programDao;
     private GraphDao graphDao;
@@ -94,16 +92,6 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     }
     
     @Override
-    public void checkApplianceCategory(final LiteYukonUser user, final Integer... categoryIds) 
-            throws NotAuthorizedException {
-        
-        if (isOperator(user)) return;
-        
-        List<Integer> actualCategoryIds = getApplianceCategoryIdsByUser(user);
-        doCheck(user, actualCategoryIds, categoryIds, "ApplianceCategory");
-    }
-    
-    @Override
     public void checkProgram(final LiteYukonUser user, final Integer... programIds)
             throws NotAuthorizedException {
         
@@ -113,26 +101,6 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
         doCheck(user, actualProgramIds, programIds, "Program");
     }
     
-    @Override
-    public void checkAppliance(final LiteYukonUser user, final Integer... applianceIds)
-            throws NotAuthorizedException {
-        
-        if (isOperator(user)) return;
-        
-        List<Integer> actualApplianceIds = getApplianceIdsByUser(user);
-        doCheck(user, actualApplianceIds, applianceIds, "Appliance");
-    }
-    
-    @Override
-    public void checkCustomerAccount(final LiteYukonUser user, final Integer... customerAccountIds) 
-            throws NotAuthorizedException {
-        
-        if (isOperator(user)) return;
-        
-        List<Integer> actualCustomerAccountIds = getCustomerAccountIdsByUser(user);
-        doCheck(user, actualCustomerAccountIds, customerAccountIds, "CustomerAccount");
-    }
-
 	@Override
 	public void checkGraph(LiteYukonUser user, Integer... graphDefinitionIds)
 			throws NotAuthorizedException {
@@ -143,77 +111,7 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
 		doCheck(user, actualDefinitionIds, graphDefinitionIds, "Graph");
 		
 	}
-    
-    @Override
-    public void haltOnCheckInventory(final LiteYukonUser user, final Integer... inventoryIds)
-            throws HaltOnErrorException {
-        try {
-            checkInventory(user, inventoryIds);
-        } catch (NotAuthorizedException e) {
-            throw new HaltOnErrorException(e.getMessage());
-        }
-    }
 
-    @Override
-    public void haltOnCheckThermostatSchedule(final LiteYukonUser user, final Integer... scheduleIds)
-            throws HaltOnErrorException {
-        try {
-            checkThermostatSchedule(user, scheduleIds);
-        } catch (NotAuthorizedException e) {
-            throw new HaltOnErrorException(e.getMessage());
-        }
-    }
-    
-    @Override
-    public void haltOnCheckContact(final LiteYukonUser user, final Integer... contactIds)
-            throws HaltOnErrorException {
-        try {
-            checkContact(user, contactIds);
-        } catch (NotAuthorizedException e) {
-            throw new HaltOnErrorException(e.getMessage());
-        }
-    }
-    
-    @Override
-    public void haltOnCheckApplianceCategory(final LiteYukonUser user, final Integer... categoryIds)
-            throws HaltOnErrorException {
-        try {
-            checkApplianceCategory(user, categoryIds);
-        } catch (NotAuthorizedException e) {
-            throw new HaltOnErrorException(e.getMessage());
-        }
-    }
-    
-    @Override
-    public void haltOnCheckProgram(final LiteYukonUser user, final Integer... programIds)
-            throws HaltOnErrorException {
-        try {
-            checkProgram(user, programIds);
-        } catch (NotAuthorizedException e) {
-            throw new HaltOnErrorException(e.getMessage());
-        }
-    }
-    
-    @Override
-    public void haltOnCheckAppliance(final LiteYukonUser user, final Integer... applianceIds)
-            throws HaltOnErrorException {
-        try {
-            checkAppliance(user, applianceIds);
-        } catch (NotAuthorizedException e) {
-            throw new HaltOnErrorException(e.getMessage());
-        }
-    }
-    
-    @Override
-    public void haltOnCheckCustomerAccount(final LiteYukonUser user, final Integer... customerAccountIds)
-            throws HaltOnErrorException {
-        try {
-            checkCustomerAccount(user, customerAccountIds);
-        } catch (NotAuthorizedException e) {
-            throw new HaltOnErrorException(e.getMessage());
-        }
-    }
-    
     private void doCheck(LiteYukonUser user, List<Integer> actualIdList, Integer[] ids, String type) {
         boolean isEmptyIds = isEmptyIds(ids);
         if (isEmptyIds) return;
@@ -239,17 +137,28 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     }
     
     private List<Integer> getInventoryIdsByUser(LiteYukonUser user) {
-        int customerAccountId = getCustomerAccountId(user);
-        final List<Integer> inventoryIdList = inventoryBaseDao.getInventoryIdsByAccountId(customerAccountId);
+
+    	List<Integer> inventoryIdList = new ArrayList<Integer>();
+        
+        // Load all inventory for all customer accounts
+    	final List<Integer> customerAccountIdsList = getCustomerAccountIdsByUser(user);
+    	for (Integer accountId : customerAccountIdsList) {
+		    inventoryIdList.addAll(inventoryBaseDao.getInventoryIdsByAccountId(accountId));
+    	}
         return inventoryIdList;
     }
     
     private List<Integer> getContactIdsByUser(LiteYukonUser user) {
-        int customerAccountId = getCustomerAccountId(user);
+
+        List<LiteContact> contacts = new ArrayList<LiteContact>();
+                
+    	// Load all contacts (primary and additional) for all customer accounts
+    	final List<Integer> customerAccountIdsList = getCustomerAccountIdsByUser(user);
+    	for (Integer accountId : customerAccountIdsList) {
+	        contacts.addAll(contactDao.getAdditionalContactsForAccount(accountId));
+	        contacts.add(contactDao.getPrimaryContactForAccount(accountId));
+    	}
         
-        final List<LiteContact> contacts = contactDao.getAdditionalContactsForAccount(customerAccountId);
-        final LiteContact primaryContact = contactDao.getPrimaryContactForAccount(customerAccountId);
-        contacts.add(primaryContact);
         final List<Integer> contactIdList = new ArrayList<Integer>(contacts.size());
         
         for (final LiteContact contact : contacts) {
@@ -260,22 +169,16 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
         return contactIdList;
     }
     
-    private List<Integer> getApplianceCategoryIdsByUser(LiteYukonUser user) {
-        List<CustomerAccount> customerAccountList = customerAccountDao.getByUser(user);
-        CustomerAccount customerAccount = customerAccountList.get(0);
-
-        List<Integer> categoryIdList =
-            applianceCategoryDao.getApplianceCategoryIdsByAccount(customerAccount.getAccountId());
-
-        return categoryIdList;
-    }
-    
     private List<Integer> getProgramIdsByUser(LiteYukonUser user) {
-        int customerAccountId = getCustomerAccountId(user);
-        
-        final List<Appliance> appliances = applianceDao.getAssignedAppliancesByAccountId(customerAccountId);
+    	List<Appliance> appliances = new ArrayList<Appliance>();
+    	
+    	// Load all appliances for all customer accounts
+    	final List<Integer> customerAccountIdsList = getCustomerAccountIdsByUser(user);
+    	for (Integer accountId : customerAccountIdsList) {
+    		appliances.addAll(applianceDao.getAssignedAppliancesByAccountId(accountId));
+    	}
+    	
         final List<Program> programs = programDao.getByAppliances(appliances);
-        
         final List<Integer> programsIdList = new ArrayList<Integer>(programs.size());
         
         for (final Program program : programs) {
@@ -284,20 +187,6 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
         }
         
         return programsIdList;
-    }
-    
-    private List<Integer> getApplianceIdsByUser(LiteYukonUser user) {
-        int customerAccountId = getCustomerAccountId(user);
-        
-        final List<Appliance> appliances = applianceDao.getAssignedAppliancesByAccountId(customerAccountId);
-        final List<Integer> applianceIdList = new ArrayList<Integer>(appliances.size());
-        
-        for (final Appliance appliance : appliances) {
-            Integer applianceId = appliance.getApplianceId();
-            applianceIdList.add(applianceId);
-        }
-        
-        return applianceIdList;
     }
     
     private List<Integer> getCustomerAccountIdsByUser(LiteYukonUser user) {
@@ -324,11 +213,14 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     }
     
     private List<Integer> getScheduleIdsByUser(LiteYukonUser user) {
-        
-    	int accountId = getCustomerAccountId(user);
-        
-        List<AccountThermostatSchedule> allSchedulesForAccount = accountThermostatScheduleDao.getAllSchedulesForAccountByType(accountId, null);
-        
+    	List<AccountThermostatSchedule> allSchedulesForAccount = new ArrayList<AccountThermostatSchedule>();
+    	
+    	// Load all schedules for all customer accounts
+    	final List<Integer> customerAccountIdsList = getCustomerAccountIdsByUser(user);
+    	for (Integer accountId : customerAccountIdsList) {
+    		allSchedulesForAccount.addAll(accountThermostatScheduleDao.getAllSchedulesForAccountByType(accountId, null));
+		}
+    	
         List<Integer> scheduleIdList = Lists.newArrayListWithCapacity(allSchedulesForAccount.size());
         for (AccountThermostatSchedule schedule : allSchedulesForAccount) {
         	int scheduleId = schedule.getAccountThermostatScheduleId();
@@ -337,13 +229,7 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
         
         return scheduleIdList;
     }
-    
-    private int getCustomerAccountId(LiteYukonUser user) {
-        List<Integer> customerAccountIdsList = getCustomerAccountIdsByUser(user);
-        int customerAccountId = customerAccountIdsList.get(0);
-        return customerAccountId;
-    }
-    
+
     private String generateErrorMessage(LiteYukonUser user, String type, Object[] ids) {
         final StringBuilder sb = new StringBuilder();
         sb.append("username: " + user.getUsername());
@@ -375,12 +261,6 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     @Autowired
     public void setContactDao(ContactDao contactDao) {
         this.contactDao = contactDao;
-    }
-    
-    @Autowired
-    public void setApplianceCategoryDao(
-            ApplianceCategoryDao applianceCategoryDao) {
-        this.applianceCategoryDao = applianceCategoryDao;
     }
     
     @Autowired

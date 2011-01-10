@@ -117,14 +117,6 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 
 		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
 
-		// Getting the enrollments for the given user
-		List<CustomerAccount> customerAccounts = customerAccountDao.getByUser(user);
-		List<LMHardwareControlGroup> lmHardwareControlGroups = Collections.emptyList();
-		if (customerAccounts.size() > 0) {
-		    lmHardwareControlGroups = 
-		        lmHardwareControlGroupDao.getCurrentEnrollmentByAccountId(customerAccounts.get(0).getAccountId());
-		}
-
 		Map<Integer, OptOutTemporaryOverride> programIdOptOutTemporaryOverrideMap = 
 		    getProgramIdOptOutTemporaryOverrideMap(energyCompany.getEnergyCompanyID());
 		OptOutTemporaryOverride energyCompanyOptOutTemporaryOverride =
@@ -133,6 +125,15 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 		// Check to see if there have been any program based temporary overrides.
 		if (programIdOptOutTemporaryOverrideMap.size() > 0) {
 		    Set<Integer> optOutOverrideAssignedProgramIds = programIdOptOutTemporaryOverrideMap.keySet();
+		    
+			// Getting the enrollments for the given user
+			List<CustomerAccount> customerAccounts = customerAccountDao.getByUser(user);
+			List<LMHardwareControlGroup> lmHardwareControlGroups = Collections.emptyList();
+			for (CustomerAccount customerAccount : customerAccounts) {
+				lmHardwareControlGroups.addAll( 
+			        lmHardwareControlGroupDao.getCurrentEnrollmentByAccountId(customerAccount.getAccountId()));
+			}
+
 		    for (LMHardwareControlGroup lmHardwareControlGroup : lmHardwareControlGroups) {
 		        
 		        // Check to see if the program id is in the override list.

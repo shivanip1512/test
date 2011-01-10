@@ -194,24 +194,17 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         }
         return account;
     }
-    
+
     @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<CustomerAccount> getByUser(final LiteYukonUser user) {
-        Validate.notNull(user, "user parameter cannot be null.");
-        
-        final StringBuilder sb = new StringBuilder();
-        sb.append("SELECT AccountId,AccountSiteId,AccountNumber,CustomerAccount.CustomerId,BillingAddressId,AccountNotes ");
-        sb.append("FROM CustomerAccount,Customer,Contact,YukonUser ");
-        sb.append("WHERE CustomerAccount.CustomerId = Customer.CustomerId "); 
-        sb.append("AND Customer.PrimaryContactId = Contact.ContactId ");
-        sb.append("AND YukonUser.UserId = Contact.LoginId ");
-        sb.append("AND YukonUser.UserId = ? ");
-        sb.append("ORDER BY CustomerAccount.AccountId");
-        
-        String sql = sb.toString();
-        List<CustomerAccount> list = yukonJdbcTemplate.query(sql, rowMapper, user.getUserID());
-        return list;
+    public List<CustomerAccount> getByUser(LiteYukonUser user) {
+
+    	// Load all based on user's Primary Contact
+    	List<CustomerAccount> accountList = getByPrimaryContactUser(user);
+
+    	// Add all based on user's Additional Contact
+        accountList.addAll(getAccountByAdditionalContactUser(user));
+    	
+        return accountList;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -360,9 +353,26 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     	return totalNumberOfAccounts;
     }
 
-    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<CustomerAccount> getAccountByAdditionalContactUser(LiteYukonUser user) {
+    private List<CustomerAccount> getByPrimaryContactUser(final LiteYukonUser user) {
+        Validate.notNull(user, "user parameter cannot be null.");
+        
+        final StringBuilder sb = new StringBuilder();
+        sb.append("SELECT AccountId,AccountSiteId,AccountNumber,CustomerAccount.CustomerId,BillingAddressId,AccountNotes ");
+        sb.append("FROM CustomerAccount,Customer,Contact,YukonUser ");
+        sb.append("WHERE CustomerAccount.CustomerId = Customer.CustomerId "); 
+        sb.append("AND Customer.PrimaryContactId = Contact.ContactId ");
+        sb.append("AND YukonUser.UserId = Contact.LoginId ");
+        sb.append("AND YukonUser.UserId = ? ");
+        sb.append("ORDER BY CustomerAccount.AccountId");
+        
+        String sql = sb.toString();
+        List<CustomerAccount> list = yukonJdbcTemplate.query(sql, rowMapper, user.getUserID());
+        return list;
+    }
+
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    private List<CustomerAccount> getAccountByAdditionalContactUser(LiteYukonUser user) {
         Validate.notNull(user, "user parameter cannot be null.");
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
