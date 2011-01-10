@@ -31,7 +31,10 @@
         });
     
         var assignedServiceCompanyChanged = function() {
-            $('workOrderBase.currentStateId').value = ${assignedEntryId};
+            if( $('workOrderBase.currentStateId').value != ${assignedEntryId} ) {
+                $('workOrderBase.currentStateId').value = ${assignedEntryId};
+                $('currentStateChangedDialog').show();
+            }
             $("eventDateDatePart").disabled = false;
             $("eventDateTimePart").disabled = false;
         }
@@ -99,6 +102,13 @@
                                 <tags:dateTimeInput path="eventDate" inline="true" fieldValue="${workOrderDto.eventDate}"/>
                             </tags:nameValue2>
                         </cti:displayForPageEditModes>
+                        
+                        <i:simplePopup titleKey=".currentStateChangedTitle" id="currentStateChangedDialog">
+                        	<cti:msg2 key=".currentStateChanged" htmlEscape="false"/>
+                        	<div class="actionArea">
+                        		<cti:button key="ok" onclick="$('currentStateChangedDialog').hide()"/>
+                       		</div>
+                        </i:simplePopup>
                         
                         <tags:nameValue2 nameKey=".assignTo">
                             <tags:selectWithItems path="workOrderBase.serviceCompanyId" items="${allServiceCompanies}" 

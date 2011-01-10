@@ -43,6 +43,10 @@
     <entry key="yukon.web.modules.operator.workOrder.currentState">Current State</entry>
     <entry key="yukon.web.modules.operator.workOrder.eventDate">Event Date</entry>
     <entry key="yukon.web.modules.operator.workOrder.assignTo">Assign To</entry>
+    <entry key="yukon.web.modules.operator.workOrder.currentStateChangedTitle">Current State Value Changed</entry>
+    <entry key="yukon.web.modules.operator.workOrder.currentStateChanged">
+    	<![CDATA[A change to Service Company also changes the Current State to Assigned.<br></br>You may override the Current State change after pressing OK.]]>
+    </entry>
 
     <entry key="yukon.web.modules.operator.workOrder.statusContainer.title">Status</entry>
     <entry key="yukon.web.modules.operator.workOrder.eventHistory">Event History</entry>
