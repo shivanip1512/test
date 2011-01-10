@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     12/27/2010 1:46:41 PM                        */
+/* Created on:     1/10/2011 1:05:21 PM                         */
 /*==============================================================*/
 
 
@@ -2473,13 +2473,6 @@ if exists (select 1
            where  id = object_id('ImportPendingComm')
             and   type = 'U')
    drop table ImportPendingComm
-go
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('InterviewQuestion')
-            and   type = 'U')
-   drop table InterviewQuestion
 go
 
 if exists (select 1
@@ -8498,21 +8491,6 @@ create table ImportPendingComm (
    BillGrp              varchar(64)          not null,
    SubstationName       varchar(64)          not null,
    constraint PK_IMPORTPENDINGCOMM primary key (DeviceID)
-)
-go
-
-/*==============================================================*/
-/* Table: InterviewQuestion                                     */
-/*==============================================================*/
-create table InterviewQuestion (
-   QuestionID           numeric              not null,
-   QuestionType         numeric              null,
-   Question             varchar(200)         null,
-   Mandatory            varchar(1)           null,
-   DisplayOrder         numeric              null,
-   AnswerType           numeric              null,
-   ExpectedAnswer       numeric              null,
-   constraint PK_INTERVIEWQUESTION primary key (QuestionID)
 )
 go
 
@@ -15233,21 +15211,6 @@ go
 alter table ImportPendingComm
    add constraint FK_ImpPC_PAO foreign key (DeviceID)
       references YukonPAObject (PAObjectID)
-go
-
-alter table InterviewQuestion
-   add constraint FK_IntQ_CsLsEn foreign key (AnswerType)
-      references YukonListEntry (EntryID)
-go
-
-alter table InterviewQuestion
-   add constraint FK_IntQ_CsLsEn2 foreign key (QuestionType)
-      references YukonListEntry (EntryID)
-go
-
-alter table InterviewQuestion
-   add constraint FK_IntQ_CsLsEn3 foreign key (ExpectedAnswer)
-      references YukonListEntry (EntryID)
 go
 
 alter table InventoryBase

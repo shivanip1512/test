@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/27/2010 1:51:47 PM                        */
+/* Created on:     1/5/2011 5:01:47 PM                          */
 /*==============================================================*/
 
 
@@ -652,8 +652,6 @@ drop table ImportData cascade constraints;
 drop table ImportFail cascade constraints;
 
 drop table ImportPendingComm cascade constraints;
-
-drop table InterviewQuestion cascade constraints;
 
 drop table InventoryBase cascade constraints;
 
@@ -5546,20 +5544,6 @@ create table ImportPendingComm  (
    BillGrp              VARCHAR2(64)                    not null,
    SubstationName       VARCHAR2(64)                    not null,
    constraint PK_IMPORTPENDINGCOMM primary key (DeviceID)
-);
-
-/*==============================================================*/
-/* Table: InterviewQuestion                                     */
-/*==============================================================*/
-create table InterviewQuestion  (
-   QuestionID           NUMBER                          not null,
-   QuestionType         NUMBER,
-   Question             VARCHAR2(200),
-   Mandatory            VARCHAR2(1),
-   DisplayOrder         NUMBER,
-   AnswerType           NUMBER,
-   ExpectedAnswer       NUMBER,
-   constraint PK_INTERVIEWQUESTION primary key (QuestionID)
 );
 
 /*==============================================================*/
@@ -11700,18 +11684,6 @@ alter table GroupPaoPermission
 alter table ImportPendingComm
    add constraint FK_ImpPC_PAO foreign key (DeviceID)
       references YukonPAObject (PAObjectID);
-
-alter table InterviewQuestion
-   add constraint FK_IntQ_CsLsEn foreign key (AnswerType)
-      references YukonListEntry (EntryID);
-
-alter table InterviewQuestion
-   add constraint FK_IntQ_CsLsEn2 foreign key (QuestionType)
-      references YukonListEntry (EntryID);
-
-alter table InterviewQuestion
-   add constraint FK_IntQ_CsLsEn3 foreign key (ExpectedAnswer)
-      references YukonListEntry (EntryID);
 
 alter table InventoryBase
    add constraint FK_CUS_CSTA_CUS3 foreign key (AccountID)
