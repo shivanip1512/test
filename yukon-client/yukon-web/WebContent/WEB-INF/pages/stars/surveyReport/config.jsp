@@ -109,11 +109,32 @@ function programsChosen(programs) {
 }
 
 function updateFieldsFromBackingBean() {
+    //deselect everything
+    $$("#answerList input:checkbox").each(
+            function(el) {
+                el.setValue(false);
+            });
+    
 	var initialAnswers = ${cti:jsonString(reportConfig.answerId)};
 	for (var index = 0; index < initialAnswers.length; index++) {
 	    $('answerId_' + initialAnswers[index]).checked = true;
 	}
-	answerCheckboxChanged();
+
+    if(${cti:jsonString(reportConfig.includeUnanswered)}) {
+        $('includeUnanswered').checked = true;
+    }
+    
+    if(${cti:jsonString(reportConfig.includeOtherAnswers)}) {
+        $('includeOtherAnswers').checked = true;
+    }
+
+    //if no report type exists, select all
+    if(!${cti:jsonString(reportConfig.reportType)}) {
+        $('selectAll').checked = true;
+        selectAllChanged();
+    } else {
+        answerCheckboxChanged();
+    }
 }
 </script>
 
@@ -195,9 +216,13 @@ function updateFieldsFromBackingBean() {
 </form:form>
 
 <script type="text/javascript">
-questionChanged();
-reportTypeChanged();
-updateFieldsFromBackingBean();
+
+Event.observe(window, 'load', function() {
+    questionChanged();
+    reportTypeChanged();
+    updateFieldsFromBackingBean();
+  });
+
 </script>
 
 </cti:standardPage>
