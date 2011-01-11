@@ -447,22 +447,6 @@
           </tr>
 
           </cti:checkMultiProperty>
-          <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ %>"> 
-<%
-	String faqLink = ServletUtils.getCustomerFAQLink(liteEC);
-	if (faqLink != null) {
-%>
-          <tr>
-            <td width="10">&nbsp;</td>
-            <td style="padding:1"><a href="<%= faqLink %>" class="Link2" target="faqs"><span class="NavText">FAQ</span></a></td>
-          </tr>
-<%	} else { %>
-          <tr>
-            <td width="10"><%= ((String[]) links.get("faq.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("faq.jsp"))[1] %></td>
-          </tr>
-<%	} %>
-		  </cti:checkProperty>
         </table>
 	  </div>
     </td>

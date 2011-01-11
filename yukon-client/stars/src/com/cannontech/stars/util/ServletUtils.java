@@ -15,11 +15,6 @@ import javax.servlet.http.HttpSession;
 import org.joda.time.Instant;
 
 import com.cannontech.common.exception.NotLoggedInException;
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.roles.consumer.ResidentialCustomerRole;
-import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.ContactNotification;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
@@ -395,40 +390,6 @@ public class ServletUtils {
             return contNotif;
         }
         return null;
-    }
-
-    public static boolean isCustomerFAQInherited(LiteStarsEnergyCompany energyCompany) {
-        if (energyCompany == null) {
-            return false;
-        }
-        String faqLink = ServletUtils.getCustomerFAQLink(energyCompany);
-        boolean isInherited = ServletUtils.INHERITED_FAQ.equals(faqLink);
-        return isInherited;
-    }
-
-    /**
-     * Get the FAQ link (usually a URL to the customer's website rather than
-     * using the default FAQ page).
-     * It will search in the first operator group, then in the first customer
-     * group.
-     * If FAQ link is not set in either of them, a null value will be returned.
-     */
-    public static String getCustomerFAQLink(LiteStarsEnergyCompany energyCompany) {
-        String faqLink = null;
-
-        LiteYukonGroup[] operGroups = energyCompany.getWebClientOperatorGroups();
-        if (operGroups.length > 0) {
-            faqLink = DaoFactory.getRoleDao().getRolePropValueGroup(operGroups[0],ConsumerInfoRole.WEB_LINK_FAQ, null);
-        }
-        if (StarsUtils.forceNotNone(faqLink).length() == 0) {
-            LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
-            if (custGroups.length > 0)
-                faqLink = DaoFactory.getRoleDao().getRolePropValueGroup(custGroups[0],ResidentialCustomerRole.WEB_LINK_FAQ,null);
-        }
-        if (StarsUtils.forceNotNone(faqLink).length() == 0)
-            faqLink = null;
-
-        return faqLink;
     }
 
     public static StarsYukonUser getStarsYukonUser(final HttpSession session) {

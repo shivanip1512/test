@@ -1,65 +1,46 @@
 package com.cannontech.web.menu.option.producer;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.SimpleMenuOptionLink;
 
-public abstract class FaqMenuOptionProducer extends DynamicMenuOptionProducer {
-    protected RolePropertyDao rolePropertyDao;
-    protected StarsDatabaseCache starsDatabaseCache;
-    
-    protected boolean isInherited(String link) {
-        boolean result = ServletUtils.INHERITED_FAQ.equals(link);
-        return result;
-    }
-    
-    protected String getInheritedLink(LiteYukonUser user, String defaultLink) {
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user); 
+public class FaqMenuOptionProducer extends DynamicMenuOptionProducer {
+    private RolePropertyDao rolePropertyDao;
 
-        while (ServletUtils.isCustomerFAQInherited(energyCompany)) {
-            energyCompany = energyCompany.getParent();
-        }
-
-        // The top most parent cannot inherit FAQ's
-        if (energyCompany == null) return defaultLink;
+    private static final String defaultLink = "/spring/stars/consumer/faq";
+    private static final String labelKey = "faq";
+    private static final String menuTextKey = "yukon.web.menu.config.consumer.questions.faq";
+    
+    @Override
+    public List<MenuOption> doGetMenuOptions(YukonUserContext userContext) {
+        SimpleMenuOptionLink menuOption = new SimpleMenuOptionLink(labelKey, menuTextKey);
         
-        String link = ServletUtils.getCustomerFAQLink(energyCompany);
-        if (StringUtils.isEmpty(link)) link = defaultLink;
+        // Get the role property faq link
+        String link = 
+            rolePropertyDao.getPropertyStringValue(YukonRoleProperty.RESIDENTIAL_WEB_LINK_FAQ, userContext.getYukonUser());
         
-        return link;
-    }
-    
-    protected void buildMenuOption(final LiteYukonUser user, String link, String defaultLink,
-                                     SimpleMenuOptionLink menuOption) {
-
-        if (StringUtils.isEmpty(link)) {
+        // If the role property isn't set, use the xml based faq as a default.
+        if (StringUtils.isBlank(link)) {
             link = defaultLink;
-        } else if (isInherited(link)) {
-            link = getInheritedLink(user, defaultLink);
-
-            // Custom link - open in new window
-            menuOption.setNewWindow(true);
         } else {
-            // Custom link - open in new window
             menuOption.setNewWindow(true);
         }
-        
         menuOption.setLinkUrl(link);
+        
+        return Arrays.<MenuOption>asList(menuOption);
     }
     
+    // DI Setters
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
     }
 }

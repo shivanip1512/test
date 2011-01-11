@@ -38,7 +38,6 @@ public interface YukonSelectionListDefs {
 	public static final String YUK_LIST_NAME_ANSWER_TYPE = "AnswerType";
 	public static final String YUK_LIST_NAME_THERMOSTAT_MODE = "ThermostatMode";
 	public static final String YUK_LIST_NAME_THERMOSTAT_FAN_STATE = "ThermostatFanState";
-	public static final String YUK_LIST_NAME_CUSTOMER_FAQ_GROUP = "CustomerFAQGroup";
 	public static final String YUK_LIST_NAME_RESIDENCE_TYPE = "ResidenceType";
 	public static final String YUK_LIST_NAME_CONSTRUCTION_MATERIAL = "ConstructionMaterial";
 	public static final String YUK_LIST_NAME_DECADE_BUILT = "DecadeBuilt";
