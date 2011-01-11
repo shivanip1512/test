@@ -431,9 +431,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                     if (liteApp.getProgramID() == program.getProgramID() && liteApp.getInventoryID() == program.getInventoryID()) {
                         if (!program.hasAddressingGroupID())
                             program.setAddressingGroupID( liteApp.getAddressingGroupID() );
-                        if (!program.hasLoadNumber())
-                            program.setLoadNumber( liteApp.getLoadNumber() );
-                        
+
                         hwAppMap.put( new Integer(liteApp.getInventoryID()), liteApp );
                         newAppList.add( liteApp );
                         appList.remove( liteApp );
@@ -669,7 +667,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                          */
                         if (liteHw != null && 
                             ((program.hasAddressingGroupID() && liteApp.getAddressingGroupID() != groupID) ||
-                             (program.hasLoadNumber() && liteApp.getLoadNumber() != oldApplianceRelay))) {
+                             liteApp.getLoadNumber() != oldApplianceRelay)) {
                             liteApp.setAddressingGroupID( groupID );
                             if (!hwsToConfig.contains( liteHw )) 
                                 hwsToConfig.add( liteHw );
