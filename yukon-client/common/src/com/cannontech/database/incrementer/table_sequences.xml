@@ -38,8 +38,6 @@
         <table name="CallReportBase" identitycolumn="CallID" initsequence="true"/>
         <table name="ServiceCompany" identitycolumn="CompanyID" initsequence="true"/>
         <table name="ServiceCompanyDesignationCode" identitycolumn="DesignationCodeID" initsequence="true"/>
-        <table name="CustomerFAQ" identitycolumn="QuestionID" initsequence="true"/>
-        <table name="InterviewQuestion" identitycolumn="QuestionID" initsequence="true"/>
         <table name="LMProgramWebPublishing" identitycolumn="ProgramID" initsequence="true"/>
         <table name="ValidationMonitor" identitycolumn="ValidationMonitorId" initsequence="true"/>
         <table name="LMGroupExpresscomAddress" identitycolumn="AddressId" initsequence="true"/>

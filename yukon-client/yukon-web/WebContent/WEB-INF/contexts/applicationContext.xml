@@ -1253,9 +1253,7 @@
                 <!-- Authorization should be handled on the controller side (with the rewrite). -->
                 <value>ALLOW|/operator/Admin/Address.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
                 <value>ALLOW|/operator/Admin/ConfigEnergyCompany.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
-                <value>ALLOW|/operator/Admin/CustomerFAQ.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
                 <value>ALLOW|/operator/Admin/EnergyCompany.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
-                <value>ALLOW|/operator/Admin/InterviewQuestion.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
                 <value>ALLOW|/operator/Admin/ManageMembers.jsp|ADMIN_MANAGE_MEMBERS</value>
                 <value>ALLOW|/operator/Admin/Message.jsp|WEB_CLIENT</value> <!-- Using WebClient to allow "full" access to  -->
                 <value>ALLOW|/operator/Admin/NewCodes.jsp|ADMIN_CONFIG_ENERGY_COMPANY</value>
@@ -1334,8 +1332,7 @@
         <property name="rolePropertyDao" ref="rolePropertyDao"/>
     </bean>
     
-    <bean id="consumerFaqMenuOption" class="com.cannontech.web.menu.option.producer.ConsumerFaqMenuOptionProducer"/>
-    <bean id="operatorFaqMenuOption" class="com.cannontech.web.menu.option.producer.OperatorFaqMenuOptionProducer"/>
+    <bean id="faqMenuOption" class="com.cannontech.web.menu.option.producer.FaqMenuOptionProducer"/>
     
     <bean id="trendingMenuOption" class="com.cannontech.web.menu.option.producer.TrendingMenuOptionProducer">
         <property name="graphDao" ref="graphDao" />

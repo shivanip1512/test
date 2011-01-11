@@ -84,7 +84,6 @@
     StarsEnrollmentPrograms categories = null;
     StarsServiceCompanies companies = null;
     StarsSubstations substations = null;
-    StarsExitInterviewQuestions exitQuestions = null;
     Map<String,StarsCustSelectionList> selectionListTable = null;
     
     StarsCustomerAccount account = null;
@@ -152,7 +151,6 @@
 	    	categories = ecSettings.getStarsEnrollmentPrograms();
 	    	companies = ecSettings.getStarsServiceCompanies();
 	    	substations = ecSettings.getStarsSubstations();
-	    	exitQuestions = ecSettings.getStarsExitInterviewQuestions();
 	        
 	        TimeZone tz = TimeZone.getTimeZone(energyCompany.getTimeZone());
 	        datePart.setTimeZone(tz);

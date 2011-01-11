@@ -24,7 +24,6 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
-import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -285,18 +284,6 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
     	        
     	        energyCompany.deleteApplianceCategory( liteAppCat.getApplianceCategoryID() );
     	        StarsDatabaseCache.getInstance().deleteWebConfiguration( liteAppCat.getWebConfigurationID() );			
-			}
-			
-			// Delete all interview questions
-			currentAction = "Deleting interview questions";
-			
-			for (int i = 0; i < energyCompany.getAllInterviewQuestions().size(); i++) {
-				LiteInterviewQuestion liteQuestion = energyCompany.getAllInterviewQuestions().get(i);
-				com.cannontech.database.data.stars.InterviewQuestion question =
-						new com.cannontech.database.data.stars.InterviewQuestion();
-				question.setQuestionID( new Integer(liteQuestion.getQuestionID()) );
-				
-                dbPersistentDao.performDBChange(question, TransactionType.DELETE);
 			}
 			
 			// Delete customer selection lists

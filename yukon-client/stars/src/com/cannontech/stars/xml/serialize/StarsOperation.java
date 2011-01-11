@@ -51,7 +51,6 @@ public final class StarsOperation {
     private StarsUpdateLoginResponse starsUpdateLoginResponse;
     private StarsUpdateThermostatManualOption starsUpdateThermostatManualOption;
     private StarsUpdateThermostatManualOptionResponse starsUpdateThermostatManualOptionResponse;
-    private StarsSendOptOutNotification starsSendOptOutNotification;
     private StarsGetEnergyCompanySettings starsGetEnergyCompanySettings;
     private StarsGetEnergyCompanySettingsResponse starsGetEnergyCompanySettingsResponse;
     private StarsUpdateControlNotification starsUpdateControlNotification;
@@ -495,15 +494,6 @@ public final class StarsOperation {
     public void setStarsUpdateThermostatManualOptionResponse(
             StarsUpdateThermostatManualOptionResponse starsUpdateThermostatManualOptionResponse) {
         this.starsUpdateThermostatManualOptionResponse = starsUpdateThermostatManualOptionResponse;
-    }
-
-    public StarsSendOptOutNotification getStarsSendOptOutNotification() {
-        return starsSendOptOutNotification;
-    }
-
-    public void setStarsSendOptOutNotification(
-            StarsSendOptOutNotification starsSendOptOutNotification) {
-        this.starsSendOptOutNotification = starsSendOptOutNotification;
     }
 
     public StarsGetEnergyCompanySettings getStarsGetEnergyCompanySettings() {

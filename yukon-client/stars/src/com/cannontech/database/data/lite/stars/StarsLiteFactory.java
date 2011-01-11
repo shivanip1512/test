@@ -145,14 +145,6 @@ public class StarsLiteFactory {
 			lite = new LiteSubstation();
 			setLiteSubstation( (LiteSubstation) lite, (com.cannontech.database.db.stars.Substation) db );
 		}
-		else if (db instanceof com.cannontech.database.db.stars.CustomerFAQ) {
-			lite = new LiteCustomerFAQ();
-			setLiteCustomerFAQ( (LiteCustomerFAQ) lite, (com.cannontech.database.db.stars.CustomerFAQ) db );
-		}
-		else if (db instanceof com.cannontech.database.db.stars.InterviewQuestion) {
-			lite = new LiteInterviewQuestion();
-			setLiteInterviewQuestion( (LiteInterviewQuestion) lite, (com.cannontech.database.db.stars.InterviewQuestion) db );
-		}
 		else if (db instanceof com.cannontech.database.db.web.YukonWebConfiguration) {
 			lite = new LiteWebConfiguration();
 			setLiteWebConfiguration( (LiteWebConfiguration) lite, (com.cannontech.database.db.web.YukonWebConfiguration) db );
@@ -634,23 +626,6 @@ public class StarsLiteFactory {
 		liteSub.setSubstationID( sub.getSubstationID().intValue() );
 		liteSub.setSubstationName( sub.getSubstationName() );
 		liteSub.setRouteID( sub.getRouteID().intValue() );
-	}
-	
-	public static void setLiteCustomerFAQ(LiteCustomerFAQ liteFAQ, com.cannontech.database.db.stars.CustomerFAQ faq) {
-		liteFAQ.setQuestionID( faq.getQuestionID().intValue() );
-		liteFAQ.setSubjectID( faq.getSubjectID().intValue() );
-		liteFAQ.setQuestion( faq.getQuestion() );
-		liteFAQ.setAnswer( faq.getAnswer() );
-	}
-	
-	public static void setLiteInterviewQuestion(LiteInterviewQuestion liteQuestion, com.cannontech.database.db.stars.InterviewQuestion question) {
-		liteQuestion.setQuestionID( question.getQuestionID().intValue() );
-		liteQuestion.setQuestionType( question.getQuestionType().intValue() );
-		liteQuestion.setQuestion( question.getQuestion() );
-		liteQuestion.setMandatory( question.getMandatory() );
-		liteQuestion.setDisplayOrder( question.getDisplayOrder().intValue() );
-		liteQuestion.setAnswerType( question.getAnswerType().intValue() );
-		liteQuestion.setExpectedAnswer( question.getExpectedAnswer().intValue() );
 	}
 	
 	public static void setLiteWebConfiguration(LiteWebConfiguration liteConfig, com.cannontech.database.db.web.YukonWebConfiguration config) {
@@ -1263,21 +1238,6 @@ public class StarsLiteFactory {
 		}
 		for (int i = 0; i < liteDynData.getInfoStrings().size(); i++)
 			starsDynData.addInfoString( (String) liteDynData.getInfoStrings().get(i) );
-	}
-	
-	public static void setStarsQuestionAnswer(StarsQuestionAnswer starsQuestion, LiteInterviewQuestion liteQuestion) {
-		starsQuestion.setQuestionID( liteQuestion.getQuestionID() );
-		starsQuestion.setQuestion( liteQuestion.getQuestion() );
-		
-		QuestionType qType = new QuestionType();
-		qType.setEntryID( liteQuestion.getQuestionType() );
-		qType.setContent( DaoFactory.getYukonListDao().getYukonListEntry(liteQuestion.getQuestionType()).getEntryText() );
-		starsQuestion.setQuestionType( qType );
-		
-		AnswerType aType = new AnswerType();
-		aType.setEntryID( liteQuestion.getAnswerType() );
-		aType.setContent( DaoFactory.getYukonListDao().getYukonListEntry(liteQuestion.getAnswerType()).getEntryText() );
-		starsQuestion.setAnswerType( aType );
 	}
 	
 	public static void setStarsCustListEntry(StarsCustListEntry starsEntry, YukonListEntry yukonEntry) {

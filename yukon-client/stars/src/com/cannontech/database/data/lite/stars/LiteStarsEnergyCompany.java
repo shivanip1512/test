@@ -84,8 +84,6 @@ import com.cannontech.stars.xml.serialize.StarsCustomerSelectionLists;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
-import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestion;
-import com.cannontech.stars.xml.serialize.StarsExitInterviewQuestions;
 import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsSubstation;
@@ -181,7 +179,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private List<LiteServiceCompany> serviceCompanies = null;
     private volatile List<Warehouse> warehouses = null;
     private List<LiteSubstation> substations = null;
-    private List<LiteInterviewQuestion> interviewQuestions = null;
 
     private final Map<Integer, Integer> programIdToAppCatIdMap = new ConcurrentHashMap<Integer, Integer>();
     private final Map<Integer, LiteApplianceCategory> appCategoryMap = 
@@ -230,6 +227,11 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     	initApplianceCategories();
     }
     
+    public int getEnergyCompanyId() {
+        return getLiteID();
+    }
+    
+    @Deprecated
     public Integer getEnergyCompanyID() {
         return new Integer( getLiteID() );
     }
@@ -893,23 +895,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return routeIDs;
     }
     
-    public synchronized List<LiteInterviewQuestion> getAllInterviewQuestions() {
-        if (interviewQuestions == null) {
-            interviewQuestions = new ArrayList<LiteInterviewQuestion>();
-            
-            com.cannontech.database.db.stars.InterviewQuestion[] questions =
-                    com.cannontech.database.db.stars.InterviewQuestion.getAllInterviewQuestions( getEnergyCompanyID() );
-            for (int i = 0; i < questions.length; i++) {
-                LiteInterviewQuestion liteQuestion = (LiteInterviewQuestion) StarsLiteFactory.createLite( questions[i] );
-                interviewQuestions.add( liteQuestion );
-            }
-            
-            CTILogger.info( "All interview questions loaded for energy company #" + getEnergyCompanyID() );
-        }
-        
-        return interviewQuestions;
-    }
-    
     /**
      * Find the next to the largest call number with pattern "CTI#(NUMBER)", e.g. "CTI#10"
      */
@@ -1006,22 +991,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return addressList;
     }
     
-    public LiteInterviewQuestion[] getInterviewQuestions(int qType) {
-        List<LiteInterviewQuestion> qList = new ArrayList<LiteInterviewQuestion>();
-        List<LiteInterviewQuestion> questions = getAllInterviewQuestions();
-        
-        synchronized (questions) {
-            for (final LiteInterviewQuestion liteQ : questions) {
-                if (liteQ.getQuestionType() == qType) qList.add( liteQ );
-            }
-        }
-        
-        LiteInterviewQuestion[] qs = new LiteInterviewQuestion[ qList.size() ];
-        qList.toArray( qs );
-        
-        return qs;
-    }
-
     public LiteApplianceCategory getApplianceCategory(int applianceCategoryID) {
         Iterable<LiteApplianceCategory> allCategories = getAllApplianceCategories();
         for (LiteApplianceCategory category : allCategories) {
@@ -1556,16 +1525,13 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             starsOperECSettings.setStarsCustomerSelectionLists( getStarsCustomerSelectionLists(user) );
             starsOperECSettings.setStarsServiceCompanies( getStarsServiceCompanies() );
             starsOperECSettings.setStarsSubstations( getStarsSubstations() );
-            starsOperECSettings.setStarsExitInterviewQuestions( getStarsExitInterviewQuestions() );
             return starsOperECSettings;
-        }
-        else if (StarsUtils.isResidentialCustomer(user.getYukonUser())) {
+        } else if (StarsUtils.isResidentialCustomer(user.getYukonUser())) { 
             StarsEnergyCompanySettings starsCustECSettings = new StarsEnergyCompanySettings();
             starsCustECSettings.setEnergyCompanyID( user.getEnergyCompanyID() );
             starsCustECSettings.setStarsEnergyCompany( getStarsEnergyCompany() );
             starsCustECSettings.setStarsEnrollmentPrograms( getStarsEnrollmentPrograms() );
             starsCustECSettings.setStarsCustomerSelectionLists( getStarsCustomerSelectionLists(user) );
-            starsCustECSettings.setStarsExitInterviewQuestions( getStarsExitInterviewQuestions() );
             return starsCustECSettings;
         }
         
@@ -1661,20 +1627,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             starsSubstations.addStarsSubstation( starsSub );
         }
         return starsSubstations;
-    }
-    
-    public StarsExitInterviewQuestions getStarsExitInterviewQuestions() {
-        StarsExitInterviewQuestions starsExitQuestions = new StarsExitInterviewQuestions();
-
-        int exitQType = getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_QUE_TYPE_EXIT).getEntryID();
-        LiteInterviewQuestion[] liteQuestions = getInterviewQuestions( exitQType );
-        for (int i = 0; i < liteQuestions.length; i++) {
-            StarsExitInterviewQuestion starsQuestion = new StarsExitInterviewQuestion();
-            StarsLiteFactory.setStarsQuestionAnswer( starsQuestion, liteQuestions[i] );
-            starsExitQuestions.addStarsExitInterviewQuestion( starsQuestion );
-        }
-
-        return starsExitQuestions;
     }
     
     public StarsCustAccountInformation getStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo) {

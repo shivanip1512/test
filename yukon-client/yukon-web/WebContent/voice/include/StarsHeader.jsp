@@ -96,8 +96,6 @@
 			session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS );
 	StarsEnergyCompany energyCompany = ecSettings.getStarsEnergyCompany();
 	StarsEnrollmentPrograms categories = ecSettings.getStarsEnrollmentPrograms();
-	StarsCustomerFAQs customerFAQs = ecSettings.getStarsCustomerFAQs();
-	StarsExitInterviewQuestions exitQuestions = ecSettings.getStarsExitInterviewQuestions();
 	
 	Hashtable selectionListTable = new Hashtable();
 	if (ecSettings.getStarsCustomerSelectionLists() != null) {

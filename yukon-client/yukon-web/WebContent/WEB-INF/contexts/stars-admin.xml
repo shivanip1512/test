@@ -46,12 +46,6 @@
 	<bean id="adminDeleteSubstation" class="com.cannontech.web.stars.action.admin.DeleteSubstationController" 
           parent="starsAdminActionController"/>
 	
-	<bean id="adminUpdateFAQSource" class="com.cannontech.web.stars.action.admin.UpdateFAQSourceController" 
-          parent="starsAdminActionController"/>
-	
-	<bean id="adminUpdateInterviewQuestions" class="com.cannontech.web.stars.action.admin.UpdateInterviewQuestionsController" 
-          parent="starsAdminActionController"/>
-	
 	<bean id="adminUpdateSelectionList" class="com.cannontech.web.stars.action.admin.UpdateSelectionListController" 
           parent="starsAdminActionController"/>
 	

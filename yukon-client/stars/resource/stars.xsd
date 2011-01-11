@@ -397,7 +397,6 @@
 				<xs:element ref="stars-UpdateThermostatScheduleResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateThermostatManualOption" minOccurs="0"/>
 				<xs:element ref="stars-UpdateThermostatManualOptionResponse" minOccurs="0"/>
-				<xs:element ref="stars-SendOptOutNotification" minOccurs="0"/>
 				<xs:element ref="stars-GetEnergyCompanySettings" minOccurs="0"/>
 				<xs:element ref="stars-GetEnergyCompanySettingsResponse" minOccurs="0"/>
 				<xs:element ref="stars-UpdateControlNotification" minOccurs="0"/>
@@ -1147,38 +1146,6 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="stars-ExitInterviewQuestion" type="stars-QuestionAnswer"/>
-	<xs:element name="stars-ExitInterviewQuestions">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="stars-ExitInterviewQuestion" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="stars-SendOptOutNotification">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="stars-ExitInterviewQuestion" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="stars-CustomerFAQ" type="stars-QuestionAnswer"/>
-	<xs:element name="stars-CustomerFAQGroup">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="Subject" type="xs:string"/>
-				<xs:element ref="stars-CustomerFAQ" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-			<xs:attribute name="subjectID" type="xs:int"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="stars-CustomerFAQs">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="stars-CustomerFAQGroup" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="stars-EnrollmentPrograms">
 		<xs:complexType>
 			<xs:sequence>
@@ -1220,10 +1187,8 @@
 				<xs:element ref="stars-WebConfig" minOccurs="0"/>
 				<xs:element ref="stars-EnrollmentPrograms" minOccurs="0"/>
 				<xs:element ref="stars-CustomerSelectionLists" minOccurs="0"/>
-				<xs:element ref="stars-CustomerFAQs" minOccurs="0"/>
 				<xs:element ref="stars-ServiceCompanies" minOccurs="0"/>
 				<xs:element ref="stars-Substations" minOccurs="0"/>
-				<xs:element ref="stars-ExitInterviewQuestions" minOccurs="0"/>
 				<xs:element name="stars-DefaultThermostatSchedules" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>

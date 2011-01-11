@@ -7,113 +7,71 @@ public class StarsEnergyCompanySettings {
     private StarsWebConfig _starsWebConfig;
     private StarsEnrollmentPrograms _starsEnrollmentPrograms;
     private StarsCustomerSelectionLists _starsCustomerSelectionLists;
-    private StarsCustomerFAQs _starsCustomerFAQs;
     private StarsServiceCompanies _starsServiceCompanies;
     private StarsSubstations _starsSubstations;
-    private StarsExitInterviewQuestions _starsExitInterviewQuestions;
 
-    public StarsEnergyCompanySettings() {
-        
-    }
-
-    public void deleteEnergyCompanyID()
-    {
+    public void deleteEnergyCompanyID() {
         this._has_energyCompanyID= false;
     }
 
-    public int getEnergyCompanyID()
-    {
+    public int getEnergyCompanyID() {
         return this._energyCompanyID;
     } 
 
-    public StarsCustomerFAQs getStarsCustomerFAQs()
-    {
-        return this._starsCustomerFAQs;
-    }
-
-    public StarsCustomerSelectionLists getStarsCustomerSelectionLists()
-    {
+    public StarsCustomerSelectionLists getStarsCustomerSelectionLists() {
         return this._starsCustomerSelectionLists;
     } 
 
-    public StarsEnergyCompany getStarsEnergyCompany()
-    {
+    public StarsEnergyCompany getStarsEnergyCompany() {
         return this._starsEnergyCompany;
     }
 
-    public StarsEnrollmentPrograms getStarsEnrollmentPrograms()
-    {
+    public StarsEnrollmentPrograms getStarsEnrollmentPrograms() {
         return this._starsEnrollmentPrograms;
     }
 
-    public StarsExitInterviewQuestions getStarsExitInterviewQuestions()
-    {
-        return this._starsExitInterviewQuestions;
-    } 
-
-    public StarsServiceCompanies getStarsServiceCompanies()
-    {
+    public StarsServiceCompanies getStarsServiceCompanies() {
         return this._starsServiceCompanies;
     } 
 
-    public StarsSubstations getStarsSubstations()
-    {
+    public StarsSubstations getStarsSubstations() {
         return this._starsSubstations;
     } 
 
-    public StarsWebConfig getStarsWebConfig()
-    {
+    public StarsWebConfig getStarsWebConfig() {
         return this._starsWebConfig;
     } 
 
-    public boolean hasEnergyCompanyID()
-    {
+    public boolean hasEnergyCompanyID() {
         return this._has_energyCompanyID;
     }
 
-    public void setEnergyCompanyID(int energyCompanyID)
-    {
+    public void setEnergyCompanyID(int energyCompanyID) {
         this._energyCompanyID = energyCompanyID;
         this._has_energyCompanyID = true;
     } 
 
-    public void setStarsCustomerFAQs(StarsCustomerFAQs starsCustomerFAQs)
-    {
-        this._starsCustomerFAQs = starsCustomerFAQs;
-    } 
-
-    public void setStarsCustomerSelectionLists(StarsCustomerSelectionLists starsCustomerSelectionLists)
-    {
+    public void setStarsCustomerSelectionLists(StarsCustomerSelectionLists starsCustomerSelectionLists) {
         this._starsCustomerSelectionLists = starsCustomerSelectionLists;
     } 
 
-    public void setStarsEnergyCompany(StarsEnergyCompany starsEnergyCompany)
-    {
+    public void setStarsEnergyCompany(StarsEnergyCompany starsEnergyCompany) {
         this._starsEnergyCompany = starsEnergyCompany;
     } 
 
-    public void setStarsEnrollmentPrograms(StarsEnrollmentPrograms starsEnrollmentPrograms)
-    {
+    public void setStarsEnrollmentPrograms(StarsEnrollmentPrograms starsEnrollmentPrograms) {
         this._starsEnrollmentPrograms = starsEnrollmentPrograms;
     } 
 
-    public void setStarsExitInterviewQuestions(StarsExitInterviewQuestions starsExitInterviewQuestions)
-    {
-        this._starsExitInterviewQuestions = starsExitInterviewQuestions;
-    }
-
-    public void setStarsServiceCompanies(StarsServiceCompanies starsServiceCompanies)
-    {
+    public void setStarsServiceCompanies(StarsServiceCompanies starsServiceCompanies) {
         this._starsServiceCompanies = starsServiceCompanies;
     } 
 
-    public void setStarsSubstations(StarsSubstations starsSubstations)
-    {
+    public void setStarsSubstations(StarsSubstations starsSubstations) {
         this._starsSubstations = starsSubstations;
     }
 
-    public void setStarsWebConfig(StarsWebConfig starsWebConfig)
-    {
+    public void setStarsWebConfig(StarsWebConfig starsWebConfig) {
         this._starsWebConfig = starsWebConfig;
     } 
 

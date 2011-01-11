@@ -537,7 +537,7 @@
                 value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL" />
               <link>/spring/stars/consumer/contactus</link>
             </option>
-            <dynamicOptions id="faq" bean="consumerFaqMenuOption">
+            <dynamicOptions id="faq" bean="faqMenuOption">
               <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ" />
             </dynamicOptions>
           </options>
@@ -1046,10 +1046,6 @@
                         </option>
                     </options>
                 </option>
-                <dynamicOptions id="faq" bean="operatorFaqMenuOption">
-                    <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ADMIN_FAQ" />
-                </dynamicOptions>
-                
             </options>
         </menu>
 
@@ -1303,10 +1299,6 @@
                     </page>
                 </pages>
             </page>
-            <page name="faq" type="BASIC">
-                <menu>operatorFaq</menu>
-                <link>/spring/stars/operator/faq</link>
-            </page>
             <page name="inventory" type="BASIC">
                 <menu>inventory|home</menu>
                 <!-- Future home of old stars inventory page: <link>/spring/stars/operator/inventory/home</link>-->
@@ -1400,12 +1392,6 @@
                             <page name="settlement.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompany|home</menu>
                                 <link>/spring/stars/operator/energyCompany/settlement</link>
-                                <labelArgument>${energyCompanyName}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
-                            </page>
-                            <page name="faqs.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>energyCompany|home</menu>
-                                <link>/spring/stars/operator/energyCompany/faqs</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
                             </page>
