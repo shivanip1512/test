@@ -121,10 +121,6 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_TOW_WEDNESDAY				= 2107;
 	public static final int YUK_DEF_ID_TOW_THURSDAY					= 2108;
 	public static final int YUK_DEF_ID_TOW_FRIDAY					= 2109;
-	public static final int YUK_DEF_ID_QUE_TYPE_SIGNUP				= 2201;
-	public static final int YUK_DEF_ID_QUE_TYPE_EXIT				= 2202;
-	public static final int YUK_DEF_ID_ANS_TYPE_SELECTION			= 2301;
-	public static final int YUK_DEF_ID_ANS_TYPE_FREE_FORM			= 2302;
 	public static final int YUK_DEF_ID_THERM_MODE_DEFAULT			= 2401;
 	public static final int YUK_DEF_ID_THERM_MODE_COOL				= 2402;
 	public static final int YUK_DEF_ID_THERM_MODE_HEAT				= 2403;

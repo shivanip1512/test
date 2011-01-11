@@ -34,8 +34,6 @@ public interface YukonSelectionListDefs {
 	public static final String YUK_LIST_NAME_DEVICE_LOCATION = "DeviceLocation";
 	public static final String YUK_LIST_NAME_CHANCE_OF_CONTROL = "ChanceOfControl";
 	public static final String YUK_LIST_NAME_TIME_OF_WEEK = "TimeOfWeek";
-	public static final String YUK_LIST_NAME_QUESTION_TYPE = "QuestionType";
-	public static final String YUK_LIST_NAME_ANSWER_TYPE = "AnswerType";
 	public static final String YUK_LIST_NAME_THERMOSTAT_MODE = "ThermostatMode";
 	public static final String YUK_LIST_NAME_THERMOSTAT_FAN_STATE = "ThermostatFanState";
 	public static final String YUK_LIST_NAME_RESIDENCE_TYPE = "ResidenceType";

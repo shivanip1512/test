@@ -1344,8 +1344,6 @@ public class StarsAdminUtil {
 			if (DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)) {
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY) );
-				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_ANSWER_TYPE,
-					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_ANSWER_TYPE) );
 			}
 			
 			Iterator<YukonSelectionList> it = listMap.values().iterator();

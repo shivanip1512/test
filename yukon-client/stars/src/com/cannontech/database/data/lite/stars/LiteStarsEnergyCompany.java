@@ -158,7 +158,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         YukonSelectionListDefs.YUK_LIST_NAME_OWNERSHIP_TYPE,
         YukonSelectionListDefs.YUK_LIST_NAME_FUEL_TYPE,
         YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
-        YukonSelectionListDefs.YUK_LIST_NAME_ANSWER_TYPE,
         YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY,
         YukonSelectionListDefs.YUK_LIST_NAME_INV_SORT_BY,
         YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY,

@@ -304,10 +304,6 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 			return YukonSelectionListDefs.YUK_LIST_NAME_THERMOSTAT_FAN_STATE;
 		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT)
 			return YukonSelectionListDefs.YUK_LIST_NAME_THERMOSTAT_MODE;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_ANS_TYPE_SELECTION)
-			return YukonSelectionListDefs.YUK_LIST_NAME_ANSWER_TYPE;
-		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_QUE_TYPE_SIGNUP)
-			return YukonSelectionListDefs.YUK_LIST_NAME_QUESTION_TYPE;
 		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY)
 			return YukonSelectionListDefs.YUK_LIST_NAME_TIME_OF_WEEK;
 		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_LOC_UNKNOWN)
