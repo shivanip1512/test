@@ -146,7 +146,7 @@ function updateFieldsFromBackingBean() {
 
 <c:set var="baseKey" value="yukon.web.surveys.${survey.surveyKey}"/>
 <cti:url var="submitUrl" value="/spring/stars/surveyReport/report"/>
-<form:form action="${submitUrl}" commandName="reportConfig">
+<form:form action="${submitUrl}" method="GET" commandName="reportConfig">
     <form:hidden path="surveyId"/>
 
     <tags:nameValueContainer2>
