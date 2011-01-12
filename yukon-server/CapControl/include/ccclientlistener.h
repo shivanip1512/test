@@ -5,6 +5,8 @@
 #include <rw/toolpro/sockport.h>
 #include <rw/thr/thread.h>
 
+#include <vector>
+
 #include "ccclientconn.h"
 #include "ccstate.h"
 

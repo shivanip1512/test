@@ -1,9 +1,7 @@
 #pragma once
 
 #include <rw/collect.h>
-#include <rw/vstream.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/vstream.h> 
 
 #include "connection.h"
 #include "observe.h"

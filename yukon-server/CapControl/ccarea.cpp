@@ -19,6 +19,8 @@
 
 extern ULONG _CC_DEBUG;
 
+using Cti::CapControl::PaoIdList;
+
 RWDEFINE_COLLECTABLE( CtiCCArea, CTICCAREA_ID )
 
 /*---------------------------------------------------------------------------
@@ -105,7 +107,7 @@ void CtiCCArea::saveGuts(RWvostream& ostrm ) const
     ostrm <<  _ovUvDisabledFlag;
     ostrm << _subStationIds.size();
 
-    Cti::CapControl::PaoIdList::const_iterator iter = _subStationIds.begin();
+    PaoIdList::const_iterator iter = _subStationIds.begin();
     for( ; iter != _subStationIds.end();iter++)
     {
         ostrm << (long)*iter;
@@ -486,7 +488,7 @@ void CtiCCArea::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capM
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    Cti::CapControl::PaoIdList::iterator subIter = getSubStationList()->begin();;
+    PaoIdList::iterator subIter = getSubStationList()->begin();;
     CtiCCSubstationPtr currentSubstation = NULL;
 
     while (subIter != getSubStationList()->end())
@@ -506,7 +508,7 @@ CtiCCArea& CtiCCArea::checkAndUpdateChildVoltReductionFlags()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    Cti::CapControl::PaoIdList::iterator subIter = getSubStationList()->begin();;
+    PaoIdList::iterator subIter = getSubStationList()->begin();;
     CtiCCSubstationPtr currentStation = NULL;
 
     int numberOfStationsVoltReducting = 0;

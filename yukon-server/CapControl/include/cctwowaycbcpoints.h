@@ -1,9 +1,6 @@
 #pragma once
 
-#include <rw/collect.h>
-#include <rw/vstream.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
+#include <map>
 
 #include "msg_cmd.h"
 #include "msg_ptreg.h"

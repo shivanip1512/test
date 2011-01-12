@@ -1,6 +1,6 @@
 #pragma once
 
-#include<list>
+#include <list>
 
 namespace Cti {
 namespace CapControl {

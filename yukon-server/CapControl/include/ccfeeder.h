@@ -2,9 +2,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
-#include <rw/sortvec.h>
 
 #include "dbaccess.h"
 #include "connection.h"

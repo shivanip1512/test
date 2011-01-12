@@ -97,7 +97,7 @@ void CtiCCSubstation::saveGuts(RWvostream& ostrm ) const
           << _ovUvDisabledFlag;
 
     ostrm << _subBusIds.size();
-    Cti::CapControl::PaoIdList::const_iterator iter = _subBusIds.begin();
+    PaoIdList::const_iterator iter = _subBusIds.begin();
 
     for( ; iter != _subBusIds.end(); iter++)
     {

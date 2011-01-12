@@ -6,6 +6,8 @@
 #include "ctitime.h"
 #include "msg_pdata.h"
 
+#include <map>
+
 class PointValueHolder
 {
     public:

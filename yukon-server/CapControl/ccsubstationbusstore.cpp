@@ -56,6 +56,9 @@ using namespace Cti::CapControl;
 using Database::DatabaseDaoFactory;
 using Cti::ThreadStatusKeeper;
 
+using Cti::CapControl::PaoIdList;
+using Cti::CapControl::PointIdList;
+
 CtiTime timeSaver;
 
 /*---------------------------------------------------------------------------
@@ -5656,7 +5659,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                     if (currentCCSubstation != NULL)
                     {
                         currentCCSubstationBus->setParentName(currentCCSubstation->getPaoName());
-                        Cti::CapControl::PaoIdList::const_iterator iterBus = currentCCSubstation->getCCSubIds()->begin();
+                        PaoIdList::const_iterator iterBus = currentCCSubstation->getCCSubIds()->begin();
                         bool found = false;
                         for( ;iterBus != currentCCSubstation->getCCSubIds()->end(); iterBus++)
                         {
@@ -8030,7 +8033,7 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
         try
         {
             //Delete pointids on this sub
-            Cti::CapControl::PointIdList *pointIds  = substationToDelete->getPointIds();
+            PointIdList *pointIds  = substationToDelete->getPointIds();
             while (!pointIds->empty())
             {
                 LONG pointid = pointIds->front();
@@ -8125,7 +8128,7 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
             try
             {
                 //Delete pointids on this sub
-                Cti::CapControl::PointIdList *pointIds  = areaToDelete->getPointIds();
+                PointIdList *pointIds  = areaToDelete->getPointIds();
                 while (!pointIds->empty())
                 {
                     LONG pointid = pointIds->front();
@@ -8159,14 +8162,14 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
             LONG subBusId;
 
             CtiCCSubstationPtr station = NULL;
-            Cti::CapControl::PaoIdList::iterator iter = areaToDelete->getSubStationList()->begin();
+            PaoIdList::iterator iter = areaToDelete->getSubStationList()->begin();
             while (iter != areaToDelete->getSubStationList()->end())
             {
                 stationId = *iter;
                 station = findSubstationByPAObjectID(stationId);
                 if (station != NULL)
                 {
-                    Cti::CapControl::PaoIdList::iterator iterBus = station->getCCSubIds()->begin();
+                    PaoIdList::iterator iterBus = station->getCCSubIds()->begin();
                     while (iterBus  != station->getCCSubIds()->end())
                     {
                         subBusId = *iterBus;
@@ -8231,7 +8234,7 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
             try
             {
                 //Delete pointids on this sub
-                Cti::CapControl::PointIdList *pointIds  = spAreaToDelete->getPointIds();
+                PointIdList *pointIds  = spAreaToDelete->getPointIds();
                 while (!pointIds->empty())
                 {
                     LONG pointid = pointIds->front();
@@ -8263,7 +8266,7 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
 
             LONG stationId;
             LONG subBusId;
-            Cti::CapControl::PaoIdList::const_iterator iter = spAreaToDelete->getSubstationIds()->begin();
+            PaoIdList::const_iterator iter = spAreaToDelete->getSubstationIds()->begin();
             while (iter != spAreaToDelete->getSubstationIds()->end())
             {
                 stationId = *iter;
@@ -8342,7 +8345,7 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
         try
         {
             //Delete pointids on this sub
-            Cti::CapControl::PointIdList *pointIds  = subToDelete->getPointIds();
+            PointIdList *pointIds  = subToDelete->getPointIds();
             while (!pointIds->empty())
             {
                 LONG pointid = pointIds->front();
@@ -8477,7 +8480,7 @@ void CtiCCSubstationBusStore::deleteFeeder(long feederId)
             deleteCapBank(*itr);
         }
 
-        Cti::CapControl::PointIdList *pointIds  = feederToDelete->getPointIds();
+        PointIdList *pointIds  = feederToDelete->getPointIds();
         //Delete pointids on this feeder
         while (!pointIds->empty())
         {
@@ -8549,7 +8552,7 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
         {
           //  capBankToDelete->dumpDynamicData();
 
-            Cti::CapControl::PointIdList* pointIds  = capBankToDelete->getPointIds();
+            PointIdList* pointIds  = capBankToDelete->getPointIds();
             //Delete pointids on this feeder
             while (!pointIds->empty())
             {
@@ -9035,12 +9038,12 @@ bool CtiCCSubstationBusStore::handleSpecialAreaDBChange(LONG reloadId, BYTE relo
          }
          else
          {
-             Cti::CapControl::PaoIdList myList;
+             PaoIdList myList;
 
              if (tempSpArea != NULL)
              {
                  myList.clear();
-                 for (Cti::CapControl::PaoIdList::iterator it = tempSpArea->getSubstationIds()->begin(); it != tempSpArea->getSubstationIds()->end(); it++)
+                 for (PaoIdList::iterator it = tempSpArea->getSubstationIds()->begin(); it != tempSpArea->getSubstationIds()->end(); it++)
                  {
                      myList.push_back(*it);
                  }
@@ -9061,10 +9064,10 @@ bool CtiCCSubstationBusStore::handleSpecialAreaDBChange(LONG reloadId, BYTE relo
 }
 
 
-void CtiCCSubstationBusStore::updateModifiedStationsAndBusesSets(Cti::CapControl::PaoIdList* stationIdList, ULONG &msgBitMask, ULONG &msgSubsBitMask,
+void CtiCCSubstationBusStore::updateModifiedStationsAndBusesSets(PaoIdList* stationIdList, ULONG &msgBitMask, ULONG &msgSubsBitMask,
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet)
 {
-    Cti::CapControl::PaoIdList::const_iterator iter = stationIdList->begin();
+    PaoIdList::const_iterator iter = stationIdList->begin();
     while (iter != stationIdList->end())
     {
         LONG stationId = *iter;
@@ -9476,9 +9479,9 @@ void CtiCCSubstationBusStore::updateAreaObjectSet(LONG areaId, CtiMultiMsg_set &
 }
 
 
-void CtiCCSubstationBusStore::addSubBusObjectsToSet(Cti::CapControl::PaoIdList *subBusIds, CtiMultiMsg_set &modifiedSubsSet)
+void CtiCCSubstationBusStore::addSubBusObjectsToSet(PaoIdList *subBusIds, CtiMultiMsg_set &modifiedSubsSet)
 {
-    Cti::CapControl::PaoIdList::const_iterator busIter = subBusIds->begin();
+    PaoIdList::const_iterator busIter = subBusIds->begin();
     while (busIter != subBusIds->end())
     {
 
@@ -9495,16 +9498,16 @@ void CtiCCSubstationBusStore::addSubBusObjectsToSet(Cti::CapControl::PaoIdList *
 }
 
 
-void CtiCCSubstationBusStore::addSubstationObjectsToSet(Cti::CapControl::PaoIdList *substationIds, CtiMultiMsg_set &modifiedSubsSet)
+void CtiCCSubstationBusStore::addSubstationObjectsToSet(PaoIdList *substationIds, CtiMultiMsg_set &modifiedSubsSet)
 {
-    Cti::CapControl::PaoIdList::const_iterator stationIter = substationIds->begin();
+    PaoIdList::const_iterator stationIter = substationIds->begin();
 
     while (stationIter != substationIds->end())
     {
         CtiCCSubstationPtr station = findSubstationByPAObjectID(*stationIter);
         if (station != NULL)
         {
-            Cti::CapControl::PaoIdList::const_iterator busIter = station->getCCSubIds()->begin();
+            PaoIdList::const_iterator busIter = station->getCCSubIds()->begin();
             while (busIter != station->getCCSubIds()->end())
             {
 
@@ -10032,7 +10035,7 @@ void CtiCCSubstationBusStore::calculateParentPowerFactor(LONG subBusId)
             pf = 0;
             epf = 0;
             numBuses = 0;
-            for (Cti::CapControl::PaoIdList::const_iterator iter = station->getCCSubIds()->begin(); iter != station->getCCSubIds()->end(); iter++)
+            for (PaoIdList::const_iterator iter = station->getCCSubIds()->begin(); iter != station->getCCSubIds()->end(); iter++)
             {
                 CtiCCSubstationBus *bus = findSubBusByPAObjectID(*iter);
                 if (bus != NULL)
@@ -10059,7 +10062,7 @@ void CtiCCSubstationBusStore::calculateParentPowerFactor(LONG subBusId)
                 pf = 0;
                 epf = 0;
                 numStations = 0;
-                for (Cti::CapControl::PaoIdList::const_iterator iter = area->getSubStationList()->begin(); iter != area->getSubStationList()->end(); iter++)
+                for (PaoIdList::const_iterator iter = area->getSubStationList()->begin(); iter != area->getSubStationList()->end(); iter++)
                 {
                     CtiCCSubstation *station = findSubstationByPAObjectID(*iter);
                     if (station != NULL)
@@ -10088,7 +10091,7 @@ void CtiCCSubstationBusStore::calculateParentPowerFactor(LONG subBusId)
                 pf = 0;
                 epf = 0;
                 numStations = 0;
-                Cti::CapControl::PaoIdList::const_iterator iter = spArea->getSubstationIds()->begin();
+                PaoIdList::const_iterator iter = spArea->getSubstationIds()->begin();
                 while (iter != spArea->getSubstationIds()->end())
                 {
                     stationId = *iter;
@@ -11031,14 +11034,14 @@ void CtiCCSubstationBusStore::cascadeStrategySettingsToChildren(LONG spAreaId, L
         {
             long strategyID = spArea->getStrategy()->getStrategyId();
 
-            Cti::CapControl::PaoIdList::const_iterator iter = spArea->getSubstationIds()->begin();
+            PaoIdList::const_iterator iter = spArea->getSubstationIds()->begin();
             for ( ; iter != spArea->getSubstationIds()->end(); ++iter)
             {
                 stationId = *iter;
                 CtiCCSubstation *station =findSubstationByPAObjectID(stationId);
                 if (station != NULL)
                 {
-                    Cti::CapControl::PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
+                    PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
                     for ( ; iterBus  != station->getCCSubIds()->end(); ++iterBus)
                     {
                         subBusId = *iterBus;
@@ -11072,14 +11075,14 @@ void CtiCCSubstationBusStore::cascadeStrategySettingsToChildren(LONG spAreaId, L
         {
             long strategyID = area->getStrategy()->getStrategyId();
 
-            Cti::CapControl::PaoIdList::const_iterator iter = area->getSubStationList()->begin();
+            PaoIdList::const_iterator iter = area->getSubStationList()->begin();
             for ( ; iter != area->getSubStationList()->end(); ++iter)
             {
                 stationId = *iter;
                 CtiCCSubstation *station = findSubstationByPAObjectID(stationId);
                 if (station != NULL)
                 {
-                    Cti::CapControl::PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
+                    PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
                     for ( ; iterBus  != station->getCCSubIds()->end(); ++iterBus)
                     {
                         subBusId = *iterBus;

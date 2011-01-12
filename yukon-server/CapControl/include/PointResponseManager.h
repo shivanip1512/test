@@ -4,6 +4,8 @@
 #include "PointResponse.h"
 #include "ccmonitorpoint.h"
 
+#include <map>
+
 namespace Cti {
 namespace CapControl {
 
