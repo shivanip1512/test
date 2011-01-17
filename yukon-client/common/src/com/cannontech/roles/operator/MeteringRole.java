@@ -34,4 +34,6 @@ public interface MeteringRole {
     public static final int VALIDATION_ENGINE = OperatorRoleDefs.METERING_PROPERTYID_BASE - 16; // -20216
     /** Access to Status Point Monitoring */
     public static final int STATUS_POINT_MONITORING = OperatorRoleDefs.METERING_PROPERTYID_BASE - 17; // -20217
+    /** Access to Porter Response Processing Monitoring */
+    public static final int PORTER_RESPONSE_MONITORING = OperatorRoleDefs.METERING_PROPERTYID_BASE - 18; // -20218
 }

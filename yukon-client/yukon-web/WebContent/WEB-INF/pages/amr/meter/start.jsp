@@ -30,6 +30,9 @@
                     <%-- STATUS POINT MONITORS WIDGET --%>
                     <ct:widget bean="statusPointMonitorsWidget"/>
                     
+                    <%-- PORTER RESPONSE MONITORS WIDGET --%>
+                    <ct:widget bean="porterResponseMonitorsWidget"/>
+                    
                     <%-- VALIDATION MONITORS WIDGET --%>
                     <ct:widget bean="validationMonitorsWidget"/>
 					

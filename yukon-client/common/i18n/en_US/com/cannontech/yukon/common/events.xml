@@ -360,6 +360,12 @@
     <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorDeleted">Status Point Monitor Deleted with Id={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by user {6}</entry>
     <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorEnableDisable">Status Point Monitor with Id={7} set to {1} by user {2}</entry>
     
+    <!-- Porter Response Processing Monitor -->
+    <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorCreated">Porter Response Monitor Created with Id={7} name={1} evaluatorStatus={2} by user {3}</entry>
+    <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorUpdated">Porter Response Monitor Updated with Id={7} name={1} evaluatorStatus={2} by user {3}</entry>
+    <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorDeleted">Porter Response Monitor Deleted with Id={7} name={1} evaluatorStatus={2} by user {3}</entry>
+    <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorEnableDisable">Porter Response Monitor with Id={7} set to {1} by user {2}</entry>
+
     <entry key="yukon.common.events.system.outageEvents.mspHandler.mspMessageSentToVendor">Status Point Monitor {1} sent OutageDetectionEvent with eventType={2} objectId={3} deviceType={4} to Multispeak vendor={5}</entry>
     <entry key="yukon.common.events.system.outageEvents.outageEventGenerated">OutageDetectionEvent generated with eventType={1} eventTime={11} deviceType={2} and objectId = {3}</entry>
     

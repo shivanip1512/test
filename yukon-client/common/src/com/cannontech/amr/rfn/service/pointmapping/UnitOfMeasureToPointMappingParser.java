@@ -28,6 +28,8 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
+import com.cannontech.common.util.MatchStyle;
+import com.cannontech.common.util.ModifiersMatcher;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Iterables;
@@ -146,61 +148,6 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
 
     private PaoDefinitionDao paoDefinitionDao;
     private static final Logger log = YukonLogManager.getLogger(UnitOfMeasureToPointMappingParser.class);
-    
-    
-    public static enum MatchStyle {
-        none {
-            @Override
-            public boolean matches(Set<?> a, Set<?> b) {
-                return Sets.intersection(a, b).isEmpty();
-            }
-        }, 
-        any {
-            @Override
-            public boolean matches(Set<?> a, Set<?> b) {
-                return !Sets.intersection(a, b).isEmpty();
-            }
-        }, 
-        all {
-            @Override
-            public boolean matches(Set<?> a, Set<?> b) {
-                return a.containsAll(b);
-            }
-        }, 
-        notall {
-            @Override
-            public boolean matches(Set<?> a, Set<?> b) {
-                return !a.containsAll(b);
-            }
-        }, 
-        subset {
-            @Override
-            public boolean matches(Set<?> a, Set<?> b) {
-                return b.containsAll(a);
-            }
-        }, 
-        notsubset {
-            @Override
-            public boolean matches(Set<?> a, Set<?> b) {
-                return !b.containsAll(a);
-            }
-        }, 
-        equal {
-            @Override
-            public boolean matches(Set<?> a, Set<?> b) {
-                return a.equals(b);
-            }
-        },
-        notequal {
-            @Override
-            public boolean matches(Set<?> a, Set<?> b) {
-                return !a.equals(b);
-            }
-        };
-        
-        public abstract boolean matches(Set<?> a, Set<?> b);
-    }
-    
     private ImmutableMultimap<PaoType, PointMapper> pointMapperMap;
     private ConcurrentMap<CachedPointKey, CachedPointValue> computingCache;
     private final NullCachedPointValue nullCachedPointValue = new NullCachedPointValue();

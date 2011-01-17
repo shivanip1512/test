@@ -132,6 +132,9 @@
     <!-- STATUS POINT PROCESSING -->
     <bean class="com.cannontech.web.amr.statusPointMonitoring.StatusPointMonitorController" />
     
+    <!-- PORTER RESPONSE MONITOR -->
+    <bean class="com.cannontech.web.amr.porterResponseMonitor.PorterResponseMonitorController" />
+
     <!-- PHASE DETECTION -->
     <bean id="PhaseDetectController" class="com.cannontech.web.amr.phaseDetect.PhaseDetectController"/>
 

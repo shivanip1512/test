@@ -100,6 +100,9 @@
     <!-- StatusPoint monitor Service -->
     <bean id="statusPointMonitorService" class="com.cannontech.amr.statusPointMonitoring.service.impl.StatusPointMonitorServiceImpl"/>
     
+    <!-- Porter Response Monitor Service -->
+    <bean id="porterResponseMonitorService" class="com.cannontech.amr.porterResponseMonitor.service.impl.PorterResponseMonitorServiceImpl"/>
+
     <!-- RFN Meter Read Service -->
     <bean id="rfnMeterReadService" class="com.cannontech.amr.rfn.service.RfnMeterReadService"/>
 

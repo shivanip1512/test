@@ -331,6 +331,7 @@ public enum YukonRoleProperty {
     PHASE_DETECT(METERING, com.cannontech.roles.operator.MeteringRole.PHASE_DETECT, booleanType()),
     VALIDATION_ENGINE(METERING, com.cannontech.roles.operator.MeteringRole.VALIDATION_ENGINE, booleanType()),
     STATUS_POINT_MONITORING(METERING, com.cannontech.roles.operator.MeteringRole.STATUS_POINT_MONITORING, booleanType()),
+    PORTER_RESPONSE_MONITORING(METERING, com.cannontech.roles.operator.MeteringRole.PORTER_RESPONSE_MONITORING, booleanType()),
     
     ODDS_FOR_CONTROL_LABEL(ODDS_FOR_CONTROL, com.cannontech.roles.operator.OddsForControlRole.ODDS_FOR_CONTROL_LABEL, stringType()),
     

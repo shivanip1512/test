@@ -197,6 +197,11 @@
         <table name="StatusPointMonitor" identitycolumn="StatusPointMonitorId" initsequence="true"/>
 		<table name="StatusPointMonitorProcessor" identitycolumn="StatusPointMonitorProcessorId" initsequence="true"/>
       </sequence>
+      <sequence name="PorterResponseMonitor">
+        <table name="PorterResponseMonitor" identitycolumn="MonitorId" initsequence="true"/>
+        <table name="PorterResponseMonitorRule" identitycolumn="RuleId" initsequence="true"/>
+        <table name="PorterResponseMonitorErrorCode" identitycolumn="ErrorCodeId" initsequence="true"/>
+      </sequence>
       <sequence name="CRE">
         <table name="CommandRequestExec" identitycolumn="CommandRequestExecId"/>
         <table name="CommandRequestExecResult" identitycolumn="CommandRequestExecResultId"/>

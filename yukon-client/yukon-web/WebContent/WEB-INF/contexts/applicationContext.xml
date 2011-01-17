@@ -586,6 +586,16 @@
         </property>
     </bean>
     
+    <bean id="porterResponseMonitorsWidget" class="com.cannontech.web.widget.PorterResponseMonitorsWidget">
+        <property name="title" value="Porter Response Monitor"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="roleAndPropertiesChecker">
+            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="PORTER_RESPONSE_MONITORING"/>
+            </bean>
+        </property>
+    </bean>
+
     <bean id="validationMonitorsWidget" class="com.cannontech.web.widget.ValidationMonitorsWidget">
         <property name="title" value="Validation Monitors"/>
         <property name="identityPath" value="common/deviceIdentity.jsp" />
