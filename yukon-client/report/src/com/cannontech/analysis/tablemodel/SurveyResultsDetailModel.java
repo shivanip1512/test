@@ -83,9 +83,9 @@ public class SurveyResultsDetailModel extends
                                               startDate, getStopDateAsInstant(),
                                               accountNumber, deviceSerialNumber);
 
-        Map<SurveyResult, Map<Integer, OptOutEvent>> optOutsBySurveyResult =
-            optOutEventDao.getOptOutsBySurveyResultAndInventoryId(surveyResults);
-        List<Integer> inventoryIds = Lists.newArrayList();
+        Map<SurveyResult, OptOutEvent> optOutsBySurveyResult =
+            optOutEventDao.getOptOutsBySurveyResult(surveyResults);
+        Set<Integer> inventoryIds = Sets.newHashSet();
         List<Integer> accountIds = Lists.newArrayList();
         for (SurveyResult result : surveyResults) {
             List<ProgramEnrollment> enrollments =
@@ -100,7 +100,7 @@ public class SurveyResultsDetailModel extends
             if (accountId != null && accountId != 0) {
                 accountIds.add(result.getAccountId());
             }
-            inventoryIds.addAll(optOutsBySurveyResult.get(result).keySet());
+            inventoryIds.add(optOutsBySurveyResult.get(result).getInventoryId());
         }
 
         Survey survey = surveyDao.getSurveyById(surveyId);
@@ -132,7 +132,7 @@ public class SurveyResultsDetailModel extends
                 }
             }
 
-            OptOutEvent event = optOutsBySurveyResult.get(result).get(result.getInventoryId());
+            OptOutEvent event = optOutsBySurveyResult.get(result);
             ModelRow row = new ModelRow();
             row.accountNumber = result.getAccountNumber();
             HardwareSummary hardwareSummary = hardwareSummariesById.get(event.getInventoryId());

@@ -58,6 +58,43 @@ public class ChunkingMappedSqlTemplate {
      */
     public <I, R, C> Map<C, R> mappedQuery(final SqlFragmentGenerator<I> sqlGenerator, 
                                            final Iterable<C> input,
+                                           final YukonRowMapper<Map.Entry<I, R>> rowMapper,
+                                           Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
+        ParameterizedRowMapper<Map.Entry<I, R>> parameterizedRowMapper =
+            new YukonRowMapperAdapter<Map.Entry<I,R>>(rowMapper);
+        return mappedQuery(sqlGenerator, input, parameterizedRowMapper,
+                           inputTypeToSqlGeneratorTypeMapper);
+    }
+
+    /**
+     * Returns a mapping of inputs to results. Query is run in a chunking manner. This method 
+     * features the ability to keep the resulting map keys in the order of the input list.
+     * Example: Normally a query with the clause WHERE someId IN (1,2,3,4) may return the results in 
+     * an arbitrary order. However, you may want the results to be return in the same order as those 
+     * input values used in the IN clause. That is what this method provides. 
+     * @param <I> Type of value used by the SqlFragmentGenerator. 
+     *        Often Integer or String.
+     * @param <C> Type of values in the input list and the result map key type. May be a complex 
+     *        type that contains a field of type &lt;I&gt;, see inputTypeToSqlGeneratorTypeMapper 
+     *        parameter.
+     * @param <R> Type of model object created by the row mapper and the result map value type.
+     * @param sqlGenerator An SqlFragmentGenerator that takes objects of type &lt;I&gt; to create 
+     *        its IN-Clause  
+     * @param inputList A list of input values. The order of this list will determine the result 
+     *        map's key ordering.
+     * @param rowMapper A typical row mapper, but instead of returning just the model object it 
+     *        should return a single Map.Entry that wraps the search value as the key and the model 
+     *        object as the value.
+     * @param inputTypeToSqlGeneratorTypeMapper A mapper that can convert from the input type to the 
+     *        SqlFragmentGenerator type. This allows complex types to be passed as the input and be 
+     *        the basis of the result ordering, but the function defines what discrete part of the 
+     *        input type to use for the query search value. Tip: If your input type is the same as 
+     *        your generator type, use Functions.identity() to create your 
+     *        inputTypeToSqlGeneratorTypeMapper.
+     * @return
+     */
+    public <I, R, C> Map<C, R> mappedQuery(final SqlFragmentGenerator<I> sqlGenerator, 
+                                           final Iterable<C> input,
                                            final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
                                            Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
 
