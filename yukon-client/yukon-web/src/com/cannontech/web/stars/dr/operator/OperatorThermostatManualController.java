@@ -13,9 +13,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -23,12 +21,9 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.model.CustomerAction;
-import com.cannontech.stars.dr.hardware.model.CustomerEventType;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
-import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
@@ -44,8 +39,6 @@ import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 @Controller
 @RequestMapping(value = "/operator/thermostatManual/*")
 public class OperatorThermostatManualController {
-	
-    private AccountEventLogService accountEventLogService;
     
 	private InventoryDao inventoryDao;
 	private CustomerEventDao customerEventDao;
@@ -136,62 +129,41 @@ public class OperatorThermostatManualController {
 		List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
 		CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         
-        // Log thermostat manual event save attempt
-		for (int thermostatId : thermostatIdsList) {
-            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-            
-            accountEventLogService.thermostatManualSetAttemptedByOperator(userContext.getYukonUser(),
-                                                                          accountInfoFragment.getAccountNumber(),
-                                                                          thermostat.getSerialNumber());
-        }
-
-        ThermostatManualEventResult message = null;
-        boolean failed = false;
-
-        //Update the temperature unit for this customer
-        if ("C".equalsIgnoreCase(temperatureUnit) || "F".equalsIgnoreCase(temperatureUnit) ) {
-            customerDao.setTempForCustomer(customerAccount.getCustomerId(), temperatureUnit);
-        } else {
-        	throw new IllegalArgumentException("Invalid temperature unit set.");
-        }
+		thermostatService.logOperatorThermostatManualSaveAttempt(thermostatIdsList, userContext, customerAccount);
         
-        ThermostatMode thermostatMode;
-        if(!StringUtils.isBlank(mode)) {
-            thermostatMode = ThermostatMode.valueOf(mode);
-        } else {
-            thermostatMode = ThermostatMode.OFF;
-        }
+        thermostatService.updateTempUnitForCustomer(temperatureUnit, customerAccount.getCustomerId());
         
-        //Check for the thermostat mode and determine valid temp range for mode and thermostat type
-        boolean needsValidation = true;
-        Integer maxTempInF = null;
-        Integer minTempInF = null;
-        int firstThermostatId = thermostatIdsList.get(0);
-        HardwareType type = inventoryDao.getThermostatById(firstThermostatId).getType();
-        SchedulableThermostatType schedThermType = SchedulableThermostatType.getByHardwareType(type);
-        if(thermostatMode == ThermostatMode.COOL) {
-            minTempInF = schedThermType.getLowerLimitCoolInFahrenheit();
-            maxTempInF = schedThermType.getUpperLimitCoolInFahrenheit();
-        } else if(thermostatMode == ThermostatMode.HEAT || thermostatMode == ThermostatMode.EMERGENCY_HEAT) {
-            minTempInF = schedThermType.getLowerLimitHeatInFahrenheit();
-            maxTempInF = schedThermType.getUpperLimitHeatInFahrenheit();
-        } else {
-            //mode is OFF, do not validate temperature
-            needsValidation = false;
-        }
+        ThermostatMode thermostatMode = thermostatService.getThermostatModeFromString(mode);
         
+        // See if the run program button was clicked
+        String runProgramButtonClicked = ServletRequestUtils.getStringParameter(request, "runProgram", null);
+        boolean runProgram = runProgramButtonClicked != null;
+        
+        //temperature must be validated if mode is heat or cool and the run program
+        //button was not pressed
+        boolean needsTempValidation = thermostatMode.isHeatOrCool() && !runProgram;
         boolean isValid = true;
-        if(needsValidation) {
-            //now that we know the appropriate range for the given thermostat type and mode, validate
-            int defaultTempForUnit = (int)CtiUtilities.convertTemperature(ThermostatManualEvent.DEFAULT_TEMPERATURE, CtiUtilities.FAHRENHEIT_CHARACTER, temperatureUnit);
-            int temperature = ServletRequestUtils.getIntParameter(request, "temperature", defaultTempForUnit);
-            int convertedMaxTemp = (int)CtiUtilities.convertTemperature(maxTempInF, CtiUtilities.FAHRENHEIT_CHARACTER, temperatureUnit);
-            int convertedMinTemp = (int)CtiUtilities.convertTemperature(minTempInF, CtiUtilities.FAHRENHEIT_CHARACTER, temperatureUnit);
-            if(temperature > convertedMaxTemp) {
+        ThermostatManualEventResult message = null;
+        int temperatureInF = thermostatService.getTempOrDefaultInF(request, temperatureUnit);
+        
+        //Validate temperature for mode and thermostat type
+        if(needsTempValidation) {
+            Integer maxTempInF = null;
+            Integer minTempInF = null;
+            
+            //The UI only allows selection of multiple thermostats of the same type, so the type of the
+            //first thermostat should be the same as any others
+            int firstThermostatId = thermostatIdsList.get(0);
+            HardwareType type = inventoryDao.getThermostatById(firstThermostatId).getType();
+            SchedulableThermostatType schedThermType = SchedulableThermostatType.getByHardwareType(type);
+            minTempInF = schedThermType.getLowerLimitInFahrenheit(thermostatMode.getHeatCoolSettingType());
+            maxTempInF = schedThermType.getUpperLimitInFahrenheit(thermostatMode.getHeatCoolSettingType());
+            
+            if(temperatureInF > maxTempInF) {
                 MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(ThermostatManualEventResult.CONSUMER_MANUAL_INVALID_TEMP_HIGH.getDisplayKey());
                 flashScope.setError(messageResolvable);
                 isValid = false;
-            } else if(temperature < convertedMinTemp) {
+            } else if(temperatureInF < minTempInF) {
                 MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(ThermostatManualEventResult.CONSUMER_MANUAL_INVALID_TEMP_LOW.getDisplayKey());
                 flashScope.setError(messageResolvable);
                 isValid = false;
@@ -199,55 +171,11 @@ public class OperatorThermostatManualController {
         }
         
         if(isValid) {
-            for (int thermostatId : thermostatIdsList) {
-                boolean hold = ServletRequestUtils.getBooleanParameter(request, "hold", false);
-    
-                // See if the run program button was clicked
-                String runProgramButtonClicked = ServletRequestUtils.getStringParameter(request, "runProgram", null);
-                boolean runProgram = runProgramButtonClicked != null;
-    
-                // Convert to fahrenheit temperature
-                int defaultTempForUnit = (int)CtiUtilities.convertTemperature(ThermostatManualEvent.DEFAULT_TEMPERATURE, CtiUtilities.FAHRENHEIT_CHARACTER, temperatureUnit);
-                int temperature = ServletRequestUtils.getIntParameter(request, "temperature", defaultTempForUnit);
-                int tempInF = (int)CtiUtilities.convertTemperature(temperature, temperatureUnit, CtiUtilities.FAHRENHEIT_CHARACTER);
-                
-                // Build up manual event from submitted params
-                ThermostatManualEvent event = new ThermostatManualEvent();
-                event.setThermostatId(thermostatId);
-                event.setHoldTemperature(hold);
-                event.setPreviousTemperature(tempInF);
-                event.setTemperatureUnit(temperatureUnit);
-                event.setRunProgram(runProgram);
-                event.setEventType(CustomerEventType.THERMOSTAT_MANUAL);
-                event.setAction(CustomerAction.MANUAL_OPTION);
-    
-                // Mode and fan can be blank
-                if (runProgram) {
-                    event.setMode(ThermostatMode.DEFAULT);
-                } else if (!StringUtils.isBlank(mode)) {
-                    thermostatMode = ThermostatMode.valueOf(mode);
-                    event.setMode(thermostatMode);
-                }
-                if (!StringUtils.isBlank(fan)) {
-                    ThermostatFanState fanState = ThermostatFanState.valueOf(fan);
-                    event.setFanState(fanState);
-                }
-    
-                // Execute manual event and get result
-                message = thermostatService.executeManualEvent(customerAccount, event, userContext);
-    
-                if (message.isFailed()) {
-                    failed = true;
-                }
-            }
-    
-            // If there was a failure and we are processing multiple thermostats,
-            // set error to generic multiple error
-            if (failed && thermostatIdsList.size() > 1) {
-                message = ThermostatManualEventResult.CONSUMER_MULTIPLE_ERROR;
-            }
-    
-            // message
+            boolean hold = ServletRequestUtils.getBooleanParameter(request, "hold", false);
+            
+            message = thermostatService.setupAndExecuteManualEvent(thermostatIdsList, hold, runProgram, temperatureInF, temperatureUnit, mode, fan, customerAccount, userContext);
+            
+            // Add thermostat labels to message
             List<String> thermostatLabels = new ArrayList<String>();
             for(Integer thermostatId : thermostatIdsList) {
             	Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
@@ -258,11 +186,6 @@ public class OperatorThermostatManualController {
             
         	flashScope.setMessage(messageResolvable, message.isFailed() ? FlashScopeMessageType.ERROR : FlashScopeMessageType.CONFIRM);
         }
-    }
-	
-	@Autowired
-	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
     }
     
 	@Autowired

@@ -101,6 +101,28 @@ public enum SchedulableThermostatType {
 		return upperLimitHeatInFahrenheit;
 	}
 	
+	public int getLowerLimitInFahrenheit(HeatCoolSettingType heatCoolSettingType){
+	    if(heatCoolSettingType == HeatCoolSettingType.HEAT) {
+	        return getLowerLimitHeatInFahrenheit();
+	    } else if(heatCoolSettingType == HeatCoolSettingType.COOL) {
+	        return getLowerLimitCoolInFahrenheit();
+	    } else {
+	        //HeatCoolSetting == OTHER.  Nothing we can do with this.
+	        throw new IllegalArgumentException("HeatCoolSettingType must be HEAT or COOL.");
+	    }
+	}
+	
+	public int getUpperLimitInFahrenheit(HeatCoolSettingType heatCoolSettingType){
+	    if(heatCoolSettingType == HeatCoolSettingType.HEAT) {
+	        return getUpperLimitHeatInFahrenheit();
+	    } else if(heatCoolSettingType == HeatCoolSettingType.COOL) {
+	        return getUpperLimitCoolInFahrenheit();
+	    }else {
+            //HeatCoolSetting == OTHER.  Nothing we can do with this.
+            throw new IllegalArgumentException("HeatCoolSettingType must be HEAT or COOL.");
+        }
+    }
+	
 	public ThermostatScheduleMode getDefaultThermostatScheduleMode() {
         return defaultThermostatScheduleMode;
     }

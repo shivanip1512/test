@@ -3,12 +3,16 @@ package com.cannontech.stars.dr.thermostat.service.impl;
 import java.util.Collection;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
@@ -16,6 +20,8 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
@@ -32,7 +38,6 @@ import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
-//import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.CustomerThermostatEventBase;
@@ -66,7 +71,13 @@ public class ThermostatServiceImpl implements ThermostatService {
     private RolePropertyDao rolePropertyDao;
     private SystemDateFormattingService systemDateFormattingService;
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
-
+    private CustomerDao customerDao;
+    
+    @Autowired
+    public void setCustomerDao(CustomerDao customerDao) {
+        this.customerDao = customerDao;
+    }
+    
     @Autowired
     public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
         this.accountEventLogService = accountEventLogService;
@@ -336,6 +347,111 @@ public class ThermostatServiceImpl implements ThermostatService {
             }
         }
     }
+    
+    @Override
+    public int getTempOrDefaultInF(HttpServletRequest request, String temperatureUnit) {
+        int defaultTempForUnit = CtiUtilities.convertTemperature(ThermostatManualEvent.DEFAULT_TEMPERATURE, CtiUtilities.FAHRENHEIT_CHARACTER, temperatureUnit);
+        int temperature = ServletRequestUtils.getIntParameter(request, "temperature", defaultTempForUnit);
+        int tempInF = CtiUtilities.convertTemperature(temperature, temperatureUnit, CtiUtilities.FAHRENHEIT_CHARACTER);
+        return tempInF;
+    }
+    
+    @Override
+    public ThermostatMode getThermostatModeFromString(String mode) {
+        ThermostatMode thermostatMode;
+        if(StringUtils.isBlank(mode)) {
+            thermostatMode = ThermostatMode.OFF;
+        } else {
+            thermostatMode = ThermostatMode.valueOf(mode);
+        }
+        return thermostatMode;
+    }
+    
+    @Override
+    public void updateTempUnitForCustomer(String temperatureUnit, int customerId) {
+        String escapedTempUnit = StringEscapeUtils.escapeHtml(temperatureUnit);
+        if(StringUtils.isNotBlank(escapedTempUnit) && 
+          (escapedTempUnit.equalsIgnoreCase("C") || escapedTempUnit.equalsIgnoreCase("F")) ) {
+            customerDao.setTempForCustomer(customerId, escapedTempUnit);
+        } else {
+            throw new IllegalArgumentException("Invalid temperature unit set.");
+        }
+    }
+    
+    @Override
+    public void logConsumerThermostatManualSaveAttempt(List<Integer> thermostatIds, YukonUserContext userContext, CustomerAccount account) {
+        for (int thermostatId : thermostatIds) {
+            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+            
+            accountEventLogService.thermostatManualSetAttemptedByConsumer(userContext.getYukonUser(),
+                                                                          account.getAccountNumber(),
+                                                                          thermostat.getSerialNumber());
+        }
+    }
+    
+    @Override
+    public void logOperatorThermostatManualSaveAttempt(List<Integer> thermostatIds, YukonUserContext userContext, CustomerAccount account) {
+        for (int thermostatId : thermostatIds) {
+            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+            
+            accountEventLogService.thermostatManualSetAttemptedByOperator(userContext.getYukonUser(),
+                                                                          account.getAccountNumber(),
+                                                                          thermostat.getSerialNumber());
+        }
+    }
+    
+    @Override
+    public ThermostatManualEventResult setupAndExecuteManualEvent(List<Integer> thermostatIds, 
+                                                                  boolean hold, 
+                                                                  boolean runProgram, 
+                                                                  int tempInF, 
+                                                                  String temperatureUnit, 
+                                                                  String mode, 
+                                                                  String fan, 
+                                                                  CustomerAccount account, 
+                                                                  YukonUserContext userContext) {
+       ThermostatManualEventResult message = null;
+       boolean failed = false;
+       
+       for (Integer thermostatId : thermostatIds) {
+           // Build up manual event from submitted params
+           ThermostatManualEvent event = new ThermostatManualEvent();
+           event.setThermostatId(thermostatId);
+           event.setHoldTemperature(hold);
+           event.setPreviousTemperature(tempInF);
+           event.setTemperatureUnit(temperatureUnit);
+           event.setRunProgram(runProgram);
+           event.setEventType(CustomerEventType.THERMOSTAT_MANUAL);
+           event.setAction(CustomerAction.MANUAL_OPTION);
+
+           // Mode and fan can be blank
+           if (runProgram) {
+               event.setMode(ThermostatMode.DEFAULT);
+           } else if (!StringUtils.isBlank(mode)) {
+               ThermostatMode thermostatMode = ThermostatMode.valueOf(mode);
+               event.setMode(thermostatMode);
+           }
+           if (!StringUtils.isBlank(fan)) {
+               ThermostatFanState fanState = ThermostatFanState.valueOf(fan);
+               event.setFanState(fanState);
+           }
+
+           // Execute manual event and get result
+           message = executeManualEvent(account, event, userContext);
+
+           if (message.isFailed()) {
+               failed = true;
+           }
+       }
+
+       // If there was a failure and we are processing multiple thermostats,
+       // set error to generic multiple error
+       if (failed && thermostatIds.size() > 1) {
+           message = ThermostatManualEventResult.CONSUMER_MULTIPLE_ERROR;
+       }
+       
+       return message;
+   }
     
     /**
      * Helper method to build a command string for the manual event

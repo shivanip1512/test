@@ -1,10 +1,15 @@
 package com.cannontech.stars.dr.thermostat.service;
 
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
+import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
@@ -47,4 +52,48 @@ public interface ThermostatService {
      * TimeOfWeek.
      */
     public void addMissingScheduleEntries(AccountThermostatSchedule schedule);
+    
+    /**
+     * Prepares a ThermostatManualEvent for each thermostat being controlled, then attempts to
+     * execute those events.
+     */
+    public ThermostatManualEventResult setupAndExecuteManualEvent(List<Integer> thermostatIds, 
+                                                                   boolean hold, 
+                                                                   boolean runProgram, 
+                                                                   int tempInF, 
+                                                                   String temperatureUnit, 
+                                                                   String mode, 
+                                                                   String fan, 
+                                                                   CustomerAccount account, 
+                                                                   YukonUserContext userContext);
+    /**
+     * Log a consumer's attempt to send manual thermostat settings.
+     */
+    public void logConsumerThermostatManualSaveAttempt(List<Integer> thermostatIds, 
+                                                       YukonUserContext userContext, 
+                                                       CustomerAccount account);
+    /**
+     * Log an operator's attempt to send manual thermostat settings.
+     */
+    public void logOperatorThermostatManualSaveAttempt(List<Integer> thermostatIds, 
+                                                       YukonUserContext userContext, 
+                                                       CustomerAccount account);
+    
+    /**
+     * Stores the temperature unit that the customer last used, so next time we can display temps
+     * in their preferred unit.
+     */
+    public void updateTempUnitForCustomer(String temperatureUnit, int customerId);
+    
+    /**
+     * Retrieves the temperature from the request, or if that doesn't exist, retrieves the default
+     * temperature for a manual event.  The resulting temperature is returned in Fahrenheit.
+     */
+    public int getTempOrDefaultInF(HttpServletRequest request, String temperatureUnit);
+    
+    /**
+     * Parses a thermostat mode string value into a ThermostatMode object.  A blank string
+     * will be translated to OFF.
+     */
+    public ThermostatMode getThermostatModeFromString(String mode);
 }

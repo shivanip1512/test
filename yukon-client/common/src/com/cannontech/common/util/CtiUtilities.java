@@ -1634,6 +1634,11 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         return Math.round(convertTemperature(dblTemperature, fromUnit, toUnit));
     }
     
+    public static int convertTemperature(int temperature, String fromUnit, String toUnit) {
+        double dblTemperature = temperature;
+        return (int) Math.round(convertTemperature(dblTemperature, fromUnit, toUnit));
+    }
+    
     public static Integer[] ensureNotNull(Integer[] arr) {
         return (arr == null ? new Integer[0] : arr);
     }
