@@ -22,7 +22,7 @@ public interface StarsInventoryBaseDao {
 	 * @return LiteInventoryBase
 	 * @throws NotFoundException
 	 */
-    public LiteInventoryBase getByInventoryId(int inventoryId);
+    public LiteInventoryBase getByInventoryId(int inventoryId) throws NotFoundException;
 
     public LiteStarsLMHardware getHardwareByInventoryId(int inventoryId);
 

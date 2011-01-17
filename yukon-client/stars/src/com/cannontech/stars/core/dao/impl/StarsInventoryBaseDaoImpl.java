@@ -95,7 +95,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
 
     @Override
     @Transactional(readOnly = true)
-    public LiteInventoryBase getByInventoryId(final int inventoryId) {
+    public LiteInventoryBase getByInventoryId(final int inventoryId) throws NotFoundException {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(selectInventorySql);
         sql.append("WHERE ib.InventoryId = ").appendArgument(inventoryId);

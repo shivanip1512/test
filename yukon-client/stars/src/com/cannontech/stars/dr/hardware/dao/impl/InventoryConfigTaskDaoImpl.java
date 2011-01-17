@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
@@ -88,6 +89,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     };
 
     @Override
+    @Transactional(propagation=Propagation.SUPPORTS)
     public InventoryConfigTask getById(int inventoryConfigTaskId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT inventoryConfigTaskId, taskName, sendInService, numberOfItems,");
@@ -98,6 +100,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     }
 
     @Override
+    @Transactional(propagation=Propagation.SUPPORTS)
     public InventoryConfigTask findTask(String taskName, int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT inventoryConfigTaskId, taskName, sendInService, numberOfItems,");
@@ -113,6 +116,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     }
 
     @Override
+    @Transactional(propagation=Propagation.SUPPORTS)
     public List<InventoryConfigTask> getAll(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT inventoryConfigTaskId, taskName, sendInService, numberOfItems,");
@@ -123,6 +127,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     }
 
     @Override
+    @Transactional(propagation=Propagation.SUPPORTS)
     public List<InventoryConfigTask> getUnfinished(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT inventoryConfigTaskId, taskName, sendInService, numberOfItems,");
@@ -177,7 +182,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     }
 
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(propagation=Propagation.SUPPORTS)
     public Iterable<InventoryConfigTaskItem> getItems(int maxItems, int energyCompanyId) {
         List<InventoryConfigTask> unfinishedTasks = getUnfinished(energyCompanyId);
         if (unfinishedTasks.isEmpty()) {
