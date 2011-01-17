@@ -48,7 +48,7 @@ public class SurveyResultsDetailModel extends
 
     public static class ModelRow {
         public String accountNumber;
-        public Object serialNumber;
+        public MessageSourceResolvable serialNumber;
         public String altTrackingNumber;
         public Object reason;
         public Date scheduledDate;
@@ -136,7 +136,11 @@ public class SurveyResultsDetailModel extends
             ModelRow row = new ModelRow();
             row.accountNumber = result.getAccountNumber();
             HardwareSummary hardwareSummary = hardwareSummariesById.get(event.getInventoryId());
-            row.serialNumber = hardwareSummary == null ? hardwareNotFound : hardwareSummary.getSerialNumber();
+            if (hardwareSummary == null) {
+                row.serialNumber = hardwareNotFound;
+            } else {
+                row.serialNumber = YukonMessageSourceResolvable.createDefaultWithoutCode(hardwareSummary.getSerialNumber());
+            }
             row.altTrackingNumber = "";
             CustomerAccountWithNames account = accountsByAccountId.get(result.getAccountId());
             if (account != null) {
