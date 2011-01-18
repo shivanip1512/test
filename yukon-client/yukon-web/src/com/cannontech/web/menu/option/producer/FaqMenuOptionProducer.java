@@ -1,6 +1,5 @@
 package com.cannontech.web.menu.option.producer;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -11,6 +10,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.SimpleMenuOptionLink;
+import com.google.common.collect.Lists;
 
 public class FaqMenuOptionProducer extends DynamicMenuOptionProducer {
     private RolePropertyDao rolePropertyDao;
@@ -21,6 +21,8 @@ public class FaqMenuOptionProducer extends DynamicMenuOptionProducer {
     
     @Override
     public List<MenuOption> doGetMenuOptions(YukonUserContext userContext) {
+        List<MenuOption> menuOptions = Lists.newArrayList();
+
         SimpleMenuOptionLink menuOption = new SimpleMenuOptionLink(labelKey, menuTextKey);
         
         // Get the role property faq link
@@ -35,7 +37,8 @@ public class FaqMenuOptionProducer extends DynamicMenuOptionProducer {
         }
         menuOption.setLinkUrl(link);
         
-        return Arrays.<MenuOption>asList(menuOption);
+        menuOptions.add(menuOption);
+        return menuOptions;
     }
     
     // DI Setters
