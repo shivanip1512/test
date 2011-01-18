@@ -128,7 +128,7 @@ public:
     virtual string getDescription(const CtiCommandParser & parse) const;
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-    INT queuedWorkCount() const;
+    unsigned queuedWorkCount() const;
     virtual bool hasQueuedWork() const;
     virtual INT queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
     virtual bool getOutMessage(CtiOutMessage *&OutMessage);

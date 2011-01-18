@@ -1019,7 +1019,7 @@ test_prot_klondike.obj:	boostutil.h utility.h ctitime.h dlldefs.h \
 		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
 		configval.h tbl_dialup.h tbl_direct.h tbl_dv_address.h \
-		dev_ccu721_queue_interface.h device_queue_interface.h
+		device_queue_interface.h
 test_prot_xml.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		prot_xml.h cmdparse.h ctitokenizer.h dlldefs.h parsevalue.h
 transdata_application.obj:	yukon.h precompiled.h types.h ctidbgmem.h \

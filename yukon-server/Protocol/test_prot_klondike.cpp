@@ -23,15 +23,15 @@ using boost::unit_test_framework::test_suite;
 
 using namespace std;
 
-using namespace Cti::Protocol;
+using Cti::Protocols::KlondikeProtocol;
 
 using Cti::byte_buffer;
 
-class Test_Wrap : public Wrap
+class Test_Wrap : public Cti::Protocol::Wrap
 {
 public:
 
-    Klondike::byte_buffer_t sent, received;
+    KlondikeProtocol::byte_buffer_t sent, received;
 
     virtual bool send( const std::vector<unsigned char> &buf )
     {
@@ -63,11 +63,11 @@ public:
     };
 };
 
-struct Test_Klondike : public Klondike
+struct Test_Klondike : public KlondikeProtocol
 {
     unsigned long time;
 
-    using Klondike::setWrap;
+    using KlondikeProtocol::setWrap;
 
     long currentTime()
     {
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_timesync_and_queue_loading)
     cout.width(2);
 
     //  load up a timesync command
-    BOOST_CHECK_EQUAL(test_klondike.setCommand(Klondike::Command_TimeSync), NoError);
+    BOOST_CHECK_EQUAL(test_klondike.setCommand(KlondikeProtocol::Command_TimeSync), NoError);
 
     test_klondike.time = 0x456789ab;
 
@@ -141,14 +141,14 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_timesync_and_queue_loading)
     timesync_standin.push_back(0x34);
     timesync_standin.push_back(0x56);
 
-    test_klondike.addQueuedWork(0,
+    test_klondike.addQueuedWork(this,
                                 timesync_standin,
                                 MAXPRIORITY,
-                                Klondike::DLCParms_BroadcastFlag,
+                                KlondikeProtocol::DLCParms_BroadcastFlag,
                                 0);
 
     //  and set the command
-    BOOST_CHECK_EQUAL(test_klondike.setCommand(Klondike::Command_LoadQueue), NoError);
+    BOOST_CHECK_EQUAL(test_klondike.setCommand(KlondikeProtocol::Command_LoadQueue), NoError);
 
     //  verify it grabs the status from the CCU first
     do_xfer(test_klondike, test_wrap, xfer, (byte_buffer() << 0x11),
@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_route_loading)
     cout.setf(ios::hex, ios::basefield);
     cout.width(2);
 
-    BOOST_CHECK_EQUAL(test_klondike.setCommand(Klondike::Command_LoadRoutes), NoError);
+    BOOST_CHECK_EQUAL(test_klondike.setCommand(KlondikeProtocol::Command_LoadRoutes), NoError);
 
     test_klondike.addRoute(1, 27, 3, 6);
 
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_route_loading)
                                             (byte_buffer() << 0x80, 0x21, 0x00, 0x00));
     cout << "Transaction " << ++transactions << endl;
 
-    BOOST_CHECK_EQUAL(test_klondike.setCommand(Klondike::Command_LoadRoutes), NoError);
+    BOOST_CHECK_EQUAL(test_klondike.setCommand(KlondikeProtocol::Command_LoadRoutes), NoError);
 
     test_klondike.addRoute(2, 16, 5, 2);
 
@@ -201,119 +201,3 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_route_loading)
     cout << "Transaction " << ++transactions << endl;
 }
 
-
-bool findAllMessages(void *, void *)
-{
-    return true;
-}
-
-
-bool findRequestId(void *request_id, void *om)
-{
-    return om && (unsigned long)request_id == ((OUTMESS *)om)->Request.GrpMsgID;
-}
-
-
-BOOST_AUTO_TEST_CASE(test_prot_klondike_queue_handler_find_all)
-{
-    Test_Klondike test_klondike;
-
-    OUTMESS om;
-
-    om.Request.GrpMsgID = 112358;
-
-    //  verify the queues start out empty
-    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(0), 0);
-    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(112358), 0);
-
-    BOOST_CHECK(!test_klondike.hasWaitingWork());
-    BOOST_CHECK(!test_klondike.hasQueuedWork());
-    BOOST_CHECK(!test_klondike.hasRemoteWork());
-
-    //  add the outmessage, ignoring the unimportant pieces
-    test_klondike.addQueuedWork(&om, Klondike::byte_buffer_t(), 0, 0, 0);
-
-    //  verify it got in there with the correct requestid
-    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(0), 0);
-    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(112358), 1);
-
-    BOOST_CHECK(test_klondike.hasWaitingWork());
-    BOOST_CHECK(test_klondike.hasQueuedWork());
-    BOOST_CHECK(!test_klondike.hasRemoteWork());
-
-    std::list<void *> entries;
-
-    //  pull out all OMs
-    test_klondike.retrieveQueueEntries(findAllMessages, NULL, entries);
-
-    //  verify the OM is no longer in there
-    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(0), 0);
-    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(112358), 0);
-
-    BOOST_CHECK(!test_klondike.hasWaitingWork());
-    BOOST_CHECK(!test_klondike.hasQueuedWork());
-    BOOST_CHECK(!test_klondike.hasRemoteWork());
-
-    //  and that we got the right OM back
-    BOOST_CHECK_EQUAL(entries.size(), 1);
-    BOOST_CHECK_EQUAL(entries.front(), &om);
-}
-
-
-BOOST_AUTO_TEST_CASE(test_prot_klondike_queue_handler_find_requestid)
-{
-    Test_Klondike test_klondike;
-
-    OUTMESS om;
-
-    om.Request.GrpMsgID = 112358;
-
-    //  verify the queues start out empty
-    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(0), 0);
-    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(112358), 0);
-
-    BOOST_CHECK(!test_klondike.hasWaitingWork());
-    BOOST_CHECK(!test_klondike.hasQueuedWork());
-    BOOST_CHECK(!test_klondike.hasRemoteWork());
-
-    //  add the outmessage, ignoring the unimportant pieces
-    test_klondike.addQueuedWork(&om, Klondike::byte_buffer_t(), 0, 0, 0);
-
-    //  verify it got in there with the correct requestid
-    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(0), 0);
-    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(112358), 1);
-
-    BOOST_CHECK(test_klondike.hasWaitingWork());
-    BOOST_CHECK(test_klondike.hasQueuedWork());
-    BOOST_CHECK(!test_klondike.hasRemoteWork());
-
-    std::list<void *> entries;
-
-    //  try to grab a bogus requestID
-    test_klondike.retrieveQueueEntries(findRequestId, (void *)111111, entries);
-
-    //  verify our OM is still in there
-    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(0), 0);
-    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(112358), 1);
-
-    BOOST_CHECK(test_klondike.hasWaitingWork());
-    BOOST_CHECK(test_klondike.hasQueuedWork());
-    BOOST_CHECK(!test_klondike.hasRemoteWork());
-
-    BOOST_CHECK_EQUAL(entries.size(), 0);
-
-    //  grab the right requestID
-    test_klondike.retrieveQueueEntries(findRequestId, (void *)112358, entries);
-
-    //  verify the OM is no longer in there
-    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(0), 0);
-    BOOST_CHECK_EQUAL(test_klondike.getQueueCount(112358), 0);
-
-    BOOST_CHECK(!test_klondike.hasWaitingWork());
-    BOOST_CHECK(!test_klondike.hasQueuedWork());
-    BOOST_CHECK(!test_klondike.hasRemoteWork());
-
-    //  and that we got the right OM back
-    BOOST_CHECK_EQUAL(entries.size(), 1);
-    BOOST_CHECK_EQUAL(entries.front(), &om);
-}

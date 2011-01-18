@@ -78,7 +78,7 @@ public:
     size_t setExecutionProhibited(unsigned long id, CtiTime& releaseTime = CtiTime(YUKONEOT));
     bool   removeInfiniteProhibit(unsigned long id);
 
-    INT     queuedWorkCount() const;
+    unsigned queuedWorkCount() const;
     bool    hasQueuedWork() const;
     bool    hasPreloadWork() const;
     CtiTime getPreloadEndTime() const;

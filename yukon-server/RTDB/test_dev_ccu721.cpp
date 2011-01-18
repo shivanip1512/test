@@ -106,26 +106,162 @@ BOOST_AUTO_TEST_CASE(test_ccu721_decode_eword)
 {
     {
         const char *e_word = "\xee\x00\x00\x20\x00\x02\xb0";
+        ESTRUCT ESt;
 
-        BOOST_CHECK_EQUAL(NACKPAD1, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7));
+        BOOST_CHECK_EQUAL(NACKPAD1, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7, &ESt));
     }
 
     {
         const char *e_word = "\xee\x00\x00\x20\x00\x02\xc0";
+        ESTRUCT ESt;
 
-        BOOST_CHECK_EQUAL(BADBCH, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7));
+        BOOST_CHECK_EQUAL(BADBCH, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7, &ESt));
     }
 
     {
         const char *e_word = "\xfe\x00\x00\x20\x00\x02\x60";
+        ESTRUCT ESt;
 
-        BOOST_CHECK_EQUAL(BADTYPE, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7));
+        BOOST_CHECK_EQUAL(BADTYPE, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7, &ESt));
     }
 
     {
         const char *e_word = "\xed\x11\x23\x45\x00\x03\xc0";
+        ESTRUCT ESt;
 
-        BOOST_CHECK_EQUAL(EWORDRCV, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7));
+        BOOST_CHECK_EQUAL(EWORDRCV, Test_Ccu721Device::decodeEWord(reinterpret_cast<const unsigned char *>(e_word), 7, &ESt));
     }
 }
 
+
+bool findAllMessages(void *, void *)
+{
+    return true;
+}
+
+
+bool findRequestId(void *request_id, void *om)
+{
+    return om && (unsigned long)request_id == ((OUTMESS *)om)->Request.GrpMsgID;
+}
+
+
+BOOST_AUTO_TEST_CASE(test_ccu721_queue_handler_find_all)
+{
+    Test_Ccu721Device test_ccu721;
+
+    OUTMESS om;
+
+    om.Request.GrpMsgID = 112358;
+    om.TargetID = 17;  //  so that the CCU knows it's targeted at an MCT
+
+    //  verify the queues start out empty
+    BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(0), 0);
+    BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(112358), 0);
+
+    BOOST_CHECK(!test_ccu721.hasWaitingWork());
+    BOOST_CHECK(!test_ccu721.hasQueuedWork());
+    BOOST_CHECK(!test_ccu721.hasRemoteWork());
+
+    unsigned device_queue_count;
+    OUTMESS *om_queued = &om;
+    void *nullptr = 0;
+
+    int retval = test_ccu721.queueOutMessageToDevice(om_queued, &device_queue_count);
+
+    BOOST_CHECK_EQUAL(retval, QUEUED_TO_DEVICE);
+    BOOST_CHECK_EQUAL(device_queue_count, 1);
+    BOOST_CHECK_EQUAL(om_queued, nullptr);
+
+    //  verify it got in there with the correct requestid
+    BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(0), 0);
+    BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(112358), 1);
+
+    BOOST_CHECK(test_ccu721.hasWaitingWork());
+    BOOST_CHECK(test_ccu721.hasQueuedWork());
+    BOOST_CHECK(!test_ccu721.hasRemoteWork());
+
+    std::list<void *> entries;
+
+    //  pull out all OMs
+    test_ccu721.retrieveQueueEntries(findAllMessages, NULL, entries);
+
+    //  verify the OM is no longer in there
+    BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(0), 0);
+    BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(112358), 0);
+
+    BOOST_CHECK(test_ccu721.hasWaitingWork());  //  as of now, the klondike portion doesn't get erased, just the CCU's record of it
+    BOOST_CHECK(!test_ccu721.hasQueuedWork());
+    BOOST_CHECK(!test_ccu721.hasRemoteWork());
+
+    //  and that we got the right OM back
+    BOOST_CHECK_EQUAL(entries.size(), 1);
+    BOOST_CHECK_EQUAL(entries.front(), &om);
+}
+
+
+BOOST_AUTO_TEST_CASE(test_ccu721_queue_handler_find_requestid)
+{
+    Test_Ccu721Device test_ccu721;
+
+    OUTMESS om;
+
+    om.Request.GrpMsgID = 112358;
+    om.TargetID = 17;  //  so that the CCU knows it's targeted at an MCT
+
+    //  verify the queues start out empty
+    BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(0), 0);
+    BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(112358), 0);
+
+    BOOST_CHECK(!test_ccu721.hasWaitingWork());
+    BOOST_CHECK(!test_ccu721.hasQueuedWork());
+    BOOST_CHECK(!test_ccu721.hasRemoteWork());
+
+    unsigned device_queue_count;
+    OUTMESS *om_queued = &om;
+    void *nullptr = 0;
+
+    int retval = test_ccu721.queueOutMessageToDevice(om_queued, &device_queue_count);
+
+    BOOST_CHECK_EQUAL(retval, QUEUED_TO_DEVICE);
+    BOOST_CHECK_EQUAL(device_queue_count, 1);
+    BOOST_CHECK_EQUAL(om_queued, nullptr);
+
+    //  verify it got in there with the correct requestid
+    BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(0), 0);
+    BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(112358), 1);
+
+    BOOST_CHECK(test_ccu721.hasWaitingWork());
+    BOOST_CHECK(test_ccu721.hasQueuedWork());
+    BOOST_CHECK(!test_ccu721.hasRemoteWork());
+
+    std::list<void *> entries;
+
+    //  try to grab a bogus requestID
+    test_ccu721.retrieveQueueEntries(findRequestId, (void *)111111, entries);
+
+    //  verify our OM is still in there
+    BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(0), 0);
+    BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(112358), 1);
+
+    BOOST_CHECK(test_ccu721.hasWaitingWork());
+    BOOST_CHECK(test_ccu721.hasQueuedWork());
+    BOOST_CHECK(!test_ccu721.hasRemoteWork());
+
+    BOOST_CHECK_EQUAL(entries.size(), 0);
+
+    //  grab the right requestID
+    test_ccu721.retrieveQueueEntries(findRequestId, (void *)112358, entries);
+
+    //  verify the OM is no longer in there
+    BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(0), 0);
+    BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(112358), 0);
+
+    BOOST_CHECK(test_ccu721.hasWaitingWork());  //  as of now, the klondike portion doesn't get erased, just the CCU's record of it
+    BOOST_CHECK(!test_ccu721.hasQueuedWork());
+    BOOST_CHECK(!test_ccu721.hasRemoteWork());
+
+    //  and that we got the right OM back
+    BOOST_CHECK_EQUAL(entries.size(), 1);
+    BOOST_CHECK_EQUAL(entries.front(), &om);
+}

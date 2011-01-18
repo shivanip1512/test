@@ -546,6 +546,7 @@ public:
    {
       BYTE            InMessage[4096];    /* two variables !!!!!! */
       DSTRUCT         DSt;
+      ESTRUCT         ESt;
       struct
       {
          DSTRUCT      DSt;              // This looks odd, but it lies on top of the one above.. Don't pull it out!
@@ -630,12 +631,6 @@ typedef struct _DSM2_SEASON
 /* DST active flag */
 #define DSTACTIVE           0x8000
 #define DSTSET(q)  ((DSTFlag ()) ? (q | DSTACTIVE) : (q & ~DSTACTIVE))
-
-/* Prototypes from PLOTROLL.C */
-int            IM_EX_CTIBASE RollOverPlotData (PCHAR, PCHAR);
-
-
-#define RETURN_THREAD_STACK_SIZE 8192
 
 /* Prototypes from PEXEC.C */
 int   IM_EX_CTIBASE PortPipeInit (USHORT);

@@ -217,12 +217,10 @@ public:
     ULONG getQueueSlot() const;
     CtiPort& setQueueSlot(const ULONG slot = 0);
 
-    bool shouldProcessQueuedDevices() const;
-
     bool getDeviceQueued() const;
-    CtiPort& setDeviceQueued(LONG id);
-    CtiPort& resetDeviceQueued(LONG id);
-    void addDeviceQueuedWork(long deviceID, int workCount);
+    bool setDeviceQueued(LONG id);
+    bool resetDeviceQueued(LONG id);
+    void addDeviceQueuedWork(long deviceID, unsigned workCount);
     void setPortCommunicating(bool state = true, DWORD ticks = 0);
     void addPortTiming(DWORD ticks);
     int getWorkCount(long requestID = 0);
@@ -298,9 +296,11 @@ private:
     CtiTime                      _lastWrite;        //  used to determine if we should block the port share...
                                                     //  initialized to CtiTime::now() on startup
 
-    list< LONG >                _devicesQueued;
+    typedef std::map<long, unsigned> device_queue_counts;
+
+    set< LONG >                 _devicesQueued;
     set< LONG >                 _devicesPreloaded;
-    map< LONG, int >            _queuedWork;
+    device_queue_counts         _queuedWork;
 
     ULONG                       _queueSlot;         // This is the queue entry which will be popped on the next readQueue call.
     DWORD                       _entryMsecTime;     // The time to get one entry off the queue in Msecs.

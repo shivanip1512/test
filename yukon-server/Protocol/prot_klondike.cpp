@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_klondike
-*
-* Date:   2006-aug-08
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2008/10/31 20:31:22 $
-*
-* Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "logger.h"
@@ -21,13 +6,13 @@
 
 using namespace std;
 
-namespace Cti       {
-namespace Protocol  {
+namespace Cti {
+namespace Protocols {
 
-const Klondike::command_state_map_t Klondike::_command_states;
+const KlondikeProtocol::command_state_map_t KlondikeProtocol::_command_states;
 
 
-Klondike::Klondike() :
+KlondikeProtocol::KlondikeProtocol() :
     _wrap(&_idlc_wrap),
     _io_state(IO_Invalid),
     _error(Error_None),
@@ -42,17 +27,17 @@ Klondike::Klondike() :
     setAddresses(DefaultSlaveAddress, DefaultMasterAddress);
 }
 
-Klondike::Klondike(const Klondike &aRef)
+KlondikeProtocol::KlondikeProtocol(const KlondikeProtocol &aRef)
 {
     *this = aRef;
 }
 
-Klondike::~Klondike()
+KlondikeProtocol::~KlondikeProtocol()
 {
     _wrap = 0;      // we don't delete this: zeroing out to make lint happy...
 }
 
-Klondike &Klondike::operator=(const Klondike &aRef)
+KlondikeProtocol &KlondikeProtocol::operator=(const KlondikeProtocol &aRef)
 {
     if( this != &aRef )
     {
@@ -64,7 +49,7 @@ Klondike &Klondike::operator=(const Klondike &aRef)
 }
 
 
-Klondike::command_state_map_t::command_state_map_t()
+KlondikeProtocol::command_state_map_t::command_state_map_t()
 {
     //  this should be rewritten to allow command codes to be repeated within a command's state machine
 
@@ -90,7 +75,7 @@ Klondike::command_state_map_t::command_state_map_t()
 }
 
 
-bool Klondike::nextCommandState()
+bool KlondikeProtocol::nextCommandState()
 {
     command_state_map_t::const_iterator itr = _command_states.find(_current_command.command);
 
@@ -121,7 +106,7 @@ bool Klondike::nextCommandState()
 }
 
 
-bool Klondike::commandStateValid()
+bool KlondikeProtocol::commandStateValid()
 {
     bool command_valid = true;
 
@@ -181,7 +166,12 @@ bool Klondike::commandStateValid()
 
                     queue_entry_t &failed_entry = remote_itr->second;
 
-                    _plc_results.push(queue_result_t(failed_entry.om, Error_QueueEntryLost, ::time(0), byte_buffer_t()));
+                    _plc_results.push_back(
+                        queue_result_t(
+                            failed_entry.requester,
+                            Error_QueueEntryLost,
+                            ::time(0),
+                            byte_buffer_t()));
 
                     remote_itr = _remote_requests.erase(remote_itr);
                 }
@@ -221,7 +211,7 @@ bool Klondike::commandStateValid()
 }
 
 
-void Klondike::setAddresses( unsigned short slaveAddress, unsigned short masterAddress )
+void KlondikeProtocol::setAddresses( unsigned short slaveAddress, unsigned short masterAddress )
 {
     _masterAddress = masterAddress;
     _slaveAddress  = slaveAddress;
@@ -231,7 +221,7 @@ void Klondike::setAddresses( unsigned short slaveAddress, unsigned short masterA
 
 
 //  this is only called from recvCommRequest, so only one thread should be able to call this at once
-int Klondike::setCommand( int command, byte_buffer_t payload, unsigned in_expected, unsigned priority, unsigned char stages, unsigned char dlc_parms )
+int KlondikeProtocol::setCommand( int command, byte_buffer_t payload, unsigned in_expected, unsigned priority, unsigned char stages, unsigned char dlc_parms )
 {
     sync_guard_t guard(_sync);
 
@@ -292,30 +282,30 @@ int Klondike::setCommand( int command, byte_buffer_t payload, unsigned in_expect
 }
 
 
-Klondike::Command Klondike::getCommand( void ) const
+KlondikeProtocol::Command KlondikeProtocol::getCommand( void ) const
 {
     return _current_command.command;
 }
 
 
-void Klondike::getQueuedResults( queue<queue_result_t> &results )
+vector<KlondikeProtocol::queue_result_t> KlondikeProtocol::getQueuedResults()
 {
-    while( !_plc_results.empty() )
-    {
-        results.push(_plc_results.front());
+    //  This would be perfect for a move constructor.
+    vector<queue_result_t> results(_plc_results.begin(), _plc_results.end());
 
-        _plc_results.pop();
-    }
+    _plc_results.clear();
+
+    return results;
 }
 
 
-Klondike::byte_buffer_t Klondike::getDTranResult( void )
+KlondikeProtocol::byte_buffer_t KlondikeProtocol::getDTranResult( void )
 {
     return _dtran_result;
 }
 
 
-string Klondike::describeCurrentStatus( void ) const
+string KlondikeProtocol::describeCurrentStatus( void ) const
 {
     ostringstream stream;
 
@@ -342,7 +332,7 @@ string Klondike::describeCurrentStatus( void ) const
 }
 
 
-int Klondike::generate( CtiXfer &xfer )
+int KlondikeProtocol::generate( CtiXfer &xfer )
 {
     sync_guard_t guard(_sync);
 
@@ -364,7 +354,7 @@ int Klondike::generate( CtiXfer &xfer )
 }
 
 
-void Klondike::doOutput(CommandCode command_code)
+void KlondikeProtocol::doOutput(CommandCode command_code)
 {
     byte_buffer_t outbound;
 
@@ -414,25 +404,34 @@ void Klondike::doOutput(CommandCode command_code)
 
             int processed = 0;
 
-            for( ; waiting_itr != waiting_end && processed < _device_queue_entries_available; waiting_itr++ )
+            while( waiting_itr != waiting_end && processed < _device_queue_entries_available )
             {
-                if( outbound.size() + QueueEntryHeaderLength + waiting_itr->outbound.size() > _wrap->getMaximumPayload() )
+                if( waiting_itr->requester )
                 {
-                    break;
+                    if( outbound.size() + QueueEntryHeaderLength + waiting_itr->outbound.size() > _wrap->getMaximumPayload() )
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        outbound.push_back(waiting_itr->priority);
+                        outbound.push_back(waiting_itr->dlc_parms);
+                        outbound.push_back(waiting_itr->stages);
+                        outbound.push_back(waiting_itr->outbound.size());
+
+                        outbound.insert(outbound.end(), waiting_itr->outbound.begin(),
+                                                        waiting_itr->outbound.end());
+
+                        _pending_requests.insert(make_pair(_device_queue_sequence + processed, waiting_itr));
+
+                        processed++;
+                    }
+
+                    waiting_itr++;
                 }
                 else
                 {
-                    outbound.push_back(waiting_itr->priority);
-                    outbound.push_back(waiting_itr->dlc_parms);
-                    outbound.push_back(waiting_itr->stages);
-                    outbound.push_back(waiting_itr->outbound.size());
-
-                    outbound.insert(outbound.end(), waiting_itr->outbound.begin(),
-                                                    waiting_itr->outbound.end());
-
-                    _pending_requests.insert(make_pair(_device_queue_sequence + processed, waiting_itr));
-
-                    processed++;
+                    waiting_itr = _waiting_requests.erase(waiting_itr);
                 }
             }
 
@@ -519,7 +518,7 @@ void Klondike::doOutput(CommandCode command_code)
 }
 
 
-void Klondike::doInput(CommandCode command_code, CtiXfer &xfer)
+void KlondikeProtocol::doInput(CommandCode command_code, CtiXfer &xfer)
 {
     _wrap->recv();
 
@@ -540,7 +539,7 @@ void Klondike::doInput(CommandCode command_code, CtiXfer &xfer)
 }
 
 
-unsigned Klondike::getPLCTiming(PLCProtocols protocol)
+unsigned KlondikeProtocol::getPLCTiming(PLCProtocols protocol)
 {
     switch( protocol )
     {
@@ -550,7 +549,7 @@ unsigned Klondike::getPLCTiming(PLCProtocols protocol)
 }
 
 
-bool Klondike::responseExpected( CommandCode command_code )
+bool KlondikeProtocol::responseExpected( CommandCode command_code )
 {
     bool response = true;
 /*
@@ -566,7 +565,7 @@ bool Klondike::responseExpected( CommandCode command_code )
 }
 
 
-int Klondike::decode( CtiXfer &xfer, int status )
+int KlondikeProtocol::decode( CtiXfer &xfer, int status )
 {
     sync_guard_t guard(_sync);
 
@@ -648,7 +647,7 @@ int Klondike::decode( CtiXfer &xfer, int status )
 }
 
 
-void Klondike::processResponse(const byte_buffer_t &inbound)
+void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
 {
     byte_buffer_t::const_iterator       inbound_itr = inbound.begin();
     const byte_buffer_t::const_iterator inbound_end = inbound.end();
@@ -861,7 +860,7 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
                                     || (rejected_nak_code != NAK_LoadBuffer_QueueFull &&
                                         rejected_nak_code != NAK_LoadBuffer_InvalidSequence) )
                                 {
-                                    if( rejected_entry.om )
+                                    if( rejected_entry.requester )
                                     {
                                         Errors error = Error_Unknown;
 
@@ -879,12 +878,12 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
                                             }
                                         }
 
-                                        _plc_results.push(queue_result_t(rejected_entry.om, error, ::time(0), byte_buffer_t()));
-                                    }
-                                    else
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_WaitingQueueWrite : system queue entry rejected (" << rejected_nak_code << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        _plc_results.push_back(
+                                            queue_result_t(
+                                                rejected_entry.requester,
+                                                error,
+                                                ::time(0),
+                                                byte_buffer_t()));
                                     }
 
                                     _waiting_requests.erase(pending_itr->second);
@@ -921,7 +920,11 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
 
                 while( (pending_itr != pending_end) && accepted )
                 {
-                    _remote_requests.insert(make_pair(pending_itr->first, *(pending_itr->second)));
+                    if( pending_itr->second->requester )
+                    {
+                        _remote_requests.insert(make_pair(pending_itr->first, *(pending_itr->second)));
+                    }
+
                     _waiting_requests.erase(pending_itr->second);
                     _device_queue_sequence++;
                     accepted--;
@@ -1028,12 +1031,14 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
                         }
                         else
                         {
-                            if( remote_itr->second.om )
+                            if( remote_itr->second.requester )
                             {
-                                _plc_results.push(queue_result_t(remote_itr->second.om,
-                                                                 Error_None,  //  we'll eventually need to plug an error code in here,
-                                                                 q.timestamp, //    but right now, q.result is poorly defined
-                                                                 q.message));
+                                _plc_results.push_back(
+                                    queue_result_t(
+                                        remote_itr->second.requester,
+                                        Error_None,  //  we'll eventually need to plug an error code in here,
+                                        q.timestamp, //    but right now, q.result is poorly defined
+                                        q.message));
                             }
 
                             _remote_requests.erase(remote_itr);
@@ -1078,7 +1083,7 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
 
 
 //  This command undoes anything we were just attempting to do - the wrap failed, we have to try again
-void Klondike::processFailed()
+void KlondikeProtocol::processFailed()
 {
     switch( _current_command.command_code )
     {
@@ -1092,7 +1097,7 @@ void Klondike::processFailed()
 }
 
 
-bool Klondike::isTransactionComplete( void ) const
+bool KlondikeProtocol::isTransactionComplete( void ) const
 {
     return _current_command.command == Command_Invalid ||
            _io_state                == IO_Complete     ||
@@ -1100,7 +1105,7 @@ bool Klondike::isTransactionComplete( void ) const
 }
 
 
-bool Klondike::errorCondition( void ) const
+bool KlondikeProtocol::errorCondition( void ) const
 {
     return _io_state == IO_Failed;
 
@@ -1108,72 +1113,43 @@ bool Klondike::errorCondition( void ) const
 
 
 
-Klondike::Errors Klondike::errorCode() const
+KlondikeProtocol::Errors KlondikeProtocol::errorCode() const
 {
     return _error;
 }
 
 
 
-bool Klondike::addQueuedWork(const OUTMESS *om, const byte_buffer_t &payload, unsigned priority, unsigned char dlc_parms, unsigned char stages)
+bool KlondikeProtocol::addQueuedWork(void *requester, const byte_buffer_t &payload, unsigned priority, unsigned char dlc_parms, unsigned char stages)
 {
     sync_guard_t guard(_sync);
 
-    _waiting_requests.insert(queue_entry_t(payload, priority, dlc_parms, stages, om));
+    _waiting_requests.insert(queue_entry_t(payload, priority, dlc_parms, stages, requester));
 
     return true;
 }
 
-bool Klondike::hasQueuedWork() const
-{
-    return hasWaitingWork() || hasRemoteWork();
-}
-
-
-unsigned Klondike::queuedWorkCount() const
+bool KlondikeProtocol::removeQueuedWork(void *handle)
 {
     sync_guard_t guard(_sync);
 
-    return _waiting_requests.size() + _remote_requests.size();
-}
-
-
-unsigned Klondike::getQueueCount(ULONG requestID)
-{
-    sync_guard_t guard(_sync);
-
-    return std::count_if(_waiting_requests.begin(),
-                         _waiting_requests.end(),
-                         queue_entry_t::request_id_equal(requestID));
-}
-
-
-void Klondike::retrieveQueueEntries(bool (*myFindFunc)(void*, void*), void *findParameter, std::list<void *> &entries)
-{
-    sync_guard_t guard(_sync);
-
-    local_work_t::const_iterator itr = _waiting_requests.begin();
+    local_work_t::iterator itr = _waiting_requests.begin();
 
     while( itr != _waiting_requests.end() )
     {
-        //  This conversion is necessary because of the bad old days.  :(
-        void *outmess = static_cast<void *>(const_cast<OUTMESS *>(itr->om));
-
-        if( outmess && myFindFunc(findParameter, outmess) )
+        if( itr->requester == handle )
         {
-            entries.push_back(outmess);
+            //  this keeps us from propagating this into _remote_requests
+            itr->requester = 0;
 
-            itr = _waiting_requests.erase(itr);
-        }
-        else
-        {
-            ++itr;
+            return true;
         }
     }
+
+    return false;
 }
 
-
-bool Klondike::isLoadingDeviceQueue() const
+bool KlondikeProtocol::isLoadingDeviceQueue() const
 {
     sync_guard_t guard(_sync);
 
@@ -1183,7 +1159,7 @@ bool Klondike::isLoadingDeviceQueue() const
 }
 
 
-bool Klondike::setLoadingDeviceQueue(bool loading)
+bool KlondikeProtocol::setLoadingDeviceQueue(bool loading)
 {
     sync_guard_t guard(_sync);
 
@@ -1191,7 +1167,7 @@ bool Klondike::setLoadingDeviceQueue(bool loading)
 }
 
 
-bool Klondike::isReadingDeviceQueue() const
+bool KlondikeProtocol::isReadingDeviceQueue() const
 {
     sync_guard_t guard(_sync);
 
@@ -1201,7 +1177,7 @@ bool Klondike::isReadingDeviceQueue() const
 }
 
 
-bool Klondike::setReadingDeviceQueue(bool reading)
+bool KlondikeProtocol::setReadingDeviceQueue(bool reading)
 {
     sync_guard_t guard(_sync);
 
@@ -1209,139 +1185,52 @@ bool Klondike::setReadingDeviceQueue(bool reading)
 }
 
 
-struct report_waiting_requests
+void KlondikeProtocol::getRequestStatus(request_statuses &waiting, request_statuses &pending, request_statuses &queued, request_statuses &completed) const
 {
-    report_waiting_requests(ostringstream &stream) : _stream(stream)  { };
-
-    ostringstream &_stream;
-
-    template<class T>
-    void operator()(const T &waiting)
-    {
-        if( waiting.om )
-        {
-            _stream << setw(8) << waiting.om->DeviceID << "|"
-                    << setw(3) << waiting.priority     << "|"
-                               << waiting.om->Request.CommandStr << endl;
-        }
-        else
-        {
-            //  so far, we only send MCT timesyncs to the CCU without an OutMessage
-            _stream << setw(8) << -1               << "|"
-                    << setw(3) << waiting.priority << "|"
-                               << "(MCT-400 broadcast timesync)" << endl;
-        }
-    }
-};
-
-
-struct report_pending_requests
-{
-    report_pending_requests(ostringstream &stream) : _stream(stream)  { };
-
-    ostringstream &_stream;
-
-    template<class T>
-    void operator()(const T &pending)
-    {
-        if( pending.second->om )
-        {
-            _stream << setw(8) << pending.first                << "|"
-                    << setw(8) << pending.second->om->DeviceID << "|"
-                    << setw(3) << pending.second->priority     << "|"
-                               << pending.second->om->Request.CommandStr << endl;
-        }
-        else
-        {
-            //  so far, we only send MCT timesyncs to the CCU without an OutMessage
-            _stream << setw(8) << pending.first            << "|"
-                    << setw(8) << -1                       << "|"
-                    << setw(3) << pending.second->priority << "|"
-                               << "(MCT-400 broadcast timesync)" << endl;
-        }
-    }
-};
-
-
-struct report_remote_requests
-{
-    report_remote_requests(ostringstream &stream) : _stream(stream)  { };
-
-    ostringstream &_stream;
-
-    template<class T>
-    void operator()(const T &remote)
-    {
-        if( remote.second.om )
-        {
-            _stream << setw(8) << remote.first               << "|"
-                    << setw(8) << remote.second.om->DeviceID << "|"
-                    << setw(3) << remote.second.priority     << "|"
-                               << remote.second.om->Request.CommandStr << endl;
-        }
-        else
-        {
-            //  so far, we only send MCT timesyncs to the CCU without an OutMessage
-            _stream << setw(8) << remote.first           << "|"
-                    << setw(8) << -1                     << "|"
-                    << setw(3) << remote.second.priority << "|"
-                               << "(MCT-400 broadcast timesync)" << endl;
-        }
-    }
-};
-
-
-string Klondike::queueReport() const
-{
-    ostringstream report;
-
     sync_guard_t guard(_sync);
 
-    report.fill(' ');
+    request_status s;
 
-    report << "Waiting requests (INUSE) : " << setw(5) << _waiting_requests.size() << " : in Yukon's queue" << endl;
-
+    for each(const queue_entry_t &entry in _waiting_requests)
     {
-        report << setw(8) << "MCT ID" << "|"
-               << setw(3) << "Pri"    << "|"
-                          << "Command" << endl;
+        s.requester = entry.requester;
+        s.priority       = entry.priority;
+        s.queue_id       = 0;
 
-        for_each(_waiting_requests.begin(),
-                 _waiting_requests.end(),
-                 report_waiting_requests(report));
+        waiting.push_back(s);
     }
 
-    report << "Pending requests (INUSE) : " << setw(5) << _pending_requests.size() << " : waiting for ACK from CCU" << endl;
-
+    for each(const pending_work_t::value_type &pending_request in _pending_requests)
     {
-        report << setw(8) << "Queue ID" << "|"
-               << setw(8) << "MCT ID"   << "|"
-               << setw(3) << "Pri"      << "|"
-                          << "Command" << endl;
+        s.requester = pending_request.second->requester;
+        s.priority       = pending_request.second->priority;
+        s.queue_id       = pending_request.first;
 
-        for_each(_pending_requests.begin(),
-                 _pending_requests.end(),
-                 report_pending_requests(report));
+        pending.push_back(s);
     }
 
-    report << "Remote requests (INCCU)  : " << setw(5) << _remote_requests.size() << " : in the CCU's queue" << endl;
-
+    for each(const remote_work_t::value_type &remote_request in _remote_requests)
     {
-        report << setw(8) << "Queue ID" << "|"
-               << setw(8) << "MCT ID"   << "|"
-               << setw(3) << "Pri"      << "|"
-                          << "Command" << endl;
+        s.requester = remote_request.second.requester;
+        s.priority       = remote_request.second.priority;
+        s.queue_id       = remote_request.first;
 
-        for_each(_remote_requests.begin(),
-                 _remote_requests.end(),
-                 report_remote_requests(report));
+        queued.push_back(s);
     }
 
-    return report.str();
+    for each(const queue_result_t &result in _plc_results)
+    {
+        s.requester = result.requester;
+        s.priority       = 0;
+        s.queue_id       = 0;
+
+        completed.push_back(s);
+    }
 }
 
 
-bool Klondike::hasRemoteWork() const
+
+bool KlondikeProtocol::hasRemoteWork() const
 {
     sync_guard_t guard(_sync);
 
@@ -1365,7 +1254,7 @@ struct store_max_priority
 };
 
 
-unsigned Klondike::getRemoteWorkPriority() const
+unsigned KlondikeProtocol::getRemoteWorkPriority() const
 {
     sync_guard_t guard(_sync);
 
@@ -1379,7 +1268,7 @@ unsigned Klondike::getRemoteWorkPriority() const
 }
 
 
-bool Klondike::hasWaitingWork() const
+bool KlondikeProtocol::hasWaitingWork() const
 {
     sync_guard_t guard(_sync);
 
@@ -1387,7 +1276,7 @@ bool Klondike::hasWaitingWork() const
 }
 
 
-unsigned Klondike::getWaitingWorkPriority() const
+unsigned KlondikeProtocol::getWaitingWorkPriority() const
 {
     sync_guard_t guard(_sync);
 
@@ -1403,7 +1292,7 @@ unsigned Klondike::getWaitingWorkPriority() const
 }
 
 
-void Klondike::addRoute(unsigned bus, unsigned fixed, unsigned variable, unsigned stages)
+void KlondikeProtocol::addRoute(unsigned bus, unsigned fixed, unsigned variable, unsigned stages)
 {
     route_entry_t route;
 
@@ -1416,18 +1305,18 @@ void Klondike::addRoute(unsigned bus, unsigned fixed, unsigned variable, unsigne
 }
 
 
-void Klondike::clearRoutes()
+void KlondikeProtocol::clearRoutes()
 {
     _routes.clear();
 }
 
 
-void Klondike::setWrap(Wrap *wrap)
+void KlondikeProtocol::setWrap(Cti::Protocol::Wrap *wrap)
 {
     _wrap = wrap;
 }
 
-long Klondike::currentTime()
+long KlondikeProtocol::currentTime()
 {
     return ::time(0);
 }

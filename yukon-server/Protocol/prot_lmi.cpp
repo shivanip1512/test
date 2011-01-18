@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_lmi
-*
-* Date:   2004-jan-14
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.55.6.1 $
-* DATE         :  $Date: 2008/11/17 23:06:31 $
-*
-* Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "logger.h"
@@ -433,7 +418,7 @@ bool CtiProtocolLMI::canDownloadCodes( void ) const
     return (now < transmit_begin) || (now > transmit_end);
 }
 
-int CtiProtocolLMI::getNumCodes( void ) const
+unsigned CtiProtocolLMI::getNumCodes( void ) const
 {
     return _codes.size();
 }

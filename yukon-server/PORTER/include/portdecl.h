@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   portdecl
-*
-* Class:
-* Date:   12/11/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2008/11/14 19:32:08 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PORTDECL_H__
-#define __PORTDECL_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include "dsm2err.h"
 #include "rte_base.h"      // For CtiRoute
@@ -63,7 +45,7 @@ VOID PorterGWThread (PVOID);
 /*  */
 VOID PortThread(void *);
 VOID PortDialbackThread(void *);
-bool RemoteReset (CtiDeviceSPtr &Device, CtiPortSPtr pPort);
+bool RemoteReset (CtiDeviceSPtr &Device, const CtiPortSPtr &pPort);
 
 /* Prototypes from PORTQUE.C */
 VOID QueueThread (PVOID);
@@ -104,5 +86,3 @@ INT LCUPreSend (OUTMESS *&, CtiDeviceSPtr );
 INT LCUResultDecode (OUTMESS *, INMESS *, CtiDeviceSPtr , ULONG, bool mayqueuescans);
 INT MPCPointSet( int status, CtiDeviceBase *dev, bool setter );
 
-
-#endif // #ifndef __PORTDECL_H__

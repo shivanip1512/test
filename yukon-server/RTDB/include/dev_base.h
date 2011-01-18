@@ -310,7 +310,7 @@ public:
     virtual LONG deviceQueueCommunicationTime() const;          // how many millis of comm time do we have?
     virtual LONG deviceMaxCommunicationTime() const;            // maximum transmitter transmit time that this device is permitted to grab.  Assigned by db or CPARM "PORTER_MAX_TRANSMITTER_TIME"
     virtual bool getOutMessage(CtiOutMessage *&OutMessage);
-    virtual INT queuedWorkCount() const;                        // Number of queued commnads on the device.
+    virtual unsigned queuedWorkCount() const;                   // Number of queued commnads on the device.
 
     virtual void setExpectedFreeze(int freeze);  //  for frozen reads
 
@@ -361,7 +361,7 @@ inline INT     CtiDeviceBase::getParity() const               { return NOPARITY;
 inline INT     CtiDeviceBase::getProtocolWrap() const         { return ProtocolWrapNone; }
 inline INT     CtiDeviceBase::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt) { return NORMAL; }
 inline bool    CtiDeviceBase::hasQueuedWork() const           { return false; }
-inline INT     CtiDeviceBase::queuedWorkCount() const         { return 0; }
+inline unsigned CtiDeviceBase::queuedWorkCount() const         { return 0; }
 inline bool    CtiDeviceBase::hasPreloadWork() const          { return false; }
 inline CtiTime CtiDeviceBase::getPreloadEndTime() const     { return CtiTime(); }
 inline LONG    CtiDeviceBase::getPreloadBytes() const         { return 0; }

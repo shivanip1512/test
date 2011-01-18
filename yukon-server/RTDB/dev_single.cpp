@@ -1,15 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_single
-*
-* Date:   10/4/2001
-*
-* PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.71.2.1 $
-* DATE         :  $Date: 2008/11/20 16:49:20 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <vector>
@@ -718,7 +706,41 @@ bool CtiDeviceSingle::isTransactionComplete(void)
 
 void CtiDeviceSingle::sendDispatchResults(CtiConnection &vg_connection)                     { }
 void CtiDeviceSingle::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)    { }
-void CtiDeviceSingle::getTargetDeviceStatistics(vector< OUTMESS > &om_statistics)           { }
+void CtiDeviceSingle::getQueuedResults(vector<queued_result_t> &results)                    { }
+
+
+std::string CtiDeviceSingle::eWordReport(const ESTRUCT &ESt) const
+{
+    ostringstream report;
+
+    report << "alarm = "                    << ESt.alarm << "\n";
+    report << "incoming_bch_error = "       << ESt.diagnostics.incoming_bch_error << "\n";
+    report << "incoming_no_response = "     << ESt.diagnostics.incoming_no_response << "\n";
+    report << "listen_ahead_bch_error = "   << ESt.diagnostics.listen_ahead_bch_error << "\n";
+    report << "listen_ahead_no_response = " << ESt.diagnostics.listen_ahead_no_response << "\n";
+    report << "repeater_code_mismatch = "   << ESt.diagnostics.repeater_code_mismatch << "\n";
+    report << "weak_signal = "              << ESt.diagnostics.weak_signal << "\n";
+    report << "echo_address = "             << ESt.echo_address << "\n";
+    report << "power_fail = "               << ESt.power_fail << "\n";
+    report << "repeater_variable = "        << ESt.repeater_variable << "\n";
+
+    if( ESt.repeater_details )
+    {
+        report << "-- repeater details --\n";
+
+        report << "pao_id = "           << ESt.repeater_details->pao_id << "\n";
+        report << "route_position = "   << ESt.repeater_details->route_position << "\n";
+        report << "total_stages = "     << ESt.repeater_details->total_stages << "\n";
+        report << "route_id = "         << ESt.repeater_details->route_id << "\n";
+
+        if( CtiRouteSPtr route = getRoute(ESt.repeater_details->route_id) )
+        {
+            report << "route_name = " << route->getName() << "\n";
+        }
+    }
+
+    return report.str();
+}
 
 
 INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
@@ -761,6 +783,13 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg( getID(), CmdStr, string("Macro offset ") + CtiNumStr(InMessage->Return.MacroOffset - 1) + string(" failed. Attempting next offset."), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.GrpMsgID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec());
 
                 msg = Ret->ResultString() + "\nError " + CtiNumStr(nRet) + ": " + FormatError(nRet);
+
+                if( nRet == EWORDRCV )
+                {
+                    msg += "\n";
+                    msg += eWordReport(InMessage->Buffer.ESt);
+                }
+
                 Ret->setResultString( msg );
                 Ret->setExpectMore();           // Help MACS know this is intermediate.
                 Ret->setStatus( nRet );
@@ -819,6 +848,16 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             }
 
             CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(  getID(), CmdStr, FormatError(nRet), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.GrpMsgID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec());
+
+            if( nRet == EWORDRCV )
+            {
+                string msg = Ret->ResultString();
+
+                msg += "\n";
+                msg += eWordReport(InMessage->Buffer.ESt);
+
+                Ret->setResultString( msg );
+            }
 
             decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
             if(getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)>0)

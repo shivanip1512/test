@@ -3,6 +3,8 @@
 #include "dlldefs.h"
 #include "cticalls.h"
 
+#include "optional.h"
+
 /* A-word function definitions */
 #define AWORDLEN        4
 #define A_RESTORE       0
@@ -95,30 +97,34 @@ struct DSTRUCT
 
 struct ESTRUCT
 {
-   unsigned repeater_variable :  3;
-   unsigned echo_address      : 13;
-   bool     power_fail;
-   bool     alarm;
+    unsigned repeater_variable :  3;
+    unsigned echo_address      : 13;
+    bool     power_fail;
+    bool     alarm;
 
-   struct
-   {
-       bool incoming_bch_error;
-       bool incoming_no_response;
-       bool listen_ahead_bch_error;
-       bool listen_ahead_no_response;
-       bool weak_signal;
-       bool repeater_code_mismatch;
+    struct
+    {
+        bool incoming_bch_error;
+        bool incoming_no_response;
+        bool listen_ahead_bch_error;
+        bool listen_ahead_no_response;
+        bool weak_signal;
+        bool repeater_code_mismatch;
 
-   } diagnostics;
-};
+    } diagnostics;
 
-struct JSTRUCT
-{
-   BYTE     Message[36];
-   USHORT   RepVar;
-   ULONG    Address;
-   USHORT   Power;
-   USHORT   Alarm;
+    struct repeater_info
+    {
+        bool valid;  //  We can't use boost::optional<> here because the ESTRUCT is used in a union - boost::optional<> has a copy constructor.
+
+        long pao_id;
+        long route_id;
+        unsigned route_position;
+        unsigned total_stages;
+
+    };
+
+    Cti::Optional<repeater_info> repeater_details;
 };
 
 
@@ -126,21 +132,13 @@ int   IM_EX_CTIBASE A_Word  (PBYTE, const ASTRUCT &, BOOL Double = FALSE);
 int   IM_EX_CTIBASE B_Word  (PBYTE, const BSTRUCT &, unsigned wordCount, BOOL Double = FALSE);
 int   IM_EX_CTIBASE C_Word  (PBYTE, const PBYTE, USHORT);
 int   IM_EX_CTIBASE C_Words (unsigned char *, const unsigned char *, unsigned short, unsigned int *cword_count = 0);
-int   IM_EX_CTIBASE D1_Word (PBYTE, PBYTE, PUSHORT, PULONG, PUSHORT, PUSHORT);
-int   IM_EX_CTIBASE D23_Word(PBYTE, PBYTE, PUSHORT, PUSHORT);
-int   IM_EX_CTIBASE D_Words (PBYTE, USHORT, USHORT, DSTRUCT *);
-int   IM_EX_CTIBASE E_Word  (PBYTE, ESTRUCT *);
-int   IM_EX_CTIBASE BCHCheck(PBYTE);
-int   IM_EX_CTIBASE PadTst  (PBYTE, USHORT, USHORT);
+int   IM_EX_CTIBASE D1_Word (const unsigned char *, PBYTE, PUSHORT, PULONG, PUSHORT, PUSHORT);
+int   IM_EX_CTIBASE D23_Word(const unsigned char *, PBYTE, PUSHORT, PUSHORT);
+int   IM_EX_CTIBASE D_Words (const unsigned char *, USHORT, USHORT, DSTRUCT *, ESTRUCT *);
+int   IM_EX_CTIBASE E_Word  (const unsigned char *, ESTRUCT *);
+bool isBchValid  (const unsigned char *);
+bool isNackPadded(const unsigned char *, USHORT, USHORT);
 int   IM_EX_CTIBASE NackTst (BYTE, PUSHORT, USHORT);
 int   IM_EX_CTIBASE APreamble (PBYTE, const ASTRUCT &);
 int   IM_EX_CTIBASE BPreamble (PBYTE, const BSTRUCT &, INT wordsToFollow);
-int   IM_EX_CTIBASE LPreamble (PBYTE, USHORT);
-int   IM_EX_CTIBASE G_Word (PBYTE, const BSTRUCT &, INT dwordCount, BOOL Double = FALSE);
-int   IM_EX_CTIBASE H_Word (PBYTE, PBYTE, USHORT);
-int   IM_EX_CTIBASE I1_Word (PBYTE, PBYTE, PUSHORT, PULONG, PUSHORT, PUSHORT);
-int   IM_EX_CTIBASE I23_Word (PBYTE, PBYTE, PUSHORT, PUSHORT);
-int   IM_EX_CTIBASE I_Words (PBYTE, USHORT, USHORT, DSTRUCT *);
-int   IM_EX_CTIBASE J_Word (PBYTE, JSTRUCT *);
-int   IM_EX_CTIBASE I_BCHCheck (PBYTE);
 

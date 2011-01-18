@@ -40,7 +40,6 @@ public:
         ScanResetFailed,
         ScanForced,
         ScanException,
-        ScanMeterRead,
         ScanDataValid
     };
 
@@ -58,6 +57,8 @@ public:
         bool           freeze_bit;
         string         description;
     };
+
+    typedef std::pair<OUTMESS *, INMESS *> queued_result_t;
 
 protected:
 
@@ -109,6 +110,8 @@ private:
     bool hasRateOrClockChanged(int rate, CtiTime &Now);
     BOOL isAlternateRateActive(bool &bScanIsScheduled, CtiTime &aNow=CtiTime(), int rate = ScanRateInvalid) const;
     BOOL scheduleSignaledAlternateScan( int rate ) const;
+
+    std::string eWordReport(const ESTRUCT &ESt) const;
 
     struct channelWithID  //  This is used for tracking return messages to commander based on channel and id
     {
@@ -179,7 +182,7 @@ public:
     virtual void sendDispatchResults(CtiConnection &vg_connection);
 
     virtual void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
-    virtual void getTargetDeviceStatistics(vector< OUTMESS > &om_statistics);
+    virtual void getQueuedResults(vector<queued_result_t> &results);
 
     virtual INT  ProcessResult(INMESS*,
                                CtiTime&,

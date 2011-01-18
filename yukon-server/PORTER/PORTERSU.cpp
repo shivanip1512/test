@@ -102,10 +102,6 @@ void AddCommErrorEntry(OUTMESS *OutMessage, INMESS *InMessage, INT ErrorCode)
 /* Routine to send error message back to originating process */
 INT SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
 {
-    INMESS InMessage;
-    ULONG BytesWritten;
-    struct timeb TimeB;
-
     if(!OutMessage)
     {
         {
@@ -115,30 +111,44 @@ INT SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
         return NORMAL;
     }
 
-    InMessage.DeviceID = PORTERSU_DEVID;
     /* create and send return message if calling process expects it */
     if(ErrorCode == PORTINHIBITED || OutMessage->EventCode & RESULT)
     {
-        OutEchoToIN( OutMessage, &InMessage );
+        INMESS *InMessage;
 
-        InMessage.InLength      = 0;
-        InMessage.EventCode     = ErrorCode;
+        INMESS DefaultInMessage;
 
-        CtiTime now;
-
-        InMessage.Time = now.seconds();
-
-        InMessage.MilliTime = 0; // TimeB.millitm;
-        if(now.isDST())
-            InMessage.MilliTime |= DSTACTIVE;
-
-        if(OutMessage->EventCode & BWORD)
+        if( PassedInMessage )
         {
-            /* save the names */
-            InMessage.Buffer.DSt.Time = InMessage.Time;
-            InMessage.Buffer.DSt.DSTFlag = InMessage.MilliTime & DSTACTIVE;
+            InMessage = PassedInMessage;
         }
+        else
+        {
+            //  They didn't pass in an inmessage, so we have to make one
+            DefaultInMessage.DeviceID = PORTERSU_DEVID;
 
+            OutEchoToIN( OutMessage, &DefaultInMessage );
+
+            DefaultInMessage.InLength      = 0;
+            DefaultInMessage.EventCode     = ErrorCode;
+
+            CtiTime now;
+
+            DefaultInMessage.Time = now.seconds();
+
+            DefaultInMessage.MilliTime = 0; // TimeB.millitm;
+            if(now.isDST())
+                DefaultInMessage.MilliTime |= DSTACTIVE;
+
+            if(OutMessage->EventCode & BWORD)
+            {
+                /* save the names */
+                DefaultInMessage.Buffer.DSt.Time = DefaultInMessage.Time;
+                DefaultInMessage.Buffer.DSt.DSTFlag = DefaultInMessage.MilliTime & DSTACTIVE;
+            }
+
+            InMessage = &DefaultInMessage;
+        }
 
         if(PorterDebugLevel & PORTER_DEBUG_SENDERROR)
         {
@@ -152,9 +162,11 @@ INT SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
         }
 
         /* send message back to originating process */
-        if(InMessage.ReturnNexus != NULL)
+        if(InMessage->ReturnNexus != NULL)
         {
-            INT writeResult = InMessage.ReturnNexus->CTINexusWrite(&InMessage, sizeof (InMessage), &BytesWritten, 30L);
+            ULONG BytesWritten;
+
+            INT writeResult = InMessage->ReturnNexus->CTINexusWrite(InMessage, sizeof (INMESS), &BytesWritten, 30L);
 
             if(writeResult || BytesWritten == 0)
             {
@@ -168,7 +180,7 @@ INT SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
                 {
                     extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CtiConnect *&Nexus);
                     CtiDeviceSPtr tempDev = DeviceManager.getDeviceByID(OutMessage->DeviceID);
-                    blitzNexusFromCCUQueue( tempDev, InMessage.ReturnNexus );
+                    blitzNexusFromCCUQueue( tempDev, InMessage->ReturnNexus );
                 }
                 // 111901 CGP.  You better not close this.. It is the OutMessage's! // InMessage.ReturnNexus->CTINexusClose();
             }

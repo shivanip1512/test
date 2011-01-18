@@ -486,30 +486,21 @@ struct timeSyncCCU721
         }
 
         /* Allocate some memory */
-        OUTMESS *OutMessage = CTIDBG_new OUTMESS;
-
-        if( OutMessage == NULL)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            return;
-        }
+        OUTMESS *OutMessage = new OUTMESS;
 
         using Cti::Devices::Ccu721Device;
         boost::shared_ptr<Ccu721Device> ccu = boost::static_pointer_cast<Ccu721Device>(RemoteRecord);
 
-        ccu->buildCommand(OutMessage, Ccu721Device::Command_Timesync);
-
-        OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
-        OutMessage->ExpirationTime = getNextTimeSync();
-
-        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+        if( ccu->buildCommand(OutMessage, Ccu721Device::Command_Timesync) )
         {
-            printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
-            delete (OutMessage);
+            OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
+            OutMessage->ExpirationTime = getNextTimeSync();
+
+            if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+            {
+                printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
+                delete (OutMessage);
+            }
         }
     }
 };

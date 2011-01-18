@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_lmi
-*
-* Class:  CtiProtocolLMI
-* Date:   2004-jan-14
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.27.6.1 $
-* DATE         :  $Date: 2008/11/17 23:06:32 $
-*
-* Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PROT_LMI_H__
-#define __PROT_LMI_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include <map>
 #include <vector>
@@ -259,7 +240,7 @@ public:
     bool   hasQueuedCodes() const;
     bool   codeVerificationPending() const;
     bool   canDownloadCodes() const;
-    int    getNumCodes() const;
+    unsigned getNumCodes() const;
     int    getPreloadDataLength() const;
     CtiTime getTransmissionEnd() const;
     CtiTime getLastCodeDownload() const;
@@ -272,4 +253,3 @@ public:
     void decodeStatuses(lmi_status statuses);
 };
 
-#endif // #ifndef __PROT_LMI_H__

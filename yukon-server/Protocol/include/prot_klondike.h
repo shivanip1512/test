@@ -10,10 +10,10 @@
 #include <queue>
 #include <functional>
 
-namespace Cti       {
-namespace Protocol  {
+namespace Cti {
+namespace Protocols {
 
-class IM_EX_PROT Klondike : public Interface
+class IM_EX_PROT KlondikeProtocol : public Cti::Protocol::Interface
 {
 public:
 
@@ -26,13 +26,13 @@ public:
 
     struct queue_result_t
     {
-        const OUTMESS *om;
+        void *requester;
         Errors error;
         unsigned long timestamp;
         byte_buffer_t message;
 
-        queue_result_t(const OUTMESS *om_, Errors error_, unsigned long timestamp_, const byte_buffer_t &message_) :
-            om       (om_),
+        queue_result_t(void *requester_, Errors error_, unsigned long timestamp_, const byte_buffer_t &message_) :
+            requester(requester_),
             error    (error_),
             timestamp(timestamp_),
             message  (message_)
@@ -40,7 +40,7 @@ public:
         };
 
         queue_result_t() :
-            om(0),
+            requester(0),
             error(Error_None),
             timestamp(0)
         {
@@ -88,39 +88,28 @@ private:
         unsigned char stages;
         byte_buffer_t outbound;
         unsigned resubmissions;
-        const OUTMESS *om;
+        void *requester;
 
         queue_entry_t() :
             protocol(PLCProtocol_Invalid),
-            resubmissions(0)
-        {
-            om = 0;
-            priority = dlc_parms = stages = 0;
-        }
+            priority(0),
+            dlc_parms(0),
+            stages(0),
+            resubmissions(0),
+            requester(0)
+        { }
 
-        queue_entry_t(const byte_buffer_t &outbound_, unsigned priority_, unsigned char dlc_parms_, unsigned char stages_, const OUTMESS *om_) :
+        queue_entry_t(const byte_buffer_t &outbound_, unsigned priority_, unsigned char dlc_parms_, unsigned char stages_, void *requester_) :
             protocol (PLCProtocol_Emetcon),
             outbound (outbound_),
             priority (priority_),
             dlc_parms(dlc_parms_),
             stages   (stages_),
             resubmissions(0),
-            om(om_)
-        { };
+            requester(requester_)
+        { }
 
         bool operator>(const queue_entry_t &rhs) const   {  return priority > rhs.priority;  };
-
-        struct request_id_equal
-        {
-            unsigned _request_id;
-
-            request_id_equal(unsigned request_id) : _request_id(request_id) {};
-
-            bool operator()(const Klondike::queue_entry_t &other)
-            {
-                return other.om && (other.om->Request.GrpMsgID == _request_id);
-            };
-        };
     };
 
     typedef fifo_multiset<queue_entry_t, std::greater<queue_entry_t> > local_work_t;
@@ -175,7 +164,7 @@ private:
         }
     };
 
-    std::queue<queue_result_t> _plc_results;
+    std::vector<queue_result_t> _plc_results;
 
     queue_entry_t _dtran_queue_entry;
     byte_buffer_t _dtran_result;
@@ -311,12 +300,12 @@ private:
 
     static bool responseExpected(CommandCode command);
 
-    Klondike(const Klondike &aRef);
-    Klondike &operator=(const Klondike &aRef);
+    KlondikeProtocol(const KlondikeProtocol &aRef);
+    KlondikeProtocol &operator=(const KlondikeProtocol &aRef);
 
-    Wrap *_wrap;
+    Cti::Protocol::Wrap *_wrap;
 
-    IDLC _idlc_wrap;
+    Cti::Protocol::IDLC _idlc_wrap;
     //DNP::Datalink _dnp_wrap;
 
     struct route_entry_t
@@ -333,13 +322,13 @@ private:
 
 protected:
 
-    void setWrap(Wrap *wrap);    //  unit test access function
+    void setWrap(Cti::Protocol::Wrap *wrap);    //  unit test access function
     virtual long currentTime();  //  unit test access function override
 
 public:
 
-    Klondike();
-    virtual ~Klondike();
+    KlondikeProtocol();
+    virtual ~KlondikeProtocol();
 
     void setAddresses(unsigned short slaveAddress, unsigned short masterAddress);
 
@@ -347,7 +336,7 @@ public:
 
     Command getCommand() const;
 
-    void getQueuedResults(std::queue<queue_result_t> &results);
+    std::vector<queue_result_t> getQueuedResults();
     byte_buffer_t getDTranResult();
 
     int generate(CtiXfer &xfer);
@@ -362,11 +351,8 @@ public:
     string describeCurrentStatus(void) const;
 
     bool hasQueuedWork()  const;
-    unsigned queuedWorkCount() const;
-    bool addQueuedWork(const OUTMESS *om, const byte_buffer_t &payload, unsigned priority, unsigned char dlc_parms, unsigned char stages);
-
-    unsigned getQueueCount(ULONG requestID);
-    void retrieveQueueEntries(bool (*myFindFunc)(void*, void*), void *findParameter, std::list<void *> &entries);
+    bool addQueuedWork(void *requester, const byte_buffer_t &payload, unsigned priority, unsigned char dlc_parms, unsigned char stages);
+    bool removeQueuedWork(void *requester);
 
     bool hasRemoteWork()  const;
     unsigned getRemoteWorkPriority() const;
@@ -378,7 +364,16 @@ public:
     bool isReadingDeviceQueue() const;
     bool setReadingDeviceQueue(bool loading);
 
-    string queueReport() const;
+    struct request_status
+    {
+        void *requester;
+        unsigned queue_id;
+        unsigned priority;
+    };
+
+    typedef std::vector<request_status> request_statuses;
+
+    void getRequestStatus(request_statuses &waiting, request_statuses &pending, request_statuses &queued, request_statuses &completed) const;
 
     void clearRoutes();
     void addRoute(unsigned bus, unsigned fixed, unsigned variable, unsigned stages);

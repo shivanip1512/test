@@ -625,32 +625,20 @@ dev_ccu721.obj:	yukon.h precompiled.h types.h ctidbgmem.h dev_ccu721.h \
 		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
 		configval.h prot_base.h xfer.h tbl_dialup.h tbl_direct.h \
-		tbl_dv_address.h dev_ccu721_queue_interface.h \
-		device_queue_interface.h prot_klondike.h prot_wrap.h \
-		prot_idlc.h fifo_multiset.h critical_section.h dev_mct4xx.h \
-		dev_mct.h dev_carrier.h dev_dlcbase.h tbl_route.h \
-		tbl_carrier.h prot_emetcon.h cmd_dlc.h cmd_base.h \
+		tbl_dv_address.h device_queue_interface.h prot_klondike.h \
+		prot_wrap.h prot_idlc.h fifo_multiset.h critical_section.h \
+		dev_mct4xx.h dev_mct.h dev_carrier.h dev_dlcbase.h \
+		tbl_route.h tbl_carrier.h prot_emetcon.h cmd_dlc.h cmd_base.h \
 		tbl_metergrp.h vcomdefs.h tbl_loadprofile.h da_load_profile.h \
 		tbl_dv_mctiedport.h pt_numeric.h tbl_pt_unit.h \
 		tbl_unitmeasure.h config_data_mct.h ctidate.h porter.h \
 		devicetypes.h portdecl.h port_base.h tbl_port_base.h \
 		counter.h tbl_port_statistics.h mgr_route.h repeaterrole.h \
 		slctdev.h smartmap.h readers_writer_lock.h
-dev_ccu721_queue_interface.obj:	yukon.h precompiled.h types.h \
-		ctidbgmem.h dev_ccu721_queue_interface.h \
-		device_queue_interface.h dlldefs.h queues.h cticalls.h \
-		os2_2w32.h prot_klondike.h prot_wrap.h prot_base.h \
-		msg_pdata.h pointdefs.h pointtypes.h message.h ctitime.h \
-		collectable.h rwutil.h database_connection.h dbaccess.h \
-		dllbase.h dsm2.h mutex.h guard.h utility.h numstr.h \
-		sorted_vector.h cticonnect.h netports.h dsm2err.h words.h \
-		sema.h database_reader.h row_reader.h boost_time.h \
-		boostutil.h xfer.h prot_idlc.h fifo_multiset.h \
-		critical_section.h
 dev_ccu_queue_interface.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		dev_ccu_queue_interface.h device_queue_interface.h dlldefs.h \
-		queues.h cticalls.h os2_2w32.h trx_711.h trx_info.h logger.h \
-		thread.h mutex.h guard.h utility.h ctitime.h numstr.h \
+		trx_711.h trx_info.h logger.h thread.h mutex.h guard.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		sorted_vector.h CtiPCPtrQueue.h critical_section.h porter.h \
 		dsm2.h cticonnect.h netports.h dsm2err.h words.h \
 		devicetypes.h
@@ -2449,8 +2437,7 @@ mgr_device.obj:	yukon.h precompiled.h types.h ctidbgmem.h mgr_device.h \
 		ion_value_fixed_time.h ion_net_application.h \
 		ion_net_network.h ion_net_datalink.h dev_gridadvisor.h \
 		dev_idlc.h tbl_dv_idlcremote.h trx_info.h porter.h \
-		devicetypes.h trx_711.h dev_ccu721.h \
-		dev_ccu721_queue_interface.h device_queue_interface.h \
+		devicetypes.h trx_711.h dev_ccu721.h device_queue_interface.h \
 		prot_klondike.h prot_wrap.h prot_idlc.h fifo_multiset.h \
 		dev_carrier.h dev_dlcbase.h tbl_route.h tbl_carrier.h \
 		prot_emetcon.h cmd_dlc.h cmd_base.h tbl_loadprofile.h \
@@ -2994,16 +2981,15 @@ slctdev.obj:	yukon.h precompiled.h types.h ctidbgmem.h dev_710.h \
 		dnp_object_binaryoutput.h tbl_dv_address.h dev_cbc.h \
 		tbl_dv_cbc.h dev_cbc7020.h config_data_cbc.h dev_ccu.h \
 		dev_ccu_queue_interface.h device_queue_interface.h \
-		dev_ccu721.h dev_ccu721_queue_interface.h prot_klondike.h \
-		prot_wrap.h prot_idlc.h fifo_multiset.h dev_welco.h \
-		prot_welco.h dev_ilex.h dev_seriesv.h dev_ied.h tbl_dv_ied.h \
-		prot_seriesv.h dev_lmi.h tbl_dv_seriesv.h prot_lmi.h \
-		verification_objects.h dev_tcu.h dev_meter.h tbl_metergrp.h \
-		vcomdefs.h dev_gridadvisor.h dev_modbus.h prot_modbus.h \
-		dev_schlum.h dev_fulcrum.h dev_ion.h prot_ion.h \
-		ion_datastream.h ion_value.h ion_serializable.h \
-		ion_value_fixed.h ion_value_numeric.h ion_value_variable.h \
-		ion_value_variable_fixedarray.h \
+		dev_ccu721.h prot_klondike.h prot_wrap.h prot_idlc.h \
+		fifo_multiset.h dev_welco.h prot_welco.h dev_ilex.h \
+		dev_seriesv.h dev_ied.h tbl_dv_ied.h prot_seriesv.h dev_lmi.h \
+		tbl_dv_seriesv.h prot_lmi.h verification_objects.h dev_tcu.h \
+		dev_meter.h tbl_metergrp.h vcomdefs.h dev_gridadvisor.h \
+		dev_modbus.h prot_modbus.h dev_schlum.h dev_fulcrum.h \
+		dev_ion.h prot_ion.h ion_datastream.h ion_value.h \
+		ion_serializable.h ion_value_fixed.h ion_value_numeric.h \
+		ion_value_variable.h ion_value_variable_fixedarray.h \
 		ion_value_variable_fixedarray_element.h \
 		ion_value_fixed_char.h ion_value_variable_boolean.h \
 		ion_value_fixed_float.h ion_value_fixed_intsigned.h \
@@ -3251,9 +3237,8 @@ test_dev_ccu721.obj:	dev_ccu721.h dev_remote.h dev_single.h dsm2.h \
 		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h configkey.h configval.h prot_base.h xfer.h \
 		tbl_dialup.h tbl_direct.h tbl_dv_address.h \
-		dev_ccu721_queue_interface.h device_queue_interface.h \
-		prot_klondike.h prot_wrap.h prot_idlc.h fifo_multiset.h \
-		critical_section.h prot_emetcon.h
+		device_queue_interface.h prot_klondike.h prot_wrap.h \
+		prot_idlc.h fifo_multiset.h critical_section.h prot_emetcon.h
 test_dev_grp.obj:	dev_grp.h cparms.h dlldefs.h rwutil.h yukon.h \
 		precompiled.h types.h ctidbgmem.h database_connection.h \
 		dbaccess.h dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h \

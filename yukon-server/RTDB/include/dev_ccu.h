@@ -1,12 +1,4 @@
-/* REVISION     :  $Revision: 1.16.10.2 $
-* DATE         :  $Date: 2008/11/17 23:06:32 $
-*
-* Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_CCU_H__
-#define __DEV_CCU_H__
-
-#include <windows.h>
+#pragma once
 
 #include "types.h"
 #include "os2_2w32.h"
@@ -16,8 +8,6 @@
 
 class IM_EX_DEVDB CtiDeviceCCU : public CtiDeviceIDLC
 {
-private:
-
     typedef CtiDeviceIDLC Inherited;
 
     enum Commands
@@ -64,7 +54,7 @@ public:
 
     bool checkForTimeSyncLoop(int status);
     bool checkAlgorithmReset(int alg);
-    INT queuedWorkCount() const;
+    unsigned queuedWorkCount() const;
     Cti::DeviceQueueInterface* getDeviceQueueHandler();
 
     virtual INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
@@ -74,4 +64,3 @@ public:
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
 };
-#endif // #ifndef __DEV_CCU_H__

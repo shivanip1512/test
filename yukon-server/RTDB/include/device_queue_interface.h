@@ -17,7 +17,7 @@ protected:
 
 public:
 
-    virtual unsigned long getRequestCount(unsigned long requestID) = 0;
+    virtual unsigned long getRequestCount(unsigned long requestID) const = 0;
     virtual void retrieveQueueEntries( bool (*myFindFunc)(void*, void*) , void *findParameter, std::list<void*>& entries) = 0;
 };
 

@@ -127,7 +127,7 @@ extern void QueueThread (void *);
 extern void KickerThread (void *);
 extern void DispatchMsgHandlerThread(VOID *Arg);
 extern HCTIQUEUE* QueueHandle(LONG pid);
-void commFail(CtiDeviceSPtr &Device);
+void commFail(const CtiDeviceSPtr &Device);
 bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
 
 DLLIMPORT extern BOOL PorterQuit;
@@ -148,7 +148,7 @@ extern DLLIMPORT CtiLocalConnect<OUTMESS, INMESS> PilToPorter; //Pil handles thi
 CtiLocalConnect<INMESS, OUTMESS> PorterToPil; //Porter handles this one
 extern DLLIMPORT CtiFIFOQueue< CtiMessage > PorterSystemMessageQueue;
 
-Cti::Porter::SystemMsgThread _sysMsgThread(&PorterSystemMessageQueue);
+Cti::Porter::SystemMsgThread _sysMsgThread(PorterSystemMessageQueue, DeviceManager, PortManager, PilToPorter);
 
 RWThreadFunction _connThread;
 RWThreadFunction _dispThread;
@@ -933,14 +933,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         }
     }
 
-    /* Check if we need to start the versacom config thread */
-   // if( !((gConfigParms.getValueAsString("PORTER_START_SYSMSGTHREAD")).empty()) && !(stricmp ("TRUE", gConfigParms.getValueAsString("PORTER_START_SYSMSGTHREAD").c_str())))
-    {
-        _sysMsgThread.setDeviceManager(&DeviceManager);
-        _sysMsgThread.setPortManager(&PortManager);
-        _sysMsgThread.setPilToPorter(&PilToPorter);
-        _sysMsgThread.start();
-    }
+    _sysMsgThread.start();
 
     if( (WorkReportFrequencyInSeconds = gConfigParms.getValueAsULong("PORTER_WORK_COUNT_TIME", 60)) <= 0 )
     {
@@ -2264,7 +2257,7 @@ bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero)
     return retVal;
 }
 
-void commFail(CtiDeviceSPtr &Device)
+void commFail(const CtiDeviceSPtr &Device)
 {
     extern CtiConnection VanGoghConnection;
 

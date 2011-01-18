@@ -1,45 +1,10 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_710
-*
-* Date:   6/21/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.23.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:39 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-#include <iostream>
-
 
 #include "cmdparse.h"
 #include "dev_710.h"
 #include "dsm2.h"
 #include "cti_asmc.h"
 #include "pt_base.h"
-
-#if 0
-#include <rw\ctoken.h>
-
-#include "porter.h"
-
-#include "pt_base.h"
-#include "master.h"
-
-#include "connection.h"
-
-#include "msg_pcreturn.h"
-#include "msg_pdata.h"
-#include "msg_multi.h"
-#include "prot_711.h"
-
-#endif
 
 using namespace std;
 
@@ -271,5 +236,32 @@ CtiDeviceCCU710& CtiDeviceCCU710::operator=(const CtiDeviceCCU710& aRef)
 INT CtiDeviceCCU710::getProtocolWrap() const
 {
    return ProtocolWrapNone;
+}
+
+/* Routine to do a loopback preamble for a 700/710 */
+INT CtiDeviceCCU710::LPreamble(PBYTE Pre, USHORT Remote)
+{
+   USHORT i;
+
+   /* load the CCU address */
+   Pre[0] = Remote & 0x03;
+
+   if(Remote > 3)
+   {
+      Pre[0] |= 0x40;
+      Pre[1] = ((Remote & 0x1c) << 1) | 0x45;
+   }
+   else
+      Pre[1] = 0x55;
+
+   Pre[0] |= 2 << 3;
+
+   Pre[2] = 0x55;
+
+   /* calculate the parity on all three bytes */
+   for(i = 0; i < 3; i++)
+      Pre[i] = Parity_C (Pre[i]);
+
+   return(NORMAL);
 }
 

@@ -1,13 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_rtc
-*
-* Date:   3/18/2004
-*
-* Author: Corey G. Plender
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
 
 #include "cparms.h"
 #include "dsm2err.h"
@@ -429,7 +420,7 @@ INT CtiDeviceRTC::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
     return status;
 }
 
-INT CtiDeviceRTC::queuedWorkCount() const
+unsigned CtiDeviceRTC::queuedWorkCount() const
 {
     return _workQueue.entries();
 }

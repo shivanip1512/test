@@ -1,33 +1,6 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_710
-*
-* Class:  CtiDeviceCCU710
-* Date:   6/21/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_710.h-arc  $
-* REVISION     :  $Revision: 1.10.22.1 $
-* DATE         :  $Date: 2008/11/13 17:23:39 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_710_H__
-#define __DEV_710_H__
-#pragma warning( disable : 4786)
-
-
-
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
-#include <windows.h>
+#pragma once
 
 #include "dev_idlc.h"
-
 
 class CtiDeviceCCU710 : public CtiDeviceIDLC
 {
@@ -41,6 +14,8 @@ private:
     {
         Command_Loop = 123  //  something non-zero
     };
+
+    int LPreamble(PBYTE, USHORT);
 
 public:
 
@@ -61,4 +36,3 @@ public:
     virtual INT getProtocolWrap() const;
 
 };
-#endif // #ifndef __DEV_710_H__

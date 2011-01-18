@@ -1,17 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   port_base
-*
-* Date:   6/24/2004
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.77.2.2 $
-* DATE         :  $Date: 2008/11/21 17:55:24 $
-*
-* Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <iostream>
@@ -1526,33 +1512,24 @@ void CtiPort::setLastOMComplete(CtiTime &atime)
     _lastOMComplete = atime;
 }
 
-bool CtiPort::shouldProcessQueuedDevices() const
-{
-    bool doit = (getDeviceQueued()); // && (queueCount() == 0));  <--  this could be something like "queueCount < 10"...  interesting
-
-    return doit;
-}
-
 bool CtiPort::getDeviceQueued() const
 {
     return !_devicesQueued.empty();
 }
 
-CtiPort& CtiPort::setDeviceQueued(LONG id)
+bool CtiPort::setDeviceQueued(LONG id)
 {
-    _devicesQueued.push_back( id );
-    return *this;
+    return _devicesQueued.insert( id ).second;
 }
 
-CtiPort& CtiPort::resetDeviceQueued(LONG id)
+bool CtiPort::resetDeviceQueued(LONG id)
 {
-    _devicesQueued.remove( id );
-    return *this;
+    return _devicesQueued.erase( id ) > 0;
 }
 
-void CtiPort::addDeviceQueuedWork(long deviceID, int workCount)
+void CtiPort::addDeviceQueuedWork(long deviceID, unsigned workCount)
 {
-    map< LONG, int >::iterator iter;
+    device_queue_counts::iterator iter;
     try
     {
         _criticalSection.acquire();
@@ -1567,13 +1544,11 @@ void CtiPort::addDeviceQueuedWork(long deviceID, int workCount)
         {
             if( workCount > 0 )
             {
-                map< LONG, int >::value_type insertVal(deviceID, workCount);
-                _queuedWork.insert(insertVal);
+                _queuedWork.insert(make_pair(deviceID, workCount));
             }
             else if(workCount == -1) // -1 means I exist, but 0 count. This device is registering.
             {
-                map< LONG, int >::value_type insertVal(deviceID, 0);
-                _queuedWork.insert(insertVal);
+                _queuedWork.insert(make_pair(deviceID, 0));
             }
         }
         _criticalSection.release();
@@ -1586,14 +1561,16 @@ void CtiPort::addDeviceQueuedWork(long deviceID, int workCount)
 
 vector<long> CtiPort::getQueuedWorkDevices()
 {
+    CtiLockGuard<CtiCriticalSection> guard(_criticalSection);
+
     vector<long> retVal;
-    map< LONG, int >::iterator iter;
-    _criticalSection.acquire();
-    for( iter = _queuedWork.begin(); iter != _queuedWork.end(); iter++ )
-    {
-        retVal.push_back(iter->first);
-    }
-    _criticalSection.release();
+
+    std::transform(
+        _queuedWork.begin(),
+        _queuedWork.end(),
+        back_inserter(retVal),
+        boost::bind(&device_queue_counts::value_type::first, _1));
+
     return retVal;
 }
 
@@ -1641,9 +1618,9 @@ int CtiPort::getWorkCount(long requestID)
             workCount += queueCount();
 
             _criticalSection.acquire();
-            for( iter = _queuedWork.begin(); iter != _queuedWork.end(); iter++ )
+            for each( device_queue_counts::value_type queue_count in _queuedWork )
             {
-                workCount += iter->second;
+                workCount += queue_count.second;
             }
             _criticalSection.release();
         }

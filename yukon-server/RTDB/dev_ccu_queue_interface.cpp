@@ -18,7 +18,7 @@ void CCU711DeviceQueueInterface::set711Info(CtiTransmitter711Info *pInfo)
     _p711Info = pInfo;
 }
 
-unsigned long CCU711DeviceQueueInterface::getRequestCount(unsigned long requestID)
+unsigned long CCU711DeviceQueueInterface::getRequestCount(unsigned long requestID) const
 {
     unsigned long count = 0;
 

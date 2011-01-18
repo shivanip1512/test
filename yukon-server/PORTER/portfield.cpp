@@ -1,98 +1,41 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   portfield
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.235 $
-* DATE         :  $Date: 2008/11/17 17:34:40 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-#include <string.h>
 
-#include <process.h>
-#include <iostream>
-#include <iomanip>
-#include <set>
-
-#include <rw/regexp.h>
-#include <rw\ctoken.h>
-#include <rw\thr\mutex.h>
-
-#include "os2_2w32.h"
-#include "cticalls.h"
+#include "c_port_interface.h"
 #include "cti_asmc.h"
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
-
-#include "cparms.h"
-#include "color.h"
-#include "queues.h"
 #include "dsm2.h"
-#include "dsm2err.h"
-#include "dev_lcu.h"
-#include "dev_tap.h"
-#include "dev_snpp.h"
-#include "dev_modbus.h"
-#include "dev_pagingreceiver.h"
-#include "dev_tnpp.h"
-#include "dev_rtc.h"
-#include "dev_rtm.h"
-#include "dev_fmu.h"
-#include "dev_wctp.h"
-#include "porter.h"
 #include "master.h"
 #include "portdecl.h"
-#include "tapterm.h"
-
 #include "portglob.h"
-#include "prot_sa3rdparty.h"
 #include "portverify.h"
 
-#include "connection.h"
-#include "c_port_interface.h"
 #include "mgr_port.h"
-#include "mgr_device.h"
-#include "dev_base.h"
-#include "dev_cbc6510.h"
-#include "dev_ccu721.h"
-#include "dev_ied.h"
-#include "dev_schlum.h"
-#include "dev_remote.h"
-#include "device_queue_interface.h"
-#include "dev_kv2.h"
-#include "dev_mct.h"  //  for the test addresses
-#include "dev_sentinel.h"
-#include "dev_focus.h"
-#include "dev_mark_v.h"
-#include "msg_trace.h"
-#include "msg_cmd.h"
-#include "pilserver.h"
-#include "xfer.h"
-#include "rtdb.h"
 
-#include "port_base.h"
-#include "port_udp.h"
+#include "mgr_device.h"
+#include "dev_wctp.h"
+#include "dev_ansi.h"
+#include "dev_ccu721.h"
+#include "dev_lcu.h"
+#include "dev_mark_v.h"
+#include "dev_mct.h"  //  for the test addresses
+#include "dev_rtc.h"
+#include "dev_tap.h"
+
+#include "mgr_route.h"
+#include "rte_macro.h"
+#include "rte_ccu.h"
+
 #include "prot_711.h"
 #include "prot_emetcon.h"
-#include "statistics.h"
+
 #include "trx_info.h"
 #include "trx_711.h"
-#include "tbl_paoexclusion.h"
-#include "utility.h"
 
 #include "portfield.h"
 
 using namespace std;
 
 extern CtiPorterVerification PorterVerificationThread;
+extern CtiRouteManager RouteManager;
 
 #define INF_LOOP_COUNT 1000
 
@@ -101,7 +44,7 @@ extern string GetDeviceName( ULONG id );
 extern void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
 extern void DisplayTraceList( CtiPortSPtr Port, list< CtiMessage* > &traceList, bool consume);
 extern HCTIQUEUE* QueueHandle(LONG pid);
-extern void commFail(CtiDeviceSPtr &Device);
+extern void commFail(const CtiDeviceSPtr &Device);
 extern bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
 
 using namespace Cti;
@@ -292,23 +235,11 @@ VOID PortThread(void *pid)
                 dout << CtiTime() << " " << Port->getName() << " PortThread read: OutMessage->DeviceID / Remote / Port / Priority = " << OutMessage->DeviceID << " / " << OutMessage->Remote << " / " << OutMessage->Port << " / " << OutMessage->Priority << endl;
             }
 
-            // Copy a good portion of the OutMessage to the to-be-formed InMessage
-            OutEchoToIN(OutMessage, &InMessage);
-
-            if((status = CheckInhibitedState(Port, &InMessage, OutMessage, Device)) != NORMAL)
+            if((status = CheckInhibitedState(Port, OutMessage, Device)) != NORMAL)
             {
                 SendError(OutMessage, status);
                 continue;
             }
-
-            /* Check if this is an analog loopback */
-    #if 0
-            if((status = VTUPrep(&Port, &InMessage, OutMessage, Device)) != NORMAL)
-            {
-                SendError (OutMessage, status);
-                continue;
-            }
-    #endif
 
             /* Make sure everything is A-OK with this device */
             if((status = ValidateDevice(Port, Device, OutMessage)) != NORMAL)
@@ -325,6 +256,9 @@ VOID PortThread(void *pid)
             }
 
             timesyncPreference = !timesyncPreference;
+
+            // Copy a good portion of the OutMessage to the to-be-formed InMessage
+            OutEchoToIN(OutMessage, &InMessage);
 
             /* Check if this port is dial up and initiate connection. */
             if((status = EstablishConnection(Port, &InMessage, OutMessage, Device)) != NORMAL)
@@ -388,26 +322,20 @@ VOID PortThread(void *pid)
              * Check if we need to do a retry on this command. Returns RETRY_SUBMITTED if the message has
              * been requeued, or the CommunicateDevice returned otherwise
              */
-            LONG did = OutMessage->DeviceID;
-            LONG tid = OutMessage->TargetID;
-            bool rgtz = OutMessage->Retry > 0;
-
             if(CheckAndRetryMessage(i, Port, &InMessage, OutMessage, Device) == RETRY_SUBMITTED)
             {
                 continue;  // It has been re-queued!
             }
-            else   /* we are either successful or retried out */
+
+            if( int error_code = DoProcessInMessage(i, Port, &InMessage, OutMessage, Device) )
             {
-                if((status = DoProcessInMessage(i, Port, &InMessage, OutMessage, Device)) != NORMAL)
-                {
-                    RequeueReportError(status, OutMessage);
-                    continue;
-                }
+                RequeueReportError(error_code, OutMessage, &InMessage);
+                continue;
             }
 
-            if((status = ReturnResultMessage(i, &InMessage, OutMessage)) != NORMAL)
+            if( int error_code = ReturnResultMessage(i, &InMessage, OutMessage) )
             {
-                RequeueReportError(status, OutMessage);
+                RequeueReportError(error_code, OutMessage, &InMessage);
                 continue;
             }
 
@@ -426,7 +354,7 @@ VOID PortThread(void *pid)
 }
 
 /* Routine to initialize a remote based on it's type */
-bool RemoteReset(CtiDeviceSPtr &Device, CtiPortSPtr Port)
+bool RemoteReset(CtiDeviceSPtr &Device, const CtiPortSPtr &Port)
 {
     bool didareset = false;
     extern INT LoadRemoteRoutes(CtiDeviceSPtr RemoteRecord);
@@ -681,7 +609,7 @@ INT ResetCommsChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
     return status;
 }
 
-INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
+INT CheckInhibitedState(CtiPortSPtr Port, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
 {
     INT      status = NORMAL;
 
@@ -706,7 +634,6 @@ INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
                 {
                     if(OutMessage->Command == CMND_LGRPQ)
                     {
-                        InMessage->EventCode = PORTINHIBITED;
                         p711Info->clearStatus(INLGRPQ);
                     }
 
@@ -731,7 +658,6 @@ INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
 
                     if(OutMessage->Command == CMND_LGRPQ)
                     {
-                        InMessage->EventCode = REMOTEINHIBITED;
                         p711Info->clearStatus(INLGRPQ);
                     }
 
@@ -780,17 +706,10 @@ INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
         }
     }
 
-    LONG did = OutMessage->DeviceID;
-    LONG tid = OutMessage->TargetID;
-    bool rgtz = OutMessage->Retry > 0;
-
     if(status != NORMAL || !Port->connectedTo(Device->getUniqueIdentifier()) )
     {
         /* Must call CheckAndRetry to make the re-queue happen if needed */
-        if((status = CheckAndRetryMessage(status, Port, InMessage, OutMessage, Device)) == RETRY_SUBMITTED)         // This call may free OutMessages
-        {
-            //processCommResult(status,did,tid,rgtz, Device); This is now called by check and retry.
-        }
+        status = CheckAndRetryMessage(status, Port, InMessage, OutMessage, Device);  // This call may free OutMessages
     }
 
     return status;
@@ -1244,30 +1163,12 @@ void processPreloads(CtiPortSPtr Port)
 }
 
 
-
-struct statistics_handler
-{
-    void operator()(OUTMESS &om)
-    {
-        om.MessageFlags |= MessageFlag_StatisticsRequested;
-
-        statisticsNewCompletion( om.Port, om.DeviceID, om.TargetID, om.EventCode, om.MessageFlags );
-
-        //  We had a comm error and need to report it.
-        addCommResult(om.TargetID, (om.EventCode & 0x3fff) != NORMAL, false);
-    }
-};
-
-
-INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
+INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMessage, const CtiDeviceSPtr &Device)
 {
     INT            status = NORMAL;
     ULONG          reject_status, ReadLength;
     struct timeb   TimeB;
-    CtiRoute       *VTURouteRecord;
 
-    BYTE           scratchBuffer[300];
-    BYTE           *dataBuffer = NULL;
     CtiXfer        trx;
 
     list< CtiMessage* > traceList;
@@ -1385,19 +1286,43 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             ds->sendDispatchResults(VanGoghConnection);
 
                             //  send text results to Commander here via return string
-                            int commResult_status = ds->sendCommResult(InMessage);
-
-                            if( commResult_status )
+                            if( int commResult_status = ds->sendCommResult(InMessage) )
                             {
                                 status = commResult_status;
                             }
 
-                            vector<OUTMESS> om_statistics;
-                            ds->getTargetDeviceStatistics(om_statistics);
+                            vector<CtiDeviceSingle::queued_result_t> queued_results;
+                            ds->getQueuedResults(queued_results);
 
-                            for_each(om_statistics.begin(),
-                                     om_statistics.end(),
-                                     statistics_handler());
+                            for each( CtiDeviceSingle::queued_result_t result in queued_results )
+                            {
+                                OUTMESS *om = result.first;
+                                INMESS *im = result.second;
+
+                                if( om && im )
+                                {
+                                    if( im->EventCode == EWORDRCV )
+                                    {
+                                        im->Buffer.ESt.repeater_details =
+                                            findRepeaterInRouteByAddress(
+                                                om->Request.RouteID,
+                                                om->Request.MacroOffset,
+                                                im->Buffer.ESt.echo_address);
+                                    }
+
+                                    addCommResult(im->TargetID, im->EventCode & 0x3fff, false);
+
+                                    //  always a completion - om->retry is generally for comms-related retries for transmitter/single devices
+                                    statisticsNewCompletion( im->Port, im->DeviceID, im->TargetID, im->EventCode & 0x3fff, im->MessageFlags );
+
+                                    ReturnResultMessage(im->EventCode & 0x3fff, im, om);
+                                }
+                                else
+                                {
+                                    delete om;
+                                    delete im;
+                                }
+                            }
 
                             queue< CtiVerificationBase * > verification_queue;
                             ds->getVerificationObjects(verification_queue);
@@ -2921,19 +2846,17 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
 }
 
 
-
 INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
 {
     extern void blitzNexusFromQueue(HCTIQUEUE q, CtiConnect *&Nexus);
     extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CtiConnect *&Nexus);
 
     INT            status = NORMAL;
-    ULONG          j, QueueCount;
+    ULONG          j;
     struct timeb   TimeB;
-    REMOTEPERF     RemotePerf;
 
     using Cti::Protocols::EmetconProtocol;
-	using Cti::Devices::MctDevice;
+    using Cti::Devices::MctDevice;
 
     if( InMessage && OutMessage )
     {
@@ -3062,13 +2985,28 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         if( (OutMessage->EventCode & BWORD) &&
                             (OutMessage->Buffer.BSt.IO & EmetconProtocol::IO_Read ) )
                         {
-                            DSTRUCT        DSt;
+                            DSTRUCT DSt;
+                            ESTRUCT ESt;
 
                             /* This is I so decode dword(s) for the result */
-                            CommResult = InMessage->EventCode = status = D_Words (InMessage->Buffer.InMessage + 3, (USHORT)((InMessage->InLength - 3) / (DWORDLEN + 1)),  OutMessage->Remote, &DSt);
-                            DSt.Time = InMessage->Time;
-                            DSt.DSTFlag = InMessage->MilliTime & DSTACTIVE;
-                            InMessage->Buffer.DSt = DSt;
+                            CommResult = InMessage->EventCode = status = D_Words (InMessage->Buffer.InMessage + 3, (USHORT)((InMessage->InLength - 3) / (DWORDLEN + 1)),  OutMessage->Remote, &DSt, &ESt);
+
+                            if( status == EWORDRCV )
+                            {
+                                ESt.repeater_details =
+                                    findRepeaterInRouteByAddress(
+                                        OutMessage->Request.RouteID,
+                                        OutMessage->Request.MacroOffset,
+                                        ESt.echo_address);
+
+                                InMessage->Buffer.ESt = ESt;
+                            }
+                            else
+                            {
+                                DSt.Time = InMessage->Time;
+                                DSt.DSTFlag = InMessage->MilliTime & DSTACTIVE;
+                                InMessage->Buffer.DSt = DSt;
+                            }
                         }
                     }
                     else if( !status && nack1 )
@@ -3295,9 +3233,63 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
         }
     }
 
-
     return status;
 }
+
+
+Cti::Optional<ESTRUCT::repeater_info> findRepeaterInRouteByAddress( const int routeId, const int macroOffset, const unsigned echo_address )
+{
+    Cti::Optional<ESTRUCT::repeater_info> result;
+
+    result = 0;
+
+    CtiRouteSPtr route = RouteManager.getEqual(routeId);
+
+    if( macroOffset > 0 )
+    {
+        if( route->getType() == RouteTypeMacro )
+        {
+            CtiRouteMacroSPtr macroRoute = boost::static_pointer_cast<CtiRouteMacro>(route);
+
+            CtiRouteMacro::CtiRoutePtrList_t routeList = macroRoute->getRoutePtrList();
+
+            if( macroOffset <= routeList.entries() )
+            {
+                route = routeList[macroOffset - 1];
+            }
+        }
+    }
+
+    if( route->getType() == RouteTypeCCU )
+    {
+        CtiRouteCCUSPtr ccuRoute = boost::static_pointer_cast<CtiRouteCCU>(route);
+
+        CtiRouteCCU::CtiRepeaterList_t &repeaterList = ccuRoute->getRepeaterList();
+
+        for( int i = 0; i < repeaterList.entries(); ++i )
+        {
+            const CtiTableRepeaterRoute &table = repeaterList[i];
+
+            if( CtiDeviceSPtr repeater = DeviceManager.getDeviceByID(table.getDeviceID()) )
+            {
+                if( (repeater->getAddress() & 0x1fff) == echo_address )
+                {
+                    ESTRUCT::repeater_info details;
+
+                    details.route_id = ccuRoute->getRouteID();
+                    details.pao_id = repeater->getID();
+                    details.route_position = i + 1;
+                    details.total_stages = repeaterList.entries();
+
+                    result = details;
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
 
 INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage)
 {
@@ -3348,7 +3340,7 @@ INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage)
  * It should ALWAYS be used in a case where some errors may actually cause
  * a re-queue
  *---------------------------------------------------------------------------*/
-INT RequeueReportError(INT status, OUTMESS *OutMessage)
+INT RequeueReportError(INT status, OUTMESS *OutMessage, INMESS *InMessage)
 {
     INT result = NORMAL;
 
@@ -3368,64 +3360,12 @@ INT RequeueReportError(INT status, OUTMESS *OutMessage)
         }
     default:
         {
-            SendError(OutMessage, status);   // This call frees the OUTMESS upon completion
+            SendError(OutMessage, status, InMessage);   // This call frees the OUTMESS upon completion
             break;
         }
     }
 
     return result;
-}
-
-
-INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
-{
-    INT status = NORMAL;
-
-    if(
-      Device->getType() != TYPE_TDMARKV &&
-      Device->getType() != TYPE_TAPTERM &&
-      Device->getType() != TYPE_ALPHA_PPLUS &&
-      Device->getType() != TYPE_FULCRUM &&
-      Device->getType() != TYPE_VECTRON &&
-      Device->getType() != TYPE_QUANTUM &&
-      Device->getType() != TYPE_LGS4 &&
-      Device->getType() != TYPE_DR87 &&
-      Device->getType() != TYPE_KV2 &&
-      Device->getType() != TYPE_ALPHA_A3 &&
-      Device->getType() != TYPE_SENTINEL &&
-      Device->getType() != TYPE_FOCUS &&
-      Device->getType() != TYPE_ALPHA_A1 &&
-      Device->getType() != TYPE_TDMARKV &&
-      Device->getType() != TYPE_SNPP
-      )
-    {
-        /* Check if this device is on a VTU and if so get it's record */
-
-#if 0 // FIX FIX FIX change for routesIDs
-        if(DeviceRecord.RouteName[2][0] != ' ')
-        {
-            /* This is a VTU! */
-            ::memcpy (VTURouteRecord.RouteName, DeviceRecord.RouteName[2], STANDNAMLEN);
-            if(!(RoutegetEqual (&VTURouteRecord)))
-            {
-                /* Go ahead and get the VTU Remote record */
-                ::memcpy (Device.RemoteName, VTURouteRecord.RemoteName, STANDNAMLEN);
-                if(RemotegetEqual (&Device))
-                {
-                    SendError (OutMessage, BADCCU);
-                    continue;
-                }
-            }
-            else
-            {
-                SendError (OutMessage, BADROUTE);
-                continue;
-            }
-        }
-#endif
-    }
-
-    return status;
 }
 
 
@@ -3853,7 +3793,7 @@ void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDeviceSPtr &Device, CtiOutMessage 
     }
 }
 
-INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDeviceSPtr &Device )
+INT GetPreferredProtocolWrap( const CtiPortSPtr &Port, const CtiDeviceSPtr &Device )
 {
     INT protocol = Port->getProtocolWrap();
 
@@ -4024,7 +3964,7 @@ INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage)
         {
             // This OM has expired and should not be acted upon!
             nRet = ErrRequestExpired;
-            SendError( OutMessage, nRet, NULL );
+            SendError( OutMessage, nRet );
         }
     }
     else
@@ -4489,7 +4429,7 @@ BOOL searchFuncForRippleOutMessage(void *firstOM, void* om)
     return( match );
 }
 
-bool processCommStatus(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device)
+bool processCommStatus(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, const CtiDeviceSPtr &Device)
 {
     bool status = false;
 

@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_lmi
-*
-* Date:   2004-feb-02
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2008/10/28 19:21:42 $
-*
-* Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
 
 #include "dev_lmi.h"
 #include "porter.h"
@@ -506,7 +492,7 @@ LONG CtiDeviceLMI::getCycleOffset() const
     return _seriesv.getTimeOffset();
 }
 
-INT CtiDeviceLMI::queuedWorkCount() const
+unsigned CtiDeviceLMI::queuedWorkCount() const
 {
     return _lmi.getNumCodes();
 }
