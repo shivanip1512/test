@@ -339,12 +339,17 @@ function setTempUnits(newUnit){
     for(var i = 0; i < timePeriods.size(); i++){
     	var timePeriod = timePeriods[i];
     	if(timePeriod != currentTimePeriod){ 	//current time period has been dealt with above
-	    	var timeTemps = schedules.get('season').get(timePeriod);
+	    	var season = schedules.get('season'); //Get 
+    	    
+	    	
+	    	var timeTemps = season[timePeriod];
+
+	    	
 	    	for(var j = 0; j < 4; j++){
 	    		var coolTempF = getFahrenheitTemp(timeTemps[j].get('coolTemp'), currentTempUnit);
-	    		timeTemps[j].get('coolTemp') = getConvertedTemp(coolTempF, newUnit);
-	    		var heatTempF = getFahrenheitTemp(timeTemps[j].get('heatTemp'), currentTempUnit);
-	    		timeTemps[j].get('heatTemp') = getConvertedTemp(heatTempF, newUnit);
+	    		 timeTemps[j].set('coolTemp', getConvertedTemp(coolTempF, newUnit));
+	    		 var heatTempF = getFahrenheitTemp(timeTemps[j].get('heatTemp'), currentTempUnit);
+	    		 timeTemps[j].set('heatTemp', getConvertedTemp(heatTempF, newUnit));
 	    	}
     	}
     }
