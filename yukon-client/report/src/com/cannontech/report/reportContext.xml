@@ -105,9 +105,7 @@
     
    <!-- Cap Control Disabled Devices -->
    <bean id="capControlDisabledDevicesModel" class="com.cannontech.analysis.tablemodel.CapControlDisabledDevicesModel"
-        scope="prototype">
-        <property name="jdbcOps" ref="jdbcTemplate"/>
-    </bean>
+        scope="prototype"/>
     
     <bean id="capControlDisabledDevicesDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
         <property name="reportModelName"><idref local="capControlDisabledDevicesModel"/></property>
