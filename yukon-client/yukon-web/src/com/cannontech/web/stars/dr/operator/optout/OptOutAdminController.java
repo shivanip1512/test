@@ -31,9 +31,10 @@ import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
+import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.model.OptOutCountsDto;
+import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
-import com.cannontech.stars.dr.optout.model.OptOutValue;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
@@ -82,12 +83,12 @@ public class OptOutAdminController {
     	map.addAttribute("scheduledOptOuts", scheduledOptOuts);
 
     	// programNameEnabledMap
-    	OptOutValue defaultOptOutEnabledSetting = optOutStatusService.getDefaultOptOutEnabled(userContext.getYukonUser());
-    	Map<Integer, OptOutValue> programSpecificEnabledOptOuts = 
+    	OptOutEnabled defaultOptOutEnabledSetting = optOutStatusService.getDefaultOptOutEnabled(userContext.getYukonUser());
+    	Map<Integer, OptOutEnabled> programSpecificEnabledOptOuts = 
     	    optOutStatusService.getProgramSpecificEnabledOptOuts(energyCompany.getEnergyCompanyId()); 
 
-        Map<String, OptOutValue> programNameEnabledMap = Maps.newLinkedHashMap();
-        for (Entry<Integer, OptOutValue> programOptOutEnabledEntry : programSpecificEnabledOptOuts.entrySet()) {
+        Map<String, OptOutEnabled> programNameEnabledMap = Maps.newLinkedHashMap();
+        for (Entry<Integer, OptOutEnabled> programOptOutEnabledEntry : programSpecificEnabledOptOuts.entrySet()) {
             
             int programId = programOptOutEnabledEntry.getKey();
             Program program = programDao.getByProgramId(programId);
@@ -100,15 +101,15 @@ public class OptOutAdminController {
     	OptOutCountsDto defaultOptOutCountsSetting = optOutStatusService.getDefaultOptOutCounts(userContext.getYukonUser());
 		List<OptOutCountsDto> programSpecificOptOutCounts = optOutStatusService.getProgramSpecificOptOutCounts(userContext.getYukonUser());
 		
-		Map<String, OptOutValue> programNameCountsMap = Maps.newLinkedHashMap();
+		Map<String, OptOutCounts> programNameCountsMap = Maps.newLinkedHashMap();
 		for (OptOutCountsDto setting : programSpecificOptOutCounts) {
 			
 			int programId = setting.getProgramId();
 			Program program = programDao.getByProgramId(programId);
-			programNameCountsMap.put(program.getProgramName(), setting.getOptOutValue());
+			programNameCountsMap.put(program.getProgramName(), setting.getOptOutCounts());
 		}
     	map.addAttribute("programNameCountsMap", programNameCountsMap);
-        map.addAttribute("energyCompanyOptOutCountsSetting", defaultOptOutCountsSetting.getOptOutValue());
+        map.addAttribute("energyCompanyOptOutCountsSetting", defaultOptOutCountsSetting.getOptOutCounts());
     	
     	// optOutsEnabled
     	boolean optOutsEnabled = optOutStatusService.getOptOutEnabled(userContext.getYukonUser());
