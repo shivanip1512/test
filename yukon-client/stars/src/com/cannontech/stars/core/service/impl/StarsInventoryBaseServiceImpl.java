@@ -156,7 +156,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                 LiteStarsLMHardware lmHw = (LiteStarsLMHardware) liteInv;
                 // create LMHardware here
                 liteInv = starsInventoryBaseDao.saveLmHardware(lmHw,
-                                                               energyCompany.getEnergyCompanyID());
+                                                               energyCompany.getEnergyCompanyId());
 
                 // if Thermostat, initialize the default schedule
                 if (lmHw.isThermostat()) {
@@ -178,7 +178,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             if (lmHardware) {
                 // update LMHardware here
                 liteInv = starsInventoryBaseDao.saveLmHardware((LiteStarsLMHardware) liteInv,
-                                                               energyCompany.getEnergyCompanyID());
+                                                               energyCompany.getEnergyCompanyId());
             }
         }
 
@@ -250,7 +250,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     public void initStaticLoadGroup(LiteStarsLMHardware lmHw, LiteStarsEnergyCompany energyCompany) {
         // get the static load group mapping
         LiteStarsCustAccountInformation liteAcct = starsCustAccountInformationDao.getById(lmHw.getAccountID(),
-                                                                                          energyCompany.getEnergyCompanyID());
+                                                                                          energyCompany.getEnergyCompanyId());
         LMHardwareConfiguration lmHwConfig = lmHardwareConfigurationDao.getStaticLoadGroupMapping(liteAcct,
                                                                                                  lmHw,
                                                                                                  energyCompany);
@@ -277,7 +277,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         lmHwEvent.setNotes(liteInv.getNotes());
         lmHwEvent.setAuthorizedBy(user.getUsername());
 
-        hardwareEventDao.add(lmHwEvent, energyCompany.getEnergyCompanyID());
+        hardwareEventDao.add(lmHwEvent, energyCompany.getEnergyCompanyId());
     }
 
     // adds the Device status event
@@ -305,7 +305,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                 lmHwEvent.setEventDateTime(new Date().getTime());
                 lmHwEvent.setNotes("Event added to match the device status");
                 lmHwEvent.setAuthorizedBy(user.getUsername());                
-                hardwareEventDao.add(lmHwEvent, energyCompany.getEnergyCompanyID());                
+                hardwareEventDao.add(lmHwEvent, energyCompany.getEnergyCompanyId());                
             }
         }
     }
@@ -339,7 +339,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
 
                 // save LMHardware here
                 liteInv = starsInventoryBaseDao.saveLmHardware(lmHw,
-                                                               energyCompany.getEnergyCompanyID());
+                                                               energyCompany.getEnergyCompanyId());
                 
                 // CREATE ADDITIONAL YUKON DEVICE FOR TWO WAY LCR
                 // - only if this is a Two Way LCR that does not yet have a Yukon device assigned to it
@@ -472,6 +472,6 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         lmHwEvent.setNotes("Removed from accountId=[" + liteInv.getAccountID() + "]");
         lmHwEvent.setAuthorizedBy(user.getUsername());
 
-        hardwareEventDao.add(lmHwEvent, energyCompany.getEnergyCompanyID());
+        hardwareEventDao.add(lmHwEvent, energyCompany.getEnergyCompanyId());
     }
 }

@@ -75,7 +75,7 @@ public class UpdateSelectionListController extends StarsAdminActionController {
                     listDB.setOrdering( ordering );
                     listDB.setSelectionLabel( label );
                     listDB.setWhereIsList( whereIsList );
-                    listDB.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
+                    listDB.setEnergyCompanyId(energyCompany.getEnergyCompanyId());
                     
 
                     dbPersistentDao.performDBChange(listDB, TransactionType.UPDATE);
@@ -92,7 +92,7 @@ public class UpdateSelectionListController extends StarsAdminActionController {
                     listDB.setWhereIsList( whereIsList );
                     listDB.setListName( listName );
                     listDB.setUserUpdateAvailable( StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonSelectionList(listName).getUserUpdateAvailable() );
-                    listDB.setEnergyCompanyId( energyCompany.getEnergyCompanyID() );
+                    listDB.setEnergyCompanyId( energyCompany.getEnergyCompanyId() );
                     
                     dbPersistentDao.performDBChange(list, TransactionType.INSERT);
                     listDB = list.getYukonSelectionList();

@@ -119,7 +119,7 @@ public class WorkOrderBean {
 	        return simpleCollectionFactory.createWorkOrderSearchCollection(searchResults);
 	    }
 	    
-	    List<Integer> energyCompanyIds = Arrays.asList(getEnergyCompany().getEnergyCompanyID());
+	    List<Integer> energyCompanyIds = Arrays.asList(getEnergyCompany().getEnergyCompanyId());
         return simpleCollectionFactory.createWorkOrderFilterCollection(energyCompanyIds,
 	                                                                   getFilters(),
 	                                                                   getDirectionAwareOrderBy(),
@@ -216,7 +216,7 @@ public class WorkOrderBean {
         htmlBuf.append("</script>").append(LINE_SEPARATOR);
 
         htmlBuf.append("<input type=\"hidden\" name=\"SearchValue\" value=\"\">");
-        htmlBuf.append("<input type=\"hidden\" name=\"SwitchContext\" value=\"").append(getEnergyCompany().getEnergyCompanyID().intValue()).append("\">");
+        htmlBuf.append("<input type=\"hidden\" name=\"SwitchContext\" value=\"").append(getEnergyCompany().getEnergyCompanyId()).append("\">");
         
 		htmlBuf.append("<table width='95%' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
 		htmlBuf.append("  <tr>").append(LINE_SEPARATOR);

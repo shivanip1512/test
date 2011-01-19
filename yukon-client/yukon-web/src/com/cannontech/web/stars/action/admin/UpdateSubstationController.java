@@ -43,7 +43,7 @@ public class UpdateSubstationController extends StarsAdminActionController {
             subDB.setRouteID( Integer.valueOf(request.getParameter("Route")) );
 
             if (newSubstation) {
-                sub.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+                sub.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
                 sub = (com.cannontech.database.data.stars.Substation)
                 Transaction.createTransaction( Transaction.INSERT, sub ).execute();
 

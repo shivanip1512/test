@@ -201,11 +201,11 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     
     public Set<Integer> getInheritedEnergyCompanyIds(LiteStarsEnergyCompany energyCompany) {
     	
-    	Set<Integer> energyCompanyIds = Sets.newHashSet(energyCompany.getEnergyCompanyID());
+    	Set<Integer> energyCompanyIds = Sets.newHashSet(energyCompany.getEnergyCompanyId());
         if (rolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, energyCompany.getUser())) {
             List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
             for (LiteStarsEnergyCompany ec : allAscendants) {
-                energyCompanyIds.add(ec.getEnergyCompanyID());
+                energyCompanyIds.add(ec.getEnergyCompanyId());
             }
         }
         

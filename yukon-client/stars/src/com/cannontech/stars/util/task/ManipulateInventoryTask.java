@@ -131,7 +131,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
             {
                 for(int j = 0; j < descendants.size(); j++)
                 {
-                    if(descendants.get(j).getEnergyCompanyID().intValue() == newEnergyCompanyID)
+                    if(descendants.get(j).getEnergyCompanyId() == newEnergyCompanyID)
                     {
                         newMember = descendants.get(j);
                     }

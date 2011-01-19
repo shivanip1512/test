@@ -102,12 +102,12 @@ public class StarsAdminUtil {
 	public static void updateDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeID, StarsYukonUser user) throws Exception {
 	    StarsEventLogService starsEventLogService = (StarsEventLogService) YukonSpringHook.getBean("starsEventLogService");
 	    
-	    int previousRouteId = energyCompany.getDefaultRouteID();
-		if (energyCompany.getDefaultRouteID() != routeID) {
+	    int previousRouteId = energyCompany.getDefaultRouteId();
+		if (energyCompany.getDefaultRouteId() != routeID) {
 			if(routeID == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
 			    removeDefaultRoute(energyCompany);
             }
-		    else if (energyCompany.getDefaultRouteID() == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
+		    else if (energyCompany.getDefaultRouteId() == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
 				// Assign the default route to the energy company
 		        // Checks to see if the LMGroupExpressCom exists
 		        LMGroupExpressCom grpExpresscom = new LMGroupExpressCom();
@@ -170,7 +170,7 @@ public class StarsAdminUtil {
                 PaoIdentifier pao = new PaoIdentifier(grpSerial.getPAObjectID(), paoType);
 				pService.addPermission(energyCompany.getUser(), pao, Permission.DEFAULT_ROUTE, true);
 			}
-			else if (routeID > 0 || energyCompany.getDefaultRouteID() > 0) {
+			else if (routeID > 0 || energyCompany.getDefaultRouteId() > 0) {
 				if (routeID < 0) routeID = 0;
 				
                 PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
@@ -208,7 +208,7 @@ public class StarsAdminUtil {
 			DBPersistentDao dbPersistentDao = YukonSpringHook.getBean(DBPersistentDao.class);
 			dbPersistentDao.processDatabaseChange(DbChangeType.UPDATE, 
 			                                      DbChangeCategory.ENERGY_COMPANY_DEFAULT_ROUTE, 
-			                                      energyCompany.getEnergyCompanyID());
+			                                      energyCompany.getEnergyCompanyId());
 
 			// Logging Default Route Id
 			starsEventLogService.energyCompanyDefaultRouteChanged(user.getYukonUser(), energyCompany.getName(),
@@ -277,7 +277,7 @@ public class StarsAdminUtil {
 		appCatDB.setCategoryID( new Integer(dftCatID) );
 		appCatDB.setDescription( appCatName );
 		appCat.setWebConfiguration( config );
-		appCat.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+		appCat.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 		
 		appCat = Transaction.createTransaction( Transaction.INSERT, appCat ).execute();
 		
@@ -357,7 +357,7 @@ public class StarsAdminUtil {
 		com.cannontech.database.db.stars.report.ServiceCompany companyDB = company.getServiceCompany();
 		
 		companyDB.setCompanyName( companyName );
-		company.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+		company.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 		
 		company = Transaction.createTransaction( Transaction.INSERT, company ).execute();
 		
@@ -423,7 +423,7 @@ public class StarsAdminUtil {
 		
 		subDB.setSubstationName( subName );
 		subDB.setRouteID( new Integer(routeID) );
-		sub.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+		sub.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 		
 		sub = Transaction.createTransaction( Transaction.INSERT, sub ).execute();
 		
@@ -890,7 +890,7 @@ public class StarsAdminUtil {
 		}
 		
 		ECToGenericMapping map = new ECToGenericMapping();
-		map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+		map.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 		map.setItemID( rtID );
 		map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
 		Transaction.createTransaction( Transaction.DELETE, map ).execute();
@@ -900,8 +900,8 @@ public class StarsAdminUtil {
 	
 	public static void addMember(LiteStarsEnergyCompany energyCompany, LiteStarsEnergyCompany member, int loginID) throws Exception {
 		ECToGenericMapping map = new ECToGenericMapping();
-		map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-		map.setItemID( member.getEnergyCompanyID() );
+		map.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
+		map.setItemID( member.getEnergyCompanyId() );
 		map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER );
 		Transaction.createTransaction( Transaction.INSERT, map ).execute();
 		
@@ -942,8 +942,8 @@ public class StarsAdminUtil {
 			if (memberID != -1 && member.getLiteID() != memberID) continue;
 			
 			ECToGenericMapping map = new ECToGenericMapping();
-			map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-			map.setItemID( member.getEnergyCompanyID() );
+			map.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
+			map.setItemID( member.getEnergyCompanyId() );
 			map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER );
 			Transaction.createTransaction( Transaction.DELETE, map ).execute();
 			
@@ -1079,7 +1079,7 @@ public class StarsAdminUtil {
 		if (energyCompany != null) {
 			SqlStatement stmt = new SqlStatement(
 					"INSERT INTO EnergyCompanyOperatorLoginList VALUES(" +
-						energyCompany.getEnergyCompanyID() + ", " + userDB.getUserID() + ")",
+						energyCompany.getEnergyCompanyId() + ", " + userDB.getUserID() + ")",
 					CtiUtilities.getDatabaseAlias()
 					);
 			stmt.execute();

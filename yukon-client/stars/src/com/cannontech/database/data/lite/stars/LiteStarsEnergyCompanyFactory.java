@@ -70,7 +70,7 @@ public class LiteStarsEnergyCompanyFactory {
         DatabaseChangeEventListener defaultRouteEventListener = new DatabaseChangeEventListener() {
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
-                if (event.getPrimaryKey() == energyCompany.getEnergyCompanyID()) {
+                if (event.getPrimaryKey() == energyCompany.getEnergyCompanyId()) {
                     energyCompany.resetDefaultRouteId();
                 }
             }

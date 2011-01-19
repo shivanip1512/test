@@ -65,7 +65,7 @@ public class EnrollmentMigrationTask extends TimeConsumingTask {
             String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
             boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
             
-            List<LiteStarsCustAccountInformation> custAcctInfoList = starsCustAccountInformationDao.getAll(energyCompany.getEnergyCompanyID());
+            List<LiteStarsCustAccountInformation> custAcctInfoList = starsCustAccountInformationDao.getAll(energyCompany.getEnergyCompanyId());
             for(LiteStarsCustAccountInformation liteAcctInformation : custAcctInfoList) {
                 LiteStarsCustAccountInformation extendedAcctInformation = energyCompany.limitedExtendCustAccountInfo(liteAcctInformation);
                 List<LiteStarsAppliance> appList = extendedAcctInformation.getAppliances();

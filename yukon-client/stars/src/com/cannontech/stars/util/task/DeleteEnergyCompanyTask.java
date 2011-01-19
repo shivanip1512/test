@@ -146,7 +146,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			// Delete all customer accounts
 			currentAction = "Deleting customer accounts";
 			
-			Object[][] accounts = CustomerAccount.getAllCustomerAccounts( energyCompany.getEnergyCompanyID() );
+			Object[][] accounts = CustomerAccount.getAllCustomerAccounts( energyCompany.getEnergyCompanyId() );
 			if (accounts != null) {
 				numAccount = accounts.length;
 				
@@ -227,7 +227,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			
 			AccountThermostatScheduleDao accountThermostatScheduleDao = 
                 YukonSpringHook.getBean("accountThermostatScheduleDao", AccountThermostatScheduleDao.class);
-			List<AccountThermostatSchedule> schedules = accountThermostatScheduleDao.getAllThermostatSchedulesForEC(energyCompany.getEnergyCompanyID());
+			List<AccountThermostatSchedule> schedules = accountThermostatScheduleDao.getAllThermostatSchedulesForEC(energyCompany.getEnergyCompanyId());
 
 		    for(AccountThermostatSchedule schedule : schedules){
 		        accountThermostatScheduleDao.deleteById(schedule.getAccountThermostatScheduleId());
@@ -237,7 +237,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			currentAction = "Deleting substations";
 			
 			ECToGenericMapping[] substations = ECToGenericMapping.getAllMappingItems(
-					energyCompany.getEnergyCompanyID(), com.cannontech.database.db.stars.Substation.TABLE_NAME );
+					energyCompany.getEnergyCompanyId(), com.cannontech.database.db.stars.Substation.TABLE_NAME );
 			if (substations != null) {
 				for (int i = 0; i < substations.length; i++) {
 					com.cannontech.database.data.stars.Substation substation =
@@ -290,7 +290,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			currentAction = "Deleting customer selection lists";
 			
 			List<YukonSelectionList> energyCompanySelectionLists = 
-			    yukonListDao.getSelectionListsByEnergyCompanyId(energyCompany.getEnergyCompanyID());
+			    yukonListDao.getSelectionListsByEnergyCompanyId(energyCompany.getEnergyCompanyId());
 			for (YukonSelectionList cList : energyCompanySelectionLists) {
 				if (cList.getListID() == LiteStarsEnergyCompany.FAKE_LIST_ID) continue;
 				
@@ -316,7 +316,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			}
 			
 			// Delete LM groups created for the default route
-			if (energyCompany.getDefaultRouteID() >= 0) {
+			if (energyCompany.getDefaultRouteId() >= 0) {
 				currentAction = "Deleting LM groups created for the default route";
 				StarsAdminUtil.removeDefaultRoute( energyCompany );
 			}
@@ -329,7 +329,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			
 			com.cannontech.database.data.company.EnergyCompanyBase ec =
 					new com.cannontech.database.data.company.EnergyCompanyBase();
-			ec.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+			ec.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 			ec.getEnergyCompany().setPrimaryContactID( new Integer(energyCompany.getPrimaryContactID()) );
 			
             dbPersistentDao.performDBChange(ec, TransactionType.DELETE);

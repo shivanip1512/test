@@ -392,7 +392,7 @@ public class OperatorAccountController {
             	        int accountId = accountService.addAccount(updatableAccount, user);
             	        if(createLogin) {
             	            /* Create the login */
-            	            residentialLoginService.createResidentialLogin(accountGeneral.getLoginBackingBean(), user, accountId, energyCompany.getEnergyCompanyID());
+            	            residentialLoginService.createResidentialLogin(accountGeneral.getLoginBackingBean(), user, accountId, energyCompany.getEnergyCompanyId());
             	            /* Added Event Log Message */
             	        }
             	        EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, 
@@ -436,7 +436,7 @@ public class OperatorAccountController {
 	    LiteYukonUser residentialUser = customerAccountDao.getYukonUserByAccountId(accountInfo.getAccountId());
 
 	    /* AccountDto */
-		AccountDto accountDto = accountService.getAccountDto(accountId, energyCompany.getEnergyCompanyID(), userContext);
+		AccountDto accountDto = accountService.getAccountDto(accountId, energyCompany.getEnergyCompanyId(), userContext);
 
 		/* OperatorGeneralUiExtras */
 		OperatorGeneralUiExtras operatorGeneralUiExtras = operatorAccountService.getOperatorGeneralUiExtras(accountId, userContext);
@@ -689,12 +689,12 @@ public class OperatorAccountController {
         List<LiteYukonGroup> ecResidentialGroups = Lists.newArrayList(energyCompany.getResidentialCustomerGroups());
         boolean showLoginSection = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_CREATE_LOGIN_FOR_ACCOUNT, user);
         
-        List<Substation> substations = substationDao.getAllSubstationsByEnergyCompanyId(energyCompany.getEnergyCompanyID());
+        List<Substation> substations = substationDao.getAllSubstationsByEnergyCompanyId(energyCompany.getEnergyCompanyId());
         modelMap.addAttribute("substations", substations);
 
         modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);
         modelMap.addAttribute("supportsPasswordSet", true);
-        modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyID());
+        modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
         modelMap.addAttribute("showLoginSection", showLoginSection);
         modelMap.addAttribute("ecResidentialGroups", ecResidentialGroups);
         modelMap.addAttribute("mode", PageEditMode.CREATE);

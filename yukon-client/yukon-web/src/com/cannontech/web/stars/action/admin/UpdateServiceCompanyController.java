@@ -105,7 +105,7 @@ public class UpdateServiceCompanyController extends StarsAdminActionController {
 
                 company.setAddress( address );
                 company.setPrimaryContact( contact );
-                company.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+                company.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
                 company = Transaction.createTransaction( TransactionType.INSERT, company ).execute();
 
                 liteContact = (LiteContact) StarsLiteFactory.createLite( contact );

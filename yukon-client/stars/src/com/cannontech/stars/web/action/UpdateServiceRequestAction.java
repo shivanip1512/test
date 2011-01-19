@@ -106,11 +106,11 @@ public class UpdateServiceRequestAction implements ActionBase {
         	LiteWorkOrderBase liteOrder = starsWorkOrderBaseDao.getById(updateOrder.getOrderID());
 
         	LiteStarsCustAccountInformation liteAcctInfo = 
-        	    starsCustAccountInformationDao.getById(liteOrder.getAccountID(), liteStarsEC.getEnergyCompanyID());
+        	    starsCustAccountInformationDao.getById(liteOrder.getAccountID(), liteStarsEC.getEnergyCompanyId());
 
         	if (updateOrder.getOrderNumber() != null &&
         		!updateOrder.getOrderNumber().equals( liteOrder.getOrderNumber() ) &&
-        		WorkOrderBase.orderNumberExists( updateOrder.getOrderNumber(), liteStarsEC.getEnergyCompanyID() ))
+        		WorkOrderBase.orderNumberExists( updateOrder.getOrderNumber(), liteStarsEC.getEnergyCompanyId() ))
         	{
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
 						StarsConstants.FAILURE_CODE_INVALID_PRIMARY_FIELD, "Order # already exists, please enter a different one") );

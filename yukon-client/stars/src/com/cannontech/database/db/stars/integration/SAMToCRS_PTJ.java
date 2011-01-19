@@ -306,7 +306,7 @@ public static void handleCRSIntegration(int stateYukDefID, WorkOrderBase workOrd
                 meterNumber = workOrderBase.getWorkOrderBase().getDescription().substring(beginIndex+14, endIndex);
         }
         
-        MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(workOrderBase.getWorkOrderBase().getAccountID(), meterNumber, liteStarsEC.getEnergyCompanyID().intValue());
+        MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(workOrderBase.getWorkOrderBase().getAccountID(), meterNumber, liteStarsEC.getEnergyCompanyId());
         if( meterHardwareBase != null)
         {
             ArrayList<LMHardwareBase> lmHardwares = MeterHardwareBase.retrieveAssignedSwitches(meterHardwareBase.getInventoryBase().getInventoryID().intValue());
@@ -344,7 +344,7 @@ public static void handleCRSIntegration(int stateYukDefID, WorkOrderBase workOrd
                         SwitchCommand switchCommand = new SwitchCommandQueue.SwitchCommand();
                         switchCommand.setAccountID(workOrderBase.getWorkOrderBase().getAccountID());
                         switchCommand.setCommandType(switchCommandStr);
-                        switchCommand.setEnergyCompanyID(liteStarsEC.getEnergyCompanyID().intValue());
+                        switchCommand.setEnergyCompanyID(liteStarsEC.getEnergyCompanyId());
                         switchCommand.setInfoString("Released " + workTypeEntry.getEntryText() + " Work Order");
                         switchCommand.setInventoryID(lmHardwareBase.getInventoryBase().getInventoryID().intValue());
                         SwitchCommandQueue.getInstance().addCommand(switchCommand, true);

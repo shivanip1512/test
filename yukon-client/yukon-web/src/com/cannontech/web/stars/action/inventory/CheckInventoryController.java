@@ -74,7 +74,7 @@ public class CheckInventoryController extends StarsInventoryActionController {
              * MCTs.
              */
             ArrayList<FilterWrapper> tempList = new ArrayList<FilterWrapper>();
-            tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_MEMBER), energyCompany.getName(), String.valueOf(energyCompany.getEnergyCompanyID())));
+            tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_MEMBER), energyCompany.getName(), String.valueOf(energyCompany.getEnergyCompanyId())));
             tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN), serialNo, serialNo));
             tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX), serialNo, serialNo));
             //session.setAttribute( ServletUtils.FILTER_INVEN_LIST, tempList );
@@ -174,7 +174,7 @@ public class CheckInventoryController extends StarsInventoryActionController {
                     session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
                     LiteStarsCustAccountInformation liteAcctInfo =
                         starsCustAccountInformationDao.getById(starsAcctInfo.getStarsCustomerAccount().getAccountID(),
-                                                               energyCompany.getEnergyCompanyID());
+                                                               energyCompany.getEnergyCompanyId());
     
                     try {
                         liteInv = CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );

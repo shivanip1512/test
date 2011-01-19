@@ -70,7 +70,7 @@ public class CreateReportController extends StarsWorkorderActionController {
         ((WorkOrderModel)reportBean.getModel()).loadData(liteStarsEC, workOrderBean.getWorkOrderList());
 
         reportBean.getModel().setTimeZone(workOrderBean.getEnergyCompany().getDefaultTimeZone());
-        reportBean.getModel().setEnergyCompanyID(workOrderBean.getEnergyCompany().getEnergyCompanyID());
+        reportBean.getModel().setEnergyCompanyID(workOrderBean.getEnergyCompany().getEnergyCompanyId());
 
         JFreeReport report = null;
         //Create the report

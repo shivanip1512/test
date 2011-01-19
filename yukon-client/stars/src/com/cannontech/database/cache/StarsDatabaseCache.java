@@ -174,7 +174,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 	    synchronized (companies) {
             final Map<Integer, LiteStarsEnergyCompany> map = new HashMap<Integer, LiteStarsEnergyCompany>(companies.size());
             for (LiteStarsEnergyCompany value : companies) {
-                Integer key = value.getEnergyCompanyID();
+                Integer key = value.getEnergyCompanyId();
                 map.put(key, value);
             }
             return map;
@@ -186,7 +186,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 		synchronized (companies) {
 			for (int i = 0; i < companies.size(); i++) {
 	    		LiteStarsEnergyCompany company = companies.get(i);
-				if (company.getEnergyCompanyID().intValue() == energyCompanyID) {
+				if (company.getEnergyCompanyId() == energyCompanyID) {
 					return company;
 				}
 			}
@@ -205,7 +205,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 		synchronized (companies) {
 			for (int i = 0; i < companies.size(); i++) {
 	    		LiteStarsEnergyCompany company = companies.get(i);
-				if (company.getEnergyCompanyID().intValue() == energyCompanyID) {
+				if (company.getEnergyCompanyId() == energyCompanyID) {
 					companies.remove( i );
 					return company;
 				}

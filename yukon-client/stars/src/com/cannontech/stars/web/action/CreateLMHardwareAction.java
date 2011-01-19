@@ -246,7 +246,7 @@ public class CreateLMHardwareAction implements ActionBase {
 			if (invID == -1) {
 				// Create new hardware
 				if (createHw.getLMHardware() != null) {
-					hw.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+					hw.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 					hw = Transaction.createTransaction( Transaction.INSERT, hw ).execute();
 					
 					LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
@@ -286,7 +286,7 @@ public class CreateLMHardwareAction implements ActionBase {
 					com.cannontech.database.data.stars.hardware.InventoryBase inventory =
 							new com.cannontech.database.data.stars.hardware.InventoryBase();
 					inventory.setInventoryBase( invDB );
-					inventory.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+					inventory.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 					
 					inventory = Transaction.createTransaction( Transaction.INSERT, inventory ).execute();
 					
@@ -457,7 +457,7 @@ public class CreateLMHardwareAction implements ActionBase {
 				if (createHw.getInstallationNotes() != null)
 					eventBaseDB.setNotes( createHw.getInstallationNotes() );
 				eventDB.setInventoryID( invDB.getInventoryID() );
-				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+				event.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 				
 				event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 				
@@ -482,7 +482,7 @@ public class CreateLMHardwareAction implements ActionBase {
 							eventBaseDB.setEventDateTime( new Date() );
 							eventBaseDB.setNotes( "Event added to match the device status" );
 							eventDB.setInventoryID( invDB.getInventoryID() );
-							event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+							event.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 							
 							event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 						}
@@ -499,7 +499,7 @@ public class CreateLMHardwareAction implements ActionBase {
 							eventBaseDB.setEventDateTime( new Date() );
 							eventBaseDB.setNotes( "Event added to match the device status" );
 							eventDB.setInventoryID( invDB.getInventoryID() );
-							event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+							event.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 							
 							event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 						}
@@ -516,7 +516,7 @@ public class CreateLMHardwareAction implements ActionBase {
 							eventBaseDB.setEventDateTime( new Date() );
 							eventBaseDB.setNotes( "Event added to match the device status" );
 							eventDB.setInventoryID( invDB.getInventoryID() );
-							event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+							event.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 							
 							event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 						}

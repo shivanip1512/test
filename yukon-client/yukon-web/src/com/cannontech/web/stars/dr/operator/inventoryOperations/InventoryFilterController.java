@@ -145,7 +145,7 @@ public class InventoryFilterController {
     
     public void setupFilterSelectionModelMap(ModelMap modelMap, YukonUserContext userContext) {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-        modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyID());
+        modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
     }
     
     @ModelAttribute(value="ruleTypes")

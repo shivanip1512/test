@@ -53,7 +53,7 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
 
             LiteApplianceCategory liteAppCat = null;
             if (newAppCat) {
-                appCat.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+                appCat.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 
                 appCat = Transaction.createTransaction( Transaction.INSERT, appCat ).execute();
 

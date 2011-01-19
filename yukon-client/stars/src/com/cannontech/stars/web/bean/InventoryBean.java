@@ -124,7 +124,7 @@ public class InventoryBean {
     
     private List<Integer> getEnergyCompanyIdList(boolean showEnergyCompany) {
         if (!showEnergyCompany) 
-            return Arrays.asList(getEnergyCompany().getEnergyCompanyID());
+            return Arrays.asList(getEnergyCompany().getEnergyCompanyId());
         
         List<LiteStarsEnergyCompany> memberList = getMembersFromFilterList();
         List<LiteStarsEnergyCompany> ecList = (!memberList.isEmpty()) ?
@@ -132,7 +132,7 @@ public class InventoryBean {
 
         List<Integer> idList = new ArrayList<Integer>(ecList.size());
         for (final LiteStarsEnergyCompany energyCompany : ecList) {
-            idList.add(energyCompany.getEnergyCompanyID());
+            idList.add(energyCompany.getEnergyCompanyId());
         }
         
         return idList;
@@ -423,7 +423,7 @@ public class InventoryBean {
 			}
 			else {
 				LiteStarsCustAccountInformation liteAcctInfo = 
-				    starsCustAccountInformationDao.getById(liteInv.getAccountID(), member.getEnergyCompanyID());
+				    starsCustAccountInformationDao.getById(liteInv.getAccountID(), member.getEnergyCompanyId());
 				LiteContact liteCont = DaoFactory.getContactDao().getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 				LiteAddress liteAddr = member.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
             	

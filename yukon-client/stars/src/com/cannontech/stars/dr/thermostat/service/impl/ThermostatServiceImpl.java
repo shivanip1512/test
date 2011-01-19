@@ -312,7 +312,7 @@ public class ThermostatServiceImpl implements ThermostatService {
                                        yukonUser.getUserID(),
                                        account.getAccountId(),
                                        account.getCustomerId(),
-                                       energyCompany.getEnergyCompanyID());
+                                       energyCompany.getEnergyCompanyId());
 
         // Save update schedule event
         CustomerThermostatEventBase event = new CustomerThermostatEventBase();
@@ -613,7 +613,7 @@ public class ThermostatServiceImpl implements ThermostatService {
         }
 
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(thermostat.getId());
-        Integer energyCompanyID = energyCompany.getEnergyCompanyID();
+        Integer energyCompanyID = energyCompany.getEnergyCompanyId();
 
         ActivityLogger.logEvent(userId,
                                 accountId,

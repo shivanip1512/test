@@ -58,7 +58,7 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
         if (liteAcct.getCustomerAccount() != null) { 
             // Must already have at least the base objects loaded
             List<LiteStarsAppliance> unassignedAppliances = starsApplianceDao.getUnassignedAppliances(liteAcct.getAccountID(),
-                                                                                                      energyCompany.getEnergyCompanyID());
+                                                                                                      energyCompany.getEnergyCompanyId());
             if (unassignedAppliances.size() > 0) {
                 unassignedAppliance = unassignedAppliances.get(0);
                 criteria.setApplianceCategoryID(

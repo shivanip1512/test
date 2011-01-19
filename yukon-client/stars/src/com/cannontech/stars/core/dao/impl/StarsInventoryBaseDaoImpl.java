@@ -220,7 +220,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
 
         List<Integer> ecIdList = new ArrayList<Integer>();
         for (LiteStarsEnergyCompany energyCompany : energyCompanyList) {
-            ecIdList.add(energyCompany.getEnergyCompanyID());
+            ecIdList.add(energyCompany.getEnergyCompanyId());
         }
 
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
@@ -241,7 +241,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
 
         List<Integer> ecIdList = new ArrayList<Integer>();
         for (LiteStarsEnergyCompany energyCompany : energyCompanyList) {
-            ecIdList.add(energyCompany.getEnergyCompanyID());
+            ecIdList.add(energyCompany.getEnergyCompanyId());
         }
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -282,7 +282,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
 
         List<Integer> ecIdList = new ArrayList<Integer>();
         for (LiteStarsEnergyCompany energyCompany : energyCompanyList) {
-            ecIdList.add(energyCompany.getEnergyCompanyID());
+            ecIdList.add(energyCompany.getEnergyCompanyId());
         }
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -309,7 +309,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
 
         List<Integer> ecIdList = new ArrayList<Integer>();
         for (LiteStarsEnergyCompany energyCompany : energyCompanyList) {
-            ecIdList.add(energyCompany.getEnergyCompanyID());
+            ecIdList.add(energyCompany.getEnergyCompanyId());
         }
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -337,7 +337,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
 
         List<Integer> ecIdList = new ArrayList<Integer>();
         for (LiteStarsEnergyCompany energyCompany : energyCompanyList) {
-            ecIdList.add(energyCompany.getEnergyCompanyID());
+            ecIdList.add(energyCompany.getEnergyCompanyId());
         }
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -516,7 +516,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
 
         List<Integer> ecIdList = new ArrayList<Integer>();
         for (LiteStarsEnergyCompany energyCompany : energyCompanyList) {
-            ecIdList.add(energyCompany.getEnergyCompanyID());
+            ecIdList.add(energyCompany.getEnergyCompanyId());
         }
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.PAObjectID, ypo.Type");

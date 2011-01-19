@@ -47,14 +47,14 @@ public class UpdateMemberEnergyCompanyController extends StarsAdminActionControl
             	if (prevLoginID.intValue() != loginID) {
 	                if (loginID != -1) {
 	                    String sql = "UPDATE ECToGenericMapping SET ItemID = " + loginID +
-	                            " WHERE EnergyCompanyID = " + energyCompany.getEnergyCompanyID() +
+	                            " WHERE EnergyCompanyID = " + energyCompany.getEnergyCompanyId() +
 	                            " AND MappingCategory = 'MemberLogin'";
 	                    SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 	                    stmt.execute();
 	                }
 	                else {
 	                    ECToGenericMapping map = new ECToGenericMapping();
-	                    map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+	                    map.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 	                    map.setItemID( prevLoginID );
 	                    map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
 	                    Transaction.createTransaction( Transaction.DELETE, map ).execute();
@@ -65,7 +65,7 @@ public class UpdateMemberEnergyCompanyController extends StarsAdminActionControl
                 if (loginID != -1) {
                 
 	                ECToGenericMapping map = new ECToGenericMapping();
-	                map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+	                map.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 	                map.setItemID( new Integer(loginID) );
 	                map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
 	                Transaction.createTransaction( Transaction.INSERT, map ).execute();

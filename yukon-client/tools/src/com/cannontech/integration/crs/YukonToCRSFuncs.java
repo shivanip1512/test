@@ -440,13 +440,13 @@ public class YukonToCRSFuncs
     {
     	if( meterNumber != null && meterNumber.length() > 0)
     	{
-    		MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(accountID.intValue(), meterNumber, liteStarsEnergyCompany.getEnergyCompanyID().intValue());
+    		MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(accountID.intValue(), meterNumber, liteStarsEnergyCompany.getEnergyCompanyId());
     		updateMeterHardware(meterHardwareBase, accountID, liteStarsEnergyCompany, meterNumber);
     	}
     	for (int i = 0; i < additionalMeters.size(); i++)
     	{
     		CRSToSAM_PTJAdditionalMeters additionalMeter = additionalMeters.get(i);
-    		MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(accountID.intValue(), additionalMeter.getMeterNumber(), liteStarsEnergyCompany.getEnergyCompanyID().intValue());
+    		MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(accountID.intValue(), additionalMeter.getMeterNumber(), liteStarsEnergyCompany.getEnergyCompanyId());
     		updateMeterHardware(meterHardwareBase, accountID, liteStarsEnergyCompany, additionalMeter.getMeterNumber());
     	}
 	}
@@ -470,14 +470,14 @@ public class YukonToCRSFuncs
 	        if( categoryEntry != null)
 	        	meterHardwareBase.getInventoryBase().setCategoryID(new Integer(categoryEntry.getEntryID()));
 			meterHardwareBase.getInventoryBase().setDeviceLabel(meterNumber);
-			meterHardwareBase.setEnergyCompanyID(liteStarsEnergyCompany.getEnergyCompanyID());
+			meterHardwareBase.setEnergyCompanyID(liteStarsEnergyCompany.getEnergyCompanyId());
 			meterHardwareBase = Transaction.createTransaction(Transaction.INSERT, meterHardwareBase).execute();
 			
 			final StarsCustAccountInformationDao starsCustAccountInformationDao =
 			    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
 			
 			LiteStarsCustAccountInformation liteStarsCustAcctInfo = 
-			    starsCustAccountInformationDao.getById(accountID, liteStarsEnergyCompany.getEnergyCompanyID());
+			    starsCustAccountInformationDao.getById(accountID, liteStarsEnergyCompany.getEnergyCompanyId());
 			
             StarsCustAccountInformation starsCustAcctInfo = liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue(), true);
 			LiteInventoryBase liteInvBase = new LiteInventoryBase();
@@ -523,7 +523,7 @@ public class YukonToCRSFuncs
         if( airCond.charValue() == 'Y' || waterHeater.charValue() == 'Y' ) {
             final StarsCustAccountInformationDao starsCustAccountInformationDao =
                 YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
-            liteStarsCustAcctInfo = starsCustAccountInformationDao.getById(accountID, liteStarsEnergyCompany.getEnergyCompanyID());
+            liteStarsCustAcctInfo = starsCustAccountInformationDao.getById(accountID, liteStarsEnergyCompany.getEnergyCompanyId());
             starsCustAcctInfo = liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue(), true);
         }
 

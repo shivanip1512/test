@@ -124,7 +124,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         mappingSql.append("(EnergyCompanyId, EventId)");
         mappingSql.append("VALUES (?,?)");
 
-        Integer energyCompanyId = energyCompany.getEnergyCompanyID();
+        Integer energyCompanyId = energyCompany.getEnergyCompanyId();
         yukonJdbcTemplate.update(mappingSql.toString(),
                                   energyCompanyId,
                                   eventId);

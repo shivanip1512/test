@@ -18,7 +18,6 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.events.loggers.StarsEventLogService;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -28,15 +27,13 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
-import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.model.OptOutCountsDto;
-import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
+import com.cannontech.stars.dr.optout.model.OptOutValue;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
@@ -61,14 +58,11 @@ public class OptOutAdminController {
 	private StarsEventLogService starsEventLogService;
 	private StarsInventoryBaseDao starsInventoryBaseDao;
 	private ProgramDao programDao;
-	private YukonUserContextMessageSourceResolver messageSourceResolver;
 	private RolePropertyDao rolePropertyDao;
 	
     @RequestMapping(value = "/operator/optOut/admin", method = RequestMethod.GET)
     public String view(YukonUserContext userContext, ModelMap map, Boolean emptyProgramName, Boolean programNotFound) throws Exception {
         
-    	MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-    	
     	rolePropertyDao.verifyAnyProperties(userContext.getYukonUser(), 
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS,
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE,
@@ -76,7 +70,7 @@ public class OptOutAdminController {
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT);
     	
     	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-    	map.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyID());
+    	map.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
 
     	int totalNumberOfAccounts = customerAccountDao.getTotalNumberOfAccounts(energyCompany);
     	map.addAttribute("totalNumberOfAccounts", totalNumberOfAccounts);
@@ -88,12 +82,12 @@ public class OptOutAdminController {
     	map.addAttribute("scheduledOptOuts", scheduledOptOuts);
 
     	// programNameEnabledMap
-    	OptOutEnabled defaultOptOutEnabledSetting = optOutStatusService.getDefaultOptOutEnabled(userContext.getYukonUser());
-    	Map<Integer, OptOutEnabled> programSpecificEnabledOptOuts = 
-    	    optOutStatusService.getProgramSpecificEnabledOptOuts(energyCompany.getEnergyCompanyID()); 
+    	OptOutValue defaultOptOutEnabledSetting = optOutStatusService.getDefaultOptOutEnabled(userContext.getYukonUser());
+    	Map<Integer, OptOutValue> programSpecificEnabledOptOuts = 
+    	    optOutStatusService.getProgramSpecificEnabledOptOuts(energyCompany.getEnergyCompanyId()); 
 
-        Map<String, OptOutEnabled> programNameEnabledMap = Maps.newLinkedHashMap();
-        for (Entry<Integer, OptOutEnabled> programOptOutEnabledEntry : programSpecificEnabledOptOuts.entrySet()) {
+        Map<String, OptOutValue> programNameEnabledMap = Maps.newLinkedHashMap();
+        for (Entry<Integer, OptOutValue> programOptOutEnabledEntry : programSpecificEnabledOptOuts.entrySet()) {
             
             int programId = programOptOutEnabledEntry.getKey();
             Program program = programDao.getByProgramId(programId);
@@ -106,15 +100,15 @@ public class OptOutAdminController {
     	OptOutCountsDto defaultOptOutCountsSetting = optOutStatusService.getDefaultOptOutCounts(userContext.getYukonUser());
 		List<OptOutCountsDto> programSpecificOptOutCounts = optOutStatusService.getProgramSpecificOptOutCounts(userContext.getYukonUser());
 		
-		Map<String, OptOutCounts> programNameCountsMap = Maps.newLinkedHashMap();
+		Map<String, OptOutValue> programNameCountsMap = Maps.newLinkedHashMap();
 		for (OptOutCountsDto setting : programSpecificOptOutCounts) {
 			
 			int programId = setting.getProgramId();
 			Program program = programDao.getByProgramId(programId);
-			programNameCountsMap.put(program.getProgramName(), setting.getOptOutCounts());
+			programNameCountsMap.put(program.getProgramName(), setting.getOptOutValue());
 		}
     	map.addAttribute("programNameCountsMap", programNameCountsMap);
-        map.addAttribute("energyCompanyOptOutCountsSetting", defaultOptOutCountsSetting.getOptOutCounts());
+        map.addAttribute("energyCompanyOptOutCountsSetting", defaultOptOutCountsSetting.getOptOutValue());
     	
     	// optOutsEnabled
     	boolean optOutsEnabled = optOutStatusService.getOptOutEnabled(userContext.getYukonUser());
@@ -394,11 +388,6 @@ public class OptOutAdminController {
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
     	this.rolePropertyDao = rolePropertyDao;
     }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-		this.messageSourceResolver = messageSourceResolver;
-	}
     
     @Autowired
     public void setProgramDao(ProgramDao programDao) {

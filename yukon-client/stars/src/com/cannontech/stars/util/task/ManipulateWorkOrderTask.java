@@ -154,7 +154,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
     					{
     						LiteStarsEnergyCompany liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(workOrderBase.getEnergyCompanyID());
     						LiteStarsCustAccountInformation liteStarsCustAcctInfo =
-    						    starsCustAccountInformationDao.getById(workOrderBase.getWorkOrderBase().getAccountID(), liteStarsEC.getEnergyCompanyID());
+    						    starsCustAccountInformationDao.getById(workOrderBase.getWorkOrderBase().getAccountID(), liteStarsEC.getEnergyCompanyId());
     						SAMToCRS_PTJ.handleCRSIntegration(listEntry.getYukonDefID(), workOrderBase, liteStarsCustAcctInfo, liteStarsEC, liteYukonUser.getUserID(), null);
     					}
                     }

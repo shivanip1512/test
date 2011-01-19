@@ -343,7 +343,7 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 	        }
 	    }
 	    else {
-	        List<LiteWorkOrderBase> allWOs = starsWorkOrderBaseDao.getAll(ec.getEnergyCompanyID());
+	        List<LiteWorkOrderBase> allWOs = starsWorkOrderBaseDao.getAll(ec.getEnergyCompanyId());
 	        if( allWOs != null)
 	            woList.addAll( allWOs );
 	    }
@@ -388,7 +388,7 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
        
         CTILogger.info("Reporting Data Loading for " + woList.size() + " Work Orders.");
         
-        final Integer energyCompanyId = liteStarsEC.getEnergyCompanyID();
+        final Integer energyCompanyId = liteStarsEC.getEnergyCompanyId();
         
         final Map<Integer, LiteStarsCustAccountInformation> accountMap = getWorkOrderHelper().getAccountMap(energyCompanyId);
         
@@ -503,7 +503,7 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 		    energyContactIdSet.add(liteStarsEnergyCompany.getPrimaryContactID());
 		    
 		    final Map<Integer, LiteStarsCustAccountInformation> currentAccountMap =
-		        getWorkOrderHelper().getAccountMap(liteStarsEnergyCompany.getEnergyCompanyID());
+		        getWorkOrderHelper().getAccountMap(liteStarsEnergyCompany.getEnergyCompanyId());
 		    
 		    int accountId = liteWorkOrder.getAccountID();
 		    if (accountId > 0) {
@@ -549,7 +549,7 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 		    info.setEnergyCompanyAddress(energyCompanyAddress);
 
 		    final Map<Integer, LiteStarsCustAccountInformation> currentAccountMap =
-		        getWorkOrderHelper().getAccountMap(liteStarsEnergyCompany.getEnergyCompanyID());
+		        getWorkOrderHelper().getAccountMap(liteStarsEnergyCompany.getEnergyCompanyId());
 		    
 		    int accountId = liteWorkOrder.getAccountID();
 		    if (accountId > 0) {
@@ -588,7 +588,7 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 			LiteAddress liteAddress = null;
 			if (lOrder.getAccountID() > 0) {
 			    Map<Integer, LiteStarsCustAccountInformation> accountMap = 
-			        getWorkOrderHelper().getAccountMap(ec.getEnergyCompanyID());
+			        getWorkOrderHelper().getAccountMap(ec.getEnergyCompanyId());
 				
 			    lAcctInfo = accountMap.get(lOrder.getAccountID());
 				liteContact = wo.getAdditionalInformation().getContact();

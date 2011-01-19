@@ -44,7 +44,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 	
 	@Override
     public LiteInventoryBase searchLMHardwareBySerialNumber(String serialNumber, LiteStarsEnergyCompany energyCompany) throws ObjectInOtherEnergyCompanyException {
-	    return searchLMHardwareBySerialNumber(serialNumber, energyCompany.getEnergyCompanyID());
+	    return searchLMHardwareBySerialNumber(serialNumber, energyCompany.getEnergyCompanyId());
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		
 		List<Integer> ecIdList = new ArrayList<Integer>();
 		for(LiteStarsEnergyCompany energyCompany : energyCompanyList) {
-			ecIdList.add(energyCompany.getEnergyCompanyID());
+			ecIdList.add(energyCompany.getEnergyCompanyId());
 		}
 
 		sql.append("SELECT ib.*, lhb.*, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId");
@@ -168,7 +168,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 
 		List<Integer> ecIdList = new ArrayList<Integer>();
 		for(LiteStarsEnergyCompany energyCompany : energyCompanyList) {
-			ecIdList.add(energyCompany.getEnergyCompanyID());
+			ecIdList.add(energyCompany.getEnergyCompanyId());
 		}
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -228,7 +228,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 
 		List<Integer> ecIdList = new ArrayList<Integer>();
 		for(LiteStarsEnergyCompany energyCompany : energyCompanyList) {
-			ecIdList.add(energyCompany.getEnergyCompanyID());
+			ecIdList.add(energyCompany.getEnergyCompanyId());
 		}
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -259,7 +259,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 
 		List<Integer> ecIdList = new ArrayList<Integer>();
 		for(LiteStarsEnergyCompany energyCompany : energyCompanyList) {
-			ecIdList.add(energyCompany.getEnergyCompanyID());
+			ecIdList.add(energyCompany.getEnergyCompanyId());
 		}
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -291,7 +291,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		
 		List<Integer> ecIdList = new ArrayList<Integer>();
 		for(LiteStarsEnergyCompany energyCompany : energyCompanyList) {
-			ecIdList.add(energyCompany.getEnergyCompanyID());
+			ecIdList.add(energyCompany.getEnergyCompanyId());
 		}
 
 		sql.append("SELECT ib.*, lhb.*, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId");
@@ -324,7 +324,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		
 		List<Integer> ecIdList = new ArrayList<Integer>();
 		for(LiteStarsEnergyCompany energyCompany : energyCompanyList) {
-			ecIdList.add(energyCompany.getEnergyCompanyID());
+			ecIdList.add(energyCompany.getEnergyCompanyId());
 		}
 
 		sql.append("SELECT ib.*, lhb.*, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId");

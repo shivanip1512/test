@@ -103,7 +103,7 @@ public class DailyTimerTask extends StarsTimerTask {
     				ActivityLogger.logEvent(-1, -1, company.getLiteID(), -1, ActivityLogActions.HARDWARE_SEND_BATCH_CONFIG_ACTION, msg);
     				
                     Map<Integer,Object[]> batchConfig = InventoryManagerUtil.getBatchConfigSubmission();
-    				batchConfig.put( company.getEnergyCompanyID(), new Object[]{new Date(), msg} );
+    				batchConfig.put( company.getEnergyCompanyId(), new Object[]{new Date(), msg} );
     			}
     		}
         }

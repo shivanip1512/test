@@ -131,7 +131,7 @@ public class AccountServiceImpl implements AccountService {
         
         // Checks to see if the account number is already being used.
         try {
-            CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyID());
+            CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyId());
             if (customerAccount != null){
             	log.error("Account " + accountNumber + " could not be added: The provided account number already exists.");
                 throw new AccountNumberUnavailableException("The provided account number already exists.");
@@ -184,7 +184,7 @@ public class AccountServiceImpl implements AccountService {
                 user.setAuthType(AuthType.NONE);
                 password = emptyPassword;
             }
-            yukonUserDao.addLiteYukonUserWithPassword(user, password, energyCompany.getEnergyCompanyID(), groups);
+            yukonUserDao.addLiteYukonUserWithPassword(user, password, energyCompany.getEnergyCompanyId(), groups);
             dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(),
                 DBChangeMsg.CHANGE_YUKON_USER_DB,
                 DBChangeMsg.CAT_YUKON_USER,
@@ -302,7 +302,7 @@ public class AccountServiceImpl implements AccountService {
             } else {
             	liteCICustomer.setCICustType(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);
             }
-            liteCICustomer.setEnergyCompanyID(energyCompany.getEnergyCompanyID());
+            liteCICustomer.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
             customerDao.addCICustomer(liteCICustomer);
             dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
                                    DBChangeMsg.CHANGE_CUSTOMER_DB,
@@ -373,7 +373,7 @@ public class AccountServiceImpl implements AccountService {
          * Add mapping
          */
         ECToAccountMapping ecToAccountMapping = new ECToAccountMapping();
-        ecToAccountMapping.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
+        ecToAccountMapping.setEnergyCompanyId(energyCompany.getEnergyCompanyId());
         ecToAccountMapping.setAccountId(customerAccount.getAccountId());
         ecMappingDao.addECToAccountMapping(ecToAccountMapping);
         log.info("Account: " + accountNumber + " added successfully.");
@@ -397,7 +397,7 @@ public class AccountServiceImpl implements AccountService {
     	
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
     	try {
-    	    CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyID());
+    	    CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyId());
             deleteAccount(account, user);
 
     	}catch (NotFoundException e ) {
@@ -410,7 +410,7 @@ public class AccountServiceImpl implements AccountService {
 
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
 
-        LiteStarsCustAccountInformation customerInfo = starsCustAccountInformationDao.getById(account.getAccountId(), energyCompany.getEnergyCompanyID());
+        LiteStarsCustAccountInformation customerInfo = starsCustAccountInformationDao.getById(account.getAccountId(), energyCompany.getEnergyCompanyId());
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
         LiteSiteInformation siteInfo = siteInformationDao.getSiteInfoById(accountSite.getSiteInformationId());
         LiteCustomer liteCustomer = customerDao.getLiteCustomer(account.getCustomerId());
@@ -551,7 +551,7 @@ public class AccountServiceImpl implements AccountService {
         
         CustomerAccount  account = null;
         try {
-            account = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyID());
+            account = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyId());
         } catch (NotFoundException e ) {
             log.error("Account " + accountNumber + " could not be updated: Unable to find account for account#: " + accountNumber);
             throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber, e);
@@ -562,7 +562,7 @@ public class AccountServiceImpl implements AccountService {
         if (StringUtils.isNotBlank(updatedAccountNumber) && !updatedAccountNumber.equals(accountNumber)) {
         		
     		try {
-                CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(updatedAccountNumber, energyCompany.getEnergyCompanyID());
+                CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(updatedAccountNumber, energyCompany.getEnergyCompanyId());
                 if (customerAccount != null){
                 	log.error("Account " + accountNumber + " could not be updated: The provided new account number already exists (" + updatedAccountNumber + ").");
                     throw new AccountNumberUnavailableException("The provided new account number already exists (" + updatedAccountNumber + ").");
@@ -668,7 +668,7 @@ public class AccountServiceImpl implements AccountService {
                     newUser.setAuthType(AuthType.NONE);
                     password = emptyPassword;
                 }
-                yukonUserDao.addLiteYukonUserWithPassword(newUser, password, energyCompany.getEnergyCompanyID(), groups);
+                yukonUserDao.addLiteYukonUserWithPassword(newUser, password, energyCompany.getEnergyCompanyId(), groups);
                 newLoginId = newUser.getUserID();
                 dbPersistantDao.processDBChange(new DBChangeMsg(newUser.getLiteID(),
                     DBChangeMsg.CHANGE_YUKON_USER_DB,
@@ -919,7 +919,7 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Update mapping
          */
-        ecMappingDao.updateECToAccountMapping(account.getAccountId(), energyCompany.getEnergyCompanyID());
+        ecMappingDao.updateECToAccountMapping(account.getAccountId(), energyCompany.getEnergyCompanyId());
         
         /*
          * Update Login
@@ -1070,7 +1070,7 @@ public class AccountServiceImpl implements AccountService {
     	
     	CustomerAccount customerAccount = null;
         try {
-            customerAccount = customerAccountDao.getByAccountNumber(accountNumber, ec.getEnergyCompanyID());
+            customerAccount = customerAccountDao.getByAccountNumber(accountNumber, ec.getEnergyCompanyId());
         } catch (NotFoundException e) {
             log.error("Unable to find account for account#: " + accountNumber);
             throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber, e);

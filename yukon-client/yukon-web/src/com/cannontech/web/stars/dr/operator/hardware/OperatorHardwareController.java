@@ -682,7 +682,7 @@ public class OperatorHardwareController {
         String defaultRoute;
         try {
             /* Apperently 'getDefaultRouteID' is not a simple getter and relies heavily on deep magic. */
-            defaultRoute = paoDao.getYukonPAOName(energyCompany.getDefaultRouteID());
+            defaultRoute = paoDao.getYukonPAOName(energyCompany.getDefaultRouteId());
             defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRoute") + defaultRoute;
         } catch(NotFoundException e) {
             defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRouteNone");
@@ -693,7 +693,7 @@ public class OperatorHardwareController {
         modelMap.addAttribute("routes", routes);
         
         
-        modelMap.addAttribute("serviceCompanies", energyCompanyDao.getAllInheritedServiceCompanies(energyCompany.getEnergyCompanyID()));
+        modelMap.addAttribute("serviceCompanies", energyCompanyDao.getAllInheritedServiceCompanies(energyCompany.getEnergyCompanyId()));
         
         
         if(editing){

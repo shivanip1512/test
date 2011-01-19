@@ -50,7 +50,7 @@ function selectionChanged(form) {
 				form.RemoveButton.disabled = true;
 				return;
 			}
-			if (oOption.value == <%= liteEC.getDefaultRouteID() %>)
+			if (oOption.value == <%=liteEC.getDefaultRouteId()%>)
 				defaultRouteSelected = true;
 		}
 	}
@@ -86,18 +86,16 @@ function removeRoutes(form) {
 	if (form.RoutesAvailable.length > 0 && form.RoutesAvailable.options[0].value == 0)
 		insertIdx = 1;
 	
-	<%
-        String dftRoute;
+	<%String dftRoute;
         try
         {
-            dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteID());
+            dftRoute = DaoFactory.getPaoDao().getYukonPAOName(liteEC.getDefaultRouteId());
             dftRoute = "Default - " + dftRoute;
         }
         catch(NotFoundException e)
         {
             dftRoute = "RouteInvalid";
-        } 
-    %>
+        }%>
     if (defaultRouteSelected && !removeWarned) {
 		if (confirm('You are going to remove the default route "<%= dftRoute %>" from the energy company. ' +
 			'Doing so could cause severe problem to your system. Are you sure you want to continue?'))

@@ -41,7 +41,7 @@ public class PurchaseChangeController extends StarsInventoryActionController {
             //new purchase plan
             if(currentPlan.getPurchaseID() == null) {
                 currentPlan.setPurchaseID(PurchasePlan.getNextPurchaseID());
-                currentPlan.setEnergyCompanyID(pBean.getEnergyCompany().getEnergyCompanyID());
+                currentPlan.setEnergyCompanyID(pBean.getEnergyCompany().getEnergyCompanyId());
                 Transaction.createTransaction(Transaction.INSERT, currentPlan).execute();
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "New purchase plan added to database.");
             } else {

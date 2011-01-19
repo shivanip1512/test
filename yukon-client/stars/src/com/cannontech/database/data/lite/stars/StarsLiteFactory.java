@@ -1015,7 +1015,7 @@ public class StarsLiteFactory {
 	}
 	
 	public static void setEnergyCompany(com.cannontech.database.db.company.EnergyCompany company, LiteStarsEnergyCompany liteCompany) {
-		company.setEnergyCompanyID( liteCompany.getEnergyCompanyID() );
+		company.setEnergyCompanyID( liteCompany.getEnergyCompanyId() );
 		company.setName( liteCompany.getName() );
 		company.setPrimaryContactID( new Integer(liteCompany.getPrimaryContactID()) );
 		company.setUserID(liteCompany.getUser().getUserID());
@@ -2385,7 +2385,7 @@ public class StarsLiteFactory {
 		    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
 		
 		LiteStarsCustAccountInformation liteAcctInfo = 
-		    starsCustAccountInformationDao.getById(event.getAccountID(), energyCompany.getEnergyCompanyID());
+		    starsCustAccountInformationDao.getById(event.getAccountID(), energyCompany.getEnergyCompanyId());
 		
 		if (event.getInventoryID() != 0) {
 			for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {

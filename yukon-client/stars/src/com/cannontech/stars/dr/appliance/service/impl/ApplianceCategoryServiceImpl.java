@@ -61,7 +61,7 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
 
         LiteApplianceCategory liteApplianceCateogry = null;
         if (isNew) {
-            appCat.setEnergyCompanyID(energyCompany.getEnergyCompanyID());
+            appCat.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
 
             dbPersistentDao.performDBChange(appCat, TransactionType.INSERT);
 

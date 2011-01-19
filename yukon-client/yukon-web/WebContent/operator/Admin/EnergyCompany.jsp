@@ -223,7 +223,7 @@ function addCustomerGroup(form) {
                           <select name="Route" onchange="setContentChanged(true)">
                             <option value="<%= LiteStarsEnergyCompany.INVALID_ROUTE_ID %>">(none)</option>
 <%
-	int routeID = liteEC.getDefaultRouteID();
+    int routeID = liteEC.getDefaultRouteId();
 	if (savedReq.getProperty("Route") != null)
 		routeID = Integer.parseInt(savedReq.getProperty("Route"));
 	

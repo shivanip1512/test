@@ -146,7 +146,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         List<LiteStarsEnergyCompany> allDescendants = ECUtils.getAllDescendants(energyCompany);
         List<Integer> energyCompanyIds = new ArrayList<Integer>();
         for (LiteStarsEnergyCompany liteStarsEnergyCompany : allDescendants) {
-            energyCompanyIds.add(liteStarsEnergyCompany.getEnergyCompanyID());
+            energyCompanyIds.add(liteStarsEnergyCompany.getEnergyCompanyId());
         }
         return getByAccountNumber(accountNumber, energyCompanyIds);
     }
@@ -348,7 +348,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     	sql.append("WHERE ectam.EnergyCompanyId = ?");
     	
     	int totalNumberOfAccounts = yukonJdbcTemplate.queryForInt(sql.toString(), 
-    															energyCompany.getEnergyCompanyID());
+    															energyCompany.getEnergyCompanyId());
     	
     	return totalNumberOfAccounts;
     }

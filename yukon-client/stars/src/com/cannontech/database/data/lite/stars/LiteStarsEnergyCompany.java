@@ -229,11 +229,13 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     public int getEnergyCompanyId() {
         return getLiteID();
     }
-    
+
     @Deprecated
     public Integer getEnergyCompanyID() {
         return new Integer( getLiteID() );
     }
+    
+    
 
     /**
      * Returns the name.
@@ -283,11 +285,16 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         this.user = user;
     }
 
+    @Deprecated
+    public int getDefaultRouteID() {
+        return getDefaultRouteId();
+    }
+    
     /**
      * This method gets the default route.  It will either use the cached value stored in this class 
      * or try to figure out the default route from the database if the routeId is CtiUtilities.NONE_ZERO_ID(0).
      */
-    public int getDefaultRouteID() {
+    public int getDefaultRouteId() {
         if (dftRouteID == INVALID_ROUTE_ID) return dftRouteID;
         
         if (dftRouteID == CtiUtilities.NONE_ZERO_ID) {
@@ -515,7 +522,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     public YukonSelectionList getYukonSelectionList(String listName, boolean useInherited, boolean useDefault) {
         
     	YukonSelectionList yukonSelectionList = 
-    	    yukonListDao.findSelectionListByEnergyCompanyIdAndListName(getEnergyCompanyID(), listName);
+    	    yukonListDao.findSelectionListByEnergyCompanyIdAndListName(getEnergyCompanyId(), listName);
     	if(yukonSelectionList != null) {
     		return yukonSelectionList;
     	}
@@ -567,7 +574,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             listDB.setWhereIsList( dftList.getWhereIsList() );
             listDB.setListName( listName );
             listDB.setUserUpdateAvailable( dftList.getUserUpdateAvailable() );
-            listDB.setEnergyCompanyId( getEnergyCompanyID() );
+            listDB.setEnergyCompanyId( getEnergyCompanyId() );
             
             dbPersistentDao.performDBChange(list, TransactionType.INSERT);
             listDB = list.getYukonSelectionList();
@@ -624,13 +631,13 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     public synchronized List<LiteServiceCompany> getServiceCompanies() {
         if (serviceCompanies == null) {
             com.cannontech.database.data.stars.report.ServiceCompany[] companies =
-                    com.cannontech.database.data.stars.report.ServiceCompany.retrieveAllServiceCompanies( getEnergyCompanyID() );
+                    com.cannontech.database.data.stars.report.ServiceCompany.retrieveAllServiceCompanies( getEnergyCompanyId() );
             
             serviceCompanies = new ArrayList<LiteServiceCompany>();
             for (int i = 0; i < companies.length; i++)
                 serviceCompanies.add( (LiteServiceCompany)StarsLiteFactory.createLite(companies[i]) );
             
-            CTILogger.info( "All service companies loaded for energy company #" + getEnergyCompanyID() );
+            CTILogger.info( "All service companies loaded for energy company #" + getEnergyCompanyId() );
         }
         
         return serviceCompanies;
@@ -716,8 +723,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         List<Warehouse> tempWarehouses = warehouses;
         if (tempWarehouses == null) {
             tempWarehouses = new ArrayList<Warehouse>();
-            tempWarehouses = warehouseDao.getAllWarehousesForEnergyCompanyId(getEnergyCompanyID());
-            CTILogger.info( "All Warehouses loaded for energy company #" + getEnergyCompanyID() );            
+            tempWarehouses = warehouseDao.getAllWarehousesForEnergyCompanyId(getEnergyCompanyId());
+            CTILogger.info( "All Warehouses loaded for energy company #" + getEnergyCompanyId() );            
 
             warehouses = tempWarehouses;
         }
@@ -745,7 +752,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     public synchronized List<LiteSubstation> getSubstations() {
         if (substations == null) {
             com.cannontech.database.db.stars.Substation[] subs =
-                    com.cannontech.database.db.stars.Substation.getAllSubstations( getEnergyCompanyID() );
+                    com.cannontech.database.db.stars.Substation.getAllSubstations( getEnergyCompanyId() );
             
             substations = new ArrayList<LiteSubstation>();
             for (int i = 0; i < subs.length; i++) {
@@ -753,7 +760,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                 substations.add( liteSub );
             }
             
-            CTILogger.info( "All substations loaded for energy company #" + getEnergyCompanyID() );
+            CTILogger.info( "All substations loaded for energy company #" + getEnergyCompanyId() );
         }
         
         return substations;
@@ -777,7 +784,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     
     public List<Integer> getOperatorLoginIDs() {
         String sql = "SELECT OperatorLoginID FROM EnergyCompanyOperatorLoginList WHERE EnergyCompanyID = ?";
-        List<Integer> list = yukonJdbcTemplate.query(sql, integerRowMapper, getEnergyCompanyID());
+        List<Integer> list = yukonJdbcTemplate.query(sql, integerRowMapper, getEnergyCompanyId());
         return list;
     }
     
@@ -804,7 +811,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                 
                 if (foundInParent) {
                     ECToGenericMapping map = new ECToGenericMapping();
-                    map.setEnergyCompanyID( getEnergyCompanyID() );
+                    map.setEnergyCompanyID( getEnergyCompanyId() );
                     map.setItemID( routeID );
                     map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
                     
@@ -864,20 +871,20 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             routeIDs = new ArrayList<Integer>();
             
             ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems(
-                    getEnergyCompanyID(), ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
+                    getEnergyCompanyId(), ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
             
             if (items != null) {
                 for (int i = 0; i < items.length; i++)
                     routeIDs.add( items[i].getItemID() );
             }
             
-            if (getDefaultRouteID() > 0) {
+            if (getDefaultRouteId() > 0) {
                 // Make sure the default route ID is in the list
-                Integer dftRouteID = new Integer( getDefaultRouteID() );
+                Integer dftRouteID = new Integer( getDefaultRouteId() );
                 
                 if (!routeIDs.contains( dftRouteID )) {
                     ECToGenericMapping map = new ECToGenericMapping();
-                    map.setEnergyCompanyID( getEnergyCompanyID() );
+                    map.setEnergyCompanyID( getEnergyCompanyId() );
                     map.setItemID( dftRouteID );
                     map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
                     
@@ -900,7 +907,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     public synchronized String getNextCallNumber() {
         if (nextCallNo == 0) {
             String sql = "SELECT CallNumber FROM CallReportBase call, ECToCallReportMapping map "
-                       + "WHERE map.EnergyCompanyID = " + getEnergyCompanyID() + " AND call.CallID = map.CallReportID";
+                       + "WHERE map.EnergyCompanyID = " + getEnergyCompanyId() + " AND call.CallID = map.CallReportID";
             SqlStatement stmt = new SqlStatement(
                     sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
             
@@ -946,7 +953,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     public synchronized String getNextOrderNumber() {
         if (nextOrderNo == 0) {
             String sql = "SELECT OrderNumber FROM WorkOrderBase service, ECToWorkOrderMapping map "
-                       + "WHERE map.EnergyCompanyID = " + getEnergyCompanyID() + " AND service.OrderID = map.WorkOrderID";
+                       + "WHERE map.EnergyCompanyID = " + getEnergyCompanyId() + " AND service.OrderID = map.WorkOrderID";
             SqlStatement stmt = new SqlStatement(
                     sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
             
@@ -1215,7 +1222,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     
     @Deprecated
     public LiteStarsCustAccountInformation getCustAccountInformation(int accountID, boolean autoLoad) {
-        LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(accountID, getEnergyCompanyID());
+        LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(accountID, getEnergyCompanyId());
         return liteAcctInfo;
     }
 
@@ -1268,7 +1275,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         for (Object object : accounts) {
         	if (object instanceof Integer) {
         		Integer accountId = (Integer) object;
-        		LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(accountId, this.getEnergyCompanyID());
+        		LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(accountId, this.getEnergyCompanyId());
         	
 	            String comparableAcctNum = liteAcctInfo.getCustomerAccount().getAccountNumber();
 	            if(accountNumSansRotationDigitsIndex > 0 && comparableAcctNum.length() >= accountNumSansRotationDigitsIndex && adjustForRotationDigits)
@@ -1634,7 +1641,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     }
     
     public StarsCustAccountInformation getStarsCustAccountInformation(int accountID, boolean autoLoad) {
-        LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(accountID, getEnergyCompanyID());
+        LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(accountID, getEnergyCompanyId());
         if (liteAcctInfo != null) return getStarsCustAccountInformation( liteAcctInfo );
         return null;
     }
@@ -1663,7 +1670,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         
         String sql = "SELECT EnergyCompanyID, ItemID FROM ECToGenericMapping " +
                 "WHERE MappingCategory='" + ECToGenericMapping.MAPPING_CATEGORY_MEMBER + "' " +
-                "AND (EnergyCompanyID=" + getEnergyCompanyID() + " OR ItemID=" + getEnergyCompanyID() + ")";
+                "AND (EnergyCompanyID=" + getEnergyCompanyId() + " OR ItemID=" + getEnergyCompanyId() + ")";
         
         try {
             SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
@@ -1680,14 +1687,14 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             }
             
             ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems(
-                    getEnergyCompanyID(), ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
+                    getEnergyCompanyId(), ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
             
             if (items != null) {
                 for (int i = 0; i < items.length; i++)
                     ech.memberLoginIDs.add( items[i].getItemID() );
             }
             
-            CTILogger.info( "Energy company hierarchy loaded for energy company #" + getEnergyCompanyID() );
+            CTILogger.info( "Energy company hierarchy loaded for energy company #" + getEnergyCompanyId() );
         }
         catch (CommandExecutionException e) {
             throw new RuntimeException(e);
@@ -1943,7 +1950,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     
     private void initApplianceCategories(){
 
-    	ApplianceCategory[] appCats = ApplianceCategory.getAllApplianceCategories(getEnergyCompanyID());
+    	ApplianceCategory[] appCats = ApplianceCategory.getAllApplianceCategories(getEnergyCompanyId());
                 
         for (ApplianceCategory category : appCats) {
             LiteApplianceCategory appCat = 
@@ -1961,7 +1968,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             appCategoryMap.put(appCat.getApplianceCategoryID(), appCat);
         }
         
-        CTILogger.info( "All appliance categories loaded for energy company #" + getEnergyCompanyID() );
+        CTILogger.info( "All appliance categories loaded for energy company #" + getEnergyCompanyId() );
     }
     
     @Override

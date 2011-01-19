@@ -83,7 +83,7 @@ public class ECUtils {
     public static List<Integer> toIdList(List<LiteStarsEnergyCompany> energyCompanyList) {
         List<Integer> idList = new ArrayList<Integer>(energyCompanyList.size());
         for (final LiteStarsEnergyCompany energyCompany : energyCompanyList) {
-            idList.add(energyCompany.getEnergyCompanyID());
+            idList.add(energyCompany.getEnergyCompanyId());
         }
         return idList;
     }

@@ -71,7 +71,7 @@ public class InsertDeviceController extends StarsInventoryActionController {
                 session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
                 LiteStarsCustAccountInformation liteAcctInfo = 
                     starsCustAccountInformationDao.getById(starsAcctInfo.getStarsCustomerAccount().getAccountID(),
-                                                           energyCompany.getEnergyCompanyID());
+                                                           energyCompany.getEnergyCompanyId());
 
                 if (invNo == null) {
                     StarsCreateLMHardware createHw = null;

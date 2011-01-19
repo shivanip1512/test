@@ -276,7 +276,7 @@ public class InventoryDaoImpl implements InventoryDao {
 
             int routeId = rs.getInt("RouteId");
             if (routeId == 0) {
-                routeId = energyCompany.getDefaultRouteID();
+                routeId = energyCompany.getDefaultRouteId();
             }
             thermostat.setRouteId(routeId);
 

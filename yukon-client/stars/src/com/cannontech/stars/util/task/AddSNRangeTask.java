@@ -151,7 +151,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 				hwDB.setManufacturerSerialNumber( serialNo );
 				hwDB.setLMHardwareTypeID( devTypeID );
 				hwDB.setRouteID( routeID );
-				hardware.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+				hardware.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 				
 				hardware = Transaction.createTransaction( Transaction.INSERT, hardware ).execute();
 				

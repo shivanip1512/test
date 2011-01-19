@@ -101,9 +101,9 @@ public class PurchaseBean
     public List<PurchasePlan> getAvailablePlans() 
     {
         if(getManageMembers())
-            availablePlans = PurchasePlan.getAllPurchasePlansForAllMembers(energyCompany.getEnergyCompanyID(), getAvailableMembers());
+            availablePlans = PurchasePlan.getAllPurchasePlansForAllMembers(energyCompany.getEnergyCompanyId(), getAvailableMembers());
         else
-            availablePlans = PurchasePlan.getAllPurchasePlans(energyCompany.getEnergyCompanyID());
+            availablePlans = PurchasePlan.getAllPurchasePlans(energyCompany.getEnergyCompanyId());
         
         return availablePlans;
     }
@@ -280,7 +280,7 @@ public class PurchaseBean
         
         Integer ecID = Warehouse.getEnergyCompanyIDFromWarehouseID(currentShipment.getWarehouseID());
         
-        if(ecID.compareTo(energyCompany.getEnergyCompanyID()) == 0)
+        if(ecID.compareTo(energyCompany.getEnergyCompanyId()) == 0)
             serialNumberMember = energyCompany;
         
         for(int i = 0; i < getAvailableMembers().size(); i++)

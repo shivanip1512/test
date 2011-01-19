@@ -48,7 +48,7 @@ public class SendSwitchCommandsController extends StarsInventoryActionController
                         
                         String msg = commands.length + " switch commands sent successfully";
                         ActivityLogger.logEvent(user.getUserID(), -1, company.getLiteID(), -1, ActivityLogActions.HARDWARE_SEND_BATCH_CONFIG_ACTION, msg);
-                        batchConfig.put( company.getEnergyCompanyID(), new Object[]{new Date(), msg} );
+                        batchConfig.put( company.getEnergyCompanyId(), new Object[]{new Date(), msg} );
                     }
                 }
             }

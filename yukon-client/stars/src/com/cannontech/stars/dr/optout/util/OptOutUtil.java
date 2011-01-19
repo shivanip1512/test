@@ -28,7 +28,7 @@ public final class OptOutUtil {
         
         LiteStarsCustAccountInformation liteAcctInfo = 
             starsCustAccountInformationDao.getById(customerAccountId,
-                                                   energyCompany.getEnergyCompanyID());
+                                                   energyCompany.getEnergyCompanyId());
         
         StarsLMProgramHistory programHistory = 
             StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo, energyCompany);

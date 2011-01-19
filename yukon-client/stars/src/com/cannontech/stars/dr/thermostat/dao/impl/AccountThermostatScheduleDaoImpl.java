@@ -226,7 +226,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     public AccountThermostatSchedule getEnergyCompanyDefaultScheduleByAccountAndType(int accountId, SchedulableThermostatType type) {
     	
     	LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(accountId);
-    	return getEnergyCompanyDefaultScheduleByType(energyCompany.getEnergyCompanyID(), type);
+    	return getEnergyCompanyDefaultScheduleByType(energyCompany.getEnergyCompanyId(), type);
     }
     
     // MAP THERMOSTATS TO SCHEDULE

@@ -104,7 +104,7 @@ public class CreateServiceRequestAction implements ActionBase {
 			    StarsCustAccountInformationDao starsCustAccountInformationDao =
 			        YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
 			    liteAcctInfo = starsCustAccountInformationDao.getById(createOrder.getAccountID(),
-			                                                          energyCompany.getEnergyCompanyID());
+			                                                          energyCompany.getEnergyCompanyId());
 			}else {
 				liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			}
@@ -222,7 +222,7 @@ public class CreateServiceRequestAction implements ActionBase {
 			if (orderNo != null) {
 				if (orderNo.trim().length() == 0)
 					throw new WebClientException( "Order # cannot be empty" );
-				if (WorkOrderBase.orderNumberExists( orderNo, energyCompany.getEnergyCompanyID() ))
+				if (WorkOrderBase.orderNumberExists( orderNo, energyCompany.getEnergyCompanyId() ))
 					throw new WebClientException( "Order # already exists" );
 			}
 			else {
@@ -248,7 +248,7 @@ public class CreateServiceRequestAction implements ActionBase {
 			}
 		}
 		
-		workOrder.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+		workOrder.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 		workOrder = Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
         
 		//New event!

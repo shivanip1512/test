@@ -64,7 +64,7 @@ public class SendWorkOrderController extends StarsWorkorderActionController {
         try {
             ReportBean reportBean = new ReportBean();
             reportBean.setType(ReportTypes.EC_WORK_ORDER);
-            reportBean.getModel().setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+            reportBean.getModel().setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
             ((WorkOrderModel)reportBean.getModel()).setOrderID( new Integer(orderID) );
             
             JFreeReport report = reportBean.createReport();;

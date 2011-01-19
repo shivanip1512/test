@@ -88,7 +88,7 @@ public class HardwareServiceImpl implements HardwareService {
             
             liteLMHardwareEvent.setNotes( "Removed from account #" + customerAccount.getAccountNumber() );
             
-            lmHardwareEventDao.add(liteLMHardwareEvent, energyCompany.getEnergyCompanyID());
+            lmHardwareEventDao.add(liteLMHardwareEvent, energyCompany.getEnergyCompanyId());
             
             if (liteInventoryBase instanceof LiteStarsLMHardware) {
                 applianceDao.deleteAppliancesByAccountIdAndInventoryId(accountId, inventoryId);

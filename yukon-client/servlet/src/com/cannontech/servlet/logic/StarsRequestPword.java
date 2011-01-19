@@ -86,7 +86,7 @@ public class StarsRequestPword extends RequestPword {
 					
 					//we must get the Yukon lite energy company for the stars lite energy company
 					LiteEnergyCompany lEnrgy =
-						DaoFactory.getEnergyCompanyDao().getEnergyCompany( eComp.getEnergyCompanyID().intValue() );
+						DaoFactory.getEnergyCompanyDao().getEnergyCompany( eComp.getEnergyCompanyId());
 
 					processEnergyCompanies( new LiteEnergyCompany[] { lEnrgy } );
 				}
@@ -130,7 +130,7 @@ public class StarsRequestPword extends RequestPword {
 	    for(Object object : accounts) {
             if(object instanceof Integer) {
                 Integer accountId = (Integer) object;
-                lCustInfo = starsCustAccountInformationDao.getById(accountId, lsec.getEnergyCompanyID());
+                lCustInfo = starsCustAccountInformationDao.getById(accountId, lsec.getEnergyCompanyId());
                 return lCustInfo;
             }
         }

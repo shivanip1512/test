@@ -49,7 +49,7 @@ public class ThermostatAdminScheduleController {
         
     	// AccountThermostatSchedule
     	SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.valueOf(type);
-    	AccountThermostatSchedule schedule = accountThermostatScheduleDao.getEnergyCompanyDefaultScheduleByType(energyCompany.getEnergyCompanyID(), schedulableThermostatType);
+    	AccountThermostatSchedule schedule = accountThermostatScheduleDao.getEnergyCompanyDefaultScheduleByType(energyCompany.getEnergyCompanyId(), schedulableThermostatType);
     	map.addAttribute("schedule", schedule);
     	
     	// schedule52Enabled

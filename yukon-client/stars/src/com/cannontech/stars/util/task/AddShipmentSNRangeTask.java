@@ -105,7 +105,7 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 				hwDB.setManufacturerSerialNumber( serialNo );
 				hwDB.setLMHardwareTypeID( devTypeID );
 				hwDB.setRouteID( 0 ); //DefaultRouteID for the energyCompany instead?
-				hardware.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+				hardware.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 				
 				hardware = Transaction.createTransaction( Transaction.INSERT, hardware ).execute();
 				

@@ -614,7 +614,7 @@ public class YukonSwitchCommandAction {
             routeID = liteHw.getRouteID();
         }
         if (routeID == 0) {
-            routeID = energyCompany.getDefaultRouteID();
+            routeID = energyCompany.getDefaultRouteId();
         }
     
         String trackHwAddr = energyCompany.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
@@ -675,7 +675,7 @@ public class YukonSwitchCommandAction {
             eventBase.setEventTypeID(hwEventEntryID);
             eventBase.setActionID(configEntryID);
             eventBase.setEventDateTime(now);
-            event.setEnergyCompanyID(energyCompany.getEnergyCompanyID());
+            event.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
     
             event = Transaction.createTransaction(Transaction.INSERT, event).execute();
     
@@ -712,7 +712,7 @@ public class YukonSwitchCommandAction {
             routeId = liteHw.getRouteID();
         }
         if (routeId == null || routeId == 0)
-            routeId = energyCompany.getDefaultRouteID();
+            routeId = energyCompany.getDefaultRouteId();
 
         for (String command : commands) {
             ServerUtils.sendSerialCommand(command, routeId, user);
@@ -728,7 +728,7 @@ public class YukonSwitchCommandAction {
             eventBase.setEventTypeID(hwEventEntryID);
             eventBase.setActionID(termEntryID);
             eventBase.setEventDateTime(new Date());
-            event.setEnergyCompanyID(energyCompany.getEnergyCompanyID());
+            event.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
     
             event = Transaction.createTransaction(Transaction.INSERT, event).execute();
     
@@ -793,7 +793,7 @@ public class YukonSwitchCommandAction {
             routeId = liteHw.getRouteID();
         }
         if (routeId == null || routeId == 0) {
-            routeId = energyCompany.getDefaultRouteID();
+            routeId = energyCompany.getDefaultRouteId();
         }
 
         for (String command : commands) {
@@ -814,7 +814,7 @@ public class YukonSwitchCommandAction {
             eventBase.setEventTypeID(hwEventEntryID);
             eventBase.setActionID(actCompEntryID);
             eventBase.setEventDateTime(new Date());
-            event.setEnergyCompanyID(energyCompany.getEnergyCompanyID());
+            event.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
     
             event = Transaction.createTransaction(Transaction.INSERT, event).execute();
     

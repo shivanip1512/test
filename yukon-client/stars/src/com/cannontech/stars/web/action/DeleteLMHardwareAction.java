@@ -250,7 +250,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 					eventBaseDB.setNotes( "Removed from account #" + liteAcctInfo.getCustomerAccount().getAccountNumber() );
 				}
 				eventDB.setInventoryID( new Integer(liteInv.getInventoryID()) );
-				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+				event.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 				
 				event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 				

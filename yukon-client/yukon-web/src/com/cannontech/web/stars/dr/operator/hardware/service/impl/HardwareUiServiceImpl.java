@@ -420,7 +420,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 /* InventoryBase */
                 LiteInventoryBase inventoryBase = getInventory(hardwareDto, accountId, energyCompany);
                 
-                inventoryId = starsInventoryBaseDao.saveInventoryBase(inventoryBase, energyCompany.getEnergyCompanyID()).getInventoryID();
+                inventoryId = starsInventoryBaseDao.saveInventoryBase(inventoryBase, energyCompany.getEnergyCompanyId()).getInventoryID();
                 
                 starsInventoryBaseService.addInstallHardwareEvent(inventoryBase, energyCompany, userContext.getYukonUser());
                 
@@ -446,7 +446,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         } else {
             /* LMHardwareBase and InventoryBase*/
             LiteStarsLMHardware lmHardware = getLmHardware(hardwareDto, accountId, energyCompany); 
-            inventoryId = starsInventoryBaseDao.saveLmHardware(lmHardware, energyCompany.getEnergyCompanyID()).getInventoryID();
+            inventoryId = starsInventoryBaseDao.saveLmHardware(lmHardware, energyCompany.getEnergyCompanyId()).getInventoryID();
             
             if(hardwareType.isThermostat()) {
                 starsInventoryBaseService.initThermostatSchedule(lmHardware, energyCompany);
@@ -490,7 +490,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             Date now = new Date();
             liteInventoryBase.setInstallDate(now.getTime());
             
-            starsInventoryBaseDao.saveInventoryBase(liteInventoryBase, energyCompany.getEnergyCompanyID()).getInventoryID();
+            starsInventoryBaseDao.saveInventoryBase(liteInventoryBase, energyCompany.getEnergyCompanyId()).getInventoryID();
 
             /* Reset the installation notes */
             List<LiteLMHardwareEvent> events = lmHardwareEventDao.getByInventoryId(liteInventoryBase.getInventoryID());
@@ -616,7 +616,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         /* InventoryBase fields */
         int categoryId = getCategoryIdForTypeId(hardwareDto.getHardwareTypeEntryId(), energyCompany);
         lmHardware.setCategoryID(categoryId);
-        lmHardware.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
+        lmHardware.setEnergyCompanyId(energyCompany.getEnergyCompanyId());
         
         /* InventoryBase fields from Dto*/
         setInventoryFieldsFromDto(lmHardware, hardwareDto);
@@ -636,7 +636,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         /* InventoryBase fields */
         int categoryId = getCategoryIdForTypeId(hardwareDto.getHardwareTypeEntryId(), energyCompany);
         meterHardware.setCategoryID(categoryId);
-        meterHardware.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
+        meterHardware.setEnergyCompanyId(energyCompany.getEnergyCompanyId());
         
         /* InventoryBase fields from Dto*/
         setInventoryFieldsFromDto(meterHardware, hardwareDto);
@@ -656,7 +656,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         /* InventoryBase fields */
         int categoryId = getCategoryIdForTypeId(hardwareDto.getHardwareTypeEntryId(), energyCompany);
         liteInventoryBase.setCategoryID(categoryId);
-        liteInventoryBase.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
+        liteInventoryBase.setEnergyCompanyId(energyCompany.getEnergyCompanyId());
         
         /* InventoryBase fields from Dto*/
         setInventoryFieldsFromDto(liteInventoryBase, hardwareDto);

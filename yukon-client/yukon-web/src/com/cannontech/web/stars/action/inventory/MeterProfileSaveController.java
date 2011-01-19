@@ -63,7 +63,7 @@ public class MeterProfileSaveController extends StarsInventoryActionController {
             {
                 currentMeter.setInventoryID(null);
                 currentMeter.setAccountID(mBean.getCurrentAccountID());
-                currentMeter.setEnergyCompanyID(mBean.getEnergyCompany().getEnergyCompanyID());
+                currentMeter.setEnergyCompanyID(mBean.getEnergyCompany().getEnergyCompanyId());
                 Transaction.createTransaction(Transaction.INSERT, currentMeter).execute();
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "New meter added to inventory and this account.");
                 accountDestination = request.getContextPath() + "/operator/Consumer/Update.jsp";
@@ -126,7 +126,7 @@ public class MeterProfileSaveController extends StarsInventoryActionController {
                     session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             LiteStarsCustAccountInformation liteAcctInfo = 
                 starsCustAccountInformationDao.getById(starsAcctInfo.getStarsCustomerAccount().getAccountID(),
-                                                       mBean.getEnergyCompany().getEnergyCompanyID());
+                                                       mBean.getEnergyCompany().getEnergyCompanyId());
             
             if (isNew) 
             {

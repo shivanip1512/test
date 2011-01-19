@@ -25,7 +25,7 @@ public class InventoryOperationsController {
     @RequestMapping(value = "/operator/inventory/inventoryOperations/home", method = RequestMethod.GET)
     public String home(ModelMap modelMap, YukonUserContext userContext) {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-        modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyID());
+        modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
         
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String title = messageSourceAccessor.getMessage("yukon.web.modules.operator.inventoryOperations.fileUploadTitle");

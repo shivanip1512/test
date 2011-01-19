@@ -87,7 +87,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccountId);
         LiteStarsCustAccountInformation liteCustomerAccount = 
             starsCustAccountInformationDao.getById(customerAccountId, 
-                                                   energyCompany.getEnergyCompanyID());
+                                                   energyCompany.getEnergyCompanyId());
 
         String progEnrBefore = toProgramNameString(liteCustomerAccount.getPrograms(), "(None)");
 
@@ -178,7 +178,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             LiteStarsCustAccountInformation liteCustomerAccount, boolean useHardwareAddressing) {
 
         final StarsProgramSignUp programSignUp = new StarsProgramSignUp();
-        programSignUp.setEnergyCompanyID(energyCompany.getEnergyCompanyID());
+        programSignUp.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
         programSignUp.setAccountNumber(customerAccount.getAccountNumber());
 
         StarsSULMPrograms programs = new StarsSULMPrograms();
@@ -248,7 +248,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
         LiteStarsCustAccountInformation liteCustomerAccount = 
             starsCustAccountInformationDao.getById(customerAccountId, 
-                                                   energyCompany.getEnergyCompanyID());
+                                                   energyCompany.getEnergyCompanyId());
         String trackHwAddr = energyCompany.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
         boolean useHardwareAddressing = Boolean.parseBoolean(trackHwAddr);
         
@@ -836,7 +836,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             // Add "sign up" event to the programs to be enrolled in
             for (int i = 0; i < progNewEnrollList.size(); i++) {
                 event.setEventID( null );
-                event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+                event.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
                 eventDB.setAccountID( accountID );
                 eventDB.setProgramID( progNewEnrollList.get(i) );
                 eventBase.setEventTypeID( progEventEntryID );
@@ -854,7 +854,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                 Integer progID = progUnenrollList.get(i);
                 
                 event.setEventID( null );
-                event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+                event.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
                 eventDB.setAccountID( accountID );
                 eventDB.setProgramID( progID );
                 eventBase.setEventTypeID( progEventEntryID );

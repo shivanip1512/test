@@ -566,7 +566,7 @@ public class AccountImportService {
                             if (acctNo == null) {
                                 LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsSearchDao.searchLMHardwareBySerialNumber(hwFields[ImportManagerUtil.IDX_SERIAL_NO], energyCompany);
                                 if (liteHw != null && liteHw.getAccountID() > 0)
-                                    acctNo = starsCustAccountInformationDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyID()).getCustomerAccount().getAccountNumber();
+                                    acctNo = starsCustAccountInformationDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyId()).getCustomerAccount().getAccountNumber();
                             }
                             
                             if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
@@ -844,7 +844,7 @@ public class AccountImportService {
                         if (acctNo == null) {
                             LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsSearchDao.searchLMHardwareBySerialNumber(hwFields[ImportManagerUtil.IDX_SERIAL_NO], energyCompany);
                             if (liteHw != null && liteHw.getAccountID() > 0)
-                                acctNo = starsCustAccountInformationDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyID()).getCustomerAccount().getAccountNumber();
+                                acctNo = starsCustAccountInformationDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyId()).getCustomerAccount().getAccountNumber();
                         }
                         
                         if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
@@ -1196,7 +1196,7 @@ public class AccountImportService {
         final String fs = System.getProperty( "file.separator" );
         String ecName = energyCompany.getName();
         if(ecName.indexOf('<') > -1) {
-            ecName = "EnergyCompany" + energyCompany.getEnergyCompanyID();
+            ecName = "EnergyCompany" + energyCompany.getEnergyCompanyId();
         }
         
         // Check to see if it exist in role property if not use default.

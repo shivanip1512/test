@@ -40,7 +40,7 @@ public class UpdateRoutesController extends StarsAdminActionController {
                     else {
                         // New route
                         ECToGenericMapping map = new ECToGenericMapping();
-                        map.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+                        map.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
                         map.setItemID( routeID );
                         map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
                         Transaction.createTransaction( Transaction.INSERT, map ).execute();
@@ -53,7 +53,7 @@ public class UpdateRoutesController extends StarsAdminActionController {
             for (int i = 0; i < oldRouteIDs.size(); i++) {
                 // Routes to be removed
                 int routeID = oldRouteIDs.get(i).intValue();
-                if (routeID == energyCompany.getDefaultRouteID())
+                if (routeID == energyCompany.getDefaultRouteId())
                     StarsAdminUtil.updateDefaultRoute( energyCompany, 0, user);
                 StarsAdminUtil.removeRoute( energyCompany, routeID );
             }

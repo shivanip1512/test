@@ -96,7 +96,7 @@ public class CommandRequestHardwareExecutorImpl implements
         if (routeId == CtiUtilities.NONE_ZERO_ID) {
             LiteStarsEnergyCompany energyCompany = 
                 ecMappingDao.getInventoryEC(hardware.getInventoryID());
-            routeId = energyCompany.getDefaultRouteID();
+            routeId = energyCompany.getDefaultRouteId();
         }
         return routeId;
 	}

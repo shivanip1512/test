@@ -39,7 +39,7 @@ public class FileUploadCollectionHelper {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.inventoryOperations." + e.getMessage()));
             
             LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-            modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyID());
+            modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
             
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             String title = messageSourceAccessor.getMessage("yukon.web.modules.operator.inventoryOperations.fileUploadTitle");
