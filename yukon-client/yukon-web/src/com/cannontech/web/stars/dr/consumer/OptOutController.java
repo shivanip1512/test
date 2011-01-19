@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.survey.dao.SurveyDao;
@@ -116,7 +114,8 @@ public class OptOutController extends AbstractConsumerController {
     	    if (!inventory.isCurrentlyOptedOut()) {
 				allOptedOut = false;
 			}
-    	    if (optOutCounts.get(inventory.getInventoryId()).isOptOutsRemaining()) {
+    	    if (optOutCounts.get(inventory.getInventoryId()).isOptOutsRemaining() &&
+    	            !inventory.isCurrentlyOptedOut()) {
     	        optOutsAvailable = true;
     	    }
     	}
@@ -164,24 +163,23 @@ public class OptOutController extends AbstractConsumerController {
         List<DisplayableInventory> optOutableInventories = new ArrayList<DisplayableInventory>();
         Map<Integer, OptOutCountHolder> optOutCounts =
             getOptOutCountsForInventories(displayableInventories, customerAccount.getAccountId());
-
         Map<DisplayableInventory, Boolean> noOptOutsAvailableLookup = Maps.newHashMap();
         for (DisplayableInventory inventory : displayableInventories) {
             OptOutCountHolder optOutCountHolder = optOutCounts.get(inventory.getInventoryId());
-        	if (optOutCountHolder.isOptOutsRemaining()) {
-        	    optOutableInventories.add(inventory);
-        	}
-        	
+            
         	boolean optOutNotAvailable = !optOutCountHolder.isOptOutsRemaining() || 
         	                              inventory.isCurrentlyOptedOut() && isSameDay ||
         	                              (inventory.getCurrentlyScheduledOptOut() != null && 
-        	                               (optOutCountHolder.getRemainingOptOuts() - 1) == 0 && 
+        	                               (optOutCountHolder.getRemainingOptOuts()) == 1 &&  
         	                               isSameDay);
-        	
         	noOptOutsAvailableLookup.put(inventory, optOutNotAvailable);
+        	
+        	if(!optOutNotAvailable){
+        	    optOutableInventories.add(inventory);
+        	}
+        	
         }
         model.addAttribute("noOptOutsAvailableLookup", noOptOutsAvailableLookup);
-
         boolean hasDeviceSelection =
             rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_OPT_OUT_DEVICE_SELECTION, user);
         boolean blanketDevices = (optOutableInventories.size() < 2 && !hasDeviceSelection);
@@ -191,8 +189,8 @@ public class OptOutController extends AbstractConsumerController {
                 inventoryIds[index] = optOutableInventories.get(index).getInventoryId();
             }
             optOutBackingBean.setInventoryIds(inventoryIds);
-
-            return optOutQuestions(customerAccount, userContext,
+           
+            return optOutQuestions(customerAccount, userContext,  
                                    optOutBackingBean, bindingResult,
                                    flashScope, model);
         }
@@ -224,18 +222,15 @@ public class OptOutController extends AbstractConsumerController {
         Integer[] inventoryIds = optOutBackingBean.getInventoryIds();
         if (inventoryIds == null || inventoryIds.length == 0) {
             model.addAttribute("error", "yukon.dr.consumer.optoutlist.noInventorySelected");
-            return deviceSelection(customerAccount, optOutBackingBean,
+            return deviceSelection(customerAccount, optOutBackingBean,         
                                    bindingResult, flashScope, model,
                                    userContext);
         }
 
         // Validating to make sure there are opt outs left to use that have not been scheduled.
         List<Integer> inventoryIdList = Arrays.asList(inventoryIds);
-        LocalDate optOutStartDate = optOutBackingBean.getStartDate();
-        final boolean optingOutForToday = optOutStartDate.equals(new LocalDate(userContext.getJodaTimeZone()));
-        
         MessageSourceResolvable validateOptOutsRemainingMessage = 
-            validateOptOutsRemaining(optingOutForToday, inventoryIdList, customerAccount);
+            validateOptOutsRemaining(inventoryIdList, customerAccount);
         if (validateOptOutsRemainingMessage != null) {
             model.addAttribute("result", validateOptOutsRemainingMessage);
             return "consumer/optout/optOutResult.jsp";
@@ -444,24 +439,24 @@ public class OptOutController extends AbstractConsumerController {
         return retVal;
     }
 
-    private MessageSourceResolvable validateOptOutsRemaining(boolean optOutForToday,
-                                                             List<Integer> inventoryIds,
+    private MessageSourceResolvable validateOptOutsRemaining(List<Integer> inventoryIds,
                                                              CustomerAccount customerAccount) {
-            
-            Iterable<InventoryBase> inventoryBases = inventoryBaseDao.getByIds(inventoryIds).values();
-            
-            // Check that there are opt outs remaining for each inventory being opted out
-            for (InventoryBase inventoryBase : inventoryBases) {
-                OptOutCountHolder optOutCount = 
-                    optOutService.getCurrentOptOutCount(inventoryBase.getInventoryId(), customerAccount.getAccountId());
 
-                if(!optOutCount.isOptOutsRemaining() ||
-                   (optOutForToday && optOutCount.getRemainingOptOuts() == 1)) {
-                    return new YukonMessageSourceResolvable("yukon.dr.consumer.optout.noOptOutsAvailableForThisInventory", inventoryBase.getDeviceLabel());
-                }
+        Iterable<InventoryBase> inventoryBases = inventoryBaseDao.getByIds(inventoryIds).values();
+
+        // Check that there are opt outs remaining for each inventory being opted out
+        for (InventoryBase inventoryBase : inventoryBases) {
+            OptOutCountHolder optOutCount = 
+                optOutService.getCurrentOptOutCount(inventoryBase.getInventoryId(), 
+                                                    customerAccount.getAccountId());
+
+            if(!optOutCount.isOptOutsRemaining()){
+                return new YukonMessageSourceResolvable("yukon.dr.consumer.optout.noOptOutsAvailableForThisInventory", 
+                                                        inventoryBase.getDeviceLabel());
             }
-            
-            return null;
+        }
+
+        return null;
     }
 
     @InitBinder
