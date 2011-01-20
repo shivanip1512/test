@@ -2792,6 +2792,16 @@ INT Mct4xxDevice::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, list< 
 }
 
 
+bool Mct4xxDevice::isProfileTablePointerCurrent(const unsigned char table_pointer, const CtiTime TimeNow, const unsigned interval_len) const
+{
+    const unsigned long seconds_since_midnight = TimeNow.seconds() % 86400;
+    const unsigned long expected_table_pointer = (seconds_since_midnight / interval_len) % 96;
+
+    //  the table pointer needs to indicate it was within the same block of 6 intervals as we expect
+    return (table_pointer / 6) == (expected_table_pointer / 6);
+}
+
+
 INT Mct4xxDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
 {
     INT status = NORMAL;
@@ -2842,17 +2852,15 @@ INT Mct4xxDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, lis
             timestamp -= interval_len * 6 * block;
             timestamp -= timestamp % (interval_len * 6);
 
-            const unsigned long seconds_since_midnight = TimeNow.seconds() % 86400;
-            const unsigned long expected_table_pointer = (seconds_since_midnight / interval_len) % 96;
-
             //  make sure we're getting the same block we're expecting
-            if( (DSt->Message[0] / 6) != (expected_table_pointer / 6) )
+            if( ! isProfileTablePointerCurrent(DSt->Message[0], TimeNow, interval_len) )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - LP error for device \"" << getName() << "\"; ";
                     dout << "Table Pointer = " << (unsigned)DSt->Message[0] << ", ";
-                    dout << "expected_table_pointer = " << expected_table_pointer;
+                    dout << "TimeNow = " << TimeNow;
+                    dout << "interval_len = " << interval_len;
                     dout << " in " __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "commandstr = " << InMessage->Return.CommandStr << endl;
                 }

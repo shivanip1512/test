@@ -66,6 +66,17 @@ Mct420Device::ConfigPartsList Mct420Device::getPartsList()
 }
 
 
+bool Mct420Device::isProfileTablePointerCurrent(const unsigned char table_pointer, const CtiTime TimeNow, const unsigned interval_len) const
+{
+    const unsigned long intervals_since_epoch = TimeNow.seconds() / interval_len;
+
+    //  truncating on purpose
+    const unsigned char expected_table_pointer = intervals_since_epoch / 6;
+
+    return table_pointer == expected_table_pointer;
+}
+
+
 int Mct420Device::executePutConfig( CtiRequestMsg        *pReq,
                                     CtiCommandParser     &parse,
                                     OUTMESS             *&OutMessage,
