@@ -79,7 +79,7 @@
     	 <br>
 	     Minimum number of days between outage count readings.
 	     <br><br>
-	     Must be greater than 0.
+	     Must be greater than or equal to 0.
 	     <br><br>
     ]]></entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.scheduleRead"><![CDATA[
