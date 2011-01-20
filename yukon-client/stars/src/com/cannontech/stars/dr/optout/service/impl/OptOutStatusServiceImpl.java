@@ -1,6 +1,5 @@
 package com.cannontech.stars.dr.optout.service.impl;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -127,12 +126,10 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 		    Set<Integer> optOutOverrideAssignedProgramIds = programIdOptOutTemporaryOverrideMap.keySet();
 		    
 			// Getting the enrollments for the given user
-			List<CustomerAccount> customerAccounts = customerAccountDao.getByUser(user);
-			List<LMHardwareControlGroup> lmHardwareControlGroups = Collections.emptyList();
-			for (CustomerAccount customerAccount : customerAccounts) {
-				lmHardwareControlGroups.addAll( 
-			        lmHardwareControlGroupDao.getCurrentEnrollmentByAccountId(customerAccount.getAccountId()));
-			}
+			CustomerAccount customerAccount = customerAccountDao.getCustomerAccount(user);
+			List<LMHardwareControlGroup> lmHardwareControlGroups = Lists.newArrayList();
+			lmHardwareControlGroups.addAll( 
+		        lmHardwareControlGroupDao.getCurrentEnrollmentByAccountId(customerAccount.getAccountId()));
 
 		    for (LMHardwareControlGroup lmHardwareControlGroup : lmHardwareControlGroups) {
 		        

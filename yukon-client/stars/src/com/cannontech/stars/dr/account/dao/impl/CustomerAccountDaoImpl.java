@@ -10,12 +10,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.Validate;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -37,9 +40,14 @@ import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.util.ECUtils;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class CustomerAccountDaoImpl implements CustomerAccountDao {
+	
+	private final Logger logger = YukonLogManager.getLogger(CustomerAccountDaoImpl.class);
+	
     private static final String insertSql;
     private static final String removeSql;
     private static final String updateSql;
@@ -199,12 +207,12 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     public List<CustomerAccount> getByUser(LiteYukonUser user) {
 
     	// Load all based on user's Primary Contact
-    	List<CustomerAccount> accountList = getByPrimaryContactUser(user);
+    	List<CustomerAccount> primaryAccountList = getByPrimaryContactUser(user);
 
-    	// Add all based on user's Additional Contact
-        accountList.addAll(getAccountByAdditionalContactUser(user));
-    	
-        return accountList;
+    	// Load all based on user's Additional Contact
+        List<CustomerAccount> additionalAccountList = getAccountByAdditionalContactUser(user);
+        List<CustomerAccount> result = Lists.newArrayList(Iterables.concat(primaryAccountList, additionalAccountList));
+        return result;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -310,6 +318,20 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         return account;
     }
     
+	@Override
+    public CustomerAccount getCustomerAccount(LiteYukonUser user) {
+    	List<CustomerAccount> accountList = getByUser(user);
+
+        if (accountList.size() == 0) {
+            throw new NotAuthorizedException("The supplied user's contact is not assigned to an account.");
+        } else {
+            if (accountList.size() > 1) {
+                logger.warn("Multiple accounts associated with user" + user.getUsername() + ", returning an arbitrary account.");
+            }
+            return accountList.get(0);
+        }
+    }
+
     private SqlStatementBuilder getAccountIdsByECSql(Iterable<Integer> energyCompanyIds) {
         SqlStatementBuilder accountIdsByECSql = new SqlStatementBuilder();
         accountIdsByECSql.append("SELECT AccountId");
@@ -357,17 +379,16 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     private List<CustomerAccount> getByPrimaryContactUser(final LiteYukonUser user) {
         Validate.notNull(user, "user parameter cannot be null.");
         
-        final StringBuilder sb = new StringBuilder();
-        sb.append("SELECT AccountId,AccountSiteId,AccountNumber,CustomerAccount.CustomerId,BillingAddressId,AccountNotes ");
-        sb.append("FROM CustomerAccount,Customer,Contact,YukonUser ");
-        sb.append("WHERE CustomerAccount.CustomerId = Customer.CustomerId "); 
-        sb.append("AND Customer.PrimaryContactId = Contact.ContactId ");
-        sb.append("AND YukonUser.UserId = Contact.LoginId ");
-        sb.append("AND YukonUser.UserId = ? ");
-        sb.append("ORDER BY CustomerAccount.AccountId");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT AccountId,AccountSiteId,AccountNumber,CustomerAccount.CustomerId,BillingAddressId,AccountNotes ");
+        sql.append("FROM CustomerAccount,Customer,Contact,YukonUser ");
+        sql.append("WHERE CustomerAccount.CustomerId = Customer.CustomerId "); 
+        sql.append("AND Customer.PrimaryContactId = Contact.ContactId ");
+        sql.append("AND YukonUser.UserId = Contact.LoginId ");
+        sql.append("AND YukonUser.UserId").eq(user.getUserID());
+        sql.append("ORDER BY CustomerAccount.AccountId");
         
-        String sql = sb.toString();
-        List<CustomerAccount> list = yukonJdbcTemplate.query(sql, rowMapper, user.getUserID());
+        List<CustomerAccount> list = yukonJdbcTemplate.query(sql, rowMapper);
         return list;
     }
 
@@ -382,10 +403,10 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("JOIN CustomerAdditionalContact CAC ON CA.CustomerId = CAC.CustomerId ");
         sql.append("JOIN Contact Cont ON CAC.ContactId = Cont.ContactId ");
         sql.append("JOIN YukonUser YU ON YU.UserId = Cont.LoginId ");
-        sql.append("WHERE YU.UserId = ? ");
+        sql.append("WHERE YU.UserId").eq(user.getUserID());
         sql.append("ORDER BY CA.AccountId");
 
-        List<CustomerAccount> list = yukonJdbcTemplate.query(sql.getSql(), rowMapper, user.getUserID());
+        List<CustomerAccount> list = yukonJdbcTemplate.query(sql.getSql(), rowMapper);
         return list;
     }
     

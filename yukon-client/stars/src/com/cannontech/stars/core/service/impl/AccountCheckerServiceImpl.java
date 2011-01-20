@@ -137,28 +137,17 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     }
     
     private List<Integer> getInventoryIdsByUser(LiteYukonUser user) {
-
-    	List<Integer> inventoryIdList = new ArrayList<Integer>();
-        
-        // Load all inventory for all customer accounts
-    	final List<Integer> customerAccountIdsList = getCustomerAccountIdsByUser(user);
-    	for (Integer accountId : customerAccountIdsList) {
-		    inventoryIdList.addAll(inventoryBaseDao.getInventoryIdsByAccountId(accountId));
-    	}
+        int customerAccountId = getCustomerAccountId(user);
+        final List<Integer> inventoryIdList = inventoryBaseDao.getInventoryIdsByAccountId(customerAccountId);
         return inventoryIdList;
     }
     
     private List<Integer> getContactIdsByUser(LiteYukonUser user) {
-
-        List<LiteContact> contacts = new ArrayList<LiteContact>();
-                
-    	// Load all contacts (primary and additional) for all customer accounts
-    	final List<Integer> customerAccountIdsList = getCustomerAccountIdsByUser(user);
-    	for (Integer accountId : customerAccountIdsList) {
-	        contacts.addAll(contactDao.getAdditionalContactsForAccount(accountId));
-	        contacts.add(contactDao.getPrimaryContactForAccount(accountId));
-    	}
+        int customerAccountId = getCustomerAccountId(user);
         
+        final List<LiteContact> contacts = contactDao.getAdditionalContactsForAccount(customerAccountId);
+        final LiteContact primaryContact = contactDao.getPrimaryContactForAccount(customerAccountId);
+        contacts.add(primaryContact);
         final List<Integer> contactIdList = new ArrayList<Integer>(contacts.size());
         
         for (final LiteContact contact : contacts) {
@@ -170,15 +159,11 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     }
     
     private List<Integer> getProgramIdsByUser(LiteYukonUser user) {
-    	List<Appliance> appliances = new ArrayList<Appliance>();
-    	
-    	// Load all appliances for all customer accounts
-    	final List<Integer> customerAccountIdsList = getCustomerAccountIdsByUser(user);
-    	for (Integer accountId : customerAccountIdsList) {
-    		appliances.addAll(applianceDao.getAssignedAppliancesByAccountId(accountId));
-    	}
-    	
+        int customerAccountId = getCustomerAccountId(user);
+        
+        final List<Appliance> appliances = applianceDao.getAssignedAppliancesByAccountId(customerAccountId);
         final List<Program> programs = programDao.getByAppliances(appliances);
+        
         final List<Integer> programsIdList = new ArrayList<Integer>(programs.size());
         
         for (final Program program : programs) {
@@ -187,18 +172,6 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
         }
         
         return programsIdList;
-    }
-    
-    private List<Integer> getCustomerAccountIdsByUser(LiteYukonUser user) {
-        final List<CustomerAccount> customerAccounts = customerAccountDao.getByUser(user);
-        final List<Integer> customerAccountIds = new ArrayList<Integer>(customerAccounts.size());
-        
-        for (final CustomerAccount customerAccount : customerAccounts) {
-            Integer customerAccountId = customerAccount.getAccountId();
-            customerAccountIds.add(customerAccountId);
-        }
-        
-        return customerAccountIds;
     }
 
     private List<Integer> getGraphDefinitionIdsByUser(LiteYukonUser user) {
@@ -213,14 +186,11 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     }
     
     private List<Integer> getScheduleIdsByUser(LiteYukonUser user) {
-    	List<AccountThermostatSchedule> allSchedulesForAccount = new ArrayList<AccountThermostatSchedule>();
-    	
-    	// Load all schedules for all customer accounts
-    	final List<Integer> customerAccountIdsList = getCustomerAccountIdsByUser(user);
-    	for (Integer accountId : customerAccountIdsList) {
-    		allSchedulesForAccount.addAll(accountThermostatScheduleDao.getAllSchedulesForAccountByType(accountId, null));
-		}
-    	
+        
+    	int accountId = getCustomerAccountId(user);
+        
+        List<AccountThermostatSchedule> allSchedulesForAccount = accountThermostatScheduleDao.getAllSchedulesForAccountByType(accountId, null);
+        
         List<Integer> scheduleIdList = Lists.newArrayListWithCapacity(allSchedulesForAccount.size());
         for (AccountThermostatSchedule schedule : allSchedulesForAccount) {
         	int scheduleId = schedule.getAccountThermostatScheduleId();
@@ -229,7 +199,12 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
         
         return scheduleIdList;
     }
-
+    
+    private int getCustomerAccountId(LiteYukonUser user) {
+    	CustomerAccount customerAccount = customerAccountDao.getCustomerAccount(user);
+    	return customerAccount.getAccountId();
+    }
+ 
     private String generateErrorMessage(LiteYukonUser user, String type, Object[] ids) {
         final StringBuilder sb = new StringBuilder();
         sb.append("username: " + user.getUsername());

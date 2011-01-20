@@ -111,10 +111,6 @@ public class OptOutAdminController {
     	map.addAttribute("programNameCountsMap", programNameCountsMap);
         map.addAttribute("energyCompanyOptOutCountsSetting", defaultOptOutCountsSetting.getOptOutCounts());
     	
-    	// optOutsEnabled
-    	boolean optOutsEnabled = optOutStatusService.getOptOutEnabled(userContext.getYukonUser());
-    	map.addAttribute("optOutsEnabled", optOutsEnabled);
-    	
     	// Get the customer search by list for search drop down box
     	YukonSelectionList yukonSelectionList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE);
     	List<YukonListEntry> customerSearchList = new ArrayList<YukonListEntry>();

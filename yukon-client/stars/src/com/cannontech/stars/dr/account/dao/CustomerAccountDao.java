@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -71,4 +72,13 @@ public interface CustomerAccountDao {
      * @return LiteYukonUser user
      */
     public LiteYukonUser getYukonUserByAccountId(int accountId);
+    
+    /**
+     * Helper method to return exactly one CustomerAccount for user.
+     *  A warning message is logged if more than one account is found for the user.
+     * @param user
+     * @return
+     * @throws NotAuthorizedException if user is not associated with any accounts.
+     */
+    public CustomerAccount getCustomerAccount(LiteYukonUser user) throws NotAuthorizedException;
 }

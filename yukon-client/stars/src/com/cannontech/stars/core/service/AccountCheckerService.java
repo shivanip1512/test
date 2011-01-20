@@ -27,5 +27,4 @@ public interface AccountCheckerService {
      * @throws NotAuthorizedException If user is not authorized
      */
     public void checkGraph(LiteYukonUser user, Integer... graphDefinitionIds) throws NotAuthorizedException;
-    
 }

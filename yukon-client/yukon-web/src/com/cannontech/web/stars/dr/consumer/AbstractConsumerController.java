@@ -1,13 +1,10 @@
 package com.cannontech.web.stars.dr.consumer;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -46,13 +43,8 @@ public abstract class AbstractConsumerController {
         YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         LiteYukonUser user = yukonUserContext.getYukonUser();
         
-        List<CustomerAccount> accountList = customerAccountDao.getByUser(user);
-        
-        if(accountList.size() > 0){
-            return accountList.get(0);
-        }
-        
-        throw new NotAuthorizedException("The supplied user's contact is not assigned to an account.");
+        CustomerAccount customerAccount = customerAccountDao.getCustomerAccount(user);
+        return customerAccount;
     }
     
     @Autowired
