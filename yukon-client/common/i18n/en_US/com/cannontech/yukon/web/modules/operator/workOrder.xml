@@ -26,6 +26,11 @@
     <entry key="yukon.web.modules.operator.workOrder.currentState">State</entry>
     <entry key="yukon.web.modules.operator.workOrder.orderedBy">Order By</entry>
     <entry key="yukon.web.modules.operator.workOrder.description">Description</entry>
+    
+    <entry key="yukon.web.modules.operator.workOrder.confirmDeleteWorkOrderDialogTitle">Confirm Delete</entry>
+    <entry key="yukon.web.modules.operator.workOrder.confirmDeleteWorkOrder">Are you sure you want to delete work order</entry>
+    <entry key="yukon.web.modules.operator.workOrder.confirmDeleteWorkOrderOk">Ok</entry>
+    <entry key="yukon.web.modules.operator.workOrder.confirmDeleteWorkOrderCancel">Cancel</entry>
 
     <!-- viewWorkOrder.jsp -->
     <entry key="yukon.web.modules.operator.workOrder.VIEW.pageName">View Work Order</entry>

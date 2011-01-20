@@ -5,6 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 
 <cti:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
 <cti:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
@@ -12,8 +13,31 @@
 <cti:standardPage module="operator" page="workOrder.list">
 <tags:setFormEditMode mode="${mode}"/>
 
-    <cti:includeCss link="/WebConfig/yukon/styles/operator/callTracking.css"/>
+<i:simplePopup titleKey=".confirmDeleteWorkOrderDialogTitle" id="confirmDeleteWorkOrderDialog" styleClass="mediumSimplePopup">
+        <cti:msg2 key=".confirmDeleteWorkOrder" arguments="${workOrder.workOrderBase.orderId}"/>
+        <div class="actionArea">
+            <input id="confirmDeleteWorkOrderOkButton" type="button" value="<cti:msg2 key=".confirmDeleteWorkOrderOk"/>" onclick="window.location='/spring/stars/operator/workOrder/deleteWorkOrder'"/>
+            <input type="button" value="<cti:msg2 key=".confirmDeleteWorkOrderCancel"/>" onclick="$('confirmDeleteWorkOrderDialog').hide()"/>
+        </div>
+</i:simplePopup>
 
+    <cti:includeCss link="/WebConfig/yukon/styles/operator/callTracking.css"/>
+  
+  <%-- 
+       JS function for showing the confirmation dialog before processing the delete
+       command. The dialog box has to be modified to show correct work order number 
+       and to call the correct delete URL. 
+   --%>
+  <script type='text/javascript'>
+   var confirmDeleteWorkOrderString = $('confirmDeleteWorkOrderDialog_body').firstChild.data;
+   
+   function showDeleteWorkOrderDialog(workOrderNumber, deleteWorkOrderUrl){
+       $('confirmDeleteWorkOrderDialog_body').firstChild.data = confirmDeleteWorkOrderString + ' '+workOrderNumber;
+       $('confirmDeleteWorkOrderOkButton').onclick = function(){window.location=""+deleteWorkOrderUrl;};
+       $('confirmDeleteWorkOrderDialog').show();
+   }
+   
+  </script>
     <form id="createWorkOrderForm" action="/spring/stars/operator/workOrder/viewWorkOrder" method="get">
         <input type="hidden" name="accountId" value="${accountId}">
     </form>
@@ -44,8 +68,9 @@
                 <tr><td colspan="8" class="noCalls subtleGray"><i:inline key=".noWorkOrders"/></td></tr>
             </cti:displayForPageEditModes>
         </c:if>
-        
+
         <c:forEach var="workOrder" items="${workOrders}">
+           
             <tr>
                 <td>
                     <cti:url var="viewWorkOrderUrl" value="/spring/stars/operator/workOrder/viewWorkOrder">
@@ -67,12 +92,13 @@
                 <%-- delete icon --%>
                 <cti:displayForPageEditModes modes="EDIT,CREATE">
                     <td class="removeCol">
-                        <form id="deleteWorkOrderForm" action="/spring/stars/operator/workOrder/deleteWorkOrder" method="post">
-                            <input type="hidden" name="accountId" value="${accountId}">
-                            <input type="hidden" name="deleteWorkOrderId" value="${workOrder.workOrderBase.orderId}">
-                            <input type="image" src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
-                        </form>
+                         <cti:url var="deleteWorkOrderUrl" value="/spring/stars/operator/workOrder/deleteWorkOrder">
+                            <cti:param name="accountId">${accountId}</cti:param>
+                            <cti:param name="deleteWorkOrderId">${workOrder.workOrderBase.orderId}</cti:param>
+                         </cti:url>
+                        <input type="image" src="${delete}" onclick = "showDeleteWorkOrderDialog(${workOrder.workOrderBase.orderNumber}, '${deleteWorkOrderUrl}')" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
                     </td>
+                    
                 </cti:displayForPageEditModes>
             
             </tr>
