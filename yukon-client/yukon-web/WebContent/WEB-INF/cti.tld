@@ -2005,6 +2005,12 @@
         <rtexprvalue>true</rtexprvalue>
         <description>Becomes the td element's sytle attribute.</description>
     </attribute>
+    <attribute>
+     <name>orderMode</name>
+     <required>false</required>
+     <rtexprvalue>true</rtexprvalue>
+     <description>Sets the order mode (topToBttom, leftToRight)</description>
+    </attribute>
   </tag>
   
   <tag>
@@ -2014,6 +2020,12 @@
     <description>
         Container for a column cell inside a cti:dataGrid tag.
     </description>
+    <attribute>
+     <name>sortKey</name>
+     <required>false</required>
+     <rtexprvalue>true</rtexprvalue>
+     <description>Reference for sorting in parent cti:dataGrid tag</description>
+    </attribute>
   </tag>
   
   <tag>

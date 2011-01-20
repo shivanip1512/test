@@ -8,10 +8,10 @@
 
 <c:set var="columnPercentage" value="${100 / columnCount}"/>
 			
-<cti:dataGrid cols="${columnCount}" tableClasses="compactResultsTable" cellStyle="width:${columnPercentage}%;">
+<cti:dataGrid cols="${columnCount}" tableClasses="compactResultsTable" cellStyle="width:${columnPercentage}%;" orderMode="topToBottom">
 	<c:forEach var="pointTemplateMask" items="${pointTemplates}">
 	
-        <cti:dataGridCell>
+        <cti:dataGridCell sortKey="${pointTemplateMask.pointTemplate.name}">
 			<c:set var="disabled" value="${pointTemplateMask.masked ? 'disabled' : ''}"/>
 			<c:set var="className" value="${pointTemplateMask.masked ? 'subtleGray' : ''}"/>
 		
