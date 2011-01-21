@@ -15,6 +15,7 @@ struct test_Mct420Device : Mct420Device
     using CtiTblPAOLite::_type;
     using Mct420Device::decodeDisconnectConfig;
     using Mct420Device::decodeDisconnectStatus;
+    using Mct420Device::isProfileTablePointerCurrent;
 
     enum test_Features
     {
@@ -226,3 +227,105 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectStatus)
                                   tr.results_begin(),  tr.results_end());
 }
 
+BOOST_AUTO_TEST_CASE(test_dev_mct420_isProfileTablePointerCurrent)
+{
+    test_Mct420Device dev;
+
+    // The math for the Mct420 devices is (seconds_from_utc_epoch / block) % 256.
+
+    {
+        const CtiTime t(CtiDate(1, 1, 2011), 19, 16, 0);  //  1293930960 seconds (0x4D1FD1D0)
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(255, t, 3600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(  0, t, 3600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(  1, t, 3600));
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(255, t, 1800));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(  0, t, 1800));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(  1, t, 1800));
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(255, t,  900));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(  0, t,  900));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(  1, t,  900));
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(  0, t,  600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(  1, t,  600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(  2, t,  600));
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(  1, t,  300));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(  2, t,  300));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(  3, t,  300));
+    }
+
+    {
+        const CtiTime t(CtiDate(1, 1, 2011), 1, 16, 0);  //  1293866160 seconds (0x4D1ED4B0)
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(252, t, 3600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(253, t, 3600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(254, t, 3600));
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(249, t, 1800));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(250, t, 1800));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(251, t, 1800));
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(243, t,  900));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(244, t,  900));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(245, t,  900));
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(238, t,  600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(239, t,  600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(240, t,  600));
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(221, t,  300));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(222, t,  300));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(223, t,  300));
+    }
+
+    {
+        const CtiTime t(CtiDate(1, 1, 2011), 9, 16, 0);  //  1293894960 seconds (0x4D1F4530)
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(253, t, 3600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(254, t, 3600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(255, t, 3600));
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(252, t, 1800));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(253, t, 1800));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(254, t, 1800));
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(249, t,  900));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(250, t,  900));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(251, t,  900));
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(246, t,  600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(247, t,  600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(248, t,  600));
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(237, t,  300));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(238, t,  300));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(239, t,  300));
+    }
+
+    {
+        const CtiTime t(CtiDate(1, 1, 2011), 12, 26, 0);  //  1293906360 seconds (0x4D1F71B8)
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(254, t, 3600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(255, t, 3600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(  0, t, 3600));
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(253, t, 1800));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(254, t, 1800));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(255, t, 1800));
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(251, t,  900));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(252, t,  900));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(253, t,  900));
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(249, t,  600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(250, t,  600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(251, t,  600));
+
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(243, t,  300));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(244, t,  300));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(245, t,  300));
+    }
+}
