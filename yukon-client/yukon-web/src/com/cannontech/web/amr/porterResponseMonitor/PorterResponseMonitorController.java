@@ -40,6 +40,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -56,7 +57,7 @@ public class PorterResponseMonitorController {
 	private PorterResponseMonitorService porterResponseMonitorService;
 	private OutageEventLogService outageEventLogService;
 	private AtomicInteger atomicInt = new AtomicInteger();
-	private final static String baseKey = "yukon.web.modules.amr.porterResponseMonitorValidator";
+	private final static String baseKey = "yukon.web.modules.amr.porterResponseMonitor";
 	private Function<PorterResponseMonitorErrorCode, Integer> transformer = new Function<PorterResponseMonitorErrorCode, Integer>() {
 		@Override
 		public Integer apply(PorterResponseMonitorErrorCode from) {
@@ -88,7 +89,7 @@ public class PorterResponseMonitorController {
 			}
 			if (containsDuplicates(orderList)) {
 				// we have duplicate orders for this monitor
-				errors.reject(baseKey + ".rulesTable.order");
+				errors.reject(baseKey + ".rulesTable.uniqueOrder");
 			}
 
 			// Error Code Uniqueness
@@ -140,6 +141,7 @@ public class PorterResponseMonitorController {
 
 		PorterResponseMonitor monitor = new PorterResponseMonitor();
 		modelMap.addAttribute("monitor", monitor);
+		modelMap.addAttribute("mode", PageEditMode.CREATE);
 
 		return "porterResponseMonitor/create.jsp";
 	}
@@ -270,12 +272,11 @@ public class PorterResponseMonitorController {
 		return remainingRules;
 	}
 
-	@RequestMapping
-	public String delete(int monitorId, ModelMap modelMap, FlashScope flashScope, YukonUserContext userContext)
+	@RequestMapping(params = "delete")
+	public String delete(@ModelAttribute PorterResponseMonitor monitor, ModelMap modelMap, FlashScope flashScope, YukonUserContext userContext)
 					throws ServletRequestBindingException {
 
-		PorterResponseMonitor monitor = porterResponseMonitorDao.getMonitorById(monitorId);
-		porterResponseMonitorService.delete(monitorId);
+		porterResponseMonitorService.delete(monitor.getMonitorId());
 
 		MessageSourceResolvable deleteMessage = new YukonMessageSourceResolvable(
 				"yukon.web.modules.amr.porterResponseMonitor.deleted", monitor.getName());
@@ -289,21 +290,21 @@ public class PorterResponseMonitorController {
 		return "redirect:/spring/meter/start";
 	}
 
-	@RequestMapping
-	public String toggleEnabled(int monitorId, ModelMap modelMap, YukonUserContext userContext)
+	@RequestMapping(params = "toggleEnabled")
+	public String toggleEnabled(@ModelAttribute PorterResponseMonitor monitor, ModelMap modelMap, 
+	                YukonUserContext userContext)
 					throws ServletRequestBindingException {
 
-		PorterResponseMonitor monitor = porterResponseMonitorDao.getMonitorById(monitorId);
 		MonitorEvaluatorStatus status = monitor.getEvaluatorStatus();
 
 		try {
-			status = porterResponseMonitorService.toggleEnabled(monitorId);
-			modelMap.addAttribute("monitorId", monitorId);
+			status = porterResponseMonitorService.toggleEnabled(monitor.getMonitorId());
+			modelMap.addAttribute("monitorId", monitor.getMonitorId());
 		} catch (NotFoundException e) {
 			return "redirect:/spring/meter/start";
 		}
 
-		outageEventLogService.porterResponseMonitorEnableDisable(monitorId, status.name(), userContext.getYukonUser());
+		outageEventLogService.porterResponseMonitorEnableDisable(monitor.getMonitorId(), status.name(), userContext.getYukonUser());
 
 		return "redirect:editPage";
 	}
@@ -335,13 +336,13 @@ public class PorterResponseMonitorController {
 		Map<Integer, String> errorCodesMap = getErrorCodesMapFromMonitor(monitor);
 
 		if (monitor.getRules().isEmpty()) {
-			MessageSourceResolvable noRulesMessage = new YukonMessageSourceResolvable(
-					"yukon.web.modules.amr.porterResponseMonitorView.rulesTable.noRules");
+			MessageSourceResolvable noRulesMessage = new YukonMessageSourceResolvable(baseKey + ".rulesTable.noRules");
 			flashScope.setWarning(Collections.singletonList(noRulesMessage));
 		}
 
 		model.addAttribute("errorCodesMap", errorCodesMap);
 		model.addAttribute("monitor", monitor);
+		model.addAttribute("mode", PageEditMode.VIEW);
 	}
 
 	private void setupEditPageModelMap(PorterResponseMonitor monitor, ModelMap model, YukonUserContext userContext) {
@@ -355,6 +356,7 @@ public class PorterResponseMonitorController {
 		Map<Integer, String> errorCodesMap = getErrorCodesMapFromMonitor(monitor);
 		model.addAttribute("errorCodesMap", errorCodesMap);
 		model.addAttribute("monitor", monitor);
+		model.addAttribute("mode", PageEditMode.EDIT);
 	}
 
 	private void setupErrorEditPageModelMap(PorterResponseMonitor monitor,

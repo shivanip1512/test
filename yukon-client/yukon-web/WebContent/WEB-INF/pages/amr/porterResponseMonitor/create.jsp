@@ -7,7 +7,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="amr" page="porterResponseMonitorCreate">
+<cti:standardPage module="amr" page="porterResponseMonitor.${mode}">
 
 	<cti:standardMenu menuSelection="meters" />
 

@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<tags:standardPageFragment module="amr"	pageName="porterResponseMonitorEdit" fragmentName="addRule">
+<tags:standardPageFragment module="amr"	pageName="porterResponseMonitor" fragmentName="addRule">
 
 	<table class="compactResultsTable">
 

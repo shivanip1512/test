@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="amr" page="porterResponseMonitorEdit">
+<cti:standardPage module="amr" page="porterResponseMonitor.${mode}">
 
 	<cti:standardMenu menuSelection="meters" />
 
@@ -85,25 +85,6 @@
 		$(rowId).show();
 	}
 </script>
-
-	<%-- MISC FORMS --%>
-	<form id="monitorDeleteForm" action="/spring/amr/porterResponseMonitor/delete" method="post">
-		<input type="hidden" name="monitorId" value="${monitor.monitorId}">
-	</form>
-
-	<form id="toggleEnabledForm" action="/spring/amr/porterResponseMonitor/toggleEnabled" method="post">
-		<input type="hidden" name="monitorId" value="${monitor.monitorId}">
-	</form>
-
-	<i:simplePopup styleClass="mediumSimplePopup" titleKey=".delete.title" id="deleteConfirmDialog">
-		<h1 class="dialogQuestion"><i:inline key=".deleteConfirm" arguments="${monitor.name}" /></h1>
-
-		<div class="actionArea">
-			<tags:slowInput2 formId="monitorDeleteForm" key="ok" />
-			<input type="button" value="<i:inline key=".cancel"/>" 
-				onclick="$('deleteConfirmDialog').hide()" class="formSubmit">
-		</div>
-	</i:simplePopup>
 
 	<form:form id="updateForm" commandName="monitor"
 		action="/spring/amr/porterResponseMonitor/update" method="post">
@@ -210,20 +191,21 @@
 			<br>
 		</cti:dataGrid>
 
-		<%-- create / update / delete --%>
+		<%-- update / enable_disable / delete / cancel --%>
 		<div class="pageActionArea">
-			<tags:slowInput2 formId="updateForm" key="update" />
-			<c:choose>
-				<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-					<tags:slowInput2 formId="toggleEnabledForm" key="monitoringDisable" />
-				</c:when>
-				<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-					<tags:slowInput2 formId="toggleEnabledForm" key="monitoringEnable" />
-				</c:when>
-			</c:choose>
-			<input type="button" onclick="$('deleteConfirmDialog').show()"
-				value="<i:inline key=".delete"/>" class="formSubmit">
-			<input type="submit" name="cancel" class="formSubmit" value="<i:inline key=".cancel"/>">
+            <cti:button key="update" type="submit"/>
+
+			<c:if test="${monitor.evaluatorStatus eq 'ENABLED'}">
+                <cti:button key="monitoringDisable" type="submit" name="toggleEnabled"/>
+			</c:if>
+			<c:if test="${monitor.evaluatorStatus eq 'DISABLED'}">
+                <cti:button key="monitoringEnable" type="submit" name="toggleEnabled"/>
+			</c:if>
+
+			<cti:button id="deleteButton" key="delete"/>
+			<tags:confirmDialog nameKey=".deleteConfirmation" arguments="${monitor.name}" submitName="delete" on="#deleteButton"/>
+
+            <cti:button key="cancel" type="submit" name="cancel"/>
 		</div>
 	</form:form>
 

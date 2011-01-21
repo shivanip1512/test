@@ -10,72 +10,46 @@
 	<entry key="yukon.web.modules.amr.porterResponseMonitorsWidget.createNew">Create</entry>
 
 	<!-- PorterResponseMonitorController create.jsp -->
-	<entry key="yukon.web.modules.amr.porterResponseMonitorCreate.title">Porter Response Monitoring</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorCreate.setup.title">Setup</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorCreate.name">Name</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorCreate.create.label">Create</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorCreate.create.labelBusy">Creating</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorCreate.cancel">Cancel</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorCreate.cancel.labelBusy">Canceling</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.CREATE.setup.title">Setup</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.CREATE.create.label">Create</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.CREATE.create.labelBusy">Creating</entry>
 
 	<!-- PorterResponseMonitorController view.jsp -->
-	<entry key="yukon.web.modules.amr.porterResponseMonitorView.title">Porter Response Monitoring</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorView.sectionHeader.title">Info</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorView.name">Name</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorView.monitoring">Monitoring</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorView.rulesTable.title">Porter Response Monitor Rules</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorView.rulesTable.header.ruleOrder">Order</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorView.rulesTable.header.success">Success</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorView.rulesTable.header.errors">Errors</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorView.rulesTable.header.matchStyle">Match</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorView.rulesTable.header.action">Action</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorView.rulesTable.header.remove">Remove</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorView.rulesTable.noRules">No Rules Exist (Click Edit button below to Add)</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorView.rulesTable.helpText"><![CDATA[
-         <br>
-         Order: The order of operations of the rules. These values must be unique.
-         <br><br>
-         Success: Whether or not the transaction was a success or failure.
-         <br><br>
-         Errors: The errors to process. This field must be populated with non-negative, unique, comma separated integers.
-         <br><br>
-         Match: The match style.
-         <br><br>
-         Action: The message to be sent to all multispeak vendors supporting ODEventNotification messages.
-         <br><br>
-    ]]></entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorView.edit.label">Edit</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.VIEW.sectionHeader.title">Info</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.VIEW.edit.label">Edit</entry>
 
 	<!-- PorterResponseMonitorController edit.jsp -->
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.title">Porter Response Monitoring</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.sectionHeader.title">Edit</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.name">Name</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.monitoring">Monitoring</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.rulesTable.title">Porter Response Monitor Rules</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.rulesTable.header.ruleOrder">Order</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.rulesTable.header.success">Success</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.rulesTable.header.errors">Errors</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.rulesTable.header.matchStyle">Match</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.rulesTable.header.action">Action</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.rulesTable.header.remove">Remove</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.rulesTable.add.label">Add Rule</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.rulesTable.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.rulesTable.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.rulesTable.add.hoverText">Click to add rule</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.rulesTable.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.rulesTable.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.rulesTable.delete.hoverText">Click to remove</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.delete">Delete</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.delete.title">Delete Porter Response Monitor</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.cancel">Cancel</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.cancel.busy">Canceling</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.deleteConfirm">Are you sure you want to delete {0}?</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.update.label">Update</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.monitoringEnable.label">Enable</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.monitoringEnable.labelBusy">Enabling</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.monitoringDisable.label">Disable</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.monitoringDisable.labelBusy">Disabling</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.rulesTable.helpText"><![CDATA[
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.sectionHeader.title">Edit</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.add.label">Add Rule</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.add.hoverText">Click to add rule</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.delete.hoverText">Click to remove</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.deleteConfirmation.title">Delete Porter Response Monitor</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.deleteConfirmation.message">Are you sure you want to delete {0}?</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.update.label">Update</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.monitoringEnable.label">Enable</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.monitoringEnable.labelBusy">Enabling</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.monitoringDisable.label">Disable</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.monitoringDisable.labelBusy">Disabling</entry>
+    
+    <!-- PorterResponseMonitorController shared keys -->
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.title">Porter Response Monitoring</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.monitoring">Monitoring</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.cancel">Cancel</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.cancel.labelBusy">Canceling</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.name">Name</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.title">Porter Response Monitor Rules</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.header.ruleOrder">Order</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.header.success">Success</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.header.errors">Errors</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.header.matchStyle">Match</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.header.action">Action</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.header.remove">Remove</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.noRules">No Rules Exist (Click Edit button below to Add)</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.helpText"><![CDATA[
          <br>
          Order: The order of operations of the rules. These values must be unique.
          <br><br>
@@ -89,10 +63,10 @@
          <br><br>
     ]]></entry>
 
-	<!-- PorterResponseMonitorController addRuleTableRow.jsp -->
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.addRule.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.addRule.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorEdit.addRule.delete.hoverText">Click to remove</entry>
+    <!-- PorterResponseMonitorController addRuleTableRow.jsp -->
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.delete.hoverText">Click to remove</entry>
 
 	<!-- PorterResponseMonitorController PorterResponseMonitorMatchStyle.java -->
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.matchStyle.none">None</entry>
@@ -106,10 +80,10 @@
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.action.deadzo">Deadzo</entry>
 
 	<!-- validation errors -->
-	<entry key="yukon.web.modules.amr.porterResponseMonitorValidator.empty.name">Name cannot be blank.</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorValidator.alreadyExists.name">Name already exists.</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorValidator.rulesTable.order">Order values must be unique</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitorValidator.rulesTable.errorCodesFormat">Error field must be populated with non-negative, unique, comma separated integers</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.empty.name">Name cannot be blank.</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.alreadyExists.name">Name already exists.</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.uniqueOrder">Order values must be unique</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.errorCodesFormat">Error field must be populated with non-negative, unique, comma separated integers</entry>
 
 	<!-- FlashScope messages -->
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.created">Porter Response Monitor Created</entry>

@@ -33,7 +33,7 @@
 
 <c:if test="${!empty pageScope.on}">
     <script type="text/javascript">
-        YEvent.observeSelectorClick('#${pageScope.on}', function() {
+        YEvent.observeSelectorClick('${pageScope.on}', function() {
             $('${id}').show();
         });
     </script>

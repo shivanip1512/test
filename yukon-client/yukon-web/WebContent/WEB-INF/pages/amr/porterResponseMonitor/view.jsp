@@ -7,7 +7,7 @@
 <%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="amr" page="porterResponseMonitorView">
+<cti:standardPage module="amr" page="porterResponseMonitor.${mode}">
 
 	<cti:standardMenu menuSelection="meters" />
 
