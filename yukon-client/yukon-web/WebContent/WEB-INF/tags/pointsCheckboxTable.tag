@@ -11,14 +11,13 @@
 <cti:dataGrid cols="${columnCount}" tableClasses="compactResultsTable" cellStyle="width:${columnPercentage}%;" orderMode="topToBottom">
 	<c:forEach var="pointTemplateMask" items="${pointTemplates}">
 	
-        <cti:dataGridCell sortKey="${pointTemplateMask.pointTemplate.name}">
+        <cti:dataGridCell>
 			<c:set var="disabled" value="${pointTemplateMask.masked ? 'disabled' : ''}"/>
 			<c:set var="className" value="${pointTemplateMask.masked ? 'subtleGray' : ''}"/>
 		
 			<label>
 				<input type="checkbox" ${disabled} name="PT:${deviceType}:${pointTemplateMask.pointTemplate.pointIdentifier.type}:${pointTemplateMask.pointTemplate.pointIdentifier.offset}">
 					<span class="${className}">${pointTemplateMask.pointTemplate.name} [#${pointTemplateMask.pointTemplate.pointIdentifier.offset}]</span>
-				</input>
 			</label>
         </cti:dataGridCell>    
         

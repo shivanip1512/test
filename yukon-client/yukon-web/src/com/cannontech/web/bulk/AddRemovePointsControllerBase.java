@@ -2,12 +2,14 @@ package com.cannontech.web.bulk;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import javax.annotation.Resource;
@@ -188,9 +190,8 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     	    }
     	};
     	
-    	Map<PointTemplate, Boolean> result = Maps.transformValues(sharedPointTemplateMasks.asMap(), func);
-
-        return result;
+        Map<PointTemplate, Boolean> resultUnsorted = Maps.transformValues(sharedPointTemplateMasks.asMap(), func);
+        return new TreeMap<PointTemplate, Boolean>(resultUnsorted);
     }
     
     /**
@@ -268,7 +269,6 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
         		}
         	}
         }
-    	
     	return pointTemplatesMap;
     }
     
@@ -292,22 +292,24 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
             // all defined point templates for device type, convert to wrappers that are all initially unmasked
             PaoDefinition paoDefiniton = paoDefinitionDao.getPaoDefinition(paoType);
             Set<PointTemplate> allPointTemplates = paoDefinitionDao.getAllPointTemplates(paoDefiniton);
-            Map<PointTemplate, Boolean> pointTemplateMaskMap = createDefaultPointTemplateMaskMap(allPointTemplates);
+            Map<PointTemplate, Boolean> pointTemplateMaskMapUnsorted = createDefaultPointTemplateMaskMap(allPointTemplates);
             
             // mask those device type points where all the the device of this type have the point
             if (maskExistingPoints) {
                 
                 fillInPointTemplateMask(maskIfExistOnAllDevices,
                                         paoTypeToSimpleDeviceMultiMap, paoType,
-                                        pointTemplateMaskMap);
+                                        pointTemplateMaskMapUnsorted);
             }
             
             PaoTypeMasks paoTypeMasks = new PaoTypeMasks();
             paoTypeMasks.setPaoType(paoType);
-            paoTypeMasks.setPointTemplateMaskMap(pointTemplateMaskMap);
+            TreeMap<PointTemplate, Boolean> pointTemplateMaskMapSorted = 
+                new TreeMap<PointTemplate, Boolean>(pointTemplateMaskMapUnsorted);
+            paoTypeMasks.setPointTemplateMaskMap(pointTemplateMaskMapSorted);
             paoTypeMasksList.add(paoTypeMasks);
+            
         }
-        
         return paoTypeMasksList;
     }
     

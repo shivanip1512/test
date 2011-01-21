@@ -2009,7 +2009,7 @@
      <name>orderMode</name>
      <required>false</required>
      <rtexprvalue>true</rtexprvalue>
-     <description>Sets the order mode (topToBttom, leftToRight)</description>
+     <description>Sets the order mode (topToBottom, leftToRight)</description>
     </attribute>
   </tag>
   
@@ -2020,12 +2020,6 @@
     <description>
         Container for a column cell inside a cti:dataGrid tag.
     </description>
-    <attribute>
-     <name>sortKey</name>
-     <required>false</required>
-     <rtexprvalue>true</rtexprvalue>
-     <description>Reference for sorting in parent cti:dataGrid tag</description>
-    </attribute>
   </tag>
   
   <tag>

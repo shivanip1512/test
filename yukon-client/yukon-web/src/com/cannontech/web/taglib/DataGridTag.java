@@ -1,8 +1,6 @@
 package com.cannontech.web.taglib;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 
 import javax.servlet.jsp.JspException;
@@ -12,97 +10,76 @@ import org.apache.commons.lang.StringUtils;
 import com.google.common.collect.Lists;
 
 public class DataGridTag extends YukonTagSupport {
-    
-    private class SortableGridElement{
-        
-        private String key;
-        private String content;
-        
-        public SortableGridElement(String key, String content){
-            this.key = key;
-            this.content = content;
+
+    public enum OrderMode {
+        NONE(""),
+        TOP_TO_BOTTOM("topToBottom"),
+        LEFT_TO_RIGHT("leftToRight");
+
+        private final String strValue;
+
+        private OrderMode(String strValue) {
+            this.strValue = strValue;
         }
 
-        public String getKey() {
-            return key;
-        }
-
-        public String getContent() {
-            return content;
+        public String toString() {
+            return strValue;
         }
     }
-    
-    private class ElementComparator implements Comparator<SortableGridElement>{
 
-        @Override
-        public int compare(SortableGridElement e1, SortableGridElement e2) {
-            return e1.getKey().toLowerCase().compareTo(e2.getKey().toLowerCase());
-        }
-        
-    }
-    
-    private LinkedList<SortableGridElement> elements = Lists.newLinkedList();
-    private SortableGridElement[][] grid;
+    private LinkedList<String> content = Lists.newLinkedList();
+    private String[][] grid;
     private int numberOfColumns;
     private int numberOfRows;
     private String tableClasses = "";
     private String tableStyle = "";
     private String rowStyle = "";
     private String cellStyle = "";
-    private String orderMode = "";
-    
+    private OrderMode orderMode = OrderMode.NONE;
+
     @Override
     public void doTag() throws JspException, IOException {
-        
+
         getJspBody().invoke(null);
-        
-        //Calculate the required number of rows
-        numberOfRows = elements.size() / numberOfColumns;
-        if(elements.size() % numberOfColumns!=0){
+
+        // Calculate the required number of rows
+        numberOfRows = content.size() / numberOfColumns;
+        if (content.size() % numberOfColumns != 0) {
             numberOfRows++;
         }
-        
-        //Create the data grid
-        grid = new SortableGridElement[numberOfRows][numberOfColumns];
-        
-        
-        /* Sort the elements based on their sort key which is required 
-         * for left to right ordering and also top to bottom
-         */
-        if(orderMode.toLowerCase().equals("lefttoright") || 
-                orderMode.toLowerCase().equals("toptobottom")){
-            Collections.sort(elements, new ElementComparator());
+
+        // Create the data grid
+        grid = new String[numberOfRows][numberOfColumns];
+
+        // Populate the grid based on orderMode
+        int index = 0;
+        for (String element : content) {
+            if (orderMode == OrderMode.TOP_TO_BOTTOM) {
+                grid[index % numberOfRows][index / numberOfRows] = element;
+            } else { // orderMode is either NONE or LEFT_TO_RIGHT
+                grid[index / numberOfColumns][index % numberOfColumns] = element;
+            }
+            index++;
         }
-        
-        //Populate the grid
-        for(int i = 0; i < elements.size();i++){
-            grid[ i / numberOfColumns][i % numberOfColumns] = elements.get(i);
-            
-        }
-        
-        //Rearrange grid elements for top to bottom mode
-        if(orderMode.toLowerCase().equals("toptobottom")){
-            arrangeTopToBottom();
-        }
-        
+
         getJspContext().getOut().println("<table ");
-        if(StringUtils.isNotBlank(tableClasses)) {
+        if (StringUtils.isNotBlank(tableClasses)) {
             getJspContext().getOut().println("class=\"" + tableClasses + "\" ");
         }
-        
+
         getJspContext().getOut().println("style=\"border-collapse:collapse;" + tableStyle + "\">");
-        
-        for(int i = 0; i < numberOfRows;i++){
-            for(int j = 0; j < numberOfColumns; j++){
+
+        for (int i = 0; i < numberOfRows; i++) {
+            for (int j = 0; j < numberOfColumns; j++) {
 
                 boolean firstCell = j == 0;
-                boolean lastCell = j == numberOfColumns - 1; 
+                boolean lastCell = j == numberOfColumns - 1;
 
-                if(firstCell){
+                if (firstCell) {
                     getJspContext().getOut().println("<tr");
                     if (StringUtils.isNotBlank(rowStyle)) {
-                        getJspContext().getOut().println(" style=\"" + rowStyle + "\""); 
-                    } 
+                        getJspContext().getOut().println(" style=\"" + rowStyle + "\"");
+                    }
                     getJspContext().getOut().println(">");
                 }
 
@@ -119,49 +96,28 @@ public class DataGridTag extends YukonTagSupport {
                 getJspContext().getOut().println("\"");
 
                 /* Add style */
-                if(StringUtils.isNotBlank(cellStyle)) {
+                if (StringUtils.isNotBlank(cellStyle)) {
                     getJspContext().getOut().println("style=\"" + cellStyle + "\"");
                 }
 
                 /* Do contents */
                 getJspContext().getOut().print(">");
-               
-                //Some Elements in the grid might be null, leave table cell empty for null values
-                if(grid[i][j]!=null){
-                    getJspContext().getOut().print(grid[i][j].getContent());
+
+                // Some Elements in the grid might be null, leave table cell empty for null values
+                if (grid[i][j] != null) {
+                    getJspContext().getOut().print(grid[i][j]);
                 }
                 getJspContext().getOut().println("</td>");
             }
             getJspContext().getOut().println("</tr>");
         }
         getJspContext().getOut().println("</table>");
-    }    
-    
-    // Changes the arrangement of grid elements for top to bottom ordering
-    private void arrangeTopToBottom(){
-        
-        SortableGridElement[][] newGrid = new SortableGridElement[numberOfRows][numberOfColumns];
-        int destRow = 0; int destColumn = 0;
-        for(int i = 0; i< numberOfRows; i++){
-            for(int j = 0; j<numberOfColumns;j++){
-                
-                newGrid[destRow][destColumn] = grid[i][j];
-                
-                destRow++;
-                if(destRow==numberOfRows){
-                    destRow = 0;
-                    destColumn++;
-                }
-            }
-        }
-        
-        grid = newGrid;
     }
 
-    public void addContent(String key, String content) {
-        elements.add(new SortableGridElement(key, content));
+    public void addContent(String content) {
+        this.content.add(content);
     }
-    
+
     public void setCols(int cols) {
         this.numberOfColumns = cols;
     }
@@ -199,10 +155,16 @@ public class DataGridTag extends YukonTagSupport {
     }
 
     public String getOrderMode() {
-        return orderMode;
+        return orderMode.toString();
     }
 
-    public void setOrderMode(String ordering) {
-        this.orderMode = ordering;
+    public void setOrderMode(String orderMode) {
+        if (orderMode.toLowerCase().equals("toptobottom")) {
+            this.orderMode = OrderMode.TOP_TO_BOTTOM;
+        } else if (orderMode.toLowerCase().equals("lefttoright")) {
+            this.orderMode = OrderMode.LEFT_TO_RIGHT;
+        } else {
+            this.orderMode = OrderMode.NONE;
+        }
     }
 }
