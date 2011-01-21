@@ -36,9 +36,7 @@
 
 <c:if test="${!empty pageScope.on}">
     <script type="text/javascript">
-       console.log('poo: ${pageScope.on}');
         YEvent.observeSelectorClick('#${pageScope.on}', function() {
-            alert('here');
             $('${id}').show();
         });
     </script>
