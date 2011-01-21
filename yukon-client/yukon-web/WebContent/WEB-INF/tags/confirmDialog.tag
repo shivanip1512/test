@@ -33,7 +33,7 @@
             <c:if test="${!empty pageScope.submitName}">
                 <cti:button key="ok" type="submit" name="${pageScope.submitName}" />
             </c:if>
-            <cti:button key="cancel" onclick="$('${pageScope.on}').hide()" />
+            <cti:button key="cancel" onclick="$('${uniqueId}').hide()" />
         </div>
     </i:simplePopup>
 </cti:msgScope>
