@@ -28,7 +28,7 @@
     <entry key="yukon.web.modules.operator.workOrder.description">Description</entry>
     
     <entry key="yukon.web.modules.operator.workOrder.confirmDeleteWorkOrderDialogTitle">Confirm Delete</entry>
-    <entry key="yukon.web.modules.operator.workOrder.confirmDeleteWorkOrder">Are you sure you want to delete work order</entry>
+    <entry key="yukon.web.modules.operator.workOrder.confirmDeleteWorkOrder">Are you sure you want to delete work order {0}?</entry>
     <entry key="yukon.web.modules.operator.workOrder.confirmDeleteWorkOrderOk">Ok</entry>
     <entry key="yukon.web.modules.operator.workOrder.confirmDeleteWorkOrderCancel">Cancel</entry>
 

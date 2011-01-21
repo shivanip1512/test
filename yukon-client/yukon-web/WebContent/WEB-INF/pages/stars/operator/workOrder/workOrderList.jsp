@@ -14,7 +14,7 @@
 <tags:setFormEditMode mode="${mode}"/>
 
 <i:simplePopup titleKey=".confirmDeleteWorkOrderDialogTitle" id="confirmDeleteWorkOrderDialog" styleClass="mediumSimplePopup">
-        <cti:msg2 key=".confirmDeleteWorkOrder" arguments="${workOrder.workOrderBase.orderId}"/>
+        <cti:msg2 key=".confirmDeleteWorkOrder"/>
         <div class="actionArea">
             <input id="confirmDeleteWorkOrderOkButton" type="button" value="<cti:msg2 key=".confirmDeleteWorkOrderOk"/>" onclick="window.location='/spring/stars/operator/workOrder/deleteWorkOrder'"/>
             <input type="button" value="<cti:msg2 key=".confirmDeleteWorkOrderCancel"/>" onclick="$('confirmDeleteWorkOrderDialog').hide()"/>
@@ -32,7 +32,8 @@
    var confirmDeleteWorkOrderString = $('confirmDeleteWorkOrderDialog_body').firstChild.data;
    
    function showDeleteWorkOrderDialog(workOrderNumber, deleteWorkOrderUrl){
-       $('confirmDeleteWorkOrderDialog_body').firstChild.data = confirmDeleteWorkOrderString + ' '+workOrderNumber;
+       var dialogString = confirmDeleteWorkOrderString.replace('{0}', workOrderNumber);;
+       $('confirmDeleteWorkOrderDialog_body').firstChild.data = dialogString;
        $('confirmDeleteWorkOrderOkButton').onclick = function(){window.location=""+deleteWorkOrderUrl;};
        $('confirmDeleteWorkOrderDialog').show();
    }
