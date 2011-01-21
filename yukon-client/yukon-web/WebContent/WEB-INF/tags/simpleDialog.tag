@@ -3,6 +3,7 @@
 <%@ attribute name="title"%>
 <%@ attribute name="onClose"%>
 <%@ attribute name="styleClass" required="false"%>
+<%@ attribute name="on" description="registers click event on the element with this ID"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -16,8 +17,5 @@
     <c:set var="title" value="title not specified"/>
 </c:if>
 
-<c:if test="${!empty pageScope.styleClass}">
-    <c:set var="style" value="${pageScope.styleClass}"/>
-</c:if>
-
-<tags:simplePopup id="${id}" title="${pageScope.title}" onClose="${pageScope.onClose}" styleClass="${style}"/>
+<tags:simplePopup id="${id}" title="${pageScope.title}" onClose="${pageScope.onClose}"
+    styleClass="${pageScope.styleClass}" on="${pageScope.on}"/>

@@ -2,6 +2,7 @@
 <%@ attribute name="title" required="true" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="onClose" required="false" type="java.lang.String"%>
+<%@ attribute name="on" description="registers click event on the element with this ID"%>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -29,3 +30,12 @@
     </div>    
 </div>
 </div>
+
+<c:if test="${!empty pageScope.on}">
+    <script type="text/javascript">
+        console.log('poo: ${pageScope.on}');
+        YEvent.observeSelectorClick('#${pageScope.on}', function() {
+            $('${id}').show();
+        });
+    </script>
+</c:if>
