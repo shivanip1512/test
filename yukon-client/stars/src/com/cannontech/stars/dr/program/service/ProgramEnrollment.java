@@ -1,5 +1,13 @@
 package com.cannontech.stars.dr.program.service;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
+import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
+import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
+import com.cannontech.stars.dr.program.model.Program;
+
 public class ProgramEnrollment {
     private int applianceCategoryId;
     private int assignedProgramId;
@@ -12,6 +20,30 @@ public class ProgramEnrollment {
     
     public ProgramEnrollment() {}
 
+    /**
+     * This method also take care of the validation for the applianceCategory, program, and loadGroup
+     * and includes checking to see if they belong to one another.
+     */
+    public ProgramEnrollment(EnrollmentHelper enrollmentHelper, LMHardwareBase lmHardwareBase,
+                             ApplianceCategory applianceCategory, Program program, LoadGroup loadGroup) {
+        setInventoryId(lmHardwareBase.getInventoryId());
+        setAssignedProgramId(program.getProgramId());
+        if (enrollmentHelper.getApplianceKW() != null) {
+            setApplianceKW(enrollmentHelper.getApplianceKW());
+        }
+        if (applianceCategory != null) {
+            setApplianceCategoryId(applianceCategory.getApplianceCategoryId());
+        } else {
+            setApplianceCategoryId(program.getApplianceCategoryId());
+        }
+        if (loadGroup != null) {
+            setLmGroupId(loadGroup.getLoadGroupId());
+        }
+        if (!StringUtils.isBlank(enrollmentHelper.getRelay())) {
+            setRelay(enrollmentHelper.getRelay());
+        }
+    }
+    
     public ProgramEnrollment(int applianceCategoryId, float applianceKW,
             boolean enroll, int inventoryId, int lmGroupId,
             int assignedProgramId, int relay) {

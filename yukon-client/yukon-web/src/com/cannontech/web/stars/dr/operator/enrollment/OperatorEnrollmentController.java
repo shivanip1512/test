@@ -17,11 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
+import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.displayable.dao.DisplayableEnrollmentDao;
@@ -54,6 +57,8 @@ public class OperatorEnrollmentController {
     private LoadGroupDao loadGroupDao;
     private StaticLoadGroupMappingDao staticLoadGroupMappingDao;
     private AssignedProgramDao assignedProgramDao;
+    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
+    private EnergyCompanyService energyCompanyService; 
     private EnrollmentDao enrollmentDao;
     private EnrollmentHelperService enrollmentHelperService;
     private RolePropertyDao rolePropertyDao;
@@ -141,9 +146,12 @@ public class OperatorEnrollmentController {
         AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
         model.addAttribute("assignedProgram", assignedProgram);
         List<LoadGroup> loadGroups = null;
-        boolean trackHardwareAddressing =
-            rolePropertyDao.checkProperty(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING,
-                                          userContext.getYukonUser());
+        
+        YukonEnergyCompany yukonEnergyCompany = 
+            energyCompanyService.getEnergyCompanyByAccountId(accountInfoFragment.getAccountId());
+        
+        boolean trackHardwareAddressingEnabled =
+            energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany);
         String batchedSwitchCommandToggle =
             rolePropertyDao.getPropertyStringValue(YukonRoleProperty.BATCHED_SWITCH_COMMAND_TOGGLE,
                                                    userContext.getYukonUser());
@@ -154,7 +162,7 @@ public class OperatorEnrollmentController {
             List<Integer> loadGroupIds =
                 staticLoadGroupMappingDao.getLoadGroupIdsForApplianceCategory(assignedProgram.getApplianceCategoryId());
             loadGroups = loadGroupDao.getByIds(loadGroupIds);
-        } else if (!trackHardwareAddressing) {
+        } else if (!trackHardwareAddressingEnabled) {
             loadGroups = loadGroupDao.getByProgramId(assignedProgram.getProgramId());
         }
         model.addAttribute("loadGroups", loadGroups);
@@ -178,20 +186,19 @@ public class OperatorEnrollmentController {
 
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
         validateAccountEditing(userContext);
-        AssignedProgram assignedProgram =
-            assignedProgramDao.getById(assignedProgramId);
+        AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
         model.addAttribute("assignedProgram", assignedProgram);
 
         List<com.cannontech.stars.dr.program.service.ProgramEnrollment> conflictingEnrollments =
-            getConflictingEnrollments(model, accountInfoFragment.getAccountId(),
-                                      assignedProgramId, userContext);
+            getConflictingEnrollments(model, accountInfoFragment.getAccountId(), assignedProgramId, userContext);
+
         // For confirmation, we just need a list of conflicting programs.
         Set<Integer> conflictingAssignedProgramIds = Sets.newHashSet();
         for (com.cannontech.stars.dr.program.service.ProgramEnrollment enrollment : conflictingEnrollments) {
             conflictingAssignedProgramIds.add(enrollment.getAssignedProgramId());
         }
-        List<AssignedProgram> conflictingPrograms =
-            assignedProgramDao.getByIds(conflictingAssignedProgramIds);
+        
+        List<AssignedProgram> conflictingPrograms = assignedProgramDao.getByIds(conflictingAssignedProgramIds);
         model.addAttribute("conflictingPrograms", conflictingPrograms);
         model.addAttribute("isAdd", isAdd);
 
@@ -221,19 +228,15 @@ public class OperatorEnrollmentController {
                                                                          accountInfoFragment.getAccountNumber());
         
         validateAccountEditing(userContext);
-        AssignedProgram assignedProgram =
-            assignedProgramDao.getById(assignedProgramId);
+        AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
         List<com.cannontech.stars.dr.program.service.ProgramEnrollment> programEnrollments = Lists.newArrayList();
         programEnrollments.addAll(programEnrollment.makeProgramEnrollments(assignedProgram.getApplianceCategoryId(), assignedProgramId));
         programEnrollments.addAll(getConflictingEnrollments(model, accountInfoFragment.getAccountId(),
                                                             assignedProgramId, userContext));
-        enrollmentHelperService.updateProgramEnrollments(programEnrollments,
-                                                         accountInfoFragment.getAccountId(),
-                                                         userContext);
+        enrollmentHelperService.updateProgramEnrollments(programEnrollments, accountInfoFragment.getAccountId(), userContext);
 
         String msgKey = "yukon.web.modules.operator.enrollmentList." + successKey;
-        MessageSourceResolvable message =
-            new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName());
+        MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName());
         flashScope.setConfirm(message);
         return closeDialog(model);
     }
@@ -244,8 +247,7 @@ public class OperatorEnrollmentController {
             AccountInfoFragment accountInfoFragment) {
         validateAccountEditing(userContext);
 
-        AssignedProgram assignedProgram =
-            assignedProgramDao.getById(assignedProgramId);
+        AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
         model.addAttribute("assignedProgram", assignedProgram);
 
         return "operator/enrollment/unenroll.jsp";
@@ -256,8 +258,7 @@ public class OperatorEnrollmentController {
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
         DisplayableEnrollmentProgram displayableEnrollmentProgram =
-            displayableEnrollmentDao.getProgram(
-                accountInfoFragment.getAccountId(), assignedProgramId);
+            displayableEnrollmentDao.getProgram(accountInfoFragment.getAccountId(), assignedProgramId);
         ProgramEnrollment programEnrollment = new ProgramEnrollment(displayableEnrollmentProgram);
         model.addAttribute("programEnrollment", programEnrollment);
 
@@ -265,9 +266,8 @@ public class OperatorEnrollmentController {
             enrollment.setEnrolled(false);
         }
 
-        return save(model, assignedProgramId, programEnrollment,
-                    "unenrollCompleted", userContext, accountInfoFragment,
-                    flashScope);
+        return save(model, assignedProgramId, programEnrollment, "unenrollCompleted", userContext, 
+                    accountInfoFragment, flashScope);
     }
 
     private List<com.cannontech.stars.dr.program.service.ProgramEnrollment> getConflictingEnrollments(ModelMap model,
@@ -281,9 +281,7 @@ public class OperatorEnrollmentController {
             // Only one program per appliance category is allowed.  Find other
             // programs in the same appliance category and make sure they
             // aren't enrolled.
-            conflictingEnrollments =
-                enrollmentDao.findConflictingEnrollments(accountId,
-                                                         assignedProgramId);
+            conflictingEnrollments = enrollmentDao.findConflictingEnrollments(accountId, assignedProgramId);
         }
 
         return conflictingEnrollments;
@@ -335,7 +333,17 @@ public class OperatorEnrollmentController {
     public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
         this.assignedProgramDao = assignedProgramDao;
     }
+    
+    @Autowired
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
+    }
 
+    @Autowired
+    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
+        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
+    }
+    
     @Autowired
     public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
         this.enrollmentDao = enrollmentDao;

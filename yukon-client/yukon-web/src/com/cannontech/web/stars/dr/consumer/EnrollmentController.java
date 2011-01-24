@@ -174,13 +174,10 @@ public class EnrollmentController extends AbstractConsumerController {
             int accountId, List<ProgramEnrollment> updatedEnrollments, HttpSession session,
             YukonUserContext userContext) {
         List<ProgramEnrollment> programEnrollments = Lists.newArrayList();
+        
         programEnrollments.addAll(updatedEnrollments);
-        programEnrollments.addAll(getConflictingEnrollments(model, accountId,
-                                                            assignedProgramId,
-                                                            userContext));
-        enrollmentHelperService.updateProgramEnrollments(programEnrollments,
-                                                         accountId,
-                                                         userContext);
+        programEnrollments.addAll(getConflictingEnrollments(model, accountId, assignedProgramId, userContext));
+        enrollmentHelperService.updateProgramEnrollments(programEnrollments, accountId, userContext);
 
         model.addAttribute("enrollmentResult", ProgramEnrollmentResultEnum.SUCCESS);
 

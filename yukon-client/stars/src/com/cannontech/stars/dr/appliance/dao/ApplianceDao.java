@@ -18,7 +18,12 @@ public interface ApplianceDao {
 
     public List<Appliance> getByAccountId(int accountId);
     
-    public List<Appliance> getByAccountIdAndProgramIdAndInventoryId(int accountId, int programId, int inventoryId);
+    /**
+     * This method returns the given appliance attached to the supplied accountId, programId, and 
+     * inventoryId.  This method only returns one entry because a piece of inventory can only be enrolled
+     * in a program once.
+     */
+    public Appliance getByAccountIdAndProgramIdAndInventoryId(int accountId, int programId, int inventoryId);
 
     public List<Integer> getApplianceIdsForAccountId(int accountId);
     

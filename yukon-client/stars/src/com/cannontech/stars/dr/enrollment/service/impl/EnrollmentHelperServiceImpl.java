@@ -4,17 +4,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
-import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -22,10 +23,9 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
+import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
@@ -60,6 +60,8 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private ApplianceCategoryDao applianceCategoryDao;
     private CustomerAccountDao customerAccountDao;
     private EnrollmentDao enrollmentDao;
+    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
+    private EnergyCompanyService energyCompanyService;
     private LoadGroupDao loadGroupDao;
     private LMHardwareBaseDao lmHardwareBaseDao;
     private ProgramDao programDao;
@@ -69,12 +71,12 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private StarsSearchDao starsSearchDao;    
 	private InventoryDao inventoryDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
-    private ECMappingDao ecMappingDao;
 
     @Override
     public void updateProgramEnrollments(List<ProgramEnrollment> programEnrollments, 
                                          int accountId,
                                          YukonUserContext userContext) {
+
         CustomerAccount customerAccount = customerAccountDao.getById(accountId);
         // Get the current enrollments.  This list will be updated to reflect
         // the desired enrollment data then passed to applyEnrollments which
@@ -124,6 +126,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 
         applyEnrollments(enrollments, customerAccount, userContext.getYukonUser());
         
+        // Log the new enrollments.
         for (ProgramEnrollment programEnrollment : addedEnrollments) {
             EnrollmentEventLoggingData eventLoggingData = getEventLoggingData(programEnrollment);
 
@@ -145,6 +148,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         
     }
 
+    @Override
     public EnrollmentEventLoggingData getEventLoggingData(ProgramEnrollment programEnrollment){
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(programEnrollment.getInventoryId());
 
@@ -157,64 +161,91 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         return new EnrollmentEventLoggingData(lmHardwareBase, loadGroup, program);
     }
 
+    @Override
     public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
     	EnrollmentHelperHolder enrollmentHelperHolder = buildEnrollmentHelperHolder(enrollmentHelper, enrollmentEnum, user);
     	doEnrollment(enrollmentHelperHolder, enrollmentEnum, user);    	
     }
     
+    @Override
     public void doEnrollment(EnrollmentHelperHolder enrollmentHelperHolder, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
 
         CustomerAccount customerAccount = enrollmentHelperHolder.getCustomerAccount();
         EnrollmentHelper enrollmentHelper = enrollmentHelperHolder.getEnrollmentHelper();
+        LMHardwareBase lmHardwareBase = enrollmentHelperHolder.getLmHardwareBase();
         
-        // Get the current enrollments.  This list will be updated to reflect
-        // the desired enrollment data then passed to applyEnrollments which
-        // will make it so.
-        List<ProgramEnrollment> enrollmentData = 
-            enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
+        // Get the current enrollments.  This list will be updated to reflect the desired enrollment
+        // data then passed to applyEnrollments which will make it so.
+        List<ProgramEnrollment> enrollmentData = enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
+        YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
         
-        LiteStarsEnergyCompany energyCompany = enrollmentHelperHolder.getLiteStarsEnergyCompany();        
-        String trackHwAddr = energyCompany.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
-        boolean useHardwareAddressing = Boolean.parseBoolean(trackHwAddr);
+        // This part of the method will get all the energy company ids that can have 
+        // an appliance category this energy company can use.
+        List<YukonEnergyCompany> parentEnergyCompanies = 
+            energyCompanyService.getAccessibleParentEnergyCompanies(yukonEnergyCompany.getEnergyCompanyId());
+        List<Integer> parentEnergyCompanyIds =
+            Lists.transform(parentEnergyCompanies, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdsFunction());
         
-        ProgramEnrollment programEnrollment = buildProgrameEnrollment(enrollmentHelperHolder, enrollmentEnum);
-        
-        if (enrollmentEnum == EnrollmentEnum.ENROLL) {
-            addProgramEnrollment(enrollmentData, programEnrollment, enrollmentHelper.isSeasonalLoad(), useHardwareAddressing);
+        // This handles an unenrollment with no program given.  In this case we we just want to unenroll
+        // the device from every program it is enrolled.
+        ProgramEnrollment programEnrollment;
+        if(enrollmentEnum.equals(EnrollmentEnum.UNENROLL) && StringUtils.isEmpty(enrollmentHelper.getProgramName())) {
+            programEnrollment = new ProgramEnrollment();
+            programEnrollment.setInventoryId(lmHardwareBase.getInventoryId());
+            programEnrollment.setAssignedProgramId(0);
+        } else {
+            
+            Program program = 
+                programService.getByProgramName(enrollmentHelper.getProgramName(), yukonEnergyCompany); 
+            ApplianceCategory applianceCategory = 
+                getApplianceCategoryByName(enrollmentHelper.getApplianceCategoryName(), program, parentEnergyCompanyIds);
+            LoadGroup loadGroup = getLoadGroupByName(enrollmentHelper.getLoadGroupName(), program);
+
+            programEnrollment = new ProgramEnrollment(enrollmentHelper, lmHardwareBase, applianceCategory, program, loadGroup);
         }
-        if (enrollmentEnum == EnrollmentEnum.UNENROLL) {
+        
+        // Adding or Removing the new program enrollment to the active enrollment list, which is needed
+        // in legacy code to process enrollment
+        if (enrollmentEnum == EnrollmentEnum.ENROLL) {
+            boolean trackHardwareAddressingEnabled =
+                energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany);
+            addProgramEnrollment(enrollmentData, programEnrollment, enrollmentHelper.isSeasonalLoad(), trackHardwareAddressingEnabled);
+        } else if (enrollmentEnum == EnrollmentEnum.UNENROLL) {
             removeProgramEnrollment(enrollmentData, programEnrollment);
         }
+        
+        // Create/Remove the supplied enrollments.  This includes adding them to the database and
+        // also sending out the commands to the device.
         applyEnrollments(enrollmentData, customerAccount, user);
         
         // Updates the applianceKW if the process was an enrollment.
+        updateApplianceKW(enrollmentEnum, customerAccount, enrollmentHelper, programEnrollment);
+        
+        // Logging the new enrollment changes.
+        logEnrollmentChange(user, enrollmentEnum, enrollmentHelper);
+    }
+
+    /**
+     * This method updates the applianceKW of a newly enrolled inventory.
+     */
+    private void updateApplianceKW(EnrollmentEnum enrollmentEnum, CustomerAccount customerAccount,
+                                         EnrollmentHelper enrollmentHelper, ProgramEnrollment programEnrollment) {
         if (enrollmentEnum == EnrollmentEnum.ENROLL) {
-            List<Appliance> appliances = 
+            Appliance appliance = 
                 applianceDao.getByAccountIdAndProgramIdAndInventoryId(customerAccount.getAccountId(),
                                                                       programEnrollment.getAssignedProgramId(),
                                                                       programEnrollment.getInventoryId());
-            if (appliances.size() == 1) {
-                if (enrollmentHelper.getApplianceKW() != null){
-                    applianceDao.updateApplianceKW(appliances.get(0).getApplianceId(),
-                                                   enrollmentHelper.getApplianceKW());
-                }
-            } else if (appliances.size() > 1) {
-                throw new DuplicateEnrollmentException("duplicate appliance for account " +
-                                                       customerAccount.getAccountId() +
-                                                       ", assigned program " +
-                                                       programEnrollment.getAssignedProgramId() +
-                                                       ", inventory " + programEnrollment.getInventoryId() +
-                                                       ".  Please fix as soon as possible.");
-            } else {
-                throw new RuntimeException("no appliance for account " +
-                                           customerAccount.getAccountId() +
-                                           ", assigned program " +
-                                           programEnrollment.getAssignedProgramId() +
-                                           ", inventory " + programEnrollment.getInventoryId() +
-                                           ".  Please fix as soon as possible.");
+            if (enrollmentHelper.getApplianceKW() != null) {
+                applianceDao.updateApplianceKW(appliance.getApplianceId(), enrollmentHelper.getApplianceKW());
             }
         }
-        
+    }
+
+    
+    /**
+     * This method write the new enrollment information to the event log table.
+     */
+    private void logEnrollmentChange(LiteYukonUser user, EnrollmentEnum enrollmentEnum, EnrollmentHelper enrollmentHelper) {
         if (enrollmentEnum == EnrollmentEnum.ENROLL) {
             accountEventLogService.deviceEnrolled(user, enrollmentHelper.getAccountNumber(),
                                                   enrollmentHelper.getSerialNumber(),
@@ -228,7 +259,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                                                     enrollmentHelper.getLoadGroupName());
         }
     }
-
+    
     /**
      * This method takes a list of enrollment data and makes that list the exact
      * list of enrollments for the customer. If they are enrolled in something
@@ -236,12 +267,12 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
      * something in the list, they will be enrolled in it.
      */
     private void applyEnrollments(List<ProgramEnrollment> enrollmentData,
-            CustomerAccount customerAccount, LiteYukonUser user) {
+                                  CustomerAccount customerAccount,
+                                  LiteYukonUser user) {
+
         // Processes the enrollment requests
         ProgramEnrollmentResultEnum applyEnrollmentRequests = 
-            programEnrollmentService.applyEnrollmentRequests(customerAccount,
-                                                             enrollmentData,
-                                                             user);
+            programEnrollmentService.applyEnrollmentRequests(customerAccount, enrollmentData, user);
         
         if (applyEnrollmentRequests.getFormatKey().equals(ProgramEnrollmentResultEnum.FAILURE)){
             throw new IllegalArgumentException("Program Enrollment Failed.");
@@ -250,66 +281,16 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
             throw new IllegalArgumentException("Incorrect Configuration.");
         }
     }
-
-    private ProgramEnrollment buildProgrameEnrollment(EnrollmentHelperHolder enrollmentHelperHolder, EnrollmentEnum enrollmentEnum){
-
-    	LMHardwareBase lmHardwareBase = enrollmentHelperHolder.getLmHardwareBase();
-    	EnrollmentHelper enrollmentHelper = enrollmentHelperHolder.getEnrollmentHelper();
-        LiteStarsEnergyCompany energyCompany = enrollmentHelperHolder.getLiteStarsEnergyCompany();
-
-        /* This part of the method will get all the energy company ids that can have 
-         * an appliance category this energy company can use.
-         */
-		Set<Integer> energyCompanyIds = ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
-        
-        /*
-         *  This handles an unenrollment with no program given.  In this case we
-         *  we just want to unenroll the device from every program it is enrolled.
-         */
-        if(enrollmentEnum.equals(EnrollmentEnum.UNENROLL) &&
-           StringUtils.isEmpty(enrollmentHelper.getProgramName())) {
-        	ProgramEnrollment programEnrollment = new ProgramEnrollment();
-	        programEnrollment.setInventoryId(lmHardwareBase.getInventoryId());
-	        programEnrollment.setAssignedProgramId(0);
-	        return programEnrollment;
-        } else {
-	        /*
-	         * Gets the program, appliance category, and load group information.  These 
-	         * methods also take care of the validation for these three types and
-	         * includes checking to see if they belong to one another.
-	         */
-        	Program program = programService.getByProgramName(enrollmentHelper.getProgramName(), energyCompany); 
-
-	        ApplianceCategory applianceCategory = getApplianceCategoryByName(enrollmentHelper.getApplianceCategoryName(), 
-	                                                                         program,
-	                                                                         energyCompanyIds);
-	        LoadGroup loadGroup = getLoadGroupByName(enrollmentHelper.getLoadGroupName(), program);
-
-	        /* Builds up the program enrollment object that will be 
-	         * used later on to enroll or unenroll.
-	         */
-	        ProgramEnrollment programEnrollment = new ProgramEnrollment();
-	        programEnrollment.setInventoryId(lmHardwareBase.getInventoryId());
-	        programEnrollment.setAssignedProgramId(program.getProgramId());
-	        if (enrollmentHelper.getApplianceKW() != null) {
-	        	programEnrollment.setApplianceKW(enrollmentHelper.getApplianceKW());
-	        }
-	        if (applianceCategory != null) {
-	        	programEnrollment.setApplianceCategoryId(applianceCategory.getApplianceCategoryId());
-	        } else {
-	        	programEnrollment.setApplianceCategoryId(program.getApplianceCategoryId());
-	        }
-	        if (loadGroup != null) {
-	        	programEnrollment.setLmGroupId(loadGroup.getLoadGroupId());
-	        }
-	        if (!StringUtils.isBlank(enrollmentHelper.getRelay())) {
-	        	programEnrollment.setRelay(enrollmentHelper.getRelay());
-	        }
-	        
-	        return programEnrollment;
-        }
-        
-    }
+///////////////////
+    ////////////////
+    ////////////////
+    ////////////////
+    ///////////////
+    ///////////////
+//    private ProgramEnrollment buildProgrameEnrollment(EnrollmentHelperHolder enrollmentHelperHolder,
+//                                                      EnrollmentEnum enrollmentEnum){
+//
+//    }
     
     protected void addProgramEnrollment(List<ProgramEnrollment> programEnrollments,
                                         ProgramEnrollment newProgramEnrollment,
@@ -384,7 +365,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     	programEnrollments.retainAll(programEnrollmentResults);
     }           
 
-    private ApplianceCategory getApplianceCategoryByName(String applianceCategoryName, Program program, Set<Integer> energyCompanyIds){
+    private ApplianceCategory getApplianceCategoryByName(String applianceCategoryName, Program program, List<Integer> energyCompanyIds){
         
         if (!StringUtils.isBlank(applianceCategoryName)){
             List<ApplianceCategory> applianceCategoryList = applianceCategoryDao.getByApplianceCategoryName(applianceCategoryName,
@@ -500,6 +481,11 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     }
 
     @Autowired
+    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
+        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
+    }
+    
+    @Autowired
     public void setLoadGroupDao(LoadGroupDao loadGroupDao) {
         this.loadGroupDao = loadGroupDao;
     }
@@ -550,8 +536,4 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 		this.starsInventoryBaseDao = starsInventoryBaseDao;
 	}
     
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-		this.ecMappingDao = ecMappingDao;
-	}
 }

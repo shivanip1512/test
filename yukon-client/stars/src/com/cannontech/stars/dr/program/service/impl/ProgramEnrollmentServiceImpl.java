@@ -19,12 +19,14 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
+import com.cannontech.database.TransactionType;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -38,13 +40,15 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.appliance.ApplianceBase;
 import com.cannontech.database.db.stars.hardware.LMHardwareConfiguration;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
+import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
+import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlhistory.service.ControlHistoryService;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
@@ -72,40 +76,36 @@ import com.google.common.collect.ListMultimap;
 
 public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     private static final Logger log = YukonLogManager.getLogger(ProgramEnrollmentServiceImpl.class);
+
+    private AssignedProgramDao assignedProgramDao;
     private ControlHistoryService controlHistoryService;
-    private ECMappingDao ecMappingDao;
     private EnergyCompanyService energyCompanyService;
     private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     private EnrollmentDao enrollmentDao;
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
+    private LoadGroupDao loadGroupDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
-
+    
     @Override
     @Transactional
     public ProgramEnrollmentResultEnum applyEnrollmentRequests(final CustomerAccount customerAccount,
-            final List<ProgramEnrollment> requests, final LiteYukonUser user) {
+                                                               final List<ProgramEnrollment> requests,
+                                                               final LiteYukonUser user) {
 
-        final int customerAccountId = customerAccount.getAccountId();
+        final int accountId = customerAccount.getAccountId();
         YukonEnergyCompany yukonEnergyCompany = 
-            energyCompanyService.getEnergyCompanyByAccountId(customerAccountId);
-
-        LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccountId);
-        LiteStarsCustAccountInformation liteCustomerAccount = 
-            starsCustAccountInformationDao.getById(customerAccountId, 
-                                                   energyCompany.getEnergyCompanyId());
+            energyCompanyService.getEnergyCompanyByAccountId(accountId);
 
         boolean trackHardwareAddressingEnabled = 
             energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany);
         boolean automaticConfigurationEnabled = 
             energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.AUTOMATIC_CONFIGURATION, yukonEnergyCompany);
 
-        String progEnrBefore = toProgramNameString(liteCustomerAccount.getPrograms(), "(None)");
-
-        String trackHwAddr = energyCompany.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
-        boolean useHardwareAddressing = Boolean.parseBoolean(trackHwAddr);
+        LiteStarsCustAccountInformation liteCustomerAccount = starsCustAccountInformationDao.getbyAccountId(accountId);
+        List<LiteStarsLMProgram> previouslyEnrolledPrograms = liteCustomerAccount.getPrograms();
 
         try {
-            StarsOperation operation = createStarsOperation(customerAccount, requests, energyCompany, liteCustomerAccount, useHardwareAddressing);
+            StarsOperation operation = createStarsOperation(customerAccount, requests, yukonEnergyCompany, liteCustomerAccount, trackHardwareAddressingEnabled);
             StarsProgramSignUp programSignUp = operation.getStarsProgramSignUp();
             Instant now  = new Instant();
 
@@ -117,7 +117,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         lmHardwareControlGroupDao
                             .getByInventoryIdAndGroupIdAndAccountIdAndType(programEnrollment.getInventoryId(), 
                                                                            programEnrollment.getLmGroupId(), 
-                                                                           customerAccountId, 
+                                                                           accountId, 
                                                                            LMHardwareControlGroup.OPT_OUT_ENTRY);
                     
                     for (LMHardwareControlGroup lmHardwareControlGroup : lmHardwareControlGroups) {
@@ -131,7 +131,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             
             // Process Enrollments
             List<LiteStarsLMHardware> hwsToConfig = 
-                updateProgramEnrollment(programSignUp, liteCustomerAccount, null,energyCompany, user);
+                updateProgramEnrollment(programSignUp, liteCustomerAccount, null, yukonEnergyCompany, user);
 
             // Send out the config/disable command
             for (final LiteStarsLMHardware liteHw : hwsToConfig) {
@@ -159,6 +159,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         }
 
         // Log activity
+        String progEnrBefore = toProgramNameString(previouslyEnrolledPrograms, "(None)");
         String progEnrNow = toProgramNameString(liteCustomerAccount.getPrograms(), "(Not Enrolled)");
 
         final StringBuilder sb = new StringBuilder();
@@ -169,75 +170,68 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         String logMessage = sb.toString();
 
         ActivityLogger.logEvent(user.getUserID(),
-                                customerAccountId,
-                                energyCompany.getLiteID(),
+                                accountId,
+                                yukonEnergyCompany.getEnergyCompanyId(),
                                 customerAccount.getCustomerId(),
                                 ActivityLogActions.PROGRAM_ENROLLMENT_ACTION,
                                 logMessage);
         
-        ProgramEnrollmentResultEnum result = (useHardwareAddressing) ?
+        ProgramEnrollmentResultEnum result = (trackHardwareAddressingEnabled) ?
                 ProgramEnrollmentResultEnum.SUCCESS_HARDWARE_CONFIG : ProgramEnrollmentResultEnum.SUCCESS;
         return result;
     }
     
     private StarsOperation createStarsOperation(CustomerAccount customerAccount,
-            List<ProgramEnrollment> requests, LiteStarsEnergyCompany energyCompany,
-            LiteStarsCustAccountInformation liteCustomerAccount, boolean useHardwareAddressing) {
+                                                List<ProgramEnrollment> programEnrollmentList,
+                                                YukonEnergyCompany energyCompany,
+                                                LiteStarsCustAccountInformation liteCustomerAccount,
+                                                boolean useHardwareAddressing) {
 
         final StarsProgramSignUp programSignUp = new StarsProgramSignUp();
         programSignUp.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
         programSignUp.setAccountNumber(customerAccount.getAccountNumber());
 
-        StarsSULMPrograms programs = new StarsSULMPrograms();
-        for (final ProgramEnrollment request : requests) {
-            SULMProgram program = new SULMProgram();
-            program.setProgramID(request.getAssignedProgramId());
-            if (request.getApplianceCategoryId() > 0) {
-                program.setApplianceCategoryID(request.getApplianceCategoryId());
-            }
-            if (request.getInventoryId() > 0) {
-                program.setInventoryID(request.getInventoryId());
-            }            
-            if (request.getLmGroupId() != 0) {
-                program.setAddressingGroupID(request.getLmGroupId());
-            } else {
-                program.setAddressingGroupID(ServerUtils.ADDRESSING_GROUP_NOT_FOUND);
-            }
-            if (request.getRelay() > 0) {
-                program.setLoadNumber(request.getRelay());
-            }
-            programs.addSULMProgram(program);
+        // Converting programEnrollmentList to a more friendly programSignUp object.
+        StarsSULMPrograms starsSULMPrograms = new StarsSULMPrograms();
+        for (final ProgramEnrollment programEnrollment : programEnrollmentList) {
+            SULMProgram sulmProgram = new SULMProgram(programEnrollment);
+            starsSULMPrograms.addSULMProgram(sulmProgram);
         }
-        programSignUp.setStarsSULMPrograms(programs);
+        programSignUp.setStarsSULMPrograms(starsSULMPrograms);
 
-        /*Going to need to do some guesswork since consumers aren't allowed
-         * to choose load groups. 
+        /*Going to need to do some guesswork since consumers aren't allowed  to choose load groups. 
          * --If the program has more than one group, we will take the first one in the list.  Could be
          * A DANGEROUS ASSUMPTION.  TODO: Track groups better.
          * --At this point, we will need to require that the switch or stat has been configured or enrolled 
          * previously from the operator side.  If it has not, there may not be a groupID set.
          */
         for (int j = 0; j < programSignUp.getStarsSULMPrograms().getSULMProgramCount(); j++) {
-            SULMProgram program = programSignUp.getStarsSULMPrograms().getSULMProgram(j);
-            int groupId = program.getAddressingGroupID();
+            SULMProgram sulmProgram = programSignUp.getStarsSULMPrograms().getSULMProgram(j);
+            int groupId = sulmProgram.getAddressingGroupID();
             if (groupId == ServerUtils.ADDRESSING_GROUP_NOT_FOUND) {
-                int programId = program.getProgramID();
-                LiteLMProgramWebPublishing webProg = energyCompany.getProgram(programId);
-                int grpID = webProg.getDefaultGroupId();
                 
+                AssignedProgram assignedProgram = assignedProgramDao.getById(sulmProgram.getProgramID());
+                LoadGroup defaultLoadGroup = getDefaultLoadGroupForProgram(assignedProgram);
+                int loadGroupId =  0;
+                if (defaultLoadGroup != null) {
+                    loadGroupId = defaultLoadGroup.getLoadGroupId();
+                }
+                
+                // Checking to see if there are any active enrollments that we can get the load 
+                // group id from.  If we can use that load group id.
                 if (!useHardwareAddressing) {
                     List<ProgramEnrollment> activeProgramEnrollments = enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
                     for (ProgramEnrollment programEnrollment : activeProgramEnrollments) {
-                        if (programEnrollment.getAssignedProgramId() == webProg.getProgramID() && 
-                                programEnrollment.getApplianceCategoryId() == webProg.getApplianceCategoryID()) {
-                            grpID = programEnrollment.getLmGroupId();
+                        if (programEnrollment.getAssignedProgramId() == assignedProgram.getProgramId() && 
+                                programEnrollment.getApplianceCategoryId() == assignedProgram.getApplianceCategoryId()) {
+                            loadGroupId = programEnrollment.getLmGroupId();
                         }
                     }
                 }
-                if (!webProg.isVirtualProgram() && grpID <= 0) {
+                if (!assignedProgram.isVirtualProgram() && loadGroupId <= 0) {
                     throw new InvalidParameterException("Program not defined correctly");
                 }
-                programSignUp.getStarsSULMPrograms().getSULMProgram(j).setAddressingGroupID(grpID);
+                programSignUp.getStarsSULMPrograms().getSULMProgram(j).setAddressingGroupID(loadGroupId);
             }
         }
 
@@ -245,28 +239,41 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         operation.setStarsProgramSignUp(programSignUp);
         return operation;
     }
-
+    
+    /**
+     *  This method gets the first load group that is associated with the program.
+     *  If there are no load groups attached to this assigned program or if the assigned program is a 
+     *  virtual program this method will return null.
+     */
+    private LoadGroup getDefaultLoadGroupForProgram(AssignedProgram assignedProgram) {
+        if (!assignedProgram.isVirtualProgram()) {
+            List<LoadGroup> loadGroups = loadGroupDao.getByProgramId(assignedProgram.getProgramId());
+            if (loadGroups.size() > 0) {
+                return loadGroups.get(0);
+            }
+        }
+        return null;
+    }
+    
     @Override
     public List<LiteStarsLMHardware> applyEnrollmentRequests(CustomerAccount customerAccount, 
-            List<ProgramEnrollment> requests, LiteInventoryBase liteInv, LiteYukonUser user)
-            throws WebClientException {
+                                                             List<ProgramEnrollment> programEnrollmentList,
+                                                             LiteInventoryBase liteInv, LiteYukonUser user)
+    throws WebClientException {
 
         final int customerAccountId = customerAccount.getAccountId();
-        LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
+        YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
         LiteStarsCustAccountInformation liteCustomerAccount = 
-            starsCustAccountInformationDao.getById(customerAccountId, 
-                                                   energyCompany.getEnergyCompanyId());
-        String trackHwAddr = energyCompany.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
-        boolean useHardwareAddressing = Boolean.parseBoolean(trackHwAddr);
+            starsCustAccountInformationDao.getbyAccountId(customerAccountId);
+        boolean trackHardwareAddressingEnabled = 
+            energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany);
         
-        StarsOperation operation = createStarsOperation(customerAccount, requests, energyCompany, liteCustomerAccount, useHardwareAddressing);
+        StarsOperation operation = 
+            createStarsOperation(customerAccount, programEnrollmentList, yukonEnergyCompany, liteCustomerAccount, trackHardwareAddressingEnabled);
         StarsProgramSignUp programSignUp = operation.getStarsProgramSignUp();
 
-        List<LiteStarsLMHardware> hwsToConfig = updateProgramEnrollment(programSignUp,
-                                                                                            liteCustomerAccount,
-                                                                                            liteInv,
-                                                                                            energyCompany,
-                                                                                            user);
+        List<LiteStarsLMHardware> hwsToConfig = 
+            updateProgramEnrollment(programSignUp, liteCustomerAccount, liteInv, yukonEnergyCompany, user);
 
         return hwsToConfig;
     }    
@@ -284,8 +291,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     }
 
     @Override
-    public void removeNonEnrolledPrograms(final List<Program> programs, 
-            final ListMultimap<Integer, ControlHistory> controlHistoryMap) {
+    public void removeNonEnrolledPrograms(final List<Program> programs, final ListMultimap<Integer, ControlHistory> controlHistoryMap) {
+
         Validate.notNull(programs, "programs parameter cannot be null");
         Validate.notNull(controlHistoryMap, "controlHistoryMap parameter cannot be null");
 
@@ -306,14 +313,19 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     private static List<LiteStarsLMHardware> updateProgramEnrollment(StarsProgramSignUp progSignUp, 
                                                                     LiteStarsCustAccountInformation liteAcctInfo,
                                                                     LiteInventoryBase liteInv, 
-                                                                    LiteStarsEnergyCompany energyCompany, 
+                                                                    YukonEnergyCompany yukonEnergyCompany, 
                                                                     LiteYukonUser currentUser) throws WebClientException {
+        
+        DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
+        EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao = 
+            YukonSpringHook.getBean("energyCompanyRolePropertyDao", EnergyCompanyRolePropertyDao.class);
+        StarsInventoryBaseDao starsInventoryBaseDao = YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+        
+        LiteStarsEnergyCompany energyCompany = 
+            StarsDatabaseCache.getInstance().getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
         
         StarsSULMPrograms programs = progSignUp.getStarsSULMPrograms();
         List<LiteStarsLMHardware> hwsToConfig = new ArrayList<LiteStarsLMHardware>();
-        
-        StarsInventoryBaseDao starsInventoryBaseDao = 
-            YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
         
         /*
          * New enrollment, opt out, and control history tracking
@@ -503,8 +515,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                 }
             }
             
-            String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
-            boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
+            boolean hardwareAddressingEnabled =
+                energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, energyCompany);
             
             for (int i = 0; i < processedPrograms.getSULMProgramCount(); i++) {
                 SULMProgram program = processedPrograms.getSULMProgram(i);
@@ -541,7 +553,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                 }
                 int groupID = program.getAddressingGroupID();
                 int relay = program.getLoadNumber();
-                if (useHardwareAddressing) {
+                if (hardwareAddressingEnabled) {
                     if (liteHw != null && liteHw.getLMConfiguration() != null) {
                         int[] grpIDs = LMControlHistoryUtil.getControllableGroupIDs( liteHw.getLMConfiguration(), relay);
                         if (grpIDs != null && grpIDs.length >= 1){
@@ -665,7 +677,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         liteApp.setProgramID( program.getProgramID() );
                         
                         app = (ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
-                        app = Transaction.createTransaction( Transaction.UPDATE, app ).execute();
+                        dbPersistentDao.performDBChange(app, TransactionType.UPDATE);
                     }
                     else {
                         /* The appliance is enrolled in the same program, update the load group if necessary.
@@ -717,12 +729,11 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                             /*-------------------------------------------------------------------------------*/
                             
                             app = (ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
-                            app = Transaction.createTransaction( Transaction.UPDATE, app ).execute();
-                            
+                            dbPersistentDao.performDBChange(app, TransactionType.UPDATE);
                             
                             // Checks to see if there are any hardware that are enrolled in this program already and updated their 
                             // addressing group to the new supplied address group.
-                            if (liteInv != null && !useHardwareAddressing) {
+                            if (liteInv != null && !hardwareAddressingEnabled) {
                                 for (int j = 0; j < appList.size(); j++) {
                                     LiteStarsAppliance lApp = appList.get(j);
                                     if (lApp.getProgramID() == program.getProgramID() && lApp.getInventoryID() != program.getInventoryID()) {
@@ -733,7 +744,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                             hwsToConfig.add( lHw );
                                         
                                         app = (ApplianceBase) StarsLiteFactory.createDBPersistent( lApp );
-                                        app = Transaction.createTransaction( Transaction.UPDATE, app ).execute();
+                                        dbPersistentDao.performDBChange(app, TransactionType.UPDATE);
                                     }
                                 }
                             }
@@ -792,7 +803,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         /*-------------------------------------------------------------------------------*/
                     }
                     
-                    app = Transaction.createTransaction( Transaction.INSERT, app ).execute();
+                    dbPersistentDao.performDBChange(app, TransactionType.INSERT);
                     
                     liteApp = StarsLiteFactory.createLiteStarsAppliance( app, energyCompany );
                     newAppList.add( liteApp );
@@ -804,7 +815,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                 LiteStarsAppliance liteApp = appsToUpdate.get(i);
                 
                 ApplianceBase app = (ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
-                app = Transaction.createTransaction( Transaction.UPDATE, app ).execute();
+                dbPersistentDao.performDBChange(app, TransactionType.UPDATE);
             }
             
             // Remove redundant program IDs in the enroll and unenroll list
@@ -843,14 +854,14 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             // Add "sign up" event to the programs to be enrolled in
             for (int i = 0; i < progNewEnrollList.size(); i++) {
                 event.setEventID( null );
-                event.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
+                event.setEnergyCompanyID( yukonEnergyCompany.getEnergyCompanyId() );
                 eventDB.setAccountID( accountID );
                 eventDB.setProgramID( progNewEnrollList.get(i) );
                 eventBase.setEventTypeID( progEventEntryID );
                 eventBase.setActionID( signUpEntryID );
                 eventBase.setEventDateTime( signupDate );
-                
-                event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
+
+                dbPersistentDao.performDBChange(event, TransactionType.INSERT);
                 
                 LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) StarsLiteFactory.createLite(event);
                 liteAcctInfo.getProgramHistory().add( liteEvent );
@@ -861,15 +872,15 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                 Integer progID = progUnenrollList.get(i);
                 
                 event.setEventID( null );
-                event.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
+                event.setEnergyCompanyID( yukonEnergyCompany.getEnergyCompanyId() );
                 eventDB.setAccountID( accountID );
                 eventDB.setProgramID( progID );
                 eventBase.setEventTypeID( progEventEntryID );
                 eventBase.setActionID( termEntryID );
                 eventBase.setEventDateTime( termDate );
-                
-                event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
-                
+
+                dbPersistentDao.performDBChange(event, TransactionType.INSERT);
+
                 LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) StarsLiteFactory.createLite(event);
                 liteAcctInfo.getProgramHistory().add( liteEvent );
             }
@@ -911,7 +922,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                                                                      currentEnrollmentInfo[RELAY],
                                                                                      currentEnrollmentInfo[PROG],
                                                                                      currentUser,
-                                                                                     useHardwareAddressing);
+                                                                                     hardwareAddressingEnabled);
                 if(!success) {
                     CTILogger.error( "Enrollment START occurred for InventoryId: " + currentEnrollmentInfo[INV] + 
                                      " LMGroupId: " + currentEnrollmentInfo[GROUP] + 
@@ -922,7 +933,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             }
             /*-------------------------------------------------------------------------------*/
         }
-        catch (TransactionException e) {
+        catch (PersistenceException e) {
             CTILogger.error( e.getMessage(), e );
             throw new WebClientException( "Failed to update the program enrollment", e );
         }
@@ -959,8 +970,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     
     // DI Setter
     @Autowired
-    public void setLmHardwareControlGroupDao(LMHardwareControlGroupDao lmHardwareControlGroupDao) {
-        this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
+    public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
+        this.assignedProgramDao = assignedProgramDao;
     }
 
     @Autowired
@@ -969,12 +980,33 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     }
     
     @Autowired
-    public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
-        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
     }
 
+    @Autowired
+    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
+        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
+    }
+    
     @Autowired
     public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
         this.enrollmentDao = enrollmentDao;
     }
+
+    @Autowired
+    public void setLmHardwareControlGroupDao(LMHardwareControlGroupDao lmHardwareControlGroupDao) {
+        this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
+    }
+    
+    @Autowired
+    public void setLoadGroupDao(LoadGroupDao loadGroupDao) {
+        this.loadGroupDao = loadGroupDao;
+    }
+    
+    @Autowired
+    public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
+        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
+    }
+
 }

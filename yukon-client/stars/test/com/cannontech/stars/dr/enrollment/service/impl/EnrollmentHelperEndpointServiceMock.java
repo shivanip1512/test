@@ -53,11 +53,9 @@ public class EnrollmentHelperEndpointServiceMock extends EnrollmentHelperService
         public void updateApplianceKW(int applianceId, float applianceKW) {}
         
         @Override
-        public List<Appliance> getByAccountIdAndProgramIdAndInventoryId(int accountId, int programId, int inventoryId){
-            List<Appliance> appList = new ArrayList<Appliance>();
+        public Appliance getByAccountIdAndProgramIdAndInventoryId(int accountId, int programId, int inventoryId){
             Appliance app = new Appliance();
-            appList.add(app);
-            return appList;
+            return app;
         }
     }
     

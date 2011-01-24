@@ -1,7 +1,6 @@
 package com.cannontech.stars.core.dao.impl;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,21 +9,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.ECToAccountMapping;
-import com.cannontech.stars.util.ECUtils;
-import com.google.common.collect.Sets;
 
 public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     private YukonJdbcTemplate yukonJdbcTemplate;;
     private StarsDatabaseCache starsDatabaseCache;
-    private RolePropertyDao rolePropertyDao;
     private ChunkingSqlTemplate chunkyJdbcTemplate;
     
     @Override
@@ -44,30 +38,21 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     public int getEnergyCompanyIdForAccountId(int accountId) {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT EnergyCompanyID FROM ECToAccountMapping WHERE AccountID").eq(accountId);
-        return yukonJdbcTemplate.queryForInt(sql);
-    }
-    
-    @Override
-    @Deprecated
-    public LiteStarsEnergyCompany getInventoryEC(int inventoryId) {
-    	
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT EnergyCompanyID FROM ECToInventoryMapping WHERE InventoryID").eq(inventoryId);
-        int energyCompanyId = yukonJdbcTemplate.queryForInt(sql);
-        
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        return energyCompany;
+    	sql.append("SELECT EnergyCompanyId");
+    	sql.append("FROM ECToAccountMapping");
+    	sql.append("WHERE AccountId").eq(accountId);
+
+    	return yukonJdbcTemplate.queryForInt(sql);
     }
     
     @Override
     public int getEnergyCompanyIdForInventoryId(int inventoryId) {
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EnergyCompanyId");
-        sql.append("FROM ECToInventoryMapping");
-        sql.append("WHERE InventoryId").eq(inventoryId);
-        
+    	
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT EnergyCompanyId");
+    	sql.append("FROM ECToInventoryMapping");
+    	sql.append("WHERE InventoryId").eq(inventoryId);
+    	
         return yukonJdbcTemplate.queryForInt(sql);
     }
     
@@ -211,19 +196,7 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         }
     }
     
-    public Set<Integer> getInheritedEnergyCompanyIds(LiteStarsEnergyCompany energyCompany) {
-    	
-    	Set<Integer> energyCompanyIds = Sets.newHashSet(energyCompany.getEnergyCompanyId());
-        if (rolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, energyCompany.getUser())) {
-            List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
-            for (LiteStarsEnergyCompany ec : allAscendants) {
-                energyCompanyIds.add(ec.getEnergyCompanyId());
-            }
-        }
-        
-        return energyCompanyIds;
-    }
-
+    // DI Setters
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
 		this.yukonJdbcTemplate = yukonJdbcTemplate;
@@ -233,11 +206,6 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
     }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
     
     @Override
     public void afterPropertiesSet() throws Exception {

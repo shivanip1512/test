@@ -95,18 +95,16 @@ public class ApplianceDaoImpl implements ApplianceDao {
         return list;
     }
 
-    public List<Appliance> getByAccountIdAndProgramIdAndInventoryId(int accountId, 
-                                                                    int programId,
-                                                                    int inventoryId) {
+    public Appliance getByAccountIdAndProgramIdAndInventoryId(int accountId, int assignedProgramId, int inventoryId) {
 
         SqlStatementBuilder applianceSQL = new SqlStatementBuilder();
         applianceSQL.append(applianceSQLHeader); 
-        applianceSQL.append("Where AB.accountId = ? ");
-        applianceSQL.append("AND AB.programId = ? ");
-        applianceSQL.append("AND LMHC.inventoryId = ?");
+        applianceSQL.append("Where AB.accountId").eq(accountId);
+        applianceSQL.append("AND AB.programId").eq(assignedProgramId);
+        applianceSQL.append("AND LMHC.inventoryId").eq(inventoryId);
         
-        return yukonJdbcTemplate.query(applianceSQL.toString(), rowMapper, 
-                                        accountId, programId, inventoryId);
+        Appliance appliance = yukonJdbcTemplate.queryForObject(applianceSQL, rowMapper);
+        return appliance;
     }
     
     @Override

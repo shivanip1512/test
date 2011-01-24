@@ -219,4 +219,12 @@ public class AssignedProgram {
 
         webConfiguration = newWebConfiguration;
     }
+
+    public boolean isVirtualProgram() {
+        if (programId == 0) {
+            return true;
+        }
+        
+        return false;
+    }
 }
