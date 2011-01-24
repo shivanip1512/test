@@ -19,8 +19,10 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -36,13 +38,12 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.appliance.ApplianceBase;
 import com.cannontech.database.db.stars.hardware.LMHardwareConfiguration;
-import com.cannontech.roles.consumer.ResidentialCustomerRole;
-import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlhistory.service.ControlHistoryService;
@@ -73,6 +74,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     private static final Logger log = YukonLogManager.getLogger(ProgramEnrollmentServiceImpl.class);
     private ControlHistoryService controlHistoryService;
     private ECMappingDao ecMappingDao;
+    private EnergyCompanyService energyCompanyService;
+    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     private EnrollmentDao enrollmentDao;
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
@@ -83,11 +86,18 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             final List<ProgramEnrollment> requests, final LiteYukonUser user) {
 
         final int customerAccountId = customerAccount.getAccountId();
+        YukonEnergyCompany yukonEnergyCompany = 
+            energyCompanyService.getEnergyCompanyByAccountId(customerAccountId);
 
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccountId);
         LiteStarsCustAccountInformation liteCustomerAccount = 
             starsCustAccountInformationDao.getById(customerAccountId, 
                                                    energyCompany.getEnergyCompanyId());
+
+        boolean trackHardwareAddressingEnabled = 
+            energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany);
+        boolean automaticConfigurationEnabled = 
+            energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.AUTOMATIC_CONFIGURATION, yukonEnergyCompany);
 
         String progEnrBefore = toProgramNameString(liteCustomerAccount.getPrograms(), "(None)");
 
@@ -130,17 +140,14 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                 if (toConfig) {
                     // Send the reenable command if hardware status is unavailable,
                     // whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property
-                    if (!useHardwareAddressing
-                            && (StarsUtils.isOperator(user) && DaoFactory.getAuthDao().checkRoleProperty( user, ConsumerInfoRole.AUTOMATIC_CONFIGURATION )
-                                    || StarsUtils.isResidentialCustomer(user) && DaoFactory.getAuthDao().checkRoleProperty(user, ResidentialCustomerRole.AUTOMATIC_CONFIGURATION))) {
-                        YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, false, null );
-                    }
-                    else if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
-                        YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw, null );
+                    if (!trackHardwareAddressingEnabled && automaticConfigurationEnabled) {
+                        YukonSwitchCommandAction.sendConfigCommand( yukonEnergyCompany, liteHw, false, null );
+                    } else if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
+                        YukonSwitchCommandAction.sendEnableCommand( yukonEnergyCompany, liteHw, null );
                     }
                 } else {
                     // Send disable command to hardware
-                    YukonSwitchCommandAction.sendDisableCommand(energyCompany, liteHw, null );
+                    YukonSwitchCommandAction.sendDisableCommand(yukonEnergyCompany, liteHw, null );
                 }
             }
         } catch (InvalidParameterException e) {
@@ -950,26 +957,19 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         return false;
     }
     
+    // DI Setter
     @Autowired
-    public void setLmHardwareControlGroupDao(
-            LMHardwareControlGroupDao lmHardwareControlGroupDao) {
+    public void setLmHardwareControlGroupDao(LMHardwareControlGroupDao lmHardwareControlGroupDao) {
         this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
     }
 
     @Autowired
-    public void setControlHistoryService(
-            ControlHistoryService controlHistoryService) {
+    public void setControlHistoryService(ControlHistoryService controlHistoryService) {
         this.controlHistoryService = controlHistoryService;
-    }
-
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
     }
     
     @Autowired
-    public void setStarsCustAccountInformationDao(
-            StarsCustAccountInformationDao starsCustAccountInformationDao) {
+    public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
         this.starsCustAccountInformationDao = starsCustAccountInformationDao;
     }
 
@@ -977,5 +977,4 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
         this.enrollmentDao = enrollmentDao;
     }
-
 }

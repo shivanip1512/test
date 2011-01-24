@@ -9,7 +9,8 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -20,8 +21,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.roles.operator.ConsumerInfoRole;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.service.StarsTwoWayLcrYukonDeviceAssignmentService;
@@ -330,6 +329,10 @@ public class UpdateLMHardwareAction implements ActionBase {
 	public static LiteInventoryBase updateInventory(StarsUpdateLMHardware updateHw, StarsDeleteLMHardware deleteHw,
 		LiteStarsCustAccountInformation liteAcctInfo, StarsYukonUser user) throws WebClientException
 	{
+	    
+	    EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao = 
+	        YukonSpringHook.getBean("energyCompanyRolePropertyDao", EnergyCompanyRolePropertyDao.class);
+	    
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		// Build up request message for adding new hardware and preserving old hardware configuration
@@ -354,14 +357,14 @@ public class UpdateLMHardwareAction implements ActionBase {
 		LiteInventoryBase liteInv = CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
 		
 		// Send out the configuration command if necessary
-		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
-		boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
+		boolean trackHardwareAddressingEnabled =
+		    energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, energyCompany);
+		boolean automaticConfigurationEnabled = 
+		    energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.AUTOMATIC_CONFIGURATION, energyCompany);
 		
-		if (!useHardwareAddressing &&
-			createHw.getLMHardware() != null &&
-			createHw.getLMHardware().getStarsLMHardwareConfigCount() > 0 &&
-			DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION))
-		{
+		
+		if (!trackHardwareAddressingEnabled && automaticConfigurationEnabled &&
+			createHw.getLMHardware() != null && createHw.getLMHardware().getStarsLMHardwareConfigCount() > 0) {
 			YukonSwitchCommandAction.sendConfigCommand( energyCompany, (LiteStarsLMHardware)liteInv, false, null );
 		}
 		

@@ -16,11 +16,13 @@ import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
 
@@ -30,7 +32,8 @@ import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
 public class CommandRequestHardwareExecutorImpl implements
 		CommandRequestHardwareExecutor {
 	
-	private ECMappingDao ecMappingDao;
+	private EnergyCompanyService energyCompanyService;
+	private StarsDatabaseCache starsDatabaseCache;
 	private StarsInventoryBaseDao starsInventoryBaseDao;
 	private CommandRequestRouteExecutor commandRequestRouteExecutor;
 	private Logger logger = YukonLogManager.getLogger(CommandRequestHardwareExecutorImpl.class);
@@ -94,27 +97,33 @@ public class CommandRequestHardwareExecutorImpl implements
 
         // Use the energy company default route if routeId is 0
         if (routeId == CtiUtilities.NONE_ZERO_ID) {
+            YukonEnergyCompany yukonEnergyCompany = 
+                energyCompanyService.getEnergyCompanyByInventoryId(hardware.getInventoryID());
             LiteStarsEnergyCompany energyCompany = 
-                ecMappingDao.getInventoryEC(hardware.getInventoryID());
+                starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
             routeId = energyCompany.getDefaultRouteId();
         }
         return routeId;
 	}
 
+	// DI Setters
     @Autowired
-	public void setEcMappingDao(ECMappingDao ecMappingDao) {
-		this.ecMappingDao = ecMappingDao;
-	}
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
+    }
 	
+    @Autowired
+    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+        this.starsDatabaseCache = starsDatabaseCache;
+    }
+    
 	@Autowired
-	public void setStarsInventoryBaseDao(
-			StarsInventoryBaseDao starsInventoryBaseDao) {
+	public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
 		this.starsInventoryBaseDao = starsInventoryBaseDao;
 	}
 	
 	@Autowired
-	public void setCommandRequestRouteExecutor(
-			CommandRequestRouteExecutor commandRequestRouteExecutor) {
+	public void setCommandRequestRouteExecutor(CommandRequestRouteExecutor commandRequestRouteExecutor) {
 		this.commandRequestRouteExecutor = commandRequestRouteExecutor;
 	}
 

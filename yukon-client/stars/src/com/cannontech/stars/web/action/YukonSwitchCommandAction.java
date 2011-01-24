@@ -12,13 +12,16 @@ import java.util.TimerTask;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
+import com.cannontech.database.TransactionType;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
@@ -26,8 +29,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.hardware.LMHardwareConfiguration;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -373,10 +376,14 @@ public class YukonSwitchCommandAction {
     // object/tables
     /* from YukonSwitchCommandAction */
     public static String[] getConfigCommands(LiteStarsLMHardware liteHw,
-                                              LiteStarsEnergyCompany energyCompany,
+                                              YukonEnergyCompany energyCompany,
                                               boolean useHardwareAddressing,
                                               Integer groupID)
             throws WebClientException {
+        
+        StarsCustAccountInformationDao starsCustAccountInformationDao = 
+            YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+        
         List<String> commands = new ArrayList<String>();
         String[] coldLoads = new String[4];
         String[] tamperDetects = new String[2];
@@ -550,7 +557,10 @@ public class YukonSwitchCommandAction {
             }
         } else {
             if (liteHw.getAccountID() > 0) {
-                LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation(liteHw.getAccountID(), true);
+                
+                LiteStarsCustAccountInformation liteAcctInfo = 
+                    starsCustAccountInformationDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyId());
+
                 for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
                     LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);
                     if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getAddressingGroupID() > 0) {
@@ -573,18 +583,26 @@ public class YukonSwitchCommandAction {
     }
 
     /* from YukonSwitchCommandAction */
-    public static void sendConfigCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, boolean forceInService, String options)
-            throws WebClientException {
+    public static void sendConfigCommand(YukonEnergyCompany yukonEnergyCompany, LiteStarsLMHardware liteHw, 
+                                         boolean forceInService, String options) throws WebClientException {
+
+        DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
+        EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao = YukonSpringHook.getBean("energyCompanyRolePropertyDao", EnergyCompanyRolePropertyDao.class);
+        StarsDatabaseCache starsDatabaseCache = YukonSpringHook.getBean("starsDatabaseCache", StarsDatabaseCache.class);
+        
         if (liteHw.getManufacturerSerialNumber().length() == 0) {
             throw new WebClientException("The manufacturer serial # of the hardware cannot be empty");
         }
     
-        LiteYukonUser user = energyCompany.getUser();
+        LiteYukonUser energyCompanyUser = yukonEnergyCompany.getEnergyCompanyUser();
     
+        LiteStarsEnergyCompany liteStarsEnergyCompany = 
+            starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+        
         Integer invID = new Integer(liteHw.getInventoryID());
-        Integer hwEventEntryID = new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID());
-        Integer configEntryID = new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID());
-        Integer availStatusEntryID = new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID());
+        Integer hwEventEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID());
+        Integer configEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID());
+        Integer availStatusEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID());
         java.util.Date now = new java.util.Date();
     
         // Parameter options corresponds to the infoString field of the switch
@@ -614,13 +632,15 @@ public class YukonSwitchCommandAction {
             routeID = liteHw.getRouteID();
         }
         if (routeID == 0) {
-            routeID = energyCompany.getDefaultRouteId();
+            routeID = liteStarsEnergyCompany.getDefaultRouteId();
         }
     
-        String trackHwAddr = energyCompany.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
-        boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
-    
-        final String[] cfgCmds = getConfigCommands(liteHw, energyCompany, useHardwareAddressing, optGroupID);
+        boolean trackHardwareAddressingEnabled = 
+            energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany);
+        boolean automaticConfigurationEnabled =
+            energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.AUTOMATIC_CONFIGURATION, yukonEnergyCompany);
+        
+        final String[] cfgCmds = getConfigCommands(liteHw, yukonEnergyCompany, trackHardwareAddressingEnabled, optGroupID);
         if (cfgCmds.length == 0) {
             throw new WebClientException("No hardware configuration set up for serial #" + liteHw.getManufacturerSerialNumber() + ".");
         }
@@ -628,10 +648,8 @@ public class YukonSwitchCommandAction {
         if ((liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL || forceInService)
             && InventoryUtils.supportServiceInOut(liteHw.getLmHardwareTypeID())) {
             // Send an in service command first
-            sendEnableCommand(energyCompany, liteHw, optRouteID);
-            RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
-            if ((StarsUtils.isOperator(user) && rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_AUTOMATIC_CONFIGURATION, user))
-                || (StarsUtils.isResidentialCustomer(user) && rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_AUTOMATIC_CONFIGURATION, user))) {
+            sendEnableCommand(yukonEnergyCompany, liteHw, optRouteID);
+            if (automaticConfigurationEnabled) {
                 // Send the config command a while later
                 final int routeID2 = routeID;
     
@@ -661,7 +679,7 @@ public class YukonSwitchCommandAction {
         } else {
             // Only send the config command
             for (int i = 0; i < cfgCmds.length; i++) {
-                ServerUtils.sendSerialCommand(cfgCmds[i], routeID, user);
+                ServerUtils.sendSerialCommand(cfgCmds[i], routeID, energyCompanyUser);
             }
         }
     
@@ -675,34 +693,40 @@ public class YukonSwitchCommandAction {
             eventBase.setEventTypeID(hwEventEntryID);
             eventBase.setActionID(configEntryID);
             eventBase.setEventDateTime(now);
-            event.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
+            event.setEnergyCompanyID(yukonEnergyCompany.getEnergyCompanyId());
     
-            event = Transaction.createTransaction(Transaction.INSERT, event).execute();
+            dbPersistentDao.performDBChange(event, TransactionType.INSERT);
     
             com.cannontech.database.db.stars.hardware.InventoryBase invDB = new com.cannontech.database.db.stars.hardware.InventoryBase();
             StarsLiteFactory.setInventoryBase(invDB, liteHw);
             invDB.setCurrentStateID(availStatusEntryID);
-            invDB = Transaction.createTransaction(Transaction.UPDATE, invDB).execute();
+            dbPersistentDao.performDBChange(invDB, TransactionType.UPDATE);
     
             liteHw.setCurrentStateID(invDB.getCurrentStateID());
             liteHw.updateDeviceStatus();
-        } catch (TransactionException e) {
+        } catch (PersistenceException e) {
             CTILogger.error(e.getMessage(), e);
         }
     }
 
     /* from YukonSwitchCommandAction */
-    public static void sendDisableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, Integer routeId)
+    public static void sendDisableCommand(YukonEnergyCompany yukonEnergyCompany, LiteStarsLMHardware liteHw, Integer routeId)
             throws WebClientException {
+        DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
+        StarsDatabaseCache starsDatabaseCache = YukonSpringHook.getBean("starsDatabaseCache", StarsDatabaseCache.class);
+
         if (liteHw.getManufacturerSerialNumber().trim().length() == 0) {
             throw new WebClientException("The manufacturer serial # of the hardware cannot be empty");
         }
+        
+        LiteStarsEnergyCompany liteStarsEnergyCompany = 
+            starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+        
+        Integer hwEventEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID());
+        Integer termEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID());
+        Integer unavailStatusEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).getEntryID());
     
-        Integer hwEventEntryID = new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID());
-        Integer termEntryID = new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID());
-        Integer unavailStatusEntryID = new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).getEntryID());
-    
-        LiteYukonUser user = energyCompany.getUser();
+        LiteYukonUser energyCompanyUser = yukonEnergyCompany.getEnergyCompanyUser();
         List<String> commands = getDisableCommands(liteHw);
 
         if (commands.isEmpty())
@@ -712,10 +736,10 @@ public class YukonSwitchCommandAction {
             routeId = liteHw.getRouteID();
         }
         if (routeId == null || routeId == 0)
-            routeId = energyCompany.getDefaultRouteId();
+            routeId = liteStarsEnergyCompany.getDefaultRouteId();
 
         for (String command : commands) {
-            ServerUtils.sendSerialCommand(command, routeId, user);
+            ServerUtils.sendSerialCommand(command, routeId, energyCompanyUser);
         }
 
         // Add "Termination" to hardware events
@@ -728,18 +752,18 @@ public class YukonSwitchCommandAction {
             eventBase.setEventTypeID(hwEventEntryID);
             eventBase.setActionID(termEntryID);
             eventBase.setEventDateTime(new Date());
-            event.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
+            event.setEnergyCompanyID(yukonEnergyCompany.getEnergyCompanyId());
     
-            event = Transaction.createTransaction(Transaction.INSERT, event).execute();
+            dbPersistentDao.performDBChange(event, TransactionType.INSERT);
     
             com.cannontech.database.db.stars.hardware.InventoryBase invDB = new com.cannontech.database.db.stars.hardware.InventoryBase();
             StarsLiteFactory.setInventoryBase(invDB, liteHw);
             invDB.setCurrentStateID(unavailStatusEntryID);
-            invDB = Transaction.createTransaction(Transaction.UPDATE, invDB).execute();
-    
+            dbPersistentDao.performDBChange(invDB, TransactionType.UPDATE);
+
             liteHw.setCurrentStateID(invDB.getCurrentStateID());
             liteHw.updateDeviceStatus();
-        } catch (TransactionException e) {
+        } catch (PersistenceException e) {
             CTILogger.error(e.getMessage(), e);
         }
     }
@@ -776,15 +800,19 @@ public class YukonSwitchCommandAction {
     }
 
     /* from YukonSwitchCommandAction */
-    public static void sendEnableCommand(LiteStarsEnergyCompany energyCompany, LiteStarsLMHardware liteHw, Integer routeId)
+    public static void sendEnableCommand(YukonEnergyCompany yukonEnergyCompany, LiteStarsLMHardware liteHw, Integer routeId)
             throws WebClientException {
+        
+        DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
+        StarsDatabaseCache starsDatabaseCache = YukonSpringHook.getBean("starsDatabaseCache", StarsDatabaseCache.class);
+        
         if (liteHw.getManufacturerSerialNumber().length() == 0) {
             throw new WebClientException("The manufacturer serial # of the hardware cannot be empty");
         }
 
-        LiteYukonUser user = energyCompany.getUser();
+        LiteYukonUser energyCompanyUser = yukonEnergyCompany.getEnergyCompanyUser();
 
-        List<String> commands = getEnableCommands(liteHw, energyCompany, false);
+        List<String> commands = getEnableCommands(liteHw, yukonEnergyCompany, false);
         if (commands.isEmpty()) {
             return;
         }
@@ -793,17 +821,22 @@ public class YukonSwitchCommandAction {
             routeId = liteHw.getRouteID();
         }
         if (routeId == null || routeId == 0) {
+            LiteStarsEnergyCompany energyCompany = 
+                starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
             routeId = energyCompany.getDefaultRouteId();
         }
 
         for (String command : commands) {
-            ServerUtils.sendSerialCommand(command, routeId, user);
+            ServerUtils.sendSerialCommand(command, routeId, energyCompanyUser);
         }
 
+        LiteStarsEnergyCompany liteStarsEnergyCompany = 
+            starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+        
         // Add "Activation Completed" to hardware events
-        Integer hwEventEntryID = new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID());
-        Integer actCompEntryID = new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID());
-        Integer availStatusEntryID = new Integer(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID());
+        Integer hwEventEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID());
+        Integer actCompEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID());
+        Integer availStatusEntryID = new Integer(liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID());
     
         try {
             com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
@@ -814,24 +847,24 @@ public class YukonSwitchCommandAction {
             eventBase.setEventTypeID(hwEventEntryID);
             eventBase.setActionID(actCompEntryID);
             eventBase.setEventDateTime(new Date());
-            event.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
+            event.setEnergyCompanyID(yukonEnergyCompany.getEnergyCompanyId());
     
-            event = Transaction.createTransaction(Transaction.INSERT, event).execute();
+            dbPersistentDao.performDBChange(event, TransactionType.INSERT);
     
             com.cannontech.database.db.stars.hardware.InventoryBase invDB = new com.cannontech.database.db.stars.hardware.InventoryBase();
             StarsLiteFactory.setInventoryBase(invDB, liteHw);
             invDB.setCurrentStateID(availStatusEntryID);
-            invDB = Transaction.createTransaction(Transaction.UPDATE, invDB).execute();
+            dbPersistentDao.performDBChange(invDB, TransactionType.UPDATE);
     
             liteHw.setCurrentStateID(invDB.getCurrentStateID());
             liteHw.updateDeviceStatus();
-        } catch (TransactionException e) {
+        } catch (PersistenceException e) {
             CTILogger.error(e.getMessage(), e);
         }
     }
 
     public static List<String> getEnableCommands(LiteStarsLMHardware liteHw,
-            LiteStarsEnergyCompany energyCompany, boolean willAlsoConfig) throws WebClientException {
+            YukonEnergyCompany energyCompany, boolean willAlsoConfig) throws WebClientException {
         List<String> retVal = Lists.newArrayList();
 
         int hwConfigType = InventoryUtils.getHardwareConfigType(liteHw.getLmHardwareTypeID());

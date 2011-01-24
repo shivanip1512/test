@@ -9,8 +9,8 @@ import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
@@ -240,13 +240,13 @@ public interface OptOutService {
 	 * to be sure device is no longer opted out, sends notification of end of opt out, updates
 	 * LMHardwareControlGroup opt out stop date
 	 * @param inventory - Inventory to cancel opt out for
-	 * @param energyCompany - Inventory's energy company
+	 * @param yukonEnergyCompany - Inventory's energy company
 	 * @param event - Opt out event being canceled
 	 * @param customerAccount - Customer account for inventory
 	 * @param userContext - User canceling opt out 
 	 */
 	public void cleanUpCancelledOptOut(LiteStarsLMHardware inventory,
-			LiteStarsEnergyCompany energyCompany, OptOutEvent event,
+			YukonEnergyCompany yukonEnergyCompany, OptOutEvent event,
 			CustomerAccount customerAccount, LiteYukonUser user)
 			throws CommandCompletionException;
 

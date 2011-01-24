@@ -164,7 +164,6 @@ public enum YukonRoleProperty {
     RESIDENTIAL_CONSUMER_INFO_THERMOSTATS_ALL(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.CONSUMER_INFO_THERMOSTATS_ALL, booleanType()),
     RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_PASSWORD, booleanType()),
     RESIDENTIAL_HIDE_OPT_OUT_BOX(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.HIDE_OPT_OUT_BOX, stringType()),
-    RESIDENTIAL_AUTOMATIC_CONFIGURATION(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.AUTOMATIC_CONFIGURATION, booleanType()),
     RESIDENTIAL_OPT_OUT_PERIOD(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.OPT_OUT_PERIOD, stringType()),
     RESIDENTIAL_OPT_OUT_LIMITS(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.OPT_OUT_LIMITS, stringType()),
     RESIDENTIAL_WEB_LINK_FAQ(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.WEB_LINK_FAQ, stringType()),
@@ -267,7 +266,6 @@ public enum YukonRoleProperty {
     OPERATOR_NEW_ACCOUNT_WIZARD(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.NEW_ACCOUNT_WIZARD, booleanType()),
     OPERATOR_IMPORT_CUSTOMER_ACCOUNT(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT, stringType()),
     OPERATOR_INVENTORY_CHECKING(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.INVENTORY_CHECKING, booleanType()),
-    OPERATOR_AUTOMATIC_CONFIGURATION(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.AUTOMATIC_CONFIGURATION, booleanType()),
     OPERATOR_ORDER_NUMBER_AUTO_GEN(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN, booleanType()),
     OPERATOR_CALL_NUMBER_AUTO_GEN(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CALL_NUMBER_AUTO_GEN, stringType()),
     OPERATOR_OPT_OUT_PERIOD(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.OPT_OUT_PERIOD, stringType()),
@@ -395,6 +393,7 @@ public enum YukonRoleProperty {
     AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS, booleanType()),
     ACCOUNT_NUMBER_LENGTH(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.ACCOUNT_NUMBER_LENGTH, integerType()),
     ROTATION_DIGIT_LENGTH(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.ROTATION_DIGIT_LENGTH, integerType()),
+    AUTOMATIC_CONFIGURATION(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.AUTOMATIC_CONFIGURATION, booleanType()),
     
     MSP_PAONAME_ALIAS(MULTISPEAK, com.cannontech.roles.yukon.MultispeakRole.MSP_PAONAME_ALIAS, InputTypeFactory.enumType(MspPaoNameAliasEnum.class)),
     MSP_PRIMARY_CB_VENDORID(MULTISPEAK, com.cannontech.roles.yukon.MultispeakRole.MSP_PRIMARY_CB_VENDORID, integerType()),

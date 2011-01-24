@@ -245,6 +245,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 	    }
 	}
 
+	@Deprecated
 	public StarsYukonUser getStarsYukonUser(LiteYukonUser yukonUser) {
         Map<Integer,StarsYukonUser> starsUsers = getAllStarsYukonUsers();
 		Integer userID = new Integer( yukonUser.getUserID() );
