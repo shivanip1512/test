@@ -406,7 +406,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("WHERE YU.UserId").eq(user.getUserID());
         sql.append("ORDER BY CA.AccountId");
 
-        List<CustomerAccount> list = yukonJdbcTemplate.query(sql.getSql(), rowMapper);
+        List<CustomerAccount> list = yukonJdbcTemplate.query(sql, rowMapper);
         return list;
     }
     

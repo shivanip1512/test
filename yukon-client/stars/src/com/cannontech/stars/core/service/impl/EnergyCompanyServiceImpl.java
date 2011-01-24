@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -22,7 +22,7 @@ import com.google.common.collect.Lists;
 public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
     private ECMappingDao ecMappingDao;
-    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
+    private RolePropertyDao rolePropertyDao;
     private StarsDatabaseCache starsDatabaseCache;
     private YukonJdbcTemplate yukonJdbcTemplate;
     
@@ -32,7 +32,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         
         // The supplied energy company does not have access to the member energy companies.
         // Return the supplied energy company id.
-        boolean manageMembersEnabled = energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, energyCompany);
+        boolean manageMembersEnabled = 
+            rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, energyCompany.getEnergyCompanyUser());
         if (!manageMembersEnabled) {
             return Collections.singletonList((YukonEnergyCompany) energyCompany);
         }
@@ -100,8 +101,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     }
     
     @Autowired
-    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
-        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
     
     @Autowired
