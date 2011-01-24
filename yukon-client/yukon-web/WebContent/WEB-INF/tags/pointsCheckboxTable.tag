@@ -8,7 +8,7 @@
 
 <c:set var="columnPercentage" value="${100 / columnCount}"/>
 			
-<cti:dataGrid cols="${columnCount}" tableClasses="compactResultsTable" cellStyle="width:${columnPercentage}%;" orderMode="topToBottom">
+<cti:dataGrid cols="${columnCount}" tableClasses="compactResultsTable" cellStyle="width:${columnPercentage}%;" orderMode="TOP_TO_BOTTOM">
 	<c:forEach var="pointTemplateMask" items="${pointTemplates}">
 	
         <cti:dataGridCell>

@@ -2009,7 +2009,7 @@
      <name>orderMode</name>
      <required>false</required>
      <rtexprvalue>true</rtexprvalue>
-     <description>Sets the order mode (topToBottom, leftToRight)</description>
+     <description>Sets the order mode (TOP_TO_BOTTOM, LEFT_TO_RIGHT (default))</description>
     </attribute>
   </tag>
   

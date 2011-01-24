@@ -12,34 +12,22 @@ import com.google.common.collect.Lists;
 public class DataGridTag extends YukonTagSupport {
 
     public enum OrderMode {
-        NONE(""),
-        TOP_TO_BOTTOM("topToBottom"),
-        LEFT_TO_RIGHT("leftToRight");
-
-        private final String strValue;
-
-        private OrderMode(String strValue) {
-            this.strValue = strValue;
-        }
-
-        public String toString() {
-            return strValue;
-        }
+        TOP_TO_BOTTOM, LEFT_TO_RIGHT;
     }
-
+    
     private LinkedList<String> content = Lists.newLinkedList();
-    private String[][] grid;
     private int numberOfColumns;
-    private int numberOfRows;
     private String tableClasses = "";
     private String tableStyle = "";
     private String rowStyle = "";
     private String cellStyle = "";
-    private OrderMode orderMode = OrderMode.NONE;
+    private OrderMode orderMode = OrderMode.LEFT_TO_RIGHT;
 
     @Override
     public void doTag() throws JspException, IOException {
-
+        int numberOfRows;
+        String[][] grid;
+        
         getJspBody().invoke(null);
 
         // Calculate the required number of rows
@@ -56,7 +44,7 @@ public class DataGridTag extends YukonTagSupport {
         for (String element : content) {
             if (orderMode == OrderMode.TOP_TO_BOTTOM) {
                 grid[index % numberOfRows][index / numberOfRows] = element;
-            } else { // orderMode is either NONE or LEFT_TO_RIGHT
+            } else { // orderMode is LEFT_TO_RIGHT
                 grid[index / numberOfColumns][index % numberOfColumns] = element;
             }
             index++;
@@ -70,25 +58,21 @@ public class DataGridTag extends YukonTagSupport {
         getJspContext().getOut().println("style=\"border-collapse:collapse;" + tableStyle + "\">");
 
         for (int i = 0; i < numberOfRows; i++) {
+            
+            //Start new row
+            getJspContext().getOut().println("<tr");
+            if (StringUtils.isNotBlank(rowStyle)) {
+                getJspContext().getOut().println(" style=\"" + rowStyle + "\"");
+            }
+            getJspContext().getOut().println(">");
+            
             for (int j = 0; j < numberOfColumns; j++) {
-
-                boolean firstCell = j == 0;
-                boolean lastCell = j == numberOfColumns - 1;
-
-                if (firstCell) {
-                    getJspContext().getOut().println("<tr");
-                    if (StringUtils.isNotBlank(rowStyle)) {
-                        getJspContext().getOut().println(" style=\"" + rowStyle + "\"");
-                    }
-                    getJspContext().getOut().println(">");
-                }
-
                 getJspContext().getOut().println("<td class=\"");
 
                 /* Add first,last,middle target class */
-                if (firstCell) {
+                if (j==0) { 
                     getJspContext().getOut().println("first");
-                } else if (lastCell) {
+                } else if (j==numberOfColumns-1) {
                     getJspContext().getOut().println("last");
                 } else {
                     getJspContext().getOut().println("middle");
@@ -159,12 +143,11 @@ public class DataGridTag extends YukonTagSupport {
     }
 
     public void setOrderMode(String orderMode) {
-        if (orderMode.toLowerCase().equals("toptobottom")) {
-            this.orderMode = OrderMode.TOP_TO_BOTTOM;
-        } else if (orderMode.toLowerCase().equals("lefttoright")) {
+        try{
+            this.orderMode = OrderMode.valueOf(orderMode);
+        }
+        catch(Exception e){
             this.orderMode = OrderMode.LEFT_TO_RIGHT;
-        } else {
-            this.orderMode = OrderMode.NONE;
         }
     }
 }
