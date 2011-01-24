@@ -10,6 +10,8 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -33,19 +35,19 @@ import com.cannontech.user.YukonUserContext;
 public class HardwareServiceImpl implements HardwareService {
 
     private ApplianceDao applianceDao;
-    private StarsInventoryBaseDao starsInventoryBaseDao;
-    private EnrollmentHelperService enrollmentHelperService;
     private CustomerAccountDao customerAccountDao;
-    private LMHardwareBaseDao lmHardwareBaseDao;
+    private EnrollmentHelperService enrollmentHelperService;
     private HardwareEventLogService hardwareEventLogService;
-    private LMHardwareEventDao lmHardwareEventDao;
     private InventoryBaseDao inventoryBaseDao;
-
+    private LMHardwareBaseDao lmHardwareBaseDao;
+    private LMHardwareEventDao lmHardwareEventDao;
+    private StarsDatabaseCache starsDatabaseCache;
+    private StarsInventoryBaseDao starsInventoryBaseDao;
     
     @Override
     @Transactional
     public void deleteHardware(YukonUserContext userContext, boolean delete, int inventoryId, 
-                               int accountId, LiteStarsEnergyCompany energyCompany) throws Exception {
+                               int accountId, YukonEnergyCompany yukonEnergyCompany) throws Exception {
         LiteInventoryBase liteInventoryBase = starsInventoryBaseDao.getByInventoryId(inventoryId);
         CustomerAccount customerAccount = customerAccountDao.getById(accountId);
         boolean deleteMCT = false;
@@ -58,7 +60,7 @@ public class HardwareServiceImpl implements HardwareService {
             enrollmentHelper.setAccountNumber(customerAccount.getAccountNumber());
             enrollmentHelper.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
             
-            enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, energyCompany.getUser());
+            enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, yukonEnergyCompany.getEnergyCompanyUser());
             
         } catch (NotFoundException ignore) {
             /* Ignore this if we are not an LMHardwareBase such as mct's */
@@ -68,7 +70,7 @@ public class HardwareServiceImpl implements HardwareService {
         if (delete) {
             /* Delete this hardware from the database */
             /*TODO handle this with new code, not with this util. */
-            InventoryManagerUtil.deleteInventory( liteInventoryBase, energyCompany, deleteMCT);
+            InventoryManagerUtil.deleteInventory( liteInventoryBase, yukonEnergyCompany, deleteMCT);
 
             // Log hardware deletion
             hardwareEventLogService.hardwareDeleted(userContext.getYukonUser(), liteInventoryBase.getDeviceLabel());
@@ -76,8 +78,10 @@ public class HardwareServiceImpl implements HardwareService {
         } else {
             /* Just remove it from the account and put it back in general inventory */
             Date removeDate = new Date();
-            int hwEventEntryId = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE ).getEntryID();
-            int uninstallActionId = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_UNINSTALL ).getEntryID();
+            LiteStarsEnergyCompany liteStarsEnergyCompany = 
+                starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+            int hwEventEntryId = liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE ).getEntryID();
+            int uninstallActionId = liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_UNINSTALL ).getEntryID();
             
             /* Add an uninstall event for this hardware */
             LiteLMHardwareEvent liteLMHardwareEvent = new LiteLMHardwareEvent();
@@ -88,7 +92,7 @@ public class HardwareServiceImpl implements HardwareService {
             
             liteLMHardwareEvent.setNotes( "Removed from account #" + customerAccount.getAccountNumber() );
             
-            lmHardwareEventDao.add(liteLMHardwareEvent, energyCompany.getEnergyCompanyId());
+            lmHardwareEventDao.add(liteLMHardwareEvent, yukonEnergyCompany.getEnergyCompanyId());
             
             if (liteInventoryBase instanceof LiteStarsLMHardware) {
                 applianceDao.deleteAppliancesByAccountIdAndInventoryId(accountId, inventoryId);
@@ -106,6 +110,7 @@ public class HardwareServiceImpl implements HardwareService {
         }
     }
     
+    // DI Setters
     @Autowired
     public void setApplianceDao(ApplianceDao applianceDao) {
 		this.applianceDao = applianceDao;
@@ -143,9 +148,13 @@ public class HardwareServiceImpl implements HardwareService {
 		this.lmHardwareEventDao = lmHardwareEventDao;
 	}
     
+    @Autowired
+    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+        this.starsDatabaseCache = starsDatabaseCache;
+    }
+    
     @Autowired    
-    public void setStarsInventoryBaseDao(
-			StarsInventoryBaseDao starsInventoryBaseDao) {
+    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
 		this.starsInventoryBaseDao = starsInventoryBaseDao;
 	}
 }

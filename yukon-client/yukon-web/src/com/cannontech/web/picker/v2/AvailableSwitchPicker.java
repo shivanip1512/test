@@ -2,7 +2,6 @@ package com.cannontech.web.picker.v2;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.inventory.LMHardwareClass;
-import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.dao.AvailableLmHardwareFilter;
 import com.cannontech.stars.dr.hardware.dao.DisplayableLmHardwareRowMapper;
@@ -21,8 +20,7 @@ import com.google.common.collect.Lists;
 
 public class AvailableSwitchPicker extends DatabasePicker<DisplayableLmHardware> {
     
-    private StarsDatabaseCache starsDatabaseCache;
-    private ECMappingDao ecMappingDao;
+    private EnergyCompanyService energyCompanyService;
     
     private final static String[] searchColumnNames = new String[] {"lmhw.manufacturerSerialNumber"};
     private final static List<OutputColumn> outputColumns;
@@ -47,12 +45,12 @@ public class AvailableSwitchPicker extends DatabasePicker<DisplayableLmHardware>
             String extraArgs, YukonUserContext userContext) {
         if (extraArgs != null) {
             int energyCompanyId = NumberUtils.toInt(extraArgs);
-            LiteStarsEnergyCompany energyCompany =
-                starsDatabaseCache.getEnergyCompany(energyCompanyId);
 
             // gather parents energyCompanyIds
-            Set<Integer> energyCompanyIds =
-                ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
+            List<YukonEnergyCompany> parentEnergyCompanies = 
+                energyCompanyService.getAccessibleParentEnergyCompanies(energyCompanyId);
+            List<Integer> energyCompanyIds =
+                Lists.transform(parentEnergyCompanies, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdsFunction());
 
             AvailableLmHardwareFilter energyCompanyIdsFilter =
                 new AvailableLmHardwareFilter(energyCompanyIds, LMHardwareClass.SWITCH);
@@ -70,14 +68,10 @@ public class AvailableSwitchPicker extends DatabasePicker<DisplayableLmHardware>
         return outputColumns;
     }
     
+    // DI Setters
     @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-		this.ecMappingDao = ecMappingDao;
-	}
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
     }
 
 }

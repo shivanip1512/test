@@ -18,23 +18,23 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
 import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private ECMappingDao ecMappingDao;
+    private EnergyCompanyService energyCompanyService;
     private WebConfigurationDao webConfigurationDao;
-    private StarsDatabaseCache starsDatabaseCache;
+    private YukonJdbcTemplate yukonJdbcTemplate;
 
     private static class RowMapper extends
             AbstractRowMapperWithBaseQuery<ApplianceCategory> {
@@ -82,34 +82,28 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getApplianceCategoryIdsByAccount(int accountId) {
-        int energyCompanyId =
-            ecMappingDao.getEnergyCompanyIdForAccountId(accountId);
-        return getApplianceCategoryIdsByEC(energyCompanyId);
+
+        YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByAccountId(accountId);
+        return getApplianceCategoryIdsByEC(yukonEnergyCompany.getEnergyCompanyId());
     }
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getApplianceCategoryIdsByEC(int energyCompanyId) {
-        LiteStarsEnergyCompany energyCompany =
-            starsDatabaseCache.getEnergyCompany(energyCompanyId);
 
-        Set<Integer> idSet = ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
+        // Getting parent energy companies.
+        List<YukonEnergyCompany> parentEnergyCompanies = 
+            energyCompanyService.getAccessibleParentEnergyCompanies(energyCompanyId);
+        List<Integer> energyCompanyIds =
+            Lists.transform(parentEnergyCompanies, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdsFunction());
 
-        final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        sqlBuilder.append("SELECT ApplianceCategoryID");
-        sqlBuilder.append("FROM ApplianceCategory");
-        sqlBuilder.append("WHERE ApplianceCategoryID IN (");
-        sqlBuilder.append("     SELECT ItemID ");
-        sqlBuilder.append("     FROM ECToGenericMapping ");
-        sqlBuilder.append("     WHERE MappingCategory = ? ");
-        sqlBuilder.append("     AND EnergyCompanyID in ( ");
-        sqlBuilder.append(idSet);
-        sqlBuilder.append("))");
-        String sql = sqlBuilder.toString();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ItemId "); // ItemId represents applianceCategoryId in this case.
+        sql.append("FROM ECToGenericMapping ");
+        sql.append("WHERE MappingCategory").eq(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY);
+        sql.append("AND EnergyCompanyId").in(energyCompanyIds);
         
-        List<Integer> applianceCategoryIdList = yukonJdbcTemplate.query(sql,
-            new IntegerRowMapper(),
-            YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY);
+        List<Integer> applianceCategoryIdList = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         return applianceCategoryIdList;
     }    
     
@@ -148,7 +142,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<ApplianceCategory> getByApplianceCategoryName(String applianceCategoryName,
-                                                              Set<Integer> energyCompanyIds) {
+                                                              Iterable<Integer> energyCompanyIds) {
         RowMapper rowMapper = new RowMapper();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(rowMapper.getBaseQuery());
@@ -221,23 +215,21 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         return retVal;
     }
 
+    
+    // DI Setters
     @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
     }
-
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-
+    
     @Autowired
     public void setWebConfigurationDao(WebConfigurationDao webConfigurationDao) {
         this.webConfigurationDao = webConfigurationDao;
     }
 
     @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
+
 }

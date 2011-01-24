@@ -168,24 +168,19 @@ public class ProgramDaoImpl implements ProgramDao {
     
     @Override
     @Transactional(readOnly = true)
-    public Program getByProgramName(String programName,
-                                          Set<Integer> energyCompanyIds) {
+    public Program getByProgramName(String programName, Iterable<Integer> energyCompanyIds) {
         
         final SqlStatementBuilder programQuery = new SqlStatementBuilder();
         programQuery.append(selectSQLHeader);
         programQuery.append("INNER JOIN ECToGenericMapping ECTGM ON (ECTGM.itemId = LMPWP.applianceCategoryId");
         programQuery.append("                                        AND ECTGM.mappingCategory = 'ApplianceCategory')");
-        programQuery.append("WHERE PAO.paoClass = ?");
-        programQuery.append("AND PAO.category = ?");
-        programQuery.append("AND PAO.paoName = ?");
-        programQuery.append("AND ECTGM.energyCompanyId in (", energyCompanyIds, ")");
+        programQuery.append("WHERE PAO.paoClass").eq(DeviceClasses.STRING_CLASS_LOADMANAGER);
+        programQuery.append("AND PAO.category").eq(PAOGroups.STRING_CAT_LOADMANAGEMENT);
+        programQuery.append("AND PAO.paoName").eq(programName);
+        programQuery.append("AND ECTGM.energyCompanyId").in(energyCompanyIds);
         
         try {
-            return yukonJdbcTemplate.queryForObject(programQuery.toString(), 
-            										 new ProgramRowMapper(yukonJdbcTemplate),
-                                                     DeviceClasses.STRING_CLASS_LOADMANAGER,
-                                                     PAOGroups.STRING_CAT_LOADMANAGEMENT,
-                                                     programName);
+            return yukonJdbcTemplate.queryForObject(programQuery, new ProgramRowMapper(yukonJdbcTemplate));
         } catch(IncorrectResultSizeDataAccessException ex){
             throw new ProgramNotFoundException("The program name supplied returned too many results or none at all.");
         }
@@ -193,28 +188,23 @@ public class ProgramDaoImpl implements ProgramDao {
 
     @Override
     @Transactional(readOnly = true)
-    public Program getByAlternateProgramName(String alternateProgramName,
-                                             Set<Integer> energyCompanyIds) {
+    public Program getByAlternateProgramName(String alternateProgramName, Iterable<Integer> energyCompanyIds) {
         
         final SqlStatementBuilder programQuery = new SqlStatementBuilder();
         programQuery.append(selectSQLHeader);
         programQuery.append("INNER JOIN ECToGenericMapping ECTGM ON (ECTGM.itemId = LMPWP.applianceCategoryId");
         programQuery.append("                                        AND ECTGM.mappingCategory = 'ApplianceCategory')");
-        programQuery.append("WHERE ((PAO.paobjectId > 0 AND PAO.paoClass = ? AND PAO.category = ?)");
+        programQuery.append("WHERE ((PAO.paobjectId > 0 ");
+        programQuery.append("        AND PAO.paoClass").eq(DeviceClasses.STRING_CLASS_LOADMANAGER);
+        programQuery.append("        AND PAO.category").eq(PAOGroups.STRING_CAT_LOADMANAGEMENT).append(")");
         programQuery.append("    OR (PAO.paobjectId = 0))");
-        programQuery.append("AND (YWC.alternateDisplayName = ?");
-        programQuery.append("     OR YWC.alternateDisplayName like ?");
-        programQuery.append("     OR YWC.alternateDisplayName like ?)");
-        programQuery.append("AND ECTGM.energyCompanyId in (", energyCompanyIds, ")");
+        programQuery.append("AND (YWC.alternateDisplayName = ?").eq(alternateProgramName);
+        programQuery.append("     OR YWC.alternateDisplayName like ").appendArgument(alternateProgramName+",%");
+        programQuery.append("     OR YWC.alternateDisplayName like ").appendArgument("%,"+alternateProgramName).append(")");
+        programQuery.append("AND ECTGM.energyCompanyId").in(energyCompanyIds);
         
         try {
-            return yukonJdbcTemplate.queryForObject(programQuery.toString(), 
-            										 new ProgramRowMapper(yukonJdbcTemplate),
-                                                     DeviceClasses.STRING_CLASS_LOADMANAGER,
-                                                     PAOGroups.STRING_CAT_LOADMANAGEMENT,
-                                                     alternateProgramName,
-                                                     alternateProgramName+",%",
-                                                     "%,"+alternateProgramName);
+            return yukonJdbcTemplate.queryForObject(programQuery, new ProgramRowMapper(yukonJdbcTemplate));
         } catch(IncorrectResultSizeDataAccessException ex){
             throw new ProgramNotFoundException("The alternate program name supplied returned too many results or none at all.");            
         }

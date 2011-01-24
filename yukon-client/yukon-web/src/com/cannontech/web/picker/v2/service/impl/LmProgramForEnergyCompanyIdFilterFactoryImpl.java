@@ -1,21 +1,21 @@
 package com.cannontech.web.picker.v2.service.impl;
 
-import java.util.Set;
+import java.util.List;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.search.pao.db.LmProgramForEnergyCompanyIdFilter;
-import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.web.picker.v2.service.LmProgramForEnergyCompanyIdFilterFactory;
+import com.google.common.collect.Lists;
 
 public class LmProgramForEnergyCompanyIdFilterFactoryImpl implements LmProgramForEnergyCompanyIdFilterFactory {
 
-	private ECMappingDao ecMappingDao;
-	private StarsDatabaseCache starsDatabaseCache;
+	private EnergyCompanyService energyCompanyService;
 	
 	@Override
 	public SqlFilter getFilterForEnergyCompanyIdExtraArg(String energyCompanyIdExtraArg) {
@@ -25,10 +25,12 @@ public class LmProgramForEnergyCompanyIdFilterFactoryImpl implements LmProgramFo
 		}
 		
 		int energyCompanyId = NumberUtils.toInt(energyCompanyIdExtraArg);
-		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
 		
 		// gather parents energyCompanyIds
-		Set<Integer> energyCompanyIds = ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
+		List<YukonEnergyCompany> parentEnergyCompanies = 
+		    energyCompanyService.getAccessibleParentEnergyCompanies(energyCompanyId);
+		List<Integer> energyCompanyIds = 
+		    Lists.transform(parentEnergyCompanies, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdsFunction());
 		
         // use the LmProgramForEnergyCompanyIdsFilter filter
         LmProgramForEnergyCompanyIdFilter filter = new LmProgramForEnergyCompanyIdFilter(energyCompanyIds);
@@ -37,12 +39,8 @@ public class LmProgramForEnergyCompanyIdFilterFactoryImpl implements LmProgramFo
 	}
 	
 	@Autowired
-	public void setEcMappingDao(ECMappingDao ecMappingDao) {
-		this.ecMappingDao = ecMappingDao;
-	}
+	public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
+    }
 	
-	@Autowired
-	public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-		this.starsDatabaseCache = starsDatabaseCache;
-	}
 }

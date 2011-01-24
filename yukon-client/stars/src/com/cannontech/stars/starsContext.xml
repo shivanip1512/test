@@ -251,6 +251,8 @@
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
     </bean>
     
+    <bean id="energyCompanyService" class="com.cannontech.stars.core.service.impl.EnergyCompanyServiceImpl"/>
+    
     <bean id="starsCacheService" class="com.cannontech.stars.core.service.impl.StarsCacheServiceImpl">
         <property name="starsInventoryBaseDao" ref="starsInventoryBaseDao" />
     </bean>

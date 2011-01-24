@@ -10,10 +10,10 @@ import com.cannontech.common.util.SqlStatementBuilder;
 
 public class AvailableLmHardwareFilter implements SqlFilter {
     
-    private Set<Integer> energyCompanyIds;
+    private Iterable<Integer> energyCompanyIds;
     private LMHardwareClass lmHardwareClass;
     
-    public AvailableLmHardwareFilter(Set<Integer> energyCompanyIds, LMHardwareClass lmHardwareClass) {
+    public AvailableLmHardwareFilter(Iterable<Integer> energyCompanyIds, LMHardwareClass lmHardwareClass) {
         this.energyCompanyIds = energyCompanyIds;
         this.lmHardwareClass = lmHardwareClass;
     }

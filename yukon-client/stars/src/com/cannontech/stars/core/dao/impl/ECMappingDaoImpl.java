@@ -49,6 +49,7 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     }
     
     @Override
+    @Deprecated
     public LiteStarsEnergyCompany getInventoryEC(int inventoryId) {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -57,6 +58,17 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         return energyCompany;
+    }
+    
+    @Override
+    public int getEnergyCompanyIdForInventoryId(int inventoryId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EnergyCompanyId");
+        sql.append("FROM ECToInventoryMapping");
+        sql.append("WHERE InventoryId").eq(inventoryId);
+        
+        return yukonJdbcTemplate.queryForInt(sql);
     }
     
     @Override

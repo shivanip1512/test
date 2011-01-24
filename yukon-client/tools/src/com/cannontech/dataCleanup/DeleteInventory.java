@@ -10,11 +10,11 @@ import org.apache.log4j.Logger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.user.SystemUserContext;
 import com.google.common.base.Function;
@@ -24,7 +24,7 @@ public class DeleteInventory {
 
 	private Logger log = YukonLogManager.getLogger(DeleteInventory.class);
 	private String appName = "DeleteInventory";
-	private ECMappingDao ecMappingDao;
+	private EnergyCompanyService energyCompanyService;
 	private StarsInventoryBaseDao starsInventoryBaseDao;
 	private HardwareService hardwareService;
 
@@ -42,7 +42,7 @@ public class DeleteInventory {
 
 	public void init() {
 		YukonSpringHook.setDefaultContext("com.cannontech.context.tools");
-		ecMappingDao = YukonSpringHook.getBean("ecMappingDao", ECMappingDao.class);
+		energyCompanyService = YukonSpringHook.getBean("energyCompanyService", EnergyCompanyService.class);
 		starsInventoryBaseDao = YukonSpringHook.getBean( "starsInventoryBaseDao", StarsInventoryBaseDao.class);
 		hardwareService = YukonSpringHook.getBean("hardwareService", HardwareService.class);
 
@@ -108,9 +108,8 @@ public class DeleteInventory {
 				" (InventoryId = " + inventoryId + ", AccountId = " + accountId + ") ");
 
 		try {
-			LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
-			hardwareService.deleteHardware(new SystemUserContext(), true,
-					inventoryId, accountId, energyCompany);
+			YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByInventoryId(inventoryId);
+			hardwareService.deleteHardware(new SystemUserContext(), true, inventoryId, accountId, yukonEnergyCompany);
 
 			log.info("Deleted the inventory " + liteInventoryBase.getDeviceLabel() + 
 					" (InventoryId = " + inventoryId + ", AccountId = " + accountId + ") ");

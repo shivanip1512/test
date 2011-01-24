@@ -28,13 +28,15 @@ import com.cannontech.common.util.Pair;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -47,11 +49,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.stars.hardware.InventoryBase;
-import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.stars.hardware.Warehouse;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
@@ -61,7 +60,6 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.InventoryUtils;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
@@ -413,11 +411,13 @@ public class InventoryManagerUtil {
 			return snFrom.toString() + " to " + snTo.toString();
 	}
 	
-	public static void deleteInventory(LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, boolean deleteFromYukon) throws Exception
-	{
-		InventoryBase inventory = (InventoryBase)StarsLiteFactory.createDBPersistent(liteInv);
-		
-		Transaction.createTransaction( Transaction.DELETE, inventory ).execute();
+	public static void deleteInventory(LiteInventoryBase liteInv, YukonEnergyCompany yukonEnergyCompany, boolean deleteFromYukon)
+	throws Exception{
+	    DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class); 
+
+	    
+	    InventoryBase inventory = (InventoryBase)StarsLiteFactory.createDBPersistent(liteInv);
+	    dbPersistentDao.performDBChange(inventory, TransactionType.DELETE);
 		
 		if (liteInv.getDeviceID() > 0 && deleteFromYukon) {
 			
@@ -429,12 +429,8 @@ public class InventoryManagerUtil {
 			
 			LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO( liteInv.getDeviceID() );
 			DBPersistent dbPer = LiteFactory.convertLiteToDBPers( litePao );
-			Transaction.createTransaction( Transaction.DELETE, dbPer ).execute();
+			dbPersistentDao.performDBChange(dbPer, TransactionType.DELETE);
 			
-			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages(
-					(CTIDbChange)dbPer, DbChangeType.DELETE );
-			for (int i = 0; i < dbChange.length; i++)
-				ServerUtils.handleDBChangeMsg( dbChange[i] );
 		}
 	}
 	

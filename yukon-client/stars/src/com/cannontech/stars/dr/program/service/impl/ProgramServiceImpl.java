@@ -1,24 +1,25 @@
 package com.cannontech.stars.dr.program.service.impl;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.dao.ProgramNotFoundException;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramService;
+import com.google.common.collect.Lists;
 
 public class ProgramServiceImpl implements ProgramService {
     private ApplianceDao applianceDao;
+    private EnergyCompanyService energyCompanyService;
     private ProgramDao programDao;
-    private ECMappingDao ecMappingDao;
 
     @Override
     public boolean hasProgramAccess(final CustomerAccount customerAccount, final Program program) {
@@ -41,13 +42,15 @@ public class ProgramServiceImpl implements ProgramService {
     }
     
     @Override
-    public Program getByProgramName(String programName, LiteStarsEnergyCompany energyCompany) {
+    public Program getByProgramName(String programName, YukonEnergyCompany yukonEnergyCompany) {
         /*
          * This part of the method will get all the energy company ids that can
          * have an appliance category this energy company can use.
          */
-    	ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
-        Set<Integer> energyCompanyIds = ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
+        List<YukonEnergyCompany> parentEnergyCompanies =
+            energyCompanyService.getAccessibleParentEnergyCompanies(yukonEnergyCompany.getEnergyCompanyId());
+        List<Integer> energyCompanyIds =
+            Lists.transform(parentEnergyCompanies, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdsFunction());
         
         Program program = null;
         try {
@@ -62,18 +65,20 @@ public class ProgramServiceImpl implements ProgramService {
         return program;
     }
 
+    // DI Setters
     @Autowired
     public void setApplianceDao(ApplianceDao applianceDao) {
         this.applianceDao = applianceDao;
     }
 
     @Autowired
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
+    }
+    
+    @Autowired
     public void setProgramDao(ProgramDao programDao) {
         this.programDao = programDao;
     }
     
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-		this.ecMappingDao = ecMappingDao;
-	}
 }

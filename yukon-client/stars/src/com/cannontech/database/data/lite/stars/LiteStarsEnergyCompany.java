@@ -88,6 +88,7 @@ import com.cannontech.stars.xml.serialize.StarsServiceCompanies;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsSubstation;
 import com.cannontech.stars.xml.serialize.StarsSubstations;
+import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 
 public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompany {
@@ -410,6 +411,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return adminEmail;
     }
     
+    @Deprecated
     public String getEnergyCompanySetting(int rolePropertyID) {
         String value = DaoFactory.getAuthDao().getRolePropertyValue(user, rolePropertyID);
         if (value != null && value.equalsIgnoreCase(CtiUtilities.STRING_NONE))
@@ -1221,6 +1223,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     }    
     
     @Deprecated
+    /**
+     * Use starsCustAccountInformationDao.getById() instead of this method.
+     */
     public LiteStarsCustAccountInformation getCustAccountInformation(int accountID, boolean autoLoad) {
         LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(accountID, getEnergyCompanyId());
         return liteAcctInfo;
@@ -1975,6 +1980,19 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     public LiteYukonUser getEnergyCompanyUser() {
         return getUser();
     }
+
+    /**
+     * This is a helper method to get the Function to transform YukonEnergyCompanies to energyCompanyIds.
+     */
+    public static Function<YukonEnergyCompany, Integer> getEnergyCompanyToEnergyCompanyIdsFunction(){
+        return new Function<YukonEnergyCompany, Integer>() {
+                    @Override
+                    public Integer apply(YukonEnergyCompany yukonEnergyCompany) {
+                        return yukonEnergyCompany.getEnergyCompanyId();
+                    }
+                };
+    }
+    
     
     // DI Setters    
     public void setAddressDao(AddressDao addressDao) {
@@ -2028,5 +2046,4 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     public void setYukonListDao(YukonListDao yukonListDao) {
         this.yukonListDao = yukonListDao;
     }
-
 }

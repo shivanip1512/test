@@ -36,8 +36,16 @@ public interface ECMappingDao {
      * @param inventoryId - Id of inventory to get ec for
      * @return Energy company
      */
+    @Deprecated
     public LiteStarsEnergyCompany getInventoryEC(int inventoryId);
 
+    /**
+     * Method to get the energy company id for a given inventory id
+     * @param inventoryId - Id of inventory to get ec for
+     * @return Energy company
+     */
+    public int getEnergyCompanyIdForInventoryId(int inventoryId);
+    
     /**
      * Method to get the energy company for a given contact id
      * @param contactId - Id of contact to get ec for
