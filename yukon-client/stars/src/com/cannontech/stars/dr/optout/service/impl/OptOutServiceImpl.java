@@ -47,6 +47,7 @@ import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
@@ -57,9 +58,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
+import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryDao;
@@ -110,11 +111,11 @@ public class OptOutServiceImpl implements OptOutService {
 	private LMHardwareBaseDao lmHardwareBaseDao;
 	private AccountEventLogService accountEventLogService;
 	private DisplayableInventoryDao displayableInventoryDao;
-    private StarsInventoryBaseDao starsInventoryBaseDao;
+    private EnergyCompanyService energyCompanyService;
+	private StarsInventoryBaseDao starsInventoryBaseDao;
 	private OptOutEventDao optOutEventDao;
 	private OptOutAdditionalDao optOutAdditionalDao;
 	private OptOutNotificationService optOutNotificationService;
-	private ECMappingDao ecMappingDao;
 	private CustomerAccountDao customerAccountDao;
 	private AuthDao authDao;
 	private RolePropertyDao rolePropertyDao;
@@ -144,7 +145,9 @@ public class OptOutServiceImpl implements OptOutService {
 			final LiteYukonUser user) throws CommandCompletionException {
 
 	    int customerAccountId = customerAccount.getAccountId();
-		final LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
+		final YukonEnergyCompany yukonEnergyCompany = 
+		    energyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
+		
 		List<Integer> inventoryIdList = request.getInventoryIdList();
 		ReadableInstant startDate = request.getStartDate();
 		boolean startNow = false;
@@ -250,11 +253,7 @@ public class OptOutServiceImpl implements OptOutService {
                 event.setState(OptOutEventState.START_OPT_OUT_SENT);
                 
 				// Send the command to the field
-				this.sendOptOutRequest(
-						inventory, 
-						energyCompany, 
-						event.getDurationInHours(), 
-						user);
+				sendOptOutRequest(inventory, event.getDurationInHours(), user);
 
 				optOutEventLog = optOutEventDao.save(event, OptOutAction.START_OPT_OUT, user);
 
@@ -277,8 +276,9 @@ public class OptOutServiceImpl implements OptOutService {
 			
 			StringBuffer logMsg = new StringBuffer();
 
-	    	DateTimeFormatter dateTimeFormatter = 
-	    	    logFormatter.withZone(energyCompany.getDefaultDateTimeZone());
+			LiteStarsEnergyCompany energyCompany = 
+			    starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+	    	DateTimeFormatter dateTimeFormatter = logFormatter.withZone(energyCompany.getDefaultDateTimeZone());
 	    	logMsg.append("Start Date/Time:" + dateTimeFormatter.print(event.getStartDate()));
 	    	logMsg.append(", Duration:" + ServletUtils.getDurationFromHours(
 	    			event.getDurationInHours()));
@@ -287,7 +287,7 @@ public class OptOutServiceImpl implements OptOutService {
 	    	ActivityLogger.logEvent(
 	    			user.getUserID(), 
 	    			customerAccount.getAccountId(), 
-	    			energyCompany.getEnergyCompanyID(), 
+	    			yukonEnergyCompany.getEnergyCompanyId(), 
 	    			customerAccount.getCustomerId(),
                     ActivityLogActions.PROGRAM_OPT_OUT_ACTION, 
                     logMsg.toString());
@@ -298,11 +298,9 @@ public class OptOutServiceImpl implements OptOutService {
     		@Override
     		public void run() {
     			try {
-    				optOutNotificationService.sendOptOutNotification(
-    						customerAccount, 
-    						energyCompany, 
-    						request, 
-    						user);
+    			     LiteStarsEnergyCompany energyCompany = 
+    			            starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+    				optOutNotificationService.sendOptOutNotification(customerAccount, energyCompany, request, user);
     			} catch (MessagingException e) {
     				// Not much we can do - tried to send notification
     				logger.error(e);
@@ -325,7 +323,6 @@ public class OptOutServiceImpl implements OptOutService {
 		    LiteStarsLMHardware inventory = 
 				(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
 		    CustomerAccount customerAccount = customerAccountDao.getById(customerAccountId);
-			LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
 			
 			OptOutEvent lastEvent = optOutEventDao.findLastEvent(inventoryId, customerAccountId);
 			
@@ -339,7 +336,7 @@ public class OptOutServiceImpl implements OptOutService {
 			request.setDurationInHours(newDuration);
 
 			// Send command out to the field
-			this.sendOptOutRequest(inventory, energyCompany, newDuration, user);
+			sendOptOutRequest(inventory, newDuration, user);
 			
 			// Log this repeat event request
 			accountEventLogService.optOutResent(user, customerAccount.getAccountNumber(), 
@@ -376,7 +373,7 @@ public class OptOutServiceImpl implements OptOutService {
 			Integer inventoryId = event.getInventoryId();
 			LiteStarsLMHardware inventory = 
 				(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
-			LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
+			YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByInventoryId(inventoryId);
     		CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(inventoryId);
     		
 			OptOutEventState state = event.getState();
@@ -385,7 +382,7 @@ public class OptOutServiceImpl implements OptOutService {
 				// The opt out is active and the stop date is after now
 				
 				this.sendCancelCommandAndNotification(
-						inventory, energyCompany, user, event, customerAccount);
+						inventory, yukonEnergyCompany, user, event, customerAccount);
 				
 				// Update event state
 				event.setState(OptOutEventState.CANCEL_SENT);
@@ -408,7 +405,7 @@ public class OptOutServiceImpl implements OptOutService {
 				ActivityLogger.logEvent(
 						user.getUserID(), 
 						customerAccount.getAccountId(), 
-						energyCompany.getLiteID(),
+						yukonEnergyCompany.getEnergyCompanyId(),
 						customerAccount.getCustomerId(), 
 						ActivityLogActions.PROGRAM_CANCEL_SCHEDULED_ACTION, 
 						"");
@@ -421,11 +418,8 @@ public class OptOutServiceImpl implements OptOutService {
 					request.setDurationInHours(event.getDurationInHours());
 					request.setQuestions(new ArrayList<ScheduledOptOutQuestion>());
 					
-					optOutNotificationService.sendCancelScheduledNotification(
-							customerAccount, 
-							energyCompany, 
-							request, 
-							user);
+					LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+					optOutNotificationService.sendCancelScheduledNotification(customerAccount, energyCompany, request, user);
 				} catch (MessagingException e) {
 					// Not much we can do - tried to send notification
 					logger.error(e);
@@ -906,17 +900,12 @@ public class OptOutServiceImpl implements OptOutService {
 	
 	@Override
 	@Transactional(propagation = Propagation.NEVER)
-	public void cleanUpCancelledOptOut(LiteStarsLMHardware inventory,
-			LiteStarsEnergyCompany energyCompany, OptOutEvent event,
-			CustomerAccount customerAccount, LiteYukonUser user) 
+	public void cleanUpCancelledOptOut(LiteStarsLMHardware inventory, YukonEnergyCompany yukonEnergyCompany,
+	                                   OptOutEvent event, CustomerAccount customerAccount, LiteYukonUser user) 
 		throws CommandCompletionException {
 
-		this.cancelLMHardwareControlGroupOptOut(
-				inventory.getInventoryID(), customerAccount, event, user);
-
-		this.sendCancelCommandAndNotification(
-				inventory, energyCompany, user, event, customerAccount);
-		
+		cancelLMHardwareControlGroupOptOut(inventory.getInventoryID(), customerAccount, event, user);
+		sendCancelCommandAndNotification(inventory, yukonEnergyCompany, user, event, customerAccount);
 		
 	}
 	
@@ -972,27 +961,26 @@ public class OptOutServiceImpl implements OptOutService {
 	/**
 	 * Helper method to send the opt out cancel command and cancel notification message
 	 * @param inventory - Inventory to cancel opt out on
-	 * @param energyCompany - Inventory's energy company
+	 * @param yukonEnergyCompany - Inventory's energy company
 	 * @param user - User requesting the cancel
 	 * @param event - Event being canceled
 	 * @param customerAccount - Inventory's account
 	 * @throws CommandCompletionException
 	 */
-	private void sendCancelCommandAndNotification(
-			LiteStarsLMHardware inventory, LiteStarsEnergyCompany energyCompany, LiteYukonUser user, 
-			OptOutEvent event, CustomerAccount customerAccount) 
+	private void sendCancelCommandAndNotification(LiteStarsLMHardware inventory, YukonEnergyCompany yukonEnergyCompany, 
+	                                              LiteYukonUser user, OptOutEvent event, CustomerAccount customerAccount) 
 		throws CommandCompletionException {
 		
 		int inventoryId = inventory.getInventoryID();
 		int accountId = customerAccount.getAccountId();
 		
 		// Send the command to cancel opt out to the field
-		this.sendCancelRequest(inventory, energyCompany, user);
+		this.sendCancelRequest(inventory, yukonEnergyCompany, user);
 		
 		ActivityLogger.logEvent(
 				user.getUserID(), 
 				accountId, 
-				energyCompany.getLiteID(), 
+				yukonEnergyCompany.getEnergyCompanyId(), 
 				customerAccount.getCustomerId(),
 				ActivityLogActions.PROGRAM_REENABLE_ACTION, 
 				"Serial #:" + inventory.getManufacturerSerialNumber());
@@ -1005,11 +993,9 @@ public class OptOutServiceImpl implements OptOutService {
 			request.setDurationInHours(event.getDurationInHours());
 			request.setQuestions(new ArrayList<ScheduledOptOutQuestion>());
 			
-			optOutNotificationService.sendReenableNotification(
-					customerAccount, 
-					energyCompany, 
-					request, 
-					user);
+			LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+			optOutNotificationService.sendReenableNotification(customerAccount, energyCompany, request, user);
+
 		} catch (MessagingException e) {
 			// Not much we can do - tried to send notification
 			logger.error(e);
@@ -1087,8 +1073,7 @@ public class OptOutServiceImpl implements OptOutService {
 	 * 		opt out to the device
 	 * @throws CommandCompletionException - If request is interrupted or times out
 	 */
-	private void sendOptOutRequest(LiteStarsLMHardware inventory,
-			LiteStarsEnergyCompany energyCompany, int durationInHours, LiteYukonUser user) 
+	private void sendOptOutRequest(LiteStarsLMHardware inventory, int durationInHours, LiteYukonUser user) 
 		throws CommandCompletionException {
 		
 		
@@ -1158,9 +1143,8 @@ public class OptOutServiceImpl implements OptOutService {
 	 * 		cancel opt out to the device
 	 * @throws CommandCompletionException - If request is interrupted or times out
 	 */
-	private void sendCancelRequest(LiteStarsLMHardware inventory,
-			LiteStarsEnergyCompany energyCompany, LiteYukonUser user) 
-		throws CommandCompletionException{
+	private void sendCancelRequest(LiteStarsLMHardware inventory, YukonEnergyCompany yukonEnergyCompany, LiteYukonUser user) 
+	throws CommandCompletionException{
 
 		String serialNumber = inventory.getManufacturerSerialNumber();
 
@@ -1272,6 +1256,11 @@ public class OptOutServiceImpl implements OptOutService {
     }
 	
 	@Autowired
+	public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
+    }
+	
+	@Autowired
     public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
         this.lmHardwareBaseDao = lmHardwareBaseDao;
 	}	
@@ -1296,11 +1285,6 @@ public class OptOutServiceImpl implements OptOutService {
 	public void setOptOutNotificationService(
 			OptOutNotificationService optOutNotificationService) {
 		this.optOutNotificationService = optOutNotificationService;
-	}
-	
-	@Autowired
-	public void setEcMappingDao(ECMappingDao ecMappingDao) {
-		this.ecMappingDao = ecMappingDao;
 	}
 	
 	@Autowired
