@@ -177,8 +177,8 @@ public class OperatorOptOutController {
             List<MessageSourceResolvable> messages =
                 YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-
-            return "operator/program/optOut/optOut.jsp";
+            
+            return view(userContext, model, accountInfoFragment);
         }
 
         LocalDate today = new LocalDate(userContext.getJodaTimeZone());
@@ -190,14 +190,6 @@ public class OperatorOptOutController {
                                           userContext.getYukonUser());
         if (isOptOutTodayOnly) {
             optOutBackingBean.setStartDate(today);
-        }
-
-        if (bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> messages =
-                YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-
-            return view(userContext, model, accountInfoFragment);
         }
 
         boolean isSameDay = today.isEqual(optOutBackingBean.getStartDate());
