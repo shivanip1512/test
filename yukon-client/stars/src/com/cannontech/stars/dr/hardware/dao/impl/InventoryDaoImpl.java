@@ -15,8 +15,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryCategory;
 import com.cannontech.common.inventory.InventoryIdentifier;
@@ -27,13 +27,16 @@ import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.SqlStringStatementBuilder;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
@@ -42,7 +45,6 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareStatus;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
-import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.util.InventoryUtils;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
@@ -52,6 +54,14 @@ import com.google.common.collect.Maps;
  * Implementation class for InventoryDao
  */
 public class InventoryDaoImpl implements InventoryDao {
+
+    private ECMappingDao ecMappingDao;
+    private EnergyCompanyService energyCompanyService;
+    private LMHardwareEventDao hardwareEventDao;
+    private StarsDatabaseCache starsDatabaseCache;
+    private YukonJdbcTemplate yukonJdbcTemplate;
+
+    private HardwareSummaryRowMapper hardwareSummaryRowMapper = new HardwareSummaryRowMapper();
 
     // Static list of thermostat device types
     private static List<Integer> THERMOSTAT_TYPES = new ArrayList<Integer>();
@@ -72,11 +82,6 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append(    "JOIN yukonListEntry le ON lmhb.lmHardwareTypeId = le.entryId ");
         selectHardwareSummarySql = sql.toString();
     }
-
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private ECMappingDao ecMappingDao;
-    private LMHardwareEventDao hardwareEventDao;
-    private HardwareSummaryRowMapper hardwareSummaryRowMapper = new HardwareSummaryRowMapper();
 
     @Override
     public List<Thermostat> getThermostatsByAccount(CustomerAccount account) {
@@ -182,16 +187,15 @@ public class InventoryDaoImpl implements InventoryDao {
     @Override
     public Thermostat getThermostatById(int thermostatId) {
 
-        LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(thermostatId);
+        YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByInventoryId(thermostatId);
 
-        StringBuilder sql = new StringBuilder("SELECT ib.*, lmhb.* ");
-        sql.append(" FROM InventoryBase ib, LMHardwareBase lmhb ");
-        sql.append(" WHERE  lmhb.inventoryid = ib.inventoryid ");
-        sql.append(" AND ib.inventoryid = ?");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT * ");
+        sql.append("FROM InventoryBase IB");
+        sql.append("JOIN LMHardwareBase LMHB ON LMHB.inventoryId = IB.inventoryId ");
+        sql.append("WHERE IB.inventoryId").eq(thermostatId);
 
-        Thermostat thermostat = yukonJdbcTemplate.queryForObject(sql.toString(),
-                                                            new ThermostatRowMapper(energyCompany),
-                                                            thermostatId);
+        Thermostat thermostat = yukonJdbcTemplate.queryForObject(sql, new ThermostatRowMapper(yukonEnergyCompany));
         return thermostat;
     }
 
@@ -235,13 +239,12 @@ public class InventoryDaoImpl implements InventoryDao {
     /**
      * Mapper class to map a resultset row into a thermostat
      */
-    private class ThermostatRowMapper implements
-            ParameterizedRowMapper<Thermostat> {
+    private class ThermostatRowMapper implements ParameterizedRowMapper<Thermostat> {
 
-        LiteStarsEnergyCompany energyCompany;
+        YukonEnergyCompany yukonEnergyCompany;
 
-        public ThermostatRowMapper(LiteStarsEnergyCompany energyCompany) {
-            this.energyCompany = energyCompany;
+        public ThermostatRowMapper(YukonEnergyCompany yukonEnergyCompany) {
+            this.yukonEnergyCompany = yukonEnergyCompany;
         }
 
         @Override
@@ -258,32 +261,37 @@ public class InventoryDaoImpl implements InventoryDao {
             String deviceLabel = rs.getString("DeviceLabel");
             thermostat.setDeviceLabel(deviceLabel);
 
+            LiteStarsEnergyCompany liteStarsEnergyCompany = 
+                starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+            
             // Convert the category entryid into a InventoryCategory enum value
             int categoryEntryId = rs.getInt("CategoryId");
-            int categoryDefinitionId = YukonListEntryHelper.getYukonDefinitionId(energyCompany,
-                                                                                 YukonSelectionListDefs.YUK_LIST_NAME_INVENTORY_CATEGORY,
-                                                                                 categoryEntryId);
+            YukonListEntry categoryListEntry = 
+                liteStarsEnergyCompany.getYukonListEntry(categoryEntryId);
+            int categoryDefinitionId = categoryListEntry.getYukonDefID();
+            
             InventoryCategory category = InventoryCategory.valueOf(categoryDefinitionId);
             thermostat.setCategory(category);
 
             // Convert the hardware type entryid into a HardwareType enum value
             int typeEntryId = rs.getInt("LMHardwareTypeId");
-            int typeDefinitionId = YukonListEntryHelper.getYukonDefinitionId(energyCompany,
-                                                                             YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE,
-                                                                             typeEntryId);
-            HardwareType type = HardwareType.valueOf(typeDefinitionId);
-            thermostat.setType(type);
+            YukonListEntry hardwareTypeListEntry = 
+                liteStarsEnergyCompany.getYukonListEntry(typeEntryId);
+            int hardwareTypeDefinitionId = hardwareTypeListEntry.getYukonDefID();
+
+            HardwareType hardwareType = HardwareType.valueOf(hardwareTypeDefinitionId);
+            thermostat.setType(hardwareType);
 
             int routeId = rs.getInt("RouteId");
             if (routeId == 0) {
-                routeId = energyCompany.getDefaultRouteId();
+                routeId = liteStarsEnergyCompany.getDefaultRouteId();
             }
             thermostat.setRouteId(routeId);
 
             // Convert the current state entryid into a HardwareStatus enum
             // value
             int statusEntryId = rs.getInt("CurrentStateId");
-            HardwareStatus status = this.getStatus(statusEntryId, id, type);
+            HardwareStatus status = this.getStatus(statusEntryId, id, hardwareType);
             thermostat.setStatus(status);
 
             return thermostat;
@@ -296,13 +304,15 @@ public class InventoryDaoImpl implements InventoryDao {
          * @param type - Type of thermostat
          * @return - Status of thermostat
          */
-        private HardwareStatus getStatus(int statusEntryId, int thermostatId,
-                HardwareType type) {
+        private HardwareStatus getStatus(int statusEntryId, int thermostatId, HardwareType type) {
+
+            LiteStarsEnergyCompany liteStarsEnergyCompany = 
+                starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
 
             if (statusEntryId != 0) {
-                int statusDefinitionId = YukonListEntryHelper.getYukonDefinitionId(energyCompany,
-                                                                                   YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS,
-                                                                                   statusEntryId);
+                YukonListEntry statusListEntry = 
+                    liteStarsEnergyCompany.getYukonListEntry(statusEntryId);
+                int statusDefinitionId = statusListEntry.getYukonDefID();
                 HardwareStatus status = HardwareStatus.valueOf(statusDefinitionId);
                 return status;
             } else {
@@ -316,9 +326,10 @@ public class InventoryDaoImpl implements InventoryDao {
                 for (LiteLMHardwareEvent event : events) {
 
                     int actionId = event.getActionID();
-                    int actionDefinitionId = YukonListEntryHelper.getYukonDefinitionId(energyCompany,
-                                                                                       YukonSelectionListDefs.YUK_LIST_NAME_LM_CUSTOMER_ACTION,
-                                                                                       actionId);
+
+                    YukonListEntry actionListEntry = 
+                        liteStarsEnergyCompany.getYukonListEntry(actionId);
+                    int actionDefinitionId = actionListEntry.getYukonDefID();
 
                     if (YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED == actionDefinitionId || isSA && YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG == actionDefinitionId) {
                         return HardwareStatus.AVAILABLE;
@@ -455,6 +466,7 @@ public class InventoryDaoImpl implements InventoryDao {
         return result.equalsIgnoreCase(deviceType);
     }
 
+    // DI Setters
     @Autowired
     public void setJdbcTemplate(YukonJdbcTemplate jdbcTemplate) {
         this.yukonJdbcTemplate = jdbcTemplate;
@@ -466,8 +478,18 @@ public class InventoryDaoImpl implements InventoryDao {
     }
 
     @Autowired
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
+    }
+    
+    @Autowired
     public void setHardwareEventDao(LMHardwareEventDao hardwareEventDao) {
         this.hardwareEventDao = hardwareEventDao;
     }
 
+    @Autowired
+    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+        this.starsDatabaseCache = starsDatabaseCache;
+    }
+    
 }

@@ -108,5 +108,11 @@ public interface YukonUserDao {
      * 
      */
     public LiteYukonUser createLoginForAdditionalContact(String firstName, String lastName, LiteYukonGroup group);
-    
+
+    /**
+     * This method returns all of the operators that are directly associated with the given energy
+     * company ids.
+     */
+    public List<LiteYukonUser> getOperatorLoginsByEnergyCompanyIds(Iterable<Integer> energyCompanyIds);
+ 
 }

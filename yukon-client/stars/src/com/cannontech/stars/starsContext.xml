@@ -132,11 +132,7 @@
         <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
     </bean>
 
-    <bean id="starsSearchDao" class="com.cannontech.stars.core.dao.impl.StarsSearchDaoImpl">
-        <property name="jdbcTemplate" ref="simpleJdbcTemplate" />
-        <property name="ecMappingDao" ref="ecMappingDao" />
-        <property name="starsInventoryBaseDao" ref="starsInventoryBaseDao" />
-    </bean>
+    <bean id="starsSearchDao" class="com.cannontech.stars.core.dao.impl.StarsSearchDaoImpl"/>
 
     <bean id="starsCustAccountInformationDao" class="com.cannontech.stars.core.dao.impl.StarsCustAccountInformationDaoImpl"/>
 

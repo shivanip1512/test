@@ -22,6 +22,7 @@ import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
@@ -29,6 +30,7 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.CustomerAction;
@@ -63,62 +65,17 @@ import com.google.common.collect.Multimap;
 public class ThermostatServiceImpl implements ThermostatService {
 
     private Logger logger = YukonLogManager.getLogger(ThermostatServiceImpl.class);
+
     private AccountEventLogService accountEventLogService;
+    private CustomerDao customerDao;
     private CustomerEventDao customerEventDao;
+    private EnergyCompanyService energyCompanyService;
     private InventoryDao inventoryDao;
     private ECMappingDao ecMappingDao;
     private CommandRequestHardwareExecutor commandRequestHardwareExecutor;
     private RolePropertyDao rolePropertyDao;
     private SystemDateFormattingService systemDateFormattingService;
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
-    private CustomerDao customerDao;
-    
-    @Autowired
-    public void setCustomerDao(CustomerDao customerDao) {
-        this.customerDao = customerDao;
-    }
-    
-    @Autowired
-    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-    
-    @Autowired
-    public void setCustomerEventDao(CustomerEventDao customerEventDao) {
-        this.customerEventDao = customerEventDao;
-    }
-
-    @Autowired
-    public void setInventoryDao(InventoryDao inventoryDao) {
-        this.inventoryDao = inventoryDao;
-    }
-
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-
-    @Autowired
-    public void setCommandRequestHardwareExecutor(
-                    CommandRequestHardwareExecutor commandRequestHardwareExecutor) {
-        this.commandRequestHardwareExecutor = commandRequestHardwareExecutor;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
-    
-    @Autowired
-    public void setSystemDateFormattingService(
-    		SystemDateFormattingService systemDateFormattingService) {
-		this.systemDateFormattingService = systemDateFormattingService;
-	}
-    
-    @Autowired
-    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
-		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
-	}
 
     @Override
     @Transactional
@@ -612,15 +569,10 @@ public class ThermostatServiceImpl implements ThermostatService {
             logMsg.append(", Fan: " + event.getFanState());
         }
 
-        LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(thermostat.getId());
-        Integer energyCompanyID = energyCompany.getEnergyCompanyId();
+        YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByInventoryId(thermostat.getId());
 
-        ActivityLogger.logEvent(userId,
-                                accountId,
-                                energyCompanyID,
-                                customerId,
-                                ActivityLogActions.THERMOSTAT_MANUAL_ACTION,
-                                logMsg.toString());
+        ActivityLogger.logEvent(userId, accountId, yukonEnergyCompany.getEnergyCompanyId(), customerId,
+                                ActivityLogActions.THERMOSTAT_MANUAL_ACTION, logMsg.toString());
     }
 
     /**
@@ -671,5 +623,56 @@ public class ThermostatServiceImpl implements ThermostatService {
                                 customerId,
                                 ActivityLogActions.THERMOSTAT_SCHEDULE_ACTION,
                                 logMessage.toString());
+    }
+    
+    // DI Setters
+    @Autowired
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
+    
+    @Autowired
+    public void setCustomerDao(CustomerDao customerDao) {
+        this.customerDao = customerDao;
+    }
+    
+    @Autowired
+    public void setCustomerEventDao(CustomerEventDao customerEventDao) {
+        this.customerEventDao = customerEventDao;
+    }
+
+    @Autowired
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
+    }
+    
+    @Autowired
+    public void setInventoryDao(InventoryDao inventoryDao) {
+        this.inventoryDao = inventoryDao;
+    }
+
+    @Autowired
+    public void setEcMappingDao(ECMappingDao ecMappingDao) {
+        this.ecMappingDao = ecMappingDao;
+    }
+
+    @Autowired
+    public void setCommandRequestHardwareExecutor(CommandRequestHardwareExecutor commandRequestHardwareExecutor) {
+        this.commandRequestHardwareExecutor = commandRequestHardwareExecutor;
+    }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
+    
+    @Autowired
+    public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
+        this.systemDateFormattingService = systemDateFormattingService;
+    }
+    
+    @Autowired
+    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
+        this.accountThermostatScheduleDao = accountThermostatScheduleDao;
     }
 }

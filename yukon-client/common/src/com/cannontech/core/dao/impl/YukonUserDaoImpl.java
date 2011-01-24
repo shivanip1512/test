@@ -45,12 +45,12 @@ public class YukonUserDaoImpl implements YukonUserDao {
     private static final String selectByUsernameSql;
     private static final ParameterizedRowMapper<LiteYukonUser> rowMapper;
     
-    private SystemEventLogService systemEventLogService;
-    private YukonJdbcOperations yukonJdbcOperations;
+    private DBPersistentDao dbPersistantDao;
     private IDatabaseCache databaseCache;
     private NextValueHelper nextValueHelper;
     private PaoPermissionDao<LiteYukonUser> userPaoPermissionDao = null;
-    private DBPersistentDao dbPersistantDao;
+    private SystemEventLogService systemEventLogService;
+    private YukonJdbcOperations yukonJdbcOperations;
     
     public static final int numberOfRandomChars = 5;
     
@@ -250,9 +250,8 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	}
 	
 	@Override
-	public void callbackWithYukonUsersInGroup(
-	        LiteYukonGroup group,
-	        SimpleCallback<LiteYukonUser> callback) {
+	public void callbackWithYukonUsersInGroup(LiteYukonGroup group, SimpleCallback<LiteYukonUser> callback) {
+
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
 	    sql.append("select yu.*");
 	    sql.append("from yukonusergroup yug");
@@ -313,30 +312,6 @@ public class YukonUserDaoImpl implements YukonUserDao {
         return mapper;
     }
     
-    @Autowired
-    public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
-        this.yukonJdbcOperations = yukonJdbcOperations;
-    }
-    
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-
-    public void setUserPaoPermissionDao(PaoPermissionDao<LiteYukonUser> userPaoPermissionDao) {
-        this.userPaoPermissionDao = userPaoPermissionDao;
-    }
-    
-    @Autowired
-    public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
-        this.dbPersistantDao = dbPersistantDao;
-    }
-    
-    @Autowired
-    public void setSystemEventLogService(SystemEventLogService systemEventLogService) {
-        this.systemEventLogService = systemEventLogService;
-    }
-
     @Override
     public LiteYukonUser createLoginForAdditionalContact(String firstName, String lastName, LiteYukonGroup group) {
         YukonUser login = new YukonUser();
@@ -351,4 +326,42 @@ public class YukonUserDaoImpl implements YukonUserDao {
         return new LiteYukonUser(login.getUserID(), login.getYukonUser().getUsername(), login.getYukonUser().getLoginStatus(), login.getYukonUser().getAuthType());
     }
 
+    @Override
+    public List<LiteYukonUser> getOperatorLoginsByEnergyCompanyIds(Iterable<Integer> energyCompanyIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(selectSql);
+        sql.append("JOIN EnergyCompanyOperatorLoginList ECOLL ON ECOLL.OperatorLoginId = YU.UserId");
+        sql.append("WHERE ECOLL.EnergyCompanyId").in(energyCompanyIds);
+        
+        List<LiteYukonUser> operators = yukonJdbcOperations.query(sql, rowMapper);
+        
+        return operators;
+    }
+    
+    // DI Setters
+    @Autowired
+    public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
+        this.dbPersistantDao = dbPersistantDao;
+    }
+    
+    @Autowired
+    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+        this.nextValueHelper = nextValueHelper;
+    }
+    
+    
+    @Autowired
+    public void setSystemEventLogService(SystemEventLogService systemEventLogService) {
+        this.systemEventLogService = systemEventLogService;
+    }
+
+    @Autowired
+    public void setUserPaoPermissionDao(PaoPermissionDao<LiteYukonUser> userPaoPermissionDao) {
+        this.userPaoPermissionDao = userPaoPermissionDao;
+    }
+
+    @Autowired
+    public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
+        this.yukonJdbcOperations = yukonJdbcOperations;
+    }
 }

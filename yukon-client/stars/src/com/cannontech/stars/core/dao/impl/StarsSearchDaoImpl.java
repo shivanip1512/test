@@ -3,6 +3,7 @@ package com.cannontech.stars.core.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -10,15 +11,16 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.LiteStarsLMHardwareRowMapper;
 import com.cannontech.stars.core.dao.SmartLiteInventoryBaseRowMapper;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
+import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.web.bean.InventoryBean;
 
@@ -26,22 +28,9 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
     private static final ParameterizedRowMapper<LiteInventoryBase> inventoryRowMapper =
         new SmartLiteInventoryBaseRowMapper();
 	private SimpleJdbcTemplate jdbcTemplate;
-	private ECMappingDao ecMappingDao;
+	private EnergyCompanyService energyCompanyService;
 	private StarsInventoryBaseDao starsInventoryBaseDao;
 
-	public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
-		this.jdbcTemplate = jdbcTemplate;
-	}
-	
-	public void setEcMappingDao(ECMappingDao ecMappingDao) {
-		this.ecMappingDao = ecMappingDao;
-	}
-	
-	public void setStarsInventoryBaseDao(
-			StarsInventoryBaseDao starsInventoryBaseDao) {
-		this.starsInventoryBaseDao = starsInventoryBaseDao;
-	}
-	
 	@Override
     public LiteInventoryBase searchLMHardwareBySerialNumber(String serialNumber, LiteStarsEnergyCompany energyCompany) throws ObjectInOtherEnergyCompanyException {
 	    return searchLMHardwareBySerialNumber(serialNumber, energyCompany.getEnergyCompanyId());
@@ -89,7 +78,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		}
 		
 		// If we get to here, we didn't find the serial number for the energyCompany provided.  Throw exception.
-		LiteStarsEnergyCompany otherEnergyCompany = ecMappingDao.getInventoryEC(lmHardwareInOtherEnergyCompany.getInventoryID());
+		YukonEnergyCompany otherEnergyCompany = energyCompanyService.getEnergyCompanyByInventoryId(lmHardwareInOtherEnergyCompany.getInventoryID());
 		throw new ObjectInOtherEnergyCompanyException( lmHardwareInOtherEnergyCompany, otherEnergyCompany);
 	}
 
@@ -153,9 +142,9 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		}
 		
 		LiteInventoryBase inventoryBase = inventoryBaseList.get(0);
-		if(!energyCompany.getEnergyCompanyID().equals(inventoryBase.getEnergyCompanyId())) {
-			LiteStarsEnergyCompany inventoryEC = ecMappingDao.getInventoryEC(inventoryBase.getInventoryID());
-			throw new ObjectInOtherEnergyCompanyException( inventoryBase, inventoryEC);
+		if(!inventoryBase.getEnergyCompanyId().equals(energyCompany.getEnergyCompanyId())) {
+			YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByInventoryId(inventoryBase.getInventoryID());
+			throw new ObjectInOtherEnergyCompanyException( inventoryBase, yukonEnergyCompany);
 		}
 		
 		return inventoryBase;
@@ -213,9 +202,9 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 	
 	private LiteInventoryBase verifyInventoryInEnergyCompany(LiteInventoryBase invBase, LiteStarsEnergyCompany energyCompany) throws ObjectInOtherEnergyCompanyException {
 
-		if(!energyCompany.getEnergyCompanyID().equals(invBase.getEnergyCompanyId())) {
-			LiteStarsEnergyCompany inventoryEC = ecMappingDao.getInventoryEC(invBase.getInventoryID());
-			throw new ObjectInOtherEnergyCompanyException( invBase, inventoryEC);
+		if(!invBase.getEnergyCompanyId().equals(energyCompany.getEnergyCompanyId())) {
+			YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByInventoryId(invBase.getInventoryID());
+			throw new ObjectInOtherEnergyCompanyException( invBase, yukonEnergyCompany);
 		}
 		
 		return invBase;
@@ -360,5 +349,21 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		return hardwareList;
 		
 	}
+
+	// DI Setters
+	@Autowired
+    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+    
+	@Autowired
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
+    }
+	
+    @Autowired   
+    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
+        this.starsInventoryBaseDao = starsInventoryBaseDao;
+    }
 
 }
