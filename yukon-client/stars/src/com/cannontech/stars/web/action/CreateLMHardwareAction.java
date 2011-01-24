@@ -33,9 +33,7 @@ import com.cannontech.stars.core.service.StarsTwoWayLcrYukonDeviceAssignmentServ
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceAssignmentException;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
-import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
-import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -302,7 +300,7 @@ public class CreateLMHardwareAction implements ActionBase {
 			    try {
 			        liteInv = starsSearchDao.getById(invID, energyCompany);
 			    } catch (ObjectInOtherEnergyCompanyException e) {
-			        throw new WebClientException("The hardware is found in another energy company [" + e.getEnergyCompany().getName() + "]");
+			        throw new WebClientException("The hardware is found in another energy company [" + e.getYukonEnergyCompany().getName() + "]");
 			    }
 				
 				if (liteInv.getAccountID() > 0) {

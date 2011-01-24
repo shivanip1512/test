@@ -8,6 +8,16 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 
 public interface StarsCustAccountInformationDao {
 
+    /**
+     * This method returns the liteStarCustAccountInformation for the supplied accountId.
+     */
+    public LiteStarsCustAccountInformation getbyAccountId(int accountId);
+    
+    @Deprecated
+    /**
+     * Use the getByAccountId(int accountId) instead of this method.  This method does validation 
+     * as well as getting the lite stars customer account information.
+     */
     public LiteStarsCustAccountInformation getById(int accountId, int energyCompanyId);
     
     public Map<Integer, LiteStarsCustAccountInformation> getByIds(Set<Integer> accountIds, int energyCompanyId);

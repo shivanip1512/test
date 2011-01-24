@@ -6,8 +6,8 @@
  */
 package com.cannontech.stars.util;
 
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 
 /**
  * @author yao
@@ -17,24 +17,24 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
  */
 public class ObjectInOtherEnergyCompanyException extends Exception {
 	
-	private LiteBase object = null;
-	private LiteStarsEnergyCompany energyCompany = null;
+	private LiteBase object;
+	private YukonEnergyCompany yukonEnergyCompany;
 	
 	public ObjectInOtherEnergyCompanyException() {
 		super();
 	}
 	
-	public ObjectInOtherEnergyCompanyException(LiteBase obj, LiteStarsEnergyCompany company) {
+	public ObjectInOtherEnergyCompanyException(LiteBase obj, YukonEnergyCompany yukonEnergyCompany) {
 		super();
 		object = obj;
-		energyCompany = company;
+		this.yukonEnergyCompany = yukonEnergyCompany;
 	}
 
 	/**
 	 * @return
 	 */
-	public LiteStarsEnergyCompany getEnergyCompany() {
-		return energyCompany;
+	public YukonEnergyCompany getYukonEnergyCompany() {
+		return yukonEnergyCompany;
 	}
 
 	/**

@@ -62,7 +62,9 @@ public class ServletUtils {
     public static final String FILTER_INVEN_LIST = ServletUtil.FILTER_INVEN_LIST;
 
     public static final String ATT_YUKON_USER = ServletUtil.ATT_YUKON_USER;
+    @Deprecated
     public static final String ATT_STARS_YUKON_USER = "STARS_YUKON_USER";
+    @Deprecated
     public static final String ATT_ENERGY_COMPANY_SETTINGS = "ENERGY_COMPANY_SETTINGS";
     public static final String ATT_CUSTOMER_SELECTION_LISTS = "CUSTOMER_SELECTION_LISTS";
     public static final String ATT_DEFAULT_THERMOSTAT_SETTINGS = "DEFAULT_THERMOSTAT_SETTINGS";
@@ -392,6 +394,7 @@ public class ServletUtils {
         return null;
     }
 
+    @Deprecated
     public static StarsYukonUser getStarsYukonUser(final HttpSession session) {
         return (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
     }

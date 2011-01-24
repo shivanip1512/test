@@ -320,11 +320,13 @@ public class StarsUtils {
 	    return comp;
 	}
 	
+	@Deprecated
 	public static boolean isOperator(LiteYukonUser user) {
 	    return !isResidentialCustomer(user) &&
 	    DaoFactory.getEnergyCompanyDao().getEnergyCompany(user) != null;
 	}
 
+	@Deprecated
 	public static boolean isResidentialCustomer(LiteYukonUser user) {
 		return DaoFactory.getAuthDao().checkRole(user, ResidentialCustomerRole.ROLEID);
 	}

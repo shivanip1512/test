@@ -128,7 +128,7 @@ public class CheckInventoryController extends StarsInventoryActionController {
                         action.equalsIgnoreCase("UpdateLMHardware"))
                 {
                     session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE,
-                                          "The hardware or device already exists in the inventory list of <i>" + e.getEnergyCompany().getName() + "</i>." );
+                                          "The hardware or device already exists in the inventory list of <i>" + e.getYukonEnergyCompany().getName() + "</i>." );
                     redirect = this.getReferer(request);
                 }
                 else {

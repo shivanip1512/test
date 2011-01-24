@@ -17,12 +17,12 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.message.util.ConnectionException;
-import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
@@ -46,7 +46,7 @@ public class OptOutCleanupService implements InitializingBean {
 	private CustomerAccountDao customerAccountDao;
 	private EnrollmentDao enrollmentDao;
 	private StarsInventoryBaseDao starsInventoryBaseDao;
-	private ECMappingDao ecMappingDao;
+	private EnergyCompanyService energyCompanyService;
 	private ScheduledExecutor executor;
 	
 	@Override
@@ -159,14 +159,13 @@ public class OptOutCleanupService implements InitializingBean {
     	int inventoryId = inventory.getInventoryID();
     	
     	CustomerAccount account = customerAccountDao.getById(event.getCustomerAccountId());
-    	LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
+    	YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByInventoryId(inventoryId);
     	
     	logger.debug("Cleaning up opt out event for inventory: " + event.getInventoryId() 
     			+ " and account: " + event.getCustomerAccountId());
     	
         try {
-			optOutService.cleanUpCancelledOptOut(
-					inventory, energyCompany, event, account, user);
+			optOutService.cleanUpCancelledOptOut(inventory, yukonEnergyCompany, event, account, user);
 		} catch (CommandCompletionException e) {
 			logger.error("Attempt to reenable inventory: " + inventoryId + " failed", e);
 		} catch (ConnectionException e) {
@@ -174,6 +173,7 @@ public class OptOutCleanupService implements InitializingBean {
 		}
     }
     
+    // DI Setters
     @Autowired
     public void setOptOutEventDao(OptOutEventDao optOutEventDao) {
 		this.optOutEventDao = optOutEventDao;
@@ -189,6 +189,10 @@ public class OptOutCleanupService implements InitializingBean {
 		this.customerAccountDao = customerAccountDao;
 	}
     
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
+    }
+    
     @Autowired
     public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
 		this.enrollmentDao = enrollmentDao;
@@ -198,11 +202,6 @@ public class OptOutCleanupService implements InitializingBean {
     public void setStarsInventoryBaseDao(
 			StarsInventoryBaseDao starsInventoryBaseDao) {
 		this.starsInventoryBaseDao = starsInventoryBaseDao;
-	}
-    
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-		this.ecMappingDao = ecMappingDao;
 	}
     
     @Resource(name="globalScheduledExecutor")

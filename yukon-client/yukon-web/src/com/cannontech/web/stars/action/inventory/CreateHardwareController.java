@@ -61,7 +61,7 @@ public class CreateHardwareController extends StarsInventoryActionController {
                     throw new WebClientException("Cannot create hardware: serial # already exists.");
             }
             catch (ObjectInOtherEnergyCompanyException e) {
-                throw new WebClientException("Cannot create hardware: serial # already exists in the inventory list of <i>" + e.getEnergyCompany().getName() + "</i>.");
+                throw new WebClientException("Cannot create hardware: serial # already exists in the inventory list of <i>" + e.getYukonEnergyCompany().getName() + "</i>.");
             }
             
             LiteInventoryBase liteInv = CreateLMHardwareAction.addInventory( createHw, null, member );

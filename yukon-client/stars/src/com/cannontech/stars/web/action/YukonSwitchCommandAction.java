@@ -559,7 +559,7 @@ public class YukonSwitchCommandAction {
             if (liteHw.getAccountID() > 0) {
                 
                 LiteStarsCustAccountInformation liteAcctInfo = 
-                    starsCustAccountInformationDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyId());
+                    starsCustAccountInformationDao.getbyAccountId(liteHw.getAccountID());
 
                 for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
                     LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);

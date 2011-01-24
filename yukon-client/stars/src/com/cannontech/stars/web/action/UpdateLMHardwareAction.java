@@ -133,7 +133,7 @@ public class UpdateLMHardwareAction implements ActionBase {
                 try {
                     liteInv = starsSearchDao.getById(updateHw.getInventoryID(), energyCompany);
                 } catch (ObjectInOtherEnergyCompanyException e) {
-                    throw new WebClientException("The hardware is found in another energy company [" + e.getEnergyCompany().getName() + "]");
+                    throw new WebClientException("The hardware is found in another energy company [" + e.getYukonEnergyCompany().getName() + "]");
                 }			    
 				origInvID = updateHw.getInventoryID();
 				
@@ -322,7 +322,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 		} catch (StarsTwoWayLcrYukonDeviceAssignmentException e) {
 			throw new WebClientException(e.getMessage(), e);
         } catch (ObjectInOtherEnergyCompanyException e) {
-            throw new WebClientException("The hardware is found in another energy company [" + e.getEnergyCompany().getName() + "]");
+            throw new WebClientException("The hardware is found in another energy company [" + e.getYukonEnergyCompany().getName() + "]");
         }
 	}
 	

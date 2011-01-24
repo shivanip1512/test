@@ -41,6 +41,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -57,6 +58,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
+import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
@@ -95,6 +97,7 @@ public class OperatorHardwareController {
     private HardwareEventLogService hardwareEventLogService;
     private HardwareUiService hardwareUiService;
     private EnergyCompanyDao energyCompanyDao;
+    private EnergyCompanyService energyCompanyService;
     private PaoDao paoDao;
     private ServiceCompanyDao serviceCompanyDao;
     private AddressDao addressDao;
@@ -210,7 +213,7 @@ public class OperatorHardwareController {
         } catch (ObjectInOtherEnergyCompanyException e) {
             /* Return to the list page with the hardware found in another ec popup. */
             modelMap.addAttribute("anotherECSerial", serialNumber.getSerialNumber());
-            modelMap.addAttribute("anotherEC", StringEscapeUtils.escapeHtml(e.getEnergyCompany().getName()));
+            modelMap.addAttribute("anotherEC", StringEscapeUtils.escapeHtml(e.getYukonEnergyCompany().getName()));
         }
         
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
@@ -405,8 +408,8 @@ public class OperatorHardwareController {
         
         /* Delete this hardware or just take it off the account and put in back in the warehouse */
         boolean delete = deleteOption.equalsIgnoreCase("delete");
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-        hardwareService.deleteHardware(userContext, delete, inventoryId, accountInfoFragment.getAccountId(), energyCompany);
+        YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByAccountId(accountInfoFragment.getAccountId());
+        hardwareService.deleteHardware(userContext, delete, inventoryId, accountInfoFragment.getAccountId(), yukonEnergyCompany);
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         if(delete) {
@@ -757,6 +760,11 @@ public class OperatorHardwareController {
     @Autowired
     public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
         this.energyCompanyDao = energyCompanyDao;
+    }
+    
+    @Autowired
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
     }
     
     @Autowired
