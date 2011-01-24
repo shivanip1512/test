@@ -13,32 +13,8 @@
 <cti:standardPage module="operator" page="workOrder.list">
 <tags:setFormEditMode mode="${mode}"/>
 
-<i:simplePopup titleKey=".confirmDeleteWorkOrderDialogTitle" id="confirmDeleteWorkOrderDialog" styleClass="mediumSimplePopup">
-        <cti:msg2 key=".confirmDeleteWorkOrder"/>
-        <div class="actionArea">
-            <input id="confirmDeleteWorkOrderOkButton" type="button" value="<cti:msg2 key=".confirmDeleteWorkOrderOk"/>" onclick="window.location='/spring/stars/operator/workOrder/deleteWorkOrder'"/>
-            <input type="button" value="<cti:msg2 key=".confirmDeleteWorkOrderCancel"/>" onclick="$('confirmDeleteWorkOrderDialog').hide()"/>
-        </div>
-</i:simplePopup>
-
     <cti:includeCss link="/WebConfig/yukon/styles/operator/callTracking.css"/>
   
-  <%-- 
-       JS function for showing the confirmation dialog before processing the delete
-       command. The dialog box has to be modified to show correct work order number 
-       and to call the correct delete URL. 
-   --%>
-  <script type='text/javascript'>
-   var confirmDeleteWorkOrderString = $('confirmDeleteWorkOrderDialog_body').firstChild.data;
-   
-   function showDeleteWorkOrderDialog(workOrderNumber, deleteWorkOrderUrl){
-       var dialogString = confirmDeleteWorkOrderString.replace('{0}', workOrderNumber);;
-       $('confirmDeleteWorkOrderDialog_body').firstChild.data = dialogString;
-       $('confirmDeleteWorkOrderOkButton').onclick = function(){window.location=""+deleteWorkOrderUrl;};
-       $('confirmDeleteWorkOrderDialog').show();
-   }
-   
-  </script>
     <form id="createWorkOrderForm" action="/spring/stars/operator/workOrder/viewWorkOrder" method="get">
         <input type="hidden" name="accountId" value="${accountId}">
     </form>
@@ -93,11 +69,12 @@
                 <%-- delete icon --%>
                 <cti:displayForPageEditModes modes="EDIT,CREATE">
                     <td class="removeCol">
-                         <cti:url var="deleteWorkOrderUrl" value="/spring/stars/operator/workOrder/deleteWorkOrder">
-                            <cti:param name="accountId">${accountId}</cti:param>
-                            <cti:param name="deleteWorkOrderId">${workOrder.workOrderBase.orderId}</cti:param>
-                         </cti:url>
-                        <input type="image" src="${delete}" onclick = "showDeleteWorkOrderDialog(${workOrder.workOrderBase.orderNumber}, '${deleteWorkOrderUrl}')" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
+                         <form id="deleteWorkOrderForm_${workOrder.workOrderBase.orderId}" action="/spring/stars/operator/workOrder/deleteWorkOrder" method="post">
+                            <input type="hidden" name="accountId" value="${accountId}">
+                            <input type="hidden" name="deleteWorkOrderId" value="${workOrder.workOrderBase.orderId}">
+                            <input type="image" id="deleteButton_${workOrder.workOrderBase.orderId}" onclick="return false" src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
+                            <tags:confirmDialog nameKey=".deleteWorkOrderConfirmation" arguments="${workOrder.workOrderBase.orderNumber}" on="#deleteButton_${workOrder.workOrderBase.orderId}"/>
+                         </form>
                     </td>
                     
                 </cti:displayForPageEditModes>
