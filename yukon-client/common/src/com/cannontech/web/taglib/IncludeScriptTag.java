@@ -14,9 +14,7 @@ public class IncludeScriptTag extends SimpleTagSupport {
 
     public void doTag() throws JspException {
         StandardPageTag spTag = StandardPageTag.find(getJspContext());
-        if (spTag != null) {
-            spTag.addScriptFile(resolveLink());
-        } else if(this.force) {
+        if(this.force) {
             //Beware of multiple includes!
             JspWriter out = getJspContext().getOut();
             try {
@@ -25,6 +23,8 @@ public class IncludeScriptTag extends SimpleTagSupport {
                 out.write("\"></script>");
             } catch (IOException e) {
             }
+        } else if (spTag != null) {
+            spTag.addScriptFile(resolveLink());
         }
         
         return;
