@@ -695,47 +695,4 @@ void deletePaoStatistics( const long paoId )
         active_event_queue->push_back(tup);
     }
 }
-#if 0
-
-
-
-
-
-
-
-
-
-    id_statistics_map::const_iterator itr = statistics.find(devicepaoid);
-
-    if( itr != statistics.end() )
-    {
-        delete itr->second;
-        statistics.erase( itr );
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " purging statistics for deleted ID: " << devicepaoid << endl;
-        }
-
-    }
-}
-void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid, UINT &messageFlags )
-{
-    messageFlags |= MessageFlag_StatisticsRequested;
-
-    //  constructed with current time
-    statistics_event_t tup;
-
-    tup.action = statistics_event_t::Request;
-    tup.paoportid = paoportid;
-    tup.devicepaoid = devicepaoid;
-    tup.targetpaoid = targetpaoid;
-    tup.result = 0;
-
-    {
-        CtiLockGuard<CtiCriticalSection> guard(event_mux);
-        active_event_queue->push_back(tup);
-    }
-}
-#endif
 
