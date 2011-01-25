@@ -97,15 +97,22 @@ public class Range<T extends Comparable<T>> {
     }
 
 	public boolean isEmpty() {
-		if (min == null || max == null) {
-			return false;
-		}
+	    if (!isValid()) {
+	        throw new IllegalStateException();
+	    }
 
-		if (min.equals(max)) {
-			return !(includesMinValue && includesMaxValue);
-		}
+	    if (min != null && min.equals(max)) {
+	        return !(includesMinValue && includesMaxValue);
+	    }
 
-		return min.compareTo(max) > 0;
+	    return false;
+	}
+
+	public boolean isValid() {
+        if (min == null || max == null) {
+            return true;
+        }
+        return min.compareTo(max) <= 0;
 	}
 
     public String toString() {

@@ -55,17 +55,38 @@ public class RangeTest {
     }
 
     @Test
-    public void testEmpty() {
-        assertTrue(inverted.isEmpty());
-        assertFalse(from5Inclusive_toUnbounded.isEmpty());
-        assertFalse(from5Exclusive_toUnbounded.isEmpty());
-        assertFalse(fromUnbounded_to5Inclusive.isEmpty());
-        assertFalse(fromUnbounded_to5Exclusive.isEmpty());
+    public void testValid() {
+        assertFalse(inverted.isValid());
 
-        assertFalse(from5Inclusive_to5Inclusive.isEmpty());
-        assertTrue(from5Inclusive_to5Exclusive.isEmpty());
-        assertTrue(from5Exclusive_to5Exclusive.isEmpty());
-        assertTrue(from5Exclusive_to5Inclusive.isEmpty());
+        assertTrue(from5Inclusive_toUnbounded.isValid());
+        assertTrue(from5Inclusive_toUnbounded.isValid() && !from5Inclusive_toUnbounded.isEmpty());
+        assertTrue(from5Exclusive_toUnbounded.isValid());
+        assertTrue(from5Exclusive_toUnbounded.isValid() && !from5Exclusive_toUnbounded.isEmpty());
+        assertTrue(fromUnbounded_to5Inclusive.isValid());
+        assertTrue(fromUnbounded_to5Inclusive.isValid() && !fromUnbounded_to5Inclusive.isEmpty());
+        assertTrue(fromUnbounded_to5Exclusive.isValid());
+        assertTrue(fromUnbounded_to5Exclusive.isValid() && !fromUnbounded_to5Exclusive.isEmpty());
+
+        assertTrue(from5Inclusive_to5Inclusive.isValid());
+        assertTrue(from5Inclusive_to5Inclusive.isValid() && !from5Inclusive_to5Inclusive.isEmpty());
+        assertTrue(from5Inclusive_to5Exclusive.isValid());
+        assertTrue(!from5Inclusive_to5Exclusive.isValid() || from5Inclusive_to5Exclusive.isEmpty());
+        assertTrue(from5Exclusive_to5Exclusive.isValid());
+        assertTrue(!from5Exclusive_to5Exclusive.isValid() || from5Exclusive_to5Exclusive.isEmpty());
+        assertTrue(from5Exclusive_to5Inclusive.isValid());
+        assertTrue(!from5Exclusive_to5Inclusive.isValid() || from5Exclusive_to5Inclusive.isEmpty());
+
+        try {
+            inverted.isEmpty();
+            fail(); // we should never get here b/c we should throw an exception
+        } catch (IllegalStateException e) {
+            // we should get into here
+        }
+    }
+
+    @Test
+    public void testIntersects() {
+        assertTrue(unbounded.intersects(5));
 
         // Nothing should intersect an empty range.
         assertFalse(inverted.intersects(0));
@@ -73,11 +94,6 @@ public class RangeTest {
         assertFalse(inverted.intersects(7));
         assertFalse(inverted.intersects(10));
         assertFalse(inverted.intersects(15));
-    }
-
-    @Test
-    public void testIntersects() {
-        assertTrue(unbounded.intersects(5));
 
         assertFalse(from5Exclusive_toUnbounded.intersects(0));
         assertTrue(from5Inclusive_toUnbounded.intersects(5));

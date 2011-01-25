@@ -103,13 +103,13 @@ public class ProgramControllerHelper {
             @Override
             protected void doValidation(ProgramListBackingBean target,
                     Errors errors) {
-                if (target.start.isEmpty()) {
+                if (!target.start.isValid() || target.start.isEmpty()) {
                     errors.reject("startFromTimeAfterToTime");
                 }
-                if (target.stop.isEmpty()) {
+                if (!target.stop.isValid() || target.stop.isEmpty()) {
                     errors.reject("stopFromTimeAfterToTime");
                 }
-                if (target.priority.isEmpty()) {
+                if (!target.priority.isValid() || target.priority.isEmpty()) {
                     errors.reject("priorityFromAfterTo");
                 }
             }
