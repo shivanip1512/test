@@ -1741,31 +1741,6 @@ void CtiCalculateThread::sendConstants()
     }
 }
 
-
-void CtiCalculateThread::onUpdateComplain( void *la )
-{
-   {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << CtiTime( ) << " CalcLogicSvc onUpdate thread is AWOL" << endl;
-   }
-}
-
-void CtiCalculateThread::periodicComplain( void *la )
-{
-   {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << CtiTime( ) << " CalcLogicSvc periodic thread is AWOL" << endl;
-   }
-}
-
-void CtiCalculateThread::calcComplain( void *la )
-{
-   {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << CtiTime( ) << " CalcLogicSvc calc thread thread is AWOL" << endl;
-   }
-}
-
 void CtiCalculateThread::sendUserQuit(void *who)
 {
     string *strPtr = (string *) who;

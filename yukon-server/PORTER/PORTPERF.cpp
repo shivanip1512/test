@@ -32,7 +32,7 @@ static bool               new_events = false;
 static CtiCriticalSection event_mux;
 
 static void processCollectedStats(bool force);
-static void statisticsRecord();
+static void statisticsRecord(ThreadStatusKeeper threadStatus);
 
 struct statistics_event_t
 {
@@ -108,7 +108,7 @@ VOID PerfUpdateThread (PVOID Arg)
 
             /* Do the statistics */
             processCollectedStats(true);
-            statisticsRecord();
+            statisticsRecord(threadStatus);
 
             delay = CtiTime().seconds() - now.seconds();
             if(delay > 5)
@@ -127,7 +127,7 @@ VOID PerfUpdateThread (PVOID Arg)
 
 
         processCollectedStats(true);
-        statisticsRecord();
+        statisticsRecord(threadStatus);
 
         delete_assoc_container(statistics);
         statistics.clear();
@@ -303,7 +303,7 @@ void processEvent(statistics_event_t &tup)
     }
 }
 
-void statisticsRecord()
+void statisticsRecord(ThreadStatusKeeper threadStatus)
 {
     if(!new_events)
     {
@@ -334,7 +334,6 @@ void statisticsRecord()
 
         // Ok, now we stuff the dirtyStatCol out on the DB.  WITHOUT BLOCKING OPERATIONS!
         {
-            ThreadStatusKeeper threadStatus("Perf Update Thread");
             Cti::Database::DatabaseConnection conn;
 
             int sCount = 0, total = dirty_stats.size();
@@ -350,7 +349,19 @@ void statisticsRecord()
 
                 if( !(++sCount % 1000) )
                 {
+                    /* The tickle call that needs to happen here follows a different alert mechanism
+                       than occurs in the majority of other cases using the ThreadStatusKeeper class.
+                       As such, we need to use a deprecated function to bypass the normal functionality
+                       of the monitorCheck() function, and use this deprecated forceTickle() function
+                       instead.
+                     
+                       Ideally we would like to be able to send a tickle without forcing us to use this
+                       type of support so that future uses of the class aren't able to navigate around
+                       the intended uses of this class. This may require adding another private variable
+                       to the ThreadStatusKeeper class similar to the sCount parameter and determining
+                       whether this tickle occurs from within the class itself. Food for thought.        */
                     threadStatus.forceTickle(CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime);
+
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " statisticsRecord() : committed " << sCount << " / " << total << " statistics records." << endl;
                 }
@@ -374,7 +385,19 @@ void statisticsRecord()
 
                     if( !(++sCount % 1000) )
                     {
+                        /* The tickle call that needs to happen here follows a different alert mechanism
+                           than occurs in the majority of other cases using the ThreadStatusKeeper class.
+                           As such, we need to use a deprecated function to bypass the normal functionality
+                           of the monitorCheck() function, and use this deprecated forceTickle() function
+                           instead.
+                         
+                           Ideally we would like to be able to send a tickle without forcing us to use this
+                           type of support so that future uses of the class aren't able to navigate around
+                           the intended uses of this class. This may require adding another private variable
+                           to the ThreadStatusKeeper class similar to the sCount parameter and determining
+                           whether this tickle occurs from within the class itself. Food for thought.        */
                         threadStatus.forceTickle(CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime);
+
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " statisticsRecord() : InsertDaily : committed " << sCount << " / " << total << " statistics records." << endl;
                     }

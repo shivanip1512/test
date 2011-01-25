@@ -132,10 +132,6 @@ public:
 
     void sendConstants( );
 
-    static void onUpdateComplain( void *la );
-    static void periodicComplain( void *la );
-    static void calcComplain( void *la );
-
     CtiCalcPointMap getPeriodicPointMap() const;
     CtiCalcPointMap getOnUpdatePointMap() const;
     CtiCalcPointMap getConstantPointMap() const;

@@ -559,8 +559,8 @@ void CtiCalcLogicService::Run( )
                 {
                     dropDispatchConnection();
                 }
-
-                threadStatus.forceTickle(CtiThreadRegData::LogOut, 0);
+                
+                threadStatus.monitorCheck();
 
                 calcThreadFunc.requestInterrupt( );
 
@@ -1502,31 +1502,6 @@ void CtiCalcLogicService::updateCalcData()
         calcThread->joinThreads();//lets try killing them completely, then reloading?
         resumeInputThread();
         _restart = true;
-    }
-}
-
-//ecs 1/5/2005
-void CtiCalcLogicService::mainComplain( void *la )
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " CalcLogicSvc MAIN thread is AWOL" << endl;
-    }
-}
-
-void CtiCalcLogicService::outComplain( void *la )
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " CalcLogicSvc OUT thread is AWOL" << endl;
-    }
-}
-
-void CtiCalcLogicService::inComplain( void *la )
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " CalcLogicSvc IN thread is AWOL" << endl;
     }
 }
 
