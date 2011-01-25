@@ -4,20 +4,21 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 
 /**
  * Class which represents billing data for an MCT430
  */
 public class MCT430 extends MeterReadBase {
-    public void populate(int pointType, int pointOffSet, int uomID, Date dateTime, Double value) {
+    
+    public void populate(PointIdentifier pointIdentifier, Date dateTime, Double value) {
 
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(dateTime.getTime());
         
-        switch (pointType) {
-            case PointTypes.PULSE_ACCUMULATOR_POINT:
-                switch (pointOffSet) {
+        switch (pointIdentifier.getPointType()) {
+            case PulseAccumulator:
+                switch (pointIdentifier.getOffset()) {
                     case 1: // KWh
                         getMeterRead().setReadingDate(calendar);
                         getMeterRead().setPosKWh(new BigInteger(String.valueOf(value.intValue())));
@@ -28,8 +29,8 @@ public class MCT430 extends MeterReadBase {
                     case 4: // kWh Channel 4
                 }
                 break;
-            case PointTypes.DEMAND_ACCUMULATOR_POINT:
-                switch (pointOffSet) {
+            case DemandAccumulator:
+                switch (pointIdentifier.getOffset()) {
     
                     case 11: // Peak KW Channel 1
                         getMeterRead().setKW(new Float(value.floatValue()));
@@ -41,9 +42,9 @@ public class MCT430 extends MeterReadBase {
                     case 14: // Peak KW Channel 4
                 }
                 break;
-            case PointTypes.ANALOG_POINT:
+            case Analog:
 
-                switch (pointOffSet) {
+                switch (pointIdentifier.getOffset()) {
                 // Electric
                 case 1: // KWh
                 case 2: // Rate A KW

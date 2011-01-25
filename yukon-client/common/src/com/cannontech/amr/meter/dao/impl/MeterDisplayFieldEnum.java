@@ -44,7 +44,7 @@ public enum MeterDisplayFieldEnum {
      */
     DEVICE_TYPE("Device Type", "deviceType",MeterSearchField.TYPE, new MeterDisplayFieldAccessor() {
         public String getField(Meter meter) {
-            return meter.getTypeStr();
+            return meter.getPaoType().getPaoTypeName();
         }
     }),
     

@@ -4,14 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlProvidingRowMapper;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
 public abstract class BaseMeterRowMapper<T> implements SqlProvidingRowMapper<T> {
 
-    private PaoGroupsWrapper paoGroupsWrapper;
-    
     private final String sql = "SELECT ypo.paObjectId, ypo.paoName, ypo.type, ypo.disableFlag, " +
                                 "DeviceMeterGroup.meterNumber, " + 
                                 "DeviceCarrierSettings.address, " +
@@ -24,8 +22,7 @@ public abstract class BaseMeterRowMapper<T> implements SqlProvidingRowMapper<T> 
                                 "left join DeviceRoutes on Device.deviceId = DeviceRoutes.deviceId " + 
                                 "left join YukonPaObject rypo on DeviceRoutes.routeId = rypo.paObjectId ";
 
-    public BaseMeterRowMapper(PaoGroupsWrapper paoGroupsWrapper) {
-        this.paoGroupsWrapper = paoGroupsWrapper;
+    public BaseMeterRowMapper() {
     }
 
     protected void fillInMeter(ResultSet rs, Meter meter) throws SQLException {
@@ -33,10 +30,8 @@ public abstract class BaseMeterRowMapper<T> implements SqlProvidingRowMapper<T> 
         meter.setDeviceId(paObjectId);
         String paoName = rs.getString("paoName");
         meter.setName(paoName);
-        String type = rs.getString("type").intern();
-        meter.setTypeStr(type);
-        int deviceType = paoGroupsWrapper.getDeviceType(type);
-        meter.setType(deviceType);
+        PaoType paoType = PaoType.getForDbString(rs.getString("type").intern());
+        meter.setPaoType(paoType);
         String meterNumber = rs.getString("meterNumber");
         meter.setMeterNumber(meterNumber);
         char disabledChar = rs.getString("disableFlag").charAt(0);

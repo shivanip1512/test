@@ -1,7 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -16,11 +15,11 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.analysis.data.stars.StarsAMRDetail;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.util.NaturalOrderComparator;
 
@@ -108,8 +107,8 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
             final Meter meter = new Meter();
             meter.setDeviceId(rs.getInt("PAOBJECTID"));
             meter.setName(rs.getString("PAONAME"));
-            meter.setTypeStr(rs.getString("TYPE"));
-            meter.setType(PAOGroups.getDeviceType(rs.getString("TYPE")));
+            PaoType paoType = PaoType.getForDbString(rs.getString("TYPE"));
+            meter.setPaoType(paoType);
             meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0)));
             meter.setMeterNumber(rs.getString("METERNUMBER"));
             meter.setAddress(rs.getString("ADDRESS"));
@@ -197,7 +196,7 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
 	    JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
 	    template.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
 	        @Override
-	        public void processRow(ResultSet rs) throws SQLException {
+	        public void processRow(ResultSet rs) {
 	            addDataRow(rs);
 	        }
 	    });
@@ -236,7 +235,7 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
 				case DEVICE_NAME_COLUMN:
 					return mpData.getMeter().getName();
 		        case DEVICE_TYPE_COLUMN:
-		            return mpData.getMeter().getTypeStr();
+		            return mpData.getMeter().getPaoType().getPaoTypeName();
 				case METER_NUMBER_COLUMN:
 				    return mpData.getMeter().getMeterNumber();
 				case PHYSICAL_ADDRESS_COLUMN:
@@ -430,8 +429,8 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
         
         if( tempOrderBy == ORDER_BY_DEVICE_TYPE)
         {
-            thisVal = mpData1.getMeter().getTypeStr();
-            anotherVal = mpData2.getMeter().getTypeStr();
+            thisVal = mpData1.getMeter().getPaoType().getPaoTypeName();
+            anotherVal = mpData2.getMeter().getPaoType().getPaoTypeName();
             if( thisVal.equalsIgnoreCase(anotherVal))
                 tempOrderBy = ORDER_BY_DEVICE_NAME;
         }

@@ -10,13 +10,11 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
-import com.cannontech.database.data.pao.PAOGroups;
 
 /**
  * Created on Dec 15, 2003
@@ -113,10 +111,8 @@ public class CarrierDBModel extends ReportModelBase<Meter>
 	                meter.setDeviceId(paobjectID);
 	                String paoName = rset.getString(2);
 	                meter.setName(paoName);
-	                String type = rset.getString(3);
-	                int deviceType = PAOGroups.getDeviceType(type);
-	                meter.setType(deviceType);
-	                meter.setTypeStr(type);
+	                PaoType paoType = PaoType.getForDbString(rset.getString(3));
+	                meter.setPaoType(paoType);
 	                String disabledStr = rset.getString(4);
 	                boolean disabled = CtiUtilities.isTrue(disabledStr.charAt(0));
 	                meter.setDisabled(disabled);
@@ -161,7 +157,7 @@ public class CarrierDBModel extends ReportModelBase<Meter>
                     return (meter.isDisabled() ? "No" : "Yes");
 		
 				case PAO_TYPE_COLUMN:
-					return meter.getTypeStr();
+					return meter.getPaoType().getPaoTypeName();
 
 				case METER_NUMBER_COLUMN:
 				    return meter.getMeterNumber();

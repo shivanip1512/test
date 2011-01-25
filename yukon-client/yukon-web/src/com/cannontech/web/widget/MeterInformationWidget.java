@@ -14,10 +14,10 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -29,7 +29,6 @@ public class MeterInformationWidget extends WidgetControllerBase {
 
     private MeterDao meterDao = null;
     private RfnMeterDao rfnMeterDao;
-    private PaoGroupsWrapper paoGroupsWrapper = null;
     private CommandRequestDeviceExecutor commandRequestExecutor;
     private PaoDefinitionDao paoDefinitionDao;
 
@@ -41,11 +40,6 @@ public class MeterInformationWidget extends WidgetControllerBase {
     @Autowired
     public void setRfnMeterDao(RfnMeterDao rfnMeterDao) {
         this.rfnMeterDao = rfnMeterDao;
-    }
-    
-    @Required
-    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
-        this.paoGroupsWrapper = paoGroupsWrapper;
     }
     
     @Required
@@ -89,15 +83,15 @@ public class MeterInformationWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("meterInformationWidget/render.jsp");
         
         Meter meter = meterDao.getForId(deviceId);
-        String type = paoGroupsWrapper.getPAOTypeString(meter.getType());
-        
+        PaoType paoType = meter.getPaoType();
+                
         /* Show CARRIER settings such as route and physcal address */
-        if(meter.getDeviceType().getPaoClass() == PaoClass.CARRIER) {
+        if(paoType.getPaoClass() == PaoClass.CARRIER) {
             mav.addObject("showCarrierSettings", true);
         }
         
         /* Show RFMESH settings such as serial number, model, and manufacturer*/
-        if(meter.getDeviceType().getPaoClass() == PaoClass.RFMESH) {
+        if(paoType.getPaoClass() == PaoClass.RFMESH) {
             mav.addObject("showRFMeshSettings", true);
             mav.addObject("rfnMeter", rfnMeterDao.getMeter(meter));
         }
@@ -107,7 +101,7 @@ public class MeterInformationWidget extends WidgetControllerBase {
         }
         
         mav.addObject("meter", meter);
-        mav.addObject("deviceType", type);
+        mav.addObject("deviceType", paoType.getPaoTypeName());
         
         return mav;
     }

@@ -335,7 +335,6 @@
             </bean>
 	   	</property>
         <property name="meterDao" ref="meterDao"/>
-        <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
         <property name="paoDefinitionDao" ref="paoDefinitionDao"/>
         <property name="commandRequestExecutor" ref="commandRequestDeviceExecutor"/>
     </bean>

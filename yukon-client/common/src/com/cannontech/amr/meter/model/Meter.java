@@ -9,17 +9,13 @@ import com.cannontech.common.pao.YukonDevice;
 
 public class Meter implements YukonDevice { 
     private int deviceId;
-    private PaoType type;
+    private PaoType paoType;
 
     private String name;
-    private String typeStr;
-
     private boolean disabled;
-
     private String route;
     private int routeId;
     private String address;
-
     private String meterNumber;
 
     public Meter() {
@@ -63,14 +59,6 @@ public class Meter implements YukonDevice {
         return disabled;
     }
 
-    public String getTypeStr() {
-        return typeStr;
-    }
-
-    public void setTypeStr(String typeStr) {
-        this.typeStr = typeStr;
-    }
-
     /**
      * @return the route name or "" if no route is assigned
      */
@@ -92,7 +80,7 @@ public class Meter implements YukonDevice {
 
     @Override
     public PaoIdentifier getPaoIdentifier() {
-        return new PaoIdentifier(deviceId, type);
+        return new PaoIdentifier(deviceId, paoType);
     }
 
     @Override
@@ -100,7 +88,7 @@ public class Meter implements YukonDevice {
         ToStringCreator tsc = new ToStringCreator(this);
         tsc.append("name", getName());
         tsc.append("deviceId", getDeviceId());
-        tsc.append("type", getTypeStr());
+        tsc.append("type", getPaoType());
         return tsc.toString();
     }
 
@@ -112,20 +100,11 @@ public class Meter implements YukonDevice {
         this.deviceId = deviceId;
     }
 
-    public PaoType getDeviceType() {
-        return PaoType.getForId(getType());
+    public PaoType getPaoType() {
+        return paoType;
     }
 
-    public void setDeviceType(PaoType deviceType) {
-        setType(deviceType.getDeviceTypeId());
+    public void setPaoType(PaoType paoType) {
+        this.paoType = paoType;
     }
-
-    public int getType() {
-        return type.getDeviceTypeId();
-    }
-
-    public void setType(int type) {
-        this.type = PaoType.getForId(type);
-    }
-
 }

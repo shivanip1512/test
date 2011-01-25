@@ -15,12 +15,12 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.data.pao.PAOGroups;
 
 /**
  * Created on Dec 15, 2003
@@ -104,10 +104,8 @@ public class MeterOutageModel extends ReportModelBase<MeterAndPointData>
 	    meter.setDeviceId(paobjectID);
 	    String paoName = rset.getString(2);
 	    meter.setName(paoName);
-	    String type = rset.getString(3);
-	    int deviceType = PAOGroups.getDeviceType(type);
-	    meter.setType(deviceType);
-	    meter.setTypeStr(type);
+        PaoType paoType = PaoType.getForDbString(rset.getString(3));
+        meter.setPaoType(paoType);
 	    boolean disabled = CtiUtilities.isTrue(rset.getString(4).charAt(0));
 	    meter.setDisabled(disabled);
 	    String meterNumber = rset.getString(5);
@@ -224,7 +222,7 @@ public class MeterOutageModel extends ReportModelBase<MeterAndPointData>
 					return meterPD.getMeter().getName();
 					
 				case DEVICE_TYPE_COLUMN:
-				    return meterPD.getMeter().getTypeStr();
+				    return meterPD.getMeter().getPaoType().getPaoTypeName();
 				    
 				case METER_NUMBER_COLUMN:
 				    return meterPD.getMeter().getMeterNumber();

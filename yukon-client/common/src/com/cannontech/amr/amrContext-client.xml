@@ -61,10 +61,7 @@
         <property name="attributeService" ref="attributeService" />
     </bean>
 
-    <bean id="meterRowMapper"
-        class="com.cannontech.amr.meter.dao.impl.MeterRowMapper">
-        <constructor-arg ref="paoGroupsWrapper" />
-    </bean>
+    <bean id="meterRowMapper" class="com.cannontech.amr.meter.dao.impl.MeterRowMapper"/>
 
 	<bean id="meterReadCommandGeneratorService" class="com.cannontech.amr.deviceread.service.impl.MeterReadCommandGeneratorServiceImpl"/>
 

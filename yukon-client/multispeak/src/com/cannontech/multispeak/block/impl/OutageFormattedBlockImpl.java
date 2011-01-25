@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.multispeak.block.data.load.LoadBlock;
 import com.cannontech.multispeak.block.data.outage.OutageBlock;
 import com.cannontech.multispeak.block.data.outage.OutageValList;
 import com.cannontech.multispeak.deploy.service.FormattedBlock;
@@ -20,10 +16,8 @@ public class OutageFormattedBlockImpl extends FormattedBlockServiceImpl <OutageB
         List<OutageBlock> outageBlockList = new ArrayList<OutageBlock>(meters.size());
 
         for (Meter meter : meters) {
-            try {
-                OutageBlock ob = getBlock(meter);
-                outageBlockList.add(ob);
-            } catch (IllegalArgumentException e) {}
+            OutageBlock ob = getBlock(meter);
+            outageBlockList.add(ob);
         }
         
         return createFormattedBlock(outageBlockList);

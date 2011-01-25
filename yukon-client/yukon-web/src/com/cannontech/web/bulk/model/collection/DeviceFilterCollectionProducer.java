@@ -123,7 +123,7 @@ public class DeviceFilterCollectionProducer implements DeviceCollectionProducer,
                 List<Meter> resultList = searchResult.getResultList();
                 ObjectMapper<Meter, SimpleDevice> mapper = new ObjectMapper<Meter, SimpleDevice>() {
                     public SimpleDevice map(Meter from) throws ObjectMappingException {
-                        SimpleDevice yukonDevice = new SimpleDevice(from.getDeviceId(), from.getType());
+                        SimpleDevice yukonDevice = new SimpleDevice(from.getDeviceId(), from.getPaoType());
                         return yukonDevice;
                     }
                 };

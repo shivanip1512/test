@@ -13,10 +13,10 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.analysis.data.device.ScanRateMeterData;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.util.NaturalOrderComparator;
 
@@ -77,8 +77,8 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
             final Meter meter = new Meter();
             meter.setDeviceId(rs.getInt("PAOBJECTID"));
             meter.setName(rs.getString("PAONAME"));
-            meter.setTypeStr(rs.getString("TYPE"));
-            meter.setType(PAOGroups.getDeviceType(meter.getTypeStr()));
+            PaoType paoType = PaoType.getForDbString(rs.getString("TYPE"));
+            meter.setPaoType(paoType);
             meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0)));
             meter.setMeterNumber(rs.getString("METERNUMBER"));
             meter.setAddress(rs.getString("ADDRESS"));
@@ -207,7 +207,7 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
                 case ENABLE_FLAG_COLUMN:
                     return (mpData.getMeter().isDisabled() ? "No" : "Yes");
 				case DEVICE_TYPE_COLUMN:
-                    return mpData.getMeter().getTypeStr();
+                    return mpData.getMeter().getPaoType().getPaoTypeName();
 				case METER_NUMBER_COLUMN:
                     return mpData.getMeter().getMeterNumber();
 				case ADDRESS_COLUMN:

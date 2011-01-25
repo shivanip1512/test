@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.multispeak.block.BlockBase;
@@ -78,13 +79,7 @@ public class OutageBlock extends BlockBase{
 
 	}
 
-	/**
-     * Helper method to load the fields based on the attribute.
-     * This method assumes the richPointData matches the attribute provided.
-	 * @param meter
-	 * @param richPointData
-	 * @param attribute
-	 */
+	@Override
 	public void populate(Meter meter, RichPointData richPointData, BuiltInAttribute attribute) {
 		
 		if (!hasValidPointValue(richPointData)) {
@@ -93,7 +88,7 @@ public class OutageBlock extends BlockBase{
 		if (attribute.equals(BuiltInAttribute.BLINK_COUNT)) {
 			setBlinkCount(meter, richPointData);
 		} else {
-			throw new IllegalArgumentException("Attribute " + attribute.toString() + " is not supported by OutageBlock.");
+			throw new IllegalUseOfAttribute("Illegal use of attribute (in OutageBlock): " + attribute.getDescription());
 		}
 		hasData = true;
 	}

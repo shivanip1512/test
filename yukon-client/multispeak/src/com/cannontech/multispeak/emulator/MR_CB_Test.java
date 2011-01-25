@@ -1,164 +1,315 @@
-/*
- * Created on Jun 13, 2005
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package com.cannontech.multispeak.emulator;
 
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.List;
 
+import org.apache.axis.AxisFault;
 import org.apache.axis.client.Service;
 import org.apache.axis.message.SOAPHeaderElement;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
-import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.deploy.service.EaLoc;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.multispeak.deploy.service.MR_CBSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.FormattedBlock;
+import com.cannontech.multispeak.deploy.service.MR_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.Meter;
 import com.cannontech.multispeak.deploy.service.MeterGroup;
 import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.multispeak.deploy.service.Nameplate;
 import com.cannontech.multispeak.deploy.service.UtilityInfo;
-import com.cannontech.spring.YukonSpringHook;
 
-/**
- * @author stacey
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public class MR_CB_Test {
 
+	private MR_ServerSoap_BindingStub instance;
+	
 	public static void main(String [] args)
 	{
-		ErrorObject[] objects = null;
+		MR_CB_Test test = new MR_CB_Test();
 		try {
-			String endpointURL = "http://localhost:8080/soap/MR_CBSoap";
+			String endpointURL = "http://localhost:8080/soap/MR_ServerSoap";
 //			endpointURL = "http://demo.cannontech.com/soap/MR_CBSoap";
 //			endpointURL = "http://10.100.10.25:80/soap/MR_CBSoap";
 //			endpointURL = "http://10.106.36.79:8080/soap/MR_CBSoap";  //Mike's computer
-		  	MR_CBSoap_BindingStub instance = new MR_CBSoap_BindingStub(new URL(endpointURL), new Service());
-			
-            YukonMultispeakMsgHeader msgHeader =new YukonMultispeakMsgHeader();
-            msgHeader.setCompany("SEDC");
-            
-			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", msgHeader);
-			instance.setHeader(header);
+			test.loadInstance(endpointURL);
 
-			int todo = 10;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo, 4=meterAddNotification
-				
-			if (todo==0) {
-			    MeterRead mr = instance.getLatestReadingByMeterNo("10620108");	//1068048 whe, 1010156108 sn_head/amr_demo
-				if( mr != null) {
-				    CTILogger.info("MeterRead received: " + ( mr.getReadingDate() != null?mr.getReadingDate().getTime():null) + " : " +mr.getPosKWh());
-				    CTILogger.info("MeterRead Error String: " + mr.getErrorString());
-				} else {
-				    CTILogger.info("******   NULL METER READING  **********");
-				}
-			}
-			else if( todo == 1) {
-                List<Meter>meters = (YukonSpringHook.getBean("mspMeterDao", MspMeterDao.class)).getAMRSupportedMeters("0", 10000);
-				if (meters != null && meters.size() > 0) {
-				    
-					CTILogger.info("METERS RETURNED: " + meters.size());
-					for (Meter meter : meters) {
-						CTILogger.info(meter.getMeterNo());
-					}
-				}
-			}
-			else if (todo == 2) {
-			    objects = instance.pingURL();
-			}
-			else if( todo == 3) {
-				GregorianCalendar cal = new GregorianCalendar();
-				cal.set(Calendar.MONTH, Calendar.JULY);
-				cal.set(Calendar.YEAR, 2006);
-				cal.set(Calendar.DAY_OF_MONTH, 1);
-				cal.set(Calendar.HOUR_OF_DAY, 1);
-				cal.set(Calendar.MINUTE, 0);
-				cal.set(Calendar.SECOND, 0);
-				cal.set(Calendar.MILLISECOND, 0);
+			//Results container objects
+			Meter[] meters;
+			MeterRead meterRead;
+			MeterRead [] meterReads;
+			FormattedBlock formattedBlock;
+			FormattedBlock[] formattedBlocks;
+			ErrorObject[] objects = null;
 
-				GregorianCalendar endCal = (GregorianCalendar)cal.clone();
-				endCal.add(Calendar.MONTH, 2);
-				MeterRead[] amr = instance.getReadingsByMeterNo("01071861", cal, endCal);	//1068048 whe, 1010156108 sn_head/amr_demo
-				if( amr != null) {
-					CTILogger.info("MeterRead received: " + amr.length + " : " );
-				}
-			} else if( todo == 4) {
-			    Meter meter = new Meter();
-			    meter.setAMRDeviceType("Cart #1 MCT-410cL (0300031)"); // this is the "Template" name
-			    meter.setMeterNo("Cart #1 MCT-410cL (0320819)"); //MeterNumber, and value used for PaoName when PaoNameAlias is DeviceName (Default)
-			    UtilityInfo utilityInfo = new UtilityInfo();
-			    utilityInfo.setAccountNumber("1234567"); //Value used for PaoName when PaoNameAlias = AccountNumber
-			    utilityInfo.setCustID("1234567"); //Value used for PaoName when PaoNameAlias = CustomerNumber
-			    EaLoc eaLoc = new EaLoc();
-			    eaLoc.setName("1234567");    //Value used for PaoName when PaoNameAlias = EALocation
-			    utilityInfo.setEaLoc(eaLoc);
-			    utilityInfo.setSubstationName("SUBSTATION 1");   //SubstationName that maps to Route in SubstationToRouteMapping
-			    meter.setUtilityInfo(utilityInfo);
-			    Nameplate nameplate = new Nameplate();
-			    nameplate.setTransponderID("320819");   //This is the Physical Address
-			    meter.setNameplate(nameplate);
-			    
-			    objects = instance.meterAddNotification(new Meter[]{meter});
-			}
-			else if (todo ==8 ) {
-				MeterGroup meterGroup = new MeterGroup();
-				String[] meterList = new String[4];
-				meterList[0] = "50000011";
-				meterList[1] = "50000012";
-				meterList[2] = "7888";
-				meterList[3] = "787";
-				
-				meterGroup.setMeterList(meterList);
-				String groupName = "/Meters/Test/Stacey";
-				meterGroup.setGroupName(groupName);
-				
-//				objects = instance.establishMeterGroup(meterGroup);
-//				objects = instance.insertMeterInMeterGroup(meterList, groupName);
-//				instance.deleteMeterGroup(groupName);
-				objects = instance.removeMetersFromMeterGroup(meterList, groupName);
+//			meters = test.getAMRSupportedMeters();
+//			printMeters(meters);
 			
-			} else if (todo == 9) {
-				
-				MeterRead mr = instance.getLatestReadingByMeterNo("1100100");
-				if( mr != null) {
-				    CTILogger.info("MeterRead received: " + ( mr.getReadingDate() != null?mr.getReadingDate().getTime():null) + " : " +mr.getPosKWh());
-				    CTILogger.info("MeterRead Error String: " + mr.getErrorString());
-				} else {
-				    CTILogger.info("******   NULL METER READING  **********");
-				}
-				
-			} else if (todo == 10) {
-				
-				String[] meterNumbers = new String[]{"1100100", "1100103"};
-				ErrorObject[] errorObject = instance.initiateMeterReadByMeterNumber(meterNumbers, null, "999");
-				
-			    CTILogger.info("errorObject = " + errorObject);
-				
-			}
+			//Readings tests
+			String meterNumber = "0300031";			
+/*			objects = test.initiateMeterReadByMeterNo();
+			printErrorObjects(objects);
 			
+			meterRead = test.getLatestReadingByMeterNo(meterNumber);
+			printMeterRead(meterRead);
+			meterReads = test.getReadingsByMeterNo(meterNumber);
+			printMeterReads(meterReads);
+			*/
+			meterReads = test.getReadingsByDate(null);
+			printMeterReads(meterReads);
+
 			
+			//Formatted Block reading tests
+			String readingType = "Outage";	//"Load"
+			formattedBlock = test.getLatestReadingByMeterNoAndType(meterNumber, readingType);
+			printFormattedBlock(formattedBlock);
+			formattedBlocks = test.getReadingsByDateAndType(meterNumber, readingType);
+			printFormattedBlocks(formattedBlocks);
+			formattedBlocks = test.getLatestReadingByType(readingType);
+			printFormattedBlocks(formattedBlocks);
+			formattedBlocks = test.getReadingsByMeterNoAndType(meterNumber, readingType);
+			printFormattedBlocks(formattedBlocks);
 			
+			//Meter change process tests
+//			objects = test.meterAddNotification();
+			
+			//Meter Group tests
+/*			String groupName = "/Meters/Test/Stacey";
+			objects = test.removeMetersFromGroup(groupName);
+			printErrorObjects(objects);
+			objects = test.establishMeterGroup(groupName);
+			printErrorObjects(objects);
+			objects = test.insertMeterInMeterGroup(groupName);
+			printErrorObjects(objects);
+			test.deleteMeterGroup(groupName);
+*/
+
+//			printMeterRead(meterRead);
+//			printMeterReads(meterReads);
+//			printErrorObjects(objects);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	
+	private ErrorObject[] initiateMeterReadByMeterNo() throws RemoteException {
+		String[] meterNumbers = new String[]{"0300031", "10620108"};
+		ErrorObject[] errorObject = instance.initiateMeterReadByMeterNumber(meterNumbers, null, "999");
+		return errorObject;
+	}
+	
+	private ErrorObject[] removeMetersFromGroup(String groupName) throws RemoteException {
+		ErrorObject[] objects;
+		String [] meterList = buildMeterList();
+		objects = instance.removeMetersFromMeterGroup(meterList, groupName);
+		return objects;
+	}
+
+	private ErrorObject[] establishMeterGroup(String groupName) throws RemoteException {
+		ErrorObject[] objects;
+		MeterGroup meterGroup = buildMeterGroup(groupName);
 		
-        if (objects != null && objects != null) {
-            for (int i = 0; i < objects.length; i++) {
-                ErrorObject obj = objects[i];
-                CTILogger.info("Error-" + i + ": " + obj.getErrorString());
+		objects = instance.establishMeterGroup(meterGroup);
+		return objects;
+	}
+
+	private ErrorObject[] insertMeterInMeterGroup(String groupName) throws RemoteException {
+		ErrorObject[] objects;
+		String [] meterList = buildMeterList();
+		objects = instance.insertMeterInMeterGroup(meterList, groupName);
+		return objects;
+	}
+
+	private void deleteMeterGroup(String groupName) throws RemoteException {
+		instance.deleteMeterGroup(groupName);
+	}
+
+	
+	private ErrorObject[] meterAddNotification() throws RemoteException {
+		ErrorObject[] objects;
+		
+		Meter meter = buildMeter("Cart #1 MCT-410cL (0300031)", "Cart #1 MCT-410cL (0320819)", "1234567", "1234567", 
+				"1234567", "SUBSTATION 1", "320819");
+		
+		objects = instance.meterAddNotification(new Meter[]{meter});
+		return objects;
+	}
+
+	private void loadInstance(String endpointURL) throws AxisFault, MalformedURLException {
+		instance = new MR_ServerSoap_BindingStub(new URL(endpointURL), new Service());
+		
+		YukonMultispeakMsgHeader msgHeader =new YukonMultispeakMsgHeader();
+		msgHeader.setCompany("Cannon MSP1");
+		
+		SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", msgHeader);
+		instance.setHeader(header);
+	}
+
+	private MeterRead getLatestReadingByMeterNo(String meterNo) throws RemoteException {
+		MeterRead meterRead = instance.getLatestReadingByMeterNo(meterNo);
+		return meterRead;
+	}
+	
+	private Meter[] getAMRSupportedMeters() throws RemoteException {
+		Meter[] meters = instance.getAMRSupportedMeters(null);
+		return meters;		
+	}
+	
+	private MeterRead[] getReadingsByMeterNo(String meterNumber) throws RemoteException {
+		MeterRead[] meterReads = instance.getReadingsByMeterNo(meterNumber, getStartDate(), getEndDate());	//1068048 whe, 1010156108 sn_head/amr_demo
+		return meterReads;
+	}
+
+	private MeterRead[] getReadingsByDate(String lastReceived) throws RemoteException {
+		MeterRead[] meterReads = instance.getReadingsByDate(getStartDate(), getEndDate(), lastReceived);
+		return meterReads;
+
+	}
+
+	private ErrorObject[] initiateMeterReadByMeterNoAndType(String meterNumber, String readingType) throws RemoteException {
+		return instance.initiateMeterReadByMeterNoAndType(meterNumber, null, readingType, "999");
+	}
+
+	private FormattedBlock getLatestReadingByMeterNoAndType(String meterNumber, String readingType) throws RemoteException {
+		return instance.getLatestReadingByMeterNoAndType(meterNumber, readingType);
+	}
+
+	private FormattedBlock[] getLatestReadingByType(String readingType) throws RemoteException {
+		return instance.getLatestReadingByType(readingType, null);
+	}
+
+	private FormattedBlock[] getReadingsByDateAndType(String meterNumber, String readingType) throws RemoteException {
+		return instance.getReadingsByDateAndType(getStartDate(), getEndDate(), readingType, null);
+	}
+	
+	private FormattedBlock[] getReadingsByMeterNoAndType(String meterNumber, String readingType) throws RemoteException {
+		return instance.getReadingsByMeterNoAndType(meterNumber, getStartDate(), getEndDate(), readingType, null);
+	}
+	
+	private String[] getSupportedReadingTypes() throws RemoteException {
+		return instance.getSupportedReadingTypes();
+	}
+	
+	private static Meter buildMeter(String templateName, String meterNumber, String accountNumber, String customerId, String eaLoc,
+			String substationName, String transponderId) {
+		Meter meter = new Meter();
+		meter.setAMRDeviceType(templateName);
+		meter.setMeterNo(meterNumber);
+		
+		UtilityInfo utilityInfo = new UtilityInfo();
+		utilityInfo.setAccountNumber(accountNumber);
+		utilityInfo.setCustID(customerId);
+		
+		EaLoc eaLocObject = new EaLoc();
+		eaLocObject.setName(eaLoc);
+		utilityInfo.setEaLoc(eaLocObject);
+		utilityInfo.setSubstationName(substationName);
+		meter.setUtilityInfo(utilityInfo);
+		
+		Nameplate nameplate = new Nameplate();
+		nameplate.setTransponderID(transponderId);
+		meter.setNameplate(nameplate);
+		
+		return meter;
+	}
+
+	private static String[] buildMeterList() {
+		String[] meterList = new String[4];
+		meterList[0] = "50000011";
+		meterList[1] = "50000012";
+		meterList[2] = "7888";
+		meterList[3] = "787";
+		
+		return meterList;
+	}
+	
+	private static MeterGroup buildMeterGroup(String groupName) {
+		MeterGroup meterGroup = new MeterGroup();
+		String [] meterList = buildMeterList();
+		meterGroup.setMeterList(meterList);
+		meterGroup.setGroupName(groupName);
+		return meterGroup;		
+	}
+	
+	private static Calendar getStartDate() {
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.set(Calendar.MONTH, Calendar.JULY);
+		cal.set(Calendar.YEAR, 2006);
+		cal.set(Calendar.DAY_OF_MONTH, 1);
+		cal.set(Calendar.HOUR_OF_DAY, 1);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		return cal;
+	}
+	
+	private static Calendar getEndDate() {
+		return new GregorianCalendar();
+	}
+
+	private static void printMeterRead(MeterRead meterRead) {
+		if (meterRead != null) {
+			MeterRead[] meterReads = new MeterRead[]{meterRead};
+			printMeterReads(meterReads);
+		}
+	}
+	
+	private static void printMeterReads(MeterRead[] meterReads) {
+		if(meterReads != null) {
+			CTILogger.info("MeterRead received: " + meterReads.length);
+			
+			for (MeterRead meterRead : meterReads ) {
+				CTILogger.info(meterRead.getMeterNo() + " - " +
+						meterRead.getPosKWh() + " " +
+						(meterRead.getReadingDate() != null ? meterRead.getReadingDate().getTime():"*") + " --- " +  
+						meterRead.getKW() + " " + 
+						(meterRead.getKWDateTime() != null ? meterRead.getKWDateTime().getTime():"*"));
+			}
+		}
+	}
+
+	private static void printFormattedBlock(FormattedBlock formattedBlock) {
+		if (formattedBlock != null) {
+			FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
+			printFormattedBlocks(formattedBlocks);
+		}
+	}
+	
+	private static void printFormattedBlocks(FormattedBlock[] formattedBlocks) {
+		if(formattedBlocks != null) {
+			CTILogger.info("MeterRead received: " + formattedBlocks.length + " : " );
+			
+			for (FormattedBlock formattedBlock : formattedBlocks) {
+				if (formattedBlock.getValueList() != null) {
+					for (String value : formattedBlock.getValueList()) {
+						CTILogger.info(value);
+					}
+				}
+			}
+		}
+	}
+
+	private static void printErrorObjects(ErrorObject[] errorObjects) {
+		if (errorObjects != null) {
+			CTILogger.info("ErrorObjects received: " + errorObjects.length + " : " );
+			for (ErrorObject errorObject : errorObjects) {
+			    CTILogger.info("Error-" + errorObject.getErrorString());
             }
         } else {
-            CTILogger.info("Successful");
+            CTILogger.info("Successful - No errors returned");
         }
+	}
 
+	private static void printMeters(Meter[] meters) {
+		if (meters != null) {
+			CTILogger.info("METERS RETURNED: " + meters.length);
+			for (Meter meter : meters) {
+				CTILogger.info(meter.getMeterNo());
+			}
+		}
 	}
 }

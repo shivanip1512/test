@@ -39,7 +39,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
-import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.util.NaturalOrderComparator;
@@ -81,7 +81,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
         // Updates the meter's name and the meter's type
         sqlUpdate = " UPDATE YukonPAObject" + " SET PAOName = ?, Type = ?" + " WHERE PAObjectID = ?";
         jdbcOps.update(sqlUpdate, new Object[] { newMeterInfo.getName(),
-                newMeterInfo.getTypeStr(), newMeterInfo.getDeviceId() });
+                newMeterInfo.getPaoType().getDatabaseRepresentation(), newMeterInfo.getDeviceId() });
 
         // Updates the meter's meter number
         sqlUpdate = " UPDATE DEVICEMETERGROUP" + " SET METERNUMBER = ?" + " WHERE DEVICEID = ? ";
@@ -342,7 +342,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     private void sendDBChangeMessage(Meter meter) {
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(meter.getDeviceId());
         YukonPAObject yukonPaobject = (YukonPAObject) dbPersistentDao.retrieveDBPersistent(liteYukonPAO);
-        dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
+        dbPersistentDao.performDBChange(yukonPaobject, TransactionType.UPDATE);
 
     }
 

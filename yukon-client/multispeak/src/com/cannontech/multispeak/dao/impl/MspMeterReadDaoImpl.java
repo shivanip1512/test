@@ -7,7 +7,7 @@ import java.util.List;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource;
-import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.multispeak.dao.MspMeterReadDao;
 import com.cannontech.multispeak.deploy.service.MeterRead;
@@ -28,16 +28,13 @@ public class MspMeterReadDaoImpl implements MspMeterReadDao {
         meterRead.setObjectID(meter.getMeterNumber());
 
         try {
-            PointValueHolder demand = 
-                attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.DEMAND);
+            PointValueHolder demand = attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.DEMAND);
             meterRead.setKW(new Float(demand.getValue()));
             GregorianCalendar cal = new GregorianCalendar();
             cal.setTime(demand.getPointDataTimeStamp());
             meterRead.setKWDateTime(cal);
-        } catch (IllegalArgumentException e) {
-        	//If the attribute doesn't exist, don't add the data
-        } catch (NotFoundException e) {
-        	//If a point doesn't exist, don't add the data
+        } catch (IllegalUseOfAttribute e) {
+        	//If the attribute/point doesn't exist, don't add the data
         }
 
         try {
@@ -46,12 +43,9 @@ public class MspMeterReadDaoImpl implements MspMeterReadDao {
             GregorianCalendar cal = new GregorianCalendar();
             cal.setTime(usage.getPointDataTimeStamp());
             meterRead.setReadingDate(cal);
-        } catch (IllegalArgumentException e) {
-        	//If the attribute doesn't exist, don't add the data
-        } catch (NotFoundException e) {
-        	//If a point doesn't exist, don't add the data
+        } catch (IllegalUseOfAttribute e) {
+        	//If the attribute/point doesn't exist, don't add the data
         }
-        
         return meterRead;
     }
 

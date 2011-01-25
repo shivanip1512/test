@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.multispeak.block.BlockBase;
@@ -115,13 +116,6 @@ public class LoadBlock extends BlockBase{
 		populateByPointValue(meter, richPointData, BuiltInAttribute.VOLTAGE_PROFILE);
 	}
 
-	/**
-     * Helper method to load the fields based on the attribute.
-     * This method assumes the pointValue matches the attribute provided.
-	 * @param meter
-	 * @param richPointData
-	 * @param attribute
-	 */
 	@Override
 	public void populate(Meter meter, RichPointData richPointData, BuiltInAttribute attribute) {
 		
@@ -138,7 +132,7 @@ public class LoadBlock extends BlockBase{
 		} else if (attribute.equals(BuiltInAttribute.VOLTAGE_PROFILE)) {
             setVoltageProfile(meter, richPointData);
         } else {
-			throw new IllegalArgumentException("Attribute " + attribute.toString() + " is not supported by LoadBlock.");
+        	throw new IllegalUseOfAttribute("Illegal use of attribute (in LoadBlock): " + attribute.getDescription());
 		}
 		hasData = true;
 	}

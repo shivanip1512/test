@@ -64,7 +64,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     private MspRawPointHistoryDao mspRawPointHistoryDao;
     private BasicServerConnection porterConnection;
     private MspValidationService mspValidationService;
-    public Map<String, FormattedBlockService> readingTypesMap;
+    public Map<String, FormattedBlockService<Block>> readingTypesMap;
     public MspMeterReadDao mspMeterReadDao;
     public MeterDao meterDao;
 
@@ -85,6 +85,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
                                          "initiateMeterReadByMeterNumber",
                                          "initiateMeterReadByMeterNoAndType",
                                          "isAMRMeter",
+                                         "getReadingsByDate",
                                          "getAMRSupportedMeters",
                                          "getLatestReadingByMeterNo",
                                          "getLatestReadings",
@@ -167,8 +168,17 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     
     @Override
     public MeterRead[] getReadingsByDate(java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {
-        init();
-        throw new RemoteException("Method getReadingsByDate(startDate, endDate, lastReceived) is NOT supported.");
+    	init();
+        
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MeterRead[] meterReads = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.NONE, 
+                                                                          null, 	//get all
+                                                                          startDate.getTime(), 
+                                                                          endDate.getTime(), 
+                                                                          lastReceived,
+                                                                          vendor.getMaxReturnRecords());
+        
+        return meterReads;
     }
     
     @Override
@@ -554,6 +564,8 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     @Override
     public FormattedBlock[] getReadingsByMeterNoAndType(String meterNo, Calendar startDate, Calendar endDate, String readingType, String lastReceived) throws RemoteException {
         init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        
         //Validate the meterNo is in Yukon
         mspValidationService.isYukonMeterNumber(meterNo); 
 
@@ -563,7 +575,8 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         FormattedBlock formattedBlock = mspRawPointHistoryDao.retrieveBlockByMeterNo(formattedBlockServ, 
                                                                                startDate.getTime(), 
                                                                                endDate.getTime(),
-                                                                               meterNo);
+                                                                               meterNo,
+                                                                               vendor.getMaxReturnRecords());
 
         FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
      
@@ -681,7 +694,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     }
     @Required
     public void setReadingTypesMap(
-            Map<String, FormattedBlockService> readingTypesMap) {
+            Map<String, FormattedBlockService<Block>> readingTypesMap) {
         this.readingTypesMap = readingTypesMap;
     }
     @Autowired

@@ -18,8 +18,9 @@ import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.analysis.data.stars.StarsAMRDetail;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
@@ -30,8 +31,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.NaturalOrderComparator;
 import com.google.common.collect.ImmutableMultimap;
@@ -160,8 +159,8 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
                     sql.append("AND IB.DEVICEID > 0 ");
                     sql.append("AND IB.DEVICEID = PAO.PAOBJECTID ");
                     sql.append("AND P.PAOBJECTID = PAO.PAOBJECTID ");
-                    sql.append(" AND P.PointOffset = ").appendArgument(pointIdentifier.getOffset());
-                    sql.append(" AND P.PointType = ").appendArgument(PointTypes.getType(pointIdentifier.getType()));
+                    sql.append(" AND P.PointOffset").eq_k(pointIdentifier.getOffset());
+                    sql.append(" AND P.PointType").eq_k(pointIdentifier.getPointType());
                     sql.append("AND P.POINTID = RPH1.POINTID ");
                     sql.append("AND PAO.PAOBJECTID = DMG.DEVICEID ");
                     sql.append("AND PAO.PAOBJECTID = DCS.DEVICEID ");
@@ -171,8 +170,8 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
                     sql.append("WHERE RPH1.POINTID = RPH2.POINTID ");
 
                     if( isShowHistory()) {
-                        sql.append(" AND TIMESTAMP > ").appendArgument(getStartDate());
-                        sql.append("AND TIMESTAMP <= ").appendArgument(getStopDate());
+                        sql.append(" AND TIMESTAMP").gt(getStartDate());
+                        sql.append("AND TIMESTAMP").lte(getStopDate());
                     }
 
                     sql.append(") ");
@@ -197,8 +196,8 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
                     final Meter meter = new Meter();
                     meter.setDeviceId(rs.getInt("PAOBJECTID"));
                     meter.setName(rs.getString("PAONAME"));
-                    meter.setTypeStr(rs.getString("TYPE"));
-                    meter.setType(PAOGroups.getDeviceType(rs.getString("TYPE")));
+                    PaoType paoType = PaoType.getForDbString(rs.getString("TYPE"));
+	                meter.setPaoType(paoType);
                     meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0)));
                     meter.setMeterNumber(rs.getString("METERNUMBER"));
                     meter.setAddress(rs.getString("ADDRESS"));
@@ -267,7 +266,7 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
             case DEVICE_NAME_COLUMN:
                 return mpData.getMeter().getName();
             case DEVICE_TYPE_COLUMN:
-                return mpData.getMeter().getTypeStr();
+                return mpData.getMeter().getPaoType().getPaoTypeName();
             case METER_NUMBER_COLUMN:
                 return mpData.getMeter().getMeterNumber();
             case PHYSICAL_ADDRESS_COLUMN:
@@ -509,8 +508,8 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
         if (thisVal.equalsIgnoreCase(anotherVal) ) {
             
             if (tempOrderBy == ORDER_BY_DEVICE_TYPE) {
-                thisVal = mpData1.getMeter().getTypeStr();
-                anotherVal = mpData2.getMeter().getTypeStr();
+                thisVal = mpData1.getMeter().getPaoType().getPaoTypeName();
+                anotherVal = mpData2.getMeter().getPaoType().getPaoTypeName();
                 if( thisVal.equalsIgnoreCase(anotherVal))
                     tempOrderBy = ORDER_BY_DEVICE_NAME;
             }

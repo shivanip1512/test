@@ -3,6 +3,7 @@ package com.cannontech.multispeak.block;
 import com.cannontech.amr.meter.model.Meter;
 
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.multispeak.block.syntax.SyntaxItem;
 
@@ -47,6 +48,7 @@ public interface Block {
 	 * @param meter
 	 * @param richPointData
 	 * @param attribute
+	 * @throws IllegalUseOfAttribute
 	 */
-    public void populate(Meter meter, RichPointData richPointData, BuiltInAttribute attribute);
+    public void populate(Meter meter, RichPointData richPointData, BuiltInAttribute attribute) throws IllegalUseOfAttribute;
 }

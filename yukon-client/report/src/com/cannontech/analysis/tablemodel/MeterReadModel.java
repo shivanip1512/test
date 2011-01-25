@@ -17,11 +17,11 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.util.NaturalOrderComparator;
 
 /**
@@ -126,10 +126,8 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
             meter.setDeviceId(paobjectID);
             String paoName = rset.getString("paoName");
             meter.setName(paoName);
-            String type = rset.getString("type");
-            int deviceType = PAOGroups.getDeviceType(type);
-            meter.setType(deviceType);
-            meter.setTypeStr(type);
+            PaoType paoType = PaoType.getForDbString(rset.getString("type"));
+            meter.setPaoType(paoType);
             String disabledStr = rset.getString("disableFlag");
             boolean disabled = CtiUtilities.isTrue(disabledStr.charAt(0));
             meter.setDisabled(disabled);
@@ -268,7 +266,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
                     return (mpData.getMeter().isDisabled() ? "Yes" : "No");
         
                 case PAO_TYPE_COLUMN:
-                    return mpData.getMeter().getTypeStr();
+                    return mpData.getMeter().getPaoType().getPaoTypeName();
 
                 case METER_NUMBER_COLUMN:
                     return mpData.getMeter().getMeterNumber();

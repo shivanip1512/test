@@ -3,6 +3,7 @@ package com.cannontech.multispeak.data;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
@@ -36,7 +37,7 @@ public abstract class MeterReadBase implements ReadableDevice{
     }
     
     @Override
-    abstract public void populate(int pointType, int pointOffSet, int uomID, Date dateTime, Double value);
+    abstract public void populate(PointIdentifier pointIdentifier, Date dateTime, Double value);
 
     @Override
     public boolean isPopulated()
@@ -58,7 +59,7 @@ public abstract class MeterReadBase implements ReadableDevice{
         for (LitePoint litePoint : litePoints) {
             PointValueQualityHolder pointData = dds.getPointValue(litePoint.getPointID());
             if( pointData != null && pointData.getPointQuality() != PointQuality.Uninitialized)
-                populate(litePoint.getPointType(), litePoint.getPointOffset(), litePoint.getUofmID(), pointData.getPointDataTimeStamp(), pointData.getValue());
+                populate(PointIdentifier.createPointIdentifier(litePoint), pointData.getPointDataTimeStamp(), pointData.getValue());
         }
     }
 }

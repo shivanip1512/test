@@ -4,12 +4,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
 public class MeterRowMapper extends BaseMeterRowMapper<Meter> {
     
-    public MeterRowMapper(PaoGroupsWrapper paoGroupsWrapper) {
-        super(paoGroupsWrapper);
+    public MeterRowMapper() {
     }
 
     public Meter mapRow(ResultSet rs, int rowNum) throws SQLException {

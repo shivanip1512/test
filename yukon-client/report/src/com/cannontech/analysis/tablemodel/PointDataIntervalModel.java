@@ -17,6 +17,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -28,7 +29,7 @@ import com.cannontech.database.data.point.PointTypes;
  *  WARNING!!! LiteRawPointHistory objects created in this report are NOT intended to be changed into RawPointHistory DBPersistent objects
  *  due to the changeID (primary key) value is not set in order to retrieve distinct values!!!
  */
-public class PointDataIntervalModel extends ReportModelBase
+public class PointDataIntervalModel extends ReportModelBase<MeterAndPointData>
 {
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 6;
@@ -150,10 +151,12 @@ public class PointDataIntervalModel extends ReportModelBase
 	    String pointName = rset.getString(5);
 	    String paoName = rset.getString(6);
 	    int paobjectID = rset.getInt(7);
+        PaoType paoType = PaoType.getForDbString(rset.getString(8));
 
 	    //Using only a partially loaded lPao because that is all the information this report cares about.  Maybe a bad decision?!
 	    Meter meter = new Meter();
 	    meter.setDeviceId(paobjectID);
+        meter.setPaoType(paoType);
 	    meter.setName(paoName);
 	    MeterAndPointData mpData = new MeterAndPointData(meter, new Integer(pointID), pointName, 
 	                                                     cal.getTime(), new Double(value), new Integer(quality));
@@ -167,7 +170,7 @@ public class PointDataIntervalModel extends ReportModelBase
 	public SqlFragmentSource buildSQLStatement()
 	{
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
-	    sql.append("SELECT DISTINCT RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTNAME, PAO.PAONAME, PAO.PAOBJECTID ");
+	    sql.append("SELECT DISTINCT RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTNAME, PAO.PAONAME, PAO.PAOBJECTID, PAO.TYPE ");
 	    sql.append(" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO ");
 	    sql.append(" WHERE P.POINTID = RPH.POINTID ");
 	    sql.append(" AND P.PAOBJECTID = PAO.PAOBJECTID ");

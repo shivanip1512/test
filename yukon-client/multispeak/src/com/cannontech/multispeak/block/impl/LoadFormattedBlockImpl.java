@@ -16,10 +16,8 @@ public class LoadFormattedBlockImpl extends FormattedBlockServiceImpl <LoadBlock
         List<LoadBlock> loadBlockList = new ArrayList<LoadBlock>(meters.size());
 
         for (Meter meter : meters) {
-            try {
-                LoadBlock lb = getBlock(meter);
-                loadBlockList.add(lb);
-            } catch (IllegalArgumentException e) {}
+            LoadBlock lb = getBlock(meter);
+            loadBlockList.add(lb);
         }
         
         LoadValList loadValList = new LoadValList(loadBlockList);

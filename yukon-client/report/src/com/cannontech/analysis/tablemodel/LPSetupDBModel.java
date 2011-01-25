@@ -1,7 +1,5 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -18,13 +16,11 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.LPMeterData;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.util.NaturalOrderComparator;
 
 /**
@@ -100,8 +96,8 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 	    final Meter meter = new Meter();
 	    meter.setDeviceId(rs.getInt("PAOBJECTID"));
 	    meter.setName(rs.getString("PAONAME"));
-	    meter.setTypeStr(rs.getString("TYPE"));
-	    meter.setType(PAOGroups.getDeviceType(meter.getTypeStr()));
+        PaoType paoType = PaoType.getForDbString(rs.getString("TYPE"));
+        meter.setPaoType(paoType);
 	    meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0)));
 	    meter.setMeterNumber(rs.getString("METERNUMBER"));
 	    meter.setAddress(rs.getString("ADDRESS"));
@@ -215,7 +211,7 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 				case DEVICE_NAME_COLUMN:
                     return mpData.getMeter().getName();
 				case DEVICE_TYPE_COLUMN:
-                    return mpData.getMeter().getTypeStr();
+                    return mpData.getMeter().getPaoType().getPaoTypeName();
 				case METER_NUMBER_COLUMN:
                     return mpData.getMeter().getMeterNumber();
 				case ADDRESS_COLUMN:

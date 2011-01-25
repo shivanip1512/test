@@ -78,7 +78,7 @@ public class RouteDBModel extends CarrierDBModel
                     return (meter.isDisabled() ? "No" : "Yes");
         
                 case ROUTEDB_METER_TYPE_COLUMN:
-                    return meter.getTypeStr();
+                    return meter.getPaoType().getPaoTypeName();
 
                 case ROUTEDB_METER_NUMBER_COLUMN:
                     return meter.getMeterNumber();

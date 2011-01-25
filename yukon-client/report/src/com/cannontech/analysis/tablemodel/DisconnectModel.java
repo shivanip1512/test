@@ -1,7 +1,5 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -20,18 +18,16 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.DisconnectMeterAndPointData;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.NaturalOrderComparator;
@@ -244,8 +240,8 @@ public class DisconnectModel extends ReportModelBase<DisconnectMeterAndPointData
             final Meter meter = new Meter();
             meter.setDeviceId(rs.getInt("PAOBJECTID"));
             meter.setName(rs.getString("PAONAME"));
-            meter.setTypeStr(rs.getString("TYPE"));
-            meter.setType(PAOGroups.getDeviceType(rs.getString("TYPE")));
+            PaoType paoType = PaoType.getForDbString(rs.getString("TYPE"));
+            meter.setPaoType(paoType);
             meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0)));
             meter.setMeterNumber(rs.getString("METERNUMBER"));
             meter.setAddress(rs.getString("ADDRESS"));
@@ -301,7 +297,7 @@ public class DisconnectModel extends ReportModelBase<DisconnectMeterAndPointData
                 case ADDRESS_COLUMN:
                     return discMandPData.getMeter().getAddress();
                 case TYPE_COLUMN:
-                    return discMandPData.getMeter().getTypeStr();
+                    return discMandPData.getMeter().getPaoType().getPaoTypeName();
                 case STATE_COLUMN:
                     return (discMandPData.getMeterAndPointData().getValue() != null) ? 
                                 getRPHValueString(discMandPData.getMeterAndPointData().getPointID(), 

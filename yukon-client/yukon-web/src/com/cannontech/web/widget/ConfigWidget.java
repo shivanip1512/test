@@ -58,9 +58,9 @@ public class ConfigWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("configWidget/render.jsp");
         Meter meter = getMeter(request);
         ConfigurationType type = ConfigurationType.MCT410;
-        if(paoDefinitionDao.isTagSupported(meter.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_470)) {
+        if(paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DEVICE_CONFIGURATION_470)) {
             type = ConfigurationType.MCT470;
-        }else if(paoDefinitionDao.isTagSupported(meter.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_430)) {
+        }else if(paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.DEVICE_CONFIGURATION_430)) {
             type = ConfigurationType.MCT430;
         }
         List<ConfigurationBase> existingConfigs = deviceConfigurationDao.getAllConfigurationsByType(type);

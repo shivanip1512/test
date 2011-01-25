@@ -61,7 +61,7 @@ import com.cannontech.core.dao.SubstationDao;
 import com.cannontech.core.dao.SubstationToRouteMappingDao;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
-import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -250,7 +250,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         
         getEventsMap().put(new Long(id), event);
         String commandStr = "getvalue kwh";
-        if( DeviceTypesFuncs.isMCT4XX(meter.getType()) )
+        if( DeviceTypesFuncs.isMCT4XX(meter.getPaoType().getDeviceTypeId()) )
             commandStr = "getvalue peak";    // getvalue peak returns the peak kW and the total kWh
         
         final String meterNumber = meter.getMeterNumber();
@@ -326,7 +326,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
  	            getEventsMap().put(new Long(id), event);
  	                
  	            String commandStr = "getvalue kwh";
- 	            if( DeviceTypesFuncs.isMCT4XX(meter.getType()) )
+ 	            if( DeviceTypesFuncs.isMCT4XX(meter.getPaoType().getDeviceTypeId()) )
  	            	commandStr = "getvalue peak"; // getvalue peak returns the peak kW and the total kWh
 
  	            writePilRequest(meter, commandStr, id, 13);
@@ -370,12 +370,12 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 returnMessages++;
                 
                 String commandStr = null;
-                if( DeviceTypesFuncs.isMCT410(meter.getType())) {
+                if( DeviceTypesFuncs.isMCT410(meter.getPaoType().getDeviceTypeId())) {
                     commandStr = "getvalue demand";
                     returnMessages++;
                 }
-                else if (DeviceTypesFuncs.isMCT430(meter.getType()) ||
-                        DeviceTypesFuncs.isMCT470(meter.getType())) {
+                else if (DeviceTypesFuncs.isMCT430(meter.getPaoType().getDeviceTypeId()) ||
+                        DeviceTypesFuncs.isMCT470(meter.getPaoType().getDeviceTypeId())) {
                     commandStr = "getvalue ied kvar";
                     returnMessages++;
                 }
@@ -694,7 +694,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                     YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
                     if (yukonPaobject instanceof MCTBase){
                             yukonPaobject.setDisabled(true);
-                            dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
+                            dbPersistentDao.performDBChange(yukonPaobject, TransactionType.UPDATE);
                             mspObjectDao.logMSPActivity(METER_REMOVE_STRING,
                                            "MeterNumber(" + meterNo + ") - Meter Disabled.",
                                            mspVendor.getCompanyName());
@@ -1552,7 +1552,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         //Enable the meter
         yukonPaobject.setDisabled(false);
         //Update the meter
-        dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
+        dbPersistentDao.performDBChange(yukonPaobject, TransactionType.UPDATE);
         mspObjectDao.logMSPActivity(METER_ADD_STRING,
                        "MeterNo(" + meter.getMeterNumber()+ ");Enabled;" + logString,
                        mspVendor.getCompanyName());
@@ -1617,7 +1617,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         //Update the meter
         if(dbChange) {
-            dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
+            dbPersistentDao.performDBChange(yukonPaobject, TransactionType.UPDATE);
         }
         
         //update the substation group
@@ -1658,12 +1658,12 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             return;
         }
 
-        String existingType = meter.getTypeStr();
-        if( templateMeter.getType() != meter.getType()) {   //different types of meters...change type
+        PaoType existingType = meter.getPaoType();
+        if( templateMeter.getPaoType().getDeviceTypeId() != meter.getPaoType().getDeviceTypeId()) {   //different types of meters...change type
             try {
-                PaoDefinition paoDefinition = paoDefinitionDao.getPaoDefinition(PaoType.getForId(templateMeter.getType()));
+                PaoDefinition paoDefinition = paoDefinitionDao.getPaoDefinition(templateMeter.getPaoType());
                 deviceUpdateService.changeDeviceType(meter, paoDefinition);
-                mspObjectDao.logMSPActivity(method, "MeterNumber (" + meter.getMeterNumber() + ") - Changed DeviceType from:" + existingType + " to:" + templateMeter.getTypeStr() + ").", mspVendor.getCompanyName());
+                mspObjectDao.logMSPActivity(method, "MeterNumber (" + meter.getMeterNumber() + ") - Changed DeviceType from:" + existingType + " to:" + templateMeter.getPaoType() + ").", mspVendor.getCompanyName());
             } catch (DataRetrievalFailureException e) {
                 CTILogger.warn(e);
             } catch (PersistenceException e) {

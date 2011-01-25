@@ -17,7 +17,7 @@ public interface MspValidationService {
      * Throws a RemoteException if the readingType is not valid.
      */
     public FormattedBlockService<Block> isValidBlockReadingType(
-            Map<String, FormattedBlockService> readingTypesMap,
+            Map<String, FormattedBlockService<Block>> readingTypesMap,
             String readingType) throws RemoteException;
 
     /**

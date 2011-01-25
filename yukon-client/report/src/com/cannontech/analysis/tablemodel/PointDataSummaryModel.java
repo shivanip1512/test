@@ -22,6 +22,7 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.LPMeterData;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -31,8 +32,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.util.NaturalOrderComparator;
 
-@SuppressWarnings("unchecked")
-public class PointDataSummaryModel extends ReportModelBase
+public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 {
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 40;
@@ -157,14 +157,11 @@ public class PointDataSummaryModel extends ReportModelBase
 	public final static String DAILY_COUNT_STRING = "Daily Count";
 
 	//contain values of Integer (pointID ) to MeterAndPointData object vlaues
-	@SuppressWarnings("unchecked")
-    private HashMap allMPDataPeaks = new HashMap();
-	@SuppressWarnings("unchecked")
-    private HashMap allMPDataLows = new HashMap();
+    private HashMap<Integer, List<MeterAndPointData>> allMPDataPeaks = new HashMap<Integer, List<MeterAndPointData>>();
+    private HashMap<Integer, List<MeterAndPointData>> allMPDataLows = new HashMap<Integer, List<MeterAndPointData>>();
 	
 	//contains all PointID (Integer) values to number of missing intervals (Integer).
-	@SuppressWarnings("unchecked")
-    private HashMap allMissingData = new HashMap();
+    private HashMap<Integer, Integer> allMissingData = new HashMap<Integer, Integer>();
 	
 	/** A string for the title of the data */
 	private static String title = "Point Data Summary Report";
@@ -214,8 +211,7 @@ public class PointDataSummaryModel extends ReportModelBase
     private boolean excludeDisabledDevices = false;
     private static final String ATT_EXCLUDE_DISABLED_DEVICES = "excludeDisabledDevices";
 
-	@SuppressWarnings("unchecked")
-    public Comparator lpDataSummaryComparator = new java.util.Comparator<LPMeterData>()
+    public Comparator<LPMeterData> lpDataSummaryComparator = new java.util.Comparator<LPMeterData>()
 	{
 		public int compare(LPMeterData o1, LPMeterData o2){
             final MeterAndPointData mpData1 = o1.getMeterAndPointData();
@@ -242,13 +238,12 @@ public class PointDataSummaryModel extends ReportModelBase
 		}
 	};
 	
-	@SuppressWarnings("unchecked")
-    public static Comparator mpDataValueComparator = new Comparator()
+    public static Comparator<MeterAndPointData> mpDataValueComparator = new Comparator<MeterAndPointData>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(MeterAndPointData o1, MeterAndPointData o2)
 		{
-			double thisVal = ((MeterAndPointData)o1).getValue().doubleValue();
-			double anotherVal = ((MeterAndPointData)o2).getValue().doubleValue();
+			double thisVal = o1.getValue().doubleValue();
+			double anotherVal = o2.getValue().doubleValue();
 			return ( thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 		}
 		public boolean equals(Object obj)
@@ -374,9 +369,9 @@ public class PointDataSummaryModel extends ReportModelBase
     {
         //Reset all objects, new data being collected!
         setData(null);
-        allMPDataLows = new HashMap();
-        allMPDataPeaks = new HashMap();
-        allMissingData = new HashMap();
+        allMPDataLows = new HashMap<Integer, List<MeterAndPointData>>();
+        allMPDataPeaks = new HashMap<Integer, List<MeterAndPointData>>();
+        allMissingData = new HashMap<Integer, Integer>();
 
         SqlFragmentSource sql = buildSQLStatement();
         CTILogger.info(sql.toString());	
@@ -393,13 +388,13 @@ public class PointDataSummaryModel extends ReportModelBase
                 String voltageDemandRate = null;
                 String liDemandRate = null;
                 String voltageDemandInterval = null;
-                Vector tempMPDataVector = new Vector();	//Vector of MeterAndPointData
+                Vector<MeterAndPointData> tempMPDataVector = new Vector<MeterAndPointData>();	//Vector of MeterAndPointData
                 while( rset.next()) {
                     Integer paobjectID = new Integer(rset.getInt(1));
                     String paoName = rset.getString(2);
                     @SuppressWarnings("unused")
                     String paoCategory = rset.getString(3);
-                    String paoType = rset.getString(4);
+                    PaoType paoType = PaoType.getForDbString(rset.getString(4));
                     String meterNumber = rset.getString(5);
                     String address = rset.getString(6);
                     String pointName = rset.getString(7);
@@ -409,7 +404,7 @@ public class PointDataSummaryModel extends ReportModelBase
                     
                         if (currentPointid != -1) {	//not the first time
                             loadSummaryData(new Integer(currentPointid), tempMPDataVector);
-                            tempMPDataVector = new Vector();  //get ready for the next PointID
+                            tempMPDataVector = new Vector<MeterAndPointData>();  //get ready for the next PointID
                             //verify all data exists, count should be equal to timeInMillis/interval
                             long nowTime = new Date().getTime();							
                             long endTime = (getStopDate().getTime() > nowTime ? nowTime:getStopDate().getTime());
@@ -452,11 +447,11 @@ public class PointDataSummaryModel extends ReportModelBase
 
                     Meter meter = new Meter();
                     meter.setDeviceId(paobjectID);
+	                meter.setPaoType(paoType);
                     meter.setName(paoName);
                     if (address != null)
                         meter.setAddress(address);
-                    meter.setTypeStr(paoType);
-
+                    
                     if (meterNumber != null) {
                         meter.setMeterNumber(meterNumber);
                     }
@@ -512,8 +507,7 @@ public class PointDataSummaryModel extends ReportModelBase
 	 * @param pointid
 	 * @param  allMPData - Vector of MeterAndPointData values
 	 */
-	@SuppressWarnings("unchecked")
-    private void loadSummaryData(Integer pointID, Vector allMPData)
+    private void loadSummaryData(Integer pointID, List<MeterAndPointData> allMPData)
 	{
 		Collections.sort(allMPData, mpDataValueComparator);
 	
@@ -541,7 +535,7 @@ public class PointDataSummaryModel extends ReportModelBase
 				case PAO_NAME_COLUMN:
 					return lpMeterData.getMeterAndPointData().getMeter().getName();
 				case PAO_TYPE_COLUMN:
-				    return lpMeterData.getMeterAndPointData().getMeter().getTypeStr();
+				    return lpMeterData.getMeterAndPointData().getMeter().getPaoType().getPaoTypeName();
 				case METER_NUMBER_COLUMN:
 				    return lpMeterData.getMeterAndPointData().getMeter().getMeterNumber();
 				case PHYSICAL_ADDRESS_COLUMN:
@@ -581,7 +575,7 @@ public class PointDataSummaryModel extends ReportModelBase
 				    return null;
 				}
 				case MISSING_DATA_FLAG_COLUMN:
-				    Integer missing = (Integer)getAllMissingDataPointIDs().get(lpMeterData.getMeterAndPointData().getPointID());
+				    Integer missing = getAllMissingDataPointIDs().get(lpMeterData.getMeterAndPointData().getPointID());
 				    return (missing == null) ? "Complete" : String.valueOf(missing.intValue()) + " Readings";
 				        
 				case TIME_COLUMN:
@@ -708,13 +702,12 @@ public class PointDataSummaryModel extends ReportModelBase
 	 * @param i
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
     private Date getPeakTimestamp(int pointID, int i)
 	{
-		List peaks = ((List)allMPDataPeaks.get(new Integer(pointID)));
+		List<MeterAndPointData> peaks = allMPDataPeaks.get(new Integer(pointID));
 		if( peaks != null && peaks.size() > i)
 		{
-			return ((MeterAndPointData)peaks.get(i)).getTimeStamp();
+			return peaks.get(i).getTimeStamp();
 		}
 		return null;
 	}
@@ -722,25 +715,23 @@ public class PointDataSummaryModel extends ReportModelBase
 	 * @param i
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
     private Double getPeakValue(int pointID, int i)
 	{
-		List peaks = ((List)allMPDataPeaks.get(new Integer(pointID)));
+		List<MeterAndPointData> peaks = allMPDataPeaks.get(new Integer(pointID));
 		if( peaks != null && peaks.size() > i)
-			return ((MeterAndPointData)peaks.get(i)).getValue();
+			return peaks.get(i).getValue();
 		return null;
 	}
 	/**
 	 * @param i
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
     private Date getLowTimestamp(int pointID, int i)
 	{
-		List lows = ((List)allMPDataLows.get(new Integer(pointID)));
+		List<MeterAndPointData> lows = allMPDataLows.get(new Integer(pointID));
 		if( lows != null && lows.size() > i)
 		{
-		    return ((MeterAndPointData)lows.get(i)).getTimeStamp();
+		    return lows.get(i).getTimeStamp();
 		}
 		return null;
 	}
@@ -748,19 +739,17 @@ public class PointDataSummaryModel extends ReportModelBase
 	 * @param i
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
     private Double getLowValue(int pointID, int i)
 	{
-		List lows = ((List)allMPDataLows.get(new Integer(pointID)));
+		List<MeterAndPointData> lows = allMPDataLows.get(new Integer(pointID));
 		if( lows != null && lows.size() > i)
-			return ((MeterAndPointData)lows.get(i)).getValue();
+			return lows.get(i).getValue();
 		return null;
 	}	
 
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnNames()
 	 */
-	@SuppressWarnings("unchecked")
     public String[] getColumnNames()
 	{
 		if( columnNames == null)
@@ -830,7 +819,6 @@ public class PointDataSummaryModel extends ReportModelBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	@SuppressWarnings("unchecked")
     public Class[] getColumnTypes()
 	{
 		if( columnTypes == null)
@@ -899,7 +887,6 @@ public class PointDataSummaryModel extends ReportModelBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
 	 */
-	@SuppressWarnings("unchecked")
     public ColumnProperties[] getColumnProperties()
 	{
 		if(columnProperties == null)
@@ -1143,8 +1130,7 @@ public class PointDataSummaryModel extends ReportModelBase
     /**
      * @return Returns the allMissingDataPointIDs.
      */
-    @SuppressWarnings("unchecked")
-    public HashMap getAllMissingDataPointIDs()
+    public HashMap<Integer, Integer> getAllMissingDataPointIDs()
     {
         return allMissingData;
     }

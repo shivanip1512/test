@@ -12,6 +12,7 @@ import java.rmi.RemoteException;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
@@ -128,7 +129,8 @@ public class MeterReadEvent extends MultispeakEvent{
                     if (o instanceof PointData) {
                         PointData pointData = (PointData) o;
                         LitePoint lPoint = pointDao.getLitePoint(pointData.getId());
-                        getDevice().populate(lPoint.getPointType(), lPoint.getPointOffset(), lPoint.getUofmID(), pointData.getPointDataTimeStamp(), pointData.getValue());
+                        PointIdentifier pointIdentifier = PointIdentifier.createPointIdentifier(lPoint);
+                        getDevice().populate(pointIdentifier, pointData.getPointDataTimeStamp(), pointData.getValue());
                     }
                 }
             }

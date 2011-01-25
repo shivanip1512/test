@@ -4,8 +4,8 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -33,10 +33,8 @@ public abstract class BlockBase implements Block{
 		    	populate(meter, richPointData, attribute);
 		    	return;
 		    }
-		} catch (IllegalArgumentException e) {
+		} catch (IllegalUseOfAttribute e) {
 		    CTILogger.debug(e);
-		} catch (NotFoundException e){
-		    CTILogger.error(e);
 		}
 	}
 

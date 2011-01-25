@@ -4,21 +4,21 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 
 /**
  * Class which represents billing data for an MCT370
  */
 public class MCT370 extends MeterReadBase {
 
-    public void populate(int pointType, int pointOffSet, int uomID, Date dateTime, Double value) {
+    public void populate(PointIdentifier pointIdentifier, Date dateTime, Double value) {
 
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(dateTime.getTime());
         
-        switch (pointType) {
-            case PointTypes.PULSE_ACCUMULATOR_POINT:
-                switch (pointOffSet) {
+        switch (pointIdentifier.getPointType()) {
+            case PulseAccumulator:
+                switch (pointIdentifier.getOffset()) {
                     case 1: // KWh - Total Consumption - channel 1
                         getMeterRead().setReadingDate(calendar);
                         getMeterRead().setPosKWh(new BigInteger(String.valueOf(value.intValue())));
@@ -28,8 +28,8 @@ public class MCT370 extends MeterReadBase {
                     case 3: // Total Consumption - channel 3
                 }
                 break;
-            case PointTypes.DEMAND_ACCUMULATOR_POINT:
-                switch (pointOffSet) {
+            case DemandAccumulator:
+                switch (pointIdentifier.getOffset()) {
     
                     case 11: // On Peak KW - Pulse Input 1
                         getMeterRead().setKW(new Float(value.floatValue()));
@@ -43,8 +43,8 @@ public class MCT370 extends MeterReadBase {
                     case 15: // On Peak KW - Pulse Input 3
                 }
                 break;
-            case PointTypes.ANALOG_POINT:
-                switch (pointOffSet) {
+            case Analog:
+                switch (pointIdentifier.getOffset()) {
 
                 // Electric
                 case 1: // KWh

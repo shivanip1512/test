@@ -15,8 +15,7 @@
         <form:hidden path="disabled"/>
         <form:hidden path="name"/>
         <form:hidden path="route"/>
-        <form:hidden path="type"/>
-        <form:hidden path="typeStr"/>
+        <form:hidden path="paoType"/>
         
         <tags:formElementContainer nameKey="meterConfigurationSection">
         
@@ -27,7 +26,7 @@
                 </tags:nameValue2>
     
                 <tags:nameValue2 nameKey=".meterType">
-                    ${meter.typeStr}
+                    ${meter.paoType.paoTypeName}
                 </tags:nameValue2>
     
                 <tags:nameValue2 nameKey=".meterNumber">
