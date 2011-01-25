@@ -486,6 +486,11 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     }
     
     @Autowired
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
+    }
+    
+    @Autowired
     public void setLoadGroupDao(LoadGroupDao loadGroupDao) {
         this.loadGroupDao = loadGroupDao;
     }
