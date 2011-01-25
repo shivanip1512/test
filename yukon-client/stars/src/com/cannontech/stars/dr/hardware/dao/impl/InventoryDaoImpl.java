@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryCategory;
 import com.cannontech.common.inventory.InventoryIdentifier;
@@ -45,6 +46,7 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareStatus;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.util.InventoryUtils;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
@@ -266,20 +268,19 @@ public class InventoryDaoImpl implements InventoryDao {
             
             // Convert the category entryid into a InventoryCategory enum value
             int categoryEntryId = rs.getInt("CategoryId");
-            YukonListEntry categoryListEntry = 
-                liteStarsEnergyCompany.getYukonListEntry(categoryEntryId);
-            int categoryDefinitionId = categoryListEntry.getYukonDefID();
+            int categoryDefinitionId = YukonListEntryHelper.getYukonDefinitionId(liteStarsEnergyCompany,
+                                                                                 YukonSelectionListDefs.YUK_LIST_NAME_INVENTORY_CATEGORY,
+                                                                                 categoryEntryId);
             
             InventoryCategory category = InventoryCategory.valueOf(categoryDefinitionId);
             thermostat.setCategory(category);
 
             // Convert the hardware type entryid into a HardwareType enum value
             int typeEntryId = rs.getInt("LMHardwareTypeId");
-            YukonListEntry hardwareTypeListEntry = 
-                liteStarsEnergyCompany.getYukonListEntry(typeEntryId);
-            int hardwareTypeDefinitionId = hardwareTypeListEntry.getYukonDefID();
-
-            HardwareType hardwareType = HardwareType.valueOf(hardwareTypeDefinitionId);
+            int typeDefinitionId = YukonListEntryHelper.getYukonDefinitionId(liteStarsEnergyCompany,
+                                                                             YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE,
+                                                                             typeEntryId);
+            HardwareType hardwareType = HardwareType.valueOf(typeDefinitionId);
             thermostat.setType(hardwareType);
 
             int routeId = rs.getInt("RouteId");
