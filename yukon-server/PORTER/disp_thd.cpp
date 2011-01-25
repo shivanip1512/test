@@ -73,6 +73,7 @@ extern void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *
 extern void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, void *lprtid);
 extern bool processInputFunction(CHAR Char);
 extern void KickPIL();
+extern void deletePaoStatistics( const long paoId );
 
 void DispatchMsgHandlerThread(VOID *Arg)
 {
@@ -147,6 +148,11 @@ void DispatchMsgHandlerThread(VOID *Arg)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << TimeNow << " Porter has received a " << dbchg->getCategory() << " DBCHANGE message from Dispatch." << endl;
+                        }
+
+                        if ( dbchg->getTypeOfChange() == ChangeTypeDelete )
+                        {
+                            deletePaoStatistics( dbchg->getId() );
                         }
 
                         break;
