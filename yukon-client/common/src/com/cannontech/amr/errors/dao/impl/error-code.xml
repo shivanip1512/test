@@ -811,6 +811,16 @@
     </ul>
   </troubleshooting>
 </error>
+<error code="273">
+  <category>Bulk Communications</category>
+  <porter>Port is not initialized</porter>
+  <description>The request has been received, but may be delayed because the port is not initialized.  Bulk communication channel may be experiencing connection difficulties.</description>
+  <troubleshooting>Verify the bulk communication channel is functioning properly.
+    <ul>
+      <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+    </ul>
+  </troubleshooting>
+</error>
 <error code="274">
   <category>Data Validation</category>
   <porter>Daily read request already in progress</porter>

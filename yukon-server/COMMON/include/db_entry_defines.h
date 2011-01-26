@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   db_entry_defines
-*
-* Date:   8/16/2001
-*
-* Author : Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/db_entry_defines.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/03/13 19:35:26 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #define SCANRATE_GENERAL      "general"
 #define SCANRATE_ACCUM        "accumulator"

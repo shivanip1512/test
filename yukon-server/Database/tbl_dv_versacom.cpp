@@ -212,9 +212,9 @@ void CtiTableVersacomLoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
     rdr["routeid"]          >> _routeID;
 
     rdr["addressusage"]     >> rwsTemp;
-	std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
-    
-    _addressUsage = resolveAddressUsage(rwsTemp, versacomAddressUsage);
+    std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
+
+    _addressUsage = resolveAddressUsage(rwsTemp, Cti::AddressUsage_Versacom);
 
     rdr["relayusage"]       >> rwsTemp;
     _relayMask = resolveRelayUsage(rwsTemp);

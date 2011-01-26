@@ -59,7 +59,7 @@ INT CtiProtocolFisherPierceCBC::parseRequest(CtiCommandParser  &parse, const FPS
                 dout << CtiTime() << " Unsupported command on fisher pierce route Command = " << parse.getCommand() << endl;
             }
 
-            status = CtiInvalidRequest;
+            status = ErrorInvalidRequest;
 
             break;
         }

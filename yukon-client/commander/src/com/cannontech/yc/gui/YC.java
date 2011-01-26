@@ -1073,11 +1073,9 @@ public class YC extends Observable implements MessageListener
 				}
 
 				if (returnMsg.getStatus() > 1 ) {
-					if (returnMsg.getExpectMore() == 0) {
-						DeviceErrorTranslatorDao deviceErrorTrans = YukonSpringHook.getBean("deviceErrorTranslator", DeviceErrorTranslatorDao.class);
-						DeviceErrorDescription deviceErrorDesc = deviceErrorTrans.translateErrorCode(returnMsg.getStatus());
-						writeOutputMessage(OutputMessage.DEBUG_MESSAGE, "<B>"+deviceErrorDesc.getCategory()+"</B> -- " + deviceErrorDesc.getDescription(), MessageType.getMessageType(returnMsg.getStatus()));
-					}
+					DeviceErrorTranslatorDao deviceErrorTrans = YukonSpringHook.getBean("deviceErrorTranslator", DeviceErrorTranslatorDao.class);
+					DeviceErrorDescription deviceErrorDesc = deviceErrorTrans.translateErrorCode(returnMsg.getStatus());
+					writeOutputMessage(OutputMessage.DEBUG_MESSAGE, "<B>"+deviceErrorDesc.getCategory()+"</B> -- " + deviceErrorDesc.getDescription(), MessageType.getMessageType(returnMsg.getStatus()));
 				} //0=succes, 1="Not Normal" return, but not necessarily an error
 				writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.getMessageType(returnMsg.getStatus()));
 

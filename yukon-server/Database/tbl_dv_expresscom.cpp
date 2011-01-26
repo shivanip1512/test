@@ -246,7 +246,7 @@ void CtiTableExpresscomLoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
     rdr["splinteraddress"   ] >> _splinter;
 
     rdr["addressusage"      ] >> rwsTemp;
-    _addressUsage = resolveAddressUsage( rwsTemp.c_str(), expresscomAddressUsage );
+    _addressUsage = resolveAddressUsage( rwsTemp.c_str(), Cti::AddressUsage_Expresscom );
 
     rdr["relayusage"        ] >> rwsTemp;
     rdr["protocolpriority"  ] >> _priority;

@@ -224,14 +224,14 @@ ERRSTRUCT CTIErrors[] = {
 
     { ErrorFreezeNotRecorded,       "There is no record of the last freeze sent to this device.",   ERRTYPEPROTOCOL },
 
-    { CtiInvalidRequest,            "Invalid/Incomplete Request",                   ERRTYPESYSTEM   },
+    { ErrorInvalidRequest,          "Invalid/Incomplete Request",                   ERRTYPESYSTEM   },
 
     { ErrorInvalidSSPEC,            "Insufficient SSPEC/Firmware Revision",         ERRTYPESYSTEM   },
     { ErrorVerifySSPEC,             "Verify SSPEC/Firmware Revision",               ERRTYPESYSTEM   },
 
     { ErrorTransmitterBusy,         "Transmitter is busy",                          ERRTYPEPROTOCOL },
-    { UnsupportedDevice,            "Device Not Supported",                         ERRTYPESYSTEM   },
-    { NoRouteFound,                 "No Route Found",                               ERRTYPESYSTEM   },
+    { ErrorUnsupportedDevice,       "Device Not Supported",                         ERRTYPESYSTEM   },
+    { ErrorPortNotInitialized,      "Port not initialized",                         ERRTYPECOMM },
 
     { ErrorCommandAlreadyInProgress,"Command already in progress",                  ERRTYPESYSTEM   },
 
@@ -239,7 +239,7 @@ ERRSTRUCT CTIErrors[] = {
 
     { ErrorNoDisconnect,            "No disconnect configured on this device",      ERRTYPESYSTEM   },
 
-    { ErrorTransmitterOverheating,  "Transmitter is overheating",                   ERRTYPECOMM },
+    { ErrorTransmitterOverheating,  "Transmitter is overheating",                   ERRTYPEPROTOCOL },
 
     { UnknownError,                 "Unknown Error",                                ERRTYPESYSTEM   },
 

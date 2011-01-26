@@ -1,48 +1,22 @@
 #include "yukon.h"
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-#include <process.h>
-#include <iostream>
-#include <list>
-#include "os2_2w32.h"
-#include "cticalls.h"
 
-#include "ctitime.h"
-#include <rw\thr\mutex.h>
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
-#include "cparms.h"
 #include "connection.h"
 #include "queues.h"
 #include "queue.h"
 #include "dsm2.h"
-#include "dsm2err.h"
-#include "porter.h"
 #include "portdecl.h"
-#include "master.h"
 
 #include "portglob.h"
 
 #include "c_port_interface.h"
 #include "mgr_port.h"
 #include "mgr_device.h"
-#include "dev_base.h"
-#include "dev_lcu.h"
-#include "dllbase.h"
 #include "CtiLocalConnect.h"
 
-#include "logger.h"
-#include "guard.h"
 #include "msg_pcrequest.h"
 #include "msg_pcreturn.h"
 #include "prot_emetcon.h"
 #include "trx_711.h"
-#include "utility.h"
-#include "dev_mct4xx.h"
 
 using namespace std;
 
@@ -418,7 +392,7 @@ INT ValidateOutMessage(OUTMESS *&OutMessage)
             delete(OutMessage);
             OutMessage = NULL;
 
-            nRet = CtiInvalidRequest;
+            nRet = ErrorInvalidRequest;
         }
         else
         {
@@ -520,6 +494,23 @@ INT ValidatePort(OUTMESS *&OutMessage)
         {
             SendError (OutMessage, BADPORT);
             status = BADPORT;
+        }
+        else if( ! Port->isViable())
+        {
+            if( CtiConnection *conn = static_cast<CtiConnection *>(OutMessage->Request.Connection) )
+            {
+                //  Provide an interim error so they know the comms channel is stalled.
+                const int error = ErrorPortNotInitialized;
+
+                string error_string = "Error " + CtiNumStr(error) + ": " + FormatError(error);
+
+                CtiReturnMsg *info = new CtiReturnMsg(OutMessage->DeviceID, OutMessage->Request, error_string, error);
+
+                //  This isn't the last you'll hear from this request.
+                info->setExpectMore();
+
+                conn->WriteConnQue(info);
+            }
         }
     }
     else

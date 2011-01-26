@@ -1,25 +1,8 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   yukon
-*
-* Date:   5/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.64.2.4 $
-* DATE         :  $Date: 2008/11/13 17:23:50 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __YUKON_H__
-#define __YUKON_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include "precompiled.h"
 
 #include "ctidbgmem.h"      // defines CTIDBG_new for memory tracking!
-
-#include <rw\thr\mutex.h>
 
 // YUKONEOT is needed to make ALL timezones operate correctly wrt the "end-of-time"
 //Changed YUKONEOT to LONG_MAX from ULONG to account for CtiTime not being unsigned   -TS
@@ -31,28 +14,17 @@
 #define PORTER_REGISTRATION_NAME     "PORTER"
 
 // Load Management Active Restore Value
-#if 0
+#define LMAR_NEWCONTROL         "N"             // This is the first entry for any new control.
+#define LMAR_LOGTIMER           "L"             // This is a timed log entry.  Nothing exciting happened in this interval.
+#define LMAR_CONT_CONTROL       "C"             // Previous command was repeated extending the current control interval.
 
-    #define LMAR_CONTINUE   "C"
-    #define LMAR_RESTORE    "R"
-    #define LMAR_TIMED      "T"
-    #define LMAR_LATCH      "L"
-    #define LMAR_MANUAL     "M"
+#define LMAR_TIMED_RESTORE      "T"             // Control terminated based on time set in load group.
+#define LMAR_MANUAL_RESTORE     "M"             // Control terminated because of an active restore or terminate command being sent.
+#define LMAR_OVERRIDE_CONTROL   "O"             // Control terminated because a new command of a different nature was sent to this group.
+#define LMAR_CONTROLACCT_ADJUST "A"             // Control accounting was adjusted by user.
+#define LMAR_PERIOD_TRANSITION  "P"             // Control was active as we crossed a control history boundary.  This log denotes the last log in the previos interval.
+#define LMAR_DISPATCH_SHUTDOWN  "S"             // Control was active as dispatch shutdown.  This entry will be used to resume control.
 
-#else
-
-    #define LMAR_NEWCONTROL         "N"             // This is the first entry for any new control.
-    #define LMAR_LOGTIMER           "L"             // This is a timed log entry.  Nothing exciting happened in this interval.
-    #define LMAR_CONT_CONTROL       "C"             // Previous command was repeated extending the current control interval.
-
-    #define LMAR_TIMED_RESTORE      "T"             // Control terminated based on time set in load group.
-    #define LMAR_MANUAL_RESTORE     "M"             // Control terminated because of an active restore or terminate command being sent.
-    #define LMAR_OVERRIDE_CONTROL   "O"             // Control terminated because a new command of a different nature was sent to this group.
-    #define LMAR_CONTROLACCT_ADJUST "A"             // Control accounting was adjusted by user.
-    #define LMAR_PERIOD_TRANSITION  "P"             // Control was active as we crossed a control history boundary.  This log denotes the last log in the previos interval.
-    #define LMAR_DISPATCH_SHUTDOWN  "S"             // Control was active as dispatch shutdown.  This entry will be used to resume control.
-
-#endif
 
 #define RESTORE_DURATION -1
 
@@ -78,16 +50,6 @@ enum CtiPaoCategory_t
     PAO_CATEGORY_ROUTE,
     PAO_CATEGORY_LOAD_MANAGEMENT,
     PAO_CATEGORY_CAP_CONTROL,
-};
-
-
-enum CtiCommState_t
-{
-    CommState_Normal = 0,
-    CommState_Failed,
-    CommState_Disabled,
-
-    CommState_Invalid
 };
 
 
@@ -132,24 +94,6 @@ enum CtiPAOClass_t
     PAOClassMACS,
 
     PAOClassInvalid
-};
-
-enum CtiDeviceState_t
-{
-    DeviceStateNormal = 0,
-    DeviceStateDisabled,
-    DeviceStateFailed,
-
-    DeviceStateInvalid
-};
-
-enum CtiPortState_t
-{
-    PortStateNormal = 0,
-    PortStateDisabled,
-    PortStateFailed,
-
-    PortStateInvalid
 };
 
 enum CtiStatisticsType_t
@@ -272,7 +216,7 @@ enum YukonError_t
     ErrorPageNAK,                 // TAP Repeat Requested, but retries exhausted
     ErrorPageNoResponse,
 
-    CtiInvalidRequest,
+    ErrorInvalidRequest,
     UnknownError,
 
     // WCTP errors
@@ -307,8 +251,9 @@ enum YukonError_t
     ErrorVerifySSPEC,           // Need to verify SSPEC/firmware revision
 
     ErrorTransmitterBusy,
-    UnsupportedDevice,
-    NoRouteFound,
+    ErrorUnsupportedDevice,
+
+    ErrorPortNotInitialized,
 
     ErrorCommandAlreadyInProgress,
 
@@ -496,5 +441,3 @@ enum CtiOutMessageFlags_t
     MessageFlag_StatisticsRequested        = 0x00000001 << 9,
 };
 
-
-#endif // __YUKON_H__

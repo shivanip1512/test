@@ -701,7 +701,7 @@ INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMe
                 dout << CtiTime() << " Unsupported command on sa305 route. Command = " << parse.getCommand() << endl;
             }
 
-            status = CtiInvalidRequest;
+            status = ErrorInvalidRequest;
 
             break;
         }

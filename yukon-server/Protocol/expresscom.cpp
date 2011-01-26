@@ -265,7 +265,7 @@ INT CtiProtocolExpresscom::demandResponseSummary()
     INT status = NoError;
 
     _message.push_back( mtDemandResponseSummary );
-    
+
     incrementMessageCount();
 
     return status;
@@ -1125,7 +1125,7 @@ INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse)
                 dout << CtiTime() << " Unsupported command on expresscom route Command = " << parse.getCommand() << endl;
             }
 
-            status = CtiInvalidRequest;
+            status = ErrorInvalidRequest;
 
             break;
         }
@@ -2801,7 +2801,7 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
         for( ; current_program != programs.end(); ++current_program )
         {
             if( !current_program->empty() )
-            {    
+            {
                 address = atoi(current_program->c_str());
                 valid &= validateAddress(address, ProgramMin, ProgramMax);
             }
@@ -2844,7 +2844,7 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
         for( ; current_splinter != splinters.end(); ++current_splinter )
         {
             if( !current_splinter->empty() )
-            {    
+            {
                 address = atoi(current_splinter->c_str());
                 valid &= validateAddress(address, SplinterMin, SplinterMax);
             }

@@ -434,7 +434,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
                 dout << CtiTime() << " Unsupported command. Command = " << parse.getCommand() << endl;
             }
 
-            status = CtiInvalidRequest;
+            status = ErrorInvalidRequest;
 
             break;
         }

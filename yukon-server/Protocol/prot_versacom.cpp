@@ -1387,7 +1387,7 @@ INT CtiProtocolVersacom::parseRequest(CtiCommandParser  &parse, const VSTRUCT &a
                 dout << CtiTime() << " Unsupported command on versacom route Command = " << parse.getCommand() << endl;
             }
 
-            status = CtiInvalidRequest;
+            status = ErrorInvalidRequest;
 
             break;
         }

@@ -1,82 +1,59 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   resolvers
-*
-* Date:   8/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/resolvers.h-arc  $
-* REVISION     :  $Revision: 1.8.4.2 $
-* DATE         :  $Date: 2008/11/12 17:27:30 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __RESOLVERS_H__
-#define __RESOLVERS_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "types.h"
 #include "pointtypes.h"
 #include "dlldefs.h"
-#include "yukon.h"
 #include "db_entry_defines.h"
 
-using std::string;
+#include <string>
 
+namespace Cti {
 
-typedef enum
+enum AddressUsage
 {
-    invalidAddressUsage = 0,
-    versacomAddressUsage,
-    expresscomAddressUsage,
+    AddressUsage_Invalid = 0,
+    AddressUsage_Versacom,
+    AddressUsage_Expresscom,
 
-    maximumAddressUsage
+    AddressUsage_Maximum
+};
 
-} CtiAddressUsage_t;
+}
 
+IM_EX_CTIBASE CtiPointType_t resolvePointType(const std::string& rwsTemp);
+IM_EX_CTIBASE INT resolvePointArchiveType(const std::string& rwsTemp);
+IM_EX_CTIBASE INT resolveCapControlType(const std::string& rwsTemp);
+IM_EX_CTIBASE INT resolveLoadManagementType(const std::string& rwsTemp);
 
-IM_EX_CTIBASE CtiPointType_t resolvePointType(const string& rwsTemp);
-IM_EX_CTIBASE INT resolvePointArchiveType(const string& rwsTemp);
-IM_EX_CTIBASE INT resolveCapControlType(const string& rwsTemp);
-IM_EX_CTIBASE INT resolveLoadManagementType(const string& rwsTemp);
+IM_EX_CTIBASE INT resolvePAOType(const std::string& category, const std::string& rwsTemp);
 
-IM_EX_CTIBASE INT resolvePAOType(const string& category, const string& rwsTemp);
+IM_EX_CTIBASE INT resolveDeviceType(const std::string& rwsTemp);
+IM_EX_CTIBASE INT resolvePortType(const std::string& str);
+IM_EX_CTIBASE INT resolveLoadManagementType(const std::string& rwsTemp);
+IM_EX_CTIBASE INT resolveCapControlType(const std::string& rwsTemp);
+IM_EX_CTIBASE INT resolveRouteType(const std::string& rwsTemp);
 
-IM_EX_CTIBASE INT resolveDeviceType(const string& rwsTemp);
-IM_EX_CTIBASE INT resolvePortType(const string& str);
-IM_EX_CTIBASE INT resolveLoadManagementType(const string& rwsTemp);
-IM_EX_CTIBASE INT resolveCapControlType(const string& rwsTemp);
-IM_EX_CTIBASE INT resolveRouteType(const string& rwsTemp);
+IM_EX_CTIBASE INT resolvePAOType(const std::string& category, const std::string& rwsTemp);
 
-IM_EX_CTIBASE INT resolvePAOType(const string& category, const string& rwsTemp);
-
-IM_EX_CTIBASE INT resolvePAOClass(const string& rwsTemp);
-IM_EX_CTIBASE INT resolvePAOCategory(const string& rwsTemp);
-IM_EX_CTIBASE INT resolveDeviceState(const string& rwsTemp);
-IM_EX_CTIBASE INT resolveScanType(const string& rwsTemp);
-IM_EX_CTIBASE INT resolveStatisticsType(const string& rwsTemp);
-IM_EX_CTIBASE CtiFilter_t resolveFilterType(const string& rwsTemp);
-IM_EX_CTIBASE INT resolveProtocol(const string& str);
-IM_EX_CTIBASE INT resolvePortType(const string& str);
-IM_EX_CTIBASE INT resolvePortState(const string& str);
-IM_EX_CTIBASE INT resolveAmpUseType(const string& rwsTemp);
-IM_EX_CTIBASE INT resolveRouteType(const string& rwsTemp);
+IM_EX_CTIBASE INT resolvePAOClass(const std::string& rwsTemp);
+IM_EX_CTIBASE INT resolvePAOCategory(const std::string& rwsTemp);
+IM_EX_CTIBASE INT resolveScanType(const std::string& rwsTemp);
+IM_EX_CTIBASE INT resolveStatisticsType(const std::string& rwsTemp);
+IM_EX_CTIBASE CtiFilter_t resolveFilterType(const std::string& rwsTemp);
+IM_EX_CTIBASE INT resolveProtocol(const std::string& str);
+IM_EX_CTIBASE INT resolvePortType(const std::string& str);
+IM_EX_CTIBASE INT resolveAmpUseType(const std::string& rwsTemp);
+IM_EX_CTIBASE INT resolveRouteType(const std::string& rwsTemp);
 IM_EX_CTIBASE bool resolveIsDeviceTypeSingle(INT Type);
-IM_EX_CTIBASE INT resolveRelayUsage(const string& rwsTemp);
+IM_EX_CTIBASE INT resolveRelayUsage(const std::string& rwsTemp);
 IM_EX_CTIBASE INT resolveAWordTime(INT Seconds);
-IM_EX_CTIBASE INT resolveAddressUsage(const string& str, int type);
-IM_EX_CTIBASE string   resolveDBChanged(INT dbnum);
-IM_EX_CTIBASE string   resolveDBChangeType(INT type);
-IM_EX_CTIBASE INT resolveSlaveAddress(const INT DeviceType, const string& str);
-IM_EX_CTIBASE CtiControlType_t  resolveControlType(const string& str);
-IM_EX_CTIBASE LONG resolveDeviceWindowType(const string& rwsTemp);
+IM_EX_CTIBASE INT resolveAddressUsage(const std::string& str, int type);
+IM_EX_CTIBASE std::string   resolveDBChanged(INT dbnum);
+IM_EX_CTIBASE std::string   resolveDBChangeType(INT type);
+IM_EX_CTIBASE INT resolveSlaveAddress(const INT DeviceType, const std::string& str);
+IM_EX_CTIBASE CtiControlType_t  resolveControlType(const std::string& str);
+IM_EX_CTIBASE LONG resolveDeviceWindowType(const std::string& rwsTemp);
 
 
-IM_EX_CTIBASE INT resolveUomToCalcType(const string& str);
-
-
-
-
-#endif //#ifndef __RESOLVERS_H__
+IM_EX_CTIBASE INT resolveUomToCalcType(const std::string& str);
 

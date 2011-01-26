@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   resolvers
-*
-* Date:   6/15/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.88.4.1 $
-* DATE         :  $Date: 2008/11/12 17:27:31 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-#include <rw/re.h>
-
 
 #include "dsm2.h"
 #include "resolvers.h"
@@ -1001,35 +985,6 @@ INT resolvePAOClass(const string& _rwsTemp)
     return nRet;
 }
 
-INT resolveDeviceState(const string& _rwsTemp)
-{
-    INT nRet = 0;
-    string rwsTemp = _rwsTemp;
-    CtiToLower(rwsTemp);
-    in_place_trim(rwsTemp);
-
-    if(rwsTemp == "normal")
-    {
-        nRet = DeviceStateNormal;
-    }
-    else if(rwsTemp == "disabled")
-    {
-        nRet = DeviceStateDisabled;
-    }
-    else if(rwsTemp == "failed")
-    {
-        nRet = DeviceStateFailed;
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Unsupported device state \"" << rwsTemp << "\" " << endl;
-        nRet = DeviceStateInvalid;
-    }
-
-    return nRet;
-}
-
 INT resolveStatisticsType(const string& _rwsTemp)
 {
     INT nRet = 0;
@@ -1161,36 +1116,6 @@ INT resolvePortType(const string& _str)
     return nRet;
 }
 
-
-
-INT resolvePortState(const string& _rwsTemp)
-{
-    INT nRet = 0;
-    string rwsTemp = _rwsTemp;
-    CtiToLower(rwsTemp);
-    in_place_trim(rwsTemp);
-
-    if(rwsTemp == "normal")
-    {
-        nRet = PortStateNormal;
-    }
-    else if(rwsTemp == "disabled")
-    {
-        nRet = PortStateDisabled;
-    }
-    else if(rwsTemp == "failed")
-    {
-        nRet = PortStateFailed;
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Unsupported port state \"" << rwsTemp << "\" " << endl;
-        nRet = PortStateInvalid;
-    }
-
-    return nRet;
-}
 
 bool resolveIsDeviceTypeSingle(INT Type)
 {
@@ -1410,7 +1335,7 @@ INT resolveAddressUsage(const string& _str, int type)
 
     switch(type)
     {
-    case (versacomAddressUsage):
+    case Cti::AddressUsage_Versacom:
         {
             if(!(str.find("u")==string::npos)) nRet |= 0x08;  // Utility
             if(!(str.find("s")==string::npos)) nRet |= 0x04;  // Section
@@ -1419,7 +1344,7 @@ INT resolveAddressUsage(const string& _str, int type)
 
             break;
         }
-    case (expresscomAddressUsage):
+    case Cti::AddressUsage_Expresscom:
         {
             if(!(str.find("s")==string::npos)) nRet |= 0x80;  // Service Provider Id
             if(!(str.find("g")==string::npos)) nRet |= 0x40;  // Geo

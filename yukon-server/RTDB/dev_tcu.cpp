@@ -450,7 +450,7 @@ INT CtiDeviceTCU::TCUControl(OUTMESS* OutMessage, VSTRUCT *VSt)
 
    OutMessage->Buffer.VSt = *VSt;
 
-   return(CtiInvalidRequest);
+   return(ErrorInvalidRequest);
 }
 
 /* Routine to execute a loop message */
