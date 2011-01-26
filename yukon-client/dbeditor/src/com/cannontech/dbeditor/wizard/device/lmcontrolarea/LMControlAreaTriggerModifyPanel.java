@@ -4,22 +4,29 @@ package com.cannontech.dbeditor.wizard.device.lmcontrolarea;
  */
 
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.event.CaretListener;
 
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
+import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 import com.cannontech.yukon.IDatabaseCache;
 
-public class LMControlAreaTriggerModifyPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.beans.PropertyChangeListener, javax.swing.event.CaretListener {
+public class LMControlAreaTriggerModifyPanel extends DataInputPanel implements ActionListener, PropertyChangeListener, CaretListener {
 	private javax.swing.JComboBox ivjJComboBoxNormalState = null;
 	private javax.swing.JComboBox ivjJComboBoxType = null;
 	private javax.swing.JLabel ivjJLabelNormalStateAndThreshold = null;
 	private javax.swing.JLabel ivjJLabelType = null;
 	private javax.swing.JTextField ivjJTextFieldThreshold = null;
+	private com.cannontech.common.gui.util.JPanelDevicePoint ivjJPanelThresholdID = null;
 	private javax.swing.JLabel ivjJLabelMinRestOffset = null;
 	private javax.swing.JTextField ivjJTextFieldMinRestOffset = null;
 	//a mutable lite point used for comparisons
@@ -357,6 +364,7 @@ private void connEtoC7(javax.swing.event.CaretEvent arg1) {
 			ivjJComboBoxType.setName("JComboBoxType");
 			// user code begin {1}
 	
+				ivjJComboBoxType.addItem( IlmDefines.TYPE_THRESHOLD_POINT );
 				ivjJComboBoxType.addItem( IlmDefines.TYPE_THRESHOLD );
 				ivjJComboBoxType.addItem( IlmDefines.TYPE_STATUS );
 				
@@ -773,8 +781,18 @@ private javax.swing.JTextField getJTextFieldATKU() {
 		else
 		{
 			trigger.setNormalState( new Integer(IlmDefines.INVALID_INT_VALUE) );
-			trigger.setThreshold( getSelectedThreshold() );
-	
+			if( trigger.getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_THRESHOLD_POINT) ) 
+			{
+				trigger.setThreshold( getSelectedThreshold() );	
+				trigger.setThresholdPointID( 
+						new Integer(getJPanelThresholdID().getSelectedPoint().getPointID()) );
+			}
+			else
+			{
+				trigger.setThreshold( getSelectedThreshold() );	
+			}
+				
+					
 			try
 			{
 				trigger.setMinRestoreOffset( 
@@ -836,6 +854,7 @@ private javax.swing.JTextField getJTextFieldATKU() {
 	
 		getJPanelTriggerID().addComboBoxPropertyChangeListener( this );
 		getJPanelDevicePointPeak().addComboBoxPropertyChangeListener( this );
+		getJPanelThresholdID().addComboBoxPropertyChangeListener(this);
 				
 	// user code end
 	getJComboBoxType().addActionListener(this);
@@ -857,9 +876,9 @@ private javax.swing.JTextField getJTextFieldATKU() {
 		// user code end
 		setName("LMControlAreaTriggerModifyPanel");
 		setToolTipText("");
-		setPreferredSize(new java.awt.Dimension(303, 194));
+		setPreferredSize(new java.awt.Dimension(390, 404));
 		setLayout(new java.awt.GridBagLayout());
-		setSize(347, 292);
+		setSize(390, 550);
 		setMinimumSize(new java.awt.Dimension(10, 10));
 
 		java.awt.GridBagConstraints constraintsJLabelType = new java.awt.GridBagConstraints();
@@ -948,6 +967,17 @@ private javax.swing.JTextField getJTextFieldATKU() {
 		constraintsJPanelTriggerID.ipadx = 90;
 		constraintsJPanelTriggerID.insets = new java.awt.Insets(5, 8, 1, 8);
 		add(getJPanelTriggerID(), constraintsJPanelTriggerID);
+		
+		java.awt.GridBagConstraints constraintsJPanelThresholdID = new java.awt.GridBagConstraints();
+		constraintsJPanelThresholdID.gridx = 1; constraintsJPanelThresholdID.gridy = 6;
+		constraintsJPanelThresholdID.gridwidth = 6;
+		constraintsJPanelThresholdID.fill = java.awt.GridBagConstraints.BOTH;
+		constraintsJPanelThresholdID.anchor = java.awt.GridBagConstraints.WEST;
+		constraintsJPanelThresholdID.weightx = 1.0;
+		constraintsJPanelThresholdID.weighty = 1.0;
+		constraintsJPanelThresholdID.ipadx = 90;
+		constraintsJPanelThresholdID.insets = new java.awt.Insets(2, 8, 6, 8);
+		add(getJPanelThresholdID(), constraintsJPanelThresholdID);
 
 		java.awt.GridBagConstraints constraintsJButtonProjection = new java.awt.GridBagConstraints();
 		constraintsJButtonProjection.gridx = 5; constraintsJButtonProjection.gridy = 1;
@@ -1066,17 +1096,23 @@ private javax.swing.JTextField getJTextFieldATKU() {
 	public void jComboBoxType_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 	{
 		boolean isThresh = IlmDefines.TYPE_THRESHOLD.equalsIgnoreCase(getJComboBoxType().getSelectedItem().toString());
-
-		getJComboBoxNormalState().setVisible(!isThresh);
-		getJTextFieldThreshold().setVisible(isThresh);
-		getJLabelMinRestOffset().setEnabled(isThresh);
-		getJTextFieldMinRestOffset().setEnabled(isThresh);
+		boolean isThreshPoint = IlmDefines.TYPE_THRESHOLD_POINT.equalsIgnoreCase(getJComboBoxType().getSelectedItem().toString());
+		
+		getJComboBoxNormalState().setVisible(!(isThresh || isThreshPoint));
+		getJTextFieldThreshold().setVisible(isThresh || isThreshPoint);
+		getJTextFieldThreshold().setEnabled(isThresh);
+		getJLabelMinRestOffset().setEnabled( isThresh || isThreshPoint );
+		getJTextFieldMinRestOffset().setEnabled(isThresh || isThreshPoint );
 		getJTextFieldATKU().setEnabled(isThresh);
 		getJLabelATKU().setEnabled(isThresh);
-		getJCheckBoxPeakTracking().setEnabled(isThresh);
+		getJCheckBoxPeakTracking().setEnabled( isThresh || isThreshPoint );
+		getJPanelThresholdID().setEnabled( isThreshPoint );
+		getJButtonProjection().setEnabled( isThresh );
+		setThresholdPointSettingsEnabled(isThreshPoint);
+		getJLabelNormalStateAndThreshold().setEnabled(isThresh);
 		
-		if( isThresh )
-		{	
+		if( isThresh || isThreshPoint )
+		{	 
 			getJLabelNormalStateAndThreshold().setText( IlmDefines.TYPE_THRESHOLD + ":");
 	
 			//initDeviceComboBox( LMControlAreaTrigger.TYPE_THRESHOLD );
@@ -1089,8 +1125,10 @@ private javax.swing.JTextField getJTextFieldATKU() {
 			};
 	
 			
-			getJButtonProjection().setEnabled( true );
 			getJPanelTriggerID().setPointTypeFilter( ptType );
+			if (isThreshPoint)	{
+				getJPanelThresholdID().setPointTypeFilter( ptType );
+			}
 		}
 		else
 		{
@@ -1156,12 +1194,17 @@ private javax.swing.JTextField getJTextFieldATKU() {
 			if( evt.getSource() == getJPanelTriggerID() )
 			{		
 				updateStates();
+				fireInputUpdate();
 			}
 	
 			if( evt.getSource() == getJPanelDevicePointPeak() )
 			{
 				fireInputUpdate();
 			}
+		}
+		
+		if( evt.getSource() == getJPanelThresholdID() ) {		
+			fireInputUpdate();
 		}
 	
 	}
@@ -1179,6 +1222,12 @@ private javax.swing.JTextField getJTextFieldATKU() {
 	
 	}
 
+	private void setThresholdPointSettingsEnabled(boolean value) 
+	{
+		for( int i = 0; i < getJPanelThresholdID().getComponentCount(); i++ )
+			getJPanelThresholdID().getComponent(i).setEnabled( value );
+	
+	}
 
 	/**
 	 * setValue method comment.
@@ -1222,13 +1271,20 @@ private javax.swing.JTextField getJTextFieldATKU() {
 			getJComboBoxNormalState().setSelectedItem( liteState );
 	
 			getJCheckBoxPeakTracking().setEnabled(false);
-		}
-		else
-		{
+		} else {
 			getJComboBoxType().setSelectedItem( trigger.getTriggerType() );
+			if( trigger.getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_THRESHOLD_POINT) ) {
+				
+				LitePoint lp =
+					DaoFactory.getPointDao().getLitePoint( trigger.getThresholdPointID().intValue() );
+				getJPanelThresholdID().setSelectedLitePAO( lp.getPaobjectID() );
+				getJPanelThresholdID().setSelectedLitePoint( lp.getPointID() );
+			}
+			else {
+				getJTextFieldThreshold().setText( trigger.getThreshold().toString() );
+			}
 			getJPanelTriggerID().setSelectedLitePAO( litePAO.getYukonID() );
 			getJPanelTriggerID().setSelectedLitePoint( litePoint.getPointID() );
-			getJTextFieldThreshold().setText( trigger.getThreshold().toString() );
 	
 			getJCheckBoxPeakTracking().setEnabled(true);
 		}
@@ -1293,5 +1349,40 @@ private javax.swing.JTextField getJTextFieldATKU() {
 		}
 	
 		return;
+	}
+
+
+	private com.cannontech.common.gui.util.JPanelDevicePoint getJPanelThresholdID() {
+		if (ivjJPanelThresholdID == null) {
+			try {
+				com.cannontech.common.gui.util.TitleBorder ivjLocalBorder1;
+				ivjLocalBorder1 = new com.cannontech.common.gui.util.TitleBorder();
+				ivjLocalBorder1.setTitleFont(new java.awt.Font("Arial", 1, 14));
+				ivjLocalBorder1.setTitle("Threshold Point Settings");
+				ivjJPanelThresholdID = new com.cannontech.common.gui.util.JPanelDevicePoint();
+				ivjJPanelThresholdID.setName("JPanelThresholdID");
+				ivjJPanelThresholdID.setBorder(ivjLocalBorder1);
+				ivjJPanelThresholdID.setFont(new java.awt.Font("Arial", 1, 12));
+				
+/*				java.awt.GridBagConstraints constraintsJPanelThresholdPoint = new java.awt.GridBagConstraints();
+				constraintsJPanelThresholdPoint.gridx = 1; constraintsJPanelThresholdPoint.gridy = 2;
+				constraintsJPanelThresholdPoint.fill = java.awt.GridBagConstraints.BOTH;
+				constraintsJPanelThresholdPoint.anchor = java.awt.GridBagConstraints.WEST;
+				constraintsJPanelThresholdPoint.weightx = 1.0;
+				constraintsJPanelThresholdPoint.weighty = 1.0;
+				constraintsJPanelThresholdPoint.ipadx = 33;
+				constraintsJPanelThresholdPoint.ipady = 6;
+				constraintsJPanelThresholdPoint.insets = new java.awt.Insets(1, 8, 5, 5);
+				getJPanelThresholdID().add(getJPanelThresholdPoint(), constraintsJPanelThresholdPoint);
+*/				// user code begin {1}
+				// user code end
+			} catch (java.lang.Throwable ivjExc) {
+				// user code begin {2}
+				// user code end
+				handleException(ivjExc);
+			}
+		}
+		
+		return ivjJPanelThresholdID;
 	}
 }

@@ -24,6 +24,7 @@ public class LMControlAreaTrigger extends com.cannontech.database.db.NestedDBPer
 	private Double minRestoreOffset = new Double(0.0);
 	private Integer peakPointID = new Integer(0);
 	private Integer triggerID = null;
+	private Integer thresholdPointID = new Integer(0);
 
 	
 	public static final String SETTER_COLUMNS[] = 
@@ -31,7 +32,7 @@ public class LMControlAreaTrigger extends com.cannontech.database.db.NestedDBPer
 		"TriggerNumber", "TriggerType", "PointID", "NormalState",
 		"Threshold", "ProjectionType", "ProjectionPoints",
 		"ProjectAheadDuration", "ThresholdKickPercent", "MinRestoreOffset",
-		"PeakPointID", "DeviceID"
+		"PeakPointID", "DeviceID", "ThresholdPointID"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "TriggerID" };
@@ -59,7 +60,7 @@ public void add() throws java.sql.SQLException
 	Object addValues[] = { getDeviceID(), getTriggerNumber(), getTriggerType(),
 				getPointID(), getNormalState(), getThreshold(), getProjectionType(),
 				getProjectionPoints(), getProjectAheadDuration(),
-				getThresholdKickPercent(), getMinRestoreOffset(), getPeakPointID(), getTriggerID() };
+				getThresholdKickPercent(), getMinRestoreOffset(), getPeakPointID(), getTriggerID(), getThresholdPointID() };
 
 	add( TABLE_NAME, addValues );
 }
@@ -136,7 +137,7 @@ public static final LMControlAreaTrigger[] getAllControlAreaTriggers(Integer ctr
 
 	String sql = "SELECT MinRestoreOffset,NormalState,PeakPointID,PointID,ProjectAheadDuration, " +
 		"ProjectionPoints,ProjectionType,Threshold,ThresholdKickPercent, "+
-		"TriggerNumber,TriggerType,DeviceID,TriggerID " + 
+		"TriggerNumber,TriggerType,DeviceID,TriggerID,ThresholdPointID " + 
 		"FROM " + TABLE_NAME + " WHERE DEVICEID= ?";
 
 	try
@@ -172,6 +173,7 @@ public static final LMControlAreaTrigger[] getAllControlAreaTriggers(Integer ctr
 				item.setTriggerType( rset.getString("TriggerType") );
 				item.setDeviceID( new Integer(rset.getInt("DeviceID")) );
 				item.setTriggerID( new Integer(rset.getInt("TriggerID")) );
+				item.setThresholdPointID(new Integer(rset.getInt("ThresholdPointID")));
 
 				tmpList.add( item );
 			}
@@ -202,7 +204,7 @@ public static final java.util.Vector getAllTriggersForAnArea( Integer ctrlAreaDe
 
 	String sql = "SELECT MinRestoreOffset,NormalState,PeakPointID,PointID,ProjectAheadDuration, " +
 		"ProjectionPoints,ProjectionType,Threshold,ThresholdKickPercent, "+
-		"TriggerNumber,TriggerType,DeviceID,TriggerID " + 
+		"TriggerNumber,TriggerType,DeviceID,TriggerID,ThresholdPointID " + 
 		"FROM " + TABLE_NAME + " WHERE DEVICEID= ?";
 
 	try
@@ -235,6 +237,7 @@ public static final java.util.Vector getAllTriggersForAnArea( Integer ctrlAreaDe
 				item.setTriggerType( rset.getString("TriggerType") );
 				item.setDeviceID( new Integer(rset.getInt("DeviceID")) );
 				item.setTriggerID( new Integer(rset.getInt("TriggerID")) );
+				item.setThresholdPointID( new Integer(rset.getInt("ThresholdPointID")));
 
 				tmpList.add( item );
 			}
@@ -418,6 +421,7 @@ public void retrieve() throws java.sql.SQLException
 		setMinRestoreOffset( (Double) results[9] );
 		setPeakPointID( (Integer) results[10] );
 		setDeviceID( (Integer) results[11] );
+		setThresholdPointID( (Integer) results[12] );
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -576,10 +580,16 @@ public void update() throws java.sql.SQLException
 	Object setValues[] = { getTriggerNumber(), getTriggerType(),
 				getPointID(), getNormalState(), getThreshold(), getProjectionType(),
 				getProjectionPoints(), getProjectAheadDuration(),
-				getThresholdKickPercent(), getMinRestoreOffset(), getPeakPointID(), getDeviceID() };
+				getThresholdKickPercent(), getMinRestoreOffset(), getPeakPointID(), getDeviceID(), getThresholdPointID() };
 
 	Object constraintValues[] = { getTriggerID() };
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+}
+public void setThresholdPointID(Integer thresholdPointID) {
+	this.thresholdPointID = thresholdPointID;
+}
+public Integer getThresholdPointID() {
+	return thresholdPointID;
 }
 }

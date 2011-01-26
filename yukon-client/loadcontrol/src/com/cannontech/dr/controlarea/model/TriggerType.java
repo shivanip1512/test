@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public enum TriggerType {
+    THRESHOLD_POINT("Threshold Point"),
     THRESHOLD("Threshold"),
     STATUS("Status");
 

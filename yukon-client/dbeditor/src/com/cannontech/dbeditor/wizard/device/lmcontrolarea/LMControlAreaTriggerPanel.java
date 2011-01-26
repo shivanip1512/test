@@ -494,7 +494,8 @@ public void jButtonNewTrigger_ActionPerformed(java.awt.event.ActionEvent actionE
 	com.cannontech.common.gui.util.OkCancelDialog d = new com.cannontech.common.gui.util.OkCancelDialog(
 		com.cannontech.common.util.CtiUtilities.getParentFrame(this), "Trigger Creation", true, p );
 
-	d.setSize( 320, 365 );	
+	
+	d.setSize( (int)p.getSize().getWidth(), (int) p.getSize().getHeight() );	
 	//d.pack();
 	d.setLocationRelativeTo( this );
 	d.show();

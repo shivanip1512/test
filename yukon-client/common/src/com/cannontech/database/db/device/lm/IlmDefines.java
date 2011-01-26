@@ -84,6 +84,7 @@ public interface IlmDefines
 	//    Start LM Trigger Defines
 	// --------------------------------------------------------------- 
 	public static final String TYPE_THRESHOLD = "Threshold";
+	public static final String TYPE_THRESHOLD_POINT = "Threshold Point";
 
 	public static final String TYPE_STATUS = "Status";
 

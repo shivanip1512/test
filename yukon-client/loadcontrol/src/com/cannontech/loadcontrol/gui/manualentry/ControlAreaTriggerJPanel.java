@@ -817,17 +817,17 @@ private void setTrigger1Values(LMControlAreaTrigger trigger, com.cannontech.data
 	else
 */
 
-	if( trigger.getTriggerType() == TriggerType.THRESHOLD )
+	if( trigger.getTriggerType() == TriggerType.THRESHOLD || trigger.getTriggerType() == TriggerType.THRESHOLD_POINT )
 	{
 		getJLabelTrigger1NotPresent().setVisible(false);
 
-		getJComboBoxTrigger1NewThreshold().setEditable(true);
+		getJComboBoxTrigger1NewThreshold().setEditable(trigger.getTriggerType() == TriggerType.THRESHOLD);
+		getJComboBoxTrigger1NewThreshold().setEnabled(trigger.getTriggerType() == TriggerType.THRESHOLD );
 
 		getJTextFieldTrigger1RestoreOffset().setText( trigger.getMinRestoreOffset().toString() );
 		getJComboBoxTrigger1NewThreshold().addItem( trigger.getThreshold() );
 		getJComboBoxTrigger1NewThreshold().setSelectedItem( trigger.getThreshold() );
 	}
-	
 }
 /**
  * Insert the method's description here.
@@ -853,17 +853,17 @@ private void setTrigger2Values(LMControlAreaTrigger trigger, com.cannontech.data
 	}
 	else
 */
-	if( trigger.getTriggerType() == TriggerType.THRESHOLD )
+	if( trigger.getTriggerType() == TriggerType.THRESHOLD || trigger.getTriggerType() == TriggerType.THRESHOLD_POINT)
 	{
 		getJLabelTrigger2NotPresent().setVisible(false);
 
-		getJComboBoxTrigger2NewThreshold().setEditable(true);
+		getJComboBoxTrigger2NewThreshold().setEditable(trigger.getTriggerType() == TriggerType.THRESHOLD);
+		getJComboBoxTrigger2NewThreshold().setEnabled(trigger.getTriggerType() == TriggerType.THRESHOLD );
 
 		getJTextFieldTrigger2RestoreOffset().setText( trigger.getMinRestoreOffset().toString() );
 		getJComboBoxTrigger2NewThreshold().addItem( trigger.getThreshold() );
 		getJComboBoxTrigger2NewThreshold().setSelectedItem( trigger.getThreshold() );
 	}
-	
 }
 /**
  * Insert the method's description here.
