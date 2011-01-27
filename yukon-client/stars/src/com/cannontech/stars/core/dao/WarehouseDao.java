@@ -12,6 +12,13 @@ public interface WarehouseDao {
      * @return List<Warehouse>
      */
     public List<Warehouse> getAllWarehousesForEnergyCompanyId(int energyCompanyId);
+    
+    /**
+     * Retrieves a Warehouse for a given id.
+     * @param warehouseId
+     * @return
+     */
+    public Warehouse getWarehouse(int warehouseId);
 
     /**
      * Removes an inventory item from it's warehouse.
@@ -34,5 +41,25 @@ public interface WarehouseDao {
      * @return Warehouse
      */
     public Warehouse findWarehouseForInventoryId(int inventoryId);
+    
+    /**
+     * Create a new Warehouse Object
+     * @param   warehouse   Warehouse   Contains the new warehouse parameters
+     * @return              int         the ID of the new warehouse
+     */
+    public int create(Warehouse warehouse);
 
+    /**
+     * Update an existing Warehouse with the parameters supplied by warehouse
+     * @param   warehouse   Warehouse  Contains the updated warehouse parameters
+     */
+    public boolean update(Warehouse warehouse);
+    
+    /**
+     * 
+     * @param warehouse
+     */
+    public boolean delete(Warehouse warehouse);
+    
+    public boolean delete(int warehouseId);
 }

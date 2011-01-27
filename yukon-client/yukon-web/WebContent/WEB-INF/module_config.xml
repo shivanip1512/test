@@ -1365,6 +1365,32 @@
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
                             </page>
+                            <page name="warehouse.HOME" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompany|home</menu>
+                                <link>/spring/stars/operator/energyCompany/warehouse/home?ecId=${ecId}</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
+                                <pages>
+                                    <page name="warehouse.VIEW" type="DETAIL_WITH_INFO" contributeToMenu="false">
+                                        <menu>energyCompany|home</menu>
+                                        <link>/spring/stars/operator/energyCompany/warehouse/view?id=${id}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
+                                    </page>
+                                    <page name="warehouse.CREATE" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
+                                        <menu>energyCompany|home</menu>
+                                        <link>/spring/stars/operator/energyCompany/warehouse/create?id=${id}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
+                                    </page>
+                                    <page name="warehouse.EDIT" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
+                                        <menu>energyCompany|home</menu>
+                                        <link>/spring/stars/operator/energyCompany/warehouse/edit?warehouseId=${warehouseId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
+                                    </page>
+                                </pages>
+                            </page>
                             <page name="substations.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompany|home</menu>
                                 <link>/spring/stars/operator/energyCompany/substations</link>

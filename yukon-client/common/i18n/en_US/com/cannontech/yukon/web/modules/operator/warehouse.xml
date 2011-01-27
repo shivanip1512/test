@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    
+    <entry key="yukon.web.modules.operator.warehouse.create.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
+    <entry key="yukon.web.modules.operator.warehouse.create.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
+    <entry key="yukon.web.modules.operator.warehouse.create.label">Create</entry>
+    
+    <entry key="yukon.web.modules.operator.warehouse.name">Name</entry>
+    <entry key="yukon.web.modules.operator.warehouse.locationAddress1">Street Address</entry>
+    <entry key="yukon.web.modules.operator.warehouse.locationAddress2">Street Address 2</entry>
+    <entry key="yukon.web.modules.operator.warehouse.cityName">City</entry>
+    <entry key="yukon.web.modules.operator.warehouse.stateCode">State</entry>
+    <entry key="yukon.web.modules.operator.warehouse.zipCode">Zip</entry>
+    <entry key="yukon.web.modules.operator.warehouse.notes">Notes</entry>
+    <entry key="yukon.web.modules.operator.warehouse.save">Save</entry>
+    
+    <!--  Validation -->
+    <entry key="yukon.web.modules.operator.warehouse.warehouseDto.warehouse.nameRequired">The Warehouse name cannot be empty.</entry>
+    <entry key="yukon.web.modules.operator.warehouse.warehouseDto.warehouse.notes">Please limit the notes to 300 characters.</entry>
+    
+    <!--  Generic success/fail messages -->
+    <entry key="yukon.web.modules.operator.warehouse.warehouseCreated">Successfully created the Warehouse.</entry>
+    <entry key="yukon.web.modules.operator.warehouse.warehouseNotCreated">There was a problem creating the Warehouse.</entry>
+    <entry key="yukon.web.modules.operator.warehouse.warehouseUpdated">Successfully updated the Warehouse.</entry>
+    <entry key="yukon.web.modules.operator.warehouse.warehouseNotUpdated">There was a problem updating the Warehouse.</entry>
+    <entry key="yukon.web.modules.operator.warehouse.warehouseDeleted">Successfully deleted the Warehouse.</entry>
+    <entry key="yukon.web.modules.operator.warehouse.warehouseNotDeleted">There was a problem deleting the Warehouse.</entry>
+
+    <!-- home.jsp -->
+    <entry key="yukon.web.modules.operator.warehouse.HOME.pageName">Warehouses</entry>
+    <entry key="yukon.web.modules.operator.warehouse.CREATE.pageName">Create Warehouse</entry>
+    <entry key="yukon.web.modules.operator.warehouse.EDIT.pageName">{0}</entry>
+    <entry key="yukon.web.modules.operator.warehouse.EDIT.contextualPageName">Edit</entry>
+    <entry key="yukon.web.modules.operator.warehouse.EDIT.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.warehouse.VIEW.pageName">Warehouse {0}</entry>
+    <entry key="yukon.web.modules.operator.warehouse.VIEW.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.warehouse.delete.label">Delete</entry>
+    <entry key="yukon.web.modules.operator.warehouse.infoContainer.title">Warehouses</entry>
+    <entry key="yukon.web.modules.operator.warehouse.edit.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
+    <entry key="yukon.web.modules.operator.warehouse.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.gif</entry>
+    <entry key="yukon.web.modules.operator.warehouse.edit.label">Edit</entry>
+    <entry key="yukon.web.modules.operator.warehouse.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+    <entry key="yukon.web.modules.operator.warehouse.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
+    <entry key="yukon.web.modules.operator.warehouse.add.label">Add Warehouse</entry>
+
+</properties>

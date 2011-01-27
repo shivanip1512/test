@@ -1742,4 +1742,6 @@
     </bean>
 
     <bean class="com.cannontech.web.stars.dr.consumer.OptOutControllerHelper"/>    
+    
+    <bean id="warehouseService" class="com.cannontech.web.stars.dr.operator.warehouse.service.impl.WarehouseServiceImpl"/>
 </beans>
