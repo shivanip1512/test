@@ -422,8 +422,7 @@ enum CtiProtocol_t
     ProtocolSA205Type,
     ProtocolSA305Type,
     ProtocolEmetconType,
-    ProtocolExpresscomType,
-    ProtocolEnergyProType
+    ProtocolExpresscomType
 };
 
 
@@ -431,13 +430,12 @@ enum CtiOutMessageFlags_t
 {
     MessageFlag_ApplyExclusionLogic        = 0x00000001 << 0,
     MessageFlag_RequeueCommandOnceOnFail   = 0x00000001 << 1,
-    MessageFlag_RouteToPorterGatewayThread = 0x00000001 << 2,
-    MessageFlag_ExpectMore                 = 0x00000001 << 3,
-    MessageFlag_QueuedToDevice             = 0x00000001 << 4,
-    MessageFlag_BroadcastOnMacroSubroutes  = 0x00000001 << 5,
-    MessageFlag_PortSharing                = 0x00000001 << 6,
-    MessageFlag_AddMctDisconnectSilence    = 0x00000001 << 7,
-    MessageFlag_AddCcu711CooldownSilence   = 0x00000001 << 8,
-    MessageFlag_StatisticsRequested        = 0x00000001 << 9,
+    MessageFlag_ExpectMore                 = 0x00000001 << 2,
+    MessageFlag_QueuedToDevice             = 0x00000001 << 3,
+    MessageFlag_BroadcastOnMacroSubroutes  = 0x00000001 << 4,
+    MessageFlag_PortSharing                = 0x00000001 << 5,
+    MessageFlag_AddMctDisconnectSilence    = 0x00000001 << 6,
+    MessageFlag_AddCcu711CooldownSilence   = 0x00000001 << 7,
+    MessageFlag_StatisticsRequested        = 0x00000001 << 8,
 };
 

@@ -121,8 +121,8 @@ test_calc.obj:	yukon.h precompiled.h types.h ctidbgmem.h calc.h \
 		cticalls.h os2_2w32.h numstr.h sorted_vector.h \
 		CtiPCPtrQueue.h pointstore.h hashkey.h hash_functions.h \
 		rtdb.h dllbase.h dsm2.h cticonnect.h netports.h dsm2err.h \
-		words.h pointdefs.h regression.h tbl_pt_limit.h dbmemobject.h \
-		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h \
-		desolvers.h row_reader.h
+		words.h optional.h pointdefs.h regression.h tbl_pt_limit.h \
+		dbmemobject.h dbaccess.h sema.h resolvers.h pointtypes.h \
+		db_entry_defines.h desolvers.h row_reader.h
 #ENDUPDATE#
 

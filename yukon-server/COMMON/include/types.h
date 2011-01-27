@@ -1,4 +1,3 @@
-
 //should this be here?
 #define STANDNAMLEN 20
 #ifndef  NORMAL
@@ -6,38 +5,6 @@
 #endif
 #define VOID    void
 #define CONST   const
-
-#if 0
-typedef int INT;
-typedef unsigned int UINT;
-typedef float FLOAT;
-typedef char CHAR;
-typedef short SHORT;
-typedef long LONG;
-typedef INT BOOL;
-
-
-typedef double DOUBLE;
-
-typedef unsigned char BYTE;
-typedef unsigned short WORD;
-typedef unsigned long DWORD;
-
-typedef unsigned char UCHAR;
-typedef unsigned short USHORT;
-typedef unsigned long ULONG;
-
-typedef char * PCHAR;
-typedef unsigned char * PUCHAR;
-typedef unsigned char * PBYTE;
-typedef short * PSHORT;
-typedef unsigned short * PUSHORT;
-typedef long * PLONG;
-typedef unsigned long * PULONG;
-typedef int * PINT;
-typedef unsigned int * PUINT;
-typedef void * PVOID;
-#endif
 
 /****************************************************************************
  * OS2 - Win32 type translations

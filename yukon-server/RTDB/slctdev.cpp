@@ -46,7 +46,6 @@
 #include "dev_wctp.h"
 #include "dev_grp_emetcon.h"
 #include "dev_grp_expresscom.h"
-#include "dev_grp_energypro.h"
 #include "dev_grp_golay.h"
 #include "dev_grp_mct.h"
 #include "dev_grp_point.h"
@@ -265,8 +264,6 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
         case TYPE_LMGROUP_XML:          NewDevice = CTIDBG_new XmlGroupDevice;     break;
 
-        case TYPE_LMGROUP_ENERGYPRO:    NewDevice = CTIDBG_new CtiDeviceGroupEnergyPro;     break;
-
         case TYPE_LMGROUP_MCT:          NewDevice = CTIDBG_new CtiDeviceGroupMCT;           break;
 
         case TYPE_LMGROUP_GOLAY:        NewDevice = CTIDBG_new CtiDeviceGroupGolay;         break;
@@ -310,7 +307,6 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPE_NEUTRAL_MONITOR:      NewDevice = CTIDBG_new CtiDeviceGridAdvisor;    break;
 
         case TYPE_VIRTUAL_SYSTEM:
-        case TYPE_ENERGYPRO:
         {
             //  Nothing in here!  These are created by the porter thread which manages them!
             break;

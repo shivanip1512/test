@@ -2010,26 +2010,6 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
                 doParsePutConfigVersacom(CmdStr);
                 break;
             }
-        case ProtocolEnergyProType:
-            {
-                // This will change over time
-                doParsePutConfigExpresscom(CmdStr);
-
-                if(CmdStr.contains(" reset"))
-                {
-                    if(CmdStr.contains(" filter"))
-                    {
-                        _cmd["epresetfilter"] = CtiParseValue(TRUE);
-                    }
-
-                    if(CmdStr.contains(" runtime"))
-                    {
-                        _cmd["epresetruntimes"] = CtiParseValue(TRUE);
-                    }
-                }
-
-                break;
-            }
         case ProtocolExpresscomType:
             {
                 doParsePutConfigExpresscom(CmdStr);
@@ -4029,14 +4009,6 @@ void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
             {
                 _cmd["type"] = CtiParseValue( "sa305", ProtocolSA305Type );
             }
-            else if(CmdStr.contains("epro"))
-            {
-                if(CmdStr.contains(" nooverride"))
-                {
-                    _cmd["overridedisable"] = CtiParseValue( TRUE );
-                }
-                _cmd["type"] = CtiParseValue( "energypro", ProtocolEnergyProType );
-            }
             else if(CmdStr.contains("xcom") || CmdStr.contains("expresscom"))
             {
                 _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
@@ -4974,7 +4946,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 }
             }
 
-            if(!(temp = CmdStr.match(" system (auto|off|heat|cool|emheat)")).empty())
+            if(!(temp = CmdStr.match(" system (off|heat|cool|emheat)")).empty())
             {
                 if(temp.contains(" off"))
                 {
@@ -4991,10 +4963,6 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 else if(temp.contains(" emheat"))
                 {
                     _cmd["xcsysstate"] = CtiParseValue( 0x10 );
-                }
-                else if(temp.contains(" auto"))
-                {
-                    _cmd["xcsysstate"] = CtiParseValue( 0x80 );     // Only valid for EPRO stats!
                 }
             }
 

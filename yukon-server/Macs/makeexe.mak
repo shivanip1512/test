@@ -141,7 +141,7 @@ clientconn.obj:	yukon.h precompiled.h types.h ctidbgmem.h clientconn.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		sorted_vector.h CtiPCPtrQueue.h observe.h ctibase.h \
 		ctinexus.h netports.h cticonnect.h dllbase.h dsm2.h dsm2err.h \
-		words.h
+		words.h optional.h
 clistener.obj:	yukon.h precompiled.h types.h ctidbgmem.h clistener.h \
 		mc.h logger.h dlldefs.h thread.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -149,26 +149,28 @@ clistener.obj:	yukon.h precompiled.h types.h ctidbgmem.h clistener.h \
 		msg_multi.h collectable.h msg_pdata.h pointdefs.h \
 		pointtypes.h message.h rwutil.h database_connection.h \
 		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h dsm2err.h \
-		words.h sema.h database_reader.h row_reader.h boost_time.h \
-		boostutil.h queue.h cparms.h configkey.h configval.h
+		words.h optional.h sema.h database_reader.h row_reader.h \
+		boost_time.h boostutil.h queue.h cparms.h configkey.h \
+		configval.h
 mc_dbthr.obj:	yukon.h precompiled.h types.h ctidbgmem.h mc_dbthr.h \
 		mc.h logger.h dlldefs.h thread.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		sorted_vector.h CtiPCPtrQueue.h mgr_mcsched.h rtdb.h \
 		hashkey.h hash_functions.h dllbase.h dsm2.h cticonnect.h \
-		netports.h dsm2err.h words.h mc_sched.h row_reader.h \
-		dbmemobject.h tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h \
-		message.h collectable.h rwutil.h database_connection.h \
-		dbaccess.h sema.h database_reader.h boost_time.h boostutil.h
+		netports.h dsm2err.h words.h optional.h mc_sched.h \
+		row_reader.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
+		tbl_mcsimpsched.h message.h collectable.h rwutil.h \
+		database_connection.h dbaccess.h sema.h database_reader.h \
+		boost_time.h boostutil.h
 mc_fileint.obj:	yukon.h precompiled.h types.h ctidbgmem.h mc_fileint.h \
 		fileint.h dlldefs.h queue.h cparms.h rwutil.h \
 		database_connection.h dbaccess.h dllbase.h os2_2w32.h \
 		cticalls.h dsm2.h mutex.h guard.h utility.h ctitime.h \
 		queues.h numstr.h sorted_vector.h cticonnect.h netports.h \
-		dsm2err.h words.h sema.h database_reader.h row_reader.h \
-		boost_time.h boostutil.h configkey.h configval.h logger.h \
-		thread.h CtiPCPtrQueue.h mgr_mcsched.h mc.h rtdb.h hashkey.h \
-		hash_functions.h mc_sched.h dbmemobject.h tbl_pao.h \
+		dsm2err.h words.h optional.h sema.h database_reader.h \
+		row_reader.h boost_time.h boostutil.h configkey.h configval.h \
+		logger.h thread.h CtiPCPtrQueue.h mgr_mcsched.h mc.h rtdb.h \
+		hashkey.h hash_functions.h mc_sched.h dbmemobject.h tbl_pao.h \
 		tbl_mcsched.h tbl_mcsimpsched.h message.h collectable.h \
 		mc_msg.h ctibase.h ctinexus.h ctidate.h
 mc_main.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctitime.h \
@@ -177,22 +179,22 @@ mc_main.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctitime.h \
 		cservice.h mc_server.h mc.h logger.h thread.h mutex.h guard.h \
 		CtiPCPtrQueue.h CParms.h rwutil.h database_connection.h \
 		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h dsm2err.h \
-		words.h sema.h database_reader.h row_reader.h boost_time.h \
-		boostutil.h configkey.h configval.h message.h collectable.h \
-		queue.h mgr_mcsched.h rtdb.h hashkey.h hash_functions.h \
-		mc_sched.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
-		tbl_mcsimpsched.h mc_dbthr.h mccmd.h msg_pcrequest.h \
-		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
-		pointtypes.h ctdpcptrq.h tbl_meterreadlog.h clistener.h \
-		clientconn.h observe.h mc_msg.h mc_script.h mc_scheduler.h \
-		mgr_holiday.h ctidate.h mc_fileint.h fileint.h ctibase.h \
-		ctinexus.h
+		words.h optional.h sema.h database_reader.h row_reader.h \
+		boost_time.h boostutil.h configkey.h configval.h message.h \
+		collectable.h queue.h mgr_mcsched.h rtdb.h hashkey.h \
+		hash_functions.h mc_sched.h dbmemobject.h tbl_pao.h \
+		tbl_mcsched.h tbl_mcsimpsched.h mc_dbthr.h mccmd.h \
+		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
+		pointdefs.h pointtypes.h ctdpcptrq.h tbl_meterreadlog.h \
+		clistener.h clientconn.h observe.h mc_msg.h mc_script.h \
+		mc_scheduler.h mgr_holiday.h ctidate.h mc_fileint.h fileint.h \
+		ctibase.h ctinexus.h
 mc_msg.obj:	yukon.h precompiled.h types.h ctidbgmem.h mc_msg.h \
 		message.h ctitime.h dlldefs.h collectable.h rwutil.h \
 		database_connection.h dbaccess.h dllbase.h os2_2w32.h \
 		cticalls.h dsm2.h mutex.h guard.h utility.h queues.h numstr.h \
 		sorted_vector.h cticonnect.h netports.h dsm2err.h words.h \
-		sema.h database_reader.h row_reader.h boost_time.h \
+		optional.h sema.h database_reader.h row_reader.h boost_time.h \
 		boostutil.h mc_sched.h mc.h logger.h thread.h CtiPCPtrQueue.h \
 		dbmemobject.h tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h
 mc_sched.obj:	yukon.h precompiled.h types.h ctidbgmem.h mc_sched.h \
@@ -202,7 +204,8 @@ mc_sched.obj:	yukon.h precompiled.h types.h ctidbgmem.h mc_sched.h \
 		tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h message.h \
 		collectable.h rwutil.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h netports.h dsm2err.h words.h \
-		sema.h database_reader.h boost_time.h boostutil.h ctidate.h
+		optional.h sema.h database_reader.h boost_time.h boostutil.h \
+		ctidate.h
 mc_scheduler.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		mc_scheduler.h ctitime.h dlldefs.h mc.h logger.h thread.h \
 		mutex.h guard.h utility.h queues.h cticalls.h os2_2w32.h \
@@ -210,7 +213,7 @@ mc_scheduler.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		row_reader.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
 		tbl_mcsimpsched.h message.h collectable.h rwutil.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h netports.h dsm2err.h words.h sema.h \
+		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
 		database_reader.h boost_time.h boostutil.h mgr_mcsched.h \
 		rtdb.h hashkey.h hash_functions.h mgr_holiday.h ctidate.h
 mc_script.obj:	yukon.h precompiled.h types.h ctidbgmem.h mc_script.h \
@@ -218,14 +221,14 @@ mc_script.obj:	yukon.h precompiled.h types.h ctidbgmem.h mc_script.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		sorted_vector.h CtiPCPtrQueue.h message.h collectable.h \
 		rwutil.h database_connection.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h netports.h dsm2err.h words.h sema.h \
+		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h
 mc_server.obj:	yukon.h precompiled.h types.h ctidbgmem.h mc_server.h \
 		mc.h logger.h dlldefs.h thread.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		sorted_vector.h CtiPCPtrQueue.h CParms.h rwutil.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h netports.h dsm2err.h words.h sema.h \
+		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		configkey.h configval.h message.h collectable.h queue.h \
 		mgr_mcsched.h rtdb.h hashkey.h hash_functions.h mc_sched.h \
@@ -243,7 +246,7 @@ mc_svc.obj:	yukon.h precompiled.h types.h ctidbgmem.h mc_svc.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
 		os2_2w32.h numstr.h sorted_vector.h CtiPCPtrQueue.h CParms.h \
 		rwutil.h database_connection.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h netports.h dsm2err.h words.h sema.h \
+		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		configkey.h configval.h message.h collectable.h queue.h \
 		mgr_mcsched.h rtdb.h hashkey.h hash_functions.h mc_sched.h \
@@ -260,24 +263,25 @@ mgr_mcsched.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		numstr.h sorted_vector.h CtiPCPtrQueue.h rtdb.h hashkey.h \
 		hash_functions.h dllbase.h dsm2.h cticonnect.h netports.h \
-		dsm2err.h words.h mc_sched.h row_reader.h dbmemobject.h \
-		tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h message.h \
-		collectable.h rwutil.h database_connection.h dbaccess.h \
-		sema.h database_reader.h boost_time.h boostutil.h
+		dsm2err.h words.h optional.h mc_sched.h row_reader.h \
+		dbmemobject.h tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h \
+		message.h collectable.h rwutil.h database_connection.h \
+		dbaccess.h sema.h database_reader.h boost_time.h boostutil.h
 precompiled.obj:	yukon.h precompiled.h types.h ctidbgmem.h
 tbl_mcsched.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		tbl_mcsched.h mutex.h dlldefs.h guard.h utility.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h numstr.h sorted_vector.h \
 		logger.h thread.h CtiPCPtrQueue.h row_reader.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h netports.h dsm2err.h words.h \
-		sema.h database_connection.h database_writer.h row_writer.h
+		optional.h sema.h database_connection.h database_writer.h \
+		row_writer.h
 tbl_mcsimpsched.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		tbl_mcsimpsched.h mutex.h dlldefs.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		sorted_vector.h logger.h thread.h CtiPCPtrQueue.h \
 		row_reader.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
-		netports.h dsm2err.h words.h sema.h database_connection.h \
-		database_writer.h row_writer.h
+		netports.h dsm2err.h words.h optional.h sema.h \
+		database_connection.h database_writer.h row_writer.h
 test_scheduletime.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		ctitime.h dlldefs.h mc_scheduler.h mc.h logger.h thread.h \
 		mutex.h guard.h utility.h queues.h cticalls.h os2_2w32.h \
@@ -285,7 +289,7 @@ test_scheduletime.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		row_reader.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
 		tbl_mcsimpsched.h message.h collectable.h rwutil.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h netports.h dsm2err.h words.h sema.h \
+		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
 		database_reader.h boost_time.h boostutil.h mgr_mcsched.h \
 		rtdb.h hashkey.h hash_functions.h mgr_holiday.h ctidate.h
 #ENDUPDATE#

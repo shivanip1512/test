@@ -21,7 +21,6 @@
 using namespace std;
 
 extern HCTIQUEUE*   QueueHandle(LONG pid);
-extern CtiQueue< CtiOutMessage, std::greater<CtiOutMessage> > GatewayOutMessageQueue;
 extern CtiLocalConnect<INMESS, OUTMESS> PorterToPil;
 
 INT PorterEntryPoint(OUTMESS *&OutMessage);
@@ -233,7 +232,7 @@ VOID ConnectionThread (VOID *Arg)
             }
         }
 
-        if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD && !(OutMessage->MessageFlags & MessageFlag_RouteToPorterGatewayThread))
+        if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD)
         {
             CtiDeviceSPtr tempDev = DeviceManager.getDeviceByID(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
 
@@ -250,28 +249,6 @@ VOID ConnectionThread (VOID *Arg)
          * Set the handle for the return message.
          */
         OutMessage->ReturnNexus = MyNexus;             /* This had better copy the entire structure CP */
-
-        /*
-         *  A bit of a wiggle here. 061903 CGP.  Capture and re-route this OM type to PorterGWThread.
-         */
-        if( OutMessage->MessageFlags & MessageFlag_RouteToPorterGatewayThread )
-        {
-            if(!stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_GATEWAY_SUPPORT"),"true"))
-            {
-                GatewayOutMessageQueue.putQueue( OutMessage );
-            }
-            else
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " ***** Gateway message request, but the gateway code was not configured to operate." << endl;
-                }
-
-                SendError(OutMessage, BADPARAM);
-            }
-
-            continue;
-        }
 
         if(OutMessage->Request.BuildIt == TRUE)
         {

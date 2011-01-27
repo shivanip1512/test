@@ -132,7 +132,7 @@ applist.obj:	yukon.h precompiled.h types.h ctidbgmem.h applist.h \
 		con_mgr.h connection.h dlldefs.h exchange.h dllbase.h \
 		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
 		ctitime.h queues.h numstr.h sorted_vector.h cticonnect.h \
-		netports.h dsm2err.h words.h logger.h thread.h \
+		netports.h dsm2err.h words.h optional.h logger.h thread.h \
 		CtiPCPtrQueue.h message.h collectable.h rwutil.h \
 		database_connection.h dbaccess.h sema.h database_reader.h \
 		row_reader.h boost_time.h boostutil.h msg_multi.h msg_pdata.h \
@@ -143,7 +143,7 @@ exe_pcreq.obj:	yukon.h precompiled.h types.h ctidbgmem.h message.h \
 		database_connection.h dbaccess.h dllbase.h os2_2w32.h \
 		cticalls.h dsm2.h mutex.h guard.h utility.h queues.h numstr.h \
 		sorted_vector.h cticonnect.h netports.h dsm2err.h words.h \
-		sema.h database_reader.h row_reader.h boost_time.h \
+		optional.h sema.h database_reader.h row_reader.h boost_time.h \
 		boostutil.h pil_conmgr.h exchange.h logger.h thread.h \
 		CtiPCPtrQueue.h con_mgr.h connection.h msg_multi.h \
 		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
@@ -164,7 +164,7 @@ parsetest.obj:	yukon.h precompiled.h types.h ctidbgmem.h queue.h \
 		cparms.h dlldefs.h rwutil.h database_connection.h dbaccess.h \
 		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \
 		utility.h ctitime.h queues.h numstr.h sorted_vector.h \
-		cticonnect.h netports.h dsm2err.h words.h sema.h \
+		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		configkey.h configval.h logger.h thread.h CtiPCPtrQueue.h \
 		cmdparse.h ctitokenizer.h parsevalue.h
@@ -174,9 +174,9 @@ pilserver.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		dlldefs.h cticalls.h dev_grp_versacom.h dev_base.h dsm2.h \
 		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
 		sorted_vector.h cticonnect.h netports.h dsm2err.h words.h \
-		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
-		boostutil.h tbl_paoexclusion.h row_reader.h rwutil.h \
-		database_connection.h dbaccess.h dllbase.h sema.h \
+		optional.h cmdparse.h ctitokenizer.h parsevalue.h \
+		dev_exclusion.h boostutil.h tbl_paoexclusion.h row_reader.h \
+		rwutil.h database_connection.h dbaccess.h dllbase.h sema.h \
 		database_reader.h boost_time.h config_device.h logger.h \
 		thread.h CtiPCPtrQueue.h hashkey.h hash_functions.h \
 		rte_base.h dbmemobject.h ctibase.h ctinexus.h message.h \
@@ -207,7 +207,7 @@ piltest.obj:	yukon.h precompiled.h types.h ctidbgmem.h queue.h \
 		cparms.h dlldefs.h rwutil.h database_connection.h dbaccess.h \
 		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \
 		utility.h ctitime.h queues.h numstr.h sorted_vector.h \
-		cticonnect.h netports.h dsm2err.h words.h sema.h \
+		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		configkey.h configval.h logger.h thread.h CtiPCPtrQueue.h \
 		exchange.h message.h collectable.h msg_cmd.h msg_reg.h \
@@ -218,7 +218,7 @@ pil_conmgr.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		collectable.h pil_conmgr.h exchange.h dlldefs.h dllbase.h \
 		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
 		ctitime.h queues.h numstr.h sorted_vector.h cticonnect.h \
-		netports.h dsm2err.h words.h logger.h thread.h \
+		netports.h dsm2err.h words.h optional.h logger.h thread.h \
 		CtiPCPtrQueue.h message.h rwutil.h database_connection.h \
 		dbaccess.h sema.h database_reader.h row_reader.h boost_time.h \
 		boostutil.h con_mgr.h connection.h msg_multi.h msg_pdata.h \
@@ -231,8 +231,8 @@ pil_exefct.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		rwutil.h database_connection.h dbaccess.h dllbase.h \
 		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
 		queues.h numstr.h sorted_vector.h cticonnect.h netports.h \
-		dsm2err.h words.h sema.h database_reader.h row_reader.h \
-		boost_time.h boostutil.h executor.h exe_cmd.h exe_reg.h \
-		pil_exefct.h exe_pcreq.h
+		dsm2err.h words.h optional.h sema.h database_reader.h \
+		row_reader.h boost_time.h boostutil.h executor.h exe_cmd.h \
+		exe_reg.h pil_exefct.h exe_pcreq.h
 precompiled.obj:	yukon.h precompiled.h types.h ctidbgmem.h
 #ENDUPDATE#

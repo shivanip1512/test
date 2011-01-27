@@ -100,6 +100,6 @@ test_decodetextcmdfile.obj:	decodetextcmdfile.h logger.h dlldefs.h \
 		cticalls.h os2_2w32.h types.h numstr.h sorted_vector.h \
 		CtiPCPtrQueue.h rwutil.h yukon.h precompiled.h ctidbgmem.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h netports.h dsm2err.h words.h sema.h \
+		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h
 #ENDUPDATE#

@@ -297,24 +297,6 @@ struct PIL_ECHO               // Data echo'ed through porter fro the PIL.
    } ProtocolInfo;
 };
 
-// 061903 Added to support the gateway product.
-struct GWSTRUCT
-{
-    INT Type;
-    INT Length;
-    BYTE MsgData[256];
-
-};
-
-struct GWRESPONSESTRUCT
-{
-    INT Type;               // Type of response
-    INT Data[10];
-    DOUBLE FPData[10];
-    BYTE MsgData[2048];
-
-};
-
 #define MAX_SA_MSG_SIZE 256
 
 struct CtiSAData
@@ -399,7 +381,6 @@ public:
       REMSSTRUCT      RemsSt;
       TAPSTRUCT       TAPSt;
       DIALUPREQUEST   DUPReq;
-      GWSTRUCT        GWSt;
       CtiSAData       SASt;
    } Buffer;
    BYTE               TailFrame[2];               // 082702 CGP    // Hey, it should have been in there for a long time!
@@ -552,7 +533,6 @@ public:
          DSTRUCT      DSt;              // This looks odd, but it lies on top of the one above.. Don't pull it out!
          DIALUPREPLY  DUPRep;
       } DUPSt;
-      GWRESPONSESTRUCT GWRSt;
    } Buffer;
 
 public:

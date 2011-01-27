@@ -167,8 +167,6 @@ IM_EX_CTIBASE unsigned char addOctalCharToSA305CRC(unsigned char crc, unsigned c
 
 IM_EX_CTIBASE void testSA305CRC(char* testData);
 
-IM_EX_CTIBASE LONG GetPAOIdOfEnergyPro(long devicesn);
-
 IM_EX_CTIBASE std::vector<int> getPointIdsOnPao(long paoid);
 IM_EX_CTIBASE std::vector< std::vector<string> > getLmXmlParametersByGroupId(long groupId);
 IM_EX_CTIBASE string getEncodingTypeForPort(long portId);

@@ -116,7 +116,7 @@ test_mgr_ptclients.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		mgr_ptclients.h dlldefs.h mgr_point.h smartmap.h boostutil.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		sorted_vector.h dllbase.h dsm2.h mutex.h guard.h cticonnect.h \
-		netports.h dsm2err.h words.h readers_writer_lock.h \
+		netports.h dsm2err.h words.h optional.h readers_writer_lock.h \
 		critical_section.h fifo_multiset.h pt_base.h row_reader.h \
 		dbmemobject.h resolvers.h pointtypes.h db_entry_defines.h \
 		pointdefs.h pt_dyn_base.h tbl_pt_base.h dbaccess.h sema.h \
@@ -134,9 +134,9 @@ test_signalmanager.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		tbl_pt_alarm.h dlldefs.h dllbase.h os2_2w32.h cticalls.h \
 		dsm2.h mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
 		sorted_vector.h cticonnect.h netports.h dsm2err.h words.h \
-		dbmemobject.h dbaccess.h sema.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h row_reader.h signalmanager.h \
-		msg_signal.h message.h collectable.h rwutil.h \
+		optional.h dbmemobject.h dbaccess.h sema.h resolvers.h \
+		pointtypes.h db_entry_defines.h desolvers.h row_reader.h \
+		signalmanager.h msg_signal.h message.h collectable.h rwutil.h \
 		database_connection.h database_reader.h boost_time.h \
 		boostutil.h msg_multi.h msg_pdata.h pointdefs.h
 #ENDUPDATE#

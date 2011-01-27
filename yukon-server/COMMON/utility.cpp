@@ -2429,34 +2429,6 @@ IM_EX_CTIBASE int binaryStringToInt(const CHAR *buffer, int length)
     return value;
 }
 
-LONG GetPAOIdOfEnergyPro(long devicesn)
-{
-    string sql("SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE TYPE='ENERGYPRO' AND PAOBJECTID IN (SELECT DEVICEID FROM DEVICEIED WHERE SLAVEADDRESS='");
-
-    sql += CtiNumStr(devicesn) + string("')");
-
-    INT id = 0;
-
-    DatabaseConnection conn;
-    DatabaseReader rdr(conn, sql);
-    rdr.execute();
-
-    if(rdr())
-    {
-        rdr["PAOBJECTID"] >> id;
-    }
-    else if(isDebugLudicrous())
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " " << sql << endl;
-        }
-    }
-
-    return id;
-}
-
 vector<int> getPointIdsOnPao(long paoid)
 {
     string sql("SELECT pointid FROM point WHERE paobjectid = ");

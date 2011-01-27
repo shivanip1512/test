@@ -131,7 +131,6 @@
 #define TYPE_LMGROUP_EXPRESSCOM              2015
 #define TYPE_LMGROUP_XML                     2016
 #define TYPE_LMGROUP_MCT                     2020
-#define TYPE_LMGROUP_ENERGYPRO               2025
 
 #define TYPE_LMGROUP_GOLAY                   2030
 #define TYPE_LMGROUP_SADIGITAL               2031
@@ -160,7 +159,6 @@
 // A system defined pseudo device. CGP 022300
 #define TYPE_SYSTEM                          3000
 #define TYPE_VIRTUAL_SYSTEM                  3001
-#define TYPE_ENERGYPRO                       3100
 
 // Port types occupy the range 6000 to 6100.  !!!!!! DO NOT USE !!!!!!
 

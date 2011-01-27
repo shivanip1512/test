@@ -85,7 +85,6 @@
 #include "database_connection.h"
 #include "dev_ccu721.h"
 
-#define DO_GATEWAYTHREAD               1
 #define DO_PORTERINTERFACETHREAD       1
 #define DO_DISPATCHTHREAD              1
 #define DO_VCONFIGTHREAD               1
@@ -842,12 +841,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     PorterToPil.setMatchingConnection(PilToPorter);
 
     pfnOldCrtAllocHook = _CrtSetAllocHook(MyAllocHook);
-
-    if(DO_GATEWAYTHREAD && !stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_GATEWAY_SUPPORT"),"true"))
-    {
-        _gwThread = rwMakeThreadFunction( PorterGWThread, (void*)NULL );
-        _gwThread.start();
-    }
 
     /* Another new Yukon Thread:
      * This thread manages connections to iMacs and other RWCollectable message senders

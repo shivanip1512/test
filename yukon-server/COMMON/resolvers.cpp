@@ -593,10 +593,6 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPE_LMGROUP_XML;
     }
-    else if(rwsTemp == "energypro group")
-    {
-        nRet = TYPE_LMGROUP_ENERGYPRO;
-    }
     else if(rwsTemp == "mct group")
     {
         nRet = TYPE_LMGROUP_MCT;
@@ -720,10 +716,6 @@ INT resolveDeviceType(const string& _rwsTemp)
     else if(rwsTemp == "rtm")
     {
         nRet = TYPE_RTM;
-    }
-    else if(rwsTemp == "energypro")
-    {
-       nRet = TYPE_ENERGYPRO;
     }
     else if(rwsTemp == "fmu")
     {
@@ -1220,7 +1212,6 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPE_LMGROUP_VERSACOM:
         case TYPE_LMGROUP_EXPRESSCOM:
         case TYPE_LMGROUP_XML:
-        case TYPE_LMGROUP_ENERGYPRO:
         case TYPE_LMGROUP_MCT:
         case TYPE_LMGROUP_GOLAY:
         case TYPE_LMGROUP_SADIGITAL:

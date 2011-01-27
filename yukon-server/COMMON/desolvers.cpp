@@ -228,7 +228,6 @@ string desolveDeviceType( INT aType )
         case TYPE_LMGROUP_VERSACOM:     Ret = "versacom group";     break;
         case TYPE_LMGROUP_EXPRESSCOM:   Ret = "expresscom group";   break;
         case TYPE_LMGROUP_XML:          Ret = "integration group";   break;
-        case TYPE_LMGROUP_ENERGYPRO:    Ret = "energypro group";    break;
         case TYPE_LMGROUP_MCT:          Ret = "mct group";          break;
         case TYPE_LMGROUP_GOLAY:        Ret = "golay group";        break;
         case TYPE_LMGROUP_SADIGITAL:    Ret = "sa-digital group";   break;

@@ -31,7 +31,6 @@
 #include "dev_paging.h"
 #include "dev_pagingreceiver.h"
 #include "dev_grp_emetcon.h"
-#include "dev_grp_energypro.h"
 #include "dev_grp_expresscom.h"
 #include "dev_grp_golay.h"
 #include "dev_grp_point.h"
@@ -846,7 +845,6 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
                         rowFound |= loadDeviceType(paoid_subset, "Emetcon groups",         CtiDeviceGroupEmetcon());
                         rowFound |= loadDeviceType(paoid_subset, "Versacom groups",        CtiDeviceGroupVersacom());
                         rowFound |= loadDeviceType(paoid_subset, "Expresscom groups",      CtiDeviceGroupExpresscom());
-                        rowFound |= loadDeviceType(paoid_subset, "EnergyPro groups",       CtiDeviceGroupEnergyPro());
                         rowFound |= loadDeviceType(paoid_subset, "Ripple groups",          CtiDeviceGroupRipple());
 
                         rowFound |= loadDeviceType(paoid_subset, "MCT load groups",        CtiDeviceGroupMCT());

@@ -601,7 +601,7 @@ void CtiPILServer::resultThread()
                     list<CtiMessage*> retList;
                     list<CtiMessage*> vgList;
 
-                    if(DeviceRecord && !(InMessage->MessageFlags & MessageFlag_RouteToPorterGatewayThread))
+                    if(DeviceRecord)
                     {
                         if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
                         {
@@ -626,24 +626,6 @@ void CtiPILServer::resultThread()
                                 dout << CtiTime() << " Process Result FAILED " << DeviceRecord->getName() << endl;
                             }
                         }
-                    }
-                    else if( InMessage->MessageFlags & MessageFlag_RouteToPorterGatewayThread )
-                    {
-                        // We need response strings from someone.  How can we get a list of results back?
-
-                        string bufstr((char*)(InMessage->Buffer.GWRSt.MsgData));
-                        retList.push_back( CTIDBG_new CtiReturnMsg(0,
-                                                                string(InMessage->Return.CommandStr),
-                                                                bufstr,
-                                                                InMessage->EventCode,
-                                                                InMessage->Return.RouteID,
-                                                                InMessage->Return.MacroOffset,
-                                                                InMessage->Return.Attempt,
-                                                                InMessage->Return.GrpMsgID,
-                                                                InMessage->Return.UserID,
-                                                                InMessage->Return.SOE,
-                                                                CtiMultiMsg_vec()));
-
                     }
                     else
                     {

@@ -109,7 +109,6 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
     type_lookups[TYPE_LMGROUP_VERSACOM]    = "VERSACOM GROUP";
     type_lookups[TYPE_LMGROUP_EXPRESSCOM]  = "EXPRESSCOM GROUP";
     type_lookups[TYPE_LMGROUP_XML]         = "INTEGRATION GROUP";
-    type_lookups[TYPE_LMGROUP_ENERGYPRO]   = "ENERGYPRO GROUP";
     type_lookups[TYPE_LMGROUP_MCT]         = "MCT GROUP";
     type_lookups[TYPE_LMGROUP_GOLAY]       = "GOLAY GROUP";
     type_lookups[TYPE_LMGROUP_SADIGITAL]   = "SA-DIGITAL GROUP";

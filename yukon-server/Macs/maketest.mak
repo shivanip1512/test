@@ -114,7 +114,7 @@ test_scheduletime.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		row_reader.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
 		tbl_mcsimpsched.h message.h collectable.h rwutil.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h netports.h dsm2err.h words.h sema.h \
+		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
 		database_reader.h boost_time.h boostutil.h mgr_mcsched.h \
 		rtdb.h hashkey.h hash_functions.h mgr_holiday.h ctidate.h
 #ENDUPDATE#
