@@ -11,8 +11,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.cannontech.stars.util.StarsMsgUtils;
-
 /**
  * Model object which represents a schedule season for a thermostat
  */
@@ -106,30 +104,6 @@ public class ThermostatSeason {
 
         List<ThermostatSeasonEntry> entryList = this.seasonEntryMap.get(timeOfWeek);
         entryList.add(entry);
-
-    }
-
-    public ThermostatMode getThermostatMode() {
-
-        if (this.webConfigurationId == StarsMsgUtils.YUK_WEB_CONFIG_ID_COOL) {
-            return ThermostatMode.COOL;
-        } else if (this.webConfigurationId == StarsMsgUtils.YUK_WEB_CONFIG_ID_HEAT) {
-            return ThermostatMode.HEAT;
-        } else {
-            throw new IllegalStateException("Web configuration id: " + this.webConfigurationId + " is not a valid configuration id for a thermostat season.");
-        }
-
-    }
-
-    public void setThermostatMode(ThermostatMode mode) {
-
-        if (mode.equals(ThermostatMode.COOL)) {
-            this.webConfigurationId = StarsMsgUtils.YUK_WEB_CONFIG_ID_COOL;
-        } else if (mode.equals(ThermostatMode.HEAT)) {
-            this.webConfigurationId = StarsMsgUtils.YUK_WEB_CONFIG_ID_HEAT;
-        } else {
-            throw new IllegalArgumentException("Thermostat mode: " + mode + " is not a valid mode for a thermostat season.");
-        }
 
     }
 

@@ -420,12 +420,7 @@ public class ThermostatServiceImpl implements ThermostatService {
             ThermostatManualEvent event) {
 
         StringBuilder commandString = new StringBuilder();
-
-        if (thermostat.isTwoWay()) {
-            commandString.append("putconfig epro setstate ");
-        } else {
-            commandString.append("putconfig xcom setstate ");
-        }
+        commandString.append("putconfig xcom setstate ");
 
         ThermostatMode mode = event.getMode();
         if (mode != null) {
@@ -492,12 +487,7 @@ public class ThermostatServiceImpl implements ThermostatService {
         Collection<AccountThermostatScheduleEntry> entries = entriesByTimeOfWeekMap.get(timeOfWeek);
 
         StringBuilder commandString = new StringBuilder();
-
-        if (thermostat.isTwoWay()) {
-            commandString.append("putconfig epro schedule ");
-        } else {
-            commandString.append("putconfig xcom schedule ");
-        }
+        commandString.append("putconfig xcom schedule ");
 
         String timeOfWeekCommand = timeOfWeek.getCommandString();
         if (scheduleMode == ThermostatScheduleMode.ALL) {

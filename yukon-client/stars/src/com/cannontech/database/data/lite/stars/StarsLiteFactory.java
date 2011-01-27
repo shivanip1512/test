@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import com.cannontech.clientutils.CTILogger;
@@ -54,7 +53,6 @@ import com.cannontech.stars.util.StarsMsgUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.*;
-import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
 
 /**
  * @author yao
@@ -1186,60 +1184,6 @@ public class StarsLiteFactory {
 		starsEvent.setYukonDefID( entry.getYukonDefID() );
 	}
 	
-	public static void setStarsThermostatDynamicData(StarsThermostatDynamicData starsDynData, LiteStarsGatewayEndDevice liteDynData, LiteStarsEnergyCompany energyCompany) {
-		if (liteDynData.getTimestamp() != 0)
-			starsDynData.setLastUpdatedTime( new Date(liteDynData.getTimestamp()) );
-		if (liteDynData.getDisplayedTemperature() != Integer.MIN_VALUE)
-			starsDynData.setDisplayedTemperature( liteDynData.getDisplayedTemperature() );
-		if (liteDynData.getDisplayedTempUnit() != null)
-			starsDynData.setDisplayedTempUnit( liteDynData.getDisplayedTempUnit().equalsIgnoreCase("C") ? "Celsius" : "Fahrenheit" );
-		starsDynData.setFan( StarsMsgUtils.getThermFanSetting(liteDynData.getFanSwitch()) );
-		starsDynData.setMode( StarsMsgUtils.getThermModeSetting(liteDynData.getSystemSwitch()) );
-		if (liteDynData.getCoolSetpoint() != Integer.MIN_VALUE)
-			starsDynData.setCoolSetpoint( liteDynData.getCoolSetpoint() );
-		if (liteDynData.getHeatSetpoint() != Integer.MIN_VALUE)
-			starsDynData.setHeatSetpoint( liteDynData.getHeatSetpoint() );
-		if (liteDynData.getSetpointStatus() != null &&
-			(liteDynData.getSetpointStatus().equalsIgnoreCase("HOLD") ||
-			liteDynData.getSetpointStatus().equalsIgnoreCase("VACATION")))
-			starsDynData.setSetpointHold( true );
-		else
-			starsDynData.setSetpointHold( false );
-		if (liteDynData.getLowerCoolSetpointLimit() != Integer.MIN_VALUE)
-			starsDynData.setLowerCoolSetpointLimit( liteDynData.getLowerCoolSetpointLimit() );
-		if (liteDynData.getUpperHeatSetpointLimit() != Integer.MIN_VALUE)
-			starsDynData.setUpperHeatSetpointLimit( liteDynData.getUpperHeatSetpointLimit() );
-		
-		starsDynData.removeAllInfoString();
-
-		// If the current mode is auto, then display that in the text area, and set mode to the last none-auto mode of the thermostat
-		StarsThermoModeSettings mode = StarsMsgUtils.getThermModeSetting( liteDynData.getSystemSwitch() );
-		starsDynData.setMode( mode );
-		
-		if (liteDynData.getOutdoorTemperature() != Integer.MIN_VALUE) {
-			String desc = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_GED_OUTDOOR_TEMP ).getEntryText();
-			starsDynData.addInfoString( desc + ": " + liteDynData.getOutdoorTemperature() + "&deg;" + StarsUtils.forceNotNull(liteDynData.getDisplayedTempUnit()) );
-		}
-		if (liteDynData.getFilterRemaining() > 0) {
-			StringTokenizer st = new StringTokenizer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_GED_FILTER).getEntryText(), "," );
-			String desc = st.nextToken();
-			starsDynData.addInfoString( desc + "(day): " + liteDynData.getFilterRemaining() );
-		}
-		if (liteDynData.getBattery() != null) {
-			String desc = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_GED_BATTERY ).getEntryText();
-			starsDynData.addInfoString( desc + ": " + liteDynData.getBattery() );
-		}
-		if (liteDynData.getCoolRuntime() > 0 || liteDynData.getHeatRuntime() > 0) {
-			StringTokenizer st = new StringTokenizer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_GED_RUNTIMES).getEntryText(), "," );
-			String coolDesc = st.nextToken();
-			String heatDesc = st.nextToken();
-			starsDynData.addInfoString( coolDesc + "(min): " + liteDynData.getCoolRuntime() );
-			starsDynData.addInfoString( heatDesc + "(min): " + liteDynData.getHeatRuntime() );
-		}
-		for (int i = 0; i < liteDynData.getInfoStrings().size(); i++)
-			starsDynData.addInfoString( (String) liteDynData.getInfoStrings().get(i) );
-	}
-	
 	public static void setStarsCustListEntry(StarsCustListEntry starsEntry, YukonListEntry yukonEntry) {
 		starsEntry.setEntryID( yukonEntry.getEntryID() );
 		starsEntry.setContent( yukonEntry.getEntryText() );
@@ -2044,20 +1988,6 @@ public class StarsLiteFactory {
 		}
 
 		return starsUser;
-	}
-	
-	public static StarsThermostatManualEvent createStarsThermostatManualEvent(LiteLMThermostatManualEvent liteEvent) {
-		StarsThermostatManualEvent starsEvent = new StarsThermostatManualEvent();
-		setStarsLMCustomerEvent(starsEvent, liteEvent);
-		
-		ThermostatManualOption starsOption = new ThermostatManualOption();
-		starsOption.setTemperature( liteEvent.getPreviousTemperature() );
-		starsOption.setHold( liteEvent.isHoldTemperature() );
-		starsOption.setMode( StarsMsgUtils.getThermModeSetting(liteEvent.getOperationStateID()) );
-		starsOption.setFan( StarsMsgUtils.getThermFanSetting(liteEvent.getFanOperationID()) );
-		starsEvent.setThermostatManualOption( starsOption );
-		
-		return starsEvent;
 	}
 	
 	public static StarsAppliance createStarsAppliance(LiteStarsAppliance liteApp, LiteStarsEnergyCompany energyCompany) {

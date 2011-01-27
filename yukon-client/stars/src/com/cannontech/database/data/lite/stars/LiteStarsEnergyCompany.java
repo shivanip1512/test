@@ -1151,11 +1151,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                         (LiteLMThermostatManualEvent) StarsLiteFactory.createLite(events[i]) );
             }
             
-            if (liteHw.isTwoWayThermostat()) {
-                settings.setDynamicData( new LiteStarsGatewayEndDevice() );
-                settings.updateThermostatSettings( liteHw, this );
-            }
-            
             return settings;
         }
         catch (Exception e) {
@@ -1653,21 +1648,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     
     public StarsCustAccountInformation getStarsCustAccountInformation(int accountID) {
         return getStarsCustAccountInformation( accountID, false );
-    }
-    
-    public void updateThermostatSettings(LiteStarsCustAccountInformation liteAcctInfo) {
-    	for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
-            int invID = liteAcctInfo.getInventories().get(i).intValue();
-
-            LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(invID);
-            if (!(liteInv instanceof LiteStarsLMHardware)) continue;
-            
-            LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
-            if (!liteHw.isTwoWayThermostat()) continue;
-            
-            LiteStarsThermostatSettings liteSettings = liteHw.getThermostatSettings();
-            liteSettings.updateThermostatSettings( liteHw, this );
-        }
     }
     
     private EnergyCompanyHierarchy loadEnergyCompanyHierarchy() {

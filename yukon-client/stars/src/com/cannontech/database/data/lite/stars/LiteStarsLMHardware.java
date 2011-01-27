@@ -22,7 +22,7 @@ public class LiteStarsLMHardware extends LiteInventoryBase {
 	public static final int THERMOSTAT_TYPE_UNKNOWN = -1;
 	public static final int THERMOSTAT_TYPE_IS_NOT = 0;
 	public static final int THERMOSTAT_TYPE_ONE_WAY = 1;
-	public static final int THERMOSTAT_TYPE_TWO_WAY = 2;
+	public static final int THERMOSTAT_TYPE_TWO_WAY = 2;	//Not currently used by anything.
 	
 	private String manufacturerSerialNumber = null;
 	private int lmHardwareTypeID = CtiUtilities.NONE_ZERO_ID;
@@ -150,13 +150,7 @@ public class LiteStarsLMHardware extends LiteInventoryBase {
             devTypeEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO))
 		{
 			thermostatType = THERMOSTAT_TYPE_ONE_WAY;
-		}
-		else if (invCatEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC &&
-			devTypeEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO)
-		{
-			thermostatType = THERMOSTAT_TYPE_TWO_WAY;
-		}
-		else {
+		} else {
 			thermostatType = THERMOSTAT_TYPE_IS_NOT;
 		}
 	}

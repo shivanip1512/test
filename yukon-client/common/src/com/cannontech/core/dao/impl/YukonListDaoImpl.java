@@ -292,8 +292,6 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 			return YukonSelectionListDefs.YUK_LIST_NAME_SO_SORT_BY;
 		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ORDER_NO)
 			return YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY;
-		else if (yukonDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO)
-			return YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE;
 		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE)
 			return YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY;
 		else if (yukonDefID >= YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO)

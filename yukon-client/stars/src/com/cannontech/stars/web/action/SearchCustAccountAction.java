@@ -43,42 +43,6 @@ import com.cannontech.stars.xml.util.StarsConstants;
  */
 
 public class SearchCustAccountAction implements ActionBase {
-
-    /*private static Comparator LAST_NAME_CMP = new Comparator() {
-    	public int compare(Object o1, Object o2) {
-			LiteStarsCustAccountInformation acct1 = (LiteStarsCustAccountInformation) o1;
-			LiteStarsCustAccountInformation acct2 = (LiteStarsCustAccountInformation) o2;
-			LiteContact cont1 = DaoFactory.getContactDao().getContact( acct1.getCustomer().getPrimaryContactID() );
-			LiteContact cont2 = DaoFactory.getContactDao().getContact( acct2.getCustomer().getPrimaryContactID() );
-			
-			int result = cont1.getContLastName().toUpperCase().compareTo( cont2.getContLastName().toUpperCase() );
-			if (result == 0)
-				result = cont1.getContFirstName().toUpperCase().compareTo( cont2.getContFirstName().toUpperCase() );
-			if (result == 0)
-				result = acct1.getCustomerAccount().getAccountNumber().compareTo( acct2.getCustomerAccount().getAccountNumber() );
-    		return result;
-    	}
-    };*/
-    
-    /*private static Comparator ADDRESS_CMP = new Comparator() {
-		public int compare(Object o1, Object o2) {
-			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) ((Pair)o1).getSecond();
-			LiteStarsCustAccountInformation acct1 = (LiteStarsCustAccountInformation) ((Pair)o1).getFirst();
-			LiteStarsCustAccountInformation acct2 = (LiteStarsCustAccountInformation) ((Pair)o2).getFirst();
-			
-			LiteAddress addr1 = company.getAddress( acct1.getAccountSite().getStreetAddressID() );
-			LiteAddress addr2 = company.getAddress( acct2.getAccountSite().getStreetAddressID() );
-			
-			int result = addr1.getLocationAddress1().toUpperCase().compareTo( addr2.getLocationAddress1().toUpperCase() );
-			if (result == 0)
-				result = addr1.getLocationAddress2().toUpperCase().compareTo( addr2.getLocationAddress2().toUpperCase() );
-			if (result == 0)
-				result = addr1.getZipCode().compareTo( addr2.getZipCode() );
-			if (result == 0)
-				result = acct1.getCustomerAccount().getAccountNumber().compareTo( acct2.getCustomerAccount().getAccountNumber() );
-			return result;
-		}
-	};*/
     
     public SearchCustAccountAction() {
         super();
@@ -214,11 +178,6 @@ public class SearchCustAccountAction implements ActionBase {
                 if (accountId != null) {    //liteAcctInfo will only be loaded if exactly 1 account was found in search.
             		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountId, true );
             		
-					if (liteAcctInfo.hasTwoWayThermostat(energyCompany)) {
-						// Get up-to-date thermostat settings
-						energyCompany.updateThermostatSettings( liteAcctInfo );
-					}
-		            
 					session.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
 		            
 					StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteAcctInfo );

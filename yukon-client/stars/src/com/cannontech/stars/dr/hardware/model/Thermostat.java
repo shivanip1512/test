@@ -89,14 +89,6 @@ public class Thermostat {
     }
 
     /**
-     * Method used to determine if this is a two-way device
-     * @return True if is two-way
-     */
-    public boolean isTwoWay() {
-        return category == InventoryCategory.TWO_WAY_RECEIVER && type == HardwareType.ENERGYPRO;
-    }
-
-    /**
      * Method used to determine if this device is available
      * @return
      */

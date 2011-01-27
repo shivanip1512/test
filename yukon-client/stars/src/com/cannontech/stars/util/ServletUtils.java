@@ -89,7 +89,6 @@ public class ServletUtils {
     public static final String ATT_NEW_ACCOUNT_WIZARD = "NEW_ACCOUNT_WIZARD";
     public static final String ATT_LAST_SUBMITTED_REQUEST = "LAST_SUBMITTED_REQUEST";
 
-    public static final String ATT_OMIT_GATEWAY_TIMEOUT = "OMIT_GATEWAY_TIMEOUT";
     public static final String ATT_THERMOSTAT_INVENTORY_IDS = "THERMOSTAT_INVENTORY_IDS";
 
     public static final String ATT_CONTEXT_SWITCHED = "CONTEXT_SWITCHED";
@@ -103,7 +102,6 @@ public class ServletUtils {
     public static final String OUT_OF_SERVICE = "Out of Service";
 
     public static final int MAX_NUM_IMAGES = 3;
-    public static final int GATEWAY_TIMEOUT_HOURS = 24;
 
     public static final String UTIL_COMPANY_ADDRESS = "<<COMPANY_ADDRESS>>";
     public static final String UTIL_PHONE_NUMBER = "<<PHONE_NUMBER>>";

@@ -37,13 +37,6 @@ public enum SchedulableThermostatType {
                 ThermostatScheduleMode.WEEKDAY_SAT_SUN,
                 ThermostatSchedulePeriodStyle.FOUR_TIMES
 	),
-    ENERGY_PRO(HardwareType.ENERGYPRO,
-                45, 99, 
-                40, 90,
-                Sets.immutableEnumSet(ThermostatScheduleMode.ALL, ThermostatScheduleMode.WEEKDAY_SAT_SUN, ThermostatScheduleMode.WEEKDAY_WEEKEND),
-                ThermostatScheduleMode.WEEKDAY_SAT_SUN,
-                ThermostatSchedulePeriodStyle.FOUR_TIMES
-    ),             
 	;
 	
 	private HardwareType hardwareType;
