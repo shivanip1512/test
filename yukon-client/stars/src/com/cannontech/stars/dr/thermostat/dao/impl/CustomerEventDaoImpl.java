@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -24,6 +25,7 @@ import com.cannontech.stars.dr.thermostat.model.CustomerThermostatEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
+import com.cannontech.stars.dr.util.YukonListEntryHelper;
 
 /**
  * Implementation class for CustomerEventDao
@@ -84,12 +86,10 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
             starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
         
         CustomerEventType eventType = event.getEventType();
-        YukonListEntry eventTypeListEntry = 
-            liteStarsEnergyCompany.getYukonListEntry(eventType.getDefinitionId());
+        int eventTypeId = YukonListEntryHelper.getListEntryId(liteStarsEnergyCompany, eventType);
 
         CustomerAction action = event.getAction();
-        YukonListEntry customerActionListEntry = 
-            liteStarsEnergyCompany.getYukonListEntry(action.getDefinitionId());
+        int actionId = YukonListEntryHelper.getListEntryId(liteStarsEnergyCompany, action);
 
         String notes = event.getNotes();
         String authorizedBy = event.getAuthorizedBy();
@@ -98,7 +98,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         SqlStatementBuilder baseSql = new SqlStatementBuilder();
         baseSql.append("INSERT INTO LMCustomerEventBase");
         baseSql.append("(EventId, EventTypeId, ActionId, EventDateTime, Notes, AuthorizedBy)");
-        baseSql.values(eventId, eventTypeListEntry.getEntryID(), customerActionListEntry.getEntryID(), date, notes, authorizedBy);
+        baseSql.values(eventId, eventTypeId, actionId, date, notes, authorizedBy);
         yukonJdbcTemplate.update(baseSql);
 
         // Insert row into ECToLMCustomerEventMapping
@@ -212,17 +212,20 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
             // Convert the operation state entryid into a ThermostatMode enum
             // value
             int operationStateId = rs.getInt("OperationStateId");
-            YukonListEntry operationStateListEntry = liteStarsEnergyCompany.getYukonListEntry(operationStateId);
+            int modeDefinitionId = YukonListEntryHelper.getYukonDefinitionId(liteStarsEnergyCompany,
+                                                                             YukonSelectionListDefs.YUK_LIST_NAME_THERMOSTAT_MODE,
+                                                                             operationStateId);
 
-            int modeDefinitionId = operationStateListEntry.getYukonDefID();
+            
             ThermostatMode mode = ThermostatMode.valueOf(modeDefinitionId);
             event.setMode(mode);
 
             // Convert the fan operation entryid into a ThermostatFanState enum
             // value
             int fanOperationId = rs.getInt("FanOperationId");
-            YukonListEntry fanOperationListEntry = liteStarsEnergyCompany.getYukonListEntry(fanOperationId);
-            int fanStateDefinitionId = fanOperationListEntry.getYukonDefID();
+            int fanStateDefinitionId = YukonListEntryHelper.getYukonDefinitionId(liteStarsEnergyCompany,
+                                                                                 YukonSelectionListDefs.YUK_LIST_NAME_THERMOSTAT_FAN_STATE,
+                                                                                 fanOperationId);
             ThermostatFanState fanState = ThermostatFanState.valueOf(fanStateDefinitionId);
             event.setFanState(fanState);
 
