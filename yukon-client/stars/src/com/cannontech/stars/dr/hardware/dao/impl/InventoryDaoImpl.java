@@ -311,9 +311,9 @@ public class InventoryDaoImpl implements InventoryDao {
                 starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
 
             if (statusEntryId != 0) {
-                YukonListEntry statusListEntry = 
-                    liteStarsEnergyCompany.getYukonListEntry(statusEntryId);
-                int statusDefinitionId = statusListEntry.getYukonDefID();
+                int statusDefinitionId = YukonListEntryHelper.getYukonDefinitionId(liteStarsEnergyCompany,
+                                                                                   YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS,
+                                                                                   statusEntryId);
                 HardwareStatus status = HardwareStatus.valueOf(statusDefinitionId);
                 return status;
             } else {
