@@ -266,10 +266,10 @@ void CtiFDRPiNotify::doUpdates()
   
     // After this has been called once, memory won't be reallocated 
     // and the following calls will be "cheap."
-    _pointList.reserve(points_at_a_time);
-    _rvalList.reserve(points_at_a_time);
-    _istatList.reserve(points_at_a_time);
-    _timeList.reserve(points_at_a_time);
+    _pointList.resize(points_at_a_time);
+    _rvalList.resize(points_at_a_time);
+    _istatList.resize(points_at_a_time);
+    _timeList.resize(points_at_a_time);
   
     // vectors are guaranteed to have contiguous memory
     PiPointId *piIdArray = &_pointList[0];                                                                       
@@ -300,7 +300,7 @@ void CtiFDRPiNotify::doUpdates()
       }
       for (int i = 0; i < pointCount; ++i)
       {
-        PiPointId thisPoint = piIdArray[i];
+        PiPointId thisPoint = _pointList.at(i);
   
         // Find all entries that match this Pi Point (probably one, but multiple points could 
         // be linked to a single Pi Point).
@@ -314,11 +314,11 @@ void CtiFDRPiNotify::doUpdates()
   
           // remove local offset (might not be thread-safe)
           struct tm *temp = NULL;
-          time_t tTime = timeArray[i];
+          time_t tTime = _timeList.at(i);
           temp = CtiTime::gmtime_r(&tTime);
           time_t timeStamp = mktime(temp);
           // pisn_evmesceptions doesn't return error codes per point, default to 0
-          handlePiUpdate(info, rvalArray[i], istatArray[i], timeStamp, 0);
+          handlePiUpdate(info, _rvalList.at(i), _istatList.at(i), timeStamp, 0);
   
         }
       }
@@ -349,21 +349,21 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
       logNow() << "Forcing update of " << pointCount
         << " points." << endl;
     }
-  
+
     vector<float> rvalList;
-    rvalList.reserve(pointCount);
+    rvalList.resize(pointCount);
     float *rvalArray = &rvalList[0];
 
     vector<int32> istatList;
-    istatList.reserve(pointCount);
+    istatList.resize(pointCount);
     int32 *istatArray = &istatList[0];
 
     vector<int32> timeList;
-    timeList.reserve(pointCount);
+    timeList.resize(pointCount);
     int32 *timeArray = &timeList[0];
 
     vector<int32> errorList;
-    errorList.reserve(pointCount);
+    errorList.resize(pointCount);
     int32 *errorArray = &errorList[0];
   
     int err = pisn_getsnapshots(piIdArray, rvalArray, istatArray, timeArray, errorArray, pointCount);
@@ -380,10 +380,10 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
     for (int i = 0; i < pointCount; ++i)
     {
       // remove local offset (might not be thread-safe)
-      time_t tTime = timeArray[i];
+      time_t tTime = timeList.at(i);
       time_t timeToSend = mktime(std::gmtime(&tTime) );
 
-      PiPointId thisPoint = piIdArray[i];
+      PiPointId thisPoint = _registerList.at(i);
 
       // Find all entries that match this Pi Point (probably one, but multiple points could 
       // be linked to a single Pi Point).
@@ -394,7 +394,7 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
             ++myIter)
       {
         const PiPointInfo &info = (*myIter).second;
-        handlePiUpdate(info, rvalArray[i], istatArray[i], timeToSend, errorArray[i]);
+        handlePiUpdate(info, rvalList.at(i), istatList.at(i), timeToSend, errorList.at(i));
       }
     }
   }
