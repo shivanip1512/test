@@ -87,9 +87,10 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         updateSql = "UPDATE CustomerAccount SET AccountSiteId = ?, AccountNumber = ?, CustomerId = ?, BillingAddressId = ?, AccountNotes = ? WHERE AccountId = ?";
         
         selectAllUsefulAccountInfoFromECSql = "SELECT ca.AccountId, ca.AccountNumber, cont.ContLastName, cont.ContFirstName" +
-                " FROM CustomerAccount ca, Contact cont, Customer cust WHERE AccountId IN" +
-                " (SELECT AccountId FROM ECToAccountMapping WHERE EnergyCompanyId = ?) " +
-                " AND cust.CustomerId = ca.CustomerId AND cont.ContactId = cust.PrimaryContactId";
+                " FROM CustomerAccount ca JOIN Customer cust ON cust.CustomerId = ca.CustomerId " + 
+                " JOIN Contact cont ON cont.ContactId = cust.PrimaryContactId " +
+                " JOIN ECToAccountMapping ec ON ec.AccountId = ca.AccountId " + 
+                " WHERE EnergyCompanyId = ? ";
         
         rowMapper = CustomerAccountDaoImpl.createRowMapper();
         
@@ -246,12 +247,10 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(" SELECT ca.AccountId, ca.AccountNumber, cust.AltTrackNum, cont.ContLastName, cont.ContFirstName ");
-        sql.append(" FROM CustomerAccount ca, Contact cont, Customer cust ");
-        sql.append(" WHERE AccountId IN (SELECT AccountId ");
-        sql.append("                     FROM ECToAccountMapping ");
-        sql.append("                     WHERE EnergyCompanyId = ?) ");
-        sql.append(" AND cust.CustomerId = ca.CustomerId ");
-        sql.append(" AND cont.ContactId = cust.PrimaryContactId ");
+        sql.append(" FROM CustomerAccount ca JOIN Customer cust ON ca.CustomerId = cust.CustomerId");
+        sql.append(" JOIN Contact cont ON cont.ContactId = cust.PrimaryContactId");
+        sql.append(" JOIN ECToAccountMapping ec on ec.AccountId = ca.AccountId");
+        sql.append(" WHERE EnergyCompanyId = ?");
         sql.append(" AND ca.AccountId in (SELECT LMHCG.AccountId ");
         sql.append("                         FROM LMHardwareControlGroup LMHCG ");
         sql.append("                         WHERE LMHCG.LMGroupId in (", groupIds, ") ");
