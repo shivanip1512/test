@@ -44,11 +44,13 @@ public class MR_CB_Test {
 			FormattedBlock[] formattedBlocks;
 			ErrorObject[] objects = null;
 
-//			meters = test.getAMRSupportedMeters();
-//			printMeters(meters);
+			meters = test.getAMRSupportedMeters();
+			printMeters(meters);
 			
 			//Readings tests
-			String meterNumber = "0300031";			
+			String meterNumber = "0300031";		
+			System.out.println(meterNumber + "- IS AMR METER? " + test.isAMRMeter(meterNumber));
+			
 /*			objects = test.initiateMeterReadByMeterNo();
 			printErrorObjects(objects);
 			
@@ -155,7 +157,7 @@ public class MR_CB_Test {
 	}
 	
 	private Meter[] getAMRSupportedMeters() throws RemoteException {
-		Meter[] meters = instance.getAMRSupportedMeters(null);
+		Meter[] meters = instance.getAMRSupportedMeters("0");
 		return meters;		
 	}
 	
@@ -194,6 +196,11 @@ public class MR_CB_Test {
 		return instance.getSupportedReadingTypes();
 	}
 	
+
+	private boolean isAMRMeter(String meterNumber) throws RemoteException {
+		return instance.isAMRMeter(meterNumber);		
+	}
+	
 	private static Meter buildMeter(String templateName, String meterNumber, String accountNumber, String customerId, String eaLoc,
 			String substationName, String transponderId) {
 		Meter meter = new Meter();
@@ -217,6 +224,7 @@ public class MR_CB_Test {
 		return meter;
 	}
 
+	
 	private static String[] buildMeterList() {
 		String[] meterList = new String[4];
 		meterList[0] = "50000011";

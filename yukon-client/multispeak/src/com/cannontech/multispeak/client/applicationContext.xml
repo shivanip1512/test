@@ -106,9 +106,7 @@
     <property name="attrDynamicDataSource" ref="attrDynamicDataSource"/>
   </bean>
 
-  <bean id="mspMeterDao" class="com.cannontech.multispeak.dao.impl.MspMeterDaoImpl">
-    <property name="jdbcOps" ref="jdbcTemplate"/> 
-  </bean>
+  <bean id="mspMeterDao" class="com.cannontech.multispeak.dao.impl.MspMeterDaoImpl"/>
 
   <bean id="yukonFormattedBlock" class="com.cannontech.multispeak.block.impl.FormattedBlockServiceImpl" abstract="true">
       <property name="attrDynamicDataSource" ref="attrDynamicDataSource"/>
