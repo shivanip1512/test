@@ -143,11 +143,6 @@ public class DataGridTag extends YukonTagSupport {
     }
 
     public void setOrderMode(String orderMode) {
-        try{
-            this.orderMode = OrderMode.valueOf(orderMode);
-        }
-        catch(Exception e){
-            this.orderMode = OrderMode.LEFT_TO_RIGHT;
-        }
+        this.orderMode = OrderMode.valueOf(orderMode);
     }
 }
