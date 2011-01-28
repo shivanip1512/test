@@ -33,6 +33,8 @@ static CtiCriticalSection event_mux;
 
 static void processCollectedStats(bool force);
 static void statisticsRecord(ThreadStatusKeeper threadStatus);
+static void deleteStatisticsRecord( const long Id );
+
 
 struct statistics_event_t
 {
@@ -303,11 +305,8 @@ void processEvent(statistics_event_t &tup)
         }
         case statistics_event_t::Deletion:
         {
-            if( eStat = getStatisticsRecord(tup.targetpaoid) )
-            {
-                delete eStat;
-                statistics.erase(tup.targetpaoid);
-            }
+            deleteStatisticsRecord(tup.targetpaoid);
+
             break;
         }
     }
@@ -693,6 +692,18 @@ void deletePaoStatistics( const long paoId )
     {
         CtiLockGuard<CtiCriticalSection> guard(event_mux);
         active_event_queue->push_back(tup);
+    }
+}
+
+
+void deleteStatisticsRecord( const long Id )
+{
+    id_statistics_map::const_iterator itr = statistics.find(Id);
+
+    if( itr != statistics.end() )
+    {
+        delete itr->second;
+        statistics.erase(itr);
     }
 }
 
