@@ -86,9 +86,9 @@ public class GroupDaoImpl implements GroupDao, InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<Group>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("CCurtGroup");
-        template.withPrimaryKeyField("CCurtGroupID");
-        template.withFieldMapper(groupFieldMapper); 
+        template.setTableName("CCurtGroup");
+        template.setPrimaryKeyField("CCurtGroupID");
+        template.setFieldMapper(groupFieldMapper); 
     }
     
     @Autowired

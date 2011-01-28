@@ -485,9 +485,9 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         zoneTemplate = new SimpleTableAccessTemplate<Zone>(yukonJdbcTemplate, nextValueHelper);
-        zoneTemplate.withTableName("Zone");
-        zoneTemplate.withPrimaryKeyField("ZoneId");
-        zoneTemplate.withFieldMapper(zoneFieldMapper);
+        zoneTemplate.setTableName("Zone");
+        zoneTemplate.setPrimaryKeyField("ZoneId");
+        zoneTemplate.setFieldMapper(zoneFieldMapper);
     }
     
     @Autowired

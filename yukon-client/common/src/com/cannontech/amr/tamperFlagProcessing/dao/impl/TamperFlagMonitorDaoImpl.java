@@ -119,9 +119,9 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao, Initializ
     public void afterPropertiesSet() throws Exception {
         template = 
            new SimpleTableAccessTemplate<TamperFlagMonitor>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("TamperFlagMonitor");
-        template.withPrimaryKeyField("TamperFlagMonitorId");
-        template.withFieldMapper(tamperFlagMonitorFieldMapper); 
+        template.setTableName("TamperFlagMonitor");
+        template.setPrimaryKeyField("TamperFlagMonitorId");
+        template.setFieldMapper(tamperFlagMonitorFieldMapper); 
     }
     
     @Autowired

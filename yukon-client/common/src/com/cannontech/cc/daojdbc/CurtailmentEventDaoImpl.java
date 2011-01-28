@@ -118,9 +118,9 @@ public class CurtailmentEventDaoImpl implements InitializingBean, CurtailmentEve
     @Override
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<CurtailmentEvent>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("CCurtCurtailmentEvent");
-        template.withPrimaryKeyField("CCurtCurtailmentEventID");
-        template.withFieldMapper(curtailmentEventFieldMapper); 
+        template.setTableName("CCurtCurtailmentEvent");
+        template.setPrimaryKeyField("CCurtCurtailmentEventID");
+        template.setFieldMapper(curtailmentEventFieldMapper); 
     }
 
     @Autowired

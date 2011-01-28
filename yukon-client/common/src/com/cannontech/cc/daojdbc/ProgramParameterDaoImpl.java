@@ -112,9 +112,9 @@ public class ProgramParameterDaoImpl implements InitializingBean, ProgramParamet
     @Override
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<ProgramParameter>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("CCurtProgramParameter");
-        template.withPrimaryKeyField("CCurtProgramParameterID");
-        template.withFieldMapper(programParameterFieldMapper);
+        template.setTableName("CCurtProgramParameter");
+        template.setPrimaryKeyField("CCurtProgramParameterID");
+        template.setFieldMapper(programParameterFieldMapper);
     }
 
     @Autowired

@@ -124,9 +124,9 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
     public void afterPropertiesSet() throws Exception {
     	template = new SimpleTableAccessTemplate<CommandRequestExecutionResult>(yukonJdbcTemplate,
     	                                                                        nextValueHelper);
-    	template.withTableName("CommandRequestExecResult");
-    	template.withPrimaryKeyField("CommandRequestExecResultId");
-    	template.withFieldMapper(rowAndFieldMapper); 
+    	template.setTableName("CommandRequestExecResult");
+    	template.setPrimaryKeyField("CommandRequestExecResultId");
+    	template.setFieldMapper(rowAndFieldMapper); 
     }
     
     @Autowired

@@ -115,9 +115,9 @@ public class AccountingEventDaoImpl implements InitializingBean, AccountingEvent
     @Override
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<AccountingEvent>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("CCurtAcctEvent");
-        template.withPrimaryKeyField("CCurtAcctEventID");
-        template.withFieldMapper(accountingEventFieldMapper); 
+        template.setTableName("CCurtAcctEvent");
+        template.setPrimaryKeyField("CCurtAcctEventID");
+        template.setFieldMapper(accountingEventFieldMapper); 
     }
     
     @Autowired

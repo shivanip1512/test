@@ -55,9 +55,9 @@ public class JobDaoBase implements InitializingBean {
 
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<YukonJob>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("Job");
-        template.withPrimaryKeyField("jobId");
-        template.withFieldMapper(jobFieldMapper);
+        template.setTableName("Job");
+        template.setPrimaryKeyField("jobId");
+        template.setFieldMapper(jobFieldMapper);
     }
 
     protected void insertJob(YukonJob job) {

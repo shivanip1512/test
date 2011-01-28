@@ -710,9 +710,9 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
 
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<LMHardwareControlGroup>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName(TABLE_NAME);
-        template.withPrimaryKeyField("controlEntryId");
-        template.withFieldMapper(controlGroupFieldMapper); 
+        template.setTableName(TABLE_NAME);
+        template.setPrimaryKeyField("controlEntryId");
+        template.setFieldMapper(controlGroupFieldMapper); 
     }
 
     @Override

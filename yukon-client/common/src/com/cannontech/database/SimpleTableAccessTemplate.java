@@ -30,22 +30,22 @@ public final class SimpleTableAccessTemplate<T> {
         this.nextValueHelper = nextValueHelper;
     }
 
-    public SimpleTableAccessTemplate<T> withTableName(String tableName) {
+    public SimpleTableAccessTemplate<T> setTableName(String tableName) {
         this.tableName = tableName;
         return this;
     }
     
-    public SimpleTableAccessTemplate<T> withFieldMapper(FieldMapper<T> fieldMapper) {
+    public SimpleTableAccessTemplate<T> setFieldMapper(FieldMapper<T> fieldMapper) {
         this.fieldMapper = fieldMapper;
         return this;
     }
     
-    public SimpleTableAccessTemplate<T> withPrimaryKeyField(String primaryKeyField) {
+    public SimpleTableAccessTemplate<T> setPrimaryKeyField(String primaryKeyField) {
         this.primaryKeyField = primaryKeyField;
         return this;
     }
     
-    public SimpleTableAccessTemplate<T> withPrimaryKeyValidOver(int i) {
+    public SimpleTableAccessTemplate<T> setPrimaryKeyValidOver(int i) {
         this.primaryKeyValidOver  = i;
         return this;
     }

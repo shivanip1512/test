@@ -138,9 +138,9 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
     public void afterPropertiesSet() throws Exception {
         siteInfoTemplate = 
             new SimpleTableAccessTemplate<LiteSiteInformation>(yukonJdbcTemplate, nextValueHelper);
-        siteInfoTemplate.withTableName(TABLE_NAME);
-        siteInfoTemplate.withPrimaryKeyField("SiteId");
-        siteInfoTemplate.withFieldMapper(siteInfoFieldMapper); 
+        siteInfoTemplate.setTableName(TABLE_NAME);
+        siteInfoTemplate.setPrimaryKeyField("SiteId");
+        siteInfoTemplate.setFieldMapper(siteInfoFieldMapper); 
     }
 
 }

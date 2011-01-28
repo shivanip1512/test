@@ -628,10 +628,10 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     @Override
     public void afterPropertiesSet() throws Exception {
         liteInventoryTemplate = new SimpleTableAccessTemplate<LiteInventoryBase>(yukonJdbcTemplate, nextValueHelper);
-        liteInventoryTemplate.withTableName("InventoryBase");
-        liteInventoryTemplate.withPrimaryKeyField("InventoryID");
-        liteInventoryTemplate.withFieldMapper(inventoryFieldMapper);
-        liteInventoryTemplate.withPrimaryKeyValidOver(0);
+        liteInventoryTemplate.setTableName("InventoryBase");
+        liteInventoryTemplate.setPrimaryKeyField("InventoryID");
+        liteInventoryTemplate.setFieldMapper(inventoryFieldMapper);
+        liteInventoryTemplate.setPrimaryKeyValidOver(0);
     }
     
     private FieldMapper<LiteInventoryBase> inventoryFieldMapper = new FieldMapper<LiteInventoryBase>() {

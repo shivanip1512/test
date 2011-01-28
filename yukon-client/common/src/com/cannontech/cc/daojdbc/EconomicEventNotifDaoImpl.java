@@ -155,9 +155,9 @@ public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao, Initial
     @Override
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<EconomicEventNotif>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("CCurtEconomicEventNotif");
-        template.withPrimaryKeyField("CCurtEconomicEventNotifID");
-        template.withFieldMapper(economicEventNotifFieldMapper);
+        template.setTableName("CCurtEconomicEventNotif");
+        template.setPrimaryKeyField("CCurtEconomicEventNotifID");
+        template.setFieldMapper(economicEventNotifFieldMapper);
     }
     
     private void setParticipantAndRevisionForNotifsAndEvents(List<EconomicEventNotif> notifList, EconomicEvent event) {

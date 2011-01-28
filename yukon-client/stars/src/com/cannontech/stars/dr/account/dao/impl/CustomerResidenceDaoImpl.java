@@ -60,9 +60,9 @@ public class CustomerResidenceDaoImpl implements CustomerResidenceDao, Initializ
     @Override
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<CustomerResidence>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("CustomerResidence");
-        template.withPrimaryKeyField("AccountSiteId");
-        template.withFieldMapper(rowAndFieldMapper); 
+        template.setTableName("CustomerResidence");
+        template.setPrimaryKeyField("AccountSiteId");
+        template.setFieldMapper(rowAndFieldMapper); 
     }
 
     @Autowired

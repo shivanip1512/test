@@ -520,14 +520,14 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
     
     public void afterPropertiesSet() throws Exception {
         liteCustomerTemplate = new SimpleTableAccessTemplate<LiteCustomer>(yukonJdbcTemplate, nextValueHelper);
-        liteCustomerTemplate.withTableName(CUSTOMER_TABLE_NAME);
-        liteCustomerTemplate.withPrimaryKeyField("CustomerId");
-        liteCustomerTemplate.withFieldMapper(customerFieldMapper);
-        liteCustomerTemplate.withPrimaryKeyValidOver(-1);
+        liteCustomerTemplate.setTableName(CUSTOMER_TABLE_NAME);
+        liteCustomerTemplate.setPrimaryKeyField("CustomerId");
+        liteCustomerTemplate.setFieldMapper(customerFieldMapper);
+        liteCustomerTemplate.setPrimaryKeyValidOver(-1);
         
         liteCICustomerTemplate = new SimpleTableAccessTemplate<LiteCICustomer>(yukonJdbcTemplate, nextValueHelper);
-        liteCICustomerTemplate.withTableName(CI_CUSTOMER_TABLE_NAME);
-        liteCICustomerTemplate.withPrimaryKeyField("CustomerId");
-        liteCICustomerTemplate.withFieldMapper(ciCustomerFieldMapper); 
+        liteCICustomerTemplate.setTableName(CI_CUSTOMER_TABLE_NAME);
+        liteCICustomerTemplate.setPrimaryKeyField("CustomerId");
+        liteCICustomerTemplate.setFieldMapper(ciCustomerFieldMapper); 
     }
 }

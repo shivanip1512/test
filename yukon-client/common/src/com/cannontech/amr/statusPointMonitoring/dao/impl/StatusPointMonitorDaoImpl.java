@@ -223,14 +223,14 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao, Initial
     
     public void afterPropertiesSet() throws Exception {
         statusPointMonitorTemplate = new SimpleTableAccessTemplate<StatusPointMonitor>(yukonJdbcTemplate, nextValueHelper);
-        statusPointMonitorTemplate.withTableName("StatusPointMonitor");
-        statusPointMonitorTemplate.withPrimaryKeyField("StatusPointMonitorId");
-        statusPointMonitorTemplate.withFieldMapper(statusPointMonitorFieldMapper);
+        statusPointMonitorTemplate.setTableName("StatusPointMonitor");
+        statusPointMonitorTemplate.setPrimaryKeyField("StatusPointMonitorId");
+        statusPointMonitorTemplate.setFieldMapper(statusPointMonitorFieldMapper);
         
         statusPointMonitorProcessorTemplate = new SimpleTableAccessTemplate<StoredStatusPointMonitorProcessor>(yukonJdbcTemplate, nextValueHelper);
-        statusPointMonitorProcessorTemplate.withTableName("StatusPointMonitorProcessor");
-        statusPointMonitorProcessorTemplate.withPrimaryKeyField("StatusPointMonitorProcessorId");
-        statusPointMonitorProcessorTemplate.withFieldMapper(statusPointMonitorProcessorFieldMapper);
+        statusPointMonitorProcessorTemplate.setTableName("StatusPointMonitorProcessor");
+        statusPointMonitorProcessorTemplate.setPrimaryKeyField("StatusPointMonitorProcessorId");
+        statusPointMonitorProcessorTemplate.setFieldMapper(statusPointMonitorProcessorFieldMapper);
     }
     
     private class StoredStatusPointMonitorProcessor {

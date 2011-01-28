@@ -169,9 +169,9 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao, Initializ
     public void afterPropertiesSet() throws Exception {
         template = 
             new SimpleTableAccessTemplate<ValidationMonitor>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("ValidationMonitor");
-        template.withPrimaryKeyField("ValidationMonitorId");
-        template.withFieldMapper(validationMonitorFieldMapper); 
+        template.setTableName("ValidationMonitor");
+        template.setPrimaryKeyField("ValidationMonitorId");
+        template.setFieldMapper(validationMonitorFieldMapper); 
     }
     
     @Autowired

@@ -142,9 +142,9 @@ public class CallReportDaoImpl implements CallReportDao, InitializingBean {
     public void afterPropertiesSet() throws Exception {
     	
     	template = new SimpleTableAccessTemplate<CallReport>(yukonJdbcTemplate, nextValueHelper);
-    	template.withTableName("CallReportBase");
-    	template.withPrimaryKeyField("CallId");
-    	template.withFieldMapper(rowAndFieldMapper); 
+    	template.setTableName("CallReportBase");
+    	template.setPrimaryKeyField("CallId");
+    	template.setFieldMapper(rowAndFieldMapper); 
     	
     	chunkyJdbcTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
     }

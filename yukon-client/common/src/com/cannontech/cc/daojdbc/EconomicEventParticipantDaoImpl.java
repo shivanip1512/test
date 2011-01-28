@@ -211,19 +211,19 @@ public class EconomicEventParticipantDaoImpl implements EconomicEventParticipant
     @Override
     public void afterPropertiesSet() throws Exception {
         participantTemplate = new SimpleTableAccessTemplate<EconomicEventParticipant>(yukonJdbcTemplate, nextValueHelper);
-        participantTemplate.withTableName("CCurtEEParticipant");
-        participantTemplate.withPrimaryKeyField("CCurtEEParticipantID");
-        participantTemplate.withFieldMapper(economicEventParticipantFieldMapper);
+        participantTemplate.setTableName("CCurtEEParticipant");
+        participantTemplate.setPrimaryKeyField("CCurtEEParticipantID");
+        participantTemplate.setFieldMapper(economicEventParticipantFieldMapper);
 
         selectionTemplate = new SimpleTableAccessTemplate<EconomicEventParticipantSelection>(yukonJdbcTemplate, nextValueHelper);
-        selectionTemplate.withTableName("CCurtEEParticipantSelection");
-        selectionTemplate.withPrimaryKeyField("CCurtEEParticipantSelectionID");
-        selectionTemplate.withFieldMapper(economicEventParticipantSelectionFieldMapper);
+        selectionTemplate.setTableName("CCurtEEParticipantSelection");
+        selectionTemplate.setPrimaryKeyField("CCurtEEParticipantSelectionID");
+        selectionTemplate.setFieldMapper(economicEventParticipantSelectionFieldMapper);
 
         windowTemplate = new SimpleTableAccessTemplate<EconomicEventParticipantSelectionWindow>(yukonJdbcTemplate, nextValueHelper);
-        windowTemplate.withTableName("CCurtEEParticipantWindow");
-        windowTemplate.withPrimaryKeyField("CCurtEEParticipantWindowID");
-        windowTemplate.withFieldMapper(economicEventParticipantSelectionWindowFieldMapper);
+        windowTemplate.setTableName("CCurtEEParticipantWindow");
+        windowTemplate.setPrimaryKeyField("CCurtEEParticipantWindowID");
+        windowTemplate.setFieldMapper(economicEventParticipantSelectionWindowFieldMapper);
     }
 
     private void setEventsForParticipants(List<EconomicEventParticipant> participantList, Iterable<EconomicEvent> eventList) {

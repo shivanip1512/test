@@ -101,9 +101,9 @@ public class CurtailmentEventParticipantDaoImpl implements CurtailmentEventParti
     @Override
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<CurtailmentEventParticipant>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("CCurtCEParticipant");
-        template.withPrimaryKeyField("CCurtCEParticipantID");
-        template.withFieldMapper(curtailmentEventParticipantFieldMapper); 
+        template.setTableName("CCurtCEParticipant");
+        template.setPrimaryKeyField("CCurtCEParticipantID");
+        template.setFieldMapper(curtailmentEventParticipantFieldMapper); 
     }
 
     @Autowired

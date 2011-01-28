@@ -123,9 +123,9 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao, InitializingBean 
     
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<OutageMonitor>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName(TABLE_NAME);
-        template.withPrimaryKeyField("OutageMonitorId");
-        template.withFieldMapper(outageMonitorFieldMapper); 
+        template.setTableName(TABLE_NAME);
+        template.setPrimaryKeyField("OutageMonitorId");
+        template.setFieldMapper(outageMonitorFieldMapper); 
     }
     
     @Autowired

@@ -141,8 +141,8 @@ public class LMControlHistoryDaoImpl implements LMControlHistoryDao, Initializin
     public void afterPropertiesSet() throws Exception {
         template = 
             new SimpleTableAccessTemplate<LMControlHistory>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName(TABLE_NAME);
-        template.withPrimaryKeyField("lmCtrlHistId");
-        template.withFieldMapper(lmControlHistoryFieldMapper); 
+        template.setTableName(TABLE_NAME);
+        template.setPrimaryKeyField("lmCtrlHistId");
+        template.setFieldMapper(lmControlHistoryFieldMapper); 
     }
 }

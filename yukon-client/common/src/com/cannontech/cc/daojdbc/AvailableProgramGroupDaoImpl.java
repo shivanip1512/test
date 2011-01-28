@@ -92,9 +92,9 @@ public class AvailableProgramGroupDaoImpl implements InitializingBean, Available
     @Override
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<AvailableProgramGroup>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("CCurtProgramGroup");
-        template.withPrimaryKeyField("CCurtProgramGroupID");
-        template.withFieldMapper(programGroupFieldMapper); 
+        template.setTableName("CCurtProgramGroup");
+        template.setPrimaryKeyField("CCurtProgramGroupID");
+        template.setFieldMapper(programGroupFieldMapper); 
     }
 
     @Autowired

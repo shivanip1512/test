@@ -67,10 +67,10 @@ public class AccountThermostatScheduleEntryDaoImpl implements AccountThermostatS
     public void init() {
     	
     	accountThermostatScheduleEntryTemplate = new SimpleTableAccessTemplate<AccountThermostatScheduleEntry>(yukonJdbcTemplate, nextValueHelper);
-    	accountThermostatScheduleEntryTemplate.withTableName("AcctThermostatScheduleEntry");
-    	accountThermostatScheduleEntryTemplate.withPrimaryKeyField("AcctThermostatScheduleEntryId");
-    	accountThermostatScheduleEntryTemplate.withFieldMapper(accountThermostatScheduleEntryRowAndFieldMapper);
-    	accountThermostatScheduleEntryTemplate.withPrimaryKeyValidOver(0);
+    	accountThermostatScheduleEntryTemplate.setTableName("AcctThermostatScheduleEntry");
+    	accountThermostatScheduleEntryTemplate.setPrimaryKeyField("AcctThermostatScheduleEntryId");
+    	accountThermostatScheduleEntryTemplate.setFieldMapper(accountThermostatScheduleEntryRowAndFieldMapper);
+    	accountThermostatScheduleEntryTemplate.setPrimaryKeyValidOver(0);
     }
 	
 	

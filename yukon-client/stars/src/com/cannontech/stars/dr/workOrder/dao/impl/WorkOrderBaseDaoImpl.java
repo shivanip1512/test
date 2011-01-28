@@ -110,10 +110,10 @@ public class WorkOrderBaseDaoImpl implements WorkOrderBaseDao, InitializingBean 
     @Override
     public void afterPropertiesSet() throws Exception {
         workOrderBaseTemplate = new SimpleTableAccessTemplate<WorkOrderBase>(yukonJdbcTemplate, nextValueHelper);
-        workOrderBaseTemplate.withTableName("WorkOrderBase");
-        workOrderBaseTemplate.withPrimaryKeyField("OrderId");
-        workOrderBaseTemplate.withFieldMapper(workOrderBaseFieldMapper);
-        workOrderBaseTemplate.withPrimaryKeyValidOver(0);
+        workOrderBaseTemplate.setTableName("WorkOrderBase");
+        workOrderBaseTemplate.setPrimaryKeyField("OrderId");
+        workOrderBaseTemplate.setFieldMapper(workOrderBaseFieldMapper);
+        workOrderBaseTemplate.setPrimaryKeyValidOver(0);
     }
     
     private FieldMapper<WorkOrderBase> workOrderBaseFieldMapper = new FieldMapper<WorkOrderBase>() {

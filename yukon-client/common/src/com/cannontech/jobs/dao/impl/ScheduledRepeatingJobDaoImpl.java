@@ -67,9 +67,9 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
         
         template = 
             new SimpleTableAccessTemplate<ScheduledRepeatingJob>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("JobScheduledRepeating");
-        template.withPrimaryKeyField("jobId");
-        template.withFieldMapper(jobFieldMapper); 
+        template.setTableName("JobScheduledRepeating");
+        template.setPrimaryKeyField("jobId");
+        template.setFieldMapper(jobFieldMapper); 
     }
 
     public Set<ScheduledRepeatingJob> getAll() {

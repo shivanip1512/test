@@ -79,9 +79,9 @@ public class CustomerGraphDaoImpl implements CustomerGraphDao, InitializingBean 
 	@Override
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<CustomerGraph>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("GraphCustomerList");
-        template.withPrimaryKeyField("GraphDefinitionId");
-        template.withFieldMapper(rowAndFieldMapper); 
+        template.setTableName("GraphCustomerList");
+        template.setPrimaryKeyField("GraphDefinitionId");
+        template.setFieldMapper(rowAndFieldMapper); 
     }
 
     @Autowired

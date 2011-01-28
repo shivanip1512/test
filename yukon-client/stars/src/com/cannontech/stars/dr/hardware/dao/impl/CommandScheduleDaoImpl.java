@@ -137,10 +137,10 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
     @PostConstruct
     public void init() {
         dbTemplate = new SimpleTableAccessTemplate<CommandSchedule>(yukonJdbcTemplate, nextValueHelper);
-        dbTemplate.withTableName("commandSchedule");
-        dbTemplate.withFieldMapper(fieldMapper);
-        dbTemplate.withPrimaryKeyField("commandScheduleId");
-        dbTemplate.withPrimaryKeyValidOver(0);
+        dbTemplate.setTableName("commandSchedule");
+        dbTemplate.setFieldMapper(fieldMapper);
+        dbTemplate.setPrimaryKeyField("commandScheduleId");
+        dbTemplate.setPrimaryKeyValidOver(0);
     }
 
     @Autowired

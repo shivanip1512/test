@@ -378,8 +378,8 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
     
     public void afterPropertiesSet() throws Exception {
         strategyTemplate = new SimpleTableAccessTemplate<CapControlStrategy>(yukonJdbcTemplate, nextValueHelper);
-        strategyTemplate.withTableName("CapControlStrategy");
-        strategyTemplate.withPrimaryKeyField("StrategyId");
-        strategyTemplate.withFieldMapper(strategyFieldMapper); 
+        strategyTemplate.setTableName("CapControlStrategy");
+        strategyTemplate.setPrimaryKeyField("StrategyId");
+        strategyTemplate.setFieldMapper(strategyFieldMapper); 
     }
 }

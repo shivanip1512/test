@@ -63,9 +63,9 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
         
         template =
             new SimpleTableAccessTemplate<ScheduledOneTimeJob>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("JobScheduledOneTime");
-        template.withPrimaryKeyField("jobId");
-        template.withFieldMapper(jobFieldMapper);
+        template.setTableName("JobScheduledOneTime");
+        template.setPrimaryKeyField("jobId");
+        template.setFieldMapper(jobFieldMapper);
     }
 
     public Set<ScheduledOneTimeJob> getAll() {

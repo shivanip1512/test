@@ -48,9 +48,9 @@ public class DeviceGroupComposedGroupDaoImpl implements DeviceGroupComposedGroup
     @Override
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<DeviceGroupComposedGroup>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("DeviceGroupComposedGroup");
-        template.withPrimaryKeyField("DeviceGroupComposedGroupId");
-        template.withFieldMapper(rowAndFieldMapper); 
+        template.setTableName("DeviceGroupComposedGroup");
+        template.setPrimaryKeyField("DeviceGroupComposedGroupId");
+        template.setFieldMapper(rowAndFieldMapper); 
     }
 
     @Autowired

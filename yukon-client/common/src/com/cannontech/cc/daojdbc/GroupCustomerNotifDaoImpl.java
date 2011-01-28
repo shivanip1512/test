@@ -105,9 +105,9 @@ public class GroupCustomerNotifDaoImpl implements GroupCustomerNotifDao, Initial
     @Override
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<GroupCustomerNotif>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("CCurtGroupCustomerNotif");
-        template.withPrimaryKeyField("CCurtGroupCustomerNotifID");
-        template.withFieldMapper(groupCustomerNotifFieldMapper); 
+        template.setTableName("CCurtGroupCustomerNotif");
+        template.setPrimaryKeyField("CCurtGroupCustomerNotifID");
+        template.setFieldMapper(groupCustomerNotifFieldMapper); 
     }
     
     @Autowired

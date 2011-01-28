@@ -286,10 +286,10 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
     @PostConstruct
     public void init() {
         dbTemplate = new SimpleTableAccessTemplate<OptOutSurvey>(yukonJdbcTemplate, nextValueHelper);
-        dbTemplate.withTableName("optOutSurvey");
-        dbTemplate.withFieldMapper(optOutSurveyFieldMapper);
-        dbTemplate.withPrimaryKeyField("optOutSurveyId");
-        dbTemplate.withPrimaryKeyValidOver(0);
+        dbTemplate.setTableName("optOutSurvey");
+        dbTemplate.setFieldMapper(optOutSurveyFieldMapper);
+        dbTemplate.setPrimaryKeyField("optOutSurveyId");
+        dbTemplate.setPrimaryKeyValidOver(0);
     }
 
     @Autowired

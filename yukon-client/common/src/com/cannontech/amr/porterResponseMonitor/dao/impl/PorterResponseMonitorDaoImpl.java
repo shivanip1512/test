@@ -268,19 +268,19 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		monitorTemplate = new SimpleTableAccessTemplate<PorterResponseMonitor>(yukonJdbcTemplate, nextValueHelper);
-		monitorTemplate.withTableName("PorterResponseMonitor");
-		monitorTemplate.withPrimaryKeyField("MonitorId");
-		monitorTemplate.withFieldMapper(monitorFieldMapper);
+		monitorTemplate.setTableName("PorterResponseMonitor");
+		monitorTemplate.setPrimaryKeyField("MonitorId");
+		monitorTemplate.setFieldMapper(monitorFieldMapper);
 
 		ruleTemplate = new SimpleTableAccessTemplate<StoredPorterResponseMonitorRule>(yukonJdbcTemplate, nextValueHelper);
-		ruleTemplate.withTableName("PorterResponseMonitorRule");
-		ruleTemplate.withPrimaryKeyField("RuleId");
-		ruleTemplate.withFieldMapper(ruleFieldMapper);
+		ruleTemplate.setTableName("PorterResponseMonitorRule");
+		ruleTemplate.setPrimaryKeyField("RuleId");
+		ruleTemplate.setFieldMapper(ruleFieldMapper);
 
 		errorCodeTemplate = new SimpleTableAccessTemplate<StoredPorterResponseMonitorErrorCode>(yukonJdbcTemplate, nextValueHelper);
-		errorCodeTemplate.withTableName("PorterResponseMonitorErrorCode");
-		errorCodeTemplate.withPrimaryKeyField("ErrorCodeId");
-		errorCodeTemplate.withFieldMapper(errorCodeFieldMapper);
+		errorCodeTemplate.setTableName("PorterResponseMonitorErrorCode");
+		errorCodeTemplate.setPrimaryKeyField("ErrorCodeId");
+		errorCodeTemplate.setFieldMapper(errorCodeFieldMapper);
 	}
 
 	@Autowired

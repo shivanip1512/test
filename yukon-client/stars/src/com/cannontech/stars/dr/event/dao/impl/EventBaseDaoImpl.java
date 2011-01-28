@@ -62,10 +62,10 @@ public class EventBaseDaoImpl implements EventBaseDao, InitializingBean {
         chunkingJdbcTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
         
         eventBaseTemplate = new SimpleTableAccessTemplate<EventBase>(yukonJdbcTemplate, nextValueHelper);
-        eventBaseTemplate.withTableName("EventBase");
-        eventBaseTemplate.withPrimaryKeyField("EventId");
-        eventBaseTemplate.withFieldMapper(eventBaseFieldMapper);
-        eventBaseTemplate.withPrimaryKeyValidOver(0);
+        eventBaseTemplate.setTableName("EventBase");
+        eventBaseTemplate.setPrimaryKeyField("EventId");
+        eventBaseTemplate.setFieldMapper(eventBaseFieldMapper);
+        eventBaseTemplate.setPrimaryKeyValidOver(0);
     }
 
     private FieldMapper<EventBase> eventBaseFieldMapper = new FieldMapper<EventBase>() {

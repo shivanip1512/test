@@ -235,19 +235,19 @@ public class EconomicEventDaoImpl implements InitializingBean, EconomicEventDao 
     @Override
     public void afterPropertiesSet() throws Exception {
         eventTemplate = new SimpleTableAccessTemplate<EconomicEvent>(yukonJdbcTemplate, nextValueHelper);
-        eventTemplate.withTableName("CCurtEconomicEvent");
-        eventTemplate.withPrimaryKeyField("CCurtEconomicEventID");
-        eventTemplate.withFieldMapper(economicEventFieldMapper);
+        eventTemplate.setTableName("CCurtEconomicEvent");
+        eventTemplate.setPrimaryKeyField("CCurtEconomicEventID");
+        eventTemplate.setFieldMapper(economicEventFieldMapper);
 
         pricingTemplate = new SimpleTableAccessTemplate<EconomicEventPricing>(yukonJdbcTemplate, nextValueHelper);
-        pricingTemplate.withTableName("CCurtEEPricing");
-        pricingTemplate.withPrimaryKeyField("CCurtEEPricingID");
-        pricingTemplate.withFieldMapper(economicEventPricingFieldMapper);
+        pricingTemplate.setTableName("CCurtEEPricing");
+        pricingTemplate.setPrimaryKeyField("CCurtEEPricingID");
+        pricingTemplate.setFieldMapper(economicEventPricingFieldMapper);
 
         windowTemplate = new SimpleTableAccessTemplate<EconomicEventPricingWindow>(yukonJdbcTemplate, nextValueHelper);
-        windowTemplate.withTableName("CCurtEEPricingWindow");
-        windowTemplate.withPrimaryKeyField("CCurtEEPricingWindowID");
-        windowTemplate.withFieldMapper(economicEventPricingWindowFieldMapper);
+        windowTemplate.setTableName("CCurtEEPricingWindow");
+        windowTemplate.setPrimaryKeyField("CCurtEEPricingWindowID");
+        windowTemplate.setFieldMapper(economicEventPricingWindowFieldMapper);
     }
 
     private void setRevisionsForEvents(Collection<EconomicEvent> eventCol) {

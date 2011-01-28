@@ -264,10 +264,10 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
     public void init() {
         dbTemplate = new SimpleTableAccessTemplate<InventoryConfigTask>(yukonJdbcTemplate,
                                                                         nextValueHelper);
-        dbTemplate.withTableName("inventoryConfigTask");
-        dbTemplate.withFieldMapper(fieldMapper);
-        dbTemplate.withPrimaryKeyField("inventoryConfigTaskId");
-        dbTemplate.withPrimaryKeyValidOver(0);
+        dbTemplate.setTableName("inventoryConfigTask");
+        dbTemplate.setFieldMapper(fieldMapper);
+        dbTemplate.setPrimaryKeyField("inventoryConfigTaskId");
+        dbTemplate.setPrimaryKeyValidOver(0);
     }
 
     @Autowired

@@ -115,9 +115,9 @@ public class CustomerStubDaoImpl implements CustomerStubDao, InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<CICustomerPointData>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("CICustomerPointData");
-        template.withPrimaryKeyField("CustomerID");
-        template.withFieldMapper(pointDataFieldMapper); 
+        template.setTableName("CICustomerPointData");
+        template.setPrimaryKeyField("CustomerID");
+        template.setFieldMapper(pointDataFieldMapper); 
     }
 
     private void setPointDataForCustomers(List<CICustomerStub> customerList) {

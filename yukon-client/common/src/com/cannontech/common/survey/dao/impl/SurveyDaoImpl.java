@@ -425,10 +425,10 @@ public class SurveyDaoImpl implements SurveyDao {
     @PostConstruct
     public void init() {
         dbTemplate = new SimpleTableAccessTemplate<Survey>(yukonJdbcTemplate, nextValueHelper);
-        dbTemplate.withTableName("survey");
-        dbTemplate.withFieldMapper(surveyFieldMapper);
-        dbTemplate.withPrimaryKeyField("surveyId");
-        dbTemplate.withPrimaryKeyValidOver(0);
+        dbTemplate.setTableName("survey");
+        dbTemplate.setFieldMapper(surveyFieldMapper);
+        dbTemplate.setPrimaryKeyField("surveyId");
+        dbTemplate.setPrimaryKeyValidOver(0);
     }
 
     @Autowired

@@ -116,9 +116,9 @@ public class ProgramDaoImpl implements ProgramDao, InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<Program>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("CCurtProgram");
-        template.withPrimaryKeyField("CCurtProgramID");
-        template.withFieldMapper(programFieldMapper); 
+        template.setTableName("CCurtProgram");
+        template.setPrimaryKeyField("CCurtProgramID");
+        template.setFieldMapper(programFieldMapper); 
     }
     
     @Autowired

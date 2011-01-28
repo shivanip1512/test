@@ -120,9 +120,9 @@ public class JobStatusDaoImpl implements JobStatusDao, InitializingBean {
     
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<JobStatus<?>>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("JobStatus");
-        template.withPrimaryKeyField("jobStatusId");
-        template.withFieldMapper(jobStatusFieldMapper); 
+        template.setTableName("JobStatus");
+        template.setPrimaryKeyField("jobStatusId");
+        template.setFieldMapper(jobStatusFieldMapper); 
     }
     
     @Autowired

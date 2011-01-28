@@ -126,9 +126,9 @@ public class CurtailmentEventNotifDaoImpl implements CurtailmentEventNotifDao, I
     @Override
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<CurtailmentEventNotif>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("CCurtCENotif");
-        template.withPrimaryKeyField("CCurtCENotifID");
-        template.withFieldMapper(curtailmentEventNotifFieldMapper); 
+        template.setTableName("CCurtCENotif");
+        template.setPrimaryKeyField("CCurtCENotifID");
+        template.setFieldMapper(curtailmentEventNotifFieldMapper); 
     }
     
     @Autowired

@@ -82,9 +82,9 @@ public class AccountingEventParticipantDaoImpl implements InitializingBean, Acco
     @Override
     public void afterPropertiesSet() throws Exception {
         template = new SimpleTableAccessTemplate<AccountingEventParticipant>(yukonJdbcTemplate, nextValueHelper);
-        template.withTableName("CCurtAcctEventParticipant");
-        template.withPrimaryKeyField("CCurtAcctEventParticipantID");
-        template.withFieldMapper(accountingEventParticipantFieldMapper); 
+        template.setTableName("CCurtAcctEventParticipant");
+        template.setPrimaryKeyField("CCurtAcctEventParticipantID");
+        template.setFieldMapper(accountingEventParticipantFieldMapper); 
     }
 
     @Autowired
