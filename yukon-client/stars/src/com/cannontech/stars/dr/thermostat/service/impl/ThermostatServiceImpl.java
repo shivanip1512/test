@@ -3,8 +3,6 @@ package com.cannontech.stars.dr.thermostat.service.impl;
 import java.util.Collection;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -12,7 +10,6 @@ import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
@@ -306,11 +303,36 @@ public class ThermostatServiceImpl implements ThermostatService {
     }
     
     @Override
-    public int getTempOrDefaultInF(HttpServletRequest request, String temperatureUnit) {
-        int defaultTempForUnit = CtiUtilities.convertTemperature(ThermostatManualEvent.DEFAULT_TEMPERATURE, CtiUtilities.FAHRENHEIT_CHARACTER, temperatureUnit);
-        int temperature = ServletRequestUtils.getIntParameter(request, "temperature", defaultTempForUnit);
-        int tempInF = CtiUtilities.convertTemperature(temperature, temperatureUnit, CtiUtilities.FAHRENHEIT_CHARACTER);
-        return tempInF;
+    public ThermostatManualEventResult validateTempAgainstLimits(List<Integer> thermostatIdsList,
+                                                                 int temperatureInF, 
+                                                                 ThermostatMode thermostatMode) {
+        int maxTempInF;
+        int minTempInF;
+        
+        //The UI only allows selection of multiple thermostats of the same type, so the type of the
+        //first thermostat should be the same as any others
+        int firstThermostatId = thermostatIdsList.get(0);
+        HardwareType type = inventoryDao.getThermostatById(firstThermostatId).getType();
+        SchedulableThermostatType schedThermType = SchedulableThermostatType.getByHardwareType(type);
+        minTempInF = schedThermType.getLowerLimitInFahrenheit(thermostatMode.getHeatCoolSettingType());
+        maxTempInF = schedThermType.getUpperLimitInFahrenheit(thermostatMode.getHeatCoolSettingType());
+        
+        ThermostatManualEventResult message = null;
+        if(temperatureInF > maxTempInF) {
+            message = ThermostatManualEventResult.CONSUMER_MANUAL_INVALID_TEMP_HIGH;
+        } else if(temperatureInF < minTempInF) {
+            message = ThermostatManualEventResult.CONSUMER_MANUAL_INVALID_TEMP_LOW;
+        }
+        return message;
+    }    
+    
+    @Override
+    public int getTempOrDefaultInF(Integer temperature, String temperatureUnit) {
+        if(temperature == null) {
+            return ThermostatManualEvent.DEFAULT_TEMPERATURE;
+        } else {
+            return CtiUtilities.convertTemperature(temperature, temperatureUnit, CtiUtilities.FAHRENHEIT_CHARACTER);
+        }
     }
     
     @Override

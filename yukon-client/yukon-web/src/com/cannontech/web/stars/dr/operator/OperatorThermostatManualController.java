@@ -13,7 +13,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -21,7 +20,6 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
@@ -87,14 +85,15 @@ public class OperatorThermostatManualController {
     public String save(String thermostatIds,
 				    		String mode, 
 				    		String fan, 
-				    		String temperatureUnit, 
+				    		String temperatureUnit,
+				    		Integer temperature,
 				    		YukonUserContext userContext,
 				            HttpServletRequest request, 
 				            ModelMap modelMap,
 				            FlashScope flashScope,
 					        AccountInfoFragment accountInfoFragment) {
-
-		executeManualEvent(thermostatIds, mode, fan, temperatureUnit, userContext, request, modelMap, flashScope, accountInfoFragment);
+	    
+		executeManualEvent(thermostatIds, mode, fan, temperatureUnit, temperature, userContext, request, modelMap, flashScope, accountInfoFragment);
 		
         return "redirect:view";
     }
@@ -104,14 +103,15 @@ public class OperatorThermostatManualController {
     public String runProgram(String thermostatIds,
 				    		String mode, 
 				    		String fan, 
-				    		String temperatureUnit, 
+				    		String temperatureUnit,
+				    		Integer temperature,
 				    		YukonUserContext userContext,
 				            HttpServletRequest request, 
 				            ModelMap modelMap,
 				            FlashScope flashScope,
 					        AccountInfoFragment accountInfoFragment) {
 
-		executeManualEvent(thermostatIds, mode, fan, temperatureUnit, userContext, request, modelMap, flashScope, accountInfoFragment);
+		executeManualEvent(thermostatIds, mode, fan, temperatureUnit, temperature, userContext, request, modelMap, flashScope, accountInfoFragment);
 		
         return "redirect:/spring/stars/operator/thermostatSchedule/view";
     }
@@ -119,7 +119,8 @@ public class OperatorThermostatManualController {
     private void executeManualEvent(String thermostatIds,
 				    		String mode, 
 				    		String fan, 
-				    		String temperatureUnit, 
+				    		String temperatureUnit,
+				    		Integer temperature,
 				    		YukonUserContext userContext,
 				            HttpServletRequest request, 
 				            ModelMap modelMap,
@@ -144,27 +145,15 @@ public class OperatorThermostatManualController {
         boolean needsTempValidation = thermostatMode.isHeatOrCool() && !runProgram;
         boolean isValid = true;
         ThermostatManualEventResult message = null;
-        int temperatureInF = thermostatService.getTempOrDefaultInF(request, temperatureUnit);
+        
+        int temperatureInF = thermostatService.getTempOrDefaultInF(temperature, temperatureUnit);
         
         //Validate temperature for mode and thermostat type
         if(needsTempValidation) {
-            Integer maxTempInF = null;
-            Integer minTempInF = null;
+            ThermostatManualEventResult limitMessage = thermostatService.validateTempAgainstLimits(thermostatIdsList, temperatureInF, thermostatMode);
             
-            //The UI only allows selection of multiple thermostats of the same type, so the type of the
-            //first thermostat should be the same as any others
-            int firstThermostatId = thermostatIdsList.get(0);
-            HardwareType type = inventoryDao.getThermostatById(firstThermostatId).getType();
-            SchedulableThermostatType schedThermType = SchedulableThermostatType.getByHardwareType(type);
-            minTempInF = schedThermType.getLowerLimitInFahrenheit(thermostatMode.getHeatCoolSettingType());
-            maxTempInF = schedThermType.getUpperLimitInFahrenheit(thermostatMode.getHeatCoolSettingType());
-            
-            if(temperatureInF > maxTempInF) {
-                MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(ThermostatManualEventResult.CONSUMER_MANUAL_INVALID_TEMP_HIGH.getDisplayKey());
-                flashScope.setError(messageResolvable);
-                isValid = false;
-            } else if(temperatureInF < minTempInF) {
-                MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(ThermostatManualEventResult.CONSUMER_MANUAL_INVALID_TEMP_LOW.getDisplayKey());
+            if(limitMessage != null) {
+                MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(limitMessage.getDisplayKey());
                 flashScope.setError(messageResolvable);
                 isValid = false;
             }

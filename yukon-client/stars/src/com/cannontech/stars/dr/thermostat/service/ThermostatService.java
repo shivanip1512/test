@@ -2,8 +2,6 @@ package com.cannontech.stars.dr.thermostat.service;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
@@ -86,14 +84,24 @@ public interface ThermostatService {
     public void updateTempUnitForCustomer(String temperatureUnit, int customerId);
     
     /**
-     * Retrieves the temperature from the request, or if that doesn't exist, retrieves the default
-     * temperature for a manual event.  The resulting temperature is returned in Fahrenheit.
+     * If the temperature value is null, returns the default temperature for a manual event in
+     * Fahrenheit.  If not, the temperature is returned in Fahrenheit.
      */
-    public int getTempOrDefaultInF(HttpServletRequest request, String temperatureUnit);
+    public int getTempOrDefaultInF(Integer temperature, String temperatureUnit);
     
     /**
      * Parses a thermostat mode string value into a ThermostatMode object.  A blank string
      * will be translated to OFF.
      */
     public ThermostatMode getThermostatModeFromString(String mode);
+    
+    /**
+     * Validates a manual event temperature against the limits of the device for the given mode.
+     * If the temperature is outside the limits, the ThermostatManualEventResult message will
+     * indicate a temp too high or low.  If the temperature is valid, the ThermostatManualEventResult
+     * will be null.
+     */
+    public ThermostatManualEventResult validateTempAgainstLimits(List<Integer> thermostatIdsList,
+                                                                 int temperatureInF, 
+                                                                 ThermostatMode mode);
 }
