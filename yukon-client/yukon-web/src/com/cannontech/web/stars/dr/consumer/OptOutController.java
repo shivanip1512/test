@@ -111,13 +111,23 @@ public class OptOutController extends AbstractConsumerController {
     	boolean allOptedOut = true;
     	boolean optOutsAvailable = false;
     	for(DisplayableInventory inventory : displayableInventories) {
+    	    OptOutCountHolder optOutCountHolder =  optOutCounts.get(inventory.getInventoryId());
     	    if (!inventory.isCurrentlyOptedOut()) {
 				allOptedOut = false;
 			}
-    	    if (optOutCounts.get(inventory.getInventoryId()).isOptOutsRemaining() &&
-    	            !inventory.isCurrentlyOptedOut()) {
-    	        optOutsAvailable = true;
+    	    
+    	    if(inventory.isCurrentlyOptedOut()){
+    	        if(inventory.getCurrentlyScheduledOptOut()==null && optOutCountHolder.isOptOutsRemaining()){
+    	            optOutsAvailable = true;
+    	        }
     	    }
+    	    else{
+    	        if((inventory.getCurrentlyScheduledOptOut()==null && optOutCountHolder.isOptOutsRemaining()) ||
+    	                (inventory.getCurrentlyScheduledOptOut()!=null && optOutCountHolder.getRemainingOptOuts()>1)){
+    	            optOutsAvailable = true;
+    	        }
+    	    }
+
     	}
     	model.addAttribute("displayableInventories", displayableInventories);
         model.addAttribute("optOutCounts", optOutCounts);
@@ -167,17 +177,17 @@ public class OptOutController extends AbstractConsumerController {
         for (DisplayableInventory inventory : displayableInventories) {
             OptOutCountHolder optOutCountHolder = optOutCounts.get(inventory.getInventoryId());
             
-        	boolean optOutNotAvailable = !optOutCountHolder.isOptOutsRemaining() || 
-        	                              inventory.isCurrentlyOptedOut() && isSameDay ||
-        	                              (inventory.getCurrentlyScheduledOptOut() != null && 
-        	                               (optOutCountHolder.getRemainingOptOuts()) == 1 &&  
-        	                               isSameDay);
-        	noOptOutsAvailableLookup.put(inventory, optOutNotAvailable);
-        	
-        	if(!optOutNotAvailable){
-        	    optOutableInventories.add(inventory);
-        	}
-        	
+            // Check if device can't be opted out
+            if(!optOutCountHolder.isOptOutsRemaining() ||
+                    optOutCountHolder.getRemainingOptOuts()==1 && inventory.getCurrentlyScheduledOptOut()!=null ||
+                    (isSameDay && inventory.isCurrentlyOptedOut()) ||
+                    (!isSameDay && inventory.getCurrentlyScheduledOptOut()!= null)){
+                noOptOutsAvailableLookup.put(inventory, true);
+            }
+            else{
+                noOptOutsAvailableLookup.put(inventory, false);
+                optOutableInventories.add(inventory);
+            }
         }
         model.addAttribute("noOptOutsAvailableLookup", noOptOutsAvailableLookup);
         boolean hasDeviceSelection =
