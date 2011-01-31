@@ -3,7 +3,7 @@
 <%@ attribute name="title"%>
 <%@ attribute name="onClose"%>
 <%@ attribute name="styleClass" required="false"%>
-<%@ attribute name="on" description="registers click event on the element with this ID"%>
+<%@ attribute name="on" description="registers click event on the element with this CSS selector"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
