@@ -3,10 +3,39 @@ package com.cannontech.amr.rfn.service.pointmapping;
 import java.util.Set;
 
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.util.ModifiersMatcher;
+import com.cannontech.common.util.MatchStyle;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 public interface UnitOfMeasureToPointMapper {
+    
+    public static class ModifiersMatcher {
+        private MatchStyle style;
+        private ImmutableSet<String> modifiers;
+
+        public ModifiersMatcher(MatchStyle style, Iterable<String> modifiers) {
+            this.style = style;
+            this.modifiers = ImmutableSet.copyOf(modifiers);
+        }
+
+        public MatchStyle getStyle() {
+            return style;
+        }
+
+        public ImmutableSet<String> getModifiers() {
+            return modifiers;
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString() {
+            return String.format("%s(%s)", style, modifiers);
+        }
+    }
 
     public static class PointMapper {
         private String name;

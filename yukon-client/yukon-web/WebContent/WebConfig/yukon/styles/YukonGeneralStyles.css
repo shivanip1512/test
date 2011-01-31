@@ -919,6 +919,12 @@ h3.indentedElementHeading + * {
 	text-align: right;
 }
 
+/* widget action area */
+.widgetActionArea {
+    text-align: right;
+    padding-top: 5px;
+}
+
 .pageActionArea {
 	margin-top: 15px;
 }

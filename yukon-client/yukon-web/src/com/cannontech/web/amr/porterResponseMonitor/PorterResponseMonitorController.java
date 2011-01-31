@@ -2,7 +2,6 @@ package com.cannontech.web.amr.porterResponseMonitor;
 
 import java.beans.PropertyEditorSupport;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -179,7 +178,7 @@ public class PorterResponseMonitorController {
 		modelMap.addAttribute("monitorId", monitor.getMonitorId());
 
 		MessageSourceResolvable createMessage = new YukonMessageSourceResolvable("yukon.web.modules.amr.porterResponseMonitor.created");
-		flashScope.setConfirm(Collections.singletonList(createMessage));
+		flashScope.setConfirm(createMessage);
 
 		outageEventLogService.porterResponseMonitorCreated(monitor.getMonitorId(),
 														   monitor.getName(),
@@ -188,7 +187,7 @@ public class PorterResponseMonitorController {
 														   monitor.getEvaluatorStatus().getDescription(),
 														   userContext.getYukonUser());
 
-		return "redirect:/spring/amr/porterResponseMonitor/editPage";
+		return "redirect:editPage";
 	}
 
 	@RequestMapping(params = "cancel")
@@ -254,7 +253,7 @@ public class PorterResponseMonitorController {
 
 		MessageSourceResolvable updateMessage = new YukonMessageSourceResolvable(
 				"yukon.web.modules.amr.porterResponseMonitor.updated", monitor.getName());
-		flashScope.setConfirm(Collections.singletonList(updateMessage));
+		flashScope.setConfirm(updateMessage);
 		
         outageEventLogService.porterResponseMonitorUpdated(monitor.getMonitorId(), 
         		monitor.getName(),
@@ -363,7 +362,7 @@ public class PorterResponseMonitorController {
 
 		if (monitor.getRules().isEmpty()) {
 			MessageSourceResolvable noRulesMessage = new YukonMessageSourceResolvable(baseKey + ".rulesTable.noRules");
-			flashScope.setWarning(Collections.singletonList(noRulesMessage));
+			flashScope.setWarning(noRulesMessage);
 		}
 
         Set<Attribute> allAttributes = attributeService.getReadableAttributes();

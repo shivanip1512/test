@@ -86,7 +86,6 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 	};
 
 	@Override
-	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 	public List<PorterResponseMonitor> getAllMonitors() {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT MonitorId, Name, StateGroupId, Attribute, EvaluatorStatus");
@@ -121,8 +120,7 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 		return monitor;
 	}
 
-	@Override
-	public List<PorterResponseMonitorRule> getRulesByMonitorId(int monitorId) {
+	private List<PorterResponseMonitorRule> getRulesByMonitorId(int monitorId) {
 		SqlStatementBuilder ruleSql = new SqlStatementBuilder();
 		ruleSql.append("SELECT RuleId, RuleOrder, Success, MatchStyle, State");
 		ruleSql.append("FROM PorterResponseMonitorRule");
@@ -139,8 +137,7 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 		return ruleList;
 	}
 
-	@Override
-	public List<PorterResponseMonitorErrorCode> getErrorCodesByRuleId(int ruleId) {
+	private List<PorterResponseMonitorErrorCode> getErrorCodesByRuleId(int ruleId) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT ErrorCodeId, RuleId, ErrorCode");
 		sql.append("FROM PorterResponseMonitorErrorCode");
@@ -152,6 +149,7 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 	}
 
 	@Override
+	@Transactional
 	public boolean deleteMonitor(int monitorId) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("DELETE FROM PorterResponseMonitor");

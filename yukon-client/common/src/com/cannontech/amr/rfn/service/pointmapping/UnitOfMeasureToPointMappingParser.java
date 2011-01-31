@@ -29,14 +29,13 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.util.MatchStyle;
-import com.cannontech.common.util.ModifiersMatcher;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableMultimap.Builder;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
-import com.google.common.collect.ImmutableMultimap.Builder;
 import com.google.common.collect.Sets.SetView;
 
 @ManagedResource

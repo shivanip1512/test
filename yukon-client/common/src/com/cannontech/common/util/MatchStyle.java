@@ -4,6 +4,9 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
+/**
+ * These Enum names appear in both XML files and in database rows and should never be changed.
+ */
 public enum MatchStyle {
 	none {
 		@Override

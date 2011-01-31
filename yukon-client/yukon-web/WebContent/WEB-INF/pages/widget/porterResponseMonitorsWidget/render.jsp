@@ -80,7 +80,7 @@
     </c:otherwise>
 </c:choose>
 
-<div style="text-align: right; padding-top: 5px;">
+<div class="widgetActionArea">
 	<%-- CREATE NEW MONITOR FORM --%>
 	<form id="createNewPorterResponseMonitorForm_${widgetParameters.widgetId}"
 		action="/spring/amr/porterResponseMonitor/createPage" method="get">
