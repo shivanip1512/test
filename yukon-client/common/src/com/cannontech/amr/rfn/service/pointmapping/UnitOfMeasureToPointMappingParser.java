@@ -320,7 +320,7 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
             multiplier = Double.parseDouble(multiplierStr);
         }
         boolean siPrefixParsing = false; // if the element doesn't exist, default to false
-        Element siPrefixElement = pointElement.getChild("siPrefix");
+        Element siPrefixElement = pointElement.getChild("parseSiPrefix");
         if (siPrefixElement != null) {
             // if the element does exist, default to true 
             String valueStr = siPrefixElement.getAttributeValue("value", Boolean.toString(true));
