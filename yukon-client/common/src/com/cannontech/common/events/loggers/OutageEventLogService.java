@@ -58,18 +58,24 @@ public interface OutageEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="system.outageEvents.porterResponseMonitor")
     public void porterResponseMonitorCreated(int monitorId, 
                                     String monitorName, 
+                                    String attribute,
+                                    String stateGroup,
                                     String evaluatorStatus,
                                     @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="system.outageEvents.porterResponseMonitor")
     public void porterResponseMonitorDeleted(int monitorId, 
                                     String monitorName, 
+                                    String attribute,
+                                    String stateGroup,
                                     String evaluatorStatus,
                                     @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="system.outageEvents.porterResponseMonitor")
     public void porterResponseMonitorUpdated(int monitorId, 
                                     String monitorName, 
+                                    String attribute,
+                                    String stateGroup,
                                     String evaluatorStatus,
                                     @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 

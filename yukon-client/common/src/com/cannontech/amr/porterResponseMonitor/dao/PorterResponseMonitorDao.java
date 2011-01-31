@@ -20,7 +20,5 @@ public interface PorterResponseMonitorDao {
 
 	public boolean deleteMonitor(int monitorId);
 
-	public boolean deleteRule(int ruleId);
-
 	public List<PorterResponseMonitorErrorCode> getErrorCodesByRuleId(int ruleId);
 }

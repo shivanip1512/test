@@ -9,8 +9,6 @@
 
 	<cti:standardMenu menuSelection="meters" />
 
-	<cti:includeScript link="/JavaScript/jquery.js" />
-
 	<cti:breadCrumbs>
 		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
 		<cti:crumbLink url="/spring/meter/start" title="Metering" />
@@ -22,15 +20,17 @@
 
 <script type="text/javascript">
 
-	addTableRow = function () {
-
+	addTableRow = function (monitorId, largestOrder) {
+	    if (addTableRow.nextOrder < largestOrder) {
+	        addTableRow.nextOrder = largestOrder;
+	    }
 		var url = '/spring/amr/porterResponseMonitor/addRule';
 		var index = $$('.ruleCounter').length;
 	    var newRow = $('defaultRow').cloneNode(true);
 	    $('rulesTableBody').appendChild(newRow);
 
 	    new Ajax.Request(url,{
-	        parameters: {'index': index++},
+	        parameters: {'index': index, 'monitorId' : monitorId, 'nextOrder' : ++addTableRow.nextOrder},
 	        onSuccess: function(transport) {
 	            var dummyHolder = document.createElement('div');
 	            dummyHolder.innerHTML = transport.responseText;
@@ -42,45 +42,28 @@
 	        }
 	    });
 	}
+    addTableRow.nextOrder = 0;
 
 	removeTableRow = function (rowId) {
 		//If this is a new row then just remove it
 		//Else hide it and show the undo row
 		if (rowId.indexOf('new_') == 0) {
-			//jquery implementation
-			//j$('#'+rowId).fadeOut(400, function () {
-			//	$(rowId).remove();
-			//});
 			$(rowId).remove();
 		} else {
-			//Remove the table row
-			var rowToDelete = document.createElement('input');
-			rowToDelete.type = 'hidden';
+    		var rowToDelete = document.createElement('input');
+    		rowToDelete.type = 'hidden';
+    		rowToDelete.name = 'rulesToRemove';
+    		rowToDelete.value = rowId;
+    		rowToDelete.id =  'deleteInput_' + rowId;
+    		$('updateForm').appendChild(rowToDelete);
 
-			//rowType will be "bank" or "point"
-			rowToDelete.name = 'rulesToRemove';
-			rowToDelete.value = rowId;
-			rowToDelete.id =  'deleteInput_' + rowId;
-			$('updateForm').appendChild(rowToDelete);
-
-			//jquery implementation
-			//j$('#'+rowId).fadeOut(400, function () {
-			//	j$('#'+rowId + '_undo').fadeIn(400);
-			//});
-
-			$(rowId).hide();
-			$(rowId + '_undo').show();
+    		$(rowId).hide();
+    	    $(rowId + '_undo').show();
 		}
 	}
 
 	undoRemoveTableRow = function (rowId) {
 		$('deleteInput_' + rowId).remove();
-
-		//jquery implementation
-		//j$('#'+rowId + '_undo').fadeOut(400, function () {
-		//	j$('#'+rowId).fadeIn(400);
-		//});
-
 		$(rowId + '_undo').hide();
 		$(rowId).show();
 	}
@@ -90,6 +73,7 @@
 		action="/spring/amr/porterResponseMonitor/update" method="post">
 
 		<form:hidden path="monitorId" />
+        <form:hidden path="stateGroup"/>
 		<form:hidden path="evaluatorStatus" />
 
 		<tags:formElementContainer nameKey="sectionHeader">
@@ -98,8 +82,21 @@
 				<%-- name --%>
 				<tags:inputNameValue nameKey=".name" path="name" size="50" maxlength="50" />
 
-				<%-- enable/disable monitoring --%>
-				<tags:nameValue2 nameKey=".monitoring">
+                <%-- attribute --%>
+                <tags:nameValue2 nameKey=".attribute">
+                    <form:select path="attribute">
+                        <c:forEach items="${allAttributes}" var="attributeVar">
+                            <form:option value="${attributeVar}">${attributeVar.description}</form:option>
+                        </c:forEach>
+                    </form:select>
+                </tags:nameValue2>
+
+                <tags:nameValue2 nameKey=".stateGroup">
+                    <spring:escapeBody htmlEscape="true">${monitor.stateGroup.stateGroupName}</spring:escapeBody>
+                </tags:nameValue2>
+
+                <%-- enable/disable monitoring --%>
+                <tags:nameValue2 nameKey=".monitoring">
 					<i:inline key="${monitor.evaluatorStatus}" />
 				</tags:nameValue2>
 
@@ -127,12 +124,16 @@
 								<th><i:inline key=".rulesTable.header.success" /></th>
 								<th><i:inline key=".rulesTable.header.errors" /></th>
 								<th><i:inline key=".rulesTable.header.matchStyle" /></th>
-								<th><i:inline key=".rulesTable.header.action" /></th>
+								<th><i:inline key=".rulesTable.header.state" /></th>
 								<th class="removeColumn"><i:inline key=".rulesTable.header.remove" /></th>
 							</tr>
 						</thead>
 						<tbody id="rulesTableBody">
+                            <c:set var="largestOrder" value="0"/>
 							<c:forEach var="rule" varStatus="status" items="${monitor.rules}">
+                                <c:if test="${largestOrder < rule.ruleOrder}">
+                                    <c:set var="largestOrder" value="${rule.ruleOrder}"/>
+                                </c:if>
 								<c:set var="rowId" value="${rule.ruleId}" />
 								<c:set var="newRow" value="false" />
 								<c:if test="${empty rowId}">
@@ -158,10 +159,12 @@
 										</form:select>
 									</td>
 									<td>
-										<form:select id="actionSelect" path="rules[${status.index}].action">
-											<c:forEach var="action" items="${actionChoices}">
-												<form:option value="${action}">
-													<i:inline key="${action.formatKey}" />
+										<form:select id="stateSelect" path="rules[${status.index}].state">
+											<c:forEach var="state" items="${monitor.stateGroup.statesList}">
+												<form:option value="${state.liteID}">
+													<spring:escapeBody htmlEscape="true">
+                                                        ${state.stateText}
+                                                    </spring:escapeBody>
 												</form:option>
 											</c:forEach>
 										</form:select>
@@ -184,7 +187,7 @@
 					</div>
 					<br>
 					<span style="float: right;">
-						<cti:button key="rulesTable.add" onclick="addTableRow()" />
+						<cti:button key="rulesTable.add" onclick="addTableRow('${monitor.monitorId}','${largestOrder}')" />
 					</span>
 				</tags:boxContainer2>
 			</cti:dataGridCell>
@@ -195,13 +198,12 @@
 		<div class="pageActionArea">
             <cti:button key="update" type="submit"/>
 
+            <c:set var="monitoringKey" value="monitoringEnable"/>
 			<c:if test="${monitor.evaluatorStatus eq 'ENABLED'}">
-                <cti:button key="monitoringDisable" type="submit" name="toggleEnabled"/>
-			</c:if>
-			<c:if test="${monitor.evaluatorStatus eq 'DISABLED'}">
-                <cti:button key="monitoringEnable" type="submit" name="toggleEnabled"/>
+                <c:set var="monitoringKey" value="monitoringDisable"/>
 			</c:if>
 
+            <cti:button key="${monitoringKey}" type="submit" name="toggleEnabled"/>
 			<cti:button id="deleteButton" key="delete"/>
 			<tags:confirmDialog nameKey=".deleteConfirmation" arguments="${monitor.name}" submitName="delete" on="#deleteButton"/>
 

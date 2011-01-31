@@ -10,7 +10,7 @@ public class PorterResponseMonitorRule {
 	private boolean success;
 	private List<PorterResponseMonitorErrorCode> errorCodes = Lists.newArrayList();
 	private PorterResponseMonitorMatchStyle matchStyle = PorterResponseMonitorMatchStyle.any;
-	private PorterResponseMonitorAction action = PorterResponseMonitorAction.normal;
+	private String state;
 
 	public Integer getRuleId() {
 		return ruleId;
@@ -52,11 +52,66 @@ public class PorterResponseMonitorRule {
 		this.matchStyle = matchStyle;
 	}
 
-	public PorterResponseMonitorAction getAction() {
-		return action;
-	}
+    public String getState() {
+        return state;
+    }
 
-	public void setAction(PorterResponseMonitorAction action) {
-		this.action = action;
-	}
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public int getStateInt() throws NumberFormatException {
+        return convertStateToInt(state);
+    }
+
+    public int convertStateToInt(String state) throws NumberFormatException {
+        return Integer.parseInt(state);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((errorCodes == null) ? 0 : errorCodes.hashCode());
+        result = prime * result + ((matchStyle == null) ? 0 : matchStyle.hashCode());
+        result = prime * result + ((ruleId == null) ? 0 : ruleId.hashCode());
+        result = prime * result + ruleOrder;
+        result = prime * result + ((state == null) ? 0 : state.hashCode());
+        result = prime * result + (success ? 1231 : 1237);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        PorterResponseMonitorRule other = (PorterResponseMonitorRule) obj;
+        if (errorCodes == null) {
+            if (other.errorCodes != null)
+                return false;
+        } else if (!errorCodes.equals(other.errorCodes))
+            return false;
+        if (matchStyle != other.matchStyle)
+            return false;
+        if (ruleId == null) {
+            if (other.ruleId != null)
+                return false;
+        } else if (!ruleId.equals(other.ruleId))
+            return false;
+        if (ruleOrder != other.ruleOrder)
+            return false;
+        if (state == null) {
+            if (other.state != null)
+                return false;
+        } else if (!state.equals(other.state))
+            return false;
+        if (success != other.success)
+            return false;
+        return true;
+    }
+
 }

@@ -8,7 +8,7 @@
 	<table class="compactResultsTable">
 
 		<tr id="new_${newRowId}" class="ruleCounter">
-			<td><input name="rules[${index}].ruleOrder" size="1" value="${index}" /></td>
+			<td><input name="rules[${index}].ruleOrder" size="1" value="${order}" /></td>
 			<td><input type="checkbox" name="rules[${index}].success" /></td>
 			<td><input type="text" size="5" value="${defaultError}" name="monitorCodes" /></td>
 			<td><select name="rules[${index}].matchStyle">
@@ -16,9 +16,9 @@
 					<option value="${style}"><i:inline key="${style.formatKey}" /></option>
 				</c:forEach>
 			</select></td>
-			<td><select name="rules[${index}].action">
-				<c:forEach items="${actionChoices}" var="action">
-					<option value="${action}"><i:inline key="${action.formatKey}" /></option>
+			<td><select name="rules[${index}].state">
+				<c:forEach items="${statesList}" var="state">
+					<option value="${state.liteID}">${state.stateText}</option>
 				</c:forEach>
 			</select></td>
 			<td class="removeColumn"><cti:img key="delete" href="javascript:removeTableRow('new_${newRowId}')" /></td>

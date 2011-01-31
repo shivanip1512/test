@@ -29,6 +29,14 @@
 				<spring:escapeBody htmlEscape="true">${monitor.name}</spring:escapeBody>
 			</tags:nameValue2>
 
+            <tags:nameValue2 nameKey=".attribute">
+                <spring:escapeBody htmlEscape="true">${monitor.attribute.description}</spring:escapeBody>
+            </tags:nameValue2>
+
+            <tags:nameValue2 nameKey=".stateGroup">
+                <spring:escapeBody htmlEscape="true">${monitor.stateGroup.stateGroupName}</spring:escapeBody>
+            </tags:nameValue2>
+
 			<%-- enable/disable monitoring --%>
 			<tags:nameValue2 nameKey=".monitoring">
 				<i:inline key="${monitor.evaluatorStatus}" />
@@ -44,7 +52,7 @@
 							<th><i:inline key=".rulesTable.header.success" /></th>
 							<th><i:inline key=".rulesTable.header.errors" /></th>
 							<th><i:inline key=".rulesTable.header.matchStyle" /></th>
-							<th><i:inline key=".rulesTable.header.action" /></th>
+							<th><i:inline key=".rulesTable.header.state" /></th>
 						</tr>
 
 						<c:forEach items="${monitor.rules}" var="rule" varStatus="status">
@@ -53,7 +61,7 @@
 								<td nowrap="nowrap">${rule.success}</td>
 								<td nowrap="nowrap">${errorCodesMap[rule.ruleId]}</td>
 								<td nowrap="nowrap">${rule.matchStyle}</td>
-								<td nowrap="nowrap">${rule.action}</td>
+								<td nowrap="nowrap">${stateStrings[status.index]}</td>
 							</tr>
 						</c:forEach>
 					</table>

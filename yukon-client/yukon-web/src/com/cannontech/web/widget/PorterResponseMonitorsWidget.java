@@ -32,7 +32,7 @@ public class PorterResponseMonitorsWidget extends AdvancedWidgetControllerBase {
 	@RequestMapping
 	public String render(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		setupRenderModel(model, request);
-		return "porterResponseMonitorWidget/render.jsp";
+		return "porterResponseMonitorsWidget/render.jsp";
 	}
 
 	@RequestMapping
@@ -56,7 +56,7 @@ public class PorterResponseMonitorsWidget extends AdvancedWidgetControllerBase {
 
 		outageEventLogService.porterResponseMonitorEnableDisable(monitorId, status.name(), userContext.getYukonUser());
 
-		return "porterResponseMonitorWidget/render.jsp";
+		return "porterResponseMonitorsWidget/render.jsp";
 	}
 
 	private void setupRenderModel(ModelMap model, HttpServletRequest request) throws Exception {

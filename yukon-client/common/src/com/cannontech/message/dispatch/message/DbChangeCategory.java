@@ -43,6 +43,7 @@ public enum DbChangeCategory {
     STARS_PUBLISHED_PROGRAM("Stars Published Program"),
     YUKON_SELECTION_LIST("YukonSelectionList"), 
     YUKON_LIST_ENTRY("YukonListEntry"),
+    PORTER_RESPONSE_MONITOR("PorterResponseMonitor"),
     ;
     
     private final String representation;

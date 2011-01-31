@@ -33,6 +33,15 @@
 				<%-- name --%>
 				<tags:inputNameValue nameKey=".name" path="name" size="50" maxlength="50" />
 
+                <%-- state group --%>
+                <tags:nameValue2 nameKey=".stateGroup">
+                    <select name="stateGroup">
+                        <c:forEach items="${stateGroups}" var="stateGroup">
+                            <option value="${stateGroup}">${stateGroup.stateGroupName}</option>
+                        </c:forEach>
+                    </select>
+                </tags:nameValue2>
+
 			</tags:nameValueContainer2>
 		</tags:formElementContainer>
 

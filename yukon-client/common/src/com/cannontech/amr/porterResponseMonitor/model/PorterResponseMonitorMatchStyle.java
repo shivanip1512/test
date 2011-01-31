@@ -1,36 +1,26 @@
 package com.cannontech.amr.porterResponseMonitor.model;
 
-import java.util.Set;
-
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.google.common.collect.Sets;
+import com.cannontech.common.util.MatchStyle;
 
 public enum PorterResponseMonitorMatchStyle implements DisplayableEnum {
 
-	// not sure if you can just do something like MatchStyle.any
-	// so doing this for now:
+	none(MatchStyle.none),
+	any(MatchStyle.any),
+	all(MatchStyle.all),
+	;
 
-	none {
-		@Override
-		public boolean matches(Set<?> a, Set<?> b) {
-			return Sets.intersection(a, b).isEmpty();
-		}
-	},
-	any {
-		@Override
-		public boolean matches(Set<?> a, Set<?> b) {
-			return !Sets.intersection(a, b).isEmpty();
-		}
-	},
-	all {
-		@Override
-		public boolean matches(Set<?> a, Set<?> b) {
-			return a.containsAll(b);
-		}
-	};
+	private final MatchStyle matchStyle;
 
-	public abstract boolean matches(Set<?> a, Set<?> b);
+    private PorterResponseMonitorMatchStyle(MatchStyle matchStyle) {
+        this.matchStyle = matchStyle;
+	    
+	}
 
+    public MatchStyle getMatchStyle() {
+        return matchStyle;
+    }
+    
 	@Override
 	public String getFormatKey() {
 		return keyPrefix + name();

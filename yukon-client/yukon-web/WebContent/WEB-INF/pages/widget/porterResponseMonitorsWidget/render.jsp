@@ -3,17 +3,13 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <c:url var="cog" value="/WebConfig/yukon/Icons/cog.gif"/>
 <c:url var="cogOver" value="/WebConfig/yukon/Icons/cog_over.gif"/>
 <c:url var="enabledImg" value="/WebConfig/yukon/Icons/green_circle.gif"/>
 <c:url var="disabledImg" value="/WebConfig/yukon/Icons/gray_circle.gif"/>
-                                        
-<cti:msg var="noMonitorsSetupText" key="yukon.web.modules.amr.porterResponseMonitorsWidget.noMonitorsSetup"/>
-<cti:msg var="nameHeaderText" key="yukon.web.modules.amr.porterResponseMonitorsWidget.tableHeader.name"/>
-<cti:msg var="enabledHeaderText" key="yukon.web.modules.amr.porterResponseMonitorsWidget.tableHeader.enabled"/>
-<cti:msg var="createNewText" key="yukon.web.modules.amr.porterResponseMonitorsWidget.createNew"/>
-<cti:msg var="actionTitleText" key="yukon.web.modules.amr.porterResponseMonitorsWidget.actionTitle.porterResponseMonitoring"/>
+
 <cti:msg var="enableText" key="yukon.common.enable"/> 
 <cti:msg var="disableText" key="yukon.common.disable"/>
 
@@ -29,8 +25,8 @@
 
 			<tr>
 				<th style="width: 20px;">&nbsp;</th>
-				<th>${nameHeaderText}</th>
-				<th style="text-align: right; width: 80px;">${enabledHeaderText}</th>
+				<th><i:inline key=".name"/></th>
+				<th style="text-align: right; width: 80px;"><i:inline key=".enabled"/></th>
 			</tr>
 
 			<c:forEach var="monitor" items="${monitors}">
@@ -46,7 +42,7 @@
 
 					<%-- action icons --%>
 					<td>
-						<a href="${viewMonitorUrl}" title="${actionTitleText} (${monitor.name})" 
+						<a href="${viewMonitorUrl}" title="<i:inline key=".porterResponseMonitoring"/> (${monitor.name})" 
 							style="text-decoration: none;">
 							<img src="${cog}" onmouseover="javascript:this.src='${cogOver}'" 
 								onmouseout="javascript:this.src='${cog}'">
@@ -55,7 +51,7 @@
 
 					<%-- monitor name --%>
 					<td class="${tdClass}">
-						<a href="${viewMonitorUrl}" title="${actionTitleText} (${monitor.name})">${monitor.name}</a>
+						<a href="${viewMonitorUrl}" title="<i:inline key=".porterResponseMonitoring"/> ${monitor.name})">${monitor.name}</a>
 					</td>
 
 					<%-- enable/disable --%>
@@ -80,7 +76,7 @@
 		</table>
 	</c:when>
 	<c:otherwise>
-    	${noMonitorsSetupText}
+        <i:inline key=".noMonitorsSetup"/>
     </c:otherwise>
 </c:choose>
 
@@ -88,7 +84,6 @@
 	<%-- CREATE NEW MONITOR FORM --%>
 	<form id="createNewPorterResponseMonitorForm_${widgetParameters.widgetId}"
 		action="/spring/amr/porterResponseMonitor/createPage" method="get">
-		<tags:slowInput myFormId="createNewPorterResponseMonitorForm_${widgetParameters.widgetId}"
-			labelBusy="${createNewText}" label="${createNewText}" />
+        <tags:slowInput2 formId="createNewPorterResponseMonitorForm_${widgetParameters.widgetId}" key="createNew"/>
 	</form>
 </div>

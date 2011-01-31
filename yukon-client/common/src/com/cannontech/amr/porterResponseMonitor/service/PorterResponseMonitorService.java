@@ -7,8 +7,8 @@ public interface PorterResponseMonitorService {
 	public boolean delete(int monitorId) throws NotFoundException;
 
 	/**
-	 * Toggles monitor enabled status. If disabled, make enabled. If disabled,
-	 * make enabled. Returns new state of the monitor.
+	 * Toggles monitor enabled status. If disabled, make enabled. If enabled,
+	 * make disabled. Returns new state of the monitor.
 	 * 
 	 * @param porterResponseProcessingMonitorId
 	 * @return
