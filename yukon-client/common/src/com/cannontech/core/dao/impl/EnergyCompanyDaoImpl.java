@@ -9,7 +9,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.EnergyCompanyDao;
@@ -18,6 +17,7 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.IDatabaseCache;
@@ -34,7 +34,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     private RolePropertyDao rolePropertyDao;
     private YukonUserDao yukonUserDao;
     private IDatabaseCache databaseCache;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
 
     private EnergyCompanyDaoImpl() {
         super();
@@ -73,7 +73,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         sql.append("where ecgm.EnergyCompanyID in (").appendArgumentList(energyCompanyIds).append(")");
         sql.append("and ecgm.MappingCategory = 'ServiceCompany'");
 
-        return simpleJdbcTemplate.query(sql.getSql(),
+        return yukonJdbcTemplate.query(sql.getSql(),
             new ParameterizedRowMapper<DisplayableServiceCompany>() {
                 @Override
                 public DisplayableServiceCompany mapRow(
@@ -99,7 +99,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         sql.append("and ItemId = ").appendArgument(energyCompanyId);
 
         try {
-            int parentId = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
+            int parentId = yukonJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
             parentIds.add(parentId);
 
             /* Recursive call to get the whole parent chain */
@@ -223,7 +223,17 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     public void addEnergyCompanyCustomerListEntry(int customerId,
             int energyCompanyId) {
         String sql = "INSERT INTO EnergyCompanyCustomerList VALUES (?,?)";
-        simpleJdbcTemplate.update(sql, energyCompanyId, customerId);
+        yukonJdbcTemplate.update(sql, energyCompanyId, customerId);
+    }
+    
+    @Override
+    public void updateCompanyName(String name, int energyCompanyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE EnergyCompany");
+        sql.append("SET Name =").appendArgument(name);
+        sql.append("WHERE EnergyCompanyId").eq_k(energyCompanyId);
+        
+        yukonJdbcTemplate.update(sql);
     }
 
     @Override
@@ -232,8 +242,8 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     }
 
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 
     public void setDatabaseCache(IDatabaseCache databaseCache) {

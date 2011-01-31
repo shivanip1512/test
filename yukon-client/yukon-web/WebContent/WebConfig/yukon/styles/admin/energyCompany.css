@@ -1,0 +1,29 @@
+table.energyCompanyHomeLayout {
+    width: 100%;
+}
+
+table.energyCompanyHomeLayout td.first,
+table.energyCompanyHomeLayout td.last {
+    vertical-align: top;
+    width: 50%;
+}
+
+table.energyCompanyHomeLayout td.last {
+    padding-left: 30px;
+}
+
+div.ecContainer {
+    max-height: 193px;
+    overflow: auto;
+    overflow-x: hidden;
+}
+
+ul.groupLists li {
+    list-style: disc;
+}
+
+div.membersContainer {
+    max-height: 300px;
+    overflow: auto;
+    overflow-x: hidden;
+}

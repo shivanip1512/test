@@ -7,7 +7,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="operator" page="warehouse.HOME">
-    <cti:includeCss link="/WebConfig/yukon/styles/operator/energyCompany.css"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/admin/energyCompany.css"/>
     
     <h1>${warehouse.warehouse.warehouseName}</h1>
     

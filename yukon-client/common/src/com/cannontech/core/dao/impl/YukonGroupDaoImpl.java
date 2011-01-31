@@ -135,6 +135,11 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         return null;
     }
     
+    @Override
+    public void save(LiteYukonGroup group) {
+        /*TODO*/
+    }
+    
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;

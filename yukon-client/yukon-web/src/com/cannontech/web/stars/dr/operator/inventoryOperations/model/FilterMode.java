@@ -3,8 +3,8 @@ package com.cannontech.web.stars.dr.operator.inventoryOperations.model;
 import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum FilterMode implements DisplayableEnum {
-    INTERSECT,
-    UNION;
+    AND,
+    OR;
     
     public String getValue() {
         return name();

@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.energyCompany;
+package com.cannontech.web.admin.energyCompany.general.model;
 
 import com.cannontech.common.model.Address;
 

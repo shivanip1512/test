@@ -43,6 +43,7 @@
     <entry key="yukon.web.components.image.edit.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
     <entry key="yukon.web.components.image.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.gif</entry>
     <entry key="yukon.web.components.image.edit.hoverText">Edit</entry>
+    <entry key="yukon.web.components.image.edit.label">Edit</entry>
     
     <entry key="yukon.web.components.image.info.imageUrl">/WebConfig/yukon/Icons/information.gif</entry>
     <entry key="yukon.web.components.image.info.hoverUrl">/WebConfig/yukon/Icons/information_over.gif</entry>
@@ -133,6 +134,7 @@
     <entry key="yukon.web.components.button.create.label">Create</entry>
     <entry key="yukon.web.components.button.ok.label">OK</entry>
     <entry key="yukon.web.components.button.save.label">Save</entry>
+    <entry key="yukon.web.components.button.submit.label">Submit</entry>
     <entry key="yukon.web.components.button.cancel.label">Cancel</entry>
     <entry key="yukon.web.components.button.delete.label">Delete</entry>
 
@@ -140,5 +142,10 @@
     <entry key="yukon.web.components.button.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
     <entry key="yukon.web.components.button.add.hoverText">Add</entry>
     <entry key="yukon.web.components.button.add.label">Add</entry>
+    
+    <entry key="yukon.web.components.button.edit.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
+    <entry key="yukon.web.components.button.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
+    <entry key="yukon.web.components.button.edit.hoverText">Edit</entry>
+    <entry key="yukon.web.components.button.edit.label">Edit</entry>
 
 </properties>

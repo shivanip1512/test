@@ -1,5 +1,7 @@
 package com.cannontech.core.roleproperties;
 
+import java.util.List;
+
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.roles.ApplicationRoleDefs;
@@ -11,6 +13,7 @@ import com.cannontech.roles.OperatorRoleDefs;
 import com.cannontech.roles.YukonRoleDefs;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableMap.Builder;
 
 import static com.cannontech.core.roleproperties.YukonRoleCategory.*;
@@ -85,6 +88,16 @@ public enum YukonRole {
         YukonRole yukonRole = lookup.get(roleId);
         Validate.notNull(yukonRole);
         return yukonRole;
+    }
+    
+    public static List<YukonRole> getForCategory(YukonRoleCategory category) throws IllegalArgumentException {
+        List<YukonRole> rolesInCategory = Lists.newArrayList();
+        for (YukonRole role : values()) {
+            if(role.getCategory() == category) {
+                rolesInCategory.add(role);
+            }
+        }
+        return rolesInCategory;
     }
     
     public int getRoleId() {

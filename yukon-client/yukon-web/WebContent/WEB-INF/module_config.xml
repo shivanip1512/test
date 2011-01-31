@@ -1014,6 +1014,136 @@
     <css file="/WebConfig/yukon/styles/operationsStyles.css" />
   </module>
 
+    <module name="adminSetup">
+        <skin name="STANDARD" />
+        <menu>
+            <options>
+                <option name="energyCompanySetup">
+                    <requireRoleProperty value="ADMIN_CONFIG_ENERGY_COMPANY" />
+                    <link>/spring/adminSetup/energyCompany/home</link>
+                    <options>
+                        <option name="home">
+                            <requireRoleProperty value="ADMIN_CONFIG_ENERGY_COMPANY" />
+                            <link>/spring/adminSetup/energyCompany/home</link>
+                        </option>
+                    </options>
+                </option>
+                <option name="multispeak">
+                    <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
+                    <link>/spring/adminSetup/multispeak</link>
+                    <options>
+                        <option name="interfaces">
+                            <link>/spring/adminSetup/multispeak/interfaces</link>
+                        </option>
+                        <option name="route_mappings">
+                            <link>/spring/adminSetup/multispeak/routeMappings</link>
+                        </option>
+                        <option name="synchronization">
+                            <link>/spring/adminSetup/multispeak/sync</link>
+                        </option>
+                    </options>
+                </option>
+                <option name="userGroupEditor">
+                    <link>/spring/adminSetup/userGroupEditor/home</link>
+                    <options>
+                        <option name="home">
+                            <link>/spring/adminSetup/userGroupEditor/home</link>
+                        </option>
+                    </options>
+                </option>
+            </options>
+        </menu>
+        
+        <pages>
+            <page name="multispeak" type="BASIC">
+                <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
+                <menu>multispeak|interfaces</menu>
+                <link>/spring/adminSetup/multispeak/interfaces</link>
+            </page>
+            <page name="userGroupEditor" type="BASIC">
+                <menu>userGroupEditor|home</menu>
+                <link>/spring/adminSetup/userGroupEditor/home</link>
+                <pages>
+                    <page name="groupEditor.VIEW" type="DETAIL">
+                        <menu>userGroupEditor|home</menu>
+                        <link>/spring/adminSetup/groupEditor/view?groupId=${groupId}</link>
+                        <labelArgument>${groupName}</labelArgument>
+                        <pages>
+                            <page name="groupEditor.EDIT" type="DETAIL_CHILD">
+                                <menu>userGroupEditor|home</menu>
+                                <link>/spring/adminSetup/groupEditor/edit?groupId=${groupId}</link>
+                                <labelArgument>${groupName}</labelArgument>
+                            </page>
+                        </pages>
+                    </page>
+                </pages>
+            </page>
+            <page name="home" type="BASIC">
+                <requireRoleProperty value="ADMIN_CONFIG_ENERGY_COMPANY" />
+                <menu>energyCompanySetup|home"</menu>
+                <link>/spring/adminSetup/energyCompany/home?ecId=${ecId}</link>
+                <pages>
+                    <page name="generalInfo.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
+                        <menu>energyCompanySetup|home</menu>
+                        <link>/spring/adminSetup/energyCompany/general/view?ecId=${ecId}</link>
+                        <labelArgument>${energyCompanyName}</labelArgument>
+                        <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
+                        <pages>
+                            <page name="generalInfo.EDIT" type="DETAIL_CHILD_WITH_INFO">
+                                <menu>energyCompanySetup|home</menu>
+                                <link>/spring/adminSetup/energyCompany/generalInfo?ecId=${ecId}</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
+                            </page>
+                            <page name="applianceCategories.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompanySetup|home</menu>
+                                <link>/spring/adminSetup/energyCompany/applianceCategories</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
+                            </page>
+                            <page name="serviceAndStorage.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompanySetup|home</menu>
+                                <link>/spring/adminSetup/energyCompany/serviceAndStorage</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
+                            </page>
+                            <page name="substations.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompanySetup|home</menu>
+                                <link>/spring/adminSetup/energyCompany/substations</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
+                            </page>
+                            <page name="routes.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompanySetup|home</menu>
+                                <link>/spring/adminSetup/energyCompany/routes</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
+                            </page>
+                            <page name="lists.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompanySetup|home</menu>
+                                <link>/spring/adminSetup/energyCompany/lists</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
+                            </page>
+                            <page name="schedules.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompanySetup|home</menu>
+                                <link>/spring/adminSetup/energyCompany/schedules</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
+                            </page>
+                            <page name="settlement.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompanySetup|home</menu>
+                                <link>/spring/adminSetup/energyCompany/settlement</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
+                            </page>
+                        </pages>
+                    </page>
+                </pages>
+            </page>
+        </pages>
+    </module>
+    
     <module name="operator">
         <skin name="STANDARD" />
         <search bean="operatorAccountSearchProducer" />
@@ -1343,7 +1473,7 @@
                 <pages>
                     <page name="generalInfo.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
                         <menu>energyCompany|home</menu>
-                        <link>/spring/stars/operator/energyCompany/generalInfo?ecId=${ecId}</link>
+                        <link>/spring/stars/operator/energyCompany/general/view?ecId=${ecId}</link>
                         <labelArgument>${energyCompanyName}</labelArgument>
                         <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
                         <pages>

@@ -39,7 +39,7 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
     public Set<InventoryIdentifier> getInventory(FilterMode filterMode, List<RuleModel> rules, DateTimeZone timeZone, YukonUserContext userContext) throws ParseException {
         SqlFragmentCollection whereClause;
         
-        if (filterMode == FilterMode.INTERSECT) {
+        if (filterMode == FilterMode.AND) {
             whereClause = SqlFragmentCollection.newAndCollection();
         } else {
             whereClause = SqlFragmentCollection.newOrCollection();

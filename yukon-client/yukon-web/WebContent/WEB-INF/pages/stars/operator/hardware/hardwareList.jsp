@@ -355,7 +355,7 @@
                             <c:when test="${not inventoryChecking}">
                                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
                                     <br>
-                                    <input type="submit" value="<cti:msg2 key=".add"/>" class="formSubmit">
+                                    <cti:button key="add" type="submit"/>
                                 </cti:checkRolesAndProperties>
                             </c:when>
                             <c:otherwise>
@@ -442,7 +442,7 @@
                             <c:choose>
                                 <c:when test="${not inventoryChecking}">
                                     <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                                        <input type="submit" value="<cti:msg2 key=".add"/>" class="formSubmit">
+                                        <cti:button key="add" type="submit"/>
                                     </cti:checkRolesAndProperties>
                                 </c:when>
                                 <c:otherwise>
@@ -549,8 +549,7 @@
                         
                                 <c:otherwise>
                                     <tags:pickerDialog extraArgs="${energyCompanyId}" id="meterPicker" type="availableMctPicker" destinationFieldId="meterId" immediateSelectMode="true"
-                                        endAction="addMeter" linkType="none" />
-                                        <cti:button key="add" type="button" onclick="javascript:meterPicker.show();"/>
+                                        endAction="addMeter" linkType="button" nameKey="add"/>
                                 </c:otherwise>
                             </c:choose>
                         </td>

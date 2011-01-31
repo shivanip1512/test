@@ -1437,8 +1437,9 @@
     <bean id="commandScheduleValidator" class="com.cannontech.web.stars.dr.operator.inventoryOperations.CommandScheduleValidator"/>
     <bean id="filterModelValidator" class="com.cannontech.web.stars.dr.operator.inventoryOperations.FilterModelValidator"/>
 
+	<bean id="energyCompanyInfoService" class="com.cannontech.web.admin.energyCompany.service.impl.EnergyCompanyInfoServiceImpl"/>
+
     <!-- OPERATOR -->
-    <bean id="energyCompanyInfoService" class="com.cannontech.web.stars.dr.operator.service.impl.EnergyCompanyInfoServiceImpl"/>
     <bean id="operatorAccountService" class="com.cannontech.web.stars.dr.operator.service.impl.OperatorAccountServiceImpl"/>
     <bean id="operatorThermostatHelperImpl" class="com.cannontech.web.stars.dr.operator.service.impl.OperatorThermostatHelperImpl"/>
     <bean id="accountGeneralValidator" class="com.cannontech.web.stars.dr.operator.validator.AccountGeneralValidator"/>
@@ -1724,7 +1725,9 @@
     
     <bean id="accountInfoFragmentArgumentResolver" class="com.cannontech.web.stars.dr.operator.general.AccountInfoFragmentArgumentResolver"/>
     
-    <bean id="energyCompanyInfoFragmentArgumentResolver" class="com.cannontech.web.stars.dr.operator.energyCompany.EnergyCompanyInfoFragmentArgumentResolver"/>
+    <bean id="energyCompanyInfoFragmentArgumentResolver" class="com.cannontech.web.admin.energyCompany.general.EnergyCompanyInfoFragmentArgumentResolver"/>
+    <bean id="generalInfoService" class="com.cannontech.web.admin.energyCompany.general.service.GeneralInfoService"/>
+    <bean id="generalInfoValidator" class="com.cannontech.web.admin.energyCompany.general.model.GeneralInfoValidator"/>
     
     <bean id="zoneDtoValidator" class="com.cannontech.web.capcontrol.ivvc.validators.ZoneDtoValidator"/>
     

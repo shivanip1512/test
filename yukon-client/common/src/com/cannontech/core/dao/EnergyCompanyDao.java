@@ -85,4 +85,6 @@ public interface EnergyCompanyDao {
     public List<Integer> getParentEnergyCompanyIds(int energyCompanyId);
 
     public List<LiteEnergyCompany> getAllEnergyCompanies();
+
+    public void updateCompanyName(String name, int energyCompanyId);
 }

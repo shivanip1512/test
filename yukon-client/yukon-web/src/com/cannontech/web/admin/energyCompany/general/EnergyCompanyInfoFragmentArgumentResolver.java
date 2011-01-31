@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.energyCompany;
+package com.cannontech.web.admin.energyCompany.general;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -8,7 +8,8 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import com.cannontech.web.stars.dr.operator.service.EnergyCompanyInfoService;
+import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
+import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoService;
 
 
 public class EnergyCompanyInfoFragmentArgumentResolver implements WebArgumentResolver {

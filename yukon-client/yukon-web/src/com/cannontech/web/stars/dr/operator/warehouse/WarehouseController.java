@@ -22,10 +22,10 @@ import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
+import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
-import com.cannontech.web.stars.dr.operator.energyCompany.EnergyCompanyInfoFragment;
-import com.cannontech.web.stars.dr.operator.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.warehouse.model.WarehouseDto;
 import com.cannontech.web.stars.dr.operator.warehouse.service.impl.WarehouseServiceImpl;
 

@@ -313,7 +313,13 @@
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
-
+    <servlet>
+        <servlet-name>adminSetup</servlet-name>
+        <servlet-class>
+            com.cannontech.web.spring.CannonDispatcherServlet
+        </servlet-class>
+        <load-on-startup>3</load-on-startup>
+    </servlet>
 	<servlet>
 		<servlet-name>lucene-index</servlet-name>
 		<servlet-class>
@@ -1083,8 +1089,10 @@
 		<url-pattern>/spring/layout/*</url-pattern>
 	</servlet-mapping>
 
-
-
+    <servlet-mapping>
+        <servlet-name>adminSetup</servlet-name>
+        <url-pattern>/spring/adminSetup/*</url-pattern>
+    </servlet-mapping>
 
 	<session-config>
 	    <!-- 24 hours in minutes -->

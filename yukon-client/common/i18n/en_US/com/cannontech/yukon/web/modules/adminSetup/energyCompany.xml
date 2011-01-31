@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <entry key="yukon.web.modules.adminSetup.home.pageName">Energy Company Settings</entry>
+    <entry key="yukon.web.modules.adminSetup.home.pageDescription">Energy Company Settings</entry>
+    <entry key="yukon.web.modules.adminSetup.home.create.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
+    <entry key="yukon.web.modules.adminSetup.home.create.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.home.create.label">Create</entry>
+    <entry key="yukon.web.modules.adminSetup.home.name">Name</entry>
+    <entry key="yukon.web.modules.adminSetup.home.type">Type</entry>
+    <entry key="yukon.web.modules.adminSetup.home.parent">Parent</entry>
+    <entry key="yukon.web.modules.adminSetup.home.member">Member</entry>
+    <entry key="yukon.web.modules.adminSetup.home.companiesContainer.title">Configure Energy Company</entry>
+
+    <!-- generalInfo.jsp -->
+    <entry key="yukon.web.modules.adminSetup.generalInfo.CREATE.pageName">Create Energy Company</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.EDIT.pageName">Edit General Info</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.EDIT.contextualPageName">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.EDIT.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.VIEW.pageName">General Info</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.VIEW.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.infoContainer.title">Energy Company Information</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.membersContainer.title">Member Energy Companies</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.edit.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.gif</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.edit.label">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.add.label">Add</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.create.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.create.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.create.label">Create</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.remove.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.remove.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.name">Name</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.address">Address</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.phone">Main Phone #</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.fax">Main Fax #</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.email">Email</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.route">Default Route</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.streetAddress1">Street Address 1</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.streetAddress2">Street Address 2</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.city">City</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.stateCode">State</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.zipCode">Zip Code</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.county">County</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.companyName">Company Name</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.remove">Remove</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.noMembers">No Member Energy Companies</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.updateSuccessful">General Info Updated Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.none">(none)</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.invalidPhoneNumber">Main Phone # contains invalid characters.</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.invalidFaxNumber">Main Fax # contains invalid characters.</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.invalidEmail">Not a valid email address.</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.memberAddSuccessful">Member Added Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.memberRemoveSuccessful">Member Removed Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.confirmRemove.title">Remove Member Energy Company {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.confirmRemove.message">Are you sure you want to remove the member energy company {0}?</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.confirmAdd.title">Add Member Energy Company </entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.confirmAdd.message">Are you sure you want to add the member energy company </entry>
+    
+    <entry key="yukon.web.modules.adminSetup.applianceCategories.VIEW.pageName">Appliance Categories</entry>
+    <entry key="yukon.web.modules.adminSetup.applianceCategories.VIEW.pageDescription">{0}</entry>
+
+    <entry key="yukon.web.modules.adminSetup.serviceAndStorage.VIEW.pageName">Service And Storage</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceAndStorage.VIEW.pageDescription">{0}</entry>
+
+    <entry key="yukon.web.modules.adminSetup.substations.VIEW.pageName">Substations</entry>
+    <entry key="yukon.web.modules.adminSetup.substations.VIEW.pageDescription">{0}</entry>
+
+    <entry key="yukon.web.modules.adminSetup.routes.VIEW.pageName">Routes</entry>
+    <entry key="yukon.web.modules.adminSetup.routes.VIEW.pageDescription">{0}</entry>
+
+    <entry key="yukon.web.modules.adminSetup.lists.VIEW.pageName">Lists</entry>
+    <entry key="yukon.web.modules.adminSetup.lists.VIEW.pageDescription">{0}</entry>
+
+    <entry key="yukon.web.modules.adminSetup.schedules.VIEW.pageName">Schedules</entry>
+    <entry key="yukon.web.modules.adminSetup.schedules.VIEW.pageDescription">{0}</entry>
+
+    <entry key="yukon.web.modules.adminSetup.settlement.VIEW.pageName">Settlement</entry>
+    <entry key="yukon.web.modules.adminSetup.settlement.VIEW.pageDescription">{0}</entry>
+
+</properties>

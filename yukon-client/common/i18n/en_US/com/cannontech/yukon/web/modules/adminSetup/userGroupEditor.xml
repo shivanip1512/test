@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <!-- home.jsp -->
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.pageName">User/Group Editor</entry>
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.pageDescription">User/Group Editor</entry>
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.selectUserOrGroup.title">Select User or Group</entry>
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.selectRole.title">Select a Role</entry>
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.selectEditor.title">Select an Editor</entry>
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.yukonRole">Yukon Role</entry>
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.group">Login Group</entry>
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.user">Yukon User</entry>
+    
+    <!-- Group Editor -->
+    <entry key="yukon.web.modules.adminSetup.groupEditor.VIEW.pageName">Group Editor</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.VIEW.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.EDIT.pageName">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.EDIT.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.groupSettings.title">Group Information</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.membersContainer.title">Members of this Group</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.rolesContainer.title">Roles</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.otherActions.title">Other Actions</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.name">Name</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.description">Description</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.username">Username</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.authtype">Auth Type</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.loginStatus">Login Status</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.noMembers">No Members</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.editPermissions.label">Edit Permissions</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.editPermissions.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.editPermissions.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.editRoleProperties.label">Edit Role Properties</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.editRoleProperties.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.editRoleProperties.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.updateSuccessful">Group Updated Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.error.required.groupName">Name is required.</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.roleCategory">{0} ({1} of {2} Selected)</entry>
+    
+</properties>

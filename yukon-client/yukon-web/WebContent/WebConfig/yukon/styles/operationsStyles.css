@@ -123,6 +123,11 @@ div.boxedLink a:visited {
     color: #000000;
 }
 
+a div.boxedLink {
+    text-decoration: none;
+    color: #000000;
+}
+
 div.boxedLink a:link {
     text-decoration: none;
     color: #000000;

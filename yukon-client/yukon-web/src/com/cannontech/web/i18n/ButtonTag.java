@@ -179,7 +179,7 @@ public class ButtonTag extends YukonTagSupport {
     private void writeImage(JspWriter out, String imageUrl) throws IOException {
         out.write("<img class=\"logoImage\" src=\"");
         out.write(imageUrl);
-        out.write("\">");
+        out.write("\" alt=\"\">");
     }
 
     protected String getLocalMessage(MessageSourceResolvable resolvable, boolean required) {

@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.operator.service.impl;
+package com.cannontech.web.admin.energyCompany.service.impl;
 
 import java.sql.SQLException;
 
@@ -10,8 +10,8 @@ import com.cannontech.core.dao.AddressDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.web.stars.dr.operator.energyCompany.EnergyCompanyInfoFragment;
-import com.cannontech.web.stars.dr.operator.service.EnergyCompanyInfoService;
+import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
+import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoService;
 
 public class EnergyCompanyInfoServiceImpl implements EnergyCompanyInfoService {
     private YukonJdbcTemplate yukonJdbcTemplate;
@@ -43,7 +43,7 @@ public class EnergyCompanyInfoServiceImpl implements EnergyCompanyInfoService {
         });
         
         fragment.setCompanyName(part.name);
-        fragment.setAddress(new Address(addressDao.getByAddressId(part.addressId)));
+        fragment.setAddress(Address.getDisplayableAddress((addressDao.getByAddressId(part.addressId))));
         
         return fragment;
     }

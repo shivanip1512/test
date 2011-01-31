@@ -173,6 +173,9 @@
                <value>classpath:com/cannontech/yukon/dr/appliance</value>
                <value>classpath:com/cannontech/yukon/dr/consumer</value>
                <value>classpath:com/cannontech/yukon/dr/program</value>
+               <value>classpath:com/cannontech/yukon/web/modules/adminSetup/root</value>
+               <value>classpath:com/cannontech/yukon/web/modules/adminSetup/energyCompany</value>
+               <value>classpath:com/cannontech/yukon/web/modules/adminSetup/userGroupEditor</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/groupCommander</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/metering</value>
                <value>classpath:com/cannontech/yukon/web/modules/dr/demandResponse</value>
@@ -196,7 +199,6 @@
                <value>classpath:com/cannontech/yukon/web/modules/operator/thermostat</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/workOrder</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/inventory</value>
-               <value>classpath:com/cannontech/yukon/web/modules/operator/energyCompany</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/warehouse</value>
                <value>classpath:com/cannontech/yukon/web/modules/multispeak/root</value>
                <value>classpath:com/cannontech/yukon/web/modules/multispeak/lmMappings</value>

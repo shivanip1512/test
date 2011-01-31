@@ -8,7 +8,7 @@
 
 <cti:standardPage module="operator" page="warehouse.HOME">
 
-    <cti:includeCss link="/WebConfig/yukon/styles/operator/energyCompany.css"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/admin/energyCompany.css"/>
 
         <cti:dataGrid cols="1" tableClasses="energyCompanyOperationsLayout">
         

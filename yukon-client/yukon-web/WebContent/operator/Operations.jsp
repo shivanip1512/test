@@ -307,10 +307,14 @@
 <cti:checkRole role="operator.AdministratorRole.ROLEID">
 
 	<tags:operationSection sectionName="Administration" sectionImageName="AdministrationLogo">
-		
-        <tags:sectionLink>
-            <a href="/spring/stars/operator/energyCompany/home">Admin Operations</a>
-        </tags:sectionLink>
+        
+        <cti:checkRolesAndProperties value="ADMIN_MULTISPEAK_SETUP, ADMIN_LM_USER_ASSIGN, ADMIN_CONFIG_ENERGY_COMPANY">
+            <a href="/spring/adminSetup/systemAdmin">
+                <tags:sectionLink>
+                    System Administration
+                </tags:sectionLink>
+            </a>
+        </cti:checkRolesAndProperties>
         
 			<cti:checkProperty property="operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY"> 
 	            <tags:sectionLink>
@@ -349,7 +353,7 @@
                     </a>
 	            </tags:sectionLink>
 			</cti:checkProperty> 
-			<cti:checkProperty property="operator.AdministratorRole.ADMIN_MULTISPEAK_SETUP"> 
+			<cti:checkProperty property="operator.AdministratorRole.ADMIN_MULTISPEAK_SETUP">
 	            <tags:sectionLink>
 	            	<a href="/spring/multispeak/setup/home">MultiSpeak Setup</a>
 	            </tags:sectionLink>

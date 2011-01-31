@@ -6,7 +6,7 @@ import com.cannontech.common.util.LazyList;
 
 public class FilterModel {
     
-    private FilterMode filterMode = FilterMode.INTERSECT;
+    private FilterMode filterMode = FilterMode.AND;
     private List<RuleModel> filterRules = LazyList.ofInstance(RuleModel.class);
     
     public FilterMode getFilterMode() {

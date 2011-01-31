@@ -69,7 +69,13 @@ public class ImageTag extends YukonTagSupport {
                 out.write(id);
                 out.write('"');
             }
-            out.write(" class=\"logoImage\" src=\"");
+            
+            String style = "logoImage";
+            if (StringUtils.isNotBlank(styleClass)) {
+                style += (" " + styleClass);
+            }
+            out.write(" class=\"" + style + "\"");
+            out.write(" src=\"");
             out.write(imageUrl);
             out.write("\"");
 
@@ -80,6 +86,8 @@ public class ImageTag extends YukonTagSupport {
                 out.write(" title=\"");
                 out.write(hoverText);
                 out.write("\"");
+            } else {
+                out.write(" alt=\"\"");
             }
 
             if (hoverUrl != null) {

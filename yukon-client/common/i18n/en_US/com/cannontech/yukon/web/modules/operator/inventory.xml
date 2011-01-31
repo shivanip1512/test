@@ -38,8 +38,8 @@
     <entry key="yukon.web.modules.operator.filterSelection.tableHeader.rules">Rules</entry>
     <entry key="yukon.web.modules.operator.filterSelection.tableHeader.remove">Remove</entry>
     <entry key="yukon.web.modules.operator.filterSelection.noRules">No Filter Rules Defined</entry>
-    <entry key="yukon.web.modules.operator.filterSelection.filterMode.UNION">At Least One</entry>
-    <entry key="yukon.web.modules.operator.filterSelection.filterMode.INTERSECT">Every One</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.filterMode.OR">At Least One</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.filterMode.AND">Every One</entry>
     <entry key="yukon.web.modules.operator.filterSelection.unenrolled">Not enrolled in any program.</entry>
     <entry key="yukon.web.modules.operator.filterSelection.select.label">Select</entry>
     <entry key="yukon.web.modules.operator.filterSelection.cancel">Cancel</entry>
@@ -139,7 +139,7 @@
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.inProgress">In Progress</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.complete">Complete</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.successCount">Successfully Paged</entry>
-    <entry key="yukon.web.modules.operator.deviceReconfigStatus.failedCount">Failed To Paged</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.failedCount">Failed To Page</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.notesLabel">Note:</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.notes">Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.newOperation">Choose A New Operation For Inventory</entry>

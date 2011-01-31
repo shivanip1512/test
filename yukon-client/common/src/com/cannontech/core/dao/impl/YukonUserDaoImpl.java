@@ -261,7 +261,6 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	    yukonJdbcOperations.query(sql, new MappingRowCallbackHandler<LiteYukonUser>(new LiteYukonUserMapper(), callback));
 	}
 
-    
     public void removeUserFromGroup(LiteYukonUser user, LiteYukonGroup... yukonGroups){
         List<Integer> yukonGroupIds = Lists.newArrayList();
         for (LiteYukonGroup yukonGroup : yukonGroups) {
@@ -289,6 +288,17 @@ public class YukonUserDaoImpl implements YukonUserDao {
         }
 
         sendUserDbChangeMsg(user.getUserID(), DbChangeType.ADD);
+    }
+    
+    @Override
+    public List<LiteYukonUser> getUsersForGroup(int groupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT yu.*");
+        sql.append("FROM yukonusergroup yug");
+        sql.append("  JOIN yukonuser yu ON yug.userid = yu.userid");
+        sql.append("WHERE groupid = ").appendArgument(groupId);
+        
+        return yukonJdbcOperations.query(sql, createRowMapper());
     }
     
     /**
