@@ -133,7 +133,7 @@ public class GeneralInfoService {
         addressDao.update(address);
         
         /* Route */
-        StarsAdminUtil.updateDefaultRoute( energyCompany, generalInfo.getDefaultRouteId(), user);
+//        StarsAdminUtil.updateDefaultRoute( energyCompany, generalInfo.getDefaultRouteId(), user);
         
     }
     
