@@ -207,10 +207,17 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     
     @Override
     public void addDatabaseChangeEventListener(final DbChangeCategory changeCategory, final DatabaseChangeEventListener listener) {
+        addDatabaseChangeEventListener(changeCategory, EnumSet.allOf(DbChangeType.class), listener);
+    }
+
+    @Override
+    public void addDatabaseChangeEventListener(final DbChangeCategory changeCategory,
+                                                final EnumSet<DbChangeType> types,
+                                                final DatabaseChangeEventListener listener) {
         addDBChangeListener(new DBChangeListener() {
             @Override
             public void dbChangeReceived(DBChangeMsg dbChange) {
-                DatabaseChangeEvent event = DbChangeHelper.findMatchingEvent(dbChange, EnumSet.allOf(DbChangeType.class), changeCategory);
+                DatabaseChangeEvent event = DbChangeHelper.findMatchingEvent(dbChange, types, changeCategory);
                 if (event != null) {
                     listener.eventReceived(event);
                 }

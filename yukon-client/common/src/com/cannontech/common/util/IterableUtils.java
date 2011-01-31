@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class IterableUtils {
@@ -98,5 +99,45 @@ public class IterableUtils {
                         throw new UnsupportedOperationException("clipped iterable does not support remove");
                     }};
             }};
+    }
+    
+    /**
+     * Use this when you have an Iterable of type A, and you know all of its elements can be casted to type B, 
+     * and you want an Iterable of type B. This method blindly casts the objects, so any exceptions will bubble up.
+     * 
+     * Compare this to Google's {@link Iterables#filter(Iterable, Class)} which takes the same arguments, but 
+     * will silently remove any items that are not castable.
+     * @param <T>
+     * @param questionableIterable
+     * @param desiredClass
+     * @return
+     */
+    public static <T> Iterable<T> castIterable(final Iterable<?> questionableIterable, final Class<T> desiredClass) throws ClassCastException {
+        
+        return new Iterable<T>() {
+
+            @Override
+            public Iterator<T> iterator() {
+                final Iterator<?> iterator = questionableIterable.iterator();
+                return new Iterator<T>() {
+
+                    @Override
+                    public boolean hasNext() {
+                        return iterator.hasNext();
+                    }
+
+                    @Override
+                    public T next() {
+                        return desiredClass.cast(iterator.next());
+                    }
+
+                    @Override
+                    public void remove() {
+                        iterator.remove();
+                    }
+                    
+                };
+            }
+        };
     }
 }

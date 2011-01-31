@@ -1,11 +1,13 @@
 package com.cannontech.core.dynamic;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * AsyncDynamicDataSource provides a method to receive dynamic point, signal/alarm, 
@@ -108,6 +110,10 @@ public interface AsyncDynamicDataSource {
      * @param listener
      */
     public void addDatabaseChangeEventListener(DbChangeCategory changeCategory, DatabaseChangeEventListener listener);
+    
+    public void addDatabaseChangeEventListener(DbChangeCategory changeCategory,
+                                        EnumSet<DbChangeType> types,
+                                        DatabaseChangeEventListener listener);
     
     /**
      * Processes a DBChangeMsg locally and then queue to the 
