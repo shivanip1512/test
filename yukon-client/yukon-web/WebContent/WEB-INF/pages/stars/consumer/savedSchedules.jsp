@@ -52,10 +52,10 @@
 				    
 				    <cti:msg2 var="createNewText" key="yukon.dr.consumer.savedSchedules.createNewSchedule" />
 				    <input type="submit" name="createNew" value="${createNewText}">
-				    
-				    <cti:msg var="deleteText" key="yukon.dr.consumer.savedSchedules.deleteSchedule" />
-				    <input type="submit" name="delete" value="${deleteText}">
-		      	
+
+                    <cti:button id="deleteSchedule" key="deleteSchedule"/>
+                    <tags:confirmDialog nameKey=".deleteConfirm" submitName="delete" on="#deleteSchedule"/>
+
 		      	</c:otherwise>
 	      	
 	      	</c:choose>

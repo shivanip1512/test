@@ -4,4 +4,9 @@
 
 <entry key="yukon.web.modules.consumer.pageTitle">Consumer Energy Services</entry>
 
+<!-- savedSchedules.jsp -->
+<entry key="yukon.web.modules.consumer.savedSchedules.deleteSchedule.label">Delete Schedule</entry>
+<entry key="yukon.web.modules.consumer.savedSchedules.deleteConfirm.title">Confirm Delete</entry>
+<entry key="yukon.web.modules.consumer.savedSchedules.deleteConfirm.message">Are you sure you want to delete this schedule?</entry>
+
 </properties>

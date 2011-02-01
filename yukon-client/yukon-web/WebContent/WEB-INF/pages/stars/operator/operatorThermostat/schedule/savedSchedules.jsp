@@ -3,8 +3,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
     
 <cti:standardPage module="operator" page="thermostatSavedSchedules">
 
@@ -49,21 +47,8 @@
 				    <cti:msg2 var="createNewText" key=".createNewSchedule" />
 				    <input type="submit" name="createNew" value="${createNewText}">
 
-				    <input type="button" onclick="$('deleteConfirmDialog').show()"
-				    	value="<i:inline key=".deleteSchedule"/>" class="formSubmit">
-
-				    <!-- Delete Hardware Popup -->
-					<i:simplePopup styleClass="mediumSimplePopup" titleKey=".deleteConfirm" 
-								   id="deleteConfirmDialog">
-						<h1 class="dialogQuestion">
-				            <i:inline key=".deleteMessage"/>
-				        </h1>
-				        <div class="actionArea">
-						    <cti:msg2 var="deleteButtonText" key=".delete" />
-					    	<input type="submit" name="delete" value="${deleteButtonText}">
-							<cti:button key="cancel" onclick="javascript:$('deleteConfirmDialog').hide();"/>
-						</div>
-					</i:simplePopup>
+				    <cti:button id="deleteSchedule" key="deleteSchedule"/>
+                    <tags:confirmDialog nameKey=".deleteConfirm" submitName="delete" on="#deleteSchedule"/>
 
 			</c:otherwise>
 	      	
