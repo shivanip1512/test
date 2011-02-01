@@ -1,9 +1,4 @@
-/*
- * Created on Jun 13, 2005
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
+
 package com.cannontech.multispeak.emulator;
 
 import java.net.URL;
@@ -23,10 +18,9 @@ import com.cannontech.multispeak.deploy.service.Meter;
 import com.cannontech.multispeak.deploy.service.Module;
 
 /**
- * @author stacey
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * This class is used for 'interactive testing'. 
+ * Un/comment methods as needed for testing purposes.
+ * This is the "poor man's MultiSpeak testing harness" 
  */
 public class CD_CB_Test {
 	private String endpointURL = "http://localhost:8080/soap/CD_ServerSoap";
