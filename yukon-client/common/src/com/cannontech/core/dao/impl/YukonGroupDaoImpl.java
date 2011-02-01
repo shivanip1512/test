@@ -121,27 +121,14 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
     }
     
     @Override
-    public String getResidentialGroupNameForUser(int userId, List<LiteYukonGroup> ecResidentialGroups) {
-
-        List<LiteYukonGroup> groupsForUser = getGroupsForUser(userId);
-        for (LiteYukonGroup userLiteYukonGroup : groupsForUser) {
-            for (LiteYukonGroup ecResidentialGroup : ecResidentialGroups){
-                if (userLiteYukonGroup.equals(ecResidentialGroup)){
-                    return ecResidentialGroup.getGroupName();
-                }
-            }
-        }
-        
-        return null;
-    }
-    
-    @Override
     public void save(LiteYukonGroup group) {
         /*TODO*/
     }
     
+    // DI Setters
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
+    
 }

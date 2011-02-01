@@ -38,12 +38,12 @@ import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.SubstationDao;
-import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.service.YukonGroupService;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -102,7 +102,7 @@ public class OperatorAccountController {
     private AccountImportService accountImportService;
     private RecentResultsCache<AccountImportResult> recentResultsCache;
     private YukonUserDao yukonUserDao;
-    private YukonGroupDao yukonGroupDao;
+    private YukonGroupService yukonGroupService;
     private AuthenticationService authenticationService;
     private ResidentialLoginService residentialLoginService;
     private TransactionOperations transactionTemplate;
@@ -443,8 +443,9 @@ public class OperatorAccountController {
 		
 		/* LoginBackingBean */
 		LoginBackingBean loginBackingBean = new LoginBackingBean();
-        String userResidentialGroupName = yukonGroupDao.getResidentialGroupNameForUser(residentialUser.getUserID(), ecResidentialGroups);
-        loginBackingBean.setCustomerLoginGroupName(userResidentialGroupName);
+        LiteYukonGroup userResidentialGroupName = 
+            yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.RESIDENTIAL_CUSTOMER, residentialUser);
+        loginBackingBean.setCustomerLoginGroupName(userResidentialGroupName.getGroupName());
         
         if (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID) {
             modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);
@@ -499,7 +500,8 @@ public class OperatorAccountController {
 	    final String loginMode = ServletRequestUtils.getStringParameter(request, "loginMode");
         modelMap.addAttribute("loginMode", loginMode);
         final LiteYukonUser residentialUser = customerAccountDao.getYukonUserByAccountId(accountInfoFragment.getAccountId());
-        String originalLoginGroup = yukonGroupDao.getResidentialGroupNameForUser(residentialUser.getUserID(), ecResidentialGroups);
+        LiteYukonGroup originalLoginGroup = 
+            yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.RESIDENTIAL_CUSTOMER, residentialUser);
         
         /* 
          * Ignore the login fields if: 
@@ -511,8 +513,7 @@ public class OperatorAccountController {
         final boolean ignoreLogin = !hasEditLoginPrivileges(userContext.getYukonUser()) 
             || (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID && StringUtils.isBlank(accountGeneral.getLoginBackingBean().getUsername()))
             || (residentialUser.getUserID() != UserUtils.USER_DEFAULT_ID && 
-                    (originalLoginGroup == null || 
-                     !didLoginChange(residentialUser, accountGeneral.getLoginBackingBean(), originalLoginGroup)));
+                !didLoginChange(residentialUser, accountGeneral.getLoginBackingBean(), originalLoginGroup.getGroupName()));
 		
 		/* UpdatableAccount */
 		final UpdatableAccount updatableAccount = new UpdatableAccount();
@@ -751,18 +752,19 @@ public class OperatorAccountController {
      * @param originalLoginGroup
      * @return true if any of the login fields were changed.
      */
-    private boolean didLoginChange(LiteYukonUser residentialUser, LoginBackingBean loginBackingBean, String originalLoginGroup) {
+    private boolean didLoginChange(LiteYukonUser residentialUser, LoginBackingBean loginBackingBean, String originalLoginGroupName) {
         String previousUsername = residentialUser.getUsername();
         
         boolean didNotChange = previousUsername.equals(loginBackingBean.getUsername())
             && StringUtils.isBlank(loginBackingBean.getPassword1()) 
             && StringUtils.isBlank(loginBackingBean.getPassword2())
-            && originalLoginGroup.equals(loginBackingBean.getCustomerLoginGroupName())
+            && StringUtils.equals(originalLoginGroupName, loginBackingBean.getCustomerLoginGroupName())
             && residentialUser.getLoginStatus() == loginBackingBean.getLoginStatus();
         
         return !didNotChange;
     }
 	
+    // DI Setters
 	@Autowired
 	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
         this.accountEventLogService = accountEventLogService;
@@ -829,8 +831,8 @@ public class OperatorAccountController {
     }
 	
 	@Autowired
-	public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
-        this.yukonGroupDao = yukonGroupDao;
+	public void setYukonGroupService(YukonGroupService yukonGroupService) {
+        this.yukonGroupService = yukonGroupService;
     }
 	
 	@Autowired

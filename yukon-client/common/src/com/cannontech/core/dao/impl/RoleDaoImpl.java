@@ -7,38 +7,49 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.dao.YukonGroupDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionType;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.SetMultimap;
+import com.google.common.collect.Sets;
 
 /**
  * A collection of methods to handle Roles and property lookups for Groups and Users
  */
-public class RoleDaoImpl implements RoleDao
-{
+public class RoleDaoImpl implements RoleDao {
+    
     private IDatabaseCache databaseCache;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
     private DBPersistentDao dbPersistentDao;
     private RolePropertyDao rolePropertyDao;
+    private YukonGroupDao yukonGroupDao;
+    private YukonJdbcTemplate yukonJdbcTemplate;
 
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.RoleDao#getRoleProperties(int)
@@ -178,11 +189,11 @@ public class RoleDaoImpl implements RoleDao
         
         if (groupRole != null) {
             groupRole.setValue( newVal );
-            dbPersistentDao.performDBChange(groupRole, Transaction.UPDATE);
+            dbPersistentDao.performDBChange(groupRole, TransactionType.UPDATE);
             
         } else {
             groupRole = new YukonGroupRole(null, group.getGroupID(), roleID, rolePropertyId, newVal);
-            dbPersistentDao.performDBChange(groupRole, Transaction.INSERT);
+            dbPersistentDao.performDBChange(groupRole, TransactionType.INSERT);
             
         }
         
@@ -204,7 +215,7 @@ public class RoleDaoImpl implements RoleDao
                      " WHERE YGR.GroupId = ? "+
                      " AND YGR.rolePropertyId = ? ";
         try {
-            YukonGroupRole groupRole = simpleJdbcTemplate.queryForObject(sql, new YukonGroupRoleRowMapper(), groupId, rolePropertyId);
+            YukonGroupRole groupRole = yukonJdbcTemplate.queryForObject(sql, new YukonGroupRoleRowMapper(), groupId, rolePropertyId);
             return groupRole;
         } catch (EmptyResultDataAccessException e) {
             // return null when result is _empty_
@@ -218,6 +229,49 @@ public class RoleDaoImpl implements RoleDao
         return enumValue;
     }
 
+    @Override
+    public SetMultimap<LiteYukonGroup, YukonRole> getGroupsAndRolesForUser(LiteYukonUser user) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT YUG.GroupId");
+        sql.append("FROM YukonUserGroup YUG");
+        sql.append("WHERE YUG.UserId").eq(user.getUserID());
+        List<Integer> groupIdList = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        
+        SetMultimap<LiteYukonGroup, YukonRole> results = HashMultimap.create();
+        for (Integer groupId : groupIdList) {
+            LiteYukonGroup liteYukonGroup = yukonGroupDao.getLiteYukonGroup(groupId);
+            Set<YukonRole> rolesForGroup = getRolesForGroup(liteYukonGroup);
+            results.putAll(liteYukonGroup, rolesForGroup);
+        }
+        
+        return results;
+
+    }
+
+    @Override
+    public Set<YukonRole> getRolesForGroup(LiteYukonGroup liteYukonGroup) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT RoleId");
+        sql.append("FROM YukonGroupRole YGR");
+        sql.append("WHERE YGR.GroupId").eq(liteYukonGroup.getGroupID());
+        List<YukonRole> rolesForGroup = yukonJdbcTemplate.query(sql, new YukonRoleRowMapper());
+        
+        return Sets.newHashSet(rolesForGroup);
+    }
+    
+    // Row Mappers
+    private class YukonRoleRowMapper implements YukonRowMapper<YukonRole> {
+
+        @Override
+        public YukonRole mapRow(YukonResultSet rs) throws SQLException {
+            int roleId = rs.getInt("roleId");
+            return YukonRole.getForId(roleId);
+        }
+
+    }
+    
     private class YukonGroupRoleRowMapper implements ParameterizedRowMapper<YukonGroupRole> {
 
         public YukonGroupRole mapRow(ResultSet rs, int row) throws SQLException {
@@ -231,18 +285,15 @@ public class RoleDaoImpl implements RoleDao
         }
     }
     
+    // DI Setters
+    @Autowired
     public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;
     }
 
-    @Required
+    @Autowired
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
         this.dbPersistentDao = dbPersistentDao;
-    }
-    
-    @Required
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
     
     @Autowired
@@ -250,4 +301,13 @@ public class RoleDaoImpl implements RoleDao
         this.rolePropertyDao = rolePropertyDao;
     }
 
+    @Autowired
+    public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
+        this.yukonGroupDao = yukonGroupDao;
+    }
+    
+    @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
 }

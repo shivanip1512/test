@@ -18,15 +18,11 @@ public interface YukonGroupDao {
 
     public LiteYukonGroup getLiteYukonGroupByName(String groupName);
 
-    /**
-     * Returns the first residential login group that the user is in.
-     */
-    public String getResidentialGroupNameForUser(int userId, List<LiteYukonGroup> ecResidentialGroups);
-
     /** 
      * Saves a LiteYukonGroup, inserting it if is a new group or
      * updating it if is an existing group.
      * @param group
      */
     public void save(LiteYukonGroup group);
+
 }

@@ -16,6 +16,7 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.service.YukonGroupService;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -36,6 +37,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
     private TransactionOperations transactionTemplate;
     private YukonUserDao yukonUserDao;
     private YukonGroupDao yukonGroupDao;
+    private YukonGroupService yukonGroupService;
 
     @Override
     public Integer createResidentialLogin(final LoginBackingBean loginBackingBean, final LiteYukonUser user, final int accountId, final int energyCompanyId) {
@@ -95,7 +97,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
     
                 checkSuppliedResidentialLoginGroup(energyCompanyId, loginBackingBean);
                 
-                updateResidentialCustomerGroup(energyCompanyId, loginBackingBean.getCustomerLoginGroupName(), residentialUser);
+                updateResidentialCustomerGroup(loginBackingBean.getCustomerLoginGroupName(), residentialUser);
     
                 updateLoginStatus(loginBackingBean, residentialUser);
                 
@@ -146,22 +148,9 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
      * This method removes the old residential group, adds a new residential group, 
      * and sends a db change message.
      */
-    private void updateResidentialCustomerGroup(int energyCompanyId, String groupName, LiteYukonUser residentialUser) {
-
-        // Get all the the residential groups
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        List<LiteYukonGroup> ecResidentialGroups = Lists.newArrayList(energyCompany.getResidentialCustomerGroups());
-        String previousUserResidentialGroupName = yukonGroupDao.getResidentialGroupNameForUser(residentialUser.getUserID(), ecResidentialGroups);
-        
-        if (!previousUserResidentialGroupName.equals(groupName)) {
-            // Remove the old login group
-            LiteYukonGroup previousResidentialLoginGroup = yukonGroupDao.getLiteYukonGroupByName(previousUserResidentialGroupName);
-            yukonUserDao.removeUserFromGroup(residentialUser, previousResidentialLoginGroup);
-            
-            // Add the new login group
-            LiteYukonGroup newResidentialLoginGroup = yukonGroupDao.getLiteYukonGroupByName(groupName);
-            yukonUserDao.addUserToGroup(residentialUser, newResidentialLoginGroup);
-        }
+     private void updateResidentialCustomerGroup(String groupName, LiteYukonUser residentialUser) {
+         LiteYukonGroup newUserGroup = yukonGroupDao.getLiteYukonGroupByName(groupName);
+         yukonGroupService.addUserToGroup(newUserGroup, residentialUser);
     }
     
     private void updateLoginStatus(LoginBackingBean loginBackingBean, LiteYukonUser residentialUser) {
@@ -175,6 +164,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
         yukonUserDao.setUserStatus(residentialUser, loginStatus);
     }
     
+    // DI Setters
     @Autowired
     public void setAuthenticationService(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
@@ -210,4 +200,8 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
         this.yukonGroupDao = yukonGroupDao;
     }
     
+    @Autowired
+    public void setYukonGroupService(YukonGroupService yukonGroupService) {
+        this.yukonGroupService = yukonGroupService;
+    }
 }

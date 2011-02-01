@@ -115,12 +115,8 @@
     <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>     
     <property name="nextValueHelper" ref="nextValueHelper"/>
   </bean>
-  <bean id="roleDao" class="com.cannontech.core.dao.impl.RoleDaoImpl" >
-    <property name="rolePropertyDao" ref="rolePropertyDao"/> 
-    <property name="databaseCache" ref="databaseCache"/> 
-    <property name="dbPersistentDao" ref="dbPersistentDao"/>
-    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
-  </bean>
+  <bean id="roleDao" class="com.cannontech.core.dao.impl.RoleDaoImpl" />
+
   <bean id="standaloneRoleDao" class="com.cannontech.core.dao.impl.StandaloneRoleDaoImpl" />
    <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl" >
     <property name="dynamicDataSource" ref="dynamicDataSource"/>
@@ -148,6 +144,8 @@
   </bean>
 
   <bean id="yukonGroupDao" class="com.cannontech.core.dao.impl.YukonGroupDaoImpl"/>
+
+  <bean id="yukonGroupService" class="com.cannontech.core.service.impl.YukonGroupServiceImpl" />
 
   <bean id="rphDao" class="com.cannontech.core.dao.impl.RawPointHistoryDaoImpl" />
   
