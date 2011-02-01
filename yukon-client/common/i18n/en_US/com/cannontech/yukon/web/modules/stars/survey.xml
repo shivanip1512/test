@@ -41,7 +41,7 @@
 <entry key="yukon.web.modules.survey.create.pageName">Survey</entry>
 <entry key="yukon.web.modules.survey.create.pageDescription">Create</entry>
 <entry key="yukon.web.modules.survey.edit.pageName">Survey</entry>
-<entry key="yukon.web.modules.survey.edit.pageDescription">Edit</entry>
+<entry key="yukon.web.modules.survey.edit.pageDescription">{0}</entry>
 
 <entry key="yukon.web.modules.survey.edit.info.title">Info</entry>
 <entry key="yukon.web.modules.survey.edit.actions.title">Actions</entry>

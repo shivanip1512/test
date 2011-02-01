@@ -429,16 +429,18 @@
             <menu>survey</menu>
             <link>/spring/stars/survey/edit?surveyId=${survey.surveyId}</link>
             <labelArgument>${survey.surveyName}</labelArgument>
-          </page>
-          <page name="reportConfig" type="DETAIL_CHILD">
-            <menu>survey</menu>
-            <link>/spring/stars/surveyReport/config?surveyId=${survey.surveyId}</link>
-            <labelArgument>${survey.surveyName}</labelArgument>
             <pages>
-              <page name="report" type="DETAIL_CHILD">
+              <page name="reportConfig" type="DETAIL_CHILD">
                 <menu>survey</menu>
-                <link>/spring/stars/surveyReport/report?surveyId=${survey.surveyId}</link>
+                <link>/spring/stars/surveyReport/config?surveyId=${survey.surveyId}</link>
                 <labelArgument>${survey.surveyName}</labelArgument>
+                <pages>
+                  <page name="report" type="DETAIL_CHILD">
+                    <menu>survey</menu>
+                    <link>/spring/stars/surveyReport/report?surveyId=${survey.surveyId}</link>
+                    <labelArgument>${survey.surveyName}</labelArgument>
+                  </page>
+                </pages>
               </page>
             </pages>
           </page>
