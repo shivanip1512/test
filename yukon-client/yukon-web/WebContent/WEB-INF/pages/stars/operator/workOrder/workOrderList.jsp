@@ -1,16 +1,43 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
-<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"  %>
 
 <cti:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
 <cti:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
     
 <cti:standardPage module="operator" page="workOrder.list">
+
+
+<script type="text/javascript">
+YEvent.observeSelectorClick('input[id^=deleteButton_]', function(event) {
+    var parentElement = Event.findElement(event, 'td');
+    var confirmMsg = $F(parentElement.down('input[name=confirmMessage]'));
+    var accountId = $F(parentElement.down('input[name=accountId]'));
+    var orderId = $F(parentElement.down('input[name=deleteWorkOrderId]'));
+    
+    var confirmPopup = $('confirmPopup');
+
+    var messageContainer = confirmPopup.down('div[id=confirmMessage]');
+    messageContainer.innerHTML = confirmMsg;
+    var accountIdDest = confirmPopup.down('input[name=accountId]');
+    Element.writeAttribute(accountIdDest, 'value', accountId);
+    var orderIdDest = confirmPopup.down('input[name=deleteWorkOrderId]');
+    Element.writeAttribute(orderIdDest, 'value', orderId);
+    confirmPopup.show();
+});
+
+YEvent.observeSelectorClick('#confirmCancel', function(event) {
+    $('confirmPopup').hide();
+});
+</script>
+
+
+
+
 <tags:setFormEditMode mode="${mode}"/>
 
     <cti:includeCss link="/WebConfig/yukon/styles/operator/callTracking.css"/>
@@ -69,19 +96,32 @@
                 <%-- delete icon --%>
                 <cti:displayForPageEditModes modes="EDIT,CREATE">
                     <td class="removeCol">
-                         <form id="deleteWorkOrderForm_${workOrder.workOrderBase.orderId}" action="/spring/stars/operator/workOrder/deleteWorkOrder" method="post">
-                            <input type="hidden" name="accountId" value="${accountId}">
-                            <input type="hidden" name="deleteWorkOrderId" value="${workOrder.workOrderBase.orderId}">
-                            <input type="image" id="deleteButton_${workOrder.workOrderBase.orderId}" onclick="return false" src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
-                            <tags:confirmDialog nameKey=".deleteWorkOrderConfirmation" arguments="${workOrder.workOrderBase.orderNumber}" on="#deleteButton_${workOrder.workOrderBase.orderId}"/>
-                         </form>
+                        <cti:msg2 var="confirmMessage" key=".deleteWorkOrderConfirmation.message" arguments="${workOrder.workOrderBase.orderNumber}"/>
+                        <input type="hidden" name="confirmMessage" value="${confirmMessage}"/>
+                        <input type="hidden" name="accountId" value="${accountId}">
+                        <input type="hidden" name="deleteWorkOrderId" value="${workOrder.workOrderBase.orderId}">
+                        <input type="image" id="deleteButton_${workOrder.workOrderBase.orderId}" onclick="return false" src="${delete}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
                     </td>
-                    
                 </cti:displayForPageEditModes>
             
             </tr>
         </c:forEach>
     </table>
+    
+    <%-- Confirm Dialog for delete work order --%>
+    <cti:msg2 key=".deleteWorkOrderConfirmation.title" var="confirmDialogTitle"/>
+    <tags:simplePopup title="${confirmDialogTitle}" id="confirmPopup" styleClass="smallSimplePopup">
+        <form action="/spring/stars/operator/workOrder/deleteWorkOrder" method="post">
+            <input type="hidden" name="accountId" value="">
+            <input type="hidden" name="deleteWorkOrderId" value="">
+            <div id="confirmMessage"></div>
+            <div class="actionArea">
+                <cti:button key="ok" type="submit"/> 
+                <cti:button key="cancel" id="confirmCancel" />
+            </div>
+        </form>
+    </tags:simplePopup>
+    
     </tags:boxContainer2>
         
     <%-- create button --%>
