@@ -22,6 +22,11 @@ import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.multispeak.deploy.service.Nameplate;
 import com.cannontech.multispeak.deploy.service.UtilityInfo;
 
+/**
+ * This class is used for 'interactive testing'. 
+ * Un/comment methods as needed for testing purposes.
+ * This is the "poor man's MultiSpeak testing harness" 
+ */
 public class MR_CB_Test {
 
 	private MR_ServerSoap_BindingStub instance;

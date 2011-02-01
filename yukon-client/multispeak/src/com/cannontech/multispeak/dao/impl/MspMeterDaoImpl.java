@@ -1,6 +1,5 @@
 package com.cannontech.multispeak.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,7 +8,6 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -17,9 +15,11 @@ import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.ListRowCallbackHandler;
+import com.cannontech.database.CollectionRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.deploy.service.Meter;
@@ -43,13 +43,12 @@ public final class MspMeterDaoImpl implements MspMeterDao
 			"LEFT OUTER JOIN DeviceMCT400Series mct ON pao.paobjectId = mct.deviceId ";
     };
     
-    private static final ParameterizedRowMapper<Meter> mspMeterRowMapper = new ParameterizedRowMapper<Meter>() {
-    	public Meter mapRow(ResultSet rset, int arg1) throws SQLException {
+    private static final YukonRowMapper<Meter> mspMeterRowMapper = new YukonRowMapper<Meter>() {
+    	public Meter mapRow(YukonResultSet rset) throws SQLException {
             String meterNumber = rset.getString("meternumber");
             int paobjectID = rset.getInt("paobjectid");
             String address = rset.getString("address");
-            String paoTypeStr = rset.getString("type");
-            PaoType paoType = PaoType.getForDbString(paoTypeStr);
+            PaoType paoType = rset.getEnum("type", PaoType.class);
             String discAddress = rset.getString("disconnectaddress");
 
             Meter mspMeter = createMeter(meterNumber, paoType, address, discAddress);
@@ -66,8 +65,8 @@ public final class MspMeterDaoImpl implements MspMeterDao
             }
             sql.append("ORDER BY METERNUMBER"); 
             List<Meter> mspMeters = new ArrayList<Meter>();
-            ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters, mspMeterRowMapper);
-            yukonJdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(lrcHandler, maxRecords));
+            CollectionRowCallbackHandler<Meter> crcHandler = new CollectionRowCallbackHandler<Meter>(mspMeterRowMapper, mspMeters);
+            yukonJdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
             return mspMeters;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("No results found > MeterNumber" + lastReceived + ".");
@@ -89,8 +88,8 @@ public final class MspMeterDaoImpl implements MspMeterDao
             sql.append("ORDER BY MeterNumber");
 
             List<Meter> mspMeters = new ArrayList<Meter>();
-            ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters, mspMeterRowMapper);
-            yukonJdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(lrcHandler, maxRecords));
+            CollectionRowCallbackHandler<Meter> crcHandler = new CollectionRowCallbackHandler<Meter>(mspMeterRowMapper, mspMeters);
+            yukonJdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
             return mspMeters;
         } catch (IncorrectResultSizeDataAccessException e) {
         	throw new NotFoundException("No results found > MeterNumber " + lastReceived + ".");
@@ -123,6 +122,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
 
     /**
      * Creates a new (MSP) Meter object.
+     * The information commented out is being used for in-line documentation of available MultiSpeak fields. 
      * @param meterNumber The Multispeak objectID.
      * @param address The meter's transponderID (Physical Address)
      * @return
@@ -172,6 +172,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
 
     /**
      * Creates a new (MSP) Nameplate object
+     * The information commented out is being used for in-line documentation of available MultiSpeak fields. 
      * @param meterNumber The multispeak objectID
      * @param address The meter's transponderID (Physical Address)
      * @return
@@ -203,6 +204,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
     
     /**
      * Creates a new (MSP) UtilityInfo object
+     * The information commented out is being used for in-line documentation of available MultiSpeak fields. 
      * @param meterNumber The Multispeak objectID
      * @return
      */

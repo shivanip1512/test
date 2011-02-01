@@ -1,9 +1,3 @@
-/*
- * Created on Jun 13, 2005
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package com.cannontech.multispeak.emulator;
 
 import java.net.MalformedURLException;
@@ -21,10 +15,9 @@ import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.Meter;
 
 /**
- * @author stacey
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * This class is used for 'interactive testing'. 
+ * Un/comment methods as needed for testing purposes.
+ * This is the "poor man's MultiSpeak testing harness" 
  */
 public class CB_CD_Test {
 
