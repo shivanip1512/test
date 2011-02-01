@@ -1,6 +1,5 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,7 +51,6 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
     private LMHardwareControlGroupDao lmHardwareControlGroupDao = (LMHardwareControlGroupDao) YukonSpringHook.getBean("lmHardwareControlGroupDao");
     private LmControlHistoryUtilService lmControlHistoryUtilService = (LmControlHistoryUtilService) YukonSpringHook.getBean("lmControlHistoryUtilService", LmControlHistoryUtilService.class); 
     private ApplianceAndProgramDao applianceAndProgramDao = (ApplianceAndProgramDao) YukonSpringHook.getBean("applianceAndProgramDao");
-    private static DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
     private ProgramDao programDao = (ProgramDao)YukonSpringHook.getBean("starsProgramDao");
     
     private List<ModelRow> data = Collections.emptyList();
@@ -250,12 +248,12 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                         row.totalOptOutHours = 0.0;
                         row.totalOptOutHoursDuringControl = 0.0;
                     } else {
-                        row.controlHours = new Double(decFormat.format(1.0 * totals[TOTAL_CONTROL_HOURS]));
+                        row.controlHours = new Double(1.0 * totals[TOTAL_CONTROL_HOURS]);
                         row.enrolledCustomers = (int)totals[ENROLLED_CUSTOMERS].doubleValue();
                         row.enrolledInventory = (int)totals[ENROLLED_INVENTORY].doubleValue();
                         row.optOutEvents = (int)totals[TOTAL_OPT_OUT_EVENTS].doubleValue();
-                        row.totalOptOutHours = new Double(decFormat.format(1.0 * totals[TOTAL_OPT_OUT_HOURS]));
-                        row.totalOptOutHoursDuringControl = new Double(decFormat.format(1.0 * totals[TOTAL_OPT_OUT_HOURS_DURING_CONTROL]));
+                        row.totalOptOutHours = new Double(1.0 * totals[TOTAL_OPT_OUT_HOURS]);
+                        row.totalOptOutHoursDuringControl = new Double(1.0 * totals[TOTAL_OPT_OUT_HOURS_DURING_CONTROL]);
                     }
                     data.add(row);
                 }

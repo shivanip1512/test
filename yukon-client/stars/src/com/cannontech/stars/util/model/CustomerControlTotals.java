@@ -36,13 +36,4 @@ public class CustomerControlTotals {
         this.totalOptOutEvents = totalOptOutEvents;
     }
     
-    public void plus(CustomerControlTotals customerControlTotals) {
-        
-        this.totalControlDuringOptOutTime = this.totalControlDuringOptOutTime.plus(customerControlTotals.getTotalControlDuringOptOutTime());
-        this.totalControlTime = this.totalControlTime.plus(customerControlTotals.getTotalControlTime());
-        this.totalOptOutTime = this.totalOptOutTime.plus(customerControlTotals.getTotalOptOutTime());
-        this.totalOptOutEvents = this.totalOptOutEvents + customerControlTotals.getTotalOptOutEvents();
-        
-    }
-
 }

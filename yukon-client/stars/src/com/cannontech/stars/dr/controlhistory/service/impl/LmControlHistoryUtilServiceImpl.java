@@ -10,6 +10,7 @@ import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.util.MutableDuration;
 import com.cannontech.common.util.OpenInterval;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -418,7 +419,8 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
                                                                           List<LMHardwareControlGroup> enrollments, 
                                                                           List<LMHardwareControlGroup> optOuts) {
         
-        CustomerControlTotals totals = new CustomerControlTotals();
+        MutableDuration mutableTotalControlTime = new MutableDuration(0);
+        MutableDuration mutableTotalControlDuringOptOutTime = new MutableDuration(0);
         
         for(int j = 0; j < starsCtrlHist.getControlHistoryCount(); j++) {
             ControlHistoryEntry controlHistoryEntry = starsCtrlHist.getControlHistory(j);
@@ -426,11 +428,9 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
             List<ControlHistoryEntry> enrolledControlHistoryEntries = 
                 LmControlHistoryUtilServiceImpl.calculateEnrollmentControlPeriod(controlHistoryEntry, enrollments);
             
-            CustomerControlTotals calculateOptOutControlHistorySummary = 
-                calculateOptOutControlHistorySummary(startDateTime, stopDateTime,
-                                                     enrolledControlHistoryEntries, optOuts);
-            
-            totals.plus(calculateOptOutControlHistorySummary);
+            calculateOptOutControlHistorySummary(mutableTotalControlTime, mutableTotalControlDuringOptOutTime,
+                                                 startDateTime, stopDateTime,
+                                                 enrolledControlHistoryEntries, optOuts);
             
         }
         
@@ -447,6 +447,9 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
             totalOptedOutDuration = totalOptedOutDuration.plus(summaryBasedOptOutDuration);
         }
 
+        CustomerControlTotals totals = new CustomerControlTotals();
+        totals.setTotalControlTime(mutableTotalControlTime.toDuration());
+        totals.setTotalControlDuringOptOutTime(mutableTotalControlDuringOptOutTime.toDuration());
         totals.setTotalOptOutTime(totalOptedOutDuration);
         totals.setTotalOptOutEvents(optOutCount);
         
@@ -458,10 +461,12 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
      * that avoided due to opt outs, how many opt outs were used, and how many hours the inventory
      * was opted out for.
      */
-    private static CustomerControlTotals calculateOptOutControlHistorySummary(ReadableInstant startDateTime, 
-                                                                              ReadableInstant stopDateTime, 
-                                                                              List<ControlHistoryEntry> enrolledControlHistoryEntries,
-                                                                              List<LMHardwareControlGroup> optOuts) {
+    private static void calculateOptOutControlHistorySummary(MutableDuration mutableTotalControlTime,
+                                                             MutableDuration mutableTotalControlDuringOptOutTime,
+                                                             ReadableInstant startDateTime, 
+                                                             ReadableInstant stopDateTime, 
+                                                             List<ControlHistoryEntry> enrolledControlHistoryEntries,
+                                                             List<LMHardwareControlGroup> optOuts) {
 
         // Calculates the total control duration for the set of enrolled control history.
         Duration projectedControlHistoryDuration = Duration.ZERO;
@@ -492,11 +497,9 @@ public class LmControlHistoryUtilServiceImpl implements LmControlHistoryUtilServ
             totalOptedOutControlDuration = totalOptedOutControlDuration.plus(optedOutDuration);
         }
         
-        CustomerControlTotals customerControlTotals = new CustomerControlTotals();
-        customerControlTotals.setTotalControlTime(projectedControlHistoryDuration.minus(totalOptedOutControlDuration));
-        customerControlTotals.setTotalControlDuringOptOutTime(totalOptedOutControlDuration);
+        mutableTotalControlTime.plus(projectedControlHistoryDuration.minus(totalOptedOutControlDuration));
+        mutableTotalControlDuringOptOutTime.plus(totalOptedOutControlDuration);
         
-        return customerControlTotals;
     }
     
     // DI Setters
