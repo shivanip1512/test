@@ -47,16 +47,16 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         sql.append("SELECT DISTINCT p.pointid, timestamp, value, p.pointOffset, p.pointType,");
         sql.append("pao.type, pao.paobjectId, dmg.meterNumber");
         sql.append("FROM RawPointHistory rph JOIN Point p ON rph.pointId = p.pointId");
-        sql.append("JOIN YukonPaobject pao ON p.paobjectId = pao.paobjectId");
-        sql.append("JOIN DeviceMeterGroup dmg ON pao.paobjectId = dmg.deviceId");
+        sql.append(  "JOIN YukonPaobject pao ON p.paobjectId = pao.paobjectId");
+        sql.append(  "JOIN DeviceMeterGroup dmg ON pao.paobjectId = dmg.deviceId");
         sql.append("WHERE ( pointOffset < 101 OR pointOffset > 104)");
-        sql.append("AND timestamp").gte(startDate);
-        sql.append("AND timestamp").lte(endDate);
+        sql.append(  "AND timestamp").gte(startDate);
+        sql.append(  "AND timestamp").lte(endDate);
     	if (readBy == ReadBy.METER_NUMBER) {
-    		sql.append("AND dmg.meterNumber").eq(readByValue);
+    		sql.append(  "AND dmg.meterNumber").eq(readByValue);
     	}
-    	if (!StringUtils.isBlank(lastReceived) ){
-    		sql.append("AND dmg.meterNumber").gt(lastReceived);
+    	if (StringUtils.isNotBlank(lastReceived) ){
+    		sql.append(  "AND dmg.meterNumber").gt(lastReceived);
     	}
         sql.append("ORDER BY dmg.meterNumber, pao.paobjectId, timestamp"); 
         
@@ -83,14 +83,14 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         sql.append("SELECT DISTINCT p.pointid, timestamp, value, p.pointOffset, p.pointType,");
         sql.append("pao.type, pao.paobjectId, dmg.meterNumber");
         sql.append("FROM RawPointHistory rph JOIN Point p ON rph.pointId = p.pointId");
-        sql.append("JOIN YukonPaobject pao ON p.paobjectId = pao.paobjectId");
-        sql.append("JOIN DeviceMeterGroup dmg ON pao.paobjectId = dmg.deviceId");
-        sql.append("JOIN (SELECT DISTINCT r.pointId, MAX(r.timestamp) AS rDate");
-        sql.append(" FROM RawPointHistory r GROUP BY pointId) irph ");
-        sql.append(  "ON rph.pointId = irph.pointId AND rph.timestamp = irph.rdate");
+        sql.append(  "JOIN YukonPaobject pao ON p.paobjectId = pao.paobjectId");
+        sql.append(  "JOIN DeviceMeterGroup dmg ON pao.paobjectId = dmg.deviceId");
+        sql.append(  "JOIN (SELECT DISTINCT r.pointId, MAX(r.timestamp) AS rDate");
+        sql.append(    "FROM RawPointHistory r GROUP BY pointId) irph ");
+        sql.append(    "ON rph.pointId = irph.pointId AND rph.timestamp = irph.rdate");
         sql.append("WHERE ( pointOffset < 101 OR pointOffset > 104)");
-    	if (!StringUtils.isBlank(lastReceived) ){
-    		sql.append("AND dmg.meterNumber").gt(lastReceived);
+    	if (StringUtils.isNotBlank(lastReceived) ){
+    		sql.append(  "AND dmg.meterNumber").gt(lastReceived);
     	}
         sql.append("ORDER BY dmg.meterNumber, pao.paobjectId, timestamp"); 
 
@@ -179,12 +179,12 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         sql.append("SELECT DISTINCT p.pointid, timestamp, value, p.pointOffset, p.pointType, ");
         sql.append("pao.type, pao.paobjectId, dmg.meterNumber, rph.quality");
         sql.append("FROM RawPointHistory rph JOIN Point p ON rph.pointId = p.pointId");
-        sql.append("JOIN YukonPaobject pao ON p.paobjectId = pao.paobjectId");
-        sql.append("JOIN DeviceMeterGroup dmg ON p.paobjectId = dmg.deviceId");
+        sql.append(  "JOIN YukonPaobject pao ON p.paobjectId = pao.paobjectId");
+        sql.append(  "JOIN DeviceMeterGroup dmg ON p.paobjectId = dmg.deviceId");
         sql.append("WHERE timestamp").gte(startDate);
-        sql.append("AND timestamp").lte(endDate);
-        if (!StringUtils.isBlank(lastReceived)) {
-        	sql.append("AND dmg.meterNumber").gt(lastReceived);
+        sql.append(  "AND timestamp").lte(endDate);
+        if (StringUtils.isNotBlank(lastReceived)) {
+        	sql.append(  "AND dmg.meterNumber").gt(lastReceived);
         }
         sql.append("ORDER BY dmg.meterNumber, pao.paobjectId, timestamp");
         
@@ -208,12 +208,12 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         sql.append("SELECT DISTINCT p.pointid, timestamp, value, p.pointOffset, p.pointType, ");
         sql.append("pao.type, pao.paobjectId, dmg.meterNumber, rph.quality");
         sql.append("FROM RawPointHistory rph JOIN Point p ON rph.pointId = p.pointId");
-        sql.append("JOIN YukonPaobject pao ON p.paobjectId = pao.paobjectId");
-        sql.append("JOIN DeviceMeterGroup dmg ON p.paobjectId = dmg.deviceId");
-        sql.append("JOIN (SELECT DISTINCT r.pointid, MAX(r.timestamp) AS rDate");
-        sql.append(" FROM RawPointHistory r GROUP BY pointId) irph ");
-        sql.append("ON rph.pointId = irph.pointId AND rph.timestamp = irph.rdate");
-        if (!StringUtils.isBlank(lastReceived)) {
+        sql.append(  "JOIN YukonPaobject pao ON p.paobjectId = pao.paobjectId");
+        sql.append(  "JOIN DeviceMeterGroup dmg ON p.paobjectId = dmg.deviceId");
+        sql.append(  "JOIN (SELECT DISTINCT r.pointid, MAX(r.timestamp) AS rDate");
+        sql.append(    "FROM RawPointHistory r GROUP BY pointId) irph ");
+        sql.append(    "ON rph.pointId = irph.pointId AND rph.timestamp = irph.rdate");
+        if (StringUtils.isNotBlank(lastReceived)) {
         	sql.append("WHERE dmg.meterNumber").eq(lastReceived);
         }
         sql.append("ORDER BY dmg.meterNumber, pao.paobjectId, timestamp");
@@ -238,11 +238,11 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         sql.append("SELECT DISTINCT p.pointid, timestamp, value, p.pointOffset, p.pointType, ");
         sql.append("pao.type, pao.paobjectId, dmg.meterNumber, rph.quality");
         sql.append("FROM RawPointHistory rph JOIN Point p ON rph.pointId = p.pointId");
-        sql.append("JOIN YukonPaobject pao ON p.paobjectId = pao.paobjectId");
-        sql.append("JOIN DeviceMeterGroup dmg ON p.paobjectId = dmg.deviceId");
+        sql.append(  "JOIN YukonPaobject pao ON p.paobjectId = pao.paobjectId");
+        sql.append(  "JOIN DeviceMeterGroup dmg ON p.paobjectId = dmg.deviceId");
         sql.append("WHERE timestamp").gte(startDate);
-        sql.append("AND timestamp").lte(endDate);
-        sql.append("AND dmg.meterNumber").eq(meterNumber);
+        sql.append(   "AND timestamp").lte(endDate);
+        sql.append(   "AND dmg.meterNumber").eq(meterNumber);
         sql.append("ORDER BY dmg.meterNumber, pao.paobjectId, timestamp");
         
         log.info("Data Collection Started: START DATE >= " + startDate + " - STOP DATE <= " + endDate);

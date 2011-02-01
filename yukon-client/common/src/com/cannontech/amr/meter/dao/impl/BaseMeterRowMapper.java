@@ -22,9 +22,6 @@ public abstract class BaseMeterRowMapper<T> implements SqlProvidingRowMapper<T> 
                                 "left join DeviceRoutes on Device.deviceId = DeviceRoutes.deviceId " + 
                                 "left join YukonPaObject rypo on DeviceRoutes.routeId = rypo.paObjectId ";
 
-    public BaseMeterRowMapper() {
-    }
-
     protected void fillInMeter(ResultSet rs, Meter meter) throws SQLException {
         int paObjectId = rs.getInt("paObjectId");
         meter.setDeviceId(paObjectId);
