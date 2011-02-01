@@ -86,10 +86,6 @@ insert into LMProgramWebPublishing values(2,9,11,0);
 insert into LMProgramWebPublishing values(2,10,12,0);
 insert into LMProgramWebPublishing values(7,11,22,1045);
 
-/* InterviewQuestion 
-insert into InterviewQuestion values(1,1051,'What is your reason for overriding the current event?','N',1,1053,0);
-insert into InterviewQuestion values(2,1051,'Would you like to be contacted by the program manager for any reason concerning the pilot?','N',2,1053,0);
-*/
 /* ECToGenericMapping */
 insert into ECToGenericMapping values (1, 1, 'Substation');
 insert into ECToGenericMapping values (1, 2, 'Substation');
@@ -102,17 +98,6 @@ INSERT INTO ECToGenericMapping VALUES (1, 4, 'ApplianceCategory');
 INSERT INTO ECToGenericMapping VALUES (1, 5, 'ApplianceCategory');
 INSERT INTO ECToGenericMapping VALUES (1, 6, 'ApplianceCategory');
 INSERT INTO ECToGenericMapping VALUES (1, 7, 'ApplianceCategory');
-/*
-INSERT INTO ECToGenericMapping VALUES (1, 1, 'InterviewQuestion');
-INSERT INTO ECToGenericMapping VALUES (1, 2, 'InterviewQuestion');
-INSERT INTO ECToGenericMapping VALUES (1, 1, 'CustomerFAQ');
-INSERT INTO ECToGenericMapping VALUES (1, 2, 'CustomerFAQ');
-INSERT INTO ECToGenericMapping VALUES (1, 3, 'CustomerFAQ');
-INSERT INTO ECToGenericMapping VALUES (1, 4, 'CustomerFAQ');
-INSERT INTO ECToGenericMapping VALUES (1, 5, 'CustomerFAQ');
-INSERT INTO ECToGenericMapping VALUES (1, 6, 'CustomerFAQ');
-INSERT INTO ECToGenericMapping VALUES (1, 7, 'CustomerFAQ');
-*/
 
 /* Create YukonUser in DBEditor!!! */
 insert into EnergyCompanyOperatorLoginList values (1, &loginId);
