@@ -31,17 +31,19 @@
 	<cti:url var="startMultiUrl" value="/spring/capcontrol/schedule/startMultiple" />
 	
 	<script type="text/javascript">
-		function removeScheduleCommand(eventId) {
-			var url = "/spring/capcontrol/schedule/removePao";
-		    new Ajax.Request(url, {'parameters': {'eventId': eventId}, 
-		        onComplete: function(transport, json) {
-					if (!json.success) {
-						display_status('Remove Schedule', '', json.resultText, 'red');
-					} else {
-						deleteScheduleCommandFromPage(eventId);
-					}
-		        
-		        } });
+		function removeScheduleCommand(eventId, scheduleName) {
+		    if( confirm("Are you sure you want to delete " + scheduleName + "?") ) {
+    			var url = "/spring/capcontrol/schedule/removePao";
+    		    new Ajax.Request(url, {'parameters': {'eventId': eventId}, 
+    		        onComplete: function(transport, json) {
+    					if (!json.success) {
+    						display_status('Remove Schedule', '', json.resultText, 'red');
+    					} else {
+    						deleteScheduleCommandFromPage(eventId);
+    					}
+    		        
+    		        } });
+		    }
 		}
 		
 		function submitCommand(eventId, scheduleName, deviceName) {
@@ -199,7 +201,7 @@
 							<td>
 		                        <!-- delete button and schedule name -->
 		                        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-		                        	<img src="/WebConfig/yukon/Icons/delete.gif" class="pointer" onclick="removeScheduleCommand(${item.eventId})">
+		                        	<img src="/WebConfig/yukon/Icons/delete.gif" class="pointer" onclick="removeScheduleCommand('${item.eventId}','${item.scheduleName}')">
 		                    	</cti:checkProperty>
 		                        <c:out value="${item.scheduleName}" />
 		                    </td>
