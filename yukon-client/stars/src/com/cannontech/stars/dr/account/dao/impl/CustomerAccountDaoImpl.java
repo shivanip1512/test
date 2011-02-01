@@ -235,9 +235,9 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("SELECT ca.*");
         sql.append("FROM CustomerAccount ca, InventoryBase ib");
         sql.append("WHERE ca.AccountId = ib.AccountId"); 
-        sql.append("AND ib.InventoryId = ?");
+        sql.append("AND ib.InventoryId").eq(inventoryId);
         
-        CustomerAccount account = yukonJdbcTemplate.queryForObject(sql.toString(), rowMapper, inventoryId);
+        CustomerAccount account = yukonJdbcTemplate.queryForObject(sql, rowMapper);
         
         return account;
     }
@@ -246,19 +246,20 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
                                                                              Date startDate, Date stopDate){
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(" SELECT ca.AccountId, ca.AccountNumber, cust.AltTrackNum, cont.ContLastName, cont.ContFirstName ");
-        sql.append(" FROM CustomerAccount ca JOIN Customer cust ON ca.CustomerId = cust.CustomerId");
-        sql.append(" JOIN Contact cont ON cont.ContactId = cust.PrimaryContactId");
-        sql.append(" JOIN ECToAccountMapping ec on ec.AccountId = ca.AccountId");
-        sql.append(" WHERE EnergyCompanyId = ?");
-        sql.append(" AND ca.AccountId in (SELECT LMHCG.AccountId ");
-        sql.append("                         FROM LMHardwareControlGroup LMHCG ");
-        sql.append("                         WHERE LMHCG.LMGroupId in (", groupIds, ") ");
-        sql.append("                         AND (LMHCG.GroupEnrollStart <= ?) ");
-        sql.append("                         AND ((LMHCG.GroupEnrollStop IS NULL) ");
-        sql.append("                               OR (LMHCG.GroupEnrollStop >= ?))) ");
+        sql.append("SELECT ca.AccountId, ca.AccountNumber, cust.AltTrackNum, cont.ContLastName, cont.ContFirstName ");
+        sql.append("FROM CustomerAccount ca JOIN Customer cust ON ca.CustomerId = cust.CustomerId");
+        sql.append("  JOIN Contact cont ON cont.ContactId = cust.PrimaryContactId");
+        sql.append("  JOIN ECToAccountMapping ec ON ec.AccountId = ca.AccountId");
+        sql.append("WHERE EnergyCompanyId").eq(ecId);
+        sql.append("  AND ca.AccountId IN");
+        sql.append("    (SELECT LMHCG.AccountId");
+        sql.append("    FROM LMHardwareControlGroup LMHCG ");
+        sql.append("    WHERE LMHCG.LMGroupId").in(groupIds);
+        sql.append("      AND (LMHCG.GroupEnrollStart").lte(stopDate).append(") ");
+        sql.append("      AND ((LMHCG.GroupEnrollStop IS NULL) ");
+        sql.append("      OR (LMHCG.GroupEnrollStop").gte(startDate).append("))) ");
     
-        List<CustomerAccountWithNames> list = yukonJdbcTemplate.query(sql.toString(), specialAccountInfoRowMapper, ecId, stopDate, startDate);
+        List<CustomerAccountWithNames> list = yukonJdbcTemplate.query(sql, specialAccountInfoRowMapper);
         return list;
     }
     
@@ -349,13 +350,13 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("WHERE CustomerId = ");
         sql.append("    (SELECT CustomerId");
         sql.append("     FROM Customer");
-        sql.append("     WHERE PrimaryContactId = ?");
+        sql.append("     WHERE PrimaryContactId").eq(contactId);
         sql.append("     OR CustomerId = ");
         sql.append("        (SELECT CustomerId");
         sql.append("         FROM CustomerAdditionalContact");
-        sql.append("         WHERE ContactId = ?))");
+        sql.append("         WHERE ContactId").eq(contactId).append("))");
         
-        CustomerAccount account = yukonJdbcTemplate.queryForObject(sql.toString(), rowMapper, contactId, contactId);
+        CustomerAccount account = yukonJdbcTemplate.queryForObject(sql, rowMapper);
         return account;
     }
     
@@ -366,10 +367,9 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     	sql.append("SELECT COUNT(*)");
     	sql.append("FROM CustomerAccount ca");
     	sql.append("	JOIN ECToAccountMapping ectam ON ca.AccountId = ectam.AccountId");
-    	sql.append("WHERE ectam.EnergyCompanyId = ?");
+    	sql.append("WHERE ectam.EnergyCompanyId").eq(energyCompany.getEnergyCompanyId());
     	
-    	int totalNumberOfAccounts = yukonJdbcTemplate.queryForInt(sql.toString(), 
-    															energyCompany.getEnergyCompanyId());
+    	int totalNumberOfAccounts = yukonJdbcTemplate.queryForInt(sql);
     	
     	return totalNumberOfAccounts;
     }
