@@ -291,7 +291,7 @@ public class StatusPointMonitorProcessorFactoryTest {
         StatusPointMonitorProcessor processor = new StatusPointMonitorProcessor();
         processor.setPrevState("0");
         
-        boolean shouldSendMessage = StatusPointMonitorProcessorFactory.isExactMatch(processor.getPrevStateInt(), null);
+        boolean shouldSendMessage = StatusPointMonitorProcessorFactory.isExactMatch(processor.transientGetPrevStateInt(), null);
         Assert.assertEquals(false, shouldSendMessage);
     }
     

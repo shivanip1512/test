@@ -27,7 +27,14 @@ public class StatusPointMonitorProcessor {
         return convertStateToSpecial(prevState);
     }
     
-    public int getPrevStateInt() throws NumberFormatException {
+    /**
+     * This getter is prefixed with "transient" so JSON does not serialize it and throw an
+     * exception on states that are not able to be converted to integers
+     * 
+     * @return int
+     * @throws NumberFormatException
+     */
+    public int transientGetPrevStateInt() throws NumberFormatException {
         return convertStateToInt(prevState);
     }
     
@@ -43,7 +50,14 @@ public class StatusPointMonitorProcessor {
         return convertStateToSpecial(nextState);
     }
     
-    public int getNextStateInt() throws NumberFormatException {
+    /**
+     * This getter is prefixed with "transient" so JSON does not serialize it and throw an
+     * exception on states that are not able to be converted to integers
+     * 
+     * @return int
+     * @throws NumberFormatException
+     */
+    public int transientGetNextStateInt() throws NumberFormatException {
         return convertStateToInt(nextState);
     }
     

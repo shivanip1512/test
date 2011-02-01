@@ -52,7 +52,7 @@
 		<include name="joda-time-1.6.jar"/>
 		<include name="jopcbridge.jar"/>
 		<include name="jradius-client.jar"/>
-		<include name="json-lib-0.7.1.jar"/>
+		<include name="json-lib-2.4-jdk15.jar"/>
 		<include name="jta.jar"/>
 		<include name="jtds.jar"/>
 		<include name="junit-4.4.jar"/>

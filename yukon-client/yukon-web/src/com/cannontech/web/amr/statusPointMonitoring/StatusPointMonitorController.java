@@ -264,7 +264,7 @@ public class StatusPointMonitorController {
             if (processor.getPrevStateType() != StatusPointMonitorStateType.EXACT) {
                 prevStateString = messageSourceAccessor.getMessage(processor.getPrevStateType());
             } else {
-                prevStateString = statusPointMonitor.getStateGroup().getStatesList().get(processor.getPrevStateInt()).getStateText();
+                prevStateString = statusPointMonitor.getStateGroup().getStatesList().get(processor.transientGetPrevStateInt()).getStateText();
             }
             prevStateStrings.add(prevStateString);
             
@@ -273,7 +273,7 @@ public class StatusPointMonitorController {
             if (processor.getNextStateType() != StatusPointMonitorStateType.EXACT) {
                 nextStateString = messageSourceAccessor.getMessage(processor.getNextStateType());
             } else {
-                nextStateString = statusPointMonitor.getStateGroup().getStatesList().get(processor.getNextStateInt()).getStateText();
+                nextStateString = statusPointMonitor.getStateGroup().getStatesList().get(processor.transientGetNextStateInt()).getStateText();
             }
             nextStateStrings.add(nextStateString);
         }

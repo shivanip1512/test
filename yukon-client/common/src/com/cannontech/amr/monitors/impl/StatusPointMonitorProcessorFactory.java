@@ -149,7 +149,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
                     shouldSendMessage = isDifference(nextPointValue, prevPointValue);
                 } else {
                     //nextState must be exact
-                    shouldSendMessage = isExactMatch(processor.getNextStateInt(), nextPointValue);
+                    shouldSendMessage = isExactMatch(processor.transientGetNextStateInt(), nextPointValue);
                 }
             } else if (prevDiff) {
                 if (nextDontCare) {
@@ -158,17 +158,17 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
                     shouldSendMessage = isDifference(nextPointValue, prevPointValue);
                 } else {
                     //nextState must be exact
-                    shouldSendMessage = (isDifference(nextPointValue, prevPointValue) && (isExactMatch(processor.getNextStateInt(), nextPointValue)));
+                    shouldSendMessage = (isDifference(nextPointValue, prevPointValue) && (isExactMatch(processor.transientGetNextStateInt(), nextPointValue)));
                 }
             }
             else if (prevExact) {
                 if (nextDontCare) {
-                    shouldSendMessage = isExactMatch(processor.getPrevStateInt(), prevPointValue);
+                    shouldSendMessage = isExactMatch(processor.transientGetPrevStateInt(), prevPointValue);
                 } else if (nextDiff) {
-                    shouldSendMessage = (isDifference(nextPointValue, prevPointValue) && isExactMatch(processor.getPrevStateInt(), prevPointValue));
+                    shouldSendMessage = (isDifference(nextPointValue, prevPointValue) && isExactMatch(processor.transientGetPrevStateInt(), prevPointValue));
                 } else {
                     //nextState must be exact
-                    shouldSendMessage = (isExactMatch(processor.getPrevStateInt(), prevPointValue) && isExactMatch(processor.getNextStateInt(), nextPointValue));
+                    shouldSendMessage = (isExactMatch(processor.transientGetPrevStateInt(), prevPointValue) && isExactMatch(processor.transientGetNextStateInt(), nextPointValue));
                 }
             }
         } catch(NumberFormatException e) {
