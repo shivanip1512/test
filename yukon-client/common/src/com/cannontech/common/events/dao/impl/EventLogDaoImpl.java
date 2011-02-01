@@ -25,6 +25,7 @@ import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PagingResultSetExtractor;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.StringRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -105,8 +106,13 @@ public class EventLogDaoImpl implements EventLogDao {
             
             Object[] arguments = new Object[argumentColumns.size()];
             for (int i = 0; i < argumentColumns.size(); ++i) {
-                arguments[i] = JdbcUtils.getResultSetValue(rs, i + countOfNonVariableColumns + 1); // columns are 1-based
+            	Object arg = JdbcUtils.getResultSetValue(rs, i + countOfNonVariableColumns + 1); // columns are 1-based
+            	if (arg instanceof String && argumentColumns.get(i).getSqlType() == Types.VARCHAR) {
+            		arg = SqlUtils.convertDbValueToString((String)arg);
+            	}
+            	arguments[i] = arg;
             }
+            
             eventLog.setArguments(arguments);
             
             return eventLog;
@@ -126,8 +132,16 @@ public class EventLogDaoImpl implements EventLogDao {
         totalArguments[1] = eventLog.getEventType(); // Type
         totalArguments[2] = eventLog.getDateTime(); // DateTime
         
-        System.arraycopy(eventLog.getArguments(), 0, totalArguments, 3, argumentColumns.size());
-        
+        for (int i = 0; i < argumentColumns.size(); ++i) {
+            int inputIndex = i;
+            int outputIndex = i + countOfNonVariableColumns;
+            Object value = eventLog.getArguments()[inputIndex];
+            if (value instanceof String && argumentColumns.get(i).getSqlType() == Types.VARCHAR) {
+                value = SqlUtils.convertStringToDbValue((String)value);
+            }
+            totalArguments[outputIndex] = value;
+        } 
+
         jdbcTemplate.update(insertSql, totalArguments, totalArgumentTypes);
     }
     
