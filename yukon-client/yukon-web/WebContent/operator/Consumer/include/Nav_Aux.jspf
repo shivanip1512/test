@@ -15,8 +15,7 @@
 						  {"Service.jsp", "Service Request"},
 						  {"ServiceSummary.jsp", "Service History"},
 						  {"Password.jsp", "Change Login"},
-						  {"faq.jsp", "FAQ"},
-                                                  {"Privileges.jsp", "Privileges"},
+                          {"Privileges.jsp", "Privileges"},
 						  {"PrintExport.jsp", "Print/Export"},
 						  {"CreateAppliances.jsp", "New"},
 						  {(DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING)? "SerialNumber.jsp?action=New" : "CreateHardware.jsp"), "New", "CreateHardware.jsp"},
@@ -435,23 +434,6 @@
     </td>
   </tr>
 </cti:checkProperty>
-<cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ) %>">
-  <tr> 
-    <td> 
-      <div align="left">
-	    <span class="NavHeader">Administration</span><br>
-        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-          <cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD) %>">
-          <tr>
-            <td width="10"><%= ((String[]) links.get("Password.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("Password.jsp"))[1] %></td>
-          </tr>
-		  </cti:checkMultiProperty>
-        </table>
-	  </div>
-    </td>
-  </tr>
-</cti:checkMultiProperty>
 	<tr> 
 		<td> 
 	    	<div align="left">
