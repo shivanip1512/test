@@ -196,6 +196,12 @@ public interface AccountEventLogService {
                                           @Arg(ArgEnum.deviceName) String serialNumber,
                                           ReadableInstant startDate);
     
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
+    public void optOutAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser user,
+                                          @Arg(ArgEnum.accountNumber) String accountNumber,
+                                          @Arg(ArgEnum.deviceName) String serialNumber,
+                                          ReadableInstant startDate);
+    
     
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<optOutResponse xmlns:y="http://yukon.cannontech.com/api" version="1.0">
+    <failure>
+        <errorCode>DeviceAlreadyOptedOut</errorCode>
+        <errorReference>FK6570742514</errorReference>
+        <errorDescription>Device 3453070372 is currently opted out</errorDescription>
+    </failure>
+</optOutResponse>

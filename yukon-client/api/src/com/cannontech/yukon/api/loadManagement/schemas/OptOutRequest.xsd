@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified" version="1.0">
+    
+    <xsd:include schemaLocation="../../common/schemas/Failure.xsd"/>
+    <xsd:include schemaLocation="../../common/schemas/Types.xsd"/>
+
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+         //TODO 
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:element name="optOutRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="accountNumber" type="yukon:AccountNumber" />
+                <xsd:element name="serialNumber" type="yukon:SerialNumber" />
+                <xsd:element name="startDate" type="xsd:date" />
+                <xsd:element name="durationInDays" type="xsd:positiveInteger" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
