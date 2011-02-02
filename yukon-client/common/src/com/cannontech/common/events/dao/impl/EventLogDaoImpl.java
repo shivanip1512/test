@@ -106,9 +106,13 @@ public class EventLogDaoImpl implements EventLogDao {
             
             Object[] arguments = new Object[argumentColumns.size()];
             for (int i = 0; i < argumentColumns.size(); ++i) {
-            	Object arg = JdbcUtils.getResultSetValue(rs, i + countOfNonVariableColumns + 1); // columns are 1-based
-            	if (arg instanceof String && argumentColumns.get(i).getSqlType() == Types.VARCHAR) {
-            		arg = SqlUtils.convertDbValueToString((String)arg);
+            	Object arg;
+            	int columnIndex = i + countOfNonVariableColumns + 1;	//columns are 1-based
+            	if (argumentColumns.get(i).getSqlType() == Types.VARCHAR) {
+            		String rawString = rs.getString(columnIndex);
+            		arg = SqlUtils.convertDbValueToString(rawString);
+            	} else {
+            		arg = JdbcUtils.getResultSetValue(rs, columnIndex);
             	}
             	arguments[i] = arg;
             }
@@ -135,9 +139,10 @@ public class EventLogDaoImpl implements EventLogDao {
         for (int i = 0; i < argumentColumns.size(); ++i) {
             int inputIndex = i;
             int outputIndex = i + countOfNonVariableColumns;
+            
             Object value = eventLog.getArguments()[inputIndex];
-            if (value instanceof String && argumentColumns.get(i).getSqlType() == Types.VARCHAR) {
-                value = SqlUtils.convertStringToDbValue((String)value);
+            if (value != null && argumentColumns.get(i).getSqlType() == Types.VARCHAR) {
+            	value = SqlUtils.convertStringToDbValue(value.toString());
             }
             totalArguments[outputIndex] = value;
         } 

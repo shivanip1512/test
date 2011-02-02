@@ -317,10 +317,10 @@ public class EventLogViewerController {
     
     
     private String formatCell(Object argument, YukonUserContext userContext) {
-        if (argument instanceof Date) {
+        if (argument == null) {	// return empty string if argument is null.
+        	return "";
+        } else if (argument instanceof Date) {
             return dateFormattingService.format(argument, DateFormatEnum.BOTH, userContext);
-        } else if (argument == null) {	// return empty string if argument is null. Needed to resolve legacy null entries.
-        	return " ";
         } else {
             return argument.toString();
         }

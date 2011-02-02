@@ -1,6 +1,5 @@
 package com.cannontech.common.events.service.impl;
 
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -46,9 +45,9 @@ public class EventLogUIServiceImpl implements EventLogUIService {
             dataRow.add(dateFormattingService.format(eventLog.getDateTime(), dateDisplayFormat, userContext));
 
             for (Object argument : eventLog.getArguments()) {
-                if (argument == null) { continue;}
-                
-                if (argument instanceof Date) {
+                if (argument == null) { 
+                	dataRow.add("");
+                } else if (argument instanceof Date) {
                     dataRow.add(dateFormattingService.format(argument, dateDisplayFormat, userContext));
                 } else {
                     dataRow.add(argument.toString());
