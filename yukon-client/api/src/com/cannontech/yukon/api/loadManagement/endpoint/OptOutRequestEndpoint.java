@@ -37,7 +37,6 @@ import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
-
 @Endpoint
 public class OptOutRequestEndpoint {
     private AccountEventLogService accountEventLogService;
@@ -48,201 +47,200 @@ public class OptOutRequestEndpoint {
     private OptOutEventDao optOutEventDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private AuthDao authDao;
-    
+
     private Namespace ns = YukonXml.getYukonNamespace();
-    
-    @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="optOutRequest")
+
+    @PayloadRoot(namespace = "http://yukon.cannontech.com/api", localPart = "optOutRequest")
     public Element invoke(Element optOutRequest, LiteYukonUser user) throws Exception {
-        
+
         XmlVersionUtils.verifyYukonMessageVersion(optOutRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        
+
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(optOutRequest);
         OptOutHelper optOutHelper = template.evaluateAsObject("//y:optOutRequest", 
                                                               new NodeToElementMapperWrapper<OptOutHelper>(new OptOutRequestElementMapper()));
 
         Element resp = new Element("optOutResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        
-        //Check if user is authorized to schedule OptOuts
-        try{
-            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user); 
-        }
-        catch (NotAuthorizedException e){
-            Element fe = XMLFailureGenerator.generateFailure(optOutRequest, null,  
-                                                             "NoOptOutAuth", "User is not authorized to schedule opt outs");
+
+        // Check if user is authorized to schedule OptOuts
+        try {
+            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
+        } catch (NotAuthorizedException e) {
+            Element fe = XMLFailureGenerator.generateFailure(optOutRequest, null, 
+                                                             "NoOptOutAuth", 
+                                                             "User is not authorized to schedule opt outs");
             resp.addContent(fe);
             return resp;
         }
-        
+
         LinkedList<Element> errorList = new LinkedList<Element>();
-        
-        LocalDate localStartDate = new LocalDate(optOutHelper.getStartDate()); 
+
+        LocalDate localStartDate = new LocalDate(optOutHelper.getStartDate());
         DateTimeZone userJodaTimeZone = DateTimeZone.forTimeZone(authDao.getUserTimeZone(user));
-        LocalDate localUserDate = new LocalDate(userJodaTimeZone); 
-           
+        LocalDate localUserDate = new LocalDate(userJodaTimeZone);
+
         boolean isToday = false;
-        if(localStartDate.getDayOfYear() == localUserDate.getDayOfYear() &&
-                localStartDate.getYear() == localUserDate.getYear()){
+        if (localStartDate.getDayOfYear() == localUserDate.getDayOfYear() &&
+                localStartDate.getYear() == localUserDate.getYear()) {
             isToday = true;
         }
-        
+
         Element failure = null;
-        
-        //Validate start date
-        if(isToday){
+
+        // Validate start date
+        if (isToday) {
             optOutHelper.setStartDate(null);
+        } else if (localStartDate.isBefore(localUserDate)) {
+            failure = XMLFailureGenerator.generateFailure(optOutRequest, null,
+                                                          "InvalidStartDate",
+                                                          "Start date can't be set to a passed date");
+        } else if (rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_OPT_OUT_TODAY_ONLY, user)) {
+            failure = XMLFailureGenerator.generateFailure(optOutRequest,null,
+                                                          "NoFutureOptOutSchedulingAuth",
+                                                          "User is not authorized to schedule opt outs on future days");
         }
-        else if(localStartDate.isBefore(localUserDate)){
-            failure = XMLFailureGenerator.generateFailure(optOutRequest, null,  
-                                                             "InvalidStartDate", "Start date can't be set to a passed date");
-        }
-        else if(rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_OPT_OUT_TODAY_ONLY, user)){
-            failure = XMLFailureGenerator.generateFailure(optOutRequest, null,  
-                                                             "NoFutureOptOutSchedulingAuth",
-                                                             "User is not authorized to schedule opt outs on future days");
-        }
-        
-        if(failure!=null){
+
+        if (failure != null) {
             resp.addContent(failure);
             return resp;
         }
-            
-        //Validate duration 
+
+        // Validate duration
         boolean isValidDuration = false;
-        String validDurations = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_OPT_OUT_PERIOD, user);
-        if(validDurations.equals("")){
-             isValidDuration = optOutHelper.getDurationInDays() == 1;
-        }
-        else{
+        String validDurations =
+            rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_OPT_OUT_PERIOD, user);
+        if (validDurations.equals("")) {
+            isValidDuration = optOutHelper.getDurationInDays() == 1;
+        } else {
             String[] validDurationStrings = validDurations.split(",");
-            for(String validDurationStr: validDurationStrings){
+            for (String validDurationStr : validDurationStrings) {
                 int validDuration = Integer.parseInt(validDurationStr.trim());
-                if(optOutHelper.getDurationInDays()==validDuration){
+                if (optOutHelper.getDurationInDays() == validDuration) {
                     isValidDuration = true;
                     break;
                 }
             }
         }
-        
-        if(!isValidDuration){
-            Element fe = XMLFailureGenerator.generateFailure(optOutRequest, null,  
+
+        if (!isValidDuration) {
+            Element fe = XMLFailureGenerator.generateFailure(optOutRequest,null,
                                                              "IllegalOptOutDuration",
                                                              "The provided OptOut duration is not permitted");
             errorList.add(fe);
         }
-        
+
         CustomerAccount customerAccount = null;
         LMHardwareBase lmHardwareBase = null;
-        
+
         // Handle invalid account number in request
-        try{
+        try {
             customerAccount = customerAccountDao.getByAccountNumber(optOutHelper.getAccountNumber(), user);
-        }
-        catch(NotFoundException e){
-            Element fe = XMLFailureGenerator.generateFailure(optOutRequest, null,  
-                                                             "InvalidAccountNumber", "Account with account number "+
-                                                             optOutHelper.getAccountNumber()+" doesn't exist");
+        } catch (NotFoundException e) {
+            Element fe = XMLFailureGenerator.generateFailure(optOutRequest, null,
+                                                             "InvalidAccountNumber",
+                                                             "Account with account number " + optOutHelper.getAccountNumber()
+                                                             + " doesn't exist");
             errorList.add(fe);
         }
 
         // Handle invalid serial number in request
-        try{
+        try {
             lmHardwareBase = lmHardwareBaseDao.getBySerialNumber(optOutHelper.getSerialNumber());
-        }
-        catch(NotFoundException e){
-            Element fe = XMLFailureGenerator.generateFailure(optOutRequest, null,  
-                                                             "InvalidSerialNumber", "No device found with serial number "+
+        } catch (NotFoundException e) {
+            Element fe = XMLFailureGenerator.generateFailure(optOutRequest, null,
+                                                             "InvalidSerialNumber",
+                                                             "No device found with serial number " +
                                                              optOutHelper.getSerialNumber());
             errorList.add(fe);
         }
-       
-        if(customerAccount!=null && lmHardwareBase!=null){
-            
+
+        if (customerAccount != null && lmHardwareBase != null) {
+
             // Check if inventory belongs to given account
-            LiteInventoryBase inventory = starsInventoryBaseDao.getByInventoryId(lmHardwareBase.getInventoryId());
-            if(inventory.getAccountID() != customerAccount.getAccountId()){
-                Element fe = XMLFailureGenerator.generateFailure(optOutRequest, null,  
-                                                                 "InvalidAccountSerialCombo",
-                                                                 "Inventory "+lmHardwareBase.getInventoryId()+ " is not assigned to " +
-                                                                 "account "+ customerAccount.getAccountId());
+            LiteInventoryBase inventory =
+                starsInventoryBaseDao.getByInventoryId(lmHardwareBase.getInventoryId());
+            if (inventory.getAccountID() != customerAccount.getAccountId()) {
+                Element fe =
+                    XMLFailureGenerator.generateFailure(optOutRequest, null,
+                                                        "InvalidAccountSerialCombo",
+                                                        "Inventory " + optOutHelper.getSerialNumber()
+                                                        + " is not assigned to " + "account " + customerAccount
+                                                                             .getAccountId());
                 errorList.add(fe);
-            }
-            else{ 
-                boolean isOptedOut = optOutEventDao.isOptedOut(lmHardwareBase.getInventoryId(), 
+            } else {
+                boolean isOptedOut = optOutEventDao.isOptedOut(lmHardwareBase.getInventoryId(),
                                                                customerAccount.getAccountId());
-              
-                 // Check if device is already opted out and requested OptOut is today
-                if(isOptedOut && isToday){
-                    Element fe = XMLFailureGenerator.generateFailure(optOutRequest, null,  
+
+                // Check if device is already opted out and requested OptOut is today
+                if (isOptedOut && isToday) {
+                    Element fe = XMLFailureGenerator.generateFailure(optOutRequest, null,
                                                                      "DeviceAlreadyOptedOut",
-                                                                     "Device "+optOutHelper.getSerialNumber()+" is currently opted out");
+                                                                     "Device " + optOutHelper.getSerialNumber()
+                                                                     + " is currently opted out");
                     errorList.add(fe);
                 }
+
+                OptOutEvent event =
+                    optOutEventDao.getScheduledOptOutEvent(lmHardwareBase.getInventoryId(),
+                                                           customerAccount.getAccountId());
                 
-                OptOutEvent event = optOutEventDao.getScheduledOptOutEvent(lmHardwareBase.getInventoryId(),     
-                                                                           customerAccount.getAccountId());
-                //Check if the device is already scheduled for OptOut
-                if(!isToday && event != null){
-                    Element fe = XMLFailureGenerator.generateFailure(optOutRequest, null,  
+                // Check if the device is already scheduled for OptOut
+                if (!isToday && event != null) {
+                    Element fe = XMLFailureGenerator.generateFailure(optOutRequest, null,
                                                                      "DeviceAlreadyScheduledForOptOut",
-                                                                     "Device "+optOutHelper.getSerialNumber()+" is already scheduled for an OptOut");
+                                                                     "Device " + optOutHelper.getSerialNumber()
+                                                                     + " is already scheduled for an OptOut");
                     errorList.add(fe);
                 }
             }
         }
-        
-        //No errors --> Perform OptOut
-        if(errorList.isEmpty()){
+
+        // No errors --> Perform OptOut
+        if (errorList.isEmpty()) {
             LinkedList<Integer> inventoryIds = new LinkedList<Integer>();
             inventoryIds.add(lmHardwareBase.getInventoryId());
 
             OptOutRequest request = new OptOutRequest();
             request.setInventoryIdList(inventoryIds);
-            if(optOutHelper.getStartDate()!=null){
+            if (optOutHelper.getStartDate() != null) {
                 request.setStartDate(new Instant(optOutHelper.getStartDate()));
-            }
-            else{
+            } else {
                 request.setStartDate(null);
             }
-            
+
             accountEventLogService.optOutAttemptedThroughApi(user,
                                                              customerAccount.getAccountNumber(),
                                                              lmHardwareBase.getManufacturerSerialNumber(),
                                                              new Instant(optOutHelper.getStartDate()));
-            
+
             request.setDurationInHours(optOutHelper.getDurationInDays() * 24);
             optOutService.optOut(customerAccount, request, user);
 
             resp.addContent(XmlUtils.createStringElement("success", ns, ""));
-        }
-        else{ //Errors occurred, send error list back to client
-            for(Element fe: errorList){
+        } else { // Errors occurred, send error list back to client
+            for (Element fe : errorList) {
                 resp.addContent(fe);
             }
         }
-        
+
         return resp;
     }
-    
-   
-    
 
-    
     @Autowired
     public void setOptOutService(OptOutService optOutService) {
         this.optOutService = optOutService;
     }
-    
+
     @Autowired
     public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
         this.customerAccountDao = customerAccountDao;
     }
-    
+
     @Autowired
     public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
         this.lmHardwareBaseDao = lmHardwareBaseDao;
     }
-    
+
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
@@ -262,7 +260,7 @@ public class OptOutRequestEndpoint {
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
     }
-    
+
     @Autowired
     public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
         this.accountEventLogService = accountEventLogService;
