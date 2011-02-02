@@ -44,7 +44,10 @@ ALTER TABLE PointAlarming
 /* End YUK-8727 */ 
 
 /* Start YUK-8741 */
-UPDATE StateGroup SET Name = 'Comm Status State Custom' where Name = 'Comm Status State' AND StateGroupId != -11;
+UPDATE StateGroup 
+SET Name = 'Comm Status State Custom' 
+WHERE Name = 'Comm Status State' 
+AND StateGroupId != -11;
 
 INSERT INTO StateGroup VALUES( -11, 'Comm Status State', 'Status' );
 INSERT INTO State VALUES( -11,-1, 'Any', 2, 6 , 0);
