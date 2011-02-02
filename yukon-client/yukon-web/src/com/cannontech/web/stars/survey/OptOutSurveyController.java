@@ -63,6 +63,11 @@ public class OptOutSurveyController {
             if (target.getProgramIds() == null || target.getProgramIds().length == 0) {
                 errors.rejectValue("programIds", "yukon.web.error.required");
             }
+            if (target.getStartDate() == null) {
+                errors.rejectValue("startDate", "yukon.web.error.required");
+            } else if (target.getStopDate() != null && !target.getStartDate().before(target.getStopDate())) {
+                errors.rejectValue("stopDate", "yukon.web.modules.dr.surveyEdit.stopDateNotBeforeStart");
+            }
         }};
 
     @RequestMapping

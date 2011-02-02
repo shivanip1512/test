@@ -229,5 +229,6 @@
 <entry key="yukon.web.modules.dr.surveyEdit.startDate">Start</entry>
 <entry key="yukon.web.modules.dr.surveyEdit.stopDate">End</entry>
 <entry key="yukon.web.modules.dr.surveyEdit.specifyStopDate">Specify an end date</entry>
+<entry key="yukon.web.modules.dr.surveyEdit.stopDateNotBeforeStart">Stop date must be after end date.</entry>
 
 </properties>
