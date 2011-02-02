@@ -414,7 +414,7 @@ public class OperatorOptOutController {
         // Log consumer opt out cancel attempt
         OptOutEvent optOutEvent = optOutEventDao.getOptOutEventById(eventId);
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(optOutEvent.getInventoryId());
-        accountEventLogService.optOutCancelAtteptedByOperator(userContext.getYukonUser(),
+        accountEventLogService.optOutCancelAttemptedByOperator(userContext.getYukonUser(),
                                                               accountInfoFragment.getAccountNumber(),
                                                               lmHardwareBase.getManufacturerSerialNumber(),
                                                               optOutEvent.getStartDate(),

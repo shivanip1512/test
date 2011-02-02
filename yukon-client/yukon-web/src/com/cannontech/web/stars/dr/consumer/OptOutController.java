@@ -404,7 +404,7 @@ public class OptOutController extends AbstractConsumerController {
         // Log consumer opt out cancel attempt
         OptOutEvent optOutEvent = optOutEventDao.getOptOutEventById(eventId);
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(optOutEvent.getInventoryId());
-        accountEventLogService.optOutCancelAtteptedByConsumer(userContext.getYukonUser(), 
+        accountEventLogService.optOutCancelAttemptedByConsumer(userContext.getYukonUser(), 
                                                               customerAccount.getAccountNumber(),
                                                               lmHardwareBase.getManufacturerSerialNumber(),
                                                               optOutEvent.getStartDate(),

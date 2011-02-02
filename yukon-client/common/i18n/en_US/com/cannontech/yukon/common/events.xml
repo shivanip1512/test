@@ -101,12 +101,12 @@
     <entry key="yukon.common.events.stars.account.optOut.optOutAttemptedByOperator.11">Opt Out Start Date</entry>
     <entry key="yukon.common.events.stars.account.optOut.optOutAttemptedByConsumer">The user {1} is attempting to opt out the device {3} on account {2} for the {11}.  They are attempting this through the consumer pages.</entry>
     <entry key="yukon.common.events.stars.account.optOut.optOutAttemptedByConsumer.11">Opt Out Start Date</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAtteptedByConsumer">The user {1} is attempting to cancel an opt out for the device {3} on the account {2} for the {11} through the {12}.  They are attempting this through the consumer pages.</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAtteptedByConsumer.11">Opt Out Start Date</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAtteptedByConsumer.12">Opt Out Stop Date</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAtteptedByOperator">The user {1} is attempting to cancel an opt out for the device {3} on the account {2} for the {11} through the {12}.  They are attempting this through the consumer pages.</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAtteptedByOperator.11">Opt Out Start Date</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAtteptedByOperator.12">Opt Out Stop Date</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttemptedByConsumer">The user {1} is attempting to cancel an opt out for the device {3} on the account {2} for the {11} through the {12}.  They are attempting this through the consumer pages.</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttemptedByConsumer.11">Opt Out Start Date</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttemptedByConsumer.12">Opt Out Stop Date</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttemptedByOperator">The user {1} is attempting to cancel an opt out for the device {3} on the account {2} for the {11} through the {12}.  They are attempting this through the consumer pages.</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttemptedByOperator.11">Opt Out Start Date</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttemptedByOperator.12">Opt Out Stop Date</entry>
 
     <entry key="yukon.common.events.stars.account.optOut.optOutLimitIncreased">{7} opt outs were added to the {2} account for the device {3} by {1}</entry>
     <entry key="yukon.common.events.stars.account.optOut.optOutLimitIncreased.7">Number of Added Opt Outs</entry>
