@@ -205,14 +205,14 @@ public interface AccountEventLogService {
     
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
-    public void optOutCancelAtteptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser user,
+    public void optOutCancelAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser user,
                                                @Arg(ArgEnum.accountNumber) String accountNumber,
                                                @Arg(ArgEnum.deviceName) String serialNumber,
                                                ReadableInstant optOutStartDate,
                                                ReadableInstant optOutStopDate);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
-    public void optOutCancelAtteptedByOperator(@Arg(ArgEnum.username) LiteYukonUser user,
+    public void optOutCancelAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser user,
                                                @Arg(ArgEnum.accountNumber) String accountNumber,
                                                @Arg(ArgEnum.deviceName) String serialNumber,
                                                ReadableInstant optOutStartDate,
