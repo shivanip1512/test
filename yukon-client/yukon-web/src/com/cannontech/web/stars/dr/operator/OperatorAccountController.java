@@ -304,6 +304,8 @@ public class OperatorAccountController {
 	// NEW ACCOUNT PAGE
 	@RequestMapping
     public String accountCreate(ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
+
+	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, userContext.getYukonUser());
 	    
 	    boolean hasOddForControlRole = rolePropertyDao.checkRole(YukonRole.ODDS_FOR_CONTROL, userContext.getYukonUser());
 	    
@@ -340,6 +342,8 @@ public class OperatorAccountController {
 	                            HttpServletRequest request,
 	                            final HttpSession session,
 	                            final LiteYukonUser user) throws ServletRequestBindingException {
+
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, user);
 	    
 	    /* Cancel Creation */
 	    String cancelButton = ServletRequestUtils.getStringParameter(request, "cancelCreation");
