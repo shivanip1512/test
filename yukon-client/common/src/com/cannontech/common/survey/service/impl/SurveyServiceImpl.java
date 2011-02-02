@@ -16,6 +16,7 @@ import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.dao.impl.SurveyRowMapper;
 import com.cannontech.common.survey.model.Answer;
 import com.cannontech.common.survey.model.Question;
+import com.cannontech.common.survey.model.QuestionType;
 import com.cannontech.common.survey.model.Survey;
 import com.cannontech.common.survey.service.SurveyService;
 import com.cannontech.common.util.SqlBuilder;
@@ -96,21 +97,23 @@ public class SurveyServiceImpl implements SurveyService {
             messageSourceResolver.getMessageSourceAccessor(userContext);
         
         for (Question question : questions) {
-            
             String baseKey = survey.getBaseKey(question);
-            String otherKey = baseKey + ".other";
-            
+
             if (!isI18nKeyResolvable(baseKey, messageSourceAccessor))
                 retVal.add(new YukonMessageSourceResolvable("yukon.web.error.i18nKeyMissing", baseKey));
-            
-            if (question.isTextAnswerAllowed())
-                if (!isI18nKeyResolvable(otherKey, messageSourceAccessor))
-                    retVal.add(new YukonMessageSourceResolvable("yukon.web.error.i18nKeyMissing", otherKey));
-            
-            for (Answer answer : question.getAnswers()) {
-                String answerKey = baseKey + "." + answer.getAnswerKey();
-                if (!isI18nKeyResolvable(answerKey, messageSourceAccessor))
-                    retVal.add(new YukonMessageSourceResolvable("yukon.web.error.i18nKeyMissing", answerKey));
+
+            if (question.getQuestionType() == QuestionType.DROP_DOWN) {
+                if (question.isTextAnswerAllowed()) {
+                    String otherKey = baseKey + ".other";
+                    if (!isI18nKeyResolvable(otherKey, messageSourceAccessor))
+                        retVal.add(new YukonMessageSourceResolvable("yukon.web.error.i18nKeyMissing", otherKey));
+                }
+
+                for (Answer answer : question.getAnswers()) {
+                    String answerKey = baseKey + "." + answer.getAnswerKey();
+                    if (!isI18nKeyResolvable(answerKey, messageSourceAccessor))
+                        retVal.add(new YukonMessageSourceResolvable("yukon.web.error.i18nKeyMissing", answerKey));
+                }
             }
         }
         
