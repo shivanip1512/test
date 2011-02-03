@@ -19,6 +19,7 @@ public class ButtonTag extends YukonTagSupport {
 
     protected String id = null;
     protected String key = null;
+    protected String href = null;
     protected String onclick = null;
     protected String styleClass = null;
     protected String type = null;
@@ -31,6 +32,10 @@ public class ButtonTag extends YukonTagSupport {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
     }
 
     public void setOnclick(String onclick) {
@@ -140,6 +145,10 @@ public class ButtonTag extends YukonTagSupport {
 
             if (StringUtils.isNotBlank(onclick)) {
                 out.write(" onclick=\"" + onclick + "\"");
+            }
+
+            if (StringUtils.isNotBlank(href)) {
+                out.write(" onclick=\"javascript:window.location='" + href + "'\"");
             }
 
             out.write(">");

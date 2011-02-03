@@ -1686,6 +1686,14 @@
             </description>
         </attribute>
         <attribute>
+            <name>href</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Adds "onclick" which causes button to navigate to given URL.
+            </description>
+        </attribute>
+        <attribute>
             <name>onclick</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
