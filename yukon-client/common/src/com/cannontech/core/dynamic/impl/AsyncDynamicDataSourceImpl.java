@@ -107,9 +107,13 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     
     public void registerForAllPointData(PointDataListener l) {
         allPointListeners.add(l);
-        // send registration command
-        dispatchProxy.registerForPoints();
         allPointsRegistered = true;
+
+        try{
+        	dispatchProxy.registerForPoints();	// send registration command
+        } catch (DispatchNotConnectedException e) {
+            CTILogger.info("Registration failed temporarily because Dispatch wasn't connected");
+        }
     }
 
     public void registerForPointData(PointDataListener l, Set<Integer> pointIds) {
