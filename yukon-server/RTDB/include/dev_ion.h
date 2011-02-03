@@ -71,7 +71,7 @@ public:
     //----
     void setMeterGroupData( const string &meterNumber);
 
-    //  getSQL has been modified to left-outer-join the metergroup table so's ION meters can be selected
+    virtual string getSQLCoreStatement() const;
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     virtual string getDescription(const CtiCommandParser & parse) const;
