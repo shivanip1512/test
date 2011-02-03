@@ -17,11 +17,14 @@ import javax.swing.event.CaretListener;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.amr.rfn.dao.RfnMeterDao;
+import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.RfnBase;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
@@ -127,14 +130,14 @@ public class RfnMeterPanel extends DataInputPanel implements CaretListener {
          * Invalid: 
          *     1. One or two of the three fields are blank.
          */
-        if(StringUtils.isBlank(serialNumber) && StringUtils.isBlank(manufacturer) && StringUtils.isBlank(model)) {
-            return true;
-        } else if(StringUtils.isNotBlank(serialNumber) && StringUtils.isNotBlank(manufacturer) && StringUtils.isNotBlank(model)) {
-            return true;
-        } else {
+        boolean allBlank = StringUtils.isBlank(serialNumber) && StringUtils.isBlank(manufacturer) && StringUtils.isBlank(model);
+        boolean allFilledIn = StringUtils.isNotBlank(serialNumber) && StringUtils.isNotBlank(manufacturer) && StringUtils.isNotBlank(model);
+        if(!allBlank && !allFilledIn) {
             setErrorString("Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.");
             return false;
         }
+        
+        return true;
     }
 
     public void caretUpdate(CaretEvent e) {
@@ -143,11 +146,21 @@ public class RfnMeterPanel extends DataInputPanel implements CaretListener {
 
     @Override
     public Object getValue(Object o) throws EditorInputValidationException {
-        RfnBase rfnMeter = (RfnBase)o;
+        /* Check for duplicates */
+        String serialNumber = StringUtils.isBlank(getSerialNumberTextField().getText()) ? null : getSerialNumberTextField().getText();
+        String manufacturer = StringUtils.isBlank(getManufacturerTextField().getText()) ? null : getManufacturerTextField().getText();
+        String model = StringUtils.isBlank(getModelTextField().getText()) ? null : getModelTextField().getText();
         
-        rfnMeter.getRfnAddress().setManufacturer(StringUtils.isBlank(getManufacturerTextField().getText()) ? null : getManufacturerTextField().getText());
-        rfnMeter.getRfnAddress().setModel(StringUtils.isBlank(getModelTextField().getText()) ? null : getModelTextField().getText());
-        rfnMeter.getRfnAddress().setSerialNumber(StringUtils.isBlank(getSerialNumberTextField().getText()) ? null : getSerialNumberTextField().getText());
+        RfnMeterDao rfnMeterDao = YukonSpringHook.getBean("rfnMeterDao", RfnMeterDao.class);
+        try {
+            rfnMeterDao.getMeter(new RfnMeterIdentifier(serialNumber, manufacturer, model));
+            throw new EditorInputValidationException("Serial Number, Manufacturer, and Model fields must be unique among RFN Meters.");
+        } catch (NotFoundException e) { /* IGNORE */ };
+        
+        RfnBase rfnMeter = (RfnBase)o;
+        rfnMeter.getRfnAddress().setManufacturer(manufacturer);
+        rfnMeter.getRfnAddress().setModel(model);
+        rfnMeter.getRfnAddress().setSerialNumber(serialNumber);
         
         if (createPointsCheckBox.isSelected()) {
             PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");

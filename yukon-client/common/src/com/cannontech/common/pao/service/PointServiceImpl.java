@@ -44,7 +44,7 @@ public class PointServiceImpl implements PointService {
 
         LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(pao.getPaoIdentifier().getPaoId(),
 																        		pointIdentifier.getOffset(),
-																        		pointIdentifier.getType());
+																        		pointIdentifier.getPointType().getPointTypeId());
 
         return point;
     }

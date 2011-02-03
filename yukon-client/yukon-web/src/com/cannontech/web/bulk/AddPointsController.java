@@ -21,7 +21,9 @@ import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.model.PointTemplate;
-import com.cannontech.database.Transaction;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
@@ -132,73 +134,85 @@ public class AddPointsController extends AddRemovePointsControllerBase {
             public void process(YukonDevice device) throws ProcessingException {
             	
             	PaoType paoType = device.getPaoIdentifier().getPaoType();
-            	if (pointTemplatesMap.containsKey(paoType)) {
-	            	Set<PointTemplate> pointSet = pointTemplatesMap.get(paoType);
-					for (PointTemplate pointTemplate : pointSet) {
-						
-						boolean pointExistsForDevice = pointService.pointExistsForPao(device, pointTemplate.getPointIdentifier());
-						
-						// add new point
-						if (!pointExistsForDevice) {
-							
-							// add new
-							PointBase newPoint = pointCreationService.createPoint(device.getPaoIdentifier().getPaoId(), pointTemplate);
-							dbPersistentDao.performDBChange(newPoint, Transaction.INSERT);
-							
-							log.debug("Added point to device: deviceId=" + device.getPaoIdentifier().getPaoId() + " pointTemplate=" + pointTemplate);
-							
-						} else {
-							
-							// update point
-							if (updatePoints) {
-								
-								log.debug("Point already exists for device, updatePoints=true, will attempt update: deviceId=" + device.getPaoIdentifier().getPaoId() + " pointTemplate=" + pointTemplate);
-								
-								LitePoint litePoint = pointService.getPointForPao(device, pointTemplate.getPointIdentifier());
-					            //PointBase pointBase = (PointBase)LiteFactory.convertLiteToDBPers(litePoint);
-					            
-					            PointBase pointBase = (PointBase)dbPersistentDao.retrieveDBPersistent(litePoint);
-					            
-					            if (pointBase instanceof AnalogPoint) {
-					            	
-					            	AnalogPoint analogPoint = (AnalogPoint)pointBase;
-					            	analogPoint.getPointAnalog().setMultiplier(pointTemplate.getMultiplier());
-					            	analogPoint.getPointUnit().setUomID(pointTemplate.getUnitOfMeasure());
-					            	analogPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
-					            	dbPersistentDao.performDBChange(analogPoint, Transaction.UPDATE);
-					            	
-					            } else if (pointBase instanceof StatusPoint) {
-					            	
-					            	StatusPoint statusPoint = (StatusPoint)pointBase;
-					            	statusPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
-					            	dbPersistentDao.performDBChange(statusPoint, Transaction.UPDATE);
-					            	
-					            } else if (pointBase instanceof AccumulatorPoint) {
-					            	
-					            	AccumulatorPoint accumulatorPoint = (AccumulatorPoint)pointBase;
-					            	accumulatorPoint.getPointAccumulator().setMultiplier(pointTemplate.getMultiplier());
-					            	accumulatorPoint.getPointUnit().setUomID(pointTemplate.getUnitOfMeasure());
-					            	accumulatorPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
-					            	dbPersistentDao.performDBChange(accumulatorPoint, Transaction.UPDATE);
-					            	
-					            } else {
-					            	
-					            	log.debug("Point type not supported, not updating: deviceId=" + device.getPaoIdentifier().getPaoId() + " pointId=" + litePoint.getLiteID() + " pointType=" + litePoint.getLiteType());
-					            }
-					            
-					            log.debug("Updated point for device: deviceId=" + device.getPaoIdentifier().getPaoId() + " point=" + pointTemplate);
-					            
-							} else {
-								
-								log.debug("Point already exists for device and updatePoints=false, not updating: deviceId=" + device.getPaoIdentifier().getPaoId() + " point=" + pointTemplate);
-							}
-						}
-					}
-					
-            	} else {
-            		
-            		log.debug("No points selected for device type, none added or updated: deviceId=" + device.getPaoIdentifier().getPaoId());
-            	}
+            	try {
+                    if (pointTemplatesMap.containsKey(paoType)) {
+                    	Set<PointTemplate> pointSet = pointTemplatesMap.get(paoType);
+                    	for (PointTemplate pointTemplate : pointSet) {
+                    		
+                    		boolean pointExistsForDevice = pointService.pointExistsForPao(device, pointTemplate.getPointIdentifier());
+                    		
+                    		/* Check to see if the point name is in use by a point with a different offset */
+                    		if (!pointExistsForDevice && pointDao.findPointByName(device, pointTemplate.getName()) != null) {
+                    		    String errorMessage = "Point with name (" + pointTemplate.getName() + ") already exists for device (" + paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId()) + ")";
+                    		    log.debug(errorMessage);
+                    		    throw new ProcessingException(errorMessage);
+                    		}
+                    		
+                    		// add new point
+                    		if (!pointExistsForDevice) {
+                    			
+                    			// add new
+                    			PointBase newPoint = pointCreationService.createPoint(device.getPaoIdentifier().getPaoId(), pointTemplate);
+                    			dbPersistentDao.performDBChange(newPoint, TransactionType.INSERT);
+                    			
+                    			log.debug("Added point to device: deviceId=" + device.getPaoIdentifier().getPaoId() + " pointTemplate=" + pointTemplate);
+                    			
+                    		} else {
+                    			
+                    			// update point
+                    			if (updatePoints) {
+                    				
+                    				log.debug("Point already exists for device, updatePoints=true, will attempt update: deviceId=" + device.getPaoIdentifier().getPaoId() + " pointTemplate=" + pointTemplate);
+                    				
+                    				LitePoint litePoint = pointService.getPointForPao(device, pointTemplate.getPointIdentifier());
+                    	            
+                    	            PointBase pointBase = (PointBase)dbPersistentDao.retrieveDBPersistent(litePoint);
+                    	            
+                    	            if (pointBase instanceof AnalogPoint) {
+                    	            	
+                    	            	AnalogPoint analogPoint = (AnalogPoint)pointBase;
+                    	            	analogPoint.getPointAnalog().setMultiplier(pointTemplate.getMultiplier());
+                    	            	analogPoint.getPointUnit().setUomID(pointTemplate.getUnitOfMeasure());
+                    	            	analogPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
+                    	            	dbPersistentDao.performDBChange(analogPoint, TransactionType.UPDATE);
+                    	            	
+                    	            } else if (pointBase instanceof StatusPoint) {
+                    	            	
+                    	            	StatusPoint statusPoint = (StatusPoint)pointBase;
+                    	            	statusPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
+                    	            	dbPersistentDao.performDBChange(statusPoint, TransactionType.UPDATE);
+                    	            	
+                    	            } else if (pointBase instanceof AccumulatorPoint) {
+                    	            	
+                    	            	AccumulatorPoint accumulatorPoint = (AccumulatorPoint)pointBase;
+                    	            	accumulatorPoint.getPointAccumulator().setMultiplier(pointTemplate.getMultiplier());
+                    	            	accumulatorPoint.getPointUnit().setUomID(pointTemplate.getUnitOfMeasure());
+                    	            	accumulatorPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
+                    	            	dbPersistentDao.performDBChange(accumulatorPoint, TransactionType.UPDATE);
+                    	            	
+                    	            } else {
+                    	            	
+                    	            	log.debug("Point type not supported, not updating: deviceId=" + device.getPaoIdentifier().getPaoId() + " pointId=" + litePoint.getLiteID() + " pointType=" + litePoint.getLiteType());
+                    	            }
+                    	            
+                    	            log.debug("Updated point for device: deviceId=" + device.getPaoIdentifier().getPaoId() + " point=" + pointTemplate);
+                    	            
+                    			} else {
+                    				
+                    				log.debug("Point already exists for device and updatePoints=false, not updating: deviceId=" + device.getPaoIdentifier().getPaoId() + " point=" + pointTemplate);
+                    			}
+                    		}
+                    	}
+                    	
+                    } else {
+                    	
+                    	log.debug("No points selected for device type, none added or updated: deviceId=" + device.getPaoIdentifier().getPaoId());
+                    }
+                } catch (PersistenceException e) {
+                    throw new ProcessingException("Add point failed", e);
+                } catch (NotFoundException e) {
+                    throw new ProcessingException("Add point failed", e);
+                }
             }
         };
         
@@ -224,4 +238,5 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         
         return mav;
     }
+    
 }

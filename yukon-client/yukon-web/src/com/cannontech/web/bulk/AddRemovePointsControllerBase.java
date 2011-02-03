@@ -48,8 +48,11 @@ import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -76,6 +79,8 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     protected DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     protected RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     protected YukonUserContextMessageSourceResolver messageSourceResolver;
+    protected PointDao pointDao;
+    protected PaoDao paoDao;
     
     private Logger log = YukonLogManager.getLogger(AddRemovePointsControllerBase.class);
     
@@ -219,10 +224,10 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     	// POINT TAMPLATES MAP
         final Map<PaoType, Set<PointTemplate>> pointTemplatesMap = Maps.newHashMap();
         
-        Enumeration parameterNames = request.getParameterNames();
+        Enumeration<String> parameterNames = request.getParameterNames();
         while (parameterNames.hasMoreElements()) {
         	
-        	String parameterName = (String)parameterNames.nextElement();
+        	String parameterName = parameterNames.nextElement();
         	
         	if (parameterName.startsWith("PT:")) {
         		
@@ -259,7 +264,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
         			
         				log.debug("Selected point checkbox: deviceType=" + checkedDeviceType + " pointType=" + pointType + " offset=" + offset);
         			
-	        			PointTemplate pointTemplate = paoDefinitionDao.getPointTemplateByTypeAndOffset(checkedDeviceType, new PointIdentifier(pointType, offset));
+	        			PointTemplate pointTemplate = paoDefinitionDao.getPointTemplateByTypeAndOffset(checkedDeviceType, new PointIdentifier(PointType.getForId(pointType), offset));
 	        			
 	        			if (!pointTemplatesMap.containsKey(checkedDeviceType)) {
 	        				pointTemplatesMap.put(checkedDeviceType, new HashSet<PointTemplate>());
@@ -379,44 +384,65 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     public void setBulkProcessor(BulkProcessor bulkProcessor) {
 		this.bulkProcessor = bulkProcessor;
 	}
+    
     @Autowired
     public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
 		this.paoGroupsWrapper = paoGroupsWrapper;
 	}
+    
     @Autowired
     public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
 		this.paoDefinitionDao = paoDefinitionDao;
 	}
+    
     @Autowired
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
 		this.dbPersistentDao = dbPersistentDao;
 	}
+    
     @Autowired
     public void setPointService(PointService pointService) {
 		this.pointService = pointService;
 	}
+    
     @Autowired
     public void setPointCreationService(PointCreationService pointCreationService) {
 		this.pointCreationService = pointCreationService;
 	}
+    
     @Autowired
     public void setTemporaryDeviceGroupService(TemporaryDeviceGroupService temporaryDeviceGroupService) {
 		this.temporaryDeviceGroupService = temporaryDeviceGroupService;
 	}
+    
     @Autowired
     public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
 		this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
 	}
+    
     @Autowired
     public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
 		this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
 	}
+    
     @Autowired
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
     }
+    
     @Resource(name="recentResultsCache")
     public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
         this.recentResultsCache = recentResultsCache;
     }
+    
+    @Autowired
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
+    }
+    
+    @Autowired
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
+    }
+    
 }

@@ -22,6 +22,9 @@ import javax.swing.event.CaretListener;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.amr.rfn.dao.RfnMeterDao;
+import com.cannontech.amr.rfn.model.RfnMeter;
+import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
@@ -37,6 +40,7 @@ import com.cannontech.common.model.PaoPropertyName;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoPropertyDao;
 import com.cannontech.database.data.device.CCU721;
 import com.cannontech.database.data.device.CarrierBase;
@@ -1857,9 +1861,12 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 carrierBase.getDeviceRoutes().setRouteID(routeId);
             } else if(val instanceof RfnBase) {
                 RfnBase rfnBase = (RfnBase)val;
-                rfnBase.getRfnAddress().setSerialNumber(StringUtils.trimToNull(getSerialNumberTextField().getText()));
-                rfnBase.getRfnAddress().setManufacturer(StringUtils.trimToNull(getManufacturerTextField().getText()));
-                rfnBase.getRfnAddress().setModel(StringUtils.trimToNull(getModelTextField().getText()));
+                String serialNumber = StringUtils.trimToNull(getSerialNumberTextField().getText());
+                rfnBase.getRfnAddress().setSerialNumber(serialNumber == null ? null : getSerialNumberTextField().getText());
+                String manufacturer = StringUtils.trimToNull(getManufacturerTextField().getText());
+                rfnBase.getRfnAddress().setManufacturer(manufacturer == null ? null : getManufacturerTextField().getText());
+                String model = StringUtils.trimToNull(getModelTextField().getText());
+                rfnBase.getRfnAddress().setModel(model == null ? null : getModelTextField().getText());
             }
         }
 
@@ -1974,15 +1981,10 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     	}
     }
     
-    /**
-     * This method was created in VisualAge.
-     * @return boolean
-     */
-    public boolean isInputValid() 
-    {
-    	if( getNameTextField().getText() == null
-    		 || getNameTextField().getText().length() < 1 )
-    	{
+    public boolean isInputValid() {
+        String deviceName = getNameTextField().getText();
+    	
+        if (StringUtils.isBlank(deviceName)) {
     		setErrorString("The Name text field must be filled in");
     		return false;
     	}
@@ -2031,7 +2033,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         }
     	
     	/* Check RFN Address settings */
-    	if(deviceBase instanceof RfnBase) {
+    	if (deviceBase instanceof RfnBase) {
     	    String serialNumber = getSerialNumberTextField().getText();
     	    String manufacturer = getManufacturerTextField().getText();
     	    String model = getModelTextField().getText();
@@ -2042,17 +2044,24 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     	     * Invalid: 
     	     *     1. One or two of the three fields are blank.
     	     */
-    	    if(StringUtils.isBlank(serialNumber) && StringUtils.isBlank(manufacturer) && StringUtils.isBlank(model)) {
-    	        return true;
-    	    } else if(StringUtils.isNotBlank(serialNumber) && StringUtils.isNotBlank(manufacturer) && StringUtils.isNotBlank(model)) {
-    	        return true;
-    	    } else {
+    	    boolean allBlank = StringUtils.isBlank(serialNumber) && StringUtils.isBlank(manufacturer) && StringUtils.isBlank(model);
+    	    boolean allFilledIn = StringUtils.isNotBlank(serialNumber) && StringUtils.isNotBlank(manufacturer) && StringUtils.isNotBlank(model);
+    	    if(!allBlank && !allFilledIn) {
     	        setErrorString("Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.");
     	        return false;
     	    }
+    	    
+    	    /* Check for duplicates */
+    	    RfnMeterDao rfnMeterDao = YukonSpringHook.getBean("rfnMeterDao", RfnMeterDao.class);
+    	    try {
+    	        RfnMeter possibleDuplicate = rfnMeterDao.getMeter(new RfnMeterIdentifier(serialNumber, manufacturer, model));
+    	        if(possibleDuplicate.getPaoIdentifier().getPaoId() != deviceBase.getPAObjectID()) {
+    	            setErrorString("Serial Number, Manufacturer, and Model fields must be unique among RFN Meters.");
+    	            return false;
+    	        }
+    	    } catch (NotFoundException e) { /* IGNORE */ };
     	}
     	
-    	String deviceName = getNameTextField().getText();
     	if( !isUniquePao(deviceName, deviceBase.getPAOCategory(), deviceBase.getPAOClass(), deviceBase.getPAObjectID())) {
     		setErrorString("Name '" + deviceName + "' is already in use.  Device Name must be unique for Category(" + deviceBase.getPAOCategory() + ") and PAOClass(" + deviceBase.getPAOClass() + ")");
     		return false;

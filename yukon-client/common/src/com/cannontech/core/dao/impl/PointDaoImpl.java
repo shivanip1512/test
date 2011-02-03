@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
@@ -16,6 +17,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.CtiUtilities;
@@ -84,6 +86,19 @@ public final class PointDaoImpl implements PointDao {
     private JdbcOperations jdbcOps;
     private NextValueHelper nextValueHelper;
     
+    @Override
+    public LitePoint findPointByName(YukonPao pao, String pointName) {
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder(litePointSql);
+            sql.append("WHERE PaobjectId").eq(pao.getPaoIdentifier().getPaoId());
+            sql.append(  "AND UPPER(PointName)").eq(pointName.toUpperCase());
+            
+            return simpleJdbcTemplate.queryForObject(sql, litePointRowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+    
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.PointDao#getLitePoint(int)
      */
@@ -114,7 +129,7 @@ public final class PointDaoImpl implements PointDao {
                 
                 String pointType = rs.getString("PointType");
                 int pointOffset = rs.getInt("PointOffset");
-                PointIdentifier pointIdentifier = new PointIdentifier(pointType, pointOffset);
+                PointIdentifier pointIdentifier = new PointIdentifier(PointType.getForString(pointType), pointOffset);
                 PaoPointIdentifier result = new PaoPointIdentifier(paoIdentifier, pointIdentifier);
                 return result;
             }

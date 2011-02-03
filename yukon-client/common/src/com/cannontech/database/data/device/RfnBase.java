@@ -32,10 +32,24 @@ public class RfnBase extends DeviceBase implements IDeviceMeterGroup {
     }
     
     @Override
+    public void addPartial() throws SQLException {
+        super.addPartial();
+        getDeviceMeterGroup().add();
+        if(!getRfnAddress().isBlank()) {
+            getRfnAddress().add();
+        }
+    }
+    
+    @Override
     public void delete() throws SQLException {
         getDeviceMeterGroup().delete();
         getRfnAddress().delete();
         super.delete();
+    }
+    
+    @Override
+    public void deletePartial() throws SQLException {
+        super.deletePartial();
     }
     
     @Override

@@ -3,6 +3,7 @@ package com.cannontech.core.dao;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LitePoint;
@@ -166,6 +167,16 @@ public interface PointDao {
     public double getPointMultiplier(LitePoint litePoint) throws NotFoundException;
     
     public List<LitePoint> searchByName(String name, String paoClass);
+
+    /**
+     * Returns the point on the given poa with the name specified.  
+     * Case is ignored. No trimming is done.
+     * If no point with that name exists on the pao null is returned.
+     * @param pao
+     * @param pointName
+     * @return LitePoint or null
+     */
+    public LitePoint findPointByName(YukonPao pao, String pointName);
 
     
 }

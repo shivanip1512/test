@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -162,6 +163,11 @@ public class MockPointDao implements PointDao {
     
     @Override
     public LitePoint getLitePoint(PaoPointIdentifier paoPointIdentifier) {
+        return null;
+    }
+
+    @Override
+    public LitePoint findPointByName(YukonPao pao, String pointName) {
         return null;
     }
 

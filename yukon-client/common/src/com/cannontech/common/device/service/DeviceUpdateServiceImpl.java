@@ -44,6 +44,7 @@ import com.cannontech.database.data.device.IDeviceMeterGroup;
 import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.RemoteBase;
+import com.cannontech.database.data.device.RfnBase;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -245,6 +246,10 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
         if (newDevice instanceof IDeviceMeterGroup && oldDevice instanceof IDeviceMeterGroup) {
             ((IDeviceMeterGroup) newDevice).setDeviceMeterGroup(((IDeviceMeterGroup) oldDevice).getDeviceMeterGroup());
+        }
+        
+        if (newDevice instanceof RfnBase && oldDevice instanceof RfnBase) {
+            ((RfnBase) newDevice).setRfnAddress((((RfnBase) oldDevice).getRfnAddress()));
         }
 
         if (newDevice instanceof TwoWayDevice && oldDevice instanceof TwoWayDevice) {
