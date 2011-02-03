@@ -1,6 +1,5 @@
 package com.cannontech.core.dynamic;
 
-import java.util.EnumSet;
 import java.util.Set;
 
 import com.cannontech.database.cache.DBChangeListener;
@@ -112,7 +111,7 @@ public interface AsyncDynamicDataSource {
     public void addDatabaseChangeEventListener(DbChangeCategory changeCategory, DatabaseChangeEventListener listener);
     
     public void addDatabaseChangeEventListener(DbChangeCategory changeCategory,
-                                        EnumSet<DbChangeType> types,
+                                        Set<DbChangeType> types,
                                         DatabaseChangeEventListener listener);
     
     /**

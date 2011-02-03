@@ -30,7 +30,12 @@ public final class SimpleTableAccessTemplate<T> {
     private Integer primaryKeyValidOver = null;
     private CascadeMode cascadeMode = CascadeMode.NONE;
     private String parentForeignKeyField;
-    
+
+    private class HolderOfParameters {
+        MapSqlParameterSource parameterSource;
+        SqlParameterHelper helper;
+    }
+
     public static enum CascadeMode {
         DELETE_ALL_CHILDREN_BEFORE_UPDATE, NONE;
     }
@@ -73,7 +78,33 @@ public final class SimpleTableAccessTemplate<T> {
         this.baseFieldMapper = advancedFieldMapper;
         this.advancedFieldMapper = advancedFieldMapper;
     }
-    
+
+    public HolderOfParameters getHolderOfParameters(T object, Number parentKeyFieldId) {
+        final MapSqlParameterSource parameterSource;
+        final SqlParameterHelper helper = new SqlParameterHelper();
+        if (advancedFieldMapper != null) {
+            advancedFieldMapper.extractValues(helper, object);
+            parameterSource = helper.getMapSqlParameterSource();
+        } else if (fieldMapper != null) {
+            parameterSource = new MapSqlParameterSource();
+            fieldMapper.extractValues(parameterSource, object);
+        } else {
+            throw new IllegalStateException();
+        }
+
+        if (parentForeignKeyField != null || parentKeyFieldId != null) {
+            Validate.notNull(parentForeignKeyField);
+            Validate.notNull(parentKeyFieldId);
+            parameterSource.addValue(parentForeignKeyField, parentKeyFieldId);
+        }
+
+        HolderOfParameters result = new HolderOfParameters();
+        result.parameterSource = parameterSource;
+        result.helper = helper;
+
+        return result;
+    }
+
     public final void save(T object) {
         if (needsPrimaryKey(object)) {
             insert(object);
@@ -103,23 +134,9 @@ public final class SimpleTableAccessTemplate<T> {
     }
     
     private final void insert(T object, Number parentKeyFieldId) {
-        final MapSqlParameterSource parameterSource;
-        final SqlParameterHelper helper = new SqlParameterHelper();
-        if (advancedFieldMapper != null) {
-            advancedFieldMapper.extractValues(helper, object);
-            parameterSource = helper.getMapSqlParameterSource();
-        } else if (fieldMapper != null) {
-            parameterSource = new MapSqlParameterSource();
-            fieldMapper.extractValues(parameterSource, object);
-        } else {
-            throw new IllegalStateException();
-        }
-        
-        if (parentForeignKeyField != null || parentKeyFieldId != null) {
-            Validate.notNull(parentForeignKeyField);
-            Validate.notNull(parentKeyFieldId);
-            parameterSource.addValue(parentForeignKeyField, parentKeyFieldId);
-        }
+        HolderOfParameters holder = getHolderOfParameters(object, parentKeyFieldId);
+        final MapSqlParameterSource parameterSource = holder.parameterSource;
+        final SqlParameterHelper helper = holder.helper;
 
         // validation to warn if the primary key field has been passed in as a normal field in the fieldmapper.  
         if(parameterSource.getValues().keySet().contains(this.primaryKeyField)) {
@@ -136,7 +153,7 @@ public final class SimpleTableAccessTemplate<T> {
 
         // generate SQL
         StringBuilder sql = new StringBuilder();
-        sql.append("INSERT into ");
+        sql.append("INSERT INTO ");
         sql.append(tableName);
         sql.append(" (");
         // append all of the field names
@@ -182,25 +199,10 @@ public final class SimpleTableAccessTemplate<T> {
     }
     
     public final void update(T object, Number parentKeyFieldId) {
-        final MapSqlParameterSource parameterSource;
-        final SqlParameterHelper helper = new SqlParameterHelper();
-        if (advancedFieldMapper != null) {
-            advancedFieldMapper.extractValues(helper, object);
-            parameterSource = helper.getMapSqlParameterSource();
-        } else if (fieldMapper != null) {
-            parameterSource = new MapSqlParameterSource();
-            fieldMapper.extractValues(parameterSource, object);
-        } else {
-            throw new IllegalStateException();
-        }
-        
-        if (parentForeignKeyField != null || parentKeyFieldId != null) {
-            Validate.notNull(parentForeignKeyField);
-            Validate.notNull(parentKeyFieldId);
-            parameterSource.addValue(parentForeignKeyField, parentKeyFieldId);
-        }
+        HolderOfParameters holder = getHolderOfParameters(object, parentKeyFieldId);
+        final MapSqlParameterSource parameterSource = holder.parameterSource;
+        final SqlParameterHelper helper = holder.helper;
 
-        
         // generate SQL
         StringBuilder sql = new StringBuilder();
         sql.append("UPDATE ");
@@ -238,7 +240,7 @@ public final class SimpleTableAccessTemplate<T> {
         yukonJdbcTemplate.getJdbcOperations().update(sql.toString(), pss);
         
         if (helper != null) {
-            // because the parent was an insert, insert the children
+            // children handling
             List<ChildPair<?>> pairList = helper.getPairList();
             for (ChildPair<?> childPair : pairList) {
                 if (childPair.template.cascadeMode == CascadeMode.DELETE_ALL_CHILDREN_BEFORE_UPDATE) {

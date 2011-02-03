@@ -1,6 +1,6 @@
 package com.cannontech.message.dispatch.message;
 
-import java.util.EnumSet;
+import java.util.Set;
 
 import org.apache.commons.lang.Validate;
 
@@ -10,7 +10,7 @@ public class DbChangeHelper {
         return msg;
     }
 
-    public static DatabaseChangeEvent findMatchingEvent(final DBChangeMsg originalMsg, EnumSet<DbChangeType> types, final DbChangeCategory category) {
+    public static DatabaseChangeEvent findMatchingEvent(final DBChangeMsg originalMsg, Set<DbChangeType> types, final DbChangeCategory category) {
         Validate.notNull(category);
         Validate.notNull(types);
         Validate.notNull(originalMsg);

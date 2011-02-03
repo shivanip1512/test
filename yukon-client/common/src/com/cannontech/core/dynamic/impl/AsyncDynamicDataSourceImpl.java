@@ -216,7 +216,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
 
     @Override
     public void addDatabaseChangeEventListener(final DbChangeCategory changeCategory,
-                                                final EnumSet<DbChangeType> types,
+                                                final Set<DbChangeType> types,
                                                 final DatabaseChangeEventListener listener) {
         addDBChangeListener(new DBChangeListener() {
             @Override
