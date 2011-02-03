@@ -17,7 +17,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.message.util.ConnectionException;
@@ -31,6 +30,7 @@ import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.dr.optout.service.OptOutService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.UserUtils;
 
 /**

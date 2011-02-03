@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -26,6 +25,7 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 /**
  * Implementation class for CustomerEventDao

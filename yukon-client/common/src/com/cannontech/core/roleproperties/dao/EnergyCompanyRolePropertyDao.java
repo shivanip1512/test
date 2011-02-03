@@ -1,9 +1,9 @@
 package com.cannontech.core.roleproperties.dao;
 
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public interface EnergyCompanyRolePropertyDao {
     

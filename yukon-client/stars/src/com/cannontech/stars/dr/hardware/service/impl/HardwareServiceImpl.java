@@ -10,7 +10,6 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
@@ -29,6 +28,7 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.user.YukonUserContext;
 

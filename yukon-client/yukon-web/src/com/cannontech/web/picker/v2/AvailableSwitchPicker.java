@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.inventory.LMHardwareClass;
-import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.dao.AvailableLmHardwareFilter;
 import com.cannontech.stars.dr.hardware.dao.DisplayableLmHardwareRowMapper;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 

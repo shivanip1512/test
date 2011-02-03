@@ -41,7 +41,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.dao.YukonListDao;
-import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -66,6 +65,7 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlready
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsUtils;

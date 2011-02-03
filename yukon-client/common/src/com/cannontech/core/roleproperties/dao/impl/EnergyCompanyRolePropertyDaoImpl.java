@@ -3,12 +3,12 @@ package com.cannontech.core.roleproperties.dao.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public class EnergyCompanyRolePropertyDaoImpl implements EnergyCompanyRolePropertyDao {
     

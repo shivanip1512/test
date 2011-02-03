@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.search.pao.db.LmProgramForEnergyCompanyIdFilter;
-import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.service.EnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.web.picker.v2.service.LmProgramForEnergyCompanyIdFilterFactory;
 import com.google.common.collect.Lists;
 

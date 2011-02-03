@@ -9,7 +9,6 @@ import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
-import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -17,6 +16,7 @@ import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 
 /**

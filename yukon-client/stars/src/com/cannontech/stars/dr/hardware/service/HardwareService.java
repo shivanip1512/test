@@ -1,6 +1,6 @@
 package com.cannontech.stars.dr.hardware.service;
 
-import com.cannontech.core.roleproperties.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 
 public interface HardwareService {

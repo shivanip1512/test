@@ -2,10 +2,10 @@ package com.cannontech.stars.dr.program.service;
 
 import java.util.List;
 
-import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public interface ProgramService {
     

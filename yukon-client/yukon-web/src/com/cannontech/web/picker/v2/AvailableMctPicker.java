@@ -10,9 +10,9 @@ import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.search.UltraLightPao;
 import com.cannontech.common.search.pao.db.AvailableMctFilter;
-import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.service.EnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 

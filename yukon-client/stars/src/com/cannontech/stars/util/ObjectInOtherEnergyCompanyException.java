@@ -6,8 +6,8 @@
  */
 package com.cannontech.stars.util;
 
-import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 /**
  * @author yao

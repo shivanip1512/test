@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PersistenceException;
-import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -21,6 +20,7 @@ import com.cannontech.stars.core.dao.SmartLiteInventoryBaseRowMapper;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.service.EnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.web.bean.InventoryBean;
 

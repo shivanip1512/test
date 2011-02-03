@@ -10,7 +10,6 @@ import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
-import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -20,6 +19,7 @@ import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.dr.optout.service.OptOutService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 
 public class OptOutServiceAdapter implements OptOutService {

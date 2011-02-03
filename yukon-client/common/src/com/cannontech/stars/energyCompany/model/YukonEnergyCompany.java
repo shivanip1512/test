@@ -1,4 +1,4 @@
-package com.cannontech.core.roleproperties;
+package com.cannontech.stars.energyCompany.model;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 

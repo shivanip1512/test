@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.dao.ProgramNotFoundException;
-import com.cannontech.core.roleproperties.YukonEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -14,6 +13,7 @@ import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.Lists;
 
 public class ProgramServiceImpl implements ProgramService {
