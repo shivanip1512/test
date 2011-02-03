@@ -22,6 +22,7 @@ import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.FormattedBlockService;
@@ -54,8 +55,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         sql.append(  "AND timestamp").lte(endDate);
     	if (readBy == ReadBy.METER_NUMBER) {
     		sql.append(  "AND dmg.meterNumber").eq(readByValue);
-    	}
-    	if (StringUtils.isNotBlank(lastReceived) ){
+    	} else if (StringUtils.isNotBlank(lastReceived) ){
     		sql.append(  "AND dmg.meterNumber").gt(lastReceived);
     	}
         sql.append("ORDER BY dmg.meterNumber, pao.paobjectId, timestamp"); 
@@ -128,15 +128,17 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
             
             ReadableDevice device = null;
             while( rset.next()) {
-//            	int pointId = rset.getInt("pointid");	// not used, commented out to keep record that it's returned
-                Date dateTime = rset.getTimestamp("timestamp");
-                double value = rset.getDouble("value");
-                int pointOffset = rset.getInt("pointoffset");
-                PointType pointType = PointType.getForString(rset.getString("pointtype"));
+            	YukonResultSet yrs = new YukonResultSet(rset);
+
+//            	int pointId = yrs.getInt("pointid");	// not used, commented out to keep record that it's returned
+                Date dateTime = yrs.getDate("timestamp");
+                double value = yrs.getDouble("value");
+                int pointOffset = yrs.getInt("pointoffset");
+                PointType pointType = yrs.getEnum("pointtype", PointType.class);
                 PointIdentifier pointIdentifier = new PointIdentifier(pointType, pointOffset);
-                PaoType paoType = PaoType.getForDbString(rset.getString("type"));
-                paobjectId = rset.getInt("paobjectid");
-                String meterNumber = rset.getString("meternumber");
+                PaoType paoType = yrs.getEnum("type", PaoType.class);
+                paobjectId = yrs.getInt("paobjectid");
+                String meterNumber = yrs.getString("meternumber");
                 
                 //Store any previous meter readings.
                 if (dateTime.after(prevDateTime) || prevPaobjectId != paobjectId) {
@@ -282,14 +284,16 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
             Block b = block.getNewBlock();
             
             while( rset.next()) {
-//                int pointID = rset.getInt("pointid");	// loaded by PointValueBuilder.build()
-//                Date dateTime = rset.getTimestamp("timestamp");	// loaded by PointValueBuilder.build()
-//                double value = rset.getDouble("value");	// loaded by PointValueBuilder.build()
-                int pointOffset = rset.getInt("pointoffset");
-                PointType pointType = PointType.getForString(rset.getString("pointtype"));
-                PaoType paoType = PaoType.getForDbString(rset.getString("type"));
-                paobjectId = rset.getInt("paobjectid");
-                String meterNumber = rset.getString("meternumber");
+            	YukonResultSet yrs = new YukonResultSet(rset);
+
+//                int pointID = yrs.getInt("pointid");	// loaded by PointValueBuilder.build()
+//                Date dateTime = yrs.getDate("timestamp");	// loaded by PointValueBuilder.build()
+//                double value = yrs.getDouble("value");	// loaded by PointValueBuilder.build()
+                int pointOffset = yrs.getInt("pointoffset");
+                PointType pointType = yrs.getEnum("pointtype", PointType.class);
+                PaoType paoType = yrs.getEnum("type", PaoType.class);
+                paobjectId = yrs.getInt("paobjectid");
+                String meterNumber = yrs.getString("meternumber");
  
                 PaoPointIdentifier paoPointIdentifier = 
                 	PaoPointIdentifier.createPaoPointIdentifier(paobjectId, paoType, pointType, pointOffset);

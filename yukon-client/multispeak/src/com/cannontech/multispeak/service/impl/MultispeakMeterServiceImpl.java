@@ -1659,7 +1659,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         }
 
         PaoType existingType = meter.getPaoType();
-        if( templateMeter.getPaoType().getDeviceTypeId() != meter.getPaoType().getDeviceTypeId()) {   //different types of meters...change type
+        if( templateMeter.getPaoType() != existingType) {   //different types of meters...change type
             try {
                 PaoDefinition paoDefinition = paoDefinitionDao.getPaoDefinition(templateMeter.getPaoType());
                 deviceUpdateService.changeDeviceType(meter, paoDefinition);
