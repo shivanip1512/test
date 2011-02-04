@@ -116,14 +116,15 @@ public class OptOutController extends AbstractConsumerController {
 				allOptedOut = false;
 			}
     	    
-    	    if(inventory.isCurrentlyOptedOut()){
-    	        if(inventory.getCurrentlyScheduledOptOut()==null && optOutCountHolder.isOptOutsRemaining()){
+    	    //Checks if the device can receive an OptOut command from the user. If the device is not
+    	    //currently opted out and/or has no OptOut scheduled, the flag is set to true
+    	    if(inventory.isCurrentlyOptedOut()) {
+    	        if(inventory.getCurrentlyScheduledOptOut()==null && optOutCountHolder.isOptOutsRemaining()) {
     	            optOutsAvailable = true;
     	        }
-    	    }
-    	    else{
+    	    } else {
     	        if((inventory.getCurrentlyScheduledOptOut()==null && optOutCountHolder.isOptOutsRemaining()) ||
-    	                (inventory.getCurrentlyScheduledOptOut()!=null && optOutCountHolder.getRemainingOptOuts()>1)){
+    	           (inventory.getCurrentlyScheduledOptOut()!=null && optOutCountHolder.getRemainingOptOuts()>1)) {
     	            optOutsAvailable = true;
     	        }
     	    }
@@ -177,14 +178,13 @@ public class OptOutController extends AbstractConsumerController {
         for (DisplayableInventory inventory : displayableInventories) {
             OptOutCountHolder optOutCountHolder = optOutCounts.get(inventory.getInventoryId());
             
-            // Check if device can't be opted out
+            // Check if device can't be opted out on one specific day provided by the user
             if(!optOutCountHolder.isOptOutsRemaining() ||
-                    optOutCountHolder.getRemainingOptOuts()==1 && inventory.getCurrentlyScheduledOptOut()!=null ||
-                    (isSameDay && inventory.isCurrentlyOptedOut()) ||
-                    (!isSameDay && inventory.getCurrentlyScheduledOptOut()!= null)){
+               (optOutCountHolder.getRemainingOptOuts()==1 && inventory.getCurrentlyScheduledOptOut()!=null) ||
+               (isSameDay && inventory.isCurrentlyOptedOut()) ||
+               (!isSameDay && inventory.getCurrentlyScheduledOptOut()!= null)) { 
                 noOptOutsAvailableLookup.put(inventory, true);
-            }
-            else{
+            } else {
                 noOptOutsAvailableLookup.put(inventory, false);
                 optOutableInventories.add(inventory);
             }
