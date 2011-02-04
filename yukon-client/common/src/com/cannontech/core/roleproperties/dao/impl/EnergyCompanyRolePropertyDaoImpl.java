@@ -13,6 +13,11 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 public class EnergyCompanyRolePropertyDaoImpl implements EnergyCompanyRolePropertyDao {
     
     private RolePropertyDao rolePropertyDao;
+    
+    public enum SerialNumberValidation {
+        NUMERIC,
+        ALPHANUMERIC
+    }
 
     @Override
     public boolean checkAllProperties(YukonEnergyCompany energyCompany, YukonRoleProperty firstProperty, YukonRoleProperty... otherProperties) {

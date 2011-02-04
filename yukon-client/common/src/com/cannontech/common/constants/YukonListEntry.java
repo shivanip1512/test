@@ -114,4 +114,43 @@ public class YukonListEntry
 		return getEntryText();
 	}
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + entryID;
+        result = prime * result + entryOrder;
+        result = prime * result + ((entryText == null) ? 0 : entryText.hashCode());
+        result = prime * result + listID;
+        result = prime * result + yukonDefID;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        YukonListEntry other = (YukonListEntry) obj;
+        if (entryID != other.entryID)
+            return false;
+        if (entryOrder != other.entryOrder)
+            return false;
+        if (entryText == null) {
+            if (other.entryText != null)
+                return false;
+        } else if (!entryText.equals(other.entryText))
+            return false;
+        if (listID != other.listID)
+            return false;
+        if (yukonDefID != other.yukonDefID)
+            return false;
+        return true;
+    }
+
+	
+	
 }

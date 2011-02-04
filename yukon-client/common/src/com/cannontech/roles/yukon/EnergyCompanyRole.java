@@ -21,5 +21,6 @@ public interface EnergyCompanyRole {
 	public static final int AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 15;
     public static final int ACCOUNT_NUMBER_LENGTH = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 16;
     public static final int ROTATION_DIGIT_LENGTH = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 17;
-    public static final int AUTOMATIC_CONFIGURATION = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 18;
+    public static final int SERIAL_NUMBER_VALIDATION = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 18;
+    public static final int AUTOMATIC_CONFIGURATION = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 19;
 }

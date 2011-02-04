@@ -9,6 +9,7 @@ import org.apache.commons.lang.Validate;
 
 import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.roleproperties.dao.impl.EnergyCompanyRolePropertyDaoImpl.SerialNumberValidation;
 import com.cannontech.core.roleproperties.enums.CsrfTokenMode;
 import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableMap;
@@ -393,6 +394,7 @@ public enum YukonRoleProperty {
     AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS, booleanType()),
     ACCOUNT_NUMBER_LENGTH(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.ACCOUNT_NUMBER_LENGTH, integerType()),
     ROTATION_DIGIT_LENGTH(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.ROTATION_DIGIT_LENGTH, integerType()),
+    SERIAL_NUMBER_VALIDATION(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.SERIAL_NUMBER_VALIDATION, InputTypeFactory.enumType(SerialNumberValidation.class)),
     AUTOMATIC_CONFIGURATION(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.AUTOMATIC_CONFIGURATION, booleanType()),
     
     MSP_PAONAME_ALIAS(MULTISPEAK, com.cannontech.roles.yukon.MultispeakRole.MSP_PAONAME_ALIAS, InputTypeFactory.enumType(MspPaoNameAliasEnum.class)),

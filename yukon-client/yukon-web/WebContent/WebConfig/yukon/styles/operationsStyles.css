@@ -133,6 +133,22 @@ div.boxedLink a:link {
     color: #000000;
 }
 
+div.boxedLink {
+    padding: 1px;
+}
+
+div.boxedLink {
+    -webkit-box-shadow: #BBB 1px 1px 1px;
+    -moz-box-shadow: #BBB 1px 1px 1px;
+    box-shadow: #BBB 1px 1px 1px;
+}
+
+div.boxedLink:hover {
+    -webkit-box-shadow: #777 1px 1px 5px;
+    -moz-box-shadow: #777 1px 1px 5px;
+    box-shadow: #777 1px 1px 5px;
+}
+
 .sectionForm {
 	float: right;
 	margin-right: 15px;

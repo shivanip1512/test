@@ -7,11 +7,14 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.impl.EnergyCompanyRolePropertyDaoImpl.SerialNumberValidation;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
@@ -86,10 +89,19 @@ public class FilterBean
         return DaoFactory.getAuthDao().checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.hasChildEnergyCompanies());
     }
     
-    public YukonSelectionList getAvailableFilters()
-    {
-        if(availableFilters == null)
+    public YukonSelectionList getAvailableFilters() {
+        if (availableFilters == null){
             availableFilters = energyCompany.getYukonSelectionList(filterListName, true, true);
+            SerialNumberValidation value = DaoFactory.getEnergyCompanyRolePropertyDao().getPropertyEnumValue(
+                YukonRoleProperty.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, energyCompany);
+            if (value == SerialNumberValidation.ALPHANUMERIC) {
+                YukonListEntry min = energyCompany.getYukonListEntry(filterListName, YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN);
+                YukonListEntry max = energyCompany.getYukonListEntry(filterListName, YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX);
+                availableFilters.getYukonListEntries().remove(min);
+                availableFilters.getYukonListEntries().remove(max);
+            }
+            
+        }
         return availableFilters;
     }
     

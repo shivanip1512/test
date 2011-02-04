@@ -29,6 +29,9 @@ import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
+import com.cannontech.core.roleproperties.dao.impl.EnergyCompanyRolePropertyDaoImpl.SerialNumberValidation;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -46,6 +49,7 @@ import com.cannontech.web.stars.dr.operator.inventoryOperations.model.RuleModel;
 import com.cannontech.web.stars.dr.operator.inventoryOperations.model.collection.MemoryCollectionProducer;
 import com.cannontech.web.stars.dr.operator.inventoryOperations.service.InventoryOperationsFilterService;
 import com.cannontech.web.stars.dr.operator.inventoryOperations.service.impl.InvalidSerialNumberRangeDataException;
+import com.google.common.collect.Lists;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)
@@ -57,6 +61,7 @@ public class InventoryFilterController {
     private StarsDatabaseCache starsDatabaseCache;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private FilterModelValidator filterModelValidator;
+    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     
     /* Setup Filter Rules */
     @RequestMapping(value = "setupFilterRules")
@@ -149,8 +154,18 @@ public class InventoryFilterController {
     }
     
     @ModelAttribute(value="ruleTypes")
-    public List<FilterRuleType> getRuleTypes() {
-        return Arrays.asList(FilterRuleType.values());
+    public List<FilterRuleType> getRuleTypes(YukonUserContext userContext) {
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        
+        List<FilterRuleType> ruleTypes = Lists.newArrayList(FilterRuleType.values());
+        SerialNumberValidation value = energyCompanyRolePropertyDao.getPropertyEnumValue(
+            YukonRoleProperty.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, energyCompany);
+        
+        if (value == SerialNumberValidation.ALPHANUMERIC) {
+            ruleTypes.remove(FilterRuleType.SERIAL_NUMBER_RANGE);
+        }
+        
+        return ruleTypes;
     }
     
     @ModelAttribute(value="filterModes")
@@ -171,6 +186,11 @@ public class InventoryFilterController {
             MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver("yukon.web.modules.operator.filterSelection.");
             binder.setMessageCodesResolver(msgCodesResolver);
         }
+    }
+    
+    @Autowired
+    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
+        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
     }
     
     @Autowired

@@ -28,6 +28,10 @@
 		}
 		links.put(linkPageName, new String[] {linkImg, linkHtml});
 	}
+    
+    EnergyCompanyRolePropertyDao ecRpDao = DaoFactory.getEnergyCompanyRolePropertyDao();
+    boolean allowRanges = ecRpDao.getPropertyEnumValue(
+        YukonRoleProperty.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, liteEC) == SerialNumberValidation.NUMERIC;
 %>
 
 <table width="101" border="0" cellspacing="0" cellpadding="5">
@@ -76,6 +80,7 @@
     </td>
   </tr>
 </cti:checkMultiProperty>
+<% if (allowRanges) {%>
 <cti:checkMultiProperty propertyid="<%= Integer.toString(InventoryRole.SN_ADD_RANGE) + ',' + Integer.toString(InventoryRole.SN_UPDATE_RANGE) + ',' + Integer.toString(InventoryRole.SN_CONFIG_RANGE) %>">
   <tr> 
     <td> 
@@ -104,4 +109,6 @@
     </td>
   </tr>
 </cti:checkMultiProperty>
+<% }%>
+
 </table>
