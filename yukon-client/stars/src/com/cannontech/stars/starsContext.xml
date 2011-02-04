@@ -176,7 +176,9 @@
 	<bean id="inventoryDao" class="com.cannontech.stars.dr.hardware.dao.impl.InventoryDaoImpl" />
 
     <bean id="customerEventDao" class="com.cannontech.stars.dr.thermostat.dao.impl.CustomerEventDaoImpl" />
-
+    
+    <bean id="thermostatEventHistoryDao" class="com.cannontech.stars.dr.thermostat.dao.impl.ThermostatEventHistoryDaoImpl" />
+    
     <bean id="thermostatScheduleDao" class="com.cannontech.stars.dr.thermostat.dao.impl.ThermostatScheduleDaoImpl" />
     <bean id="accountThermostatScheduleDao" class="com.cannontech.stars.dr.thermostat.dao.impl.AccountThermostatScheduleDaoImpl" />
     <bean id="accountThermostatScheduleEntryDao" class="com.cannontech.stars.dr.thermostat.dao.impl.AccountThermostatScheduleEntryDaoImpl" />

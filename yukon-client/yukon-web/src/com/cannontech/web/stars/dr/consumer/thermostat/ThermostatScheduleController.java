@@ -31,6 +31,7 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
+import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleDisplay;
@@ -49,14 +50,13 @@ import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT)
 @Controller
 public class ThermostatScheduleController extends AbstractThermostatController {
-
     private AccountEventLogService accountEventLogService;
-    
     private InventoryDao inventoryDao;
     private CustomerDao customerDao;
     private ThermostatService thermostatService;
     private OperatorThermostatHelper operatorThermostatHelper;
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    private ThermostatEventHistoryDao thermostatEventHistoryDao;
 
     @RequestMapping(value = "/consumer/thermostat/schedule/view", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount account, 
@@ -283,6 +283,11 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                         failed = true;
                     }
         		}
+        		
+        		if(!failed) {
+                    //Log schedule send to thermostat history
+                    thermostatEventHistoryDao.logScheduleEvent(yukonUserContext.getYukonUser(), thermostatId, ats.getAccountThermostatScheduleId(), thermostatScheduleMode);
+                }
         	}
         	
         	if (failed && thermostatIds.size() > 1) {
@@ -412,4 +417,9 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
 		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
 	}
+    
+    @Autowired
+    public void setThermostatEventHistoryDao(ThermostatEventHistoryDao thermostatEventHistoryDao) {
+        this.thermostatEventHistoryDao = thermostatEventHistoryDao;
+    }
 }

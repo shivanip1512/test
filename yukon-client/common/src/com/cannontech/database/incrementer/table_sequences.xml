@@ -259,5 +259,8 @@
       <sequence name="inventoryConfigTask">
         <table name="inventoryConfigTask" identitycolumn="inventoryReconfigTaskId"/>
       </sequence>
+      <sequence name="thermostatEventHistory">
+        <table name="ThermostatEventHistory" identitycolumn="EventId"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

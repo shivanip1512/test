@@ -76,6 +76,24 @@
     <entry key="yukon.web.modules.operator.thermostatManual.runProgramText"><![CDATA[
         <b>or</b> Click <b>RUN PROGRAM</b> to revert to your thermostat program.
     ]]></entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.historyTableTitle">Command History</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.noItems">No command history available.</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.thermostatHeader">Thermostat</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.typeHeader">Type</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.userHeader">User</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.dateHeader">Date</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.detailsHeader">Details</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.MANUAL">Manual</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.RESTORE">Restore</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.SCHEDULE">Schedule</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.manualDetailsTemp">Temp: {0}</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.manualDetailsFan">Fan:</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.scheduleDetails">Schedule: {0}</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.scheduleDetailsMode">Mode:</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.WEEKDAY_SAT_SUN">Weekday, Saturday, Sunday</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.WEEKDAY_WEEKEND">Weekday, Weekend</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.ALL">All</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.deletedSchedule">(Deleted schedule)</entry>
     
     <entry key="yukon.web.modules.operator.thermostatManual.sendConfirm.title">Confirm New Thermostat Settings</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.sendConfirm.message">Proceed with the following thermostat settings?</entry>

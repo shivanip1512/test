@@ -13,6 +13,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -22,6 +23,8 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
+import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
+import com.cannontech.stars.dr.thermostat.model.ThermostatEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
@@ -44,13 +47,15 @@ public class OperatorThermostatManualController {
 	private CustomerAccountDao customerAccountDao;
 	private ThermostatService thermostatService;
 	private OperatorThermostatHelper operatorThermostatHelper;
+	private ThermostatEventHistoryDao thermostatEventHistoryDao;
 	
 	// VIEW
 	@RequestMapping
     public String view(String thermostatIds,
-				    		ModelMap modelMap,
+				    		 ModelMap modelMap,
 					         FlashScope flashScope,
-					         AccountInfoFragment accountInfoFragment) {
+					         AccountInfoFragment accountInfoFragment,
+					         HttpServletRequest request) {
 
 		List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
 		
@@ -70,13 +75,29 @@ public class OperatorThermostatManualController {
             event = new ThermostatManualEvent();
         }
         
-        
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
         String temperatureUnit = customer.getTemperatureUnit();
         event.setTemperatureUnit(temperatureUnit);
         modelMap.addAttribute("event", event);
+        
+        List<ThermostatEvent> eventHistoryList = thermostatEventHistoryDao.getEventsByThermostatIds(thermostatIdsList);
 
+        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 10);
+        int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        int toIndex = startIndex + itemsPerPage;
+        int numberOfResults = eventHistoryList.size();
+        
+        if(numberOfResults < toIndex) toIndex = numberOfResults;
+        eventHistoryList = eventHistoryList.subList(startIndex, toIndex);
+        
+        SearchResult<ThermostatEvent> result = new SearchResult<ThermostatEvent>();
+        result.setResultList(eventHistoryList);
+        result.setBounds(startIndex, itemsPerPage, numberOfResults);
+        modelMap.addAttribute("searchResult", result);
+        modelMap.addAttribute("eventHistoryList", result.getResultList());
+        
         return "operator/operatorThermostat/manual/view.jsp";
     }
 	
@@ -205,5 +226,10 @@ public class OperatorThermostatManualController {
 	@Autowired
 	public void setOperatorThermostatHelper(OperatorThermostatHelper operatorThermostatHelper) {
 		this.operatorThermostatHelper = operatorThermostatHelper;
+	}
+	
+	@Autowired
+	public void setThermostatEventHistoryDao(ThermostatEventHistoryDao thermostatEventHistoryDao) {
+	    this.thermostatEventHistoryDao = thermostatEventHistoryDao;
 	}
 }

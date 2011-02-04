@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.ActivityLogger;
@@ -36,6 +37,7 @@ import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
+import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.CustomerThermostatEventBase;
@@ -73,6 +75,7 @@ public class ThermostatServiceImpl implements ThermostatService {
     private RolePropertyDao rolePropertyDao;
     private SystemDateFormattingService systemDateFormattingService;
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    private ThermostatEventHistoryDao thermostatEventHistoryDao;
 
     @Override
     @Transactional
@@ -140,7 +143,19 @@ public class ThermostatServiceImpl implements ThermostatService {
                                     yukonUser.getUserID(),
                                     account.getAccountId(),
                                     account.getCustomerId());
-
+        
+        //Log to thermostat history
+        if(event.isRunProgram()) {
+            thermostatEventHistoryDao.logRestoreEvent(userContext.getYukonUser(), thermostatId);
+        } else {
+            thermostatEventHistoryDao.logManualEvent(userContext.getYukonUser(), 
+                                                     thermostatId, 
+                                                     event.getPreviousTemperature(), 
+                                                     event.getMode(), 
+                                                     event.getFanState(), 
+                                                     event.isHoldTemperature());
+        }
+        
         return event.isRunProgram() ? ThermostatManualEventResult.CONSUMER_MANUAL_PROGRAM_SUCCESS
                 : ThermostatManualEventResult.CONSUMER_MANUAL_SUCCESS;
         }
@@ -637,6 +652,22 @@ public class ThermostatServiceImpl implements ThermostatService {
                                 logMessage.toString());
     }
     
+    @Override
+    public String getAccountThermostatScheduleNameFromId(int atsId) {
+        try {
+            AccountThermostatSchedule ats = accountThermostatScheduleDao.getById(atsId);
+            return ats.getScheduleName();
+        } catch(EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+    
+    @Override
+    public String getThermostatNameFromId(int thermostatId) {
+        Thermostat thermo =  inventoryDao.getThermostatById(thermostatId);
+        return thermo.getLabel();
+    }
+    
     // DI Setters
     @Autowired
     public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
@@ -686,5 +717,10 @@ public class ThermostatServiceImpl implements ThermostatService {
     @Autowired
     public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
         this.accountThermostatScheduleDao = accountThermostatScheduleDao;
+    }
+    
+    @Autowired
+    public void setThermostatEventHistoryDao(ThermostatEventHistoryDao thermostatEventHistoryDao) {
+        this.thermostatEventHistoryDao = thermostatEventHistoryDao;
     }
 }

@@ -104,4 +104,15 @@ public interface ThermostatService {
     public ThermostatManualEventResult validateTempAgainstLimits(List<Integer> thermostatIdsList,
                                                                  int temperatureInF, 
                                                                  ThermostatMode mode);
+    
+    /**
+     * Given a thermostat schedule id, returns the name of that schedule.  If a schedule with that
+     * id does not exist, returns null.
+     */
+    public String getAccountThermostatScheduleNameFromId(int atsId);
+    
+    /**
+     * Given a thermostat id, returns the name of that thermostat.
+     */
+    public String getThermostatNameFromId(int thermostatId);
 }

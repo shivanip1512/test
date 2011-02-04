@@ -137,11 +137,26 @@
             </li>
         </ol>
     ]]></entry>
-    
     <entry key="yukon.dr.consumer.thermostat.runProgramText"><![CDATA[
         <b>or</b><br><br>
         Click <b>RUN PROGRAM</b> to revert to your thermostat program.
     ]]></entry>
+    <entry key="yukon.dr.consumer.thermostat.noItems">No command history available.</entry>
+    <entry key="yukon.dr.consumer.thermostat.thermostatHeader">Thermostat</entry>
+    <entry key="yukon.dr.consumer.thermostat.typeHeader">Type</entry>
+    <entry key="yukon.dr.consumer.thermostat.dateHeader">Date</entry>
+    <entry key="yukon.dr.consumer.thermostat.detailsHeader">Details</entry>
+    <entry key="yukon.dr.consumer.thermostat.MANUAL">Manual</entry>
+    <entry key="yukon.dr.consumer.thermostat.RESTORE">Restore</entry>
+    <entry key="yukon.dr.consumer.thermostat.SCHEDULE">Schedule</entry>
+    <entry key="yukon.dr.consumer.thermostat.manualDetailsTemp">Temp: {0}</entry>
+    <entry key="yukon.dr.consumer.thermostat.manualDetailsFan">Fan:</entry>
+    <entry key="yukon.dr.consumer.thermostat.scheduleDetails">Schedule: {0}</entry>
+    <entry key="yukon.dr.consumer.thermostat.scheduleDetailsMode">Mode:</entry>
+    <entry key="yukon.dr.consumer.thermostat.WEEKDAY_SAT_SUN">Weekday, Saturday, Sunday</entry>
+    <entry key="yukon.dr.consumer.thermostat.WEEKDAY_WEEKEND">Weekday, Weekend</entry>
+    <entry key="yukon.dr.consumer.thermostat.ALL">All</entry>
+    <entry key="yukon.dr.consumer.thermostat.deletedSchedule">(Deleted schedule)</entry>
    
     <!--  scheduleHints.jsp -->
     <entry key="yukon.dr.consumer.scheduleHints.header">Thermostat Schedule - Hints and Details</entry>

@@ -32,6 +32,7 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
+import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleDisplay;
@@ -52,9 +53,7 @@ import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 @Controller
 @RequestMapping(value = "/operator/thermostatSchedule/*")
 public class OperatorThermostatScheduleController {
-	
     private AccountEventLogService accountEventLogService;
-    
 	private InventoryDao inventoryDao;
 	private CustomerDao customerDao;
 	private CustomerAccountDao customerAccountDao;
@@ -63,6 +62,7 @@ public class OperatorThermostatScheduleController {
 	private AccountCheckerService accountCheckerService;
 	private AccountThermostatScheduleDao accountThermostatScheduleDao;
 	private RolePropertyDao rolePropertyDao;
+	private ThermostatEventHistoryDao thermostatEventHistoryDao;
 	
 	// VIEW
 	@RequestMapping
@@ -336,6 +336,11 @@ public class OperatorThermostatScheduleController {
                         failed = true;
                     }
         		}
+        		
+        		if(!failed) {
+        		    //Log schedule send to thermostat history
+        		    thermostatEventHistoryDao.logScheduleEvent(userContext.getYukonUser(), thermostatId, ats.getAccountThermostatScheduleId(), thermostatScheduleMode);
+        		}
         	}
         	
         	if (failed && thermostatIdsList.size() > 1) {
@@ -485,5 +490,10 @@ public class OperatorThermostatScheduleController {
 	@Autowired
 	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
+	}
+	
+	@Autowired
+	public void setThermostatEventHistoryDao(ThermostatEventHistoryDao thermostatEventHistoryDao) {
+	    this.thermostatEventHistoryDao = thermostatEventHistoryDao;
 	}
 }

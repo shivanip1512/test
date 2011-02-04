@@ -24,6 +24,8 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
+import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
+import com.cannontech.stars.dr.thermostat.model.ThermostatEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
@@ -37,14 +39,15 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT)
 @Controller
 public class ThermostatManualController extends AbstractThermostatController {
-
     private AccountEventLogService accountEventLogService;
-    
     private InventoryDao inventoryDao;
     private CustomerEventDao customerEventDao;
     private ThermostatService thermostatService;
     private CustomerDao customerDao;
-
+    private ThermostatEventHistoryDao thermostatEventHistoryDao;
+    
+    private final int NUMBER_OF_HISTORY_ROWS_TO_DISPLAY = 6;
+    
     @RequestMapping(value = "/consumer/thermostat/view", method = RequestMethod.GET)
     public String view(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
             LiteYukonUser user, ModelMap map) throws Exception {
@@ -56,7 +59,6 @@ public class ThermostatManualController extends AbstractThermostatController {
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatIds.get(0));
         map.addAttribute("thermostat", thermostat);
 
-        
         ThermostatManualEvent event;
         if (thermostatIds.size() == 1) {
             // single thermostat selected
@@ -80,7 +82,10 @@ public class ThermostatManualController extends AbstractThermostatController {
         event.setTemperatureUnit(temperatureUnit);
 
         map.addAttribute("event", event);
-
+        
+        List<ThermostatEvent> eventHistoryList = thermostatEventHistoryDao.getLastNEventsByThermostatIds(thermostatIds, NUMBER_OF_HISTORY_ROWS_TO_DISPLAY);
+        map.addAttribute("eventHistoryList", eventHistoryList);
+        
         return "consumer/thermostat.jsp";
     }
 
@@ -255,5 +260,9 @@ public class ThermostatManualController extends AbstractThermostatController {
     public void setCustomerDao(CustomerDao customerDao) {
 		this.customerDao = customerDao;
 	}
-
+    
+    @Autowired
+    public void setThermostatEventHistoryDao(ThermostatEventHistoryDao thermostatEventHistoryDao) {
+        this.thermostatEventHistoryDao = thermostatEventHistoryDao;
+    }
 }
