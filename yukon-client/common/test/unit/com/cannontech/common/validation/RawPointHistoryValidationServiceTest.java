@@ -373,7 +373,7 @@ public class RawPointHistoryValidationServiceTest {
     
     private ValidationMonitor createStandardSettings() {
         ValidationMonitor validationMonitor = new ValidationMonitor();
-        validationMonitor.setKwhReadingError(.1);
+        validationMonitor.setKwhReadingError(.1000001);
         validationMonitor.setKwhSlopeError(4);
         validationMonitor.setPeakHeightMinimum(10);
         validationMonitor.setReasonableMaxKwhPerDay(400);
