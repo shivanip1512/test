@@ -224,13 +224,13 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
                                             "ipaddress = ?, "
                                             "udpport = ?"
                                             " where deviceid = ?";
-            _lastControlReason = ( ( (LONG) getPointValueByAttribute(PointAttribute::LastControlLocal) & 0x01)            ||
-                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlRemote) & 0x01 )        << 1 ) ||
-                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlOvUv) & 0x01 )         << 2 ) ||
-                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlNeutralFault) & 0x01)  << 3 ) ||
-                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlScheduled) & 0x01)     << 4 ) ||
-                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlDigital) & 0x01)       << 5 ) ||
-                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlAnalog) & 0x01 )       << 6 ) ||
+            _lastControlReason = ( ( (LONG) getPointValueByAttribute(PointAttribute::LastControlLocal) & 0x01)            |
+                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlRemote) & 0x01 )       << 1 ) |
+                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlOvUv) & 0x01 )         << 2 ) |
+                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlNeutralFault) & 0x01)  << 3 ) |
+                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlScheduled) & 0x01)     << 4 ) |
+                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlDigital) & 0x01)       << 5 ) |
+                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlAnalog) & 0x01 )       << 6 ) |
                                 ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlTemperature) & 0x01 )  << 7 ) );
             INT condition = 0;
             if (getPointValueByAttribute(PointAttribute::UvCondition))
@@ -310,13 +310,13 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
 
             Cti::Database::DatabaseWriter dbInserter(conn, insertSql);
 
-            _lastControlReason = ( ( (LONG)getPointValueByAttribute(PointAttribute::LastControlLocal)       & 0x01)  ||
-                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlRemote)       & 0x02)  ||
-                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlOvUv)         & 0x04)  ||
-                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlNeutralFault) & 0x08)  ||
-                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlScheduled)    & 0x10)  ||
-                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlDigital)      & 0x20)  ||
-                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlAnalog)       & 0x40)  ||
+            _lastControlReason = ( ( (LONG)getPointValueByAttribute(PointAttribute::LastControlLocal)    & 0x01)  |
+                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlRemote)       & 0x02)  |
+                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlOvUv)         & 0x04)  |
+                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlNeutralFault) & 0x08)  |
+                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlScheduled)    & 0x10)  |
+                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlDigital)      & 0x20)  |
+                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlAnalog)       & 0x40)  |
                                 ((LONG)getPointValueByAttribute(PointAttribute::LastControlTemperature)  & 0x80)  );
             INT condition = 0;
             if (getPointValueByAttribute(PointAttribute::UvCondition))
@@ -500,33 +500,45 @@ CtiTime CtiCCTwoWayPoints::getPointTimeStampByAttribute(PointAttribute attribute
     return time;
 }
 
+bool CtiCCTwoWayPoints::isTimestampNew(LONG pointID, CtiTime timestamp)
+{
+    bool retVal = true;
+    CtiTime prevTime = gInvalidCtiTime;
+    if (_pointValues.getPointTime(pointID, prevTime) && timestamp <= prevTime)
+    {    
+        retVal = false;
+    }
+    return retVal;
+}
+
 BOOL CtiCCTwoWayPoints::setTwoWayStatusPointValue(LONG pointID, LONG value, CtiTime timestamp)
 {
     BOOL retVal = false;
-    if ( _pointidPointtypeMap.find(pointID)->second == StatusPointType)
-        retVal = true;
-    _pointValues.addPointValue(pointID, value, timestamp);
-
+    if ( _pointidPointtypeMap.find(pointID)->second == StatusPointType &&
+         (retVal = isTimestampNew(pointID, timestamp)) )
+    {    
+        _pointValues.addPointValue(pointID, value, timestamp);
+    }
     return retVal;
-
 }
 BOOL CtiCCTwoWayPoints::setTwoWayAnalogPointValue(LONG pointID, LONG value, CtiTime timestamp)
 {
     BOOL retVal = FALSE;
-    if ( _pointidPointtypeMap.find(pointID)->second == AnalogPointType)
-        retVal = true;
-    _pointValues.addPointValue(pointID, value, timestamp);
-
-    
+    if ( _pointidPointtypeMap.find(pointID)->second == AnalogPointType &&
+         (retVal = isTimestampNew(pointID, timestamp)) )
+    {    
+        _pointValues.addPointValue(pointID, value, timestamp);
+    }
     return retVal;
 }
 BOOL CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue(LONG pointID, LONG value, CtiTime timestamp)
 {
     BOOL retVal = FALSE;
-    if ( _pointidPointtypeMap.find(pointID)->second == PulseAccumulatorPointType)
-        retVal = true;
-    _pointValues.addPointValue(pointID, value, timestamp);
-
+    if ( _pointidPointtypeMap.find(pointID)->second == PulseAccumulatorPointType &&
+         (retVal = isTimestampNew(pointID, timestamp)) )
+    {    
+        _pointValues.addPointValue(pointID, value, timestamp);
+    }
     return retVal;
 }
 
@@ -547,104 +559,103 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::addAllCBCPointsToRegMsg(std::set<long>& po
 }
 
 
-void CtiCCTwoWayPoints::setDynamicData(Cti::RowReader& rdr)
+void CtiCCTwoWayPoints::setDynamicData(Cti::RowReader& rdr, CtiTime timestamp)
 {
     INT condition = 0;
     string tempBoolString;
-    CtiTime timeNow;
     LONG tempLong;
 
 
     rdr["recloseblocked"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::ReCloseBlocked), tempBoolString=="y"?TRUE:FALSE, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::ReCloseBlocked), tempBoolString=="y"?TRUE:FALSE, timestamp);
     rdr["controlmode"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::ControlMode), tempBoolString=="y"?TRUE:FALSE, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::ControlMode), tempBoolString=="y"?TRUE:FALSE, timestamp);
     rdr["autovoltcontrol"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::AutoVoltControl), tempBoolString=="y"?TRUE:FALSE, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::AutoVoltControl), tempBoolString=="y"?TRUE:FALSE, timestamp);
     rdr["lastcontrol"] >>_lastControlReason;
     rdr["condition"] >> condition;
     rdr["opfailedneutralcurrent"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OpFailedNeutralCurrent), tempBoolString=="y"?TRUE:FALSE, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OpFailedNeutralCurrent), tempBoolString=="y"?TRUE:FALSE, timestamp);
     rdr["neutralcurrentfault"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::NeutralCurrentFault), tempBoolString=="y"?TRUE:FALSE, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::NeutralCurrentFault), tempBoolString=="y"?TRUE:FALSE, timestamp);
     rdr["badrelay"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::BadRelay), tempBoolString=="y"?TRUE:FALSE, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::BadRelay), tempBoolString=="y"?TRUE:FALSE, timestamp);
     rdr["dailymaxops"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::DailyMaxOps), tempBoolString=="y"?TRUE:FALSE, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::DailyMaxOps), tempBoolString=="y"?TRUE:FALSE, timestamp);
     rdr["voltagedeltaabnormal"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::VoltageDeltaAbnormal), tempBoolString=="y"?TRUE:FALSE, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::VoltageDeltaAbnormal), tempBoolString=="y"?TRUE:FALSE, timestamp);
     rdr["tempalarm"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::TempAlarm), tempBoolString=="y"?TRUE:FALSE, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::TempAlarm), tempBoolString=="y"?TRUE:FALSE, timestamp);
     rdr["dstactive"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::DSTActive), tempBoolString=="y"?TRUE:FALSE, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::DSTActive), tempBoolString=="y"?TRUE:FALSE, timestamp);
     rdr["neutrallockout"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::NeutralLockout), tempBoolString=="y"?TRUE:FALSE, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::NeutralLockout), tempBoolString=="y"?TRUE:FALSE, timestamp);
     rdr["ignoredindicator"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::IgnoredIndicator), tempBoolString=="y"?TRUE:FALSE, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::IgnoredIndicator), tempBoolString=="y"?TRUE:FALSE, timestamp);
     rdr["voltage"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::CbcVoltage), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::CbcVoltage), tempLong, timestamp);
     rdr["highvoltage"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::HighVoltage), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::HighVoltage), tempLong, timestamp);
     rdr["lowvoltage"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LowVoltage), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LowVoltage), tempLong, timestamp);
     rdr["deltavoltage"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::DeltaVoltage), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::DeltaVoltage), tempLong, timestamp);
     rdr["analoginputone"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::AnalogInput1), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::AnalogInput1), tempLong, timestamp);
     rdr["temp"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::Temperature), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::Temperature), tempLong, timestamp);
     rdr["rssi"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::RSSI), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::RSSI), tempLong, timestamp);
     rdr["ignoredreason"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::IgnoredReason), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::IgnoredReason), tempLong, timestamp);
     rdr["totalopcount"] >>tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::TotalOpCount), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::TotalOpCount), tempLong, timestamp);
     rdr["uvopcount"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UvCount), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UvCount), tempLong, timestamp);
     rdr["ovopcount"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OvCount), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OvCount), tempLong, timestamp);
     rdr["ovuvcountresetdate"] >> _ovuvCountResetDate; //toADD
     rdr["uvsetpoint"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UvSetPoint), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UvSetPoint), tempLong, timestamp);
     rdr["ovsetpoint"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OvSetPoint), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OvSetPoint), tempLong, timestamp);
     rdr["ovuvtracktime"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OVUVTrackTime), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OVUVTrackTime), tempLong, timestamp);
     rdr["lastovuvdatetime"] >> _lastOvUvDateTime; //toAdd
     rdr["neutralcurrentsensor"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::NeutralCurrentSensor), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::NeutralCurrentSensor), tempLong, timestamp);
     rdr["neutralcurrentalarmsetpoint"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::NeutralCurrentAlarmSetPoint), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::NeutralCurrentAlarmSetPoint), tempLong, timestamp);
     rdr["ipaddress"]  >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UDPIpAddress), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UDPIpAddress), tempLong, timestamp);
     rdr["udpport"] >>  tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UDPPortNumber), tempLong, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UDPPortNumber), tempLong, timestamp);
 
 
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlLocal), _lastControlReason & 0x01, timeNow);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlRemote), _lastControlReason & 0x02, timeNow);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlOvUv), _lastControlReason & 0x04, timeNow);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlNeutralFault), _lastControlReason & 0x08, timeNow);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlScheduled), _lastControlReason & 0x10, timeNow);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlDigital), _lastControlReason & 0x20, timeNow);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlAnalog), _lastControlReason & 0x40, timeNow);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlTemperature), _lastControlReason & 0x80, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlLocal), _lastControlReason & 0x01, timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlRemote), _lastControlReason & 0x02, timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlOvUv), _lastControlReason & 0x04, timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlNeutralFault), _lastControlReason & 0x08, timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlScheduled), _lastControlReason & 0x10, timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlDigital), _lastControlReason & 0x20, timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlAnalog), _lastControlReason & 0x40, timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlTemperature), _lastControlReason & 0x80, timestamp);
 
 
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UvCondition), condition & 0x01, timeNow);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OvCondition), condition & 0x02, timeNow);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UvCondition), condition & 0x01, timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OvCondition), condition & 0x02, timestamp);
 
     _insertDynamicDataFlag = FALSE;
     _dirty = false;
@@ -716,141 +727,5 @@ string CtiCCTwoWayPoints::getLastControlText()
     return retVal;
 }
 
-
-LONG CtiCCTwoWayPoints::getLastControl() 
-{
-    LONG retVal = 0;
-
-    if (getPointValueByAttribute(PointAttribute::LastControlRemote) > 0 )
-        retVal = CC_Remote;
-    else if (getPointValueByAttribute(PointAttribute::LastControlLocal) > 0 )
-        retVal = CC_Local;
-    else if (getPointValueByAttribute(PointAttribute::LastControlOvUv) > 0 )
-        retVal = CC_OvUv;
-    else if (getPointValueByAttribute(PointAttribute::LastControlNeutralFault) > 0 )
-        retVal = CC_NeutralFault;
-    else if (getPointValueByAttribute(PointAttribute::LastControlScheduled) > 0 )
-        retVal = CC_Scheduled;
-    else if (getPointValueByAttribute(PointAttribute::LastControlDigital) > 0 )
-        retVal = CC_Digital;
-    else if (getPointValueByAttribute(PointAttribute::LastControlAnalog) > 0 )
-        retVal = CC_Analog;
-    else if (getPointValueByAttribute(PointAttribute::LastControlTemperature) > 0 )
-        retVal = CC_Temperature;
-
-    return retVal;
-}
-
-INT CtiCCTwoWayPoints::getLastControlReason() const
-{
-    return _lastControlReason;
-}
-
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlReason()
-{
-    if (getPointValueByAttribute(PointAttribute::LastControlRemote) > 0 )
-        _lastControlReason = CC_Remote;
-    else if (getPointValueByAttribute(PointAttribute::LastControlLocal) > 0 )
-        _lastControlReason = CC_Local;
-    else if (getPointValueByAttribute(PointAttribute::LastControlOvUv) > 0 )
-        _lastControlReason = CC_OvUv;
-    else if (getPointValueByAttribute(PointAttribute::LastControlNeutralFault) > 0 )
-        _lastControlReason = CC_NeutralFault;
-    else if (getPointValueByAttribute(PointAttribute::LastControlScheduled) > 0 )
-        _lastControlReason = CC_Scheduled;
-    else if (getPointValueByAttribute(PointAttribute::LastControlDigital) > 0 )
-        _lastControlReason = CC_Digital;
-    else if (getPointValueByAttribute(PointAttribute::LastControlAnalog) > 0 )
-        _lastControlReason = CC_Analog;
-    else if (getPointValueByAttribute(PointAttribute::LastControlTemperature) > 0 )
-        _lastControlReason = CC_Temperature;
-
-    return *this;
-}
-
-
-BOOL CtiCCTwoWayPoints::isLastControlReasonUpdated(LONG pointID,LONG reason )
-{
-    BOOL retVal = FALSE;
-    switch (reason)
-    {
-        case CC_Remote:
-        {
-            if (getPointIdByAttribute(PointAttribute::LastControlRemote) ==  pointID && 
-                getPointValueByAttribute(PointAttribute::LastControlRemote) == 0)
-            {
-                retVal = TRUE;
-            }
-            break;
-        }
-        case CC_Local:
-        {
-            if (getPointIdByAttribute(PointAttribute::LastControlLocal) ==  pointID && 
-                getPointValueByAttribute(PointAttribute::LastControlLocal) == 0)
-            {
-                retVal = TRUE;
-            }
-            break;
-        }
-        case CC_OvUv:
-        {
-            if (getPointIdByAttribute(PointAttribute::LastControlOvUv) ==  pointID && 
-                getPointValueByAttribute(PointAttribute::LastControlOvUv) == 0)
-            {
-                retVal = TRUE;
-            }
-            break;
-        }
-        case CC_NeutralFault:
-        {
-            if (getPointIdByAttribute(PointAttribute::LastControlNeutralFault) ==  pointID && 
-                getPointValueByAttribute(PointAttribute::LastControlNeutralFault) == 0)
-            {
-                retVal = TRUE;
-            }
-            break;
-        }
-        case CC_Scheduled:
-        {
-            if (getPointIdByAttribute(PointAttribute::LastControlScheduled) ==  pointID && 
-                getPointValueByAttribute(PointAttribute::LastControlScheduled) == 0)
-            {
-                retVal = TRUE;
-            }
-            break;
-        }
-        case CC_Digital:
-        {
-            if (getPointIdByAttribute(PointAttribute::LastControlDigital) ==  pointID && 
-                getPointValueByAttribute(PointAttribute::LastControlDigital) == 0)
-            {
-                retVal = TRUE;
-            }
-            break;
-        }
-        case CC_Analog:
-        {
-            if (getPointIdByAttribute(PointAttribute::LastControlAnalog) == pointID && 
-                getPointValueByAttribute(PointAttribute::LastControlAnalog) == 0)
-            {
-                retVal = TRUE;
-            }
-            break;
-        }
-        case CC_Temperature:
-        {
-            if (getPointIdByAttribute(PointAttribute::LastControlTemperature) == pointID && 
-                getPointValueByAttribute(PointAttribute::LastControlTemperature) == 0)
-            {
-                retVal = TRUE;
-            }
-            break;
-        }
-        default:
-            break;
-    }
-
-    return retVal;
-}
 
 

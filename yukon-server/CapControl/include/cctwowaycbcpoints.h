@@ -31,14 +31,7 @@ public:
     LONG getPAOId() const;
 
     string getLastControlText() ;
-    LONG getLastControl() ;
-    INT getLastControlReason() const;
-
-
     CtiCCTwoWayPoints& setPAOId(LONG paoId);
-
-    CtiCCTwoWayPoints& setLastControlReason();
-
 
     LitePoint getPointByAttribute(const PointAttribute & attribute) const;
     int getPointIdByAttribute(const PointAttribute & attribute) const;
@@ -51,15 +44,12 @@ public:
     BOOL setTwoWayAnalogPointValue(LONG pointID, LONG value, CtiTime timestamp);
     BOOL setTwoWayPulseAccumulatorPointValue(LONG pointID, LONG value, CtiTime timestamp);
 
-    BOOL isLastControlReasonUpdated(LONG pointID, LONG reason );
-
-
     CtiCCTwoWayPoints& addAllCBCPointsToRegMsg(std::set<long>& pointList);
     BOOL isDirty();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     void restore(Cti::RowReader& rdr);
-    void setDynamicData(Cti::RowReader& rdr);
+    void setDynamicData(Cti::RowReader& rdr, CtiTime timestamp);
     CtiCCTwoWayPoints* replicate() const;
 
     CtiCCTwoWayPoints& operator=(const CtiCCTwoWayPoints& right);
@@ -87,6 +77,7 @@ private:
     PointAttribute getAnalogAttribute(int offset);
     PointAttribute getAccumulatorAttribute(int offset);
     PointAttribute getStatusAttribute(int offset);
+    bool isTimestampNew(LONG pointID, CtiTime timestamp);
 
     LONG _paoid;
     string _paotype;
