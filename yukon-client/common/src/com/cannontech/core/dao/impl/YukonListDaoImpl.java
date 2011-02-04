@@ -31,13 +31,42 @@ import com.google.common.collect.MapMaker;
 
 public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao {
 
-    public class EnergyCompanyAndListName {
+    public static class EnergyCompanyAndListName {
         private String listName;
         private int energyCompanyId;
 
         public EnergyCompanyAndListName(int energyCompanyId, String listName) {
             this.energyCompanyId = energyCompanyId;
             this.listName = listName;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + energyCompanyId;
+            result = prime * result
+                     + ((listName == null) ? 0 : listName.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            EnergyCompanyAndListName other = (EnergyCompanyAndListName) obj;
+            if (energyCompanyId != other.energyCompanyId)
+                return false;
+            if (listName == null) {
+                if (other.listName != null)
+                    return false;
+            } else if (!listName.equals(other.listName))
+                return false;
+            return true;
         }
     }
 
