@@ -50,6 +50,8 @@
     <entry key="yukon.web.modules.operator.thermostatManual.decrementTemp">&amp;#9660;</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.arrow">/WebConfig/yukon/Icons/triangle-right.gif</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.hold">Hold</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.hold.on">On</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.hold.off">Off</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.mode">MODE</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.mode.AUTO">Auto</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.mode.COOL">Cool</entry>
@@ -74,6 +76,9 @@
     <entry key="yukon.web.modules.operator.thermostatManual.runProgramText"><![CDATA[
         <b>or</b> Click <b>RUN PROGRAM</b> to revert to your thermostat program.
     ]]></entry>
+    
+    <entry key="yukon.web.modules.operator.thermostatManual.sendConfirm.title">Confirm New Thermostat Settings</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.sendConfirm.message">Proceed with the following thermostat settings?</entry>
     
     <!--  operatorThermostat/schedule/view.jsp -->
     <entry key="yukon.web.modules.operator.thermostatSchedule.pageName">Thermostat Schedule</entry>

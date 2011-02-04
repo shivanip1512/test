@@ -119,7 +119,7 @@
         
     }
     
-    function setMode(mode){
+    function setMode(mode, element){
         $('mode').value = mode;
         
         $('coolArrow').hide();
@@ -144,14 +144,16 @@
             $('temperature').setStyle({color: 'black'});
             $('temperature').disable();
         } 
+        $('modeConfirm').innerHTML = element.innerHTML;
     }
     
-    function setFan(arrow, fan){
+    function setFan(arrow, fan, element){
         $('fan').value = fan;
         $('autoArrow').hide();
         $('circulateArrow').hide();
         $('onArrow').hide();
         $(arrow).show();
+        $('fanConfirm').innerHTML = element.innerHTML;
     }
     
     function editName(){
