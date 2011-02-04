@@ -178,7 +178,7 @@ public class OptOutController extends AbstractConsumerController {
         for (DisplayableInventory inventory : displayableInventories) {
             OptOutCountHolder optOutCountHolder = optOutCounts.get(inventory.getInventoryId());
             
-            // Check if device can't be opted out on one specific day provided by the user
+            // Check if device can't be opted out on one specific day provided by the user.
             if(!optOutCountHolder.isOptOutsRemaining() ||
                (optOutCountHolder.getRemainingOptOuts()==1 && inventory.getCurrentlyScheduledOptOut()!=null) ||
                (isSameDay && inventory.isCurrentlyOptedOut()) ||
