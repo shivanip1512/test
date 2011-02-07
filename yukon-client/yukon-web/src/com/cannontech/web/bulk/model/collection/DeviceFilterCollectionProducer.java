@@ -22,11 +22,9 @@ import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.RangeBasedDeviceCollection;
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.search.SearchResult;
-import com.cannontech.common.util.MappingList;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.bulk.model.DeviceCollectionProducer;
@@ -121,14 +119,7 @@ public class DeviceFilterCollectionProducer implements DeviceCollectionProducer,
             public List<SimpleDevice> getDevices(int start, int size) {
                 SearchResult<Meter> searchResult = meterSearchDao.search(filterBys, orderBy, start, size);
                 List<Meter> resultList = searchResult.getResultList();
-                ObjectMapper<Meter, SimpleDevice> mapper = new ObjectMapper<Meter, SimpleDevice>() {
-                    public SimpleDevice map(Meter from) throws ObjectMappingException {
-                        SimpleDevice yukonDevice = new SimpleDevice(from.getDeviceId(), from.getPaoType());
-                        return yukonDevice;
-                    }
-                };
-                List<SimpleDevice> result = new MappingList<Meter, SimpleDevice>(resultList, mapper);
-                
+                List<SimpleDevice> result = PaoUtils.asSimpleDeviceListFromPaos(resultList);
                 return result;
             }
             
