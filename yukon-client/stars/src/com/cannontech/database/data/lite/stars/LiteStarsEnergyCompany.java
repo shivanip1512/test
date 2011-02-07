@@ -304,7 +304,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             if(! permittedPaoIDs.isEmpty()) {
                 
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT LMGEC.LMGroupId, GM.OwnerId ");
+                sql.append("SELECT LMGEC.LMGroupId");
                 sql.append("FROM LMGroupExpressCom LMGEC");
                 sql.append("JOIN GenericMacro GM ON GM.ChildId = LMGEC.LMGroupId");
                 sql.append("WHERE GM.MacroType").eq(MacroTypes.GROUP);
@@ -411,6 +411,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return adminEmail;
     }
     
+    /**
+     * @Deprecated The energyCompanyRolePropertyDao should be used instead of this method.
+     */
     @Deprecated
     public String getEnergyCompanySetting(int rolePropertyID) {
         String value = DaoFactory.getAuthDao().getRolePropertyValue(user, rolePropertyID);
@@ -1966,11 +1969,11 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      */
     public static Function<YukonEnergyCompany, Integer> getEnergyCompanyToEnergyCompanyIdsFunction(){
         return new Function<YukonEnergyCompany, Integer>() {
-                    @Override
-                    public Integer apply(YukonEnergyCompany yukonEnergyCompany) {
-                        return yukonEnergyCompany.getEnergyCompanyId();
-                    }
-                };
+            @Override
+            public Integer apply(YukonEnergyCompany yukonEnergyCompany) {
+                return yukonEnergyCompany.getEnergyCompanyId();
+            }
+        };
     }
     
     

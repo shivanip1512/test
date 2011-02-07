@@ -17,13 +17,8 @@ public class ProgramEnrollment {
     private int inventoryId;
     private boolean enroll; 
     
-    
     public ProgramEnrollment() {}
 
-    /**
-     * This method also take care of the validation for the applianceCategory, program, and loadGroup
-     * and includes checking to see if they belong to one another.
-     */
     public ProgramEnrollment(EnrollmentHelper enrollmentHelper, LMHardwareBase lmHardwareBase,
                              ApplianceCategory applianceCategory, Program program, LoadGroup loadGroup) {
         setInventoryId(lmHardwareBase.getInventoryId());

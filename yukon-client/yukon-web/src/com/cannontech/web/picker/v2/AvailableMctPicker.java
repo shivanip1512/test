@@ -1,6 +1,7 @@
 package com.cannontech.web.picker.v2;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,15 +11,12 @@ import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.search.UltraLightPao;
 import com.cannontech.common.search.pao.db.AvailableMctFilter;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.stars.core.service.EnergyCompanyService;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.user.YukonUserContext;
-import com.google.common.collect.Lists;
 
 public class AvailableMctPicker extends DatabasePaoPicker {
     
-    private EnergyCompanyService energyCompanyService;
+    private ECMappingDao ecMappingDao;
     private PaoDefinitionDao paoDefinitionDao;
 
     @Override
@@ -30,21 +28,18 @@ public class AvailableMctPicker extends DatabasePaoPicker {
             int energyCompanyId = NumberUtils.toInt(extraArgs);
             
             // gather parents energyCompanyIds
-            List<YukonEnergyCompany> parentEnergyCompanies = 
-                energyCompanyService.getAccessibleParentEnergyCompanies(energyCompanyId);
-            List<Integer> energyCompanyIds =
-                Lists.transform(parentEnergyCompanies, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdsFunction());
+            Set<Integer> parentEnergyCompanies = ecMappingDao.getParentEnergyCompanyIds(energyCompanyId);
             
             AvailableMctFilter energyCompanyIdsFilter = 
-                new AvailableMctFilter(energyCompanyIds, paoDefinitionDao);
+                new AvailableMctFilter(parentEnergyCompanies, paoDefinitionDao);
             sqlFilters.add(energyCompanyIdsFilter);
         }
     }
 
     // DI Setters
     @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
+    public void setEcMappingDao(ECMappingDao ecMappingDao) {
+        this.ecMappingDao = ecMappingDao;
     }
     
     @Autowired

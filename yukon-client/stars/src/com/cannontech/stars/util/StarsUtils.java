@@ -320,12 +320,18 @@ public class StarsUtils {
 	    return comp;
 	}
 	
+	/**
+	 * @deprecated There should never be any need to call these if the role properties are well designed.
+	 */
 	@Deprecated
 	public static boolean isOperator(LiteYukonUser user) {
 	    return !isResidentialCustomer(user) &&
 	    DaoFactory.getEnergyCompanyDao().getEnergyCompany(user) != null;
 	}
 
+    /**
+     * @deprecated There should never be any need to call these if the role properties are well designed.
+     */
 	@Deprecated
 	public static boolean isResidentialCustomer(LiteYukonUser user) {
 		return DaoFactory.getAuthDao().checkRole(user, ResidentialCustomerRole.ROLEID);

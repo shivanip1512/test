@@ -1,21 +1,21 @@
 package com.cannontech.web.picker.v2.service.impl;
 
-import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.search.pao.db.LmProgramForEnergyCompanyIdFilter;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.stars.core.service.EnergyCompanyService;
+import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.web.picker.v2.service.LmProgramForEnergyCompanyIdFilterFactory;
-import com.google.common.collect.Lists;
 
 public class LmProgramForEnergyCompanyIdFilterFactoryImpl implements LmProgramForEnergyCompanyIdFilterFactory {
 
-	private EnergyCompanyService energyCompanyService;
+    private ApplianceCategoryDao applianceCategoryDao;
+    private StarsDatabaseCache starsDatabaseCache;
 	
 	@Override
 	public SqlFilter getFilterForEnergyCompanyIdExtraArg(String energyCompanyIdExtraArg) {
@@ -27,20 +27,24 @@ public class LmProgramForEnergyCompanyIdFilterFactoryImpl implements LmProgramFo
 		int energyCompanyId = NumberUtils.toInt(energyCompanyIdExtraArg);
 		
 		// gather parents energyCompanyIds
-		List<YukonEnergyCompany> parentEnergyCompanies = 
-		    energyCompanyService.getAccessibleParentEnergyCompanies(energyCompanyId);
-		List<Integer> energyCompanyIds = 
-		    Lists.transform(parentEnergyCompanies, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdsFunction());
+		YukonEnergyCompany yukonEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+		Set<Integer> appCatEnergyCompanyIds = applianceCategoryDao.getAppCatEnergyCompanyIds(yukonEnergyCompany);
 		
         // use the LmProgramForEnergyCompanyIdsFilter filter
-        LmProgramForEnergyCompanyIdFilter filter = new LmProgramForEnergyCompanyIdFilter(energyCompanyIds);
+        LmProgramForEnergyCompanyIdFilter filter = new LmProgramForEnergyCompanyIdFilter(appCatEnergyCompanyIds);
         
         return filter;
 	}
 	
+	// DI Setter
 	@Autowired
-	public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
+	public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
+        this.applianceCategoryDao = applianceCategoryDao;
+    }
+	
+	@Autowired
+	public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+        this.starsDatabaseCache = starsDatabaseCache;
     }
 	
 }

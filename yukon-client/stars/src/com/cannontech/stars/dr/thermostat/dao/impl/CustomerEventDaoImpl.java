@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -156,13 +157,12 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
 
         Integer eventId = event.getEventId();
         Integer thermostatId = event.getThermostatId();
-        String holdTempatureStr = (holdTemperature) ? "Y" : "N";
         
         // Insert row into LMThermostatManualEvent
         SqlStatementBuilder eventSql = new SqlStatementBuilder();
         eventSql.append("INSERT INTO LMThermostatManualEvent");
         eventSql.append("(EventId, InventoryId, PreviousTemperature, HoldTemperature, OperationStateId, FanOperationId)");
-        eventSql.values(eventId, thermostatId, previousTemperature, holdTempatureStr,
+        eventSql.values(eventId, thermostatId, previousTemperature, YNBoolean.valueOf(holdTemperature),
                         modeListEntry.getEntryID(), fanStateEntry.getEntryID());
 
         yukonJdbcTemplate.update(eventSql);

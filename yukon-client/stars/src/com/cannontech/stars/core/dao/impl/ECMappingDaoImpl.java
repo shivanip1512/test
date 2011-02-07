@@ -1,6 +1,9 @@
 package com.cannontech.stars.core.dao.impl;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,11 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.ECToAccountMapping;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.util.ECUtils;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     private YukonJdbcTemplate yukonJdbcTemplate;;
@@ -194,6 +202,63 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
             sql.append("DELETE FROM ECToCallReportMapping WHERE CallReportId IN (", callReportIds, ")");
             return sql.toString();
         }
+    }
+    
+    @Override
+    public Set<YukonEnergyCompany> getChildEnergyCompanies(int energyCompanyId) {
+        
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+
+        // Get all of the child energy companies including itself for the supplied energy company id.
+        List<Integer> childEnergyCompanyIds = energyCompany.getAllEnergyCompaniesDownward();
+        Set<YukonEnergyCompany> availableChildEnergyCompanies = Sets.newHashSetWithExpectedSize(childEnergyCompanyIds.size());
+        for (int childEnergyCompanyId : childEnergyCompanyIds) {
+            YukonEnergyCompany childEnergyCompany = starsDatabaseCache.getEnergyCompany(childEnergyCompanyId);
+            availableChildEnergyCompanies.add(childEnergyCompany);
+        }
+        
+        return availableChildEnergyCompanies;
+
+    }
+
+    @Override
+    public Set<Integer> getChildEnergyCompanyIds(int energyCompanyId) {
+        Set<YukonEnergyCompany> childEnergyCompanies = getChildEnergyCompanies(energyCompanyId);
+        
+        Collection<Integer> childEnergyCompanyIds = 
+            Collections2.transform(childEnergyCompanies, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdsFunction());
+        
+        return Sets.newHashSet(childEnergyCompanyIds);
+        
+    }
+    
+    @Override
+    public LinkedHashSet<YukonEnergyCompany> getParentEnergyCompanies(int energyCompanyId) {
+
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        
+        //  Get all the energy companies to the supplied energy company id.
+        List<LiteStarsEnergyCompany> allParentEnergyCompanies = ECUtils.getAllAscendants(energyCompany);
+
+        LinkedHashSet<YukonEnergyCompany> availableEnergyCompanies = Sets.newLinkedHashSet();
+        availableEnergyCompanies.addAll(allParentEnergyCompanies);
+        
+        return availableEnergyCompanies;
+
+    }
+    
+    @Override
+    public LinkedHashSet<Integer> getParentEnergyCompanyIds(int energyCompanyId) {
+
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        
+        //  Get all the energy companies to the supplied energy company id.
+        List<LiteStarsEnergyCompany> allParentEnergyCompanies = ECUtils.getAllAscendants(energyCompany);
+        List<Integer> energyCompaniesIdList = 
+            Lists.transform(allParentEnergyCompanies, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdsFunction());
+        
+        return Sets.newLinkedHashSet(energyCompaniesIdList);
+
     }
     
     // DI Setters

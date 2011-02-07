@@ -1,10 +1,13 @@
 package com.cannontech.stars.core.dao;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.ECToAccountMapping;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 /**
  * Data access interface used to get energy company
@@ -101,5 +104,30 @@ public interface ECMappingDao {
      * @param energyCompanyId
      */
     public void updateECToAccountMapping(int accountId, int energyCompanyId);
+
+    
+    /**
+     * Returns all the member energy companies, including itself,  of the supplied energy company.  
+     */
+    public Set<YukonEnergyCompany> getChildEnergyCompanies(int energyCompanyId);
+
+    /**
+     * Returns all the member energy companies, including itself,  of the supplied energy company.  
+     */
+    public Set<Integer> getChildEnergyCompanyIds(int energyCompanyId);  
+
+    /**
+     * Returns all the energy companies that the supplied energy company is a
+     * member of, including itself. It will also be ordered from child energy company
+     * to the further most parent energy company.
+     */
+    public LinkedHashSet<YukonEnergyCompany> getParentEnergyCompanies(int energyCompanyId);
+
+    /**
+     * Returns all the energy company ids that the supplied energy company is a
+     * member of, including itself. It will also be ordered from child energy company
+     * to the further most parent energy company.
+     */
+    public LinkedHashSet<Integer> getParentEnergyCompanyIds(int energyCompanyId);
 
 }

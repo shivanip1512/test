@@ -288,5 +288,9 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	public void setProgramHistory(List<LiteLMProgramEvent> list) {
 		programHistory = list;
 	}
+	
+	public int getEnergyCompanyId() {
+        return energyCompanyId;
+    }
 
 }

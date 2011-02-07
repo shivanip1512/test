@@ -57,7 +57,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
-import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
@@ -65,7 +64,6 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlready
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsUtils;
@@ -97,7 +95,6 @@ public class OperatorHardwareController {
     private HardwareEventLogService hardwareEventLogService;
     private HardwareUiService hardwareUiService;
     private EnergyCompanyDao energyCompanyDao;
-    private EnergyCompanyService energyCompanyService;
     private PaoDao paoDao;
     private ServiceCompanyDao serviceCompanyDao;
     private AddressDao addressDao;
@@ -408,8 +405,7 @@ public class OperatorHardwareController {
         
         /* Delete this hardware or just take it off the account and put in back in the warehouse */
         boolean delete = deleteOption.equalsIgnoreCase("delete");
-        YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByAccountId(accountInfoFragment.getAccountId());
-        hardwareService.deleteHardware(userContext, delete, inventoryId, accountInfoFragment.getAccountId(), yukonEnergyCompany);
+        hardwareService.deleteHardware(userContext, delete, inventoryId, accountInfoFragment.getAccountId());
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         if(delete) {
@@ -760,11 +756,6 @@ public class OperatorHardwareController {
     @Autowired
     public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
         this.energyCompanyDao = energyCompanyDao;
-    }
-    
-    @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
     }
     
     @Autowired

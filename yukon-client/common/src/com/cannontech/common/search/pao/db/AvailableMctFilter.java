@@ -19,10 +19,10 @@ import com.google.common.collect.Lists;
 
 public class AvailableMctFilter implements SqlFilter {
     
-    private Iterable<Integer> energyCompanyIds;
+    private Set<Integer> energyCompanyIds;
     private PaoDefinitionDao paoDefinitionDao;
     
-    public AvailableMctFilter(Iterable<Integer> energyCompanyIds, PaoDefinitionDao paoDefinitionDao) {
+    public AvailableMctFilter(Set<Integer> energyCompanyIds, PaoDefinitionDao paoDefinitionDao) {
         this.energyCompanyIds = energyCompanyIds;
         this.paoDefinitionDao = paoDefinitionDao;
     }

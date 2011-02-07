@@ -189,6 +189,7 @@ public class OptOutCleanupService implements InitializingBean {
 		this.customerAccountDao = customerAccountDao;
 	}
     
+    @Autowired
     public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
         this.energyCompanyService = energyCompanyService;
     }

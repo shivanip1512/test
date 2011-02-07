@@ -50,6 +50,7 @@ import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.ServletUtils;
@@ -179,6 +180,10 @@ public class StarsDatabaseCache implements DBChangeListener {
             }
             return map;
         }
+	}
+	
+	public LiteStarsEnergyCompany getEnergyCompany(YukonEnergyCompany yukonEnergyCompany) {
+	    return getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
 	}
 	
 	public LiteStarsEnergyCompany getEnergyCompany(int energyCompanyID) {

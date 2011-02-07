@@ -16,6 +16,7 @@ import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
@@ -36,6 +37,7 @@ public class HardwareServiceImpl implements HardwareService {
 
     private ApplianceDao applianceDao;
     private CustomerAccountDao customerAccountDao;
+    private EnergyCompanyService energyCompanyService;
     private EnrollmentHelperService enrollmentHelperService;
     private HardwareEventLogService hardwareEventLogService;
     private InventoryBaseDao inventoryBaseDao;
@@ -46,8 +48,10 @@ public class HardwareServiceImpl implements HardwareService {
     
     @Override
     @Transactional
-    public void deleteHardware(YukonUserContext userContext, boolean delete, int inventoryId, 
-                               int accountId, YukonEnergyCompany yukonEnergyCompany) throws Exception {
+    public void deleteHardware(YukonUserContext userContext, boolean delete, int inventoryId, int accountId) 
+    throws Exception {
+        
+        YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByAccountId(accountId);
         LiteInventoryBase liteInventoryBase = starsInventoryBaseDao.getByInventoryId(inventoryId);
         CustomerAccount customerAccount = customerAccountDao.getById(accountId);
         boolean deleteMCT = false;
@@ -60,7 +64,7 @@ public class HardwareServiceImpl implements HardwareService {
             enrollmentHelper.setAccountNumber(customerAccount.getAccountNumber());
             enrollmentHelper.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
             
-            enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, yukonEnergyCompany.getEnergyCompanyUser());
+            enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, userContext.getYukonUser());
             
         } catch (NotFoundException ignore) {
             /* Ignore this if we are not an LMHardwareBase such as mct's */
@@ -122,8 +126,12 @@ public class HardwareServiceImpl implements HardwareService {
 	}
     
     @Autowired
-    public void setEnrollmentHelperService(
-			EnrollmentHelperService enrollmentHelperService) {
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
+    }
+    
+    @Autowired
+    public void setEnrollmentHelperService(EnrollmentHelperService enrollmentHelperService) {
 		this.enrollmentHelperService = enrollmentHelperService;
 	}
     

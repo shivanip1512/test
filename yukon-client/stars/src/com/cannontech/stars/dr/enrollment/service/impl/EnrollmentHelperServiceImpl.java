@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,13 +180,6 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         List<ProgramEnrollment> enrollmentData = enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
         YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
         
-        // This part of the method will get all the energy company ids that can have 
-        // an appliance category this energy company can use.
-        List<YukonEnergyCompany> parentEnergyCompanies = 
-            energyCompanyService.getAccessibleParentEnergyCompanies(yukonEnergyCompany.getEnergyCompanyId());
-        List<Integer> parentEnergyCompanyIds =
-            Lists.transform(parentEnergyCompanies, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdsFunction());
-        
         // This handles an unenrollment with no program given.  In this case we we just want to unenroll
         // the device from every program it is enrolled.
         ProgramEnrollment programEnrollment;
@@ -194,11 +188,17 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
             programEnrollment.setInventoryId(lmHardwareBase.getInventoryId());
             programEnrollment.setAssignedProgramId(0);
         } else {
-            
-            Program program = 
-                programService.getByProgramName(enrollmentHelper.getProgramName(), yukonEnergyCompany); 
+
+            /**
+             * This method also take care of the validation for the applianceCategory, program, and loadGroup
+             * and includes checking to see if they belong to one another.
+             */
+            Program program = programService.getByProgramName(enrollmentHelper.getProgramName(), yukonEnergyCompany); 
+
+            Set<Integer> appCatEnergyCompanyIds = applianceCategoryDao.getAppCatEnergyCompanyIds(yukonEnergyCompany);
             ApplianceCategory applianceCategory = 
-                getApplianceCategoryByName(enrollmentHelper.getApplianceCategoryName(), program, parentEnergyCompanyIds);
+                getApplianceCategoryByName(enrollmentHelper.getApplianceCategoryName(), program, appCatEnergyCompanyIds);
+
             LoadGroup loadGroup = getLoadGroupByName(enrollmentHelper.getLoadGroupName(), program);
 
             programEnrollment = new ProgramEnrollment(enrollmentHelper, lmHardwareBase, applianceCategory, program, loadGroup);
@@ -281,16 +281,6 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
             throw new IllegalArgumentException("Incorrect Configuration.");
         }
     }
-///////////////////
-    ////////////////
-    ////////////////
-    ////////////////
-    ///////////////
-    ///////////////
-//    private ProgramEnrollment buildProgrameEnrollment(EnrollmentHelperHolder enrollmentHelperHolder,
-//                                                      EnrollmentEnum enrollmentEnum){
-//
-//    }
     
     protected void addProgramEnrollment(List<ProgramEnrollment> programEnrollments,
                                         ProgramEnrollment newProgramEnrollment,
@@ -365,7 +355,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     	programEnrollments.retainAll(programEnrollmentResults);
     }           
 
-    private ApplianceCategory getApplianceCategoryByName(String applianceCategoryName, Program program, List<Integer> energyCompanyIds){
+    private ApplianceCategory getApplianceCategoryByName(String applianceCategoryName, Program program, Set<Integer> energyCompanyIds){
         
         if (!StringUtils.isBlank(applianceCategoryName)){
             List<ApplianceCategory> applianceCategoryList = applianceCategoryDao.getByApplianceCategoryName(applianceCategoryName,

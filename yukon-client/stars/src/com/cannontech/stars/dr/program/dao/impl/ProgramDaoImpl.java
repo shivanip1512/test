@@ -14,20 +14,23 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
 import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
+import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.dao.ProgramRowMapper;
 import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
@@ -37,6 +40,8 @@ public class ProgramDaoImpl implements ProgramDao {
     private final ParameterizedRowMapper<Integer> programIdRowMapper = createProgramIdRowMapper();
 
     private ApplianceAndProgramDao applianceAndProgramDao;
+    private ApplianceCategoryDao applianceCategoryDao;
+    private StarsDatabaseCache starsDatabaseCache;
     private YukonJdbcTemplate yukonJdbcTemplate;
 
     private final String selectSQLHeader =
@@ -168,16 +173,19 @@ public class ProgramDaoImpl implements ProgramDao {
     
     @Override
     @Transactional(readOnly = true)
-    public Program getByProgramName(String programName, Iterable<Integer> energyCompanyIds) {
+    public Program getByProgramName(String programName, int energyCompanyId) {
+        
+        YukonEnergyCompany yukonEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        Set<Integer> appCatEnergyCompanyIds = applianceCategoryDao.getAppCatEnergyCompanyIds(yukonEnergyCompany);
         
         final SqlStatementBuilder programQuery = new SqlStatementBuilder();
         programQuery.append(selectSQLHeader);
         programQuery.append("INNER JOIN ECToGenericMapping ECTGM ON (ECTGM.itemId = LMPWP.applianceCategoryId");
         programQuery.append("                                        AND ECTGM.mappingCategory = 'ApplianceCategory')");
-        programQuery.append("WHERE PAO.paoClass").eq(DeviceClasses.STRING_CLASS_LOADMANAGER);
-        programQuery.append("AND PAO.category").eq(PAOGroups.STRING_CAT_LOADMANAGEMENT);
+        programQuery.append("WHERE PAO.paoClass").eq_k(PaoClass.LOADMANAGEMENT);
+        programQuery.append("AND PAO.category").eq_k(PaoCategory.LOADMANAGEMENT);
         programQuery.append("AND PAO.paoName").eq(programName);
-        programQuery.append("AND ECTGM.energyCompanyId").in(energyCompanyIds);
+        programQuery.append("AND ECTGM.energyCompanyId").in(appCatEnergyCompanyIds);
         
         try {
             return yukonJdbcTemplate.queryForObject(programQuery, new ProgramRowMapper(yukonJdbcTemplate));
@@ -188,20 +196,23 @@ public class ProgramDaoImpl implements ProgramDao {
 
     @Override
     @Transactional(readOnly = true)
-    public Program getByAlternateProgramName(String alternateProgramName, Iterable<Integer> energyCompanyIds) {
+    public Program getByAlternateProgramName(String alternateProgramName, int energyCompanyId) {
+        
+        YukonEnergyCompany yukonEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        Set<Integer> appCatEnergyCompanyIds = applianceCategoryDao.getAppCatEnergyCompanyIds(yukonEnergyCompany);
         
         final SqlStatementBuilder programQuery = new SqlStatementBuilder();
         programQuery.append(selectSQLHeader);
         programQuery.append("INNER JOIN ECToGenericMapping ECTGM ON (ECTGM.itemId = LMPWP.applianceCategoryId");
         programQuery.append("                                        AND ECTGM.mappingCategory = 'ApplianceCategory')");
         programQuery.append("WHERE ((PAO.paobjectId > 0 ");
-        programQuery.append("        AND PAO.paoClass").eq(DeviceClasses.STRING_CLASS_LOADMANAGER);
-        programQuery.append("        AND PAO.category").eq(PAOGroups.STRING_CAT_LOADMANAGEMENT).append(")");
+        programQuery.append("        AND PAO.paoClass").eq_k(PaoClass.LOADMANAGEMENT);
+        programQuery.append("        AND PAO.category").eq_k(PaoCategory.LOADMANAGEMENT).append(")");
         programQuery.append("    OR (PAO.paobjectId = 0))");
-        programQuery.append("AND (YWC.alternateDisplayName = ?").eq(alternateProgramName);
+        programQuery.append("AND (YWC.alternateDisplayName").eq(alternateProgramName);
         programQuery.append("     OR YWC.alternateDisplayName like ").appendArgument(alternateProgramName+",%");
         programQuery.append("     OR YWC.alternateDisplayName like ").appendArgument("%,"+alternateProgramName).append(")");
-        programQuery.append("AND ECTGM.energyCompanyId").in(energyCompanyIds);
+        programQuery.append("AND ECTGM.energyCompanyId").in(appCatEnergyCompanyIds);
         
         try {
             return yukonJdbcTemplate.queryForObject(programQuery, new ProgramRowMapper(yukonJdbcTemplate));
@@ -321,6 +332,16 @@ public class ProgramDaoImpl implements ProgramDao {
     @Autowired
     public void setApplianceAndProgramDao(ApplianceAndProgramDao applianceAndProgramDao) {
         this.applianceAndProgramDao = applianceAndProgramDao;
+    }
+    
+    @Autowired
+    public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
+        this.applianceCategoryDao = applianceCategoryDao;
+    }
+    
+    @Autowired
+    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+        this.starsDatabaseCache = starsDatabaseCache;
     }
     
     @Autowired

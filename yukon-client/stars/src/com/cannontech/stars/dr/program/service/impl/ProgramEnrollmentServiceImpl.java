@@ -79,12 +79,14 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
     private AssignedProgramDao assignedProgramDao;
     private ControlHistoryService controlHistoryService;
+    private DBPersistentDao dbPersistentDao;
     private EnergyCompanyService energyCompanyService;
     private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     private EnrollmentDao enrollmentDao;
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private LoadGroupDao loadGroupDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    private StarsInventoryBaseDao starsInventoryBaseDao;
     
     @Override
     @Transactional
@@ -310,16 +312,11 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     /**
      * This is a transplant from the ProgramSignUpAction class which has now been deleted:
      */
-    private static List<LiteStarsLMHardware> updateProgramEnrollment(StarsProgramSignUp progSignUp, 
-                                                                    LiteStarsCustAccountInformation liteAcctInfo,
-                                                                    LiteInventoryBase liteInv, 
-                                                                    YukonEnergyCompany yukonEnergyCompany, 
-                                                                    LiteYukonUser currentUser) throws WebClientException {
-        
-        DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
-        EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao = 
-            YukonSpringHook.getBean("energyCompanyRolePropertyDao", EnergyCompanyRolePropertyDao.class);
-        StarsInventoryBaseDao starsInventoryBaseDao = YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+    private List<LiteStarsLMHardware> updateProgramEnrollment(StarsProgramSignUp progSignUp, 
+                                                              LiteStarsCustAccountInformation liteAcctInfo,
+                                                              LiteInventoryBase liteInv, 
+                                                              YukonEnergyCompany yukonEnergyCompany, 
+                                                              LiteYukonUser currentUser) throws WebClientException {
         
         LiteStarsEnergyCompany energyCompany = 
             StarsDatabaseCache.getInstance().getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
@@ -975,6 +972,11 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     }
 
     @Autowired
+    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
+    }
+    
+    @Autowired
     public void setControlHistoryService(ControlHistoryService controlHistoryService) {
         this.controlHistoryService = controlHistoryService;
     }
@@ -1007,6 +1009,11 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Autowired
     public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
         this.starsCustAccountInformationDao = starsCustAccountInformationDao;
+    }
+    
+    @Autowired
+    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
+        this.starsInventoryBaseDao = starsInventoryBaseDao;
     }
 
 }

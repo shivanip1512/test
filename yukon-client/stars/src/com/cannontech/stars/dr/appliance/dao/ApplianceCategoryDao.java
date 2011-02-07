@@ -3,23 +3,30 @@ package com.cannontech.stars.dr.appliance.dao;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public interface ApplianceCategoryDao {
 
     public ApplianceCategory getById(int applianceCategoryId);
 
     public List<ApplianceCategory> getByApplianceCategoryName(String applianceCategoryName, 
-                                                              Iterable<Integer> energyCompanyIds);
+                                                              Set<Integer> energyCompanyIds);
 
     public List<Integer> getEnergyCompaniesByApplianceCategoryId(int applianceCategoryId);
 
     public List<ApplianceCategory> findApplianceCategories(int customerAccountId);
 
-    public List<Integer> getApplianceCategoryIdsByAccount(int accountId);    
     public List<Integer> getApplianceCategoryIdsByEC(int energyCompanyId);    
 
     public Map<Integer, ApplianceCategory> getByApplianceCategoryIds(
             Collection<Integer> applianceCategoryIds);
+    
+    /**
+     * This method will get all the energy company ids that can
+     * have an appliance category this energy company can use.
+     */
+    public Set<Integer> getAppCatEnergyCompanyIds(YukonEnergyCompany yukonEnergyCompany);
 }

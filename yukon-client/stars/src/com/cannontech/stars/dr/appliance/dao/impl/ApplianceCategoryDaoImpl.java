@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +19,12 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.EnergyCompanyService;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
@@ -28,11 +32,13 @@ import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
+    private ECMappingDao ecMappingDao;
     private EnergyCompanyService energyCompanyService;
+    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
+    private StarsDatabaseCache starsDatabaseCache;
     private WebConfigurationDao webConfigurationDao;
     private YukonJdbcTemplate yukonJdbcTemplate;
 
@@ -81,27 +87,17 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<Integer> getApplianceCategoryIdsByAccount(int accountId) {
-
-        YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByAccountId(accountId);
-        return getApplianceCategoryIdsByEC(yukonEnergyCompany.getEnergyCompanyId());
-    }
-
-    @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getApplianceCategoryIdsByEC(int energyCompanyId) {
 
-        // Getting parent energy companies.
-        List<YukonEnergyCompany> parentEnergyCompanies = 
-            energyCompanyService.getAccessibleParentEnergyCompanies(energyCompanyId);
-        List<Integer> energyCompanyIds =
-            Lists.transform(parentEnergyCompanies, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdsFunction());
+        // Getting available appliance category energy companies.
+        YukonEnergyCompany yukonEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        Set<Integer> appCatEnergyCompanyIds = getAppCatEnergyCompanyIds(yukonEnergyCompany);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ItemId "); // ItemId represents applianceCategoryId in this case.
         sql.append("FROM ECToGenericMapping ");
         sql.append("WHERE MappingCategory").eq(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY);
-        sql.append("AND EnergyCompanyId").in(energyCompanyIds);
+        sql.append("AND EnergyCompanyId").in(appCatEnergyCompanyIds);
         
         List<Integer> applianceCategoryIdList = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         return applianceCategoryIdList;
@@ -110,7 +106,9 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<ApplianceCategory> findApplianceCategories(int customerAccountId) {
-        List<Integer> applianceCategoryIdList = getApplianceCategoryIdsByAccount(customerAccountId);
+
+        YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByAccountId(customerAccountId);
+        List<Integer> applianceCategoryIdList = getApplianceCategoryIdsByEC(yukonEnergyCompany.getEnergyCompanyId());
 
         final Set<ApplianceCategory> set = new HashSet<ApplianceCategory>(applianceCategoryIdList.size());
         
@@ -142,7 +140,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<ApplianceCategory> getByApplianceCategoryName(String applianceCategoryName,
-                                                              Iterable<Integer> energyCompanyIds) {
+                                                              Set<Integer> energyCompanyIds) {
         RowMapper rowMapper = new RowMapper();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(rowMapper.getBaseQuery());
@@ -215,11 +213,36 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         return retVal;
     }
 
+    @Override
+    public Set<Integer> getAppCatEnergyCompanyIds(YukonEnergyCompany yukonEnergyCompany) {
+
+        if (energyCompanyRolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, yukonEnergyCompany)) {
+            return ecMappingDao.getParentEnergyCompanyIds(yukonEnergyCompany.getEnergyCompanyId());
+        } else {
+            return Collections.singleton(yukonEnergyCompany.getEnergyCompanyId());
+        }
+        
+    }
     
     // DI Setters
     @Autowired
+    public void setEcMappingDao(ECMappingDao ecMappingDao) {
+        this.ecMappingDao = ecMappingDao;
+    }
+    
+    @Autowired
     public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
         this.energyCompanyService = energyCompanyService;
+    }
+    
+    @Autowired
+    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
+        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
+    }
+    
+    @Autowired
+    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+        this.starsDatabaseCache = starsDatabaseCache;
     }
     
     @Autowired

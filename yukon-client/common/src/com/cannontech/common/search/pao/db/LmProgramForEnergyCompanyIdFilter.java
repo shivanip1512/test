@@ -1,14 +1,16 @@
 package com.cannontech.common.search.pao.db;
 
+import java.util.Set;
+
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 
 public class LmProgramForEnergyCompanyIdFilter implements SqlFilter {
     
-	private Iterable<Integer> energyCompanyIds;
+	private Set<Integer> energyCompanyIds;
 	
-	public LmProgramForEnergyCompanyIdFilter(Iterable<Integer> energyCompanyIds) {
+	public LmProgramForEnergyCompanyIdFilter(Set<Integer> energyCompanyIds) {
 		this.energyCompanyIds = energyCompanyIds;
 	}
 	
