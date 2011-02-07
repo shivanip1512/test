@@ -1,7 +1,9 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%@ tag body-content="empty" %>
@@ -11,6 +13,7 @@
 <%@ attribute name="itemLabel" required="true" type="java.lang.String"%>
 <%@ attribute name="defaultItemValue" required="false" type="java.lang.String"%>
 <%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>
+<%@ attribute name="emptyValueKey" required="false" type="java.lang.String"%>
 <%@ attribute name="onchange" required="false" type="java.lang.String"%>
 
 <%-- VIEW MODE --%>
@@ -47,7 +50,23 @@
                 <form:option value="${pageScope.defaultItemValue}">${pageScope.defaultItemLabel}</form:option>
             </c:if>
             <c:forEach var="item" items="${items}">
-                <form:option value="${item[itemValue]}"><cti:formatObject value="${item[itemLabel]}"/></form:option>
+                <form:option value="${item[itemValue]}">
+                    <c:choose>
+                        <c:when test="${not empty fn:trim(item[itemLabel])}">
+                            <cti:formatObject value="${item[itemLabel]}"/>
+                        </c:when>
+                        <c:otherwise>
+                            <c:choose>
+                                <c:when test="${not empty pageScope.emptyValueKey}">
+                                    <i:inline key="${pageScope.emptyValueKey}"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <i:inline key="defaults.na"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:otherwise>
+                    </c:choose>
+                </form:option>
             </c:forEach>
         </form:select>
     </c:otherwise>
