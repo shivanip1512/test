@@ -1220,10 +1220,10 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return liteAcctInfo;
     }    
     
-    @Deprecated
     /**
-     * Use starsCustAccountInformationDao.getById() instead of this method.
+     * @deprecated Use starsCustAccountInformationDao.getById() instead of this method.
      */
+    @Deprecated
     public LiteStarsCustAccountInformation getCustAccountInformation(int accountID, boolean autoLoad) {
         LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(accountID, getEnergyCompanyId());
         return liteAcctInfo;
