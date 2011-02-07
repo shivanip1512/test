@@ -2,18 +2,17 @@ package com.cannontech.stars.dr.optout.model;
 
 import org.joda.time.Instant;
 
-import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideType;
-
-public class OptOutTemporaryOverride {
+public abstract class OptOutTemporaryOverride {
  
     private int optOutTemporaryOverrideId;
     private int userId;
     private int energyCompanyId;
-    private OptOutTemporaryOverrideType optOutType;
     private Instant startDate;
     private Instant stopDate;
-    private int optOutValue;
     private Integer assignedProgramId;  // This value can be null;
+    
+    public OptOutTemporaryOverride() {
+    }
     
     public int getOptOutTemporaryOverrideId() {
         return optOutTemporaryOverrideId;
@@ -36,13 +35,6 @@ public class OptOutTemporaryOverride {
         this.energyCompanyId = energyCompanyId;
     }
     
-    public OptOutTemporaryOverrideType getOptOutType() {
-        return optOutType;
-    }
-    public void setOptOutType(OptOutTemporaryOverrideType optOutType) {
-        this.optOutType = optOutType;
-    }
-    
     public Instant getStartDate() {
         return startDate;
     }
@@ -56,20 +48,7 @@ public class OptOutTemporaryOverride {
     public void setStopDate(Instant stopDate) {
         this.stopDate = stopDate;
     }
-    
-    public int getOptOutValue() {
-        return optOutValue;
-    }
-    public void setOptOutValue(int optOutValue) {
-        this.optOutValue = optOutValue;
-    }
-    
-    public OptOutEnabled getOptOutEnabled() {
-        if (OptOutTemporaryOverrideType.ENABLED == optOutType) {
-            return OptOutEnabled.valueOf(optOutValue);
-        }
-        return null;
-    }
+
     
     public Integer getAssignedProgramId() {
         return assignedProgramId;

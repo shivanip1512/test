@@ -7,7 +7,7 @@ import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.optout.exception.NoTemporaryOverrideException;
 import com.cannontech.stars.dr.optout.model.OptOutCountsDto;
-import com.cannontech.stars.dr.optout.model.OptOutTemporaryOverride;
+import com.cannontech.stars.dr.optout.model.OptOutEnabledTemporaryOverride;
 
 /**
  * Dao class for persisting OptOutEvents and OptOutTemporaryOverrides
@@ -20,14 +20,14 @@ public interface OptOutTemporaryOverrideDao {
 	 * This OptOutTemporaryOverride object can be used with getCurrentProgramOptOutTemporaryOverrides
 	 * to figure out if a user has access to opt out a device or not.
 	 */
-	public OptOutTemporaryOverride findCurrentSystemOptOutTemporaryOverrides(int energyCompanyId);
+	public OptOutEnabledTemporaryOverride findCurrentSystemOptOutTemporaryOverrides(int energyCompanyId);
 	
     /**
      * The method returns all of the current program level OptOutTemporaryOverrides for a given energy company id.
      * These OptOutTemporaryOverride objects can be used with getCurrentSystemOptOutTemporaryOverrides
      * to figure out if a user has access to opt out a device or not.
      */
-    public List<OptOutTemporaryOverride> getCurrentProgramOptOutTemporaryOverrides(int energyCompanyId);
+    public List<OptOutEnabledTemporaryOverride> getCurrentProgramOptOutTemporaryOverrides(int energyCompanyId);
 
     /**
 	 * Method to determine if Opt Outs currently count against the limit

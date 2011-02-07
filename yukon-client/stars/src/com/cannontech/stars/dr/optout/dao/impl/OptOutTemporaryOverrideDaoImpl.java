@@ -21,7 +21,8 @@ import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideType;
 import com.cannontech.stars.dr.optout.exception.NoTemporaryOverrideException;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.model.OptOutCountsDto;
-import com.cannontech.stars.dr.optout.model.OptOutTemporaryOverride;
+import com.cannontech.stars.dr.optout.model.OptOutCountsTemporaryOverride;
+import com.cannontech.stars.dr.optout.model.OptOutEnabledTemporaryOverride;
 
 /**
  * Implementation class for OptOutEventDao
@@ -58,7 +59,7 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 
 	
 	@Override
-	public OptOutTemporaryOverride findCurrentSystemOptOutTemporaryOverrides(int energyCompanyId) {
+	public OptOutEnabledTemporaryOverride findCurrentSystemOptOutTemporaryOverrides(int energyCompanyId) {
 		
 		Date now = new Date();
 		
@@ -72,14 +73,14 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 		sql.append("  AND ProgramId IS NULL");
 		
 		try {
-    		return yukonJdbcTemplate.queryForObject(sql, new OptOutTemporaryOverrideRowMapper());
+    		return yukonJdbcTemplate.queryForObject(sql, new OptOutEnabledTemporaryOverrideRowMapper());
 		} catch (EmptyResultDataAccessException e) {
 		    return null;
         }
 	}
 
     @Override
-    public List<OptOutTemporaryOverride> getCurrentProgramOptOutTemporaryOverrides(int energyCompanyId) {
+    public List<OptOutEnabledTemporaryOverride> getCurrentProgramOptOutTemporaryOverrides(int energyCompanyId) {
         
         Date now = new Date();
         
@@ -92,8 +93,8 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
         sql.append("  AND EnergyCompanyId").eq(energyCompanyId);
         sql.append("  AND ProgramId IS NOT NULL");
         
-        List<OptOutTemporaryOverride> optOutTemporaryOverrides = 
-            yukonJdbcTemplate.query(sql, new OptOutTemporaryOverrideRowMapper());
+        List<OptOutEnabledTemporaryOverride> optOutTemporaryOverrides = 
+            yukonJdbcTemplate.query(sql, new OptOutEnabledTemporaryOverrideRowMapper());
         
         return optOutTemporaryOverrides;
     }
@@ -204,17 +205,16 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 
     }
     
-	private final class OptOutTemporaryOverrideRowMapper implements YukonRowMapper<OptOutTemporaryOverride> {
+	private final class OptOutEnabledTemporaryOverrideRowMapper implements YukonRowMapper<OptOutEnabledTemporaryOverride> {
 
         @Override
-        public OptOutTemporaryOverride mapRow(YukonResultSet rs) throws SQLException {
+        public OptOutEnabledTemporaryOverride mapRow(YukonResultSet rs) throws SQLException {
             
-            OptOutTemporaryOverride result = new OptOutTemporaryOverride();
+            OptOutEnabledTemporaryOverride result = new OptOutEnabledTemporaryOverride();
             
             result.setOptOutTemporaryOverrideId(rs.getInt("OptOutTemporaryOverrideId"));
             result.setUserId(rs.getInt("UserId"));
             result.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
-            result.setOptOutType(rs.getEnum("OptOutType", OptOutTemporaryOverrideType.class));
             result.setStartDate(rs.getInstant("StartDate"));
             result.setStopDate(rs.getInstant("StopDate"));
             result.setOptOutValue(rs.getInt("OptOutValue"));
@@ -223,6 +223,26 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
             return result;
         }
     }
+	
+	// I added this for symetry, but it is never used!
+	private final class OptOutCountsTemporaryOverrideRowMapper implements YukonRowMapper<OptOutCountsTemporaryOverride> {
+	    
+	    @Override
+	    public OptOutCountsTemporaryOverride mapRow(YukonResultSet rs) throws SQLException {
+	        
+	        OptOutCountsTemporaryOverride result = new OptOutCountsTemporaryOverride();
+	        
+	        result.setOptOutTemporaryOverrideId(rs.getInt("OptOutTemporaryOverrideId"));
+	        result.setUserId(rs.getInt("UserId"));
+	        result.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
+	        result.setStartDate(rs.getInstant("StartDate"));
+	        result.setStopDate(rs.getInstant("StopDate"));
+	        result.setOptOutValue(rs.getInt("OptOutValue"));
+	        result.setAssignedProgramId(rs.getNullableInt("ProgramId"));
+	        
+	        return result;
+	    }
+	}
 	
 	// DI Setters
 	@Autowired
