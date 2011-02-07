@@ -208,7 +208,12 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 			ModelMap map) throws ServletRequestBindingException {
 
         LiteYukonUser user = yukonUserContext.getYukonUser();
-        AccountThermostatSchedule oldAts = accountThermostatScheduleDao.getById(scheduleId);
+        
+        String oldScheduleName = "";
+        if(scheduleId >= 0) {
+            AccountThermostatSchedule oldAts = accountThermostatScheduleDao.getById(scheduleId);
+            oldScheduleName = oldAts.getScheduleName();
+        }
         
         // Log thermostat schedule save attempt
         for (int thermostatId : thermostatIds) {
@@ -262,9 +267,9 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.CONSUMER_SAVE_SCHEDULE_SUCCESS;
 
         // Log schedule name change
-        if (!oldAts.getScheduleName().equalsIgnoreCase(ats.getScheduleName())) {
+        if (oldScheduleName.equalsIgnoreCase(ats.getScheduleName())) {
             accountEventLogService.thermostatScheduleNameChanged(user,
-                                                                 oldAts.getScheduleName(),
+                                                                 oldScheduleName,
                                                                  ats.getScheduleName());
         }
 
