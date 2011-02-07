@@ -25,6 +25,33 @@ SET DefaultValue = 'METER_NUMBER',
 WHERE RolePropertyId = -1600;
 /* End YUK-9467 */
 
+/* Start YUK-9471 */
+CREATE TABLE ThermostatEventHistory(
+      EventId           NUMBER           NOT NULL,
+      EventType         VARCHAR2(64)       NOT NULL,
+      UserName          VARCHAR2(64)       NOT NULL,
+      EventTime         DATE          NOT NULL,
+      ThermostatId      NUMBER           NOT NULL,
+      ManualTemp        NUMBER           NULL,
+      ManualMode        VARCHAR2(64)       NULL,
+      ManualFan         VARCHAR2(64)       NULL,
+      ManualHold        CHAR(1)           NULL,
+      ScheduleId        NUMBER           NULL,
+      ScheduleMode      VARCHAR2(64)       NULL,
+      CONSTRAINT PK_ThermEventHist PRIMARY KEY (EventId)
+);
+
+ALTER TABLE ThermostatEventHistory
+      ADD CONSTRAINT FK_ThermEventHist_InvBase FOREIGN KEY (ThermostatId)
+            REFERENCES InventoryBase (InventoryId)
+                  ON DELETE CASCADE;
+
+ALTER TABLE ThermostatEventHistory
+   ADD CONSTRAINT FK_ThermEventHist_AcctThermSch FOREIGN KEY (ScheduleId)
+      REFERENCES AcctThermostatSchedule (AcctThermostatScheduleId)
+         ON DELETE SET NULL;
+/* End YUK-9471 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

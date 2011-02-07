@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/3/2011 4:07:31 PM                          */
+/* Created on:     2/7/2011 5:21:55 PM                          */
 /*==============================================================*/
 
 
@@ -966,6 +966,8 @@ drop table Tags cascade constraints;
 drop table TamperFlagMonitor cascade constraints;
 
 drop table TemplateDisplay cascade constraints;
+
+drop table ThermostatEventHistory cascade constraints;
 
 drop table UNITMEASURE cascade constraints;
 
@@ -8135,6 +8137,24 @@ create table TemplateDisplay  (
 );
 
 /*==============================================================*/
+/* Table: ThermostatEventHistory                                */
+/*==============================================================*/
+create table ThermostatEventHistory  (
+   EventId              NUMBER                          not null,
+   EventType            VARCHAR2(64)                    not null,
+   Username             VARCHAR2(64)                    not null,
+   EventTime            DATE                            not null,
+   ThermostatId         NUMBER                          not null,
+   ManualTemp           NUMBER,
+   ManualMode           VARCHAR2(64),
+   ManualFan            VARCHAR2(64),
+   ManualHold           CHAR(1),
+   ScheduleId           NUMBER,
+   ScheduleMode         VARCHAR2(64),
+   constraint PK_ThermEventHist primary key (EventId)
+);
+
+/*==============================================================*/
 /* Table: UNITMEASURE                                           */
 /*==============================================================*/
 create table UNITMEASURE  (
@@ -12609,6 +12629,16 @@ alter table TemplateDisplay
 alter table TemplateDisplay
    add constraint FK_TemplateDisplay_TEMPLATE foreign key (TemplateNum)
       references TEMPLATE (TEMPLATENUM);
+
+alter table ThermostatEventHistory
+   add constraint FK_ThermEventHist_AcctThermSch foreign key (ScheduleId)
+      references AcctThermostatSchedule (AcctThermostatScheduleId)
+      on delete set null;
+
+alter table ThermostatEventHistory
+   add constraint FK_ThermEventHist_InvBase foreign key (ThermostatId)
+      references InventoryBase (InventoryID)
+      on delete cascade;
 
 alter table UserPaoPermission
    add constraint FK_USERPAOP_REF_YKUSR_YUKONUSE foreign key (UserID)

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/3/2011 4:11:44 PM                          */
+/* Created on:     2/7/2011 5:24:18 PM                          */
 /*==============================================================*/
 
 
@@ -3572,6 +3572,13 @@ if exists (select 1
            where  id = object_id('TemplateDisplay')
             and   type = 'U')
    drop table TemplateDisplay
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ThermostatEventHistory')
+            and   type = 'U')
+   drop table ThermostatEventHistory
 go
 
 if exists (select 1
@@ -11293,6 +11300,25 @@ create table TemplateDisplay (
 go
 
 /*==============================================================*/
+/* Table: ThermostatEventHistory                                */
+/*==============================================================*/
+create table ThermostatEventHistory (
+   EventId              numeric              not null,
+   EventType            varchar(64)          not null,
+   Username             varchar(64)          not null,
+   EventTime            datetime             not null,
+   ThermostatId         numeric              not null,
+   ManualTemp           numeric              null,
+   ManualMode           varchar(64)          null,
+   ManualFan            varchar(64)          null,
+   ManualHold           char(1)              null,
+   ScheduleId           numeric              null,
+   ScheduleMode         varchar(64)          null,
+   constraint PK_ThermEventHist primary key (EventId)
+)
+go
+
+/*==============================================================*/
 /* Table: UNITMEASURE                                           */
 /*==============================================================*/
 create table UNITMEASURE (
@@ -16356,6 +16382,18 @@ go
 alter table TemplateDisplay
    add constraint FK_TemplateDisplay_TEMPLATE foreign key (TemplateNum)
       references TEMPLATE (TEMPLATENUM)
+go
+
+alter table ThermostatEventHistory
+   add constraint FK_ThermEventHist_AcctThermSch foreign key (ScheduleId)
+      references AcctThermostatSchedule (AcctThermostatScheduleId)
+         on delete set null
+go
+
+alter table ThermostatEventHistory
+   add constraint FK_ThermEventHist_InvBase foreign key (ThermostatId)
+      references InventoryBase (InventoryID)
+         on delete cascade
 go
 
 alter table UserPaoPermission
