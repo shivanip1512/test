@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/7/2011 5:21:55 PM                          */
+/* Created on:     2/7/2011 11:46:24 PM                         */
 /*==============================================================*/
 
 
@@ -8254,7 +8254,7 @@ create table ValidationMonitor  (
    constraint PK_ValidMon primary key (ValidationMonitorId)
 );
 
-INSERT INTO ValidationMonitor VALUES (1, 'Default All Meters', '/Meters', 400, 1, 4, .1, 15, 1, 'DISABLED');
+INSERT INTO ValidationMonitor VALUES (1, 'Default All Meters', '/Meters', 400, 1, 4, .1000001, 15, 1, 'DISABLED');
 
 /*==============================================================*/
 /* Table: VersacomRoute                                         */

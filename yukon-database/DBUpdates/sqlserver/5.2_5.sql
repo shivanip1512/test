@@ -54,6 +54,12 @@ ALTER TABLE ThermostatEventHistory
 GO
 /* End YUK-9471 */
 
+/* Start YUK-9475 */
+UPDATE ValidationMonitor 
+SET ReadingError = .1000001 
+where ReadingError = .1;
+/* End YUK-9475 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
