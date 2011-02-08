@@ -300,7 +300,7 @@ void CtiFDRPiNotify::doUpdates()
       }
       for (int i = 0; i < pointCount; ++i)
       {
-        PiPointId thisPoint = _pointList.at(i);
+        PiPointId thisPoint = piIdArray[i];
   
         // Find all entries that match this Pi Point (probably one, but multiple points could 
         // be linked to a single Pi Point).
@@ -314,11 +314,11 @@ void CtiFDRPiNotify::doUpdates()
   
           // remove local offset (might not be thread-safe)
           struct tm *temp = NULL;
-          time_t tTime = _timeList.at(i);
+          time_t tTime = timeArray[i];
           temp = CtiTime::gmtime_r(&tTime);
           time_t timeStamp = mktime(temp);
           // pisn_evmesceptions doesn't return error codes per point, default to 0
-          handlePiUpdate(info, _rvalList.at(i), _istatList.at(i), timeStamp, 0);
+          handlePiUpdate(info, rvalArray[i], istatArray[i], timeStamp, 0);
   
         }
       }
@@ -380,10 +380,10 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
     for (int i = 0; i < pointCount; ++i)
     {
       // remove local offset (might not be thread-safe)
-      time_t tTime = timeList.at(i);
+      time_t tTime = timeArray[i];
       time_t timeToSend = mktime(std::gmtime(&tTime) );
 
-      PiPointId thisPoint = _registerList.at(i);
+      PiPointId thisPoint = piIdArray[i];
 
       // Find all entries that match this Pi Point (probably one, but multiple points could 
       // be linked to a single Pi Point).
@@ -394,7 +394,7 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
             ++myIter)
       {
         const PiPointInfo &info = (*myIter).second;
-        handlePiUpdate(info, rvalList.at(i), istatList.at(i), timeToSend, errorList.at(i));
+        handlePiUpdate(info, rvalArray[i], istatArray[i], timeToSend, errorArray[i]);
       }
     }
   }
