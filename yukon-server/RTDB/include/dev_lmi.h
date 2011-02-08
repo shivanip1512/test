@@ -63,7 +63,6 @@ public:
 
     void processInboundData(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, list<CtiPointDataMsg*> &points, string &info );
 
-    CtiMutex& getExclusionMux();
     bool hasExclusions() const;
     void addExclusion(CtiTablePaoExclusion &paox);
     void clearExclusions();

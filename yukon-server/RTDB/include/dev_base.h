@@ -282,7 +282,6 @@ public:
 
 
     // The methods below are in place to support exclusion logic and will typ. be overridden in load group objects only.
-    CtiMutex& getExclusionMux();  //  this isn't implemented anywhere... ?
     virtual bool hasExclusions() const;
     virtual void addExclusion(CtiTablePaoExclusion &paox);
     virtual void clearExclusions();

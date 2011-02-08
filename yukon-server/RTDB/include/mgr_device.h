@@ -105,7 +105,6 @@ public:
     bool refreshPointGroups(void);
     void writeDynamicPaoInfo(void);
 
-    void test_dumpList(void);
     void deleteList(void);
 
     ptr_type getDeviceByID(LONG Remote);
@@ -126,7 +125,7 @@ public:
     CtiDeviceManager &setDevicePrioritiesForPort(long portid, const device_priorities_t &device_priorities);
 
     bool mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice, const int requestPriority, CtiTablePaoExclusion &deviceexclusion);
-    bool removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice);
+    void removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice);
     ptr_type chooseExclusionDevice(LONG portid);
     CtiDeviceManager &addPortExclusion(LONG paoID);
 

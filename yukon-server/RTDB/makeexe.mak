@@ -43,9 +43,6 @@ pointtest.obj
 RTESTOBJS=\
 routetest.obj
 
-DEVTESTOBJS=\
-devtest.obj
-
 CONNTESTOBJS=\
 conntest.obj
 
@@ -53,7 +50,6 @@ conntest.obj
 CTIPROGS=\
 pointtest.exe \
 routetest.exe \
-devtest.exe \
 memtest.exe \
 conntest.exe
 
@@ -83,20 +79,6 @@ pointtest.exe:  $(PTTESTOBJS) makeexe.mak
 -link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctipntdb.lib  $(RWLIBS) $(BOOST_LIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
-               -@copy ..\$@ $(YUKONOUTPUT)
-                @echo:
-                @echo Done building Target ..\$@
-                @echo:
-                @%cd $(CWD)
-
-devtest.exe:    $(DEVTESTOBJS) makeexe.mak
-                @echo:
-                @echo Compiling ..\$@
-                @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(DEVTESTOBJS) \
--link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOST_LIBS)
-               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo:
                 @echo Done building Target ..\$@
@@ -326,23 +308,6 @@ conntest.obj:	yukon.h precompiled.h types.h ctidbgmem.h dllbase.h \
 		boostutil.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
 		configval.h msg_cmd.h msg_trace.h
-devtest.obj:	yukon.h precompiled.h types.h ctidbgmem.h hashkey.h \
-		hash_functions.h dlldefs.h mgr_device.h rtdb.h utility.h \
-		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
-		sorted_vector.h dllbase.h dsm2.h mutex.h guard.h cticonnect.h \
-		netports.h dsm2err.h words.h optional.h dev_base.h cmdparse.h \
-		ctitokenizer.h parsevalue.h dev_exclusion.h boostutil.h \
-		tbl_paoexclusion.h row_reader.h rwutil.h \
-		database_connection.h dbaccess.h sema.h database_reader.h \
-		boost_time.h config_device.h logger.h thread.h \
-		CtiPCPtrQueue.h rte_base.h dbmemobject.h ctibase.h ctinexus.h \
-		message.h collectable.h tbl_pao_lite.h tbl_rtcomm.h \
-		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
-		msg_signal.h tbl_base.h tbl_stats.h tbl_scanrate.h \
-		tbl_dyn_paoinfo.h tbl_static_paoinfo.h pointdefs.h pt_base.h \
-		pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
-		tbl_pt_trigger.h slctdev.h smartmap.h readers_writer_lock.h \
-		critical_section.h
 dev_710.obj:	yukon.h precompiled.h types.h ctidbgmem.h cmdparse.h \
 		ctitokenizer.h dlldefs.h parsevalue.h dev_710.h dev_idlc.h \
 		os2_2w32.h dsm2.h mutex.h guard.h utility.h ctitime.h \
@@ -2416,22 +2381,6 @@ mgr_device.obj:	yukon.h precompiled.h types.h ctidbgmem.h mgr_device.h \
 		tbl_dv_versacom.h dev_grp_xml.h amq_connection.h \
 		dev_grp_mct.h tbl_dv_lmgmct.h dev_mct_broadcast.h dev_rds.h \
 		dev_xml.h
-mgr_exclusion.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		mgr_exclusion.h dlldefs.h dev_base.h dsm2.h mutex.h guard.h \
-		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
-		sorted_vector.h cticonnect.h netports.h dsm2err.h words.h \
-		optional.h cmdparse.h ctitokenizer.h parsevalue.h \
-		dev_exclusion.h boostutil.h tbl_paoexclusion.h row_reader.h \
-		rwutil.h database_connection.h dbaccess.h dllbase.h sema.h \
-		database_reader.h boost_time.h config_device.h logger.h \
-		thread.h CtiPCPtrQueue.h hashkey.h hash_functions.h \
-		rte_base.h dbmemobject.h ctibase.h ctinexus.h message.h \
-		collectable.h tbl_pao_lite.h tbl_rtcomm.h resolvers.h \
-		pointtypes.h db_entry_defines.h desolvers.h msg_signal.h \
-		tbl_base.h tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
-		tbl_static_paoinfo.h pointdefs.h pt_base.h pt_dyn_base.h \
-		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h smartmap.h \
-		readers_writer_lock.h critical_section.h
 mgr_holiday.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		mgr_holiday.h ctidate.h dlldefs.h logger.h thread.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \

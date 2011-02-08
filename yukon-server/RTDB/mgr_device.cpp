@@ -108,40 +108,6 @@ static void applyClearExclusions(const long unusedkey, CtiDeviceSPtr Device, voi
     Device->clearExclusions();
 }
 
-static void applyRemoveInfiniteProhibit(const long unusedkey, CtiDeviceSPtr Device, void* d)
-{
-    try
-    {
-        CtiDeviceBase *pAnxiousDevice = (CtiDeviceBase *)d;       // This is the port that wishes to execute!
-        LONG did = (LONG)pAnxiousDevice->getID();         // This is the id which is to be pulled from the prohibition list.
-
-        bool found = Device->removeInfiniteProhibit( did );
-
-        if(found && (getDebugLevel() & DEBUGLEVEL_EXCLUSIONS))
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device " << Device->getName() << " no longer prohibited because of " << pAnxiousDevice->getName() << "." << endl;
-            }
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(slog);
-                slog << CtiTime() << " Device " << Device->getName() << " no longer prohibited because of " << pAnxiousDevice->getName() << "." << endl;
-            }
-        }
-    }
-    catch(...)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-
-    return;
-}
-
-
-
 bool removeExclusionDevice(CtiDeviceSPtr &Device, void *lptrid)
 {
     bool bstatus = false;
@@ -189,63 +155,6 @@ static void applyClearMacroDeviceList(const long unusedkey, CtiDeviceSPtr Device
     if( Device->getType() == TYPE_MACRO && (!paoid || Device->getID() == paoid) )
         ((CtiDeviceMacro *)(Device.get()))->clearDeviceList();
 }
-
-void CtiDeviceManager::test_dumpList(void)
-{
-    CtiDeviceBase *p = NULL;
-    try
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() <<" There are " << _smartMap.entries() << " entries" << endl;
-        }
-
-        spiterator itr;
-
-        for(itr = begin(); itr != end(); itr++)
-        {
-            p = (itr->second).get();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                p->DumpData();
-            }
-        }
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Exclusions **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        for(itr = _exclusionMap.getMap().begin(); itr != _exclusionMap.getMap().end(); itr++)
-        {
-            p = (itr->second).get();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                p->getExclusion().Dump();
-            }
-        }
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Exclusions **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-    catch(RWExternalErr e )
-    {
-        //Make sure the list is cleared
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Attempting to clear device list..." << endl;
-        }
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " DumpDevices:  " << e.why() << endl;
-        }
-        RWTHROW(e);
-
-    }
-}
-
 
 bool CtiDeviceManager::refreshDevices(Cti::RowReader &rdr)
 {
@@ -1158,18 +1067,36 @@ int CtiDeviceManager::getPortDevicePriority(long portid, long deviceid) const
 /*
  * ptr_type anxiousDevice has completed an execution.  We must cleanup his mess.
  */
-bool CtiDeviceManager::removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice)
+void CtiDeviceManager::removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice)
 {
-    bool bstatus = false;
-
-    //  I don't think we need this - apply() locks us instead
-    //coll_type::writer_lock_guard_t guard(getLock());
-
     try
     {
         if(anxiousDevice)
         {
-            apply( applyRemoveInfiniteProhibit, (void*)(anxiousDevice.get()));  // Remove prohibit mark from any device.
+            coll_type::reader_lock_guard_t guard(getLock());
+
+            long anxiousDeviceId = anxiousDevice->getID();         // This is the id which is to be pulled from the prohibition list.
+
+            for each( const coll_type::val_type &record in _exclusionMap.getMap() )
+            {
+                const CtiDeviceSPtr &device = record.second;
+
+                if( device->removeInfiniteProhibit(anxiousDeviceId) )
+                {
+                    if( getDebugLevel() & DEBUGLEVEL_EXCLUSIONS )
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " Device " << device->getName() << " no longer prohibited because of " << anxiousDevice->getName() << "." << endl;
+                        }
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(slog);
+                            slog << CtiTime() << " Device " << device->getName() << " no longer prohibited because of " << anxiousDevice->getName() << "." << endl;
+                        }
+                    }
+                }
+            }
+
             anxiousDevice->setExecuting(false);                                 // Mark ourselves as _not_ executing!
         }
     }
@@ -1178,8 +1105,6 @@ bool CtiDeviceManager::removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-
-    return bstatus;
 }
 
 
@@ -2166,6 +2091,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
      */
     // Find the Best Time Excluded Device
 
+    coll_type::reader_lock_guard_t lock(getLock());
 
     spiterator itr;
 

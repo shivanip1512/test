@@ -168,7 +168,6 @@ public:
     virtual ULONG getDelay(int Offset) const { return 0L; }
     virtual CtiPort& setDelay(int Offset, int D) { return *this; }
 
-    CtiMutex& getExclusionMux();
     bool hasExclusions() const;
     exclusions getExclusions() const;
     void addExclusion(CtiTablePaoExclusion &paox);
@@ -309,8 +308,6 @@ private:
     bool                        _sharingStatus;     // This is set to true if we are portsharing on this port.
     bool                        _sharingToggle;     // true if the next OM should be from Yukon, false if the foreign system has priority
 };
-
-inline CtiMutex& CtiPort::getExclusionMux() { return _exclusionMux; }
 
 inline bool CtiPort::isQuestionable() const   { return _commFailCount >= portMaxCommFails();}
 
