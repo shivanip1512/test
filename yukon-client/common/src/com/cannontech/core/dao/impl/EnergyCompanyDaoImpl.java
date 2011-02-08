@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.EnergyCompanyDao;
@@ -20,6 +21,7 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
@@ -35,6 +37,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     private YukonUserDao yukonUserDao;
     private IDatabaseCache databaseCache;
     private YukonJdbcTemplate yukonJdbcTemplate;
+    private NextValueHelper nextValueHelper;
 
     private EnergyCompanyDaoImpl() {
         super();
@@ -235,6 +238,21 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         
         yukonJdbcTemplate.update(sql);
     }
+    
+    @Override
+    @Transactional
+    public int createEnergyCompany(String name, int primaryContactId, int userId) {
+        int energyCompanyId = nextValueHelper.getNextValue("EnergyCompany"); 
+        SqlStatementBuilder sql = new SqlStatementBuilder("INSERT INTO EnergyCompany");
+        sql.values(energyCompanyId, name, primaryContactId, userId);
+        yukonJdbcTemplate.update(sql);
+        
+        sql = new SqlStatementBuilder("INSERT INTO EnergyCompanyOperatorLoginList");
+        sql.values(energyCompanyId, userId);
+        yukonJdbcTemplate.update(sql);
+        
+        return energyCompanyId;
+    }
 
     @Override
     public List<LiteEnergyCompany> getAllEnergyCompanies() {
@@ -257,5 +275,10 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
 
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
+    }
+    
+    @Autowired
+    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+        this.nextValueHelper = nextValueHelper;
     }
 }

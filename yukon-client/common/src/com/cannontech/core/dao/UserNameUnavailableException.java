@@ -1,6 +1,5 @@
-package com.cannontech.stars.dr.account.exception;
+package com.cannontech.core.dao;
 
-import com.cannontech.core.dao.DuplicateException;
 
 public class UserNameUnavailableException extends DuplicateException 
 {

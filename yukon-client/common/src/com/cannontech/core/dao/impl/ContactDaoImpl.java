@@ -531,7 +531,7 @@ public final class ContactDaoImpl implements ContactDao {
             address.setLocationAddress1(CtiUtilities.STRING_NONE);
             address.setLocationAddress2(CtiUtilities.STRING_NONE);
             address.setZipCode(CtiUtilities.STRING_NONE);
-            address.setStateCode("MN");
+            address.setStateCode("");
             addressDao.add(address);
             contact.setAddressID(address.getAddressID());
             // END HACK

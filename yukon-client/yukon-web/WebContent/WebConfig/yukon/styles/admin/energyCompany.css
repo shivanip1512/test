@@ -27,3 +27,15 @@ div.membersContainer {
     overflow: auto;
     overflow-x: hidden;
 }
+
+div.membersContainer ul li {
+    padding-bottom: 2px;
+}
+
+div.notes {
+    padding-bottom: 5px;
+}
+
+tr.pickerRow td.value span[id^='picker_'] {
+    vertical-align: top;
+}

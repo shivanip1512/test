@@ -25,7 +25,7 @@ import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.service.EnergyCompanyService;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
@@ -36,7 +36,7 @@ import com.google.common.collect.Maps;
 
 public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     private ECMappingDao ecMappingDao;
-    private EnergyCompanyService energyCompanyService;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
     private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     private StarsDatabaseCache starsDatabaseCache;
     private WebConfigurationDao webConfigurationDao;
@@ -107,7 +107,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<ApplianceCategory> findApplianceCategories(int customerAccountId) {
 
-        YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByAccountId(customerAccountId);
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccountId);
         List<Integer> applianceCategoryIdList = getApplianceCategoryIdsByEC(yukonEnergyCompany.getEnergyCompanyId());
 
         final Set<ApplianceCategory> set = new HashSet<ApplianceCategory>(applianceCategoryIdList.size());
@@ -231,8 +231,8 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     }
     
     @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
     
     @Autowired

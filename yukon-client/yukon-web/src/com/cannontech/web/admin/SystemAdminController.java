@@ -24,7 +24,6 @@ public class SystemAdminController {
         boolean hasUserGroupEditor = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, userContext.getYukonUser());
         
         if (hasConfigEC) {
-            modelMap.addAttribute("ecId", energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID());
             return "redirect:/spring/adminSetup/energyCompany/home";
         }
         /* TODO */

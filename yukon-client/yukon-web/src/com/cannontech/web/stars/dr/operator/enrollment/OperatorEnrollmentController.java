@@ -23,7 +23,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
-import com.cannontech.stars.core.service.EnergyCompanyService;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.displayable.dao.DisplayableEnrollmentDao;
@@ -58,7 +58,7 @@ public class OperatorEnrollmentController {
     private StaticLoadGroupMappingDao staticLoadGroupMappingDao;
     private AssignedProgramDao assignedProgramDao;
     private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
-    private EnergyCompanyService energyCompanyService; 
+    private YukonEnergyCompanyService yukonEnergyCompanyService; 
     private EnrollmentDao enrollmentDao;
     private EnrollmentHelperService enrollmentHelperService;
     private RolePropertyDao rolePropertyDao;
@@ -148,7 +148,7 @@ public class OperatorEnrollmentController {
         List<LoadGroup> loadGroups = null;
         
         YukonEnergyCompany yukonEnergyCompany = 
-            energyCompanyService.getEnergyCompanyByAccountId(accountInfoFragment.getAccountId());
+            yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountInfoFragment.getAccountId());
         
         boolean trackHardwareAddressingEnabled =
             energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany);
@@ -335,8 +335,8 @@ public class OperatorEnrollmentController {
     }
     
     @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
 
     @Autowired

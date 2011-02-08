@@ -32,21 +32,21 @@ public class GeneralInfoValidator extends SimpleValidator<GeneralInfo> {
         /* Main Phone Number */
         String phone = generalInfo.getPhone();
         if (StringUtils.isNotBlank(phone)  && phoneNumberFormattingService.isHasInvalidCharacters(phone)) {
-            errors.rejectValue("phone", "yukon.web.modules.operator.generalInfo.invalidPhoneNumber");
+            errors.rejectValue("phone", "yukon.web.modules.adminSetup.generalInfo.invalidPhoneNumber");
         }
         YukonValidationUtils.checkExceedsMaxLength(errors, "phone", phone, ContactNotificationDtoValidator.MAX_NOTIFICATION_LENGTH);
         
         /* Fax Number */
         String fax = generalInfo.getFax();
         if (StringUtils.isNotBlank(fax) && phoneNumberFormattingService.isHasInvalidCharacters(fax)) {
-            errors.rejectValue("fax", "yukon.web.modules.operator.generalInfo.invalidFaxNumber");
+            errors.rejectValue("fax", "yukon.web.modules.adminSetup.generalInfo.invalidFaxNumber");
         }
         YukonValidationUtils.checkExceedsMaxLength(errors, "fax", fax, ContactNotificationDtoValidator.MAX_NOTIFICATION_LENGTH);
         
         /* Email */
         String email = generalInfo.getEmail();
         if (StringUtils.isNotBlank(email) && !Validator.isEmailAddress(email)) {
-            errors.rejectValue("email", "yukon.web.modules.operator.generalInfo.invalidEmail");
+            errors.rejectValue("email", "yukon.web.modules.adminSetup.generalInfo.invalidEmail");
         }
         
     }

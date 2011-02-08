@@ -123,7 +123,7 @@ public class GeneralInfoController {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
         
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String none = messageSourceAccessor.getMessage("yukon.web.modules.adminSetup.generalInfo.none");
+        String none = messageSourceAccessor.getMessage("yukon.web.defaults.none");
         modelMap.addAttribute("none", none);
         
         GeneralInfo generalInfo = generalInfoService.getGeneralInfo(energyCompany);

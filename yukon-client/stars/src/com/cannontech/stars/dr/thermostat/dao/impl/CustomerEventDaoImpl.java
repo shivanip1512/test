@@ -17,7 +17,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.stars.core.service.EnergyCompanyService;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.hardware.model.CustomerAction;
 import com.cannontech.stars.dr.hardware.model.CustomerEventType;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
@@ -33,7 +33,7 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
  */
 public class CustomerEventDaoImpl implements CustomerEventDao {
 
-    private EnergyCompanyService energyCompanyService;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
     private NextValueHelper nextValueHelper;
     private StarsDatabaseCache starsDatabaseCache;
     private YukonJdbcTemplate yukonJdbcTemplate;
@@ -41,7 +41,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
     @Override
     public ThermostatManualEvent getLastManualEvent(int inventoryId) {
 
-        YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByInventoryId(inventoryId);
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(inventoryId);
 
         // Query to get the row from LMThermostatManualEvent where the row's
         // event id matches the event id from the row in LMCustomerEventBase
@@ -72,7 +72,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
     @Transactional
     public void save(CustomerThermostatEvent event) {
         YukonEnergyCompany yukonEnergyCompany = 
-            energyCompanyService.getEnergyCompanyByInventoryId(event.getThermostatId());
+            yukonEnergyCompanyService.getEnergyCompanyByInventoryId(event.getThermostatId());
         
         // Get next eventid
         int eventId = nextValueHelper.getNextValue("LMCustomerEventBase");
@@ -240,8 +240,8 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
 
     // DI Setters
     @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
     
     @Autowired

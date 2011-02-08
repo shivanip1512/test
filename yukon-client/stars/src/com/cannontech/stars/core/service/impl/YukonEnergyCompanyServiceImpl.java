@@ -8,11 +8,11 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.service.EnergyCompanyService;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 
-public class EnergyCompanyServiceImpl implements EnergyCompanyService {
+public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService {
 
     private ECMappingDao ecMappingDao;
     private StarsDatabaseCache starsDatabaseCache;

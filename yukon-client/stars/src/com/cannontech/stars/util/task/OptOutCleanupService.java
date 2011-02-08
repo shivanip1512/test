@@ -21,7 +21,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
-import com.cannontech.stars.core.service.EnergyCompanyService;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
@@ -46,7 +46,7 @@ public class OptOutCleanupService implements InitializingBean {
 	private CustomerAccountDao customerAccountDao;
 	private EnrollmentDao enrollmentDao;
 	private StarsInventoryBaseDao starsInventoryBaseDao;
-	private EnergyCompanyService energyCompanyService;
+	private YukonEnergyCompanyService yukonEnergyCompanyService;
 	private ScheduledExecutor executor;
 	
 	@Override
@@ -159,7 +159,7 @@ public class OptOutCleanupService implements InitializingBean {
     	int inventoryId = inventory.getInventoryID();
     	
     	CustomerAccount account = customerAccountDao.getById(event.getCustomerAccountId());
-    	YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByInventoryId(inventoryId);
+    	YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(inventoryId);
     	
     	logger.debug("Cleaning up opt out event for inventory: " + event.getInventoryId() 
     			+ " and account: " + event.getCustomerAccountId());
@@ -190,8 +190,8 @@ public class OptOutCleanupService implements InitializingBean {
 	}
     
     @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
     
     @Autowired

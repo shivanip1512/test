@@ -69,7 +69,6 @@ import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
@@ -96,7 +95,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private DBPersistentDao dbPersistentDao;
     private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     private PaoPermissionService paoPermissionService;
-    private StarsInventoryBaseDao starsInventoryBaseDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private StarsSearchDao starsSearchDao;
     private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
@@ -1992,10 +1990,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
 
     public void setPaoPermissionService(PaoPermissionService paoPermissionService) {
         this.paoPermissionService = paoPermissionService;
-    }
-    
-    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
-        this.starsInventoryBaseDao = starsInventoryBaseDao;
     }
     
     public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {

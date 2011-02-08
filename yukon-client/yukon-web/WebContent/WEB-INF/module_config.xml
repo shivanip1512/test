@@ -1085,6 +1085,10 @@
                 <menu>energyCompanySetup|home"</menu>
                 <link>/spring/adminSetup/energyCompany/home?ecId=${ecId}</link>
                 <pages>
+                    <page name="createEnergyCompany" type="BASIC">
+                        <menu>energyCompanySetup|home</menu>
+                        <link>/spring/adminSetup/energyCompany/new</link>
+                    </page>
                     <page name="generalInfo.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
                         <menu>energyCompanySetup|home</menu>
                         <link>/spring/adminSetup/energyCompany/general/view?ecId=${ecId}</link>
@@ -1095,49 +1099,41 @@
                                 <menu>energyCompanySetup|home</menu>
                                 <link>/spring/adminSetup/energyCompany/generalInfo?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
                             </page>
                             <page name="applianceCategories.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
                                 <link>/spring/adminSetup/energyCompany/applianceCategories</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
                             </page>
                             <page name="serviceAndStorage.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
                                 <link>/spring/adminSetup/energyCompany/serviceAndStorage</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
                             </page>
                             <page name="substations.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
                                 <link>/spring/adminSetup/energyCompany/substations</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
                             </page>
                             <page name="routes.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
                                 <link>/spring/adminSetup/energyCompany/routes</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
                             </page>
                             <page name="lists.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
                                 <link>/spring/adminSetup/energyCompany/lists</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
                             </page>
                             <page name="schedules.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
                                 <link>/spring/adminSetup/energyCompany/schedules</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
                             </page>
                             <page name="settlement.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
                                 <link>/spring/adminSetup/energyCompany/settlement</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
                             </page>
                         </pages>
                     </page>

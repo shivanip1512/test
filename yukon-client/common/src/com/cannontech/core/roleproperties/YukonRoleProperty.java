@@ -222,6 +222,7 @@ public enum YukonRoleProperty {
     
     TEMPLATE_ROOT(NOTIFICATION_CONFIGURATION, com.cannontech.roles.notifications.NotificationConfigurationRole.TEMPLATE_ROOT, stringType()),
     
+    ADMIN_ENERGY_COMPANY_SUPER_USER(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_ENERGY_COMPANY_SUPER_USER, booleanType()),
     ADMIN_CONFIG_ENERGY_COMPANY(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY, booleanType()),
     ADMIN_CREATE_ENERGY_COMPANY(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY, booleanType()),
     ADMIN_DELETE_ENERGY_COMPANY(OPERATOR_ADMINISTRATOR, com.cannontech.roles.operator.AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY, booleanType()),

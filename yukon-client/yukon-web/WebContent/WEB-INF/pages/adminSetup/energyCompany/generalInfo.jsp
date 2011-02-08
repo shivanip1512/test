@@ -99,7 +99,8 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
                             </cti:displayForPageEditModes>
 
                             <tags:inputNameValue nameKey=".email" path="email" size="35" maxlength="130"/>
-                            <tags:selectNameValue items="${routes}" itemLabel="paoName" nameKey=".route" path="defaultRouteId" itemValue="yukonID" defaultItemLabel="${none}" defaultItemValue="-1"/>
+                            <tags:selectNameValue items="${routes}" itemLabel="paoName" itemValue="yukonID" 
+                                nameKey=".route" path="defaultRouteId" defaultItemLabel="${none}" defaultItemValue="-1"/>
                             
                         </tags:nameValueContainer2>
                     

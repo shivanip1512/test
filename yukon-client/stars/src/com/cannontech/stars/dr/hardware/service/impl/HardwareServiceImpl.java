@@ -16,7 +16,7 @@ import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
-import com.cannontech.stars.core.service.EnergyCompanyService;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
@@ -37,7 +37,7 @@ public class HardwareServiceImpl implements HardwareService {
 
     private ApplianceDao applianceDao;
     private CustomerAccountDao customerAccountDao;
-    private EnergyCompanyService energyCompanyService;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
     private EnrollmentHelperService enrollmentHelperService;
     private HardwareEventLogService hardwareEventLogService;
     private InventoryBaseDao inventoryBaseDao;
@@ -51,7 +51,7 @@ public class HardwareServiceImpl implements HardwareService {
     public void deleteHardware(YukonUserContext userContext, boolean delete, int inventoryId, int accountId) 
     throws Exception {
         
-        YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByAccountId(accountId);
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountId);
         LiteInventoryBase liteInventoryBase = starsInventoryBaseDao.getByInventoryId(inventoryId);
         CustomerAccount customerAccount = customerAccountDao.getById(accountId);
         boolean deleteMCT = false;
@@ -126,8 +126,8 @@ public class HardwareServiceImpl implements HardwareService {
 	}
     
     @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
     
     @Autowired

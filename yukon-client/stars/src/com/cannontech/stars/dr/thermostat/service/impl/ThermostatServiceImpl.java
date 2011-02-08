@@ -27,7 +27,7 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.service.EnergyCompanyService;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.CustomerAction;
@@ -68,7 +68,7 @@ public class ThermostatServiceImpl implements ThermostatService {
     private AccountEventLogService accountEventLogService;
     private CustomerDao customerDao;
     private CustomerEventDao customerEventDao;
-    private EnergyCompanyService energyCompanyService;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
     private InventoryDao inventoryDao;
     private ECMappingDao ecMappingDao;
     private CommandRequestHardwareExecutor commandRequestHardwareExecutor;
@@ -596,7 +596,7 @@ public class ThermostatServiceImpl implements ThermostatService {
             logMsg.append(", Fan: " + event.getFanState());
         }
 
-        YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByInventoryId(thermostat.getId());
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(thermostat.getId());
 
         ActivityLogger.logEvent(userId, accountId, yukonEnergyCompany.getEnergyCompanyId(), customerId,
                                 ActivityLogActions.THERMOSTAT_MANUAL_ACTION, logMsg.toString());
@@ -685,8 +685,8 @@ public class ThermostatServiceImpl implements ThermostatService {
     }
 
     @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
     
     @Autowired

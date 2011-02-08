@@ -645,6 +645,10 @@ div.sectionContainer .sectionContainer_content {
 
 
 /* FORM ELEMENT CONTAINER */
+div.formElementContainer {
+    padding-bottom: 10px;
+}
+
 div.formElementContainer .formElementContainer_titleBar {
   padding-bottom:5px;
 }
@@ -659,8 +663,6 @@ div.formElementContainer .formElementContainer_content {
    padding: .5em;
    border-top:1px #DDD solid;
 }
-
-
 
 div.pagedBox table {
     width: 100%;

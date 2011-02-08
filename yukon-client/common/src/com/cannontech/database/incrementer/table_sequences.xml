@@ -41,6 +41,7 @@
         <table name="LMProgramWebPublishing" identitycolumn="ProgramID" initsequence="true"/>
         <table name="ValidationMonitor" identitycolumn="ValidationMonitorId" initsequence="true"/>
         <table name="LMGroupExpresscomAddress" identitycolumn="AddressId" initsequence="true"/>
+        <table name="EnergyCompany" identitycolumn="EnergyCompanyId" initsequence="true"/>
       </sequence>
       <sequence name="UsersRolesAndGroups">
       	<table name="YukonUserRole" identitycolumn="UserRoleId" initsequence="true"/>

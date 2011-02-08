@@ -25,7 +25,7 @@ import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
-import com.cannontech.stars.core.service.EnergyCompanyService;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
@@ -62,7 +62,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private CustomerAccountDao customerAccountDao;
     private EnrollmentDao enrollmentDao;
     private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
-    private EnergyCompanyService energyCompanyService;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
     private LoadGroupDao loadGroupDao;
     private LMHardwareBaseDao lmHardwareBaseDao;
     private ProgramDao programDao;
@@ -178,7 +178,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         // Get the current enrollments.  This list will be updated to reflect the desired enrollment
         // data then passed to applyEnrollments which will make it so.
         List<ProgramEnrollment> enrollmentData = enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
-        YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
         
         // This handles an unenrollment with no program given.  In this case we we just want to unenroll
         // the device from every program it is enrolled.
@@ -476,8 +476,8 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     }
     
     @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
     
     @Autowired

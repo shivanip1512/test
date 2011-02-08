@@ -14,9 +14,9 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Node;
 
+import com.cannontech.core.dao.UserNameUnavailableException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
-import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.yukon.api.account.endpoint.NewAccountsRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;

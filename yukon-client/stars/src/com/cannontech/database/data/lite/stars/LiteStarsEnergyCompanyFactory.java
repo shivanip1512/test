@@ -16,7 +16,6 @@ import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
@@ -28,7 +27,6 @@ public class LiteStarsEnergyCompanyFactory {
     private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     private PaoPermissionService paoPermissionService;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
-    private StarsInventoryBaseDao starsInventoryBaseDao;
     private StarsSearchDao starsSearchDao;
     private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
 	private SystemDateFormattingService systemDateFormattingService;
@@ -56,7 +54,6 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setPaoPermissionService(paoPermissionService);
         energyCompany.setStarsCustAccountInformationDao(starsCustAccountInformationDao);
         energyCompany.setSystemDateFormattingService(systemDateFormattingService);
-        energyCompany.setStarsInventoryBaseDao(starsInventoryBaseDao);
         energyCompany.setStarsSearchDao(starsSearchDao);
         energyCompany.setStarsWorkOrderBaseDao(starsWorkOrderBaseDao);
         energyCompany.setWarehouseDao(warehouseDao);
@@ -120,11 +117,6 @@ public class LiteStarsEnergyCompanyFactory {
     @Autowired
     public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
         this.starsCustAccountInformationDao = starsCustAccountInformationDao;
-    }
-    
-    @Autowired
-    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
-        this.starsInventoryBaseDao = starsInventoryBaseDao;
     }
     
     @Autowired

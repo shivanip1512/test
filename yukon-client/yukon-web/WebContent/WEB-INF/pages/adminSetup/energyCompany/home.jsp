@@ -17,31 +17,20 @@
             <tags:boxContainer2 nameKey="companiesContainer">
                 
                 <div class="membersContainer">
-                    <table class="compactResultsTable">
-                        <tr>
-                            <th><i:inline key=".name"/></th>
-                            <th><i:inline key=".type"/></th>
-                        </tr>
-                        
+                    <ul>
                         <c:forEach items="${companies}" var="company" varStatus="status">
-                            <tr>
-                                <td><a href="/spring/adminSetup/energyCompany/general/view?ecId=${company.energyCompanyId}">${company.name}</a></td>
-                                <td>
-                                    <c:choose>
-                                        <c:when test="${status.index == 0}"><i:inline key=".parent"/></c:when>
-                                        <c:otherwise><i:inline key=".member"/></c:otherwise>
-                                    </c:choose>
-                                </td>
-                            </tr>
+                            <li><a href="/spring/adminSetup/energyCompany/general/view?ecId=${company.energyCompanyId}">${company.name}</a></li>
                         </c:forEach>
-                    </table>
+                    </ul>
                 </div>
                 
-                <div class="actionArea">
-                    <form action="/spring/adminSetup/energyCompany/create">
-                        <cti:button key="create" type="submit" name="create"/>
-                    </form>
-                </div>
+                <cti:checkRolesAndProperties value="ADMIN_ENERGY_COMPANY_SUPER_USER">
+                    <div class="actionArea">
+                        <form action="/spring/adminSetup/energyCompany/new">
+                            <cti:button key="create" type="submit" name="create"/>
+                        </form>
+                    </div>
+                </cti:checkRolesAndProperties>
             
             </tags:boxContainer2>
         

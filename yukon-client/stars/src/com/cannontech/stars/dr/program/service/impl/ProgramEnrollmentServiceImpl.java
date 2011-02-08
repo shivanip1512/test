@@ -44,7 +44,7 @@ import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
-import com.cannontech.stars.core.service.EnergyCompanyService;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
@@ -80,7 +80,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     private AssignedProgramDao assignedProgramDao;
     private ControlHistoryService controlHistoryService;
     private DBPersistentDao dbPersistentDao;
-    private EnergyCompanyService energyCompanyService;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
     private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     private EnrollmentDao enrollmentDao;
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
@@ -96,7 +96,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
         final int accountId = customerAccount.getAccountId();
         YukonEnergyCompany yukonEnergyCompany = 
-            energyCompanyService.getEnergyCompanyByAccountId(accountId);
+            yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountId);
 
         boolean trackHardwareAddressingEnabled = 
             energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany);
@@ -264,7 +264,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     throws WebClientException {
 
         final int customerAccountId = customerAccount.getAccountId();
-        YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
         LiteStarsCustAccountInformation liteCustomerAccount = 
             starsCustAccountInformationDao.getbyAccountId(customerAccountId);
         boolean trackHardwareAddressingEnabled = 
@@ -982,8 +982,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     }
     
     @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
 
     @Autowired

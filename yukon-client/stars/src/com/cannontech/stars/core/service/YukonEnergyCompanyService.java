@@ -3,7 +3,7 @@ package com.cannontech.stars.core.service;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
-public interface EnergyCompanyService {
+public interface YukonEnergyCompanyService {
 
     /**
      * This method gets the energy company that the operator is directly associated with.
@@ -23,5 +23,5 @@ public interface EnergyCompanyService {
      * This method should be used as the primary option when you are working with an inventory. 
      */
     public YukonEnergyCompany getEnergyCompanyByInventoryId(int inventoryId);
-
+    
 }

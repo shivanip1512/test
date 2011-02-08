@@ -87,4 +87,14 @@ public interface EnergyCompanyDao {
     public List<LiteEnergyCompany> getAllEnergyCompanies();
 
     public void updateCompanyName(String name, int energyCompanyId);
+    
+    /**
+     * Creates an energy company with operator login and returns the new energy companies id.
+     * @param name
+     * @param primaryContactId
+     * @param userId
+     * @return
+     */
+    public int createEnergyCompany(String name, int primaryContactId, int userId);
+    
 }

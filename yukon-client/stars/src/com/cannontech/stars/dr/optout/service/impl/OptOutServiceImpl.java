@@ -59,7 +59,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
-import com.cannontech.stars.core.service.EnergyCompanyService;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryDao;
@@ -111,7 +111,7 @@ public class OptOutServiceImpl implements OptOutService {
 	private LMHardwareBaseDao lmHardwareBaseDao;
 	private AccountEventLogService accountEventLogService;
 	private DisplayableInventoryDao displayableInventoryDao;
-    private EnergyCompanyService energyCompanyService;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
 	private StarsInventoryBaseDao starsInventoryBaseDao;
 	private OptOutEventDao optOutEventDao;
 	private OptOutAdditionalDao optOutAdditionalDao;
@@ -146,7 +146,7 @@ public class OptOutServiceImpl implements OptOutService {
 
 	    int customerAccountId = customerAccount.getAccountId();
 		final YukonEnergyCompany yukonEnergyCompany = 
-		    energyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
+		    yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
 		
 		List<Integer> inventoryIdList = request.getInventoryIdList();
 		ReadableInstant startDate = request.getStartDate();
@@ -373,7 +373,7 @@ public class OptOutServiceImpl implements OptOutService {
 			Integer inventoryId = event.getInventoryId();
 			LiteStarsLMHardware inventory = 
 				(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
-			YukonEnergyCompany yukonEnergyCompany = energyCompanyService.getEnergyCompanyByInventoryId(inventoryId);
+			YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(inventoryId);
     		CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(inventoryId);
     		
 			OptOutEventState state = event.getState();
@@ -1256,8 +1256,8 @@ public class OptOutServiceImpl implements OptOutService {
     }
 	
 	@Autowired
-	public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
+	public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
 	
 	@Autowired

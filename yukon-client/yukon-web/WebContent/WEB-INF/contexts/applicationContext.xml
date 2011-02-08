@@ -1728,6 +1728,8 @@
     <bean id="energyCompanyInfoFragmentArgumentResolver" class="com.cannontech.web.admin.energyCompany.general.EnergyCompanyInfoFragmentArgumentResolver"/>
     <bean id="generalInfoService" class="com.cannontech.web.admin.energyCompany.general.service.GeneralInfoService"/>
     <bean id="generalInfoValidator" class="com.cannontech.web.admin.energyCompany.general.model.GeneralInfoValidator"/>
+    <bean id="energyCompanyService" class="com.cannontech.web.admin.energyCompany.service.impl.EnergyCompanyServiceImpl"/>
+    <bean id="energyCompanyDtoValidator" class="com.cannontech.web.admin.energyCompany.model.EnergyCompanyDtoValidator"/>
     
     <bean id="zoneDtoValidator" class="com.cannontech.web.capcontrol.ivvc.validators.ZoneDtoValidator"/>
     

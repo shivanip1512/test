@@ -24,7 +24,6 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.stars.ECToGenericMapping;
-import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.web.admin.energyCompany.general.model.GeneralInfo;
 
 public class GeneralInfoService {

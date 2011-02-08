@@ -2,19 +2,46 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-    <entry key="yukon.web.modules.adminSetup.home.pageName">Energy Company Settings</entry>
-    <entry key="yukon.web.modules.adminSetup.home.pageDescription">Energy Company Settings</entry>
+    <entry key="yukon.web.modules.adminSetup.home.pageName">Energy Companies</entry>
     <entry key="yukon.web.modules.adminSetup.home.create.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
     <entry key="yukon.web.modules.adminSetup.home.create.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
     <entry key="yukon.web.modules.adminSetup.home.create.label">Create</entry>
     <entry key="yukon.web.modules.adminSetup.home.name">Name</entry>
-    <entry key="yukon.web.modules.adminSetup.home.type">Type</entry>
-    <entry key="yukon.web.modules.adminSetup.home.parent">Parent</entry>
-    <entry key="yukon.web.modules.adminSetup.home.member">Member</entry>
-    <entry key="yukon.web.modules.adminSetup.home.companiesContainer.title">Configure Energy Company</entry>
+    <entry key="yukon.web.modules.adminSetup.home.companiesContainer.title">Configure Energy Companies</entry>
 
+    <!-- create.jsp -->
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.pageName">Create Energy Company</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.contextualPageName">Create</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.generalInfo.title">General Information</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.name">Company Name</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.email">Email</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorLogin.title">Default Operator Login</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorLogin.note">The default login belongs to the primary operator group selected and can also edit energy company settings.</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.note">Note:</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.secondaryOperatorLogin.title">Secondary Operator Login (Optional)</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.secondaryOperatorLogin.note">The secondary login belongs to the primary operator group selected.</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.username">Username</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.password">Password</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.confirmPassword">Confirm Password</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultRoute">Default Route</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.groups.title">Operator and Residential Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.primaryOperatorGroup">Primary Operator Group</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.additionalOperatorGroups">Additional Operator Group(s)</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.residentialGroups">Residential Group(s)</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.optional">(Optional)</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.name.required">Company Name is required.</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.name.unavailable">Company Name is unavailable.</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.email.invalid">Not a valid email address.</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.email.required">Email is required.</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.primaryOperatorGroup.required">Primary Operator Group is required.</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.adminUsername.required">Username is required.</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.adminUsername.unavailable">Username is unavailable.</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.adminPassword1.required">Password is required.</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.adminPassword2.required">Confirm Password is required.</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.adminPassword.mismatch">Password fields did not match.</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.creationSuccessful">Energy Company {0} Created Successfully</entry>
+    
     <!-- generalInfo.jsp -->
-    <entry key="yukon.web.modules.adminSetup.generalInfo.CREATE.pageName">Create Energy Company</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.EDIT.pageName">Edit General Info</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.EDIT.contextualPageName">Edit</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.EDIT.pageDescription">{0}</entry>
@@ -49,7 +76,6 @@
     <entry key="yukon.web.modules.adminSetup.generalInfo.remove">Remove</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.noMembers">No Member Energy Companies</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.updateSuccessful">General Info Updated Successfully</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.none">(none)</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.invalidPhoneNumber">Main Phone # contains invalid characters.</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.invalidFaxNumber">Main Fax # contains invalid characters.</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.invalidEmail">Not a valid email address.</entry>
