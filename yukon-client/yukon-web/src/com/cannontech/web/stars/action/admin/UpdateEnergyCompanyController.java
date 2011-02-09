@@ -152,7 +152,7 @@ public class UpdateEnergyCompanyController extends StarsAdminActionController {
             }
 
             int routeID = Integer.parseInt(request.getParameter("Route"));
-            StarsAdminUtil.updateDefaultRoute( energyCompany, routeID, user);
+            StarsAdminUtil.updateDefaultRoute( energyCompany, routeID, user.getYukonUser());
 
             // Update energy company role DEFAULT_TIME_ZONE if necessary
             LiteYukonGroup adminGroup = energyCompany.getOperatorAdminGroup();

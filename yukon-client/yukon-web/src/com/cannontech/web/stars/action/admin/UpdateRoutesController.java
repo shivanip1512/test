@@ -54,7 +54,7 @@ public class UpdateRoutesController extends StarsAdminActionController {
                 // Routes to be removed
                 int routeID = oldRouteIDs.get(i).intValue();
                 if (routeID == energyCompany.getDefaultRouteId())
-                    StarsAdminUtil.updateDefaultRoute( energyCompany, 0, user);
+                    StarsAdminUtil.updateDefaultRoute( energyCompany, 0, user.getYukonUser());
                 StarsAdminUtil.removeRoute( energyCompany, routeID );
             }
         }

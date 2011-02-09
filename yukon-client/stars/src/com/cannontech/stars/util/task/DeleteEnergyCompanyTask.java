@@ -177,7 +177,8 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			for (int i = 0; i < stmt.getRowCount(); i++)
 				invIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
 			numInventory = invIDs.length;
-			
+			dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
+			yukonListDao = YukonSpringHook.getBean("yukonListDao", YukonListDao.class);
 			for (int i = 0; i < invIDs.length; i++) {
 				currentAction = "Deleting inventory id = " + invIDs[i];
 				

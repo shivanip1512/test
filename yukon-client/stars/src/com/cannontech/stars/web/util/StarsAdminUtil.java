@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -46,7 +48,6 @@ import com.cannontech.database.data.device.lm.LMGroupExpressCom;
 import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -99,7 +100,7 @@ public class StarsAdminUtil {
 	
 	public static final String FIRST_TIME = "FIRST_TIME";
 	
-	public static void updateDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeID, StarsYukonUser user) throws Exception {
+	public static void updateDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeID, LiteYukonUser user) throws Exception {
 	    StarsEventLogService starsEventLogService = (StarsEventLogService) YukonSpringHook.getBean("starsEventLogService");
 	    
 	    int previousRouteId = energyCompany.getDefaultRouteId();
@@ -154,14 +155,14 @@ public class StarsAdminUtil {
                 } else {
                     // Creates a macrogroup if it doesn't exist.
                     grpSerial = (MacroGroup) LMFactory.createLoadManagement( DeviceTypes.MACRO_GROUP );  
-				grpSerial.setPAOName( energyCompany.getName() + " Serial Group" );
-				GenericMacro macro = new GenericMacro();
+    				grpSerial.setPAOName( energyCompany.getName() + " Serial Group" );
+    				GenericMacro macro = new GenericMacro();
                     macro.setChildID( grpExpresscom.getPAObjectID() );  
-				macro.setChildOrder( new Integer(0) );
-				macro.setMacroType( MacroTypes.GROUP );
-				grpSerial.getMacroGroupVector().add( macro );
-				grpSerial = Transaction.createTransaction( Transaction.INSERT, grpSerial ).execute();
-				ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DbChangeType.ADD)[0] );
+    				macro.setChildOrder( new Integer(0) );
+    				macro.setMacroType( MacroTypes.GROUP );
+    				grpSerial.getMacroGroupVector().add( macro );
+    				grpSerial = Transaction.createTransaction( Transaction.INSERT, grpSerial ).execute();
+    				ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DbChangeType.ADD)[0] );
                 }
                 
                 PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
@@ -211,7 +212,7 @@ public class StarsAdminUtil {
 			                                      energyCompany.getEnergyCompanyId());
 
 			// Logging Default Route Id
-			starsEventLogService.energyCompanyDefaultRouteChanged(user.getYukonUser(), energyCompany.getName(),
+			starsEventLogService.energyCompanyDefaultRouteChanged(user, energyCompany.getName(),
 			                                                      previousRouteId, routeID);
 		}
 	}
@@ -240,7 +241,7 @@ public class StarsAdminUtil {
                 /*Load groups are only assigned to users, so for now we only have to worry about removing from
                  * the user.
                  */
-                pService.removePermission(energyCompany.getUser(), new LiteYukonPAObject(serialGrpID), Permission.DEFAULT_ROUTE);
+                pService.removePermission(energyCompany.getUser(), new PaoIdentifier(serialGrpID, PaoType.MACRO_GROUP), Permission.DEFAULT_ROUTE);
     			stmt.setSQLString( sql );
     			stmt.execute();
     			

@@ -192,7 +192,7 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     
                     // Assign default route to the energy company
                     int routeID = Integer.parseInt( request.getParameter("Route") );
-                    StarsAdminUtil.updateDefaultRoute( newCompany, routeID, user);
+                    StarsAdminUtil.updateDefaultRoute( newCompany, routeID, user.getYukonUser());
                     
                     // Add the new energy company as a member of the current company
                     if (isAddMember)
