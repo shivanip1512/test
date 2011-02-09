@@ -1,10 +1,12 @@
 <?xml version="1.0"?>
 <vxml version="2.0">
 <%@ include file="include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.stars.dr.optout.service.OptOutService" %>
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
-<%
+<%@ page import="com.cannontech.core.roleproperties.YukonRoleProperty" %>
+<%@ page import="com.cannontech.core.roleproperties.dao.RolePropertyDao" %>
+<%@ page import="com.cannontech.stars.dr.optout.util.OptOutUtil" %>
 
+<% 
 	String action = "OptOutProgram";
 	String redirect = request.getContextPath() + "/voice/inboundConfirm.jsp";
 	String referer = request.getRequestURI();
@@ -54,9 +56,11 @@
 
 <%
 	int option = 1;
-	
-   OptOutService optOutService = (OptOutService) YukonSpringHook.getBean("optOutService");
-   List<Integer> optOutPeriodList = optOutService.getAvailableOptOutPeriods(lYukonUser);
+    
+    final RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+    String optOutPeriodString = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.RESIDENTIAL_OPT_OUT_PERIOD,  user.getYukonUser());
+    
+    List<Integer> optOutPeriodList = OptOutUtil.parseOptOutPeriodString(optOutPeriodString);
    
 	for (Integer optOutPeriod : optOutPeriodList) {
 		String period = (optOutPeriod == 1) ? "Day" : "Days";
