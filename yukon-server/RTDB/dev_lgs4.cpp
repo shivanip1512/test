@@ -1909,7 +1909,7 @@ INT CtiDeviceLandisGyrS4::ErrorDecode (const INMESS        &InMessage,
     if (pMsg != NULL)
     {
         pMsg->insert( -1 );           // This is the dispatch token and is unimplemented at this time
-        pMsg->insert(OP_DEVICEID);    // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+        pMsg->insert(CtiCommandMsg::OP_DEVICEID);    // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
         pMsg->insert(getID());             // The id (device or point which failed)
         pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
         pMsg->insert(InMessage.EventCode);
@@ -1989,7 +1989,7 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
             if (pMsg != NULL)
             {
                 pMsg->insert( -1 );           // This is the dispatch token and is unimplemented at this time
-                pMsg->insert(OP_DEVICEID);    // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+                pMsg->insert(CtiCommandMsg::OP_DEVICEID);    // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
                 pMsg->insert(getID());             // The id (device or point which failed)
                 pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 

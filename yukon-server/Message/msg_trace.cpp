@@ -85,15 +85,6 @@ CtiTraceMsg::saveGuts(RWvostream &aStream) const
     aStream << end << _attributes << _trace;
 }
 
-void
-CtiTraceMsg::What() const
-{
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << "CtiTraceMsg.... " << endl;
-   }
-}
-
 void CtiTraceMsg::dump() const
 {
    Inherited::dump();

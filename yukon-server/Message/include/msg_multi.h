@@ -44,7 +44,6 @@ public:
    virtual void saveGuts(RWvostream &aStream) const;
    virtual void restoreGuts(RWvistream& aStream);
    virtual CtiMessage* replicateMessage() const;
-   void What() const;
 
    int  getCount() const;
 

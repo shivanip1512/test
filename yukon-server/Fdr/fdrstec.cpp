@@ -386,7 +386,7 @@ int CtiFDR_STEC::fail ()
         if (pMsg != NULL)
         {
             pMsg->insert( -1 );                   // This is the dispatch token and is unimplemented at this time
-            pMsg->insert(OP_POINTID);     // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+            pMsg->insert(CtiCommandMsg::OP_POINTID);     // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
             pMsg->insert(point.getPointID());                    // The id (device or point which failed)
             pMsg->insert(ScanRateGeneral);              // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
@@ -404,7 +404,7 @@ int CtiFDR_STEC::fail ()
         if (pMsg != NULL)
         {
             pMsg->insert( -1 );                   // This is the dispatch token and is unimplemented at this time
-            pMsg->insert(OP_POINTID);     // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+            pMsg->insert(CtiCommandMsg::OP_POINTID);     // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
             pMsg->insert(point.getPointID());                    // The id (device or point which failed)
             pMsg->insert(ScanRateGeneral);              // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
@@ -464,7 +464,7 @@ int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoa
                 CtiCommandMsg *pCmdMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
                 pCmdMsg->insert( -1 );                          // This is the dispatch token and is unimplemented at this time
-                pCmdMsg->insert(OP_POINTID);                    // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+                pCmdMsg->insert(CtiCommandMsg::OP_POINTID);                    // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
                 pCmdMsg->insert(point.getPointID());  // The id (device or point which failed)
                 pCmdMsg->insert(ScanRateGeneral);               // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
                 queueMessageToDispatch(pCmdMsg);
@@ -535,7 +535,7 @@ int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoa
                 CtiCommandMsg *pCmdMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
                 pCmdMsg->insert( -1 );                          // This is the dispatch token and is unimplemented at this time
-                pCmdMsg->insert(OP_POINTID);                    // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+                pCmdMsg->insert(CtiCommandMsg::OP_POINTID);                    // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
                 pCmdMsg->insert(point.getPointID());  // The id (device or point which failed)
                 pCmdMsg->insert(ScanRateGeneral);               // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
                 queueMessageToDispatch(pCmdMsg);

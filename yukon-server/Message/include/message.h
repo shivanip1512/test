@@ -108,8 +108,6 @@ public:
    // Adjust the time to now.
    void resetTime();
 
-   virtual void What() const;
-
    virtual void PreInsert();
 
    virtual void dump() const;

@@ -1,37 +1,9 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   ctivangogh
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2008/11/11 21:51:43 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __VANGOGH_H__
-#define __VANGOGH_H__
-#pragma warning( disable : 4786)
+#pragma once
 
-#include <functional>
-#include <iostream>
 #include <set>
-#include <map>
-using std::set;
-using std::map;
-using std::iostream;
-
 
 #include <rw\thr\thrfunc.h>
-#include <rw/toolpro/winsock.h>
 #include <rw/toolpro/socket.h>
-#include <rw/toolpro/neterr.h>
-#include <rw\rwerr.h>
-#include <rw\thr\mutex.h>
-#include <rw\tphasht.h>
-#include <rw/tvslist.h>
 
 #include "con_mgr.h"
 #include "con_mgr_vg.h"
@@ -64,16 +36,7 @@ using std::iostream;
 #include "tbl_ci_cust.h"
 #include "tbl_contact_notification.h"
 #include "rtdb.h"
-#include "numstr.h"
 
-
-#include <string.h>
-
-#define MAX_ALARM_TRX 256
-
-
-class CtiConnectionManager;
-class CtiVanGoghConnectionManager;
 class CtiPointRegistrationMsg;
 class CtiPointBase;
 class CtiPointStatus;
@@ -84,10 +47,10 @@ class IM_EX_CTIVANGOGH CtiVanGogh : public CtiServer
 {
 public:
 
-    typedef set< CtiTableNotificationGroup >  CtiNotificationGroupSet_t;
-    typedef set< CtiTableContactNotification >  CtiContactNotificationSet_t;
-    typedef set< CtiDeviceBaseLite >          CtiDeviceLiteSet_t;
-    typedef set< CtiTableCICustomerBase >     CtiDeviceCICustSet_t;
+    typedef std::set< CtiTableNotificationGroup >  CtiNotificationGroupSet_t;
+    typedef std::set< CtiTableContactNotification >  CtiContactNotificationSet_t;
+    typedef std::set< CtiDeviceBaseLite >          CtiDeviceLiteSet_t;
+    typedef std::set< CtiTableCICustomerBase >     CtiDeviceCICustSet_t;
 
     typedef struct
     {
@@ -152,8 +115,8 @@ private:
     void bumpDeviceFromAlternateRate(CtiPointSPtr pPoint);
     void bumpDeviceToAlternateRate(CtiPointSPtr pPoint);
 
-    void acknowledgeCommandMsg( CtiPointSPtr &pPt, const CtiCommandMsg *&Cmd, int alarmcondition );
-    void acknowledgeAlarmCondition( CtiPointSPtr &pPt, const CtiCommandMsg *&Cmd, int alarmcondition );
+    void acknowledgeCommandMsg( CtiPointSPtr &pPt, const CtiCommandMsg *Cmd, int alarmcondition );
+    void acknowledgeAlarmCondition( CtiPointSPtr &pPt, const CtiCommandMsg *Cmd, int alarmcondition );
     bool processInputFunction(CHAR Char);
     void queueSignalToSystemLog( CtiSignalMsg *&pSig );
     void stopDispatch();
@@ -296,8 +259,9 @@ public:
     CtiDeviceLiteSet_t::iterator deviceLiteFind(const LONG paoId);
     void reportOnThreads();
     void writeMessageToScanner(const CtiCommandMsg *Cmd);
-    void writeMessageToClient(CtiMessage *&pReq, string clientName);
-    bool writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPointStatusSPtr pPoint, const CtiCommandMsg *&Cmd  );
+    void writeMessageToClient(const CtiMessage *pReq, string clientName);
+    bool writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPointStatusSPtr pPoint, const CtiCommandMsg *Cmd );
+    void writeAnalogOutputMessageToPIL(long deviceid, long pointid, long value, const CtiCommandMsg *Cmd);
     int processControlMessage(CtiLMControlHistoryMsg *pMsg);
     int processCommErrorMessage(CtiCommErrorHistoryMsg *pMsg);
 
@@ -321,4 +285,3 @@ public:
 
 };
 
-#endif // #ifndef __VANGOGH_H__

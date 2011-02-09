@@ -11,9 +11,6 @@
 #include <rw/toolpro/inetaddr.h>
 #include <rw\rwerr.h>
 #include <rw\thr\mutex.h>
-#include <rw/re.h>
-#undef mask_
-
 
 #include "collectable.h"
 #include "counter.h"
@@ -63,8 +60,6 @@
 #include "database_reader.h"
 #include "database_writer.h"
 
-
-// #include "slctdev.h"
 #include "connection.h"
 #include "dbaccess.h"
 #include "utility.h"
@@ -79,8 +74,6 @@
 
 using namespace std;
 
-#define DEBUGPOINTCHANGES
-
 #define LMCTLHIST_WINDOW         30             // How often partial LM control intervals are written out to DB.
 #define MAX_ARCHIVER_ENTRIES     10             // If this many entries appear, we'll do a dump
 #define MAX_DYNLMQ_ENTRIES       100            // If this many entries appear, we'll do a dump
@@ -90,6 +83,8 @@ using namespace std;
 #define SANITY_RATE              300
 #define POINT_EXPIRE_CHECK_RATE  60
 #define DYNAMIC_LOAD_SIZE        256
+
+#define MAX_ALARM_TRX 256
 
 DLLIMPORT extern CtiLogger   dout;
 
@@ -853,7 +848,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                 if(pPt )      // I know about the point...
                 {
-                    acknowledgeCommandMsg(pPt, (const CtiCommandMsg *&)*&Cmd, alarmcondition);
+                    acknowledgeCommandMsg(pPt, Cmd, alarmcondition);
                 }
             }
 
@@ -861,7 +856,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
         }
     case (CtiCommandMsg::PorterConsoleInput):
         {
-            writeMessageToClient((CtiMessage*&)Cmd, string(PORTER_REGISTRATION_NAME));
+            writeMessageToClient(Cmd, string(PORTER_REGISTRATION_NAME));
             break;
         }
     case (CtiCommandMsg::ControlRequest):
@@ -920,7 +915,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                     did = pPoint->getDeviceID();
                                 }
 
-                                bool is_a_control = writeControlMessageToPIL(did, rawstate, boost::static_pointer_cast<CtiPointStatus>(pPoint), (const CtiCommandMsg *&) *&Cmd);
+                                bool is_a_control = writeControlMessageToPIL(did, rawstate, boost::static_pointer_cast<CtiPointStatus>(pPoint), Cmd);
 
                                 CtiPointDataMsg *pPseudoValPD = 0;
                                 PtVerifyTriggerSPtr verificationPtr;
@@ -1006,6 +1001,29 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
             }
             break;
         }
+    case (CtiCommandMsg::AnalogOutput):
+        {
+            if(Cmd->getOpArgList().size() >= 2)
+            {
+                const long point_id = Cmd->getOpArgList()[0];
+                const long value    = Cmd->getOpArgList()[1];
+
+                if(const CtiPointSPtr point = PointMgr.getPoint(point_id))
+                {
+                    if(const long device_id = point->getDeviceID())
+                    {
+                        writeAnalogOutputMessageToPIL(device_id, point_id, value, Cmd);
+                    }
+                }
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "**** Error, Control Request did not have a valid command vector **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            break;
+        }
     case (CtiCommandMsg::Ablement):
     case (CtiCommandMsg::ControlAblement):
         {
@@ -1034,12 +1052,12 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                             if(Cmd->getOperation() == CtiCommandMsg::Ablement)
                             {
-                                if(idtype == OP_DEVICEID)
+                                if(idtype == CtiCommandMsg::OP_DEVICEID)
                                 {
                                     tagmask = TAG_DISABLE_DEVICE_BY_DEVICE;
                                     setmask |= (disable ? TAG_DISABLE_DEVICE_BY_DEVICE : 0);    // Set it, or clear it?
                                 }
-                                else if(idtype == OP_POINTID)
+                                else if(idtype == CtiCommandMsg::OP_POINTID)
                                 {
                                     tagmask = TAG_DISABLE_POINT_BY_POINT;
                                     setmask |= (disable ? TAG_DISABLE_POINT_BY_POINT : 0);      // Set it, or clear it?
@@ -1047,19 +1065,19 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             }
                             else if(Cmd->getOperation() == CtiCommandMsg::ControlAblement)
                             {
-                                if(idtype == OP_DEVICEID)
+                                if(idtype == CtiCommandMsg::OP_DEVICEID)
                                 {
                                     tagmask = TAG_DISABLE_CONTROL_BY_DEVICE;
                                     setmask |= (disable ? TAG_DISABLE_CONTROL_BY_DEVICE : 0);   // Set it, or clear it?
                                 }
-                                else if(idtype == OP_POINTID)
+                                else if(idtype == CtiCommandMsg::OP_POINTID)
                                 {
                                     tagmask = TAG_DISABLE_CONTROL_BY_POINT;
                                     setmask |= (disable ? TAG_DISABLE_CONTROL_BY_POINT : 0);    // Set it, or clear it?
                                 }
                             }
 
-                            if(idtype == OP_DEVICEID)
+                            if(idtype == CtiCommandMsg::OP_DEVICEID)
                             {
                                 CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(id);
                                 if(dliteit != _deviceLiteSet.end() && ablementDevice(dliteit, setmask, tagmask))
@@ -1067,7 +1085,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                     adjustDeviceDisableTags(id, false, Cmd->getUser());    // We always have an id here.
                                 }
                             }
-                            else if(idtype == OP_POINTID)
+                            else if(idtype == CtiCommandMsg::OP_POINTID)
                             {
                                 bool devicedifferent;
 
@@ -1767,7 +1785,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
             {
                 bool isNew = isPointDataNewInformation( aPD, pDyn );    // This must be checked before the setPoint() method is called.
 
-                if( aPD.getTime() >= pDyn->getTimeStamp() || (aPD.getTags() & TAG_POINT_FORCE_UPDATE) 
+                if( aPD.getTime() >= pDyn->getTimeStamp() || (aPD.getTags() & TAG_POINT_FORCE_UPDATE)
                     || (pDyn->getQuality() == UnintializedQuality && aPD.getQuality() != UnintializedQuality) )
                 {
                     {
@@ -3679,7 +3697,7 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
                     {
                         pData->setTags(TAG_POINT_OLD_TIMESTAMP);
                     }
-                    else 
+                    else
                     {
                         pData->resetTags(TAG_POINT_OLD_TIMESTAMP); // No one else may set this but us!
                     }
@@ -3714,7 +3732,7 @@ INT CtiVanGogh::commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiMultiWrapp
 
     CtiCommandMsg::CtiOpArgList_t &Op = pCmd->getOpArgList();
 
-    if( Op[1] == OP_DEVICEID )    // All points on a device must be marked as nonUpdated
+    if( Op[1] == CtiCommandMsg::OP_DEVICEID )    // All points on a device must be marked as nonUpdated
     {
         vector<CtiPointSPtr> points;
         vector<CtiPointSPtr>::iterator pointIter;
@@ -3731,7 +3749,7 @@ INT CtiVanGogh::commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiMultiWrapp
             }
         }
     }
-    else if( Op[(size_t)1] == RWInteger(OP_POINTID) )
+    else if( Op[1] == CtiCommandMsg::OP_POINTID )
     {
         CtiServerExclusion pmguard(_server_exclusion);
         CtiPointSPtr pPoint = PointMgr.getPoint(Op[(size_t)2]);
@@ -5779,7 +5797,7 @@ void CtiVanGogh::reportOnThreads()
     }
 }
 
-bool CtiVanGogh::writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPointStatusSPtr pPoint, const CtiCommandMsg *&Cmd  )
+bool CtiVanGogh::writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPointStatusSPtr pPoint, const CtiCommandMsg *Cmd )
 {
     bool control = false;
     string  cmdstr;
@@ -5803,7 +5821,7 @@ bool CtiVanGogh::writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPoint
     {
         pReq->setUser( Cmd->getUser() );
         pReq->setMessagePriority( MAXPRIORITY - 1 );    // Make it sing!
-        writeMessageToClient((CtiMessage*&)pReq, string(PIL_REGISTRATION_NAME));
+        writeMessageToClient(pReq, string(PIL_REGISTRATION_NAME));
     }
 
     delete pReq;
@@ -5812,7 +5830,28 @@ bool CtiVanGogh::writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPoint
     return control;
 }
 
-void CtiVanGogh::writeMessageToClient(CtiMessage *&pReq, string clientName)
+void CtiVanGogh::writeAnalogOutputMessageToPIL(long deviceid, long pointid, long value, const CtiCommandMsg *Cmd)
+{
+    string cmdstr;
+
+    cmdstr += "putvalue analog value ";
+    cmdstr += CtiNumStr(value);
+
+    cmdstr += " select pointid ";
+    cmdstr += CtiNumStr(pointid);
+
+    if( CtiRequestMsg *pReq = new CtiRequestMsg(deviceid, cmdstr) )
+    {
+        pReq->setUser( Cmd->getUser() );
+        pReq->setMessagePriority( MAXPRIORITY - 1 );    // Make it sing!
+
+        writeMessageToClient(pReq, string(PIL_REGISTRATION_NAME));
+
+        delete pReq;
+    }
+}
+
+void CtiVanGogh::writeMessageToClient(const CtiMessage *pReq, string clientName)
 {
     CtiServer::ptr_type CM;
     bool bDone = false;
@@ -6770,7 +6809,7 @@ void CtiVanGogh::reactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPoin
     }
 }
 
-void CtiVanGogh::acknowledgeCommandMsg( CtiPointSPtr &pPt, const CtiCommandMsg *&Cmd, int alarmcondition )
+void CtiVanGogh::acknowledgeCommandMsg( CtiPointSPtr &pPt, const CtiCommandMsg *Cmd, int alarmcondition )
 {
     CtiSignalMsg *pSigNew = 0;
 
@@ -6788,7 +6827,7 @@ void CtiVanGogh::acknowledgeCommandMsg( CtiPointSPtr &pPt, const CtiCommandMsg *
 
 }
 
-void CtiVanGogh::acknowledgeAlarmCondition( CtiPointSPtr &pPt, const CtiCommandMsg *&Cmd, int alarmcondition )
+void CtiVanGogh::acknowledgeAlarmCondition( CtiPointSPtr &pPt, const CtiCommandMsg *Cmd, int alarmcondition )
 {
     CtiSignalMsg *pSigNew = 0;
 
@@ -7014,7 +7053,7 @@ void CtiVanGogh::VGDBSignalWriterThread()
 void CtiVanGogh::VGDBSignalEmailThread()
 {
     UINT sanity = 0;
-    
+
     ThreadStatusKeeper threadStatus("DB Signal Email Thread");
 
     {
@@ -7632,7 +7671,7 @@ void CtiVanGogh::stopDispatch()
     {
         // This forces the listener thread to exit on shutdown.
         _listenerSocket.close();
-    } 
+    }
     catch(...)
     {
         // Dont really care, we are shutting down.
@@ -7907,7 +7946,7 @@ void CtiVanGogh::sendbGCtrlC(void *who)
                                     pReq->setUser( aPD.getUser() );
                                     pReq->setSource(DISPATCH_APPLICATION_NAME);
                                     pReq->setMessagePriority( MAXPRIORITY - 1 );    // Make it sing!
-                                    writeMessageToClient((CtiMessage*&)pReq, string(PIL_REGISTRATION_NAME));
+                                    writeMessageToClient(pReq, string(PIL_REGISTRATION_NAME));
                                 }
                                 sendPendingControlRequest(aPD, controlPoint, iter->second);
                                 iter->second->lastTriggerValue = pointValue;
@@ -8314,7 +8353,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
             {
                 CtiCommandMsg::CtiOpArgList_t &Op = pCmdMsg->getOpArgList();
 
-                if( Op[1] == OP_DEVICEID )    // All points on a device must be marked as nonUpdated
+                if( Op[1] == CtiCommandMsg::OP_DEVICEID )    // All points on a device must be marked as nonUpdated
                 {
                     vector<int> points = getPointIdsOnPao(Op[2]);
 
@@ -8327,7 +8366,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
                         }
                     }
                 }
-                else if( Op[1] == OP_POINTID )
+                else if( Op[1] == CtiCommandMsg::OP_POINTID )
                 {
                     if(!PointMgr.isPointLoaded(Op[2]))
                     {
@@ -8468,7 +8507,7 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
             {
                 CtiCommandMsg::CtiOpArgList_t &Op = pCmdMsg->getOpArgList();
 
-                if( Op[1] == OP_DEVICEID )    // All points on a device must be marked as nonUpdated
+                if( Op[1] == CtiCommandMsg::OP_DEVICEID )    // All points on a device must be marked as nonUpdated
                 {
                     vector<int> points = getPointIdsOnPao(Op[2]);
 
@@ -8480,7 +8519,7 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
                         }
                     }
                 }
-                else if( Op[1] == OP_POINTID )
+                else if( Op[1] == CtiCommandMsg::OP_POINTID )
                 {
                     ptIdList.insert(Op[2]);
                 }

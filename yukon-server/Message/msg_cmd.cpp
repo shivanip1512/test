@@ -1,29 +1,16 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_cmd
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_cmd.cpp-arc  $
-* REVISION     :  $Revision: 1.8.24.3 $
-* DATE         :  $Date: 2008/11/14 19:31:04 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include <rw\thr\mutex.h>
-#include <rw/collect.h>
+#include "msg_cmd.h"
 
 #include "dllbase.h"
-#include "collectable.h"
 #include "dlldefs.h"
-#include "msg_cmd.h"
 #include "logger.h"
+
+#include <rw/collect.h>
+
+#include <iostream>
+
+using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 RWDEFINE_COLLECTABLE( CtiCommandMsg, MSG_COMMAND );
 
@@ -54,15 +41,6 @@ CtiCommandMsg::saveGuts(RWvostream &aStream) const
       aStream << *itr;
    }
 
-}
-
-void
-CtiCommandMsg::What() const
-{
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << "CtiCommandMsg.... " << " iOperation " << getOperation() << endl;
-   }
 }
 
 void CtiCommandMsg::dump() const
@@ -135,22 +113,7 @@ std::vector<int>& CtiCommandMsg::insert(INT i)
    return iOpArgList;
 }
 
-void CtiCommandMsg::clear()
-{
-   iOpArgList.clear();
-}
-
-INT CtiCommandMsg::getOpArgument(INT i) const
-{
-    return iOpArgList[i];
-}
-
 string CtiCommandMsg::getOpString() const
-{
-   return iOpString;
-}
-
-string& CtiCommandMsg::getOpString()
 {
    return iOpString;
 }
@@ -183,7 +146,4 @@ CtiCommandMsg::CtiCommandMsg(const CtiCommandMsg &aRef, int Pri)
 {
    *this = aRef;
 }
-
-CtiCommandMsg::~CtiCommandMsg() {};
-
 

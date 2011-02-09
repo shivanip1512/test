@@ -52,16 +52,6 @@ CtiDBChangeMsg::saveGuts(RWvostream &aStream) const
            << _typeofchange;
 }
 
-void
-CtiDBChangeMsg::What() const
-{
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << "CtiDBChangeMsg.... " << _id << " " << _database << " " << _category << " "
-           << _objecttype << " " << _typeofchange << endl;
-   }
-}
-
 // Return a new'ed copy of this message!
 CtiMessage* CtiDBChangeMsg::replicateMessage() const
 {

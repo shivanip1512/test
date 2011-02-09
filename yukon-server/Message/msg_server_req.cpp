@@ -21,12 +21,6 @@ void CtiServerRequestMsg::restoreGuts(RWvistream &strm)
     strm >> _id >> _payload;
 }
 
-void CtiServerRequestMsg::What() const
-{
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << "CtiServerRequestMsg.... " << endl;
-}
-
 void CtiServerRequestMsg::dump() const
 {
    Inherited::dump();

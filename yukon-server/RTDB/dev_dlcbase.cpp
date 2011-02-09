@@ -455,7 +455,7 @@ INT DlcBaseDevice::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage* >
                     case EmetconProtocol::Scan_General:
                     {
                         pMsg->insert( -1 );             //  This is the dispatch token and is unimplemented at this time
-                        pMsg->insert(OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+                        pMsg->insert(CtiCommandMsg::OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
                         pMsg->insert(getID());          //  The id (device or point which failed)
                         pMsg->insert(ScanRateGeneral);  //  defined in yukon.h
                         pMsg->insert(InMessage->EventCode);
@@ -466,7 +466,7 @@ INT DlcBaseDevice::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage* >
                     case EmetconProtocol::Scan_Accum:
                     {
                         pMsg->insert( -1 );             //  This is the dispatch token and is unimplemented at this time
-                        pMsg->insert(OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+                        pMsg->insert(CtiCommandMsg::OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
                         pMsg->insert(getID());          //  The id (device or point which failed)
                         pMsg->insert(ScanRateAccum);
                         pMsg->insert(InMessage->EventCode);
@@ -477,7 +477,7 @@ INT DlcBaseDevice::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage* >
                     case EmetconProtocol::Scan_Integrity:
                     {
                         pMsg->insert( -1 );             //  This is the dispatch token and is unimplemented at this time
-                        pMsg->insert(OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+                        pMsg->insert(CtiCommandMsg::OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
                         pMsg->insert(getID());          //  The id (device or point which failed)
                         pMsg->insert(ScanRateIntegrity);
                         pMsg->insert(InMessage->EventCode);

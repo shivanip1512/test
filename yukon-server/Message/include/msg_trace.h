@@ -59,7 +59,6 @@ public:
     void restoreGuts(RWvistream& aStream);
     CtiMessage* replicateMessage() const;
 
-    void What() const;
     virtual void dump() const;
 
 

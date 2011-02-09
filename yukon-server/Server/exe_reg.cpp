@@ -22,7 +22,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 //#include "que_exec.h"
 #include "con_mgr.h"
 #include "con_mgr_vg.h"
-// #include "ctivangogh.h"
 #include "server_b.h"
 #include "msg_reg.h"
 

@@ -2,6 +2,8 @@
 
 #include "dev_dnp.h"
 
+#include "dnp_object_analogoutput.h"
+
 #include "porter.h"
 
 #include "pt_status.h"
@@ -11,6 +13,8 @@
 
 #include "msg_cmd.h"
 #include "msg_lmcontrolhistory.h"
+
+#include <boost/optional.hpp>
 
 using namespace std;
 
@@ -406,22 +410,41 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
         {
             int offset;
 
+            using Cti::Protocol::DNP::AnalogOutput;
+
+            boost::optional<long> control_offset;
+
             if( parse.isKeyValid("analog") )
             {
-                CtiPointSPtr point;
-
-                controlout.type = Protocol::DNPInterface::AnalogOutput;
-                controlout.control_offset = parse.getiValue("analogoffset");
-
-                controlout.aout.value     = parse.getiValue("analogvalue");
-
-                command = Protocol::DNPInterface::Command_SetAnalogOut;
-
-                point = getDevicePointOffsetTypeEqual(controlout.control_offset, AnalogOutputPointType);
-                if( point )
+                if( parse.isKeyValid("analogoffset") )
                 {
-                    CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), point->getPointID(), controlout.aout.value, CtiTime(), 0, 100);
-                    vgList.push_back(hist);
+                    control_offset = parse.getiValue("analogoffset");
+                }
+                else if( parse.isKeyValid("point") )
+                {
+                    const long pointid = parse.getiValue("point");
+
+                    if( const CtiPointSPtr point = getDevicePointEqual(pointid) )
+                    {
+                        if( point->getType() == AnalogOutputPointType )
+                        {
+                            if( point->getPointOffset() > AnalogOutput::AnalogOutputOffset )
+                            {
+                                controlout.control_offset = point->getPointOffset() - AnalogOutput::AnalogOutputOffset;
+                            }
+                        }
+                    }
+                }
+
+                if( control_offset )
+                {
+                    controlout.control_offset = *control_offset;
+
+                    controlout.type = Protocol::DNPInterface::AnalogOutput;
+
+                    controlout.aout.value     = parse.getiValue("analogvalue");
+
+                    command = Protocol::DNPInterface::Command_SetAnalogOut;
                 }
             }
 
@@ -1003,7 +1026,7 @@ INT DnpDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, list<
     if(pMsg != NULL)
     {
         pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
-        pMsg->insert(OP_DEVICEID);      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+        pMsg->insert(CtiCommandMsg::OP_DEVICEID);      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
         pMsg->insert(getID());          // The id (device or point which failed)
         pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 

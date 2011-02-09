@@ -1054,7 +1054,7 @@ int MctDevice::insertPointFail( const INMESS &InMessage, CtiReturnMsg *pPIL, int
     if( pMsg != NULL && pPoint )
     {
         pMsg->insert( -1 );          // This is the dispatch token and is unimplemented at this time
-        pMsg->insert( OP_POINTID );  // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+        pMsg->insert( CtiCommandMsg::OP_POINTID );  // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
         pMsg->insert( pPoint->getPointID() );
         pMsg->insert( scanType );
         pMsg->insert( InMessage.EventCode );  // The error number from dsm2.h or yukon.h which was reported.

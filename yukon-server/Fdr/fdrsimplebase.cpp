@@ -359,7 +359,7 @@ void CtiFDRSimple::handleNonUpdate(CtiFDRPoint *ctiPoint,
   }
 
   pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
-  pMsg->insert(OP_POINTID);       // OP_POINTID indicates a point fail situation.
+  pMsg->insert(CtiCommandMsg::OP_POINTID);       // OP_POINTID indicates a point fail situation.
   pMsg->insert(ctiPoint->getPointID());  // The pointid which failed
   pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,
                                   //  ScanRateIntegrity, or if unknown -> ScanRateInvalid

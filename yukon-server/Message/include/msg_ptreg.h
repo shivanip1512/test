@@ -62,7 +62,6 @@ public:
    void saveGuts(RWvostream &aStream) const;
    void restoreGuts(RWvistream& aStream);
    virtual CtiMessage* replicateMessage() const;
-   void What() const;
 
    // If list is empty, I assume you wanted them all!.
    int  getCount() const;

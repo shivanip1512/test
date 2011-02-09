@@ -18,7 +18,7 @@
 #include "collectable.h"
 #include "dllbase.h"
 #include "logger.h"
-#include "numstr.h" 
+#include "numstr.h"
 
 #define DEFAULT_SYSTEM_USER "(yukon system)"
 RWDEFINE_COLLECTABLE( CtiMessage, MSG_DEFAULT );
@@ -192,10 +192,6 @@ CtiMessage&  CtiMessage::setMessageTime(const CtiTime &mTime)
 void CtiMessage::resetTime()
 {
     MessageTime = MessageTime.now();
-}
-
-void CtiMessage::What() const
-{
 }
 
 void CtiMessage::PreInsert()

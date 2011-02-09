@@ -55,13 +55,6 @@ CtiRegistrationMsg::saveGuts(RWvostream &aStream) const
    aStream << _appExpirationDelay;
 }
 
-void
-CtiRegistrationMsg::What() const
-{
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
-   dout << "CtiRegistrationMsg.... " << endl;
-}
-
 // Return a new'ed copy of this message!
 CtiMessage* CtiRegistrationMsg::replicateMessage() const
 {

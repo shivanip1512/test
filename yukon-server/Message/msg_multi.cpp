@@ -41,12 +41,6 @@ void CtiMultiMsg::saveGuts(RWvostream &aStream) const
    aStream << _bag;
 }
 
-void CtiMultiMsg::What() const
-{
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
-   dout << "CtiMultiMsg.... " << endl;
-}
-
 void CtiMultiMsg::dump() const
 {
    Inherited::dump();

@@ -48,12 +48,6 @@ void CtiServerResponseMsg::restoreGuts(RWvistream &strm)
         _payload = 0;
 }
 
-void CtiServerResponseMsg::What() const
-{
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << "CtiServerResponseMsg.... " << endl;
-}
-
 void CtiServerResponseMsg::dump() const
 {
     Inherited::dump();

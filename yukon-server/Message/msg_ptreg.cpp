@@ -64,13 +64,6 @@ CtiPointRegistrationMsg::saveGuts(RWvostream &aStream) const
    }
 }
 
-void
-CtiPointRegistrationMsg::What() const
-{
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
-   dout << "CtiPointRegistrationMsg.... " << endl;
-}
-
 // Return a new'ed copy of this message!
 CtiMessage* CtiPointRegistrationMsg::replicateMessage() const
 {

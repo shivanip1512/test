@@ -57,8 +57,6 @@ public:
    void restoreGuts(RWvistream& aStream);
    CtiMessage* replicateMessage() const;
 
-   void What() const;
-
    virtual void dump() const;
 };
 #endif // #ifndef __MSG_DBCHG_H__

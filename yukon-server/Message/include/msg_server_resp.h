@@ -58,7 +58,6 @@ public:
 
     virtual CtiMessage* replicateMessage() const;
 
-    void What() const;
     virtual void dump() const;
 
 protected:

@@ -67,8 +67,6 @@ public:
    int         getAppExpirationDelay() const;
    void        setAppExpirationDelay(int d);
 
-   void        What() const;
-
    virtual void dump() const;
 };
 
