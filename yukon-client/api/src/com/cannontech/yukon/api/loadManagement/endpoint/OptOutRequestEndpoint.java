@@ -10,6 +10,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -76,6 +77,8 @@ public class OptOutRequestEndpoint {
             fe = XMLFailureGenerator.generateFailure(optOutRequest,e, e.getErrorCode(), e.getMessage());
         } catch(NotAuthorizedException e) {
             fe = XMLFailureGenerator.generateFailure(optOutRequest, e, "UserNotAuthorized", "Insufficent privileges to perform this operation.");
+        } catch (NotFoundException e){
+            fe = XMLFailureGenerator.generateFailure(optOutRequest, e, "NotFound", e.getMessage());
         } finally {
             if(fe!=null) {
                 resp.addContent(fe);
