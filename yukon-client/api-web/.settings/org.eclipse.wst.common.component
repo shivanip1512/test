@@ -27,21 +27,6 @@
         <dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/activemq-all-5.4.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/asm-attrs.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/asm.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/cglib-2.1.3.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/joda-time-1.6.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/org.osgi.core-4.1.0.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <property name="java-output-path"/>
         <property name="context-root" value="api"/>
     </wb-module>
