@@ -3,37 +3,26 @@ package com.cannontech.stars.dr.optout.exception;
 /**
  * Exception thrown when the device is not opted out and it was expected to be
  */
-public class AlreadyOptedOutException extends RuntimeException {
+public class AlreadyOptedOutException extends OptOutException {
 
-	private Integer deviceId;
-	private Integer customerAccountId;
+    String serialNumber;
 
-	public AlreadyOptedOutException(int deviceId, int customerAccountId) {
-		this.deviceId = deviceId;
-		this.customerAccountId = customerAccountId;
-	}
+    public AlreadyOptedOutException(String serialNumber) {
+        super("DeviceAlreadyOptedOut");
+        this.serialNumber = serialNumber;
+    }
 
-	@Override
-	public String getMessage() {
-		return "Device id: " + deviceId
-				+ " is already currently opted out for customer account id: "
-				+ customerAccountId;
-	}
+    @Override
+    public String getMessage() {
+        return "Device " + serialNumber + " is already opted out.";
+    }
 
-	public Integer getDeviceId() {
-		return deviceId;
-	}
+    public String getSerialNumber() {
+        return serialNumber;
+    }
 
-	public void setDeviceId(Integer deviceId) {
-		this.deviceId = deviceId;
-	}
-
-	public Integer getCustomerAccountId() {
-		return customerAccountId;
-	}
-
-	public void setCustomerAccountId(Integer customerAccountId) {
-		this.customerAccountId = customerAccountId;
-	}
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
 
 }

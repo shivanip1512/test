@@ -13,14 +13,21 @@
          //TODO 
         </xsd:documentation>
     </xsd:annotation>
-    <xsd:element name="optOutRequest">
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element name="accountNumber" type="yukon:AccountNumber" />
-                <xsd:element name="serialNumber" type="yukon:SerialNumber" />
-                <xsd:element name="startDate" type="xsd:date" />
-                <xsd:element name="durationInDays" type="xsd:positiveInteger" />
-            </xsd:sequence>
-        </xsd:complexType>
-    </xsd:element>
+    
+    <xsd:complexType name = "OptOutRequest">
+      <xsd:complexContent>
+        <xsd:extension base="yukon:YukonMessage">
+          <xsd:sequence>
+            <xsd:element name="accountNumber" type="yukon:AccountNumber" />
+            <xsd:element name="serialNumber" type="yukon:SerialNumber" />
+            <xsd:element name="startDate" type="xsd:date" minOccurs="0"/>
+            <xsd:element name="durationInHours" type="xsd:positiveInteger" />
+            <xsd:element name="counts" type="xsd:boolean" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="optOutRequest" type="yukon:OptOutRequest"/>
+   
 </xsd:schema>

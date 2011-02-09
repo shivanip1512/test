@@ -36,6 +36,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.StarsEventLogService;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Result;
 import com.cannontech.common.util.TimeUtil;
@@ -76,7 +77,12 @@ import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
 import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideDao;
 import com.cannontech.stars.dr.optout.exception.AlreadyOptedOutException;
+import com.cannontech.stars.dr.optout.exception.InvalidOptOutDurationException;
+import com.cannontech.stars.dr.optout.exception.InvalidOptOutStartDateException;
 import com.cannontech.stars.dr.optout.exception.NotOptedOutException;
+import com.cannontech.stars.dr.optout.exception.OptOutAlreadyScheduledException;
+import com.cannontech.stars.dr.optout.exception.OptOutCountLimitException;
+import com.cannontech.stars.dr.optout.exception.OptOutException;
 import com.cannontech.stars.dr.optout.model.OptOutAction;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
@@ -140,176 +146,246 @@ public class OptOutServiceImpl implements OptOutService {
 	
 
 	@Override
-	@Transactional
-	public void optOut(final CustomerAccount customerAccount, final OptOutRequest request, 
-			final LiteYukonUser user) throws CommandCompletionException {
-
+    @Transactional
+    public void optOut(final CustomerAccount customerAccount, final OptOutRequest request, 
+            final LiteYukonUser user, final OptOutCounts optOutCounts) throws CommandCompletionException {
+	    
 	    int customerAccountId = customerAccount.getAccountId();
-		final YukonEnergyCompany yukonEnergyCompany = 
-		    yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
-		
-		List<Integer> inventoryIdList = request.getInventoryIdList();
-		ReadableInstant startDate = request.getStartDate();
-		boolean startNow = false;
-		Instant now = new Instant();
-		if(startDate == null) {
-			// Start now
-			request.setStartDate(now);
-			startNow = true;
-		}
-		
-		OptOutCountsDto defaultOptOutCountsSetting = optOutStatusService.getDefaultOptOutCounts(user);
-		
-		Map<Integer, OptOutCountsDto> optOutCountsSettingsByProgramIdMap = new HashMap<Integer, OptOutCountsDto>();
-		List<OptOutCountsDto> programSpecificOptOutCounts = optOutStatusService.getProgramSpecificOptOutCounts(user);
-		for (OptOutCountsDto setting : programSpecificOptOutCounts) {
-			optOutCountsSettingsByProgramIdMap.put(setting.getProgramId(), setting);
-		}
-
-		Map<Integer, Integer> surveyResultIdsBySurveyId = Maps.newHashMap();
-		if (request.getSurveyResults() != null) {
+        final YukonEnergyCompany yukonEnergyCompany = 
+            yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
+        
+        List<Integer> inventoryIdList = request.getInventoryIdList();
+        ReadableInstant startDate = request.getStartDate();
+        boolean startNow = false;
+        Instant now = new Instant();
+        if(startDate == null) {
+            // Start now
+            request.setStartDate(now);
+            startNow = true;
+        }
+        
+        Map<Integer, Integer> surveyResultIdsBySurveyId = Maps.newHashMap();
+        if (request.getSurveyResults() != null) {
             for (Result result : request.getSurveyResults()) {
                 surveyDao.saveResult(result);
                 surveyResultIdsBySurveyId.put(result.getSurveyId(), result.getSurveyResultId());
             }
-		}
+        }
+        
+        OptOutCountsDto defaultOptOutCountsSetting = optOutStatusService.getDefaultOptOutCounts(user); 
+        Map<Integer, OptOutCountsDto> optOutCountsSettingsByProgramIdMap = new HashMap<Integer, OptOutCountsDto>();
+        List<OptOutCountsDto> programSpecificOptOutCounts = optOutStatusService.getProgramSpecificOptOutCounts(user);
+        for (OptOutCountsDto setting : programSpecificOptOutCounts) {
+            optOutCountsSettingsByProgramIdMap.put(setting.getProgramId(), setting);
+        }
+        
+        for(Integer inventoryId : inventoryIdList) { 
+            
+            LiteStarsLMHardware inventory = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
+            OptOutCounts optOutCountsKeeper = null;
+            
+            // No OptOutCounts settings were passed, use the default settings
+            if(optOutCounts==null){
+                
+                List<DisplayableInventoryEnrollment> programs = displayableInventoryEnrollmentDao.find(customerAccount.getAccountId(), inventoryId);
+                
+                List<OptOutCountsDto> optOutCountSettingsForPrograms = Lists.newArrayList();
+                for (DisplayableInventoryEnrollment program : programs) {
+                    int programId = program.getAssignedProgramId();
+                    OptOutCountsDto oocs = optOutCountsSettingsByProgramIdMap.get(programId);
+                    if (oocs != null) {
+                        optOutCountSettingsForPrograms.add(oocs);
+                    }
+                }
+                    
+                OptOutCountsDto optOutCountsDtoKeeper;
+                if (optOutCountSettingsForPrograms.size() == 0) {
+                    optOutCountsDtoKeeper = defaultOptOutCountsSetting;
+                } else {
+                    Ordering<OptOutCountsDto> ordering = Ordering.from(OptOutCountsDto.getStartTimeComparator());
+                    optOutCountsDtoKeeper = ordering.max(optOutCountSettingsForPrograms); // tie breaker, keep the one with most RECENT StartDate (max)
+                }
+                optOutCountsKeeper = optOutCountsDtoKeeper.getOptOutCounts();
+            } else {
+                optOutCountsKeeper = optOutCounts;
+            }
+            
+         // Create and save opt out event for this inventory
+            OptOutEvent event = new OptOutEvent();
+            event.setEventId(request.getEventId());
+            event.setEventCounts(optOutCountsKeeper);
+            event.setCustomerAccountId(customerAccountId);
+            event.setInventoryId(inventoryId);
+            event.setScheduledDate(now);
+            event.setStartDate(request.getStartDate());
+            event.setStopDate(request.getStopDate());
 
-        // Send opt out command immediately for each inventory
-    	for(Integer inventoryId : inventoryIdList) { 
+            OptOutLog optOutEventLog = null;
+            if(!startNow) {
+                
+                // Cancel any existing scheduled opt out
+                OptOutEvent scheduledEvent = 
+                    optOutEventDao.getScheduledOptOutEvent(inventoryId, customerAccountId);
+                if(scheduledEvent != null) {
+                    this.cancelOptOut(
+                            Collections.singletonList(scheduledEvent.getEventId()), 
+                            user);
+                }
 
-			LiteStarsLMHardware inventory = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
-			List<DisplayableInventoryEnrollment> programs = displayableInventoryEnrollmentDao.find(customerAccount.getAccountId(), inventoryId);
-			
-			List<OptOutCountsDto> optOutCountSettingsForPrograms = Lists.newArrayList();
-			for (DisplayableInventoryEnrollment program : programs) {
-				int programId = program.getAssignedProgramId();
-				OptOutCountsDto oocs = optOutCountsSettingsByProgramIdMap.get(programId);
-				if (oocs != null) {
-					optOutCountSettingsForPrograms.add(oocs);
-				}
-			}
-				
-			OptOutCountsDto optOutCountsDtoKeeper;
-			if (optOutCountSettingsForPrograms.size() == 0) {
-				optOutCountsDtoKeeper = defaultOptOutCountsSetting;
-			} else {
-				Ordering<OptOutCountsDto> ordering = Ordering.from(OptOutCountsDto.getStartTimeComparator());
-				optOutCountsDtoKeeper = ordering.max(optOutCountSettingsForPrograms); // tie breaker, keep the one with most RECENT StartDate (max)
-			}
-			OptOutCounts optOutCountsKeeper = optOutCountsDtoKeeper.getOptOutCounts();
-			
-			// Create and save opt out event for this inventory
-			OptOutEvent event = new OptOutEvent();
-			event.setEventId(request.getEventId());
-			event.setEventCounts(optOutCountsKeeper);
-			event.setCustomerAccountId(customerAccountId);
-			event.setInventoryId(inventoryId);
-			event.setScheduledDate(now);
-			event.setStartDate(request.getStartDate());
-			event.setStopDate(request.getStopDate());
+                // Schedule the opt out 
+                event.setState(OptOutEventState.SCHEDULED);
+                optOutEventLog = optOutEventDao.save(event, OptOutAction.SCHEDULE, user);
+            } else {
+                // Do the opt out now 
+                
+                // Already opted out exception, for requests from UI
+                // Ignore/Cancel scheduled requests from automated OptOut task, if already opted out
+                boolean alreadyOptedOut = optOutEventDao.isOptedOut(inventoryId, customerAccountId);
+                if (alreadyOptedOut && request.getEventId() == null) {
+                    
+                    // AlreadyOptedOutException originally extended RuntimeException
+                    // Convert it to a RuntimeException to avoid modifying a lot of working
+                    // code fragments
+                    try {
+                        throw new AlreadyOptedOutException("");
+                    } catch (AlreadyOptedOutException e) {
+                        new RuntimeException(e.getMessage());
+                    }
+                }
+                if (request.getEventId() != null) {
+                    // Get any overdue scheduled opt out - that is the event we should be starting                  
+                    OptOutEvent overdueEvent = 
+                        optOutEventDao.getOptOutEventById(request.getEventId());
 
-			OptOutLog optOutEventLog = null;
-			if(!startNow) {
-				
-				// Cancel any existing scheduled opt out
-				OptOutEvent scheduledEvent = 
-					optOutEventDao.getScheduledOptOutEvent(inventoryId, customerAccountId);
-				if(scheduledEvent != null) {
-					this.cancelOptOut(
-							Collections.singletonList(scheduledEvent.getEventId()), 
-							user);
-				}
-
-				// Schedule the opt out 
-				event.setState(OptOutEventState.SCHEDULED);
-				optOutEventLog = optOutEventDao.save(event, OptOutAction.SCHEDULE, user);
-			} else {
-				// Do the opt out now 
-				
-				// Already opted out exception, for requests from UI
-			    // Ignore/Cancel scheduled requests from automated OptOut task, if already opted out
-			    boolean alreadyOptedOut = optOutEventDao.isOptedOut(inventoryId, customerAccountId);
-			    if (alreadyOptedOut && request.getEventId() == null) {
-			        throw new AlreadyOptedOutException(inventoryId, customerAccountId);
-			    }
-			    if (request.getEventId() != null) {
-			        // Get any overdue scheduled opt out - that is the event we should be starting				    
-			        OptOutEvent overdueEvent = 
-			            optOutEventDao.getOptOutEventById(request.getEventId());
-
-			        if (alreadyOptedOut) {
-			            if (overdueEvent.getState().equals(OptOutEventState.SCHEDULED)) {
-			                // Already opted out, cancel this scheduled one
-			                this.cancelOptOut(Collections.singletonList(request.getEventId()), user);                            
-			            } 
-			            return;
-			        } else {
-			            if (!overdueEvent.getState().equals(OptOutEventState.SCHEDULED)) {
-			                return;
-			            }
-			            event.setScheduledDate(overdueEvent.getScheduledDate());
-			        }
-			    }
+                    if (alreadyOptedOut) {
+                        if (overdueEvent.getState().equals(OptOutEventState.SCHEDULED)) {
+                            // Already opted out, cancel this scheduled one
+                            this.cancelOptOut(Collections.singletonList(request.getEventId()), user);                            
+                        } 
+                        return;
+                    } else {
+                        if (!overdueEvent.getState().equals(OptOutEventState.SCHEDULED)) {
+                            return;
+                        }
+                        event.setScheduledDate(overdueEvent.getScheduledDate());
+                    }
+                }
                 event.setState(OptOutEventState.START_OPT_OUT_SENT);
                 
-				// Send the command to the field
-				sendOptOutRequest(inventory, event.getDurationInHours(), user);
+                // Send the command to the field
+                sendOptOutRequest(inventory, event.getDurationInHours(), user);
 
-				optOutEventLog = optOutEventDao.save(event, OptOutAction.START_OPT_OUT, user);
+                optOutEventLog = optOutEventDao.save(event, OptOutAction.START_OPT_OUT, user);
 
-				// Update the LMHardwareControlGroup table
-				lmHardwareControlInformationService.startOptOut(inventoryId, customerAccountId, user, event.getStartDate());
-			}
+                // Update the LMHardwareControlGroup table
+                lmHardwareControlInformationService.startOptOut(inventoryId, customerAccountId, user, event.getStartDate());
+            }
+            
+            if (request.getSurveyIdsByInventoryId() != null &&
+                    request.getSurveyIdsByInventoryId().get(inventoryId) != null) {
+                    for (Integer surveyId : request.getSurveyIdsByInventoryId().get(inventoryId)) {
+                        int surveyResultId = surveyResultIdsBySurveyId.get(surveyId);
+                        optOutSurveyDao.saveResult(surveyResultId, optOutEventLog.getLogId());
+                    }
+                }
 
-			if (request.getSurveyIdsByInventoryId() != null &&
-			    request.getSurveyIdsByInventoryId().get(inventoryId) != null) {
-	            for (Integer surveyId : request.getSurveyIdsByInventoryId().get(inventoryId)) {
-	                int surveyResultId = surveyResultIdsBySurveyId.get(surveyId);
-	                optOutSurveyDao.saveResult(surveyResultId, optOutEventLog.getLogId());
-	            }
-			}
+                // Log the event
+                accountEventLogService.deviceOptedOut(user, customerAccount.getAccountNumber(), 
+                                                      inventory.getManufacturerSerialNumber(),
+                                                      request.getStartDate(), request.getStopDate());
+                
+                StringBuffer logMsg = new StringBuffer();
 
-	    	// Log the event
-			accountEventLogService.deviceOptedOut(user, customerAccount.getAccountNumber(), 
-			                                      inventory.getManufacturerSerialNumber(),
-			                                      request.getStartDate(), request.getStopDate());
-			
-			StringBuffer logMsg = new StringBuffer();
+                LiteStarsEnergyCompany energyCompany = 
+                    starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+                DateTimeFormatter dateTimeFormatter = logFormatter.withZone(energyCompany.getDefaultDateTimeZone());
+                logMsg.append("Start Date/Time:" + dateTimeFormatter.print(event.getStartDate()));
+                logMsg.append(", Duration:" + ServletUtils.getDurationFromHours(
+                        event.getDurationInHours()));
+                logMsg.append(", Serial #:" + inventory.getManufacturerSerialNumber());
+                
+                ActivityLogger.logEvent(
+                        user.getUserID(), 
+                        customerAccount.getAccountId(), 
+                        yukonEnergyCompany.getEnergyCompanyId(), 
+                        customerAccount.getCustomerId(),
+                        ActivityLogActions.PROGRAM_OPT_OUT_ACTION, 
+                        logMsg.toString());
+            }
 
-			LiteStarsEnergyCompany energyCompany = 
-			    starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
-	    	DateTimeFormatter dateTimeFormatter = logFormatter.withZone(energyCompany.getDefaultDateTimeZone());
-	    	logMsg.append("Start Date/Time:" + dateTimeFormatter.print(event.getStartDate()));
-	    	logMsg.append(", Duration:" + ServletUtils.getDurationFromHours(
-	    			event.getDurationInHours()));
-	    	logMsg.append(", Serial #:" + inventory.getManufacturerSerialNumber());
-	    	
-	    	ActivityLogger.logEvent(
-	    			user.getUserID(), 
-	    			customerAccount.getAccountId(), 
-	    			yukonEnergyCompany.getEnergyCompanyId(), 
-	    			customerAccount.getCustomerId(),
-                    ActivityLogActions.PROGRAM_OPT_OUT_ACTION, 
-                    logMsg.toString());
-    	}
+            // Send opt out notification
+            Runnable notificationRunner = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                         LiteStarsEnergyCompany energyCompany = 
+                                starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+                        optOutNotificationService.sendOptOutNotification(customerAccount, energyCompany, request, user);
+                    } catch (MessagingException e) {
+                        // Not much we can do - tried to send notification
+                        logger.error(e);
+                    }
+                }
+            };
+            executor.execute(notificationRunner);
 
-    	// Send opt out notification
-    	Runnable notificationRunner = new Runnable() {
-    		@Override
-    		public void run() {
-    			try {
-    			     LiteStarsEnergyCompany energyCompany = 
-    			            starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
-    				optOutNotificationService.sendOptOutNotification(customerAccount, energyCompany, request, user);
-    			} catch (MessagingException e) {
-    				// Not much we can do - tried to send notification
-    				logger.error(e);
-    			}
-    		}
-    	};
-    	executor.execute(notificationRunner);
-
+        }
+	
+	@Override
+	@Transactional
+	public void optOut(final CustomerAccount customerAccount, final OptOutRequest request, 
+			final LiteYukonUser user) throws CommandCompletionException {
+	    
+	    optOut(customerAccount, request, user, null);
 	}
+	
+    @Override
+    @Transactional
+    public void optOutWithPriorValidation(final CustomerAccount customerAccount,
+                                          final OptOutRequest request,
+                                          final LiteYukonUser user, final OptOutCounts optOutCounts)
+                                      throws CommandCompletionException, OptOutException, NotAuthorizedException {
+
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT,
+                                       user);
+        if (request.getStartDate() != null) {
+            DateTime currentTime = new DateTime();
+            DateTime startTime = new DateTime(request.getStartDate());
+
+            if (startTime.isBefore(currentTime)) {
+                throw new InvalidOptOutStartDateException();
+            }
+        }
+
+        if (request.getDurationInHours() <= 0) {
+            throw new InvalidOptOutDurationException();
+        }
+
+        for (Integer inventoryId : request.getInventoryIdList()) {
+            LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+            if (request.getStartDate() == null && 
+                optOutEventDao.isOptedOut(lmHardwareBase.getInventoryId(), customerAccount.getAccountId())) {
+                throw new AlreadyOptedOutException(lmHardwareBase.getManufacturerSerialNumber());
+            }
+            
+            if(request.getStartDate()!=null) {
+                OptOutEvent event = optOutEventDao.getScheduledOptOutEvent(lmHardwareBase.getInventoryId(),
+                                                                           customerAccount.getAccountId());
+                if (event != null) {
+                    throw new OptOutAlreadyScheduledException(lmHardwareBase.getManufacturerSerialNumber());
+                }   
+            }
+            
+            if (optOutCounts == OptOutCounts.COUNT) {
+                OptOutCountHolder optOutCountHolder = getCurrentOptOutCount(lmHardwareBase.getInventoryId(),
+                                                                            customerAccount.getAccountId());
+                if (!optOutCountHolder.isOptOutsRemainingAfterScheduled()) {
+                    throw new OptOutCountLimitException(lmHardwareBase.getManufacturerSerialNumber());
+                }
+            }
+        }
+        optOut(customerAccount, request, user, optOutCounts);
+    }
 
 	@Transactional
 	public void resendOptOut(int inventoryId, int customerAccountId, LiteYukonUser user) 
@@ -633,7 +709,10 @@ public class OptOutServiceImpl implements OptOutService {
 			}
 		}
 		
+		OptOutEvent scheduledOptOut = optOutEventDao.getScheduledOptOutEvent(inventoryId, customerAccountId);
+		
 		OptOutCountHolder holder = new OptOutCountHolder();
+		holder.setScheduledOptOuts(scheduledOptOut==null ? 0 : 1);
 		holder.setInventory(inventoryId);
 		holder.setUsedOptOuts(usedOptOuts);
 		holder.setRemainingOptOuts(remainingOptOuts);
@@ -922,21 +1001,6 @@ public class OptOutServiceImpl implements OptOutService {
 		return this.getCurrentOptOutLimit(user);
 	};
 	
-	@Override
-	public List<Integer> getAvailableOptOutPeriods(LiteYukonUser user) {
-	    
-        String optOutPeriodString = null;
-        if (StarsUtils.isOperator(user)) {
-            optOutPeriodString = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_OPT_OUT_PERIOD,
-                                                                        user);
-        } else {
-            optOutPeriodString = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.RESIDENTIAL_OPT_OUT_PERIOD,
-                                                                        user);
-        }
-        List<Integer> availOptOutPeriods = parseOptOutPeriodString(optOutPeriodString);
-        return availOptOutPeriods;
-    }
-	
 	private OptOutLimit getCurrentOptOutLimit(LiteYukonUser user) {
 		
 		// The account we are looking at doesn't have a login, therefore there are no limits
@@ -1044,27 +1108,6 @@ public class OptOutServiceImpl implements OptOutService {
 		
 	}
 	
-    private List<Integer> parseOptOutPeriodString(String optOutPeriodString) {
-
-        List<Integer> optOutPeriodInts = new ArrayList<Integer>();
-        try {
-            if (!StringUtils.isBlank(optOutPeriodString)) {
-                String[] optOutPeriodStrs = StringUtils.split(optOutPeriodString, ',');
-                for (String optOutPeriodStr : optOutPeriodStrs) {
-                    optOutPeriodInts.add(Integer.valueOf(optOutPeriodStr.trim()));
-                }
-            }
-        } catch (NumberFormatException e) {
-            throw new RuntimeException("Can't parse OptOutPeriod role property value [" + optOutPeriodString + "]", e);
-        }
-        
-        // default to 1 day, if value not set
-        if (optOutPeriodInts.isEmpty()) {
-            optOutPeriodInts.add(1);
-        }
-
-        return optOutPeriodInts;
-    }
     
 	/**
 	 * Helper method to send the opt out command out to the device

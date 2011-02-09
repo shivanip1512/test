@@ -6,13 +6,17 @@ import java.util.List;
 import org.joda.time.LocalDate;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.optout.exception.AlreadyOptedOutException;
+import com.cannontech.stars.dr.optout.exception.OptOutException;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
+import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
@@ -37,6 +41,30 @@ public interface OptOutService {
 	public void optOut(CustomerAccount customerAccount, OptOutRequest request,
 			LiteYukonUser user) 
 		throws CommandCompletionException;
+	
+	/**
+	 * Method to opt a device out or schedule an opt out for a future date
+     * @param customerAccount - Account the device is on
+     * @param request - Contains info about the opt out such as start date and duration
+     * @param user - User requesting opt out
+	 * @param optOutCounts - Determines if the opt out counts towards the user's opt out limit
+	 * @throws CommandCompletionException
+	 */
+    public void optOut(CustomerAccount customerAccount, OptOutRequest request,
+                       LiteYukonUser user, OptOutCounts optOutCounts) 
+                   throws CommandCompletionException;
+    /**
+     * Method to opt a device out or schedule an opt out for a future date. Before the opt out
+     * is performed parameters are validated for correctness and sufficient user rights
+     * @param customerAccount - Account the device is on
+     * @param request - Contains info about the opt out such as start date and duration
+     * @param user - User requesting opt out
+     * @param optOutCounts - Determines if the opt out counts towards the user's opt out limit
+     * @throws CommandCompletionException, OptOutException, NotAuthorizedException
+     */
+    public void optOutWithPriorValidation(CustomerAccount customerAccount, OptOutRequest request,
+                                          LiteYukonUser user, OptOutCounts optOutCounts) 
+                                    throws CommandCompletionException, OptOutException, NotAuthorizedException;
 
 	/**
 	 * Method to cancel an opt out or a scheduled opt out
@@ -120,15 +148,6 @@ public interface OptOutService {
 	 * @return The opt out counts for the inventory/account
 	 */
 	public OptOutCountHolder getCurrentOptOutCount(int inventoryId, int customerAccountId);
-
-   /**
-     * Method to get allowed Opt out periods for a given user based on the
-     * OptOutPeriod role property. Defaults to 1 day if role property value is
-     * not set.
-     * @param user
-     * @return List of allowed opt out period values
-     */
-    public List<Integer> getAvailableOptOutPeriods(LiteYukonUser user);
 	
 	/**
 	 * Method to get the current opt out limit for an account

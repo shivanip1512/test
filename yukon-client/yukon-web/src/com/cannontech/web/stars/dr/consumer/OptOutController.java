@@ -45,6 +45,7 @@ import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.optout.service.OptOutSurveyService;
+import com.cannontech.stars.dr.optout.util.OptOutUtil;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -139,8 +140,8 @@ public class OptOutController extends AbstractConsumerController {
     	model.addAttribute("previousOptOutList", previousOptOutList);
     	model.addAttribute("allOptedOut", allOptedOut);
     	model.addAttribute("optOutsAvailable", optOutsAvailable);
-    	
-    	List<Integer> optOutPeriodList = optOutService.getAvailableOptOutPeriods(user);
+    	String optOutPeriodString = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.RESIDENTIAL_OPT_OUT_PERIOD,  user);
+    	List<Integer> optOutPeriodList = OptOutUtil.parseOptOutPeriodString(optOutPeriodString);
     	model.addAttribute("optOutPeriodList", optOutPeriodList);
     	    	
     	return "consumer/optout/optOut.jsp";

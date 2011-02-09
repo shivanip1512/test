@@ -1,13 +1,18 @@
 package com.cannontech.stars.dr.optout;
 
-import java.util.Date;
+import org.joda.time.Instant;
+import org.joda.time.Period;
+
+import com.cannontech.stars.dr.optout.model.OptOutCounts;
 
 public class OptOutHelper {
     
     private String accountNumber;
     private String serialNumber;
-    private Date startDate;
-    private long durationInDays;
+    private Instant startDate;
+    private Period duration;
+    private OptOutCounts optOutCounts;
+    
     public String getAccountNumber() {
         return accountNumber;
     }
@@ -20,19 +25,23 @@ public class OptOutHelper {
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
     }
-    public Date getStartDate() {
+    public Instant getStartDate() {
         return startDate;
     }
-    public void setStartDate(Date startDate) {
+    public void setStartDate(Instant startDate) {
         this.startDate = startDate;
     }
-    public long getDurationInDays() {
-        return durationInDays;
+    public Period getDuration() {
+        return duration;
     }
-    public void setDurationInDays(long durationInDays) {
-        this.durationInDays = durationInDays;
+    public void setDuration(Period duration) {
+        this.duration = duration;
+    }
+    public OptOutCounts getOptOutCounts() {
+        return optOutCounts;
+    }
+    public void setOptOutCounts(OptOutCounts optOutCounts) {
+        this.optOutCounts = optOutCounts;
     }
     
-    
-
 }

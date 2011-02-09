@@ -53,6 +53,7 @@ import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutSurveyService;
+import com.cannontech.stars.dr.optout.util.OptOutUtil;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -591,7 +592,8 @@ public class OperatorOptOutController {
                                            ModelMap model,
                                            YukonUserContext userContext) {
 
-        List<Integer> optOutPeriodList = optOutService.getAvailableOptOutPeriods(userContext.getYukonUser());
+        String optOutPeriodString = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_OPT_OUT_PERIOD,  userContext.getYukonUser());
+        List<Integer> optOutPeriodList = OptOutUtil.parseOptOutPeriodString(optOutPeriodString);
         model.addAttribute("optOutPeriodList", optOutPeriodList);
 
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);

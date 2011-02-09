@@ -10,6 +10,7 @@ public class OptOutCountHolder {
 	private Integer inventoryId;
 	private int usedOptOuts = 0;
 	private int remainingOptOuts = 0;
+	private int scheduledOptOuts = 0;
 
 	public Integer getInventoryId() {
 		return inventoryId;
@@ -38,4 +39,22 @@ public class OptOutCountHolder {
 	public boolean isOptOutsRemaining() {
 		return remainingOptOuts > 0 || remainingOptOuts == OptOutService.NO_OPT_OUT_LIMIT;
 	}
+	
+	public boolean isOptOutsRemainingAfterScheduled() {
+	    if(remainingOptOuts == OptOutService.NO_OPT_OUT_LIMIT) {
+	        return true;
+	    }
+	    
+	    return remainingOptOuts - scheduledOptOuts > 0;
+	}
+
+    public int getScheduledOptOuts() {
+        return scheduledOptOuts;
+    }
+
+    public void setScheduledOptOuts(int scheduledOptOuts) {
+        this.scheduledOptOuts = scheduledOptOuts;
+    }
+	
+	
 }

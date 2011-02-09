@@ -1,7 +1,10 @@
 package com.cannontech.stars.dr.optout.util;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import com.cannontech.core.dao.NotFoundException;
@@ -26,9 +29,7 @@ public final class OptOutUtil {
         final StarsCustAccountInformationDao starsCustAccountInformationDao = 
             YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
         
-        LiteStarsCustAccountInformation liteAcctInfo = 
-            starsCustAccountInformationDao.getById(customerAccountId,
-                                                   energyCompany.getEnergyCompanyId());
+        LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getbyAccountId(customerAccountId);
         
         StarsLMProgramHistory programHistory = 
             StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo, energyCompany);
@@ -54,6 +55,28 @@ public final class OptOutUtil {
         optOut.setEndDate(endDate);
         optOut.setDurationInHours(durationInHours);
         return optOut;
+    }
+    
+    public static List<Integer> parseOptOutPeriodString(String optOutPeriodString) {
+
+        List<Integer> optOutPeriodInts = new ArrayList<Integer>();
+        try {
+            if (!StringUtils.isBlank(optOutPeriodString)) {
+                String[] optOutPeriodStrs = StringUtils.split(optOutPeriodString, ',');
+                for (String optOutPeriodStr : optOutPeriodStrs) {
+                    optOutPeriodInts.add(Integer.valueOf(optOutPeriodStr.trim()));
+                }
+            }
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Can't parse OptOutPeriod role property value [" + optOutPeriodString + "]", e);
+        }
+        
+        // default to 1 day, if value not set
+        if (optOutPeriodInts.isEmpty()) {
+            optOutPeriodInts.add(1);
+        }
+
+        return optOutPeriodInts;
     }
     
 }

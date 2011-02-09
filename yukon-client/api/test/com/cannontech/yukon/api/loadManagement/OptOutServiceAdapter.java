@@ -6,6 +6,7 @@ import java.util.List;
 import org.joda.time.LocalDate;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
@@ -13,7 +14,9 @@ import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.optout.exception.OptOutException;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
+import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
@@ -70,11 +73,6 @@ public class OptOutServiceAdapter implements OptOutService {
                                                               String programName) throws ProgramNotFoundException {
         throw new UnsupportedOperationException("not implemented");
     }
-
-	@Override
-	public List<Integer> getAvailableOptOutPeriods(LiteYukonUser user) {
-	    throw new UnsupportedOperationException("not implemented");
-	}
 	
 	@Override
 	public OptOutCountHolder getCurrentOptOutCount(int inventoryId,
@@ -158,6 +156,19 @@ public class OptOutServiceAdapter implements OptOutService {
     public String checkOptOutStartDate(int accountId, LocalDate startDate,
                                        YukonUserContext userContext,
                                        boolean isOperator) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public void optOut(CustomerAccount customerAccount, OptOutRequest request, LiteYukonUser user,
+                       OptOutCounts optOutCounts) throws CommandCompletionException {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public void optOutWithPriorValidation(CustomerAccount customerAccount, OptOutRequest request,
+                                          LiteYukonUser user, OptOutCounts optOutCounts)
+            throws CommandCompletionException, OptOutException, NotAuthorizedException {
         throw new UnsupportedOperationException("not implemented");
     }
 
