@@ -103,7 +103,6 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;

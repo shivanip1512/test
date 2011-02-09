@@ -13,7 +13,6 @@ import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.stars.dr.optout.exception.AlreadyOptedOutException;
 import com.cannontech.stars.dr.optout.exception.OptOutException;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
