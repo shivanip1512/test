@@ -337,7 +337,7 @@ function hideUpdateWarning() {
 }
 
 Event.observe(window, 'load', function() {
-    $$('img.hoverableImage').each(function(element) {
+    $$('img.hoverableImage, input.hoverableImage').each(function(element) {
         var basePath = element.src;
         var extStart = basePath.lastIndexOf(".");
         var hoverPath = basePath.substring(0, extStart) + "_over" + basePath.substring(extStart);
