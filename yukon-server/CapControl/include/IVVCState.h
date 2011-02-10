@@ -10,6 +10,16 @@
 class IVVCState
 {
     public:
+        
+        struct CommsStatus
+        {
+            bool cbcsLost;
+            bool regulatorsLost;
+            bool voltagesLost;
+
+            CommsStatus() : cbcsLost(false), regulatorsLost(false), voltagesLost(false) {  }
+        };
+
 
         enum State
         {
@@ -66,9 +76,6 @@ class IVVCState
         CtiTime getNextHeartbeatTime();
         void setNextHeartbeatTime(const CtiTime& time);
 
-        void setCommsRetryCount(const unsigned long retryCount);
-        unsigned long getCommsRetryCount() const;
-
         void setShowVarCheckMsg(const bool flag);
         bool isShowVarCheckMsg() const;
 
@@ -81,8 +88,27 @@ class IVVCState
         void setShowNoRegulatorAttachedMsg(const bool flag);
         bool isShowNoRegulatorAttachedMsg() const;
 
-        void setCommsLost(const bool flag);
-        bool isCommsLost() const;
+        bool isCbcCommsLost() const;
+        void setCbcCommsLost(const bool flag);
+
+        bool doAnalysis() const
+        {
+            return _doAnalysis;
+        }
+
+        void setDoAnalysis(const bool flag)
+        {
+            _doAnalysis = flag;
+        }
+
+        void setCbcCommsRetryCount(const unsigned long retryCount)
+        {
+            _cbcCommsRetryCount = retryCount;
+        }
+        unsigned long getCbcCommsRetryCount() const
+        {
+            return _cbcCommsRetryCount;
+        }
 
         void setConsecutiveCapBankOps(const unsigned ops);
         const unsigned getConsecutiveCapBankOps() const;
@@ -128,10 +154,15 @@ class IVVCState
         bool _showRegulatorAutoModeMsg;
         bool _showNoRegulatorAttachedMsg;
         bool _commsLost;
+        bool _cbcCommsLost;
+
+        bool _doAnalysis;
 
         unsigned _consecutiveCapBankOps;
 
         unsigned long _commsRetryCount;
+        unsigned long _cbcCommsRetryCount;
+
         std::set<long> _reportedControllers;
 };
 

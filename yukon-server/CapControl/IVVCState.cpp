@@ -6,13 +6,13 @@ IVVCState::IVVCState() :
     _scannedRequest(false),
     _controlledId(-1),
     _paoId(0),
-    _commsRetryCount(0),
     _showVarCheckFailMsg(true),
     _showSubbusDisableMsg(true),
     _showRegulatorAutoModeMsg(true),
     _showNoRegulatorAttachedMsg(true),
     _remoteMode(false),
     _commsLost(false),
+    _cbcCommsRetryCount(0),
     _firstPass(true)
 {
 }
@@ -134,18 +134,6 @@ void IVVCState::setNextHeartbeatTime(const CtiTime& time)
 }
 
 
-void IVVCState::setCommsRetryCount(const unsigned long retryCount)
-{
-    _commsRetryCount = retryCount;
-}
-
-
-unsigned long IVVCState::getCommsRetryCount() const
-{
-    return _commsRetryCount;
-}
-
-
 void IVVCState::setShowVarCheckMsg(const bool flag)
 {
     _showVarCheckFailMsg = flag;
@@ -201,14 +189,15 @@ const std::set<long>& IVVCState::getReportedControllers()
     return _reportedControllers;
 }
 
-bool IVVCState::isCommsLost() const
+
+bool IVVCState::isCbcCommsLost() const
 {
-    return _commsLost;
+    return _cbcCommsLost;
 }
 
-void IVVCState::setCommsLost(const bool flag)
+void IVVCState::setCbcCommsLost(const bool flag)
 {
-    _commsLost = flag;
+    _cbcCommsLost = flag;
 }
 
 void IVVCState::setConsecutiveCapBankOps(const unsigned ops)

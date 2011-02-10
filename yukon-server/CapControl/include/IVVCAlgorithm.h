@@ -23,7 +23,7 @@ class IVVCAlgorithm
 
         bool checkConfigAllZonesHaveRegulator(IVVCStatePtr state, CtiCCSubstationBusPtr subbus);
 
-        virtual bool checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow);
+        virtual IVVCState::CommsStatus checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow);
         virtual bool checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, double desiredRatio, PointRequestType pointRequestType);
         virtual bool determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan, std::set<PointRequest>& pointRequests);
 

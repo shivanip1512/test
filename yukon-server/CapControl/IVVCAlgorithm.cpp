@@ -104,37 +104,40 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
     if ( ! checkConfigAllZonesHaveRegulator(state, subbus) )
     {
-        state->setShowNoRegulatorAttachedMsg(false); // toggle flag to only show message once.
-        state->setState(IVVCState::IVVC_WAIT); // reset algorithm
+        state->setShowNoRegulatorAttachedMsg(false);
+        state->setState(IVVCState::IVVC_WAIT);
 
         return;
     }
 
-    //Show this message again next time it happens
     state->setShowNoRegulatorAttachedMsg(true);
 
-    if ( ! subbus->getDisableFlag() )
-    {
-        state->setShowBusDisableMsg(true);
+    // subbus is disabled - reset the algorithm and bail
 
-        //Is it time to send a keep alive?
-        if ((_IVVC_KEEPALIVE != 0) && (timeNow > state->getNextHeartbeatTime()) && !state->isCommsLost())
-        {
-            sendKeepAlive(subbus);
-            state->setNextHeartbeatTime(timeNow + _IVVC_KEEPALIVE);  // _IVVC_KEEPALIVE is in seconds!
-        }
-    }
-    else
+    if ( subbus->getDisableFlag() )
     {
         if (state->isShowBusDisableMsg())
         {
-            state->setShowBusDisableMsg(false);
-            state->setState(IVVCState::IVVC_WAIT);
-
             CtiLockGuard<CtiLogger> logger_guard(dout);
+
             dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName() << ". The bus is disabled." << endl;
         }
+        state->setShowBusDisableMsg(false);
+        state->setState(IVVCState::IVVC_WAIT);
+
         return;
+    }
+
+    state->setShowBusDisableMsg(true);
+
+    // subbus is enabled
+    // send LTC heartbeat as long as cbcs are communicating
+    if ( (_IVVC_KEEPALIVE != 0) &&
+         (timeNow > state->getNextHeartbeatTime()) &&
+         ! state->isCbcCommsLost() )
+    {
+        sendKeepAlive(subbus);
+        state->setNextHeartbeatTime(timeNow + _IVVC_KEEPALIVE);  // _IVVC_KEEPALIVE is in seconds!
     }
 
     DispatchConnectionPtr dispatchConnection = CtiCapController::getInstance()->getDispatchConnection();
@@ -142,40 +145,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
     switch (currentState)
     {
-        case IVVCState::IVVC_DISABLED:
-        {
-            if ( ! allRegulatorsInRemoteMode(subbusId) )
-            {
-                if (state->isShowRegulatorAutoModeMsg())// show message?
-                {
-                    state->setShowRegulatorAutoModeMsg(false);
-
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName()
-                         << ". One or more Voltage Regulators are in 'Auto' mode." << endl;
-                }
-                break;
-            }
-            else
-            {
-                state->setShowRegulatorAutoModeMsg(true);
-                state->setShowBusDisableMsg(true);
-                state->setState(IVVCState::IVVC_WAIT);
-
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Resuming for bus: " << subbus->getPaoName() << endl;
-            }
-        }
         case IVVCState::IVVC_WAIT:
         {
-            // If the bus is disabled or a voltage regulator is in 'Auto' mode we don't want to run the algorithm.
-            if ( subbus->getDisableFlag() ||
-                 ! allRegulatorsInRemoteMode(subbusId) )
-            {
-                state->setState(IVVCState::IVVC_DISABLED);
-                return;
-            }
-
             // toggle these flags so the log message prints again....
             state->setShowVarCheckMsg(true);
             state->setNextControlTime(CtiTime() + strategy->getControlInterval());
@@ -193,8 +164,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 // Disable the bus so we don't try to run again. User Intervention required.
                 subbus->setDisableFlag(true);
                 subbus->setBusUpdatedFlag(true);
-
-                state->setState(IVVCState::IVVC_DISABLED);
 
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - IVVC Configuration Error: Algorithm cannot execute." << endl;
@@ -256,7 +225,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             PointDataRequestPtr request = state->getGroupRequest();
 
             //Check for stale data.
-            if (checkForStaleData(request,timeNow))
+            IVVCState::CommsStatus  commsStatuses = checkForStaleData( request, timeNow );
+
+            if ( commsStatuses.cbcsLost || commsStatuses.regulatorsLost || commsStatuses.voltagesLost )     // something is stale
             {
                 //Not starting a new scan here. There should be retrys happening already.
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
@@ -266,17 +237,40 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     request->reportStatusToLog();
                 }
 
-                state->setCommsRetryCount(state->getCommsRetryCount() + 1);
-                if (state->getCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
-                {
-                    state->setCommsRetryCount(0);
-                    state->setState(IVVCState::IVVC_COMMS_LOST);
-                    request->reportStatusToLog();
+                state->setState(IVVCState::IVVC_WAIT);
 
+                if ( commsStatuses.voltagesLost )   // don't analyse but also don't go comms lost.
+                {
                     if (_CC_DEBUG & CC_DEBUG_IVVC)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - IVVC Algorithm: Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost." << endl;
+                        dout << CtiTime() << " - IVVC Algorithm: Analysis Interval: Missing one or more additional voltage points." << endl;
+                    }
+                }
+
+                if ( commsStatuses.regulatorsLost ) // don't analyse but also don't go comms lost.
+                {
+                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - IVVC Algorithm: Analysis Interval: Missing one or more Voltage Regulator points." << endl;
+                    }
+                }
+
+                if ( commsStatuses.cbcsLost )
+                {
+                    state->setCbcCommsRetryCount(state->getCbcCommsRetryCount() + 1);
+                    if (state->getCbcCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
+                    {
+                        state->setCbcCommsRetryCount(0);
+                        state->setState(IVVCState::IVVC_COMMS_LOST);
+                        request->reportStatusToLog();
+
+                        if (_CC_DEBUG & CC_DEBUG_IVVC)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - IVVC Algorithm: Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost." << endl;
+                        }
                     }
                 }
                 break;
@@ -290,10 +284,11 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 }
                 request->reportStatusToLog();
                 state->setState(IVVCState::IVVC_ANALYZE_DATA);
+                state->setCbcCommsRetryCount(0);
 
-                if ( state->isCommsLost() )
+                if ( state->isCbcCommsLost() )
                 {
-                    state->setCommsLost(false);     // Write to the event log...
+                    state->setCbcCommsLost(false);     // Write to the event log...
 
                     LONG stationId, areaId, spAreaId;
                     store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
@@ -320,6 +315,30 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::IVVC_ANALYZE_DATA:
         {
+            // If a voltage regulator is in 'Auto' mode we don't want to run the analysis.
+            if ( ! allRegulatorsInRemoteMode(subbusId) )
+            {
+                if ( state->isShowRegulatorAutoModeMsg() )
+                {
+                    state->setShowRegulatorAutoModeMsg(false);
+
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - IVVC Analysis Suspended for bus: " << subbus->getPaoName()
+                         << ". One or more Voltage Regulators are in 'Auto' mode." << endl;
+                }
+                return;
+            }
+            else
+            {
+                if ( ! state->isShowRegulatorAutoModeMsg() )
+                {
+                    state->setShowRegulatorAutoModeMsg(true);
+        
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - IVVC Analysis Resuming for bus: " << subbus->getPaoName() << endl;
+                }
+            }
+
             if ( busAnalysisState(state, subbus, strategy, dispatchConnection) )
             {
                 break;
@@ -478,9 +497,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         {
             state->setState(IVVCState::IVVC_WAIT);
 
-            if ( ! state->isCommsLost() )
+            if ( ! state->isCbcCommsLost() )
             {
-                state->setCommsLost(true);
+                state->setCbcCommsLost(true);
 
                 // Switch the voltage regulators to auto mode.
                 {
@@ -662,29 +681,22 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     }//switch
 }//execute
 
-bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow)
+
+IVVCState::CommsStatus IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow)
 {
     //These might be cparms later
     double regulatorRatio = 1.0;
     double otherRatio = 1.0;
 
-    if (checkForStaleData(request,timeNow,regulatorRatio,RegulatorRequestType))
-    {
-        return true;
-    }
+    IVVCState::CommsStatus  commsStatuses;
 
-    if (checkForStaleData(request,timeNow,otherRatio,OtherRequestType))
-    {
-        return true;
-    }
+    commsStatuses.cbcsLost       = checkForStaleData( request, timeNow, _IVVC_BANKS_REPORTING_RATIO, CbcRequestType);
+    commsStatuses.regulatorsLost = checkForStaleData( request, timeNow, regulatorRatio, RegulatorRequestType);
+    commsStatuses.voltagesLost   = checkForStaleData( request, timeNow, otherRatio, OtherRequestType);
 
-    if (checkForStaleData(request,timeNow,_IVVC_BANKS_REPORTING_RATIO,CbcRequestType))
-    {
-        return true;
-    }
-
-    return false;
+    return commsStatuses;
 }
+
 
 bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, double desiredRatio, PointRequestType pointRequestType)
 {
@@ -1306,7 +1318,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " IVVC Algorithm: Not Operating volatge regualtors due to minimum tap period." << endl;
+            dout << CtiTime() << " IVVC Algorithm: Not Operating Voltage Regulators due to minimum tap period." << endl;
         }
 
         return;
