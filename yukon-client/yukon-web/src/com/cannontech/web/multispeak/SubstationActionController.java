@@ -14,8 +14,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.model.Substation;
-import com.cannontech.core.dao.SubstationDao;
-import com.cannontech.core.dao.SubstationToRouteMappingDao;
+import com.cannontech.core.substation.dao.SubstationDao;
+import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.servlet.YukonUserContextUtils;

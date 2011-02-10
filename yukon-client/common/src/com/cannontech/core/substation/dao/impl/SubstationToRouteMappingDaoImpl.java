@@ -1,4 +1,4 @@
-package com.cannontech.core.dao.impl;
+package com.cannontech.core.substation.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,7 +13,8 @@ import com.cannontech.common.model.Substation;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.SubstationToRouteMappingDao;
+import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
+import com.cannontech.core.substation.model.SubstationRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 
 public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMappingDao {

@@ -194,10 +194,9 @@
   
   <bean id="extraPaoPointAssignmentDao" class="com.cannontech.core.dao.impl.ExtraPaoPointAssignmentDaoImpl"/>
 
-  <bean id="substationDao" class="com.cannontech.core.dao.impl.SubstationDaoImpl"/>
+  <bean id="substationDao" class="com.cannontech.core.substation.dao.impl.SubstationDaoImpl"/>
 
-  <bean id="substationToRouteMappingDao"
-      class="com.cannontech.core.dao.impl.SubstationToRouteMappingDaoImpl">
+  <bean id="substationToRouteMappingDao" class="com.cannontech.core.substation.dao.impl.SubstationToRouteMappingDaoImpl">
     <property name="simpleJdbcTemplate">
       <ref bean="simpleJdbcTemplate" />
     </property>

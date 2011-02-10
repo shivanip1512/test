@@ -1,7 +1,4 @@
-/**
- * 
- */
-package com.cannontech.core.dao.impl;
+package com.cannontech.core.substation.model;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

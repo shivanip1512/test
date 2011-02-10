@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.model.Substation;
-import com.cannontech.core.dao.SubstationDao;
+import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;

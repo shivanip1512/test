@@ -1,4 +1,4 @@
-package com.cannontech.core.dao.impl;
+package com.cannontech.core.substation.dao.impl;
 
 import java.util.List;
 
@@ -9,7 +9,8 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.SubstationDao;
+import com.cannontech.core.substation.dao.SubstationDao;
+import com.cannontech.core.substation.model.SubstationRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 

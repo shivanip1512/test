@@ -1,4 +1,4 @@
-package com.cannontech.core.dao;
+package com.cannontech.core.substation.dao;
 
 import java.util.List;
 
