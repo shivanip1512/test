@@ -124,8 +124,7 @@ public class OptOutController extends AbstractConsumerController {
     	            optOutsAvailable = true;
     	        }
     	    } else {
-    	        if((inventory.getCurrentlyScheduledOptOut()==null && optOutCountHolder.isOptOutsRemaining()) ||
-    	           (inventory.getCurrentlyScheduledOptOut()!=null && optOutCountHolder.getRemainingOptOuts()>1)) {
+    	        if(optOutCountHolder.isOptOutsRemainingAfterScheduled()) {
     	            optOutsAvailable = true;
     	        }
     	    }
@@ -190,10 +189,11 @@ public class OptOutController extends AbstractConsumerController {
                 optOutableInventories.add(inventory);
             }
         }
+        
         model.addAttribute("noOptOutsAvailableLookup", noOptOutsAvailableLookup);
         boolean hasDeviceSelection =
             rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_OPT_OUT_DEVICE_SELECTION, user);
-        boolean blanketDevices = (optOutableInventories.size() < 2 && !hasDeviceSelection);
+        boolean blanketDevices = (optOutableInventories.size() == 1 && !hasDeviceSelection);
         if (blanketDevices) {
             Integer[] inventoryIds = new Integer[optOutableInventories.size()];
             for (int index = 0; index < optOutableInventories.size(); index++) {
