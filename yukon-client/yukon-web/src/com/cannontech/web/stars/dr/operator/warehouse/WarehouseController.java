@@ -17,47 +17,53 @@ import com.cannontech.common.validator.AddressValidator;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.warehouse.model.WarehouseDto;
 import com.cannontech.web.stars.dr.operator.warehouse.service.impl.WarehouseServiceImpl;
 
 @RequestMapping("/operator/energyCompany/warehouse/*")
 @Controller
+@CheckRoleProperty(YukonRoleProperty.ADMIN_MULTI_WAREHOUSE)
 public class WarehouseController {
+    public StarsDatabaseCache starsDatabaseCache;
     
     private WarehouseServiceImpl warehouseService;
     private final String baseUrl = "/spring/stars/operator/energyCompany/warehouse";
-    private RolePropertyDao rolePropertyDao;
     
     /* Main page */
     @RequestMapping
     public String home(YukonUserContext userContext, 
-                       ModelMap modelMap, 
-                       int ecId, 
+                       ModelMap modelMap,
+                       int ecId,
                        EnergyCompanyInfoFragment energyCompanyInfoFragment) {
-        modelMap.addAttribute("warehouses", warehouseService.getWarehousesForEnergyCompany(ecId));
+        
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
+        modelMap.addAttribute("warehouses", warehouseService.getWarehousesForEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId()));
+        modelMap.addAttribute("energyCompanyName", energyCompanyInfoFragment.getCompanyName());
         return "operator/warehouse/home.jsp";
     }
     
     /* Individual View */
     @RequestMapping ("view")
     public String viewWarehouse(YukonUserContext userContext, 
-                                ModelMap modelMap, 
-                                int ecId, 
+                                ModelMap modelMap,
                                 int warehouseId, 
+                                int ecId,
                                 EnergyCompanyInfoFragment energyCompanyInfoFragment) {
-        modelMap.addAttribute("warehouse", warehouseService.getWarehouse(warehouseId));
+        
+        modelMap.addAttribute("warehouseDto", warehouseService.getWarehouse(warehouseId));
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
-        modelMap.addAttribute("mode", "VIEW");
+        modelMap.addAttribute("mode", PageEditMode.VIEW);
         return "operator/warehouse/view.jsp";
     }
     
@@ -67,20 +73,18 @@ public class WarehouseController {
                                ModelMap modelMap, 
                                int ecId, 
                                EnergyCompanyInfoFragment energyCompanyInfoFragment) {
-        //check permissions
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_MULTI_WAREHOUSE, userContext.getYukonUser());
         
         WarehouseDto warehouseDto = new WarehouseDto(new Warehouse(), new LiteAddress());
         //Populate with the basics
         warehouseDto.getWarehouse().setEnergyCompanyID(ecId);
         modelMap.addAttribute("warehouseDto", warehouseDto);
-        modelMap.addAttribute("mode", "CREATE");
+        modelMap.addAttribute("mode", PageEditMode.CREATE);
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
         return "operator/warehouse/edit.jsp";
     }
     
     /* Create */
-    @RequestMapping ("create")
+    @RequestMapping (params="create")
     public String createWarehouse(YukonUserContext userContext,
                                   ModelMap modelMap, 
                                   int ecId,
@@ -88,24 +92,21 @@ public class WarehouseController {
                                   BindingResult bindingResult,
                                   FlashScope flashScope,
                                   EnergyCompanyInfoFragment energyCompanyInfoFragment) {
-        //check permissions
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_MULTI_WAREHOUSE, userContext.getYukonUser());
         
+        modelMap.addAttribute("ecId", ecId);
         WarehouseDtoValidator validator = new WarehouseDtoValidator();
         validator.validate(warehouseDto, bindingResult);
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            return editWarehouse(userContext, modelMap, ecId,  warehouseDto.getWarehouse().getWarehouseID(), energyCompanyInfoFragment);
+            modelMap.addAttribute("mode", PageEditMode.CREATE);
+            return "operator/warehouse/edit.jsp";
         }
         
-        if(warehouseService.createWarehouse(warehouseDto) > 0) {
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.warehouse.warehouseNotCreated"));
-            return "redirect:home?ecId=" + ecId;
-        } else {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.warehouse.warehouseCreated"));
-            return editWarehouse(userContext, modelMap, ecId,  warehouseDto.getWarehouse().getWarehouseID(), energyCompanyInfoFragment);
-        }
+        warehouseService.createWarehouse(warehouseDto);
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.warehouse.warehouseCreated", warehouseDto.getWarehouse().getWarehouseName()));
+        
+        return "redirect:home";
     }
     
     /* Edit */
@@ -115,17 +116,15 @@ public class WarehouseController {
                                 int ecId, 
                                 int warehouseId, 
                                 EnergyCompanyInfoFragment energyCompanyInfoFragment) {
-        //check permissions
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_MULTI_WAREHOUSE, userContext.getYukonUser());
         
         modelMap.addAttribute("warehouseDto", warehouseService.getWarehouse(warehouseId));
-        modelMap.addAttribute("mode", "EDIT");
+        modelMap.addAttribute("mode", PageEditMode.EDIT);
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
         return "operator/warehouse/edit.jsp";
     }
     
     /* Update */
-    @RequestMapping ("update")
+    @RequestMapping (params="update")
     public String updateWarehouse(YukonUserContext userContext,
                                   ModelMap modelMap,
                                  int ecId,
@@ -133,8 +132,6 @@ public class WarehouseController {
                                  BindingResult bindingResult,
                                  FlashScope flashScope,
                                  EnergyCompanyInfoFragment energyCompanyInfoFragment) {
-      //check permissions
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_MULTI_WAREHOUSE, userContext.getYukonUser());
         
         WarehouseDtoValidator validator = new WarehouseDtoValidator();
         validator.validate(warehouseDto, bindingResult);
@@ -144,33 +141,27 @@ public class WarehouseController {
             return editWarehouse(userContext, modelMap, ecId,  warehouseDto.getWarehouse().getWarehouseID(), energyCompanyInfoFragment);
         }
         
-        if(warehouseService.updateWarehouse(warehouseDto)) {
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.warehouse.warehouseUpdated"));
-            return "redirect:view?warehouseId=" + warehouseDto.getWarehouse().getWarehouseID() + "&ecId=" + ecId;
-        } else {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.warehouse.warehouseNotUpdated"));
-            return editWarehouse(userContext, modelMap, ecId,  warehouseDto.getWarehouse().getWarehouseID(), energyCompanyInfoFragment);
-        }
+        warehouseService.updateWarehouse(warehouseDto);
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.warehouse.warehouseUpdated", warehouseDto.getWarehouse().getWarehouseName()));
+        modelMap.addAttribute("warehouseId", warehouseDto.getWarehouse().getWarehouseID());
+        modelMap.addAttribute("ecId", ecId);
+        return "redirect:view";
     }
     
     /* Delete */
-    @RequestMapping ("delete")
+    @RequestMapping (params="delete")
     public String deleteWarehouse(YukonUserContext userContext, 
-                                  ModelMap modelMap, 
-                                  int warehouseId,
+                                  ModelMap modelMap,
                                   int ecId,
+                                  final @ModelAttribute ("warehouseDto") WarehouseDto warehouseDto,
                                   FlashScope flashScope,
                                   EnergyCompanyInfoFragment energyCompanyInfoFragment) {
-      //check permissions
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_MULTI_WAREHOUSE, userContext.getYukonUser());
         
-        if(warehouseService.deleteWarehouse(warehouseId)) {
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.warehouse.warehouseDeleted"));
-            return "redirect:home?ecId=" + ecId;
-        } else {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.warehouse.warehouseNotDeleted"));
-            return viewWarehouse(userContext, modelMap, ecId, warehouseId, energyCompanyInfoFragment);
-        }
+        warehouseService.deleteWarehouse(warehouseDto);
+        
+        modelMap.addAttribute("ecId", ecId);
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.warehouse.warehouseDeleted", warehouseDto.getWarehouse().getWarehouseName()));
+        return "redirect:home";
     }
     
     private static class WarehouseDtoValidator extends SimpleValidator<WarehouseDto> {
@@ -202,43 +193,8 @@ public class WarehouseController {
         this.warehouseService = warehouseService;
     }
     
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @ModelAttribute("indexUrl")
-    public String getIndexUrl() {
-        return this.baseUrl + "/home";
-    }
-    
-    @ModelAttribute("viewUrl")
-    public String getViewUrl() {
-        return this.baseUrl + "/view";
-    }
-    
-    @ModelAttribute("newUrl")
-    public String getNewUrl() {
-        return this.baseUrl + "/new";
-    }
-    
-    @ModelAttribute("createUrl")
-    public String getCreateUrl() {
-        return this.baseUrl + "/create";
-    }
-    
-    @ModelAttribute("editUrl")
-    public String getEditUrl() {
-        return this.baseUrl + "/edit";
-    }
-    
-    @ModelAttribute("updateUrl")
-    public String getUpdateUrl() {
-        return this.baseUrl + "/update";
-    }
-    
-    @ModelAttribute("deleteUrl")
-    public String getDeleteUrl() {
-        return this.baseUrl + "/delete";
+    @ModelAttribute("baseUrl")
+    public String getBaseUrl() {
+        return this.baseUrl;
     }
 }

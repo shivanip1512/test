@@ -168,3 +168,7 @@ dir ol menu,  dir ul menu,  dir menu menu,  dir dir menu,
 dir ol dir,   dir ul dir,   dir menu dir,   dir dir dir {
   list-style-type: square;
 }
+
+.fr { float:right; }
+.fl { float:left; }
+.dn { display: none; }

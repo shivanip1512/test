@@ -226,6 +226,7 @@ img.graycssicon,input.graycssicon {
     color: black;
     font-size: 80%;
     text-decoration: none;
+    word-wrap: break-word;
 }
 
 .contextualMenu li.selected {

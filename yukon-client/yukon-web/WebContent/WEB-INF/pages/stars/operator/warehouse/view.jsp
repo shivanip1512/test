@@ -6,34 +6,30 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage module="operator" page="warehouse.HOME">
+<cti:standardPage module="operator" page="warehouse.${mode}">
     <cti:includeCss link="/WebConfig/yukon/styles/admin/energyCompany.css"/>
     
-    <h1>${warehouse.warehouse.warehouseName}</h1>
-    
-    <span class="meta">
-        <tags:liteAddress address="${warehouse.address}"/>
-    </span>
-    <br/>
-    <br/>
-    ${warehouse.warehouse.notes}
-    <br/>
-    <br/>
+    <tags:formElementContainer nameKey="viewContainer">
+        <span class="meta">
+            <tags:liteAddress address="${warehouseDto.address}"/>
+        </span>
+        <br/>
+        <br/>
+        <c:if test="${ not empty warehouseDto.warehouse.notes}">
+            <spring:escapeBody htmlEscape="true">${warehouseDto.warehouse.notes}</spring:escapeBody>
+            <br/>
+            <br/>
+        </c:if>
+    </tags:formElementContainer>
     <cti:checkRolesAndProperties value="ADMIN_MULTI_WAREHOUSE">
-        <cti:url var="warehouseEditUrl" value="${editUrl}">
+        <cti:url var="warehouseEditUrl" value="${baseUrl}/edit">
             <cti:param name="ecId" value="${ecId}"/>
-            <cti:param name="warehouseId" value="${warehouse.warehouse.warehouseID}"/>
+            <cti:param name="warehouseId" value="${warehouseDto.warehouse.warehouseID}"/>
         </cti:url>
         <cti:button key="edit" onclick="javascript:window.location ='${warehouseEditUrl}'"/>
-        
-        <cti:url var="warehouseDeleteUrl" value="${deleteUrl}">
-            <cti:param name="ecId" value="${ecId}"/>
-            <cti:param name="warehouseId" value="${warehouse.warehouse.warehouseID}"/>
-        </cti:url>
-        <cti:button key="delete" onclick="javascript:window.location ='${warehouseDeleteUrl}'"/>
     </cti:checkRolesAndProperties>
     
-    <cti:url var="warehouseIndexUrl" value="${indexUrl}">
+    <cti:url var="warehouseIndexUrl" value="${baseUrl}/home">
         <cti:param name="ecId" value="${ecId}"/>
     </cti:url>
     <cti:button key="cancel" onclick="javascript:window.location ='${warehouseIndexUrl}'"/>

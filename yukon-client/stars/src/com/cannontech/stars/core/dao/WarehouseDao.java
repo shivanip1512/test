@@ -45,21 +45,20 @@ public interface WarehouseDao {
     /**
      * Create a new Warehouse Object
      * @param   warehouse   Warehouse   Contains the new warehouse parameters
-     * @return              int         the ID of the new warehouse
      */
-    public int create(Warehouse warehouse);
+    public void create(Warehouse warehouse);
 
     /**
      * Update an existing Warehouse with the parameters supplied by warehouse
      * @param   warehouse   Warehouse  Contains the updated warehouse parameters
      */
-    public boolean update(Warehouse warehouse);
+    public void update(Warehouse warehouse);
     
     /**
      * 
      * @param warehouse
      */
-    public boolean delete(Warehouse warehouse);
+    public void delete(Warehouse warehouse);
     
-    public boolean delete(int warehouseId);
+    public void delete(int warehouseId);
 }

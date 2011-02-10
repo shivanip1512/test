@@ -6,11 +6,9 @@ import java.util.List;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.spring.YukonSpringHook;
 
 public class Warehouse extends DBPersistent {
-    private static final NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
     private Integer warehouseID;
     private String warehouseName;
     private Integer addressID;
@@ -32,7 +30,7 @@ public Warehouse() {
 }
 
 public static Integer getNextWarehouseID() {
-    int nextValueId = nextValueHelper.getNextValue(TABLE_NAME);
+    int nextValueId = YukonSpringHook.getNextValueHelper().getNextValue(TABLE_NAME);
     return nextValueId;
 }
 

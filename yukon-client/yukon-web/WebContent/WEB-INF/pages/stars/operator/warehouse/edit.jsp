@@ -11,20 +11,16 @@
     
      <tags:setFormEditMode mode="${mode}"/>
      
-    <cti:displayForPageEditModes modes="EDIT">
-        <cti:url value="${updateUrl}" var="action"/>
-    </cti:displayForPageEditModes>
-    <cti:displayForPageEditModes modes="CREATE">
-        <cti:url value="${createUrl}" var="action"/>
-    </cti:displayForPageEditModes>
+    <cti:url value="${baseUrl}/update" var="action">
+        <cti:param name="ecId" value="${ecId}"/>
+    </cti:url>
     
-     <form:form commandName="warehouseDto" action="${action}">
-        <input type="hidden" name="ecId" value="${ecId}"/>
+     <form:form commandName="warehouseDto" action="${action}" name="warehouseForm">
         
-        <input type="hidden" name="warehouse.warehouseID" value="${warehouseDto.warehouse.warehouseID}"/>
-        <input type="hidden" name="warehouse.addressID" value="${warehouseDto.warehouse.addressID}"/>
-        <input type="hidden" name="warehouse.energyCompanyID" value="${warehouseDto.warehouse.energyCompanyID}"/>
-        <input type="hidden" name="address.addressID" value="${warehouseDto.warehouse.addressID}"/>
+        <tags:hidden path="warehouse.warehouseID"/>
+        <tags:hidden path="warehouse.addressID"/>
+        <tags:hidden path="warehouse.energyCompanyID"/>
+        <tags:hidden path="address.addressID"/>
             
         <tags:nameValueContainer2>
             
@@ -39,12 +35,27 @@
             <tags:textareaNameValue nameKey=".notes" rows="3" cols="40" path="warehouse.notes"></tags:textareaNameValue>
         </tags:nameValueContainer2>
         
-        <button type="submit" name="save" class="formSubmit">
-            <i:inline key=".save"/>
-        </button>
-        <cti:url var="warehouseIndexUrl" value="${indexUrl}">
+        <!-- Save/Update -->
+        <cti:displayForPageEditModes modes="CREATE">
+            <cti:button key="save" name="create" type="submit"/>
+        </cti:displayForPageEditModes>
+        <cti:displayForPageEditModes modes="EDIT">
+            <cti:button key="save" name="update" type="submit"/>
+        </cti:displayForPageEditModes>
+        
+        <!-- Cancel -->
+        <cti:url var="warehouseIndexUrl" value="${baseUrl}/home">
             <cti:param name="ecId" value="${ecId}"/>
         </cti:url>
         <cti:button key="cancel" onclick="javascript:window.location ='${warehouseIndexUrl}'"/>
+        
+        <!-- Delete (out of harm's way) -->
+        <div class="fr">
+            <cti:displayForPageEditModes modes="EDIT">
+                <cti:button key="delete" styleClass="delete"/>
+                <tags:confirmDialog nameKey="confirmDelete" id="delete" submitName="delete" on="button.delete" />
+            </cti:displayForPageEditModes>
+        </div>
      </form:form>
+  
 </cti:standardPage>

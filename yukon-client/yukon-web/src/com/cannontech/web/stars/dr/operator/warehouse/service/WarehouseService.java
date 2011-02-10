@@ -10,11 +10,11 @@ public interface WarehouseService {
     
     public WarehouseDto getWarehouse(int warehouseId);
     
-    public int createWarehouse(WarehouseDto warehouseDto);
+    public void createWarehouse(WarehouseDto warehouseDto);
     
-    public boolean updateWarehouse(WarehouseDto warehouseDto);
+    public void updateWarehouse(WarehouseDto warehouseDto);
     
-    public boolean deleteWarehouse(WarehouseDto warehouseDto);
+    public void deleteWarehouse(WarehouseDto warehouseDto);
     
-    public boolean deleteWarehouse(int warehouseId);
+    public void deleteWarehouse(int warehouseId);
 }

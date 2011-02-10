@@ -14,38 +14,38 @@
         
             <%-- RIGHT SIDE COLUMN --%>
             <cti:dataGridCell>
-                <tags:boxContainer title="Warehouses">
+                <tags:boxContainer2 nameKey="pageName">
                     
                     <table class="compactResultsTable rowHighlighting">
                         <c:forEach items="${warehouses}" var="warehouse">
                         <tr class="<tags:alternateRow odd="" even="altRow"/>">
                             <td style="width:30%">
-                                <cti:url var="warehouseViewUrl" value="${viewUrl}">
+                                <cti:url var="warehouseViewUrl" value="${baseUrl}/view">
                                     <cti:param name="ecId" value="${ecId}"/>
                                     <cti:param name="warehouseId" value="${warehouse.warehouse.warehouseID}"/>
                                 </cti:url>
-                                <b><a href="${warehouseViewUrl}">${warehouse.warehouse.warehouseName}</a></b>
+                                <b>
+                                    <a href="${warehouseViewUrl}">
+                                        <spring:escapeBody htmlEscape="true">${warehouse.warehouse.warehouseName}</spring:escapeBody>
+                                    </a>
+                                </b>
                                 <br/>
                                 <span class="meta">
-                                    <tags:notNullDataLine value="${warehouse.address.locationAddress1}"/>
-                                    <tags:notNullDataLine value="${warehouse.address.locationAddress2}"/>
-                                    <tags:notNullDataLine value="${warehouse.address.cityName}" inLine="true"/>,
-                                    <tags:notNullDataLine value="${warehouse.address.stateCode}" inLine="true"/>
-                                    <tags:notNullDataLine value="${warehouse.address.zipCode}" inLine="true"/>
+                                    <tags:liteAddress address="${warehouse.address}"></tags:liteAddress>
                                 </span>
                             </td>
                             <td>
-                                ${warehouse.warehouse.notes}
+                                <spring:escapeBody htmlEscape="true">${warehouse.warehouse.notes}</spring:escapeBody>
                             </td>
                         </tr>
                         </c:forEach>
                     </table>
                     
-                </tags:boxContainer>
+                </tags:boxContainer2>
                 
                 <cti:checkRolesAndProperties value="ADMIN_MULTI_WAREHOUSE">
                     <div class="actionArea">
-                        <cti:url var="createWarehouseUrl" value="${newUrl}">
+                        <cti:url var="createWarehouseUrl" value="${baseUrl}/new">
                             <cti:param name="ecId" value="${ecId}"/>
                         </cti:url>
                         <cti:button key="add" onclick="javascript:window.location='${createWarehouseUrl}'"/>

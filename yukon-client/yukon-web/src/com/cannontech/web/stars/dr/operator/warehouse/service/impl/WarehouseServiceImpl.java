@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.dr.operator.warehouse.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,53 +9,58 @@ import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.web.stars.dr.operator.warehouse.model.WarehouseDto;
 import com.cannontech.web.stars.dr.operator.warehouse.service.WarehouseService;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 public class WarehouseServiceImpl implements WarehouseService {
     
-    private WarehouseDao    warehouseDao;
-    private AddressDao      addressDao;
+    private WarehouseDao warehouseDao;
+    private AddressDao addressDao;
+    
+    private Function<Warehouse, WarehouseDto> warehouseToDtoFunction = new Function<Warehouse, WarehouseDto>() {
+        public WarehouseDto apply(Warehouse from) {
+            return new WarehouseDto(from, addressDao.getByAddressId(from.getAddressID()));
+        }
+    };
 
     @Override
     public List<WarehouseDto> getWarehousesForEnergyCompany(int energyCompanyId) {
-        List<WarehouseDto> warehouseDtos = new ArrayList<WarehouseDto>();
         List<Warehouse> warehouses = warehouseDao.getAllWarehousesForEnergyCompanyId(energyCompanyId);
-        
-        for(Warehouse warehouse : warehouses) {
-            warehouseDtos.add(new WarehouseDto(warehouse, addressDao.getByAddressId(warehouse.getAddressID())));
-        }
-        return warehouseDtos;
+        return Lists.transform(warehouses, warehouseToDtoFunction);
     }
 
     @Override
     public WarehouseDto getWarehouse(int warehouseId) {
-        Warehouse warehouse = warehouseDao.getWarehouse(warehouseId);
-        return new WarehouseDto(warehouse, addressDao.getByAddressId(warehouse.getAddressID()));
+        return warehouseToDtoFunction.apply(warehouseDao.getWarehouse(warehouseId));
     }
 
     @Override
-    public int createWarehouse(WarehouseDto warehouseDto) {
+    public void createWarehouse(WarehouseDto warehouseDto) {
         addressDao.add(warehouseDto.getAddress());
         warehouseDto.getWarehouse().setAddressID(warehouseDto.getAddress().getAddressID());
-        return warehouseDao.create(warehouseDto.getWarehouse());
+        warehouseDao.create(warehouseDto.getWarehouse());
     }
 
     @Override
-    public boolean updateWarehouse(WarehouseDto warehouseDto) {
+    public void updateWarehouse(WarehouseDto warehouseDto) {
         //update warehouse & address
-        return warehouseDao.update(warehouseDto.getWarehouse()) && addressDao.update(warehouseDto.getAddress());
+        warehouseDao.update(warehouseDto.getWarehouse());
+        addressDao.update(warehouseDto.getAddress());
     }
 
     @Override
-    public boolean deleteWarehouse(WarehouseDto warehouseDto) {
-        return warehouseDao.delete(warehouseDto.getWarehouse())  && addressDao.remove(warehouseDto.getAddress());
+    public void deleteWarehouse(WarehouseDto warehouseDto) {
+        warehouseDao.delete(warehouseDto.getWarehouse());
+        addressDao.remove(warehouseDto.getAddress());
     }
 
     @Override
-    public boolean deleteWarehouse(int warehouseId) {
+    public void deleteWarehouse(int warehouseId) {
         WarehouseDto warehouseDto = getWarehouse(warehouseId);
-        return warehouseDao.delete(warehouseDto.getWarehouse()) && addressDao.remove(warehouseDto.getAddress());
+        warehouseDao.delete(warehouseDto.getWarehouse());
+        addressDao.remove(warehouseDto.getAddress());
     }
-
+    
     @Autowired
     public void setAddressDao(AddressDao addressDao) {
         this.addressDao = addressDao;
