@@ -105,8 +105,11 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         energyCompany.setName(energyCompanyDto.getName());
         energyCompany.setPrimaryContactID(contact.getContactID());
         energyCompany.setUserID(adminUser.getUserID());
+        
+        /* This method doesn't 'create' anything, it just news a LiteStarsEnergyCompany and injects dependencies. */
         LiteStarsEnergyCompany liteEnergyCompany = energyCompanyFactory.createEnergyCompany(energyCompany);
-        starsDatabaseCache.addEnergyCompany(liteEnergyCompany);
+        
+        /* This does nothing to StarsDatabaseCache,  I don't know who else would care. */
         dbPersistentDao.processDatabaseChange(DbChangeType.ADD, DbChangeCategory.ENERGY_COMPANY, energyCompanyId);
         
         /* Add Secondary Operator */
@@ -117,11 +120,24 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         
         /* Set Default Route */
         StarsAdminUtil.updateDefaultRoute(liteEnergyCompany, energyCompanyDto.getDefaultRouteId(), user);
+        /* StarsAdminUtil.updateDefaultRoute doesn't actually set the default route id on the LiteStarsEnergyCompany.
+         * It only writes it to the database, to actually set it properly you have to set it to zero with resetDefaultRouteId()
+         * and the first time someone uses the getDefaultRouteId() method it will lookup it up and set it on the cached 
+         * LiteStarsEnergyCompany before returning it.  The first thing StarsAdminUtil.updateDefaultRoute actually does  
+         * is call getDefaultRouteId() and at this point I think it needs to be -1 so the save to the db will actually happen.
+         * Without calling resetDefaultRouteId() after the save, the cached LiteStarsEnergyCompany will still have a
+         * defaultRouteId of -1.  Although I don't know why we couldn't just set it on the cached LiteStarsEnergyCompany now,
+         * there is no setter method for the defaultRouteId.
+         * 
+         * This is the most soul crushing poo code I've ever witnessed. */
+        liteEnergyCompany.resetDefaultRouteId();
         
         /* Add as member to parent */
         if (parentId != null) {
             StarsAdminUtil.addMember(starsDatabaseCache.getEnergyCompany(parentId), liteEnergyCompany, adminUser.getUserID());
         }
+        
+        starsDatabaseCache.addEnergyCompany(liteEnergyCompany);
         
         return liteEnergyCompany;
     }
