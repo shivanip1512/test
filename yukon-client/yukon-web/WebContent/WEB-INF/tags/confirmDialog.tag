@@ -7,8 +7,8 @@
 <%@ attribute name="nameKey" required="true" rtexprvalue="true"%>
 <%@ attribute name="id" rtexprvalue="true"%>
 <%@ attribute name="submitName" rtexprvalue="true" description="This will be the name of the OK submit button."%>
-<%@ attribute name="arguments" type="java.lang.Object" rtexprvalue="true"%>
-<%@ attribute name="on" description="registers click event on the element with this ID"%>
+<%@ attribute name="argument" type="java.lang.Object" rtexprvalue="true"%>
+<%@ attribute name="on" description="registers click event on the element with this CSS selector"%>
 
 <cti:uniqueIdentifier var="uniqueId"/>
 <c:if test="${!empty pageScope.id}">
@@ -16,12 +16,7 @@
 </c:if>
 
 <cti:msgScope paths="${nameKey},">
-    <c:if test="${empty pageScope.arguments}">
-        <cti:msg2 var="confirmationMsg" key=".message" />
-    </c:if>
-    <c:if test="${!empty pageScope.arguments}">
-        <cti:msg2 var="confirmationMsg" key=".message" arguments="${pageScope.arguments}" />
-    </c:if>
+    <cti:msg2 var="confirmationMsg" key=".message" argument="${pageScope.argument}" />
 
     <i:simplePopup id="${uniqueId}" styleClass="mediumSimplePopup" titleKey=".title" on="${pageScope.on}">
         <h3 class="dialogQuestion">${confirmationMsg}</h3>
