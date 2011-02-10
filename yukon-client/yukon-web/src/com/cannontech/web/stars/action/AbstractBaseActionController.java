@@ -11,7 +11,7 @@ import org.springframework.web.servlet.mvc.Controller;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
-import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonListDao;

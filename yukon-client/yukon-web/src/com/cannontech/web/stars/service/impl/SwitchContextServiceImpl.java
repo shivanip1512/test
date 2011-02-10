@@ -5,7 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;

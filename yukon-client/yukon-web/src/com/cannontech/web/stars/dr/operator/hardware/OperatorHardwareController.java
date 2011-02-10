@@ -36,7 +36,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
-import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ServiceCompanyDao;

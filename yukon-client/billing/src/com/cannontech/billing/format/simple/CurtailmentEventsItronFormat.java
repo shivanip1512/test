@@ -27,7 +27,7 @@ import com.cannontech.cc.service.EconomicService;
 import com.cannontech.cc.service.enums.CurtailmentEventState;
 import com.cannontech.cc.service.enums.EconomicEventState;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.spring.YukonSpringHook;

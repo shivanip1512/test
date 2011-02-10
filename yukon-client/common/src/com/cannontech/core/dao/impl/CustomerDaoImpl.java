@@ -20,7 +20,7 @@ import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DeviceCustomerListDao;
-import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.GraphCustomerListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.customer.model.CustomerInformation;

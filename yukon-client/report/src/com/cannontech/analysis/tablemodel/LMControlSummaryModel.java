@@ -13,7 +13,7 @@ import org.joda.time.Instant;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.OpenInterval;
-import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;

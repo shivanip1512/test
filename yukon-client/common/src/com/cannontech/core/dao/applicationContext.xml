@@ -79,7 +79,7 @@
    	<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
    	<property name="nextValueHelper" ref="nextValueHelper"/>
   </bean>
-  <bean id="energyCompanyDao" class="com.cannontech.core.dao.impl.EnergyCompanyDaoImpl" >
+  <bean id="energyCompanyDao" class="com.cannontech.stars.energyCompany.dao.impl.EnergyCompanyDaoImpl" >
   	<property name="yukonUserDao" ref="yukonUserDao"/>
     <property name="databaseCache" ref="databaseCache"/>
   </bean>	

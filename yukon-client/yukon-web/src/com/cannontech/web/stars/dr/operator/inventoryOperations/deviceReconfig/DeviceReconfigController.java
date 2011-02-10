@@ -22,7 +22,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;

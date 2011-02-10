@@ -1,4 +1,4 @@
-package com.cannontech.core.dao.impl;
+package com.cannontech.stars.energyCompany.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,7 +12,6 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -22,6 +21,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 

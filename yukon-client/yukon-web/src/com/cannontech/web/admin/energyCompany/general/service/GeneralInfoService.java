@@ -14,7 +14,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
-import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.impl.LiteYukonUserMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.cache.StarsDatabaseCache;

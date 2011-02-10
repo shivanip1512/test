@@ -10,7 +10,7 @@ import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.survey.dao.impl.EnergyCompanyFilter;
 import com.cannontech.common.survey.dao.impl.SurveyRowMapper;
 import com.cannontech.common.survey.model.Survey;
-import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;

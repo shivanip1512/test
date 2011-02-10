@@ -1,10 +1,11 @@
-package com.cannontech.core.dao;
+package com.cannontech.stars.energyCompany.dao;
 
 import java.util.List;
 
-import com.cannontech.core.dao.impl.EnergyCompanyDaoImpl.DisplayableServiceCompany;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.energyCompany.dao.impl.EnergyCompanyDaoImpl.DisplayableServiceCompany;
 
 public interface EnergyCompanyDao {
 

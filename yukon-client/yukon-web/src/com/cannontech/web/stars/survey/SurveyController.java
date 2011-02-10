@@ -32,7 +32,7 @@ import com.cannontech.common.survey.service.SurveyService;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DuplicateException;
-import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;

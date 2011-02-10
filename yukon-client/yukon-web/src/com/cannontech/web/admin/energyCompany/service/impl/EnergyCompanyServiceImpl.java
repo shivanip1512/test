@@ -11,7 +11,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.EnergyCompanyNameUnavailableException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.UserNameUnavailableException;

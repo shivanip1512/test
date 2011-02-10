@@ -13,7 +13,7 @@ import com.cannontech.cc.dao.GroupDao;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.GroupCustomerNotif;
-import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.support.CustomerPointTypeHelper;

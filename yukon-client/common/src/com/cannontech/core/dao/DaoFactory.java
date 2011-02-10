@@ -2,6 +2,7 @@ package com.cannontech.core.dao;
 
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 
 public class DaoFactory {
     
