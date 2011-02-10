@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
     xmlns:lxslt="http://xml.apache.org/xslt"
     xmlns:redirect="http://xml.apache.org/xalan/redirect"
@@ -31,6 +32,7 @@
 
 -->
 <xsl:param name="output.dir" select="'.'"/>
+<xsl:param name="TITLE">Unit Test Results.</xsl:param>
 
 
 <xsl:template match="testsuites">
@@ -144,7 +146,7 @@
 <xsl:template name="index.html">
 <html>
     <head>
-        <title>Unit Test Results.</title>
+        <title><xsl:value-of select="$TITLE"/></title>
     </head>
     <frameset cols="20%,80%">
         <frameset rows="30%,70%">
@@ -688,7 +690,7 @@ h6 {
 
 <!-- Page HEADER -->
 <xsl:template name="pageHeader">
-    <h1>Unit Test Results</h1>
+    <h1><xsl:value-of select="$TITLE"/></h1>
     <table width="100%">
     <tr>
         <td align="left"></td>
@@ -860,7 +862,18 @@ h6 {
 -->
 <xsl:template name="br-replace">
     <xsl:param name="word"/>
-    <xsl:value-of disable-output-escaping="yes" select='stringutils:replace(string($word),"&#xA;","&lt;br/>")'/>
+    <xsl:choose>
+      <xsl:when test="contains($word, '&#xa;')">
+        <xsl:value-of select="substring-before($word, '&#xa;')"/>
+        <br/>
+        <xsl:call-template name="br-replace">
+          <xsl:with-param name="word" select="substring-after($word, '&#xa;')"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+	<xsl:value-of select="$word"/>
+      </xsl:otherwise>
+    </xsl:choose>
 </xsl:template>
 
 <xsl:template name="display-time">

@@ -1,233 +1,261 @@
 <?xml version="1.0" ?>
 <project name="Yukon Clients" default="targets" basedir=".">
 
-    <property environment="env"/> 	 	 
-    <property file="build.properties"/>
-	 	      	     	     
+    <property environment="env" />
+    <property file="build.properties" />
+
     <target name="targets">
-    	<echo message="${yukon.client.home}"/>
-        <echo message="The following targets are available"/>
-        <echo message=" build        - perform incremental build"/>
-        <echo message=" runUnitTests - run all unit tests"/>
-        <echo message=" clean        - clean the slate"/>
-        <echo message=" all          - do a clean then a build"/>
-        <echo message=" install      - installs a build to your YUKON_HOME directory"/>
-        <echo message=" uninstall    - remove the install at YUKON_HOME"/>        
-        <echo message=" [jar name]   - builds only the specified jar"/>
-        <echo message=" sign jars    - sign all jars"/>
+        <echo message="${yukon.client.home}" />
+        <echo message="The following targets are available" />
+        <echo message=" build        - perform incremental build" />
+        <echo message=" runUnitTests - run all unit tests" />
+        <echo message=" clean        - clean the slate" />
+        <echo message=" all          - do a clean then a build" />
+        <echo message=" install      - installs a build to your YUKON_HOME directory" />
+        <echo message=" uninstall    - remove the install at YUKON_HOME" />
+        <echo message=" [jar name]   - builds only the specified jar" />
+        <echo message=" sign jars    - sign all jars" />
     </target>
-            
+
     <target name="all" depends="init, cleanlib, help">
         <antcall target="callall">
-            <param name="dotarget" value="all"/>
+            <param name="dotarget" value="all" />
         </antcall>
     </target>
-          
+
     <target name="clean" depends="init, cleanlib">
-        <antcall target="callall" inheritAll="true" >
-            <param name="dotarget" value="clean"/>
+        <antcall target="callall" inheritAll="true">
+            <param name="dotarget" value="clean" />
         </antcall>
     </target>
 
     <target name="build" depends="init">
         <antcall target="callall" inheritAll="true">
-            <param name="dotarget" value="build"/>
+            <param name="dotarget" value="build" />
         </antcall>
     </target>
-    
-    <target name="help" depends="init,help.present,help.skip"/>
-    
+
+    <target name="help" depends="init,help.present,help.skip" />
+
     <target name="help.present" if="yukonHelpAvailable">
-        <echo message="including yukon-help"/>
-        <ant dir="${yukon.help}" antfile="build.xml" inheritAll="true"/>
+        <echo message="including yukon-help" />
+        <ant dir="${yukon.help}" antfile="build.xml" inheritAll="true" />
         <copy todir="${yukon.lib}">
             <fileset dir="${yukon.help}/lib">
-                <include name="*.jar"/>
+                <include name="*.jar" />
             </fileset>
         </copy>
     </target>
-    
+
     <target name="help.skip" unless="yukonHelpAvailable">
-        <echo message="yukon-help is not in correct location to be included"/>
+        <echo message="yukon-help is not in correct location to be included" />
     </target>
-	
+
     <target name="runUnitTests" depends="init">
-<!-- All of our build files need this target for this to work
+        <!-- All of our build files need this target for this to work
         <antcall target="callall" inheritAll="true">
             <param name="dotarget" value="runUnitTests"/>
         </antcall>
 -->
-        <ant dir="${common}" target="runUnitTests"/>
+        <ant dir="${common}" target="runUnitTests" />
     </target>
 
     <target name="init">
-        <echo message="JAVA_HOME=${env.JAVA_HOME}"/>
-        <echo message="ANT_HOME=${env.ANT_HOME}"/>
-        <echo message="target=${yukon.javac.target}"/>
+        <echo message="JAVA_HOME=${env.JAVA_HOME}" />
+        <echo message="ANT_HOME=${env.ANT_HOME}" />
+        <echo message="target=${yukon.javac.target}" />
         <mkdir dir="${yukon.lib}" />
-        
+
         <!-- see if help is available -->
         <condition property="yukonHelpAvailable">
-            <available file="${yukon.help}"/>
+            <available file="${yukon.help}" />
         </condition>
     </target>
-	
+
     <target name="cleanlib">
         <delete quiet="true" dir="${yukon.lib}">
         </delete>
     </target>
-    
-    <target name="install">    	
-    	<mkdir dir="${yukon.client.home}"/>
-    	<mkdir dir="${yukon.client.bin}"/>
-    	<mkdir dir="${yukon.client.config}"/>
-    	<mkdir dir="${yukon.client.export}"/>
-    	<mkdir dir="${yukon.client.log}"/>
-    	<mkdir dir="${yukon.client.help}"/>
-    	
-    	<antcall target="callall" inheritAll="true">
-    		<param name="dotarget" value="install"/>
-    	</antcall>
+
+    <target name="install">
+        <mkdir dir="${yukon.client.home}" />
+        <mkdir dir="${yukon.client.bin}" />
+        <mkdir dir="${yukon.client.config}" />
+        <mkdir dir="${yukon.client.export}" />
+        <mkdir dir="${yukon.client.log}" />
+        <mkdir dir="${yukon.client.help}" />
+
+        <antcall target="callall" inheritAll="true">
+            <param name="dotarget" value="install" />
+        </antcall>
     </target>
-    
+
     <target name="uninstall">
-    	<delete>
-    		<fileset dir="${yukon.client.home}" />
-    	</delete>
+        <delete>
+            <fileset dir="${yukon.client.home}" />
+        </delete>
     </target>
-    
+
     <target name="callall">
         <!-- These groupings mean something to me. Talk to me if you rearrange. -Tmack -->
         <ant dir="${third-party}" target="${dotarget}" />
         <ant dir="${common}" target="${dotarget}" />
-    	
+
         <ant dir="${web-common}" target="${dotarget}" />
 
-          <ant dir="${billing}" target="${dotarget}" /> 
-          <ant dir="${calchist}" target="${dotarget}" />
-          <ant dir="${trending}" target="${dotarget}" />
-          <ant dir="${monitor}" target="${dotarget}" />
-          <ant dir="${yukonappserver}" target="${dotarget}"/>
-            
-          <ant dir="${export}" target="${dotarget}" />
-          <ant dir="${esub}" target="${dotarget}"/>
-          <ant dir="${tdc}" target="${dotarget}" />
-    	  <ant dir="${loadcontrol}" target="${dotarget}" />
-    	  <ant dir="${dbeditor}" target="${dotarget}" />
-          <ant dir="${commander}" target="${dotarget}" />
-          <ant dir="${commands}" target="${dotarget}" />
-          <ant dir="${logger}" target="${dotarget}"/>
-          <ant dir="${resource}" target="${dotarget}"/>
-        
-          <ant dir="${esub-editor}" target="${dotarget}"/>
-          <ant dir="${cbc}" target="${dotarget}" />
-          <ant dir="${macs}" target="${dotarget}" />
-          <ant dir="${stars}" target="${dotarget}"/>
-    	
-          <ant dir="${api}" target="${dotarget}"/>
-        
-          <ant dir="${tools}" target="${dotarget}" />
+        <ant dir="${billing}" target="${dotarget}" />
+        <ant dir="${calchist}" target="${dotarget}" />
+        <ant dir="${trending}" target="${dotarget}" />
+        <ant dir="${monitor}" target="${dotarget}" />
+        <ant dir="${yukonappserver}" target="${dotarget}" />
 
-          <ant dir="${multispeak}" target="${dotarget}"/>
-          <ant dir="${foreign}" target="${dotarget}"/>
-          <ant dir="${report}" target="${dotarget}"/>        
-  	  	  <ant dir="${servlet}" target="${dotarget}"/>
-          <ant dir="${notification}" target="${dotarget}"/>
-          <ant dir="${services}" target="${dotarget}"/>
-          <ant dir="${api-web}" target="${dotarget}"/>
-          <ant dir="${yukon-web}" target="${dotarget}"/>
+        <ant dir="${export}" target="${dotarget}" />
+        <ant dir="${esub}" target="${dotarget}" />
+        <ant dir="${tdc}" target="${dotarget}" />
+        <ant dir="${loadcontrol}" target="${dotarget}" />
+        <ant dir="${dbeditor}" target="${dotarget}" />
+        <ant dir="${commander}" target="${dotarget}" />
+        <ant dir="${commands}" target="${dotarget}" />
+        <ant dir="${logger}" target="${dotarget}" />
+        <ant dir="${resource}" target="${dotarget}" />
+
+        <ant dir="${esub-editor}" target="${dotarget}" />
+        <ant dir="${cbc}" target="${dotarget}" />
+        <ant dir="${macs}" target="${dotarget}" />
+        <ant dir="${stars}" target="${dotarget}" />
+
+        <ant dir="${api}" target="${dotarget}" />
+
+        <ant dir="${tools}" target="${dotarget}" />
+
+        <ant dir="${multispeak}" target="${dotarget}" />
+        <ant dir="${foreign}" target="${dotarget}" />
+        <ant dir="${report}" target="${dotarget}" />
+        <ant dir="${servlet}" target="${dotarget}" />
+        <ant dir="${notification}" target="${dotarget}" />
+        <ant dir="${services}" target="${dotarget}" />
+        <ant dir="${api-web}" target="${dotarget}" />
+        <ant dir="${yukon-web}" target="${dotarget}" />
     </target>
-	
+
     <target name="deploy">
-	    <ear destfile="${yukon.lib}/yukon.ear" appxml="${yukon.lib}/META-INF/application.xml">
-	      <fileset dir="${yukon.lib}" includes="*.jar,*.war"/>
-	    </ear>
-	</target>
-	
-    
+        <ear destfile="${yukon.lib}/yukon.ear" appxml="${yukon.lib}/META-INF/application.xml">
+            <fileset dir="${yukon.lib}" includes="*.jar,*.war" />
+        </ear>
+    </target>
+
+
     <target name="tools">
-    	<antcall target="singlebuild" inheritAll="true">
-    		<param name="dotarget" value="build"/>
-    		<param name="filename" value="${tools}"/>
-    	</antcall>
+        <antcall target="singlebuild" inheritAll="true">
+            <param name="dotarget" value="build" />
+            <param name="filename" value="${tools}" />
+        </antcall>
     </target>
 
     <target name="dbeditor">
-    	<antcall target="billing"/>
-    	<antcall target="singlebuild" inheritAll="true">
-    		<param name="dotarget" value="build"/>
-    		<param name="filename" value="${dbeditor}"/>
-    	</antcall>
+        <antcall target="billing" />
+        <antcall target="singlebuild" inheritAll="true">
+            <param name="dotarget" value="build" />
+            <param name="filename" value="${dbeditor}" />
+        </antcall>
     </target>
 
     <target name="billing">
-    	<antcall target="singlebuild" inheritAll="true">
-    		<param name="dotarget" value="build"/>
-    		<param name="filename" value="${billing}"/>
-    	</antcall>
+        <antcall target="singlebuild" inheritAll="true">
+            <param name="dotarget" value="build" />
+            <param name="filename" value="${billing}" />
+        </antcall>
     </target>
 
     <target name="tdc">
-    	<antcall target="singlebuild" inheritAll="true">
-    		<param name="dotarget" value="build"/>
-    		<param name="filename" value="${tdc}"/>
-    	</antcall>
+        <antcall target="singlebuild" inheritAll="true">
+            <param name="dotarget" value="build" />
+            <param name="filename" value="${tdc}" />
+        </antcall>
     </target>
 
     <target name="monitor">
-    	<antcall target="singlebuild" inheritAll="true">
-    		<param name="dotarget" value="build"/>
-    		<param name="filename" value="${monitor}"/>
-    	</antcall>
+        <antcall target="singlebuild" inheritAll="true">
+            <param name="dotarget" value="build" />
+            <param name="filename" value="${monitor}" />
+        </antcall>
     </target>
 
     <target name="cbc">
-    	<antcall target="tdc"/>
-    	<antcall target="singlebuild" inheritAll="true">
-    		<param name="dotarget" value="build"/>
-    		<param name="filename" value="${cbc}"/>
-    	</antcall>
+        <antcall target="tdc" />
+        <antcall target="singlebuild" inheritAll="true">
+            <param name="dotarget" value="build" />
+            <param name="filename" value="${cbc}" />
+        </antcall>
     </target>
 
     <target name="macs">
-    	<antcall target="tdc"/>
-    	<antcall target="singlebuild" inheritAll="true">
-    		<param name="dotarget" value="build"/>
-    		<param name="filename" value="${macs}"/>
-    	</antcall>
+        <antcall target="tdc" />
+        <antcall target="singlebuild" inheritAll="true">
+            <param name="dotarget" value="build" />
+            <param name="filename" value="${macs}" />
+        </antcall>
     </target>
 
     <target name="loadcontrol">
-    	<antcall target="tdc"/>
-    	<antcall target="singlebuild" inheritAll="true">
-    		<param name="dotarget" value="build"/>
-    		<param name="filename" value="${loadcontrol}"/>
-    	</antcall>
+        <antcall target="tdc" />
+        <antcall target="singlebuild" inheritAll="true">
+            <param name="dotarget" value="build" />
+            <param name="filename" value="${loadcontrol}" />
+        </antcall>
     </target>
-    
+
     <target name="yukon-web">
-    	<antcall target="singlebuild" inheritAll="true">
-	   		<param name="dotarget" value="build"/>
-    		<param name="filename" value="${yukon-web}"/>
-    	</antcall>
+        <antcall target="singlebuild" inheritAll="true">
+            <param name="dotarget" value="build" />
+            <param name="filename" value="${yukon-web}" />
+        </antcall>
     </target>
 
     <target name="sensus-jms" depends="build">
-    	<ant dir="${yukon.base}/sensus-jms" target="build"/>
+        <ant dir="${yukon.base}/sensus-jms" target="build" />
     </target>
 
-	<!-- Special build function that can build one module with its dependencies -->
+    <!-- Special build function that can build one module with its dependencies -->
     <target name="singlebuild" if="filename">
-	   <ant dir="${third-party}" target="${dotarget}" />
-	   <ant dir="${common}" target="${dotarget}" />
-        <ant dir="${filename}" target="${dotarget}"/>
+        <ant dir="${third-party}" target="${dotarget}" />
+        <ant dir="${common}" target="${dotarget}" />
+        <ant dir="${filename}" target="${dotarget}" />
     </target>
 
-	<!--Added build option for copying the needed jar files into the WEB-INF directory of yukon-web. SN-->
-	<target name="webbuild" depends="build,webcopy"/>
+    <!--Added build option for copying the needed jar files into the WEB-INF directory of yukon-web. SN-->
+    <target name="webbuild" depends="build,webcopy" />
 
     <target name="webcopy">
-        <ant dir="${yukon-web}" target="webcopy"/> 
+        <ant dir="${yukon-web}" target="webcopy" />
+    </target>
+
+    <property name="spring-download" value="${java.io.tmpdir}/spring-download" />
+    <property name="version" value="3.0.5" />
+    <target name="spring-download">
+        <copy todir="${spring-download}" flatten="true">
+            <url url="http://s3.amazonaws.com/dist.springframework.org/release/SPR/spring-framework-${version}.RELEASE.zip" />
+        </copy>
+    </target>
+
+    <target name="spring-install">
+        <copy todir="${third-party}">
+            <restrict>
+                <archives>
+                    <zips>
+                        <fileset dir="${spring-download}" includes="*.zip" />
+                    </zips>
+                </archives>
+                <name name="**/dist/*.jar" />
+            </restrict>
+            <chainedmapper>
+                <flattenmapper />
+                <globmapper from="org.springframework.*-${version}.RELEASE.jar" to="spring-*-${version}.jar" />
+            </chainedmapper>
+        </copy>
+    </target>
+
+    <target name="update-spring" depends="spring-download, spring-install">
     </target>
 
 </project>

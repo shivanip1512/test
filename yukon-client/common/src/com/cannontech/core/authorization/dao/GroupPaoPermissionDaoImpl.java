@@ -132,7 +132,6 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
         return this.getPaosForPermission(groupIds, permission);
     }
 
-    @SuppressWarnings("unchecked")
     private List<Integer> getPaosForPermission(String groupIds, Permission permission) {
 
         String sql = "select paoid from grouppaopermission where groupid in (" + groupIds
@@ -144,24 +143,24 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
         return paoIdList;
     }
 
-    @SuppressWarnings("unchecked")
     private List<PaoPermission> getPermissions(String groupIds) {
 
         String sql = "select groupPaoPermissionId, groupid, paoid, permission, allow from GroupPaoPermission "
                 + "where groupid in (" + groupIds + ")";
-        List<PaoPermission> gppList = jdbcTemplate.query(sql, new GroupPaoPermissionMapper());
-        return gppList;
+        List<? extends PaoPermission> gppList = jdbcTemplate.query(sql, new GroupPaoPermissionMapper());
+        List<PaoPermission> result = Lists.newArrayList(gppList);
+        return result;
     }
 
-    @SuppressWarnings("unchecked")
     private List<PaoPermission> getPermissionsForPao(int groupId, int paoId) {
 
         String sql = "select groupPaoPermissionId, groupid, paoid, permission, allow from GroupPaoPermission "
                 + "where groupid = ? and paoid = ?";
-        List<PaoPermission> gppList = jdbcTemplate.query(sql,
+        List<? extends PaoPermission> gppList = jdbcTemplate.query(sql,
                                                          new Object[] { groupId, paoId },
                                                          new GroupPaoPermissionMapper());
-        return gppList;
+        List<PaoPermission> result = Lists.newArrayList(gppList);
+        return result;
     }
 
     private AuthorizationResponse isHasPermissionForPao(List<Integer> groupIdList, int paoId, Permission permission) {

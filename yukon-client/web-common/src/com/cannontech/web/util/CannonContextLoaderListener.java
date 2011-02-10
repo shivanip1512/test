@@ -21,7 +21,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.ContextLoaderServlet;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.spring.YukonSpringHook;

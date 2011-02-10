@@ -34,16 +34,23 @@ public class BulkFieldServiceImpl implements BulkFieldService, ApplicationContex
     @SuppressWarnings("unchecked")
     public List<String> getBulkFieldBeanNames() {
         
-        Map<String, BulkField<?, ?>> bulkFields = BeanFactoryUtils.beansOfTypeIncludingAncestors(context, BulkField.class);
+        Map<String, BulkField<?, ?>> bulkFields = unsafeBeansOfType();
         
         return new ArrayList<String>(bulkFields.keySet());
+    }
+
+
+    @SuppressWarnings("rawtypes")
+    private Map unsafeBeansOfType() {
+        // this is a hack to replicate the return value of beansOfTypeIncludingAncestors 
+        // before the Spring 3.0 upgrade
+        return BeanFactoryUtils.beansOfTypeIncludingAncestors(context, BulkField.class);
     }
     
 
     /**
      * GET ALL BULK FIELD PROCESSORS
      */
-    @SuppressWarnings("unchecked")
     public List<BulkYukonDeviceFieldProcessor> getBulkFieldProcessors() {
         
         Map<String, BulkYukonDeviceFieldProcessor> bulkFields = BeanFactoryUtils.beansOfTypeIncludingAncestors(context, BulkYukonDeviceFieldProcessor.class);
@@ -57,7 +64,7 @@ public class BulkFieldServiceImpl implements BulkFieldService, ApplicationContex
     @SuppressWarnings("unchecked")
     public List<BulkField<?, ?>> getBulkFields() {
         
-        Map<String, BulkField<?, ?>> bulkFields = BeanFactoryUtils.beansOfTypeIncludingAncestors(context, BulkField.class);
+        Map<String, BulkField<?, ?>> bulkFields = unsafeBeansOfType();
         
         return new ArrayList<BulkField<?, ?>>(bulkFields.values());
     }
@@ -119,7 +126,7 @@ public class BulkFieldServiceImpl implements BulkFieldService, ApplicationContex
     public <T> boolean processorExistsForBulkFieldColumnHeaders(List<BulkFieldColumnHeader> bulkFieldColumnHeaders) {
         
         Set<BulkField<?, T>> matchingBulkFields = Sets.newHashSet();
-        Map<String, BulkField<?, T>> allBulkFields = BeanFactoryUtils.beansOfTypeIncludingAncestors(context, BulkField.class);
+        Map<String, BulkField<?, T>> allBulkFields = unsafeBeansOfType();
         
         for (BulkFieldColumnHeader bulkFieldColumnHeader : bulkFieldColumnHeaders) {
             

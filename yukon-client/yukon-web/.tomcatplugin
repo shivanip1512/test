@@ -33,6 +33,7 @@
         <webClassPathEntry>/third-party/activation.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/activemq-all-5.4.2.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/antlr-2.7.6rc1.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/aopalliance.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/asm-attrs.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/asm.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/aspectjrt.jar</webClassPathEntry>
@@ -92,9 +93,27 @@
         <webClassPathEntry>/third-party/quartz-all-1.6.0.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/rwav.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/saaj.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-aop-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-asm-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-aspects-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-beans-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-context-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-context.support-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-core-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-expression-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-instrument-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-instrument.tomcat-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-jdbc-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-jms-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-orm-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-oxm-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-test-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-transaction-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-web-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-web.servlet-3.0.5.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-web.struts-3.0.5.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/spring-webmvc.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/spring-ws-1.5.6-all.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/spring.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/struts.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/wsdl4j.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/xbean-spring-3.4.jar</webClassPathEntry>

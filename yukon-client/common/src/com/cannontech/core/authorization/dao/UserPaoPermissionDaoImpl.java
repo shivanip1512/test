@@ -24,6 +24,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 /**
@@ -91,7 +92,6 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
         return this.getPaosForPermission(user.getUserID(), permission);
     }
 
-    @SuppressWarnings("unchecked")
     private List<Integer> getPaosForPermission(int userID, Permission permission) {
 
         String sql = "select paoid from userpaopermission where userid = ? and permission = ?";
@@ -114,7 +114,6 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
         throw new UnsupportedOperationException("Not implemented for users");
     }
 
-    @SuppressWarnings("unchecked")
     public AuthorizationResponse hasPermissionForPao(int userId, int paoId, Permission permission) {
         String sql;
         sql = "select allow from UserPaoPermission where userid = ? and paoid = ? " + "and permission = ?";
@@ -180,26 +179,26 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
         throw new UnsupportedOperationException("Not implemented for users");
     }
 
-    @SuppressWarnings("unchecked")
     private List<PaoPermission> getPermissions(int userId) {
 
         String sql = "select userPaoPermissionId, userid, paoid, permission, allow from UserPaoPermission "
                 + "where userid = ?";
-        List<PaoPermission> uppList = jdbcTemplate.query(sql,
+        List<? extends PaoPermission> uppList = jdbcTemplate.query(sql,
                                                          new Object[] { userId },
                                                          new UserPaoPermissionMapper());
-        return uppList;
+        List<PaoPermission> result = Lists.newArrayList(uppList);
+        return result;
     }
 
-    @SuppressWarnings("unchecked")
     private List<PaoPermission> getPermissionsForPao(int userId, int paoId) {
 
         String sql = "select userPaoPermissionId, userid, paoid, permission, allow from UserPaoPermission "
                 + "where userid = ? and paoid = ?";
-        List<PaoPermission> uppList = jdbcTemplate.query(sql,
+        List<? extends PaoPermission> uppList = jdbcTemplate.query(sql,
                                                          new Object[] { userId, paoId },
                                                          new UserPaoPermissionMapper());
-        return uppList;
+        List<PaoPermission> result = Lists.newArrayList(uppList);
+        return result;
     }
 
     private void addPermission(int userId, int paoId, Permission permission, boolean allow) {
