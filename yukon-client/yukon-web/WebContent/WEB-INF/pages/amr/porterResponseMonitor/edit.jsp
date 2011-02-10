@@ -205,7 +205,7 @@
 
             <cti:button key="${monitoringKey}" type="submit" name="toggleEnabled"/>
 			<cti:button id="deleteButton" key="delete"/>
-			<tags:confirmDialog nameKey=".deleteConfirmation" arguments="${monitor.name}" submitName="delete" on="#deleteButton"/>
+			<tags:confirmDialog nameKey=".deleteConfirmation" argument="${monitor.name}" submitName="delete" on="#deleteButton"/>
 
             <cti:button key="cancel" type="submit" name="cancel"/>
 		</div>
