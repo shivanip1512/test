@@ -14,7 +14,6 @@
 #include "lmmessage.h"
 #include "lmid.h"
 #include "utility.h"
-#include <rw/collstr.h>
 #include <time.h>
 
 using std::vector;

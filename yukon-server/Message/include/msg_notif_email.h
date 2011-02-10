@@ -7,7 +7,7 @@
 *
 * File:   msg_notif_email
 *
-* Class:  
+* Class:
 * Date:   1/22/2004
 *
 * Author: Eric Schmit
@@ -28,18 +28,20 @@
 #include "yukon.h"
 #include "msg_notif_email_attachment.h"
 
+#include <rw/ordcltn.h>
+
 using std::string;
 
 class IM_EX_MSG CtiNotifEmailMsg : public CtiMessage
 {
 private:
-   
+
    int                                          _notifGroupID;
-   string                                       _to;          
+   string                                       _to;
    string                                       _subject;
    string                                       _body;
-   string                                       _toCC;        
-   string                                       _toBCC;       
+   string                                       _toCC;
+   string                                       _toBCC;
    std::vector<CtiNotifEmailAttachmentMsg*>      _attachments;
 
    CtiNotifEmailAttachmentMsg    *_notifAttachment;
@@ -86,13 +88,13 @@ protected:
 class IM_EX_MSG CtiCustomerNotifEmailMsg : public CtiMessage
 {
 private:
-   
+
    int                           _customerID;
-   string                     _to;          
+   string                     _to;
    string                     _subject;
    string                     _body;
-   string                     _toCC;        
-   string                     _toBCC;       
+   string                     _toCC;
+   string                     _toBCC;
    RWOrdered                     _attachments;
 
    CtiNotifEmailAttachmentMsg    *_notifAttachment;

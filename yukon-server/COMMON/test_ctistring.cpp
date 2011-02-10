@@ -14,9 +14,6 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <rw/re.h>
-
-
 #include "ctistring.h"
 
 #define BOOST_AUTO_TEST_MAIN "Test CtiString"

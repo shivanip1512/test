@@ -14,10 +14,10 @@
 *
 *    PURPOSE: Dsm2 ascii import
 *
-*    DESCRIPTION: 
+*    DESCRIPTION:
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrdsm2import.cpp,v $
       Revision 1.12.20.1  2008/11/13 17:23:47  jmarks
       YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
@@ -83,14 +83,14 @@
 
       This is an update due to the freezing of PVCS on 4/13/2002
 
-   
+
       Rev 1.1   10 Apr 2002 16:34:10   dsutton
    no longer setting the time when creating the point data msg because the only
    person using this, san bernard, is sending data from ilex that reads 1998
-   
+
       Rev 1.0   12 Mar 2002 10:36:18   dsutton
    Initial revision.
-   
+
 *
 *
 *
@@ -104,7 +104,6 @@
 #include <io.h>
 
 /** include files **/
-#include <rw/ctoken.h>
 #include "ctitime.h"
 #include "ctidate.h"
 
@@ -139,7 +138,7 @@ const CHAR * CtiFDR_Dsm2Import::KEY_DELETE_FILE = "FDR_DSM2IMPORT_DELETE_FILE";
 // Constructors, Destructor, and Operators
 CtiFDR_Dsm2Import::CtiFDR_Dsm2Import()
 : CtiFDRAsciiImportBase(string("DSM2IMPORT"))
-{   
+{
     init();
 }
 
@@ -158,7 +157,7 @@ CtiFDR_Dsm2Import::~CtiFDR_Dsm2Import()
 BOOL CtiFDR_Dsm2Import::init( void )
 {
     // init the base class
-    Inherited::init();    
+    Inherited::init();
 
     if (!readConfig( ))
     {
@@ -166,7 +165,7 @@ BOOL CtiFDR_Dsm2Import::init( void )
     }
 
     loadTranslationLists();
-    
+
     return TRUE;
 }
 
@@ -174,7 +173,7 @@ BOOL CtiFDR_Dsm2Import::init( void )
 * Function Name: CtiFDR_Dsm2Import::run()
 *
 * Description: runs the interface
-* 
+*
 **************************************************
 */
 BOOL CtiFDR_Dsm2Import::run( void )
@@ -189,8 +188,8 @@ BOOL CtiFDR_Dsm2Import::run( void )
 /*************************************************
 * Function Name: CtiFDR_Dsm2Import::stop()
 *
-* Description: stops all threads 
-* 
+* Description: stops all threads
+*
 **************************************************
 */
 BOOL CtiFDR_Dsm2Import::stop( void )
@@ -270,18 +269,18 @@ USHORT CtiFDR_Dsm2Import::Dsm2ToYukonQuality (CHAR aQuality)
     if (aQuality == 'O')
         Quality = UnknownQuality;
 
-	return(Quality);
+    return(Quality);
 }
 
 bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMsg)
 {
-	bool retCode = false;
+    bool retCode = false;
     bool flag;
     std::transform(aLine.begin(), aLine.end(), aLine.begin(), tolower);
     string tempString1;                // Will receive each token
     boost::char_separator<char> sep(",\r\n");
     Boost_char_tokenizer cmdLine(aLine, sep);
-    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
+    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();
 
     CtiFDRPoint         point;
     CHAR action[200];
@@ -292,7 +291,7 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
     {
         tempString1 = *tok_iter; tok_iter++;
         {
-            CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
+            CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
             flag = findTranslationNameInList (tempString1, getReceiveFromList(), point);
         }
 
@@ -347,9 +346,9 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
                                 case DemandAccumulatorPointType:
                                 case CalculatedPointType:
                                 {
-                                    *retMsg = new CtiPointDataMsg(point.getPointID(), 
-                                                                value, 
-                                                                quality, 
+                                    *retMsg = new CtiPointDataMsg(point.getPointID(),
+                                                                value,
+                                                                quality,
                                                                 AnalogPointType);
 //                                    ((CtiPointDataMsg *)*retMsg)->setTime(timestamp);
 
@@ -368,18 +367,18 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
                                     // check for control functions
                                     if (point.isControllable())
                                     {
-                                        int controlState=-1; 
+                                        int controlState=-1;
 
                                         // make sure the value is valid
                                         if (value == Dsm2_Open)
                                         {
                                             controlState = OPENED;
-                                        } 
+                                        }
                                         else if (value == Dsm2_Closed)
                                         {
                                             controlState = CLOSED;
                                         }
-                                        else          
+                                        else
                                         {
                                             {
                                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -389,7 +388,7 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
                                             CHAR state[20];
                                             _snprintf (state,20,"%.0f",value);
                                             desc = getInterfaceName() + string (" control point received with an invalid state ") + string (state);
-                                            _snprintf(action,60,"%s for pointID %d", 
+                                            _snprintf(action,60,"%s for pointID %d",
                                                       translationName.c_str(),
                                                       point.getPointID());
                                             logEvent (desc,string (action));
@@ -419,7 +418,7 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
                                             ((CtiCommandMsg *)*retMsg)->insert( -1 );                // This is the dispatch token and is unimplemented at this time
                                             ((CtiCommandMsg *)*retMsg)->insert(0);                   // device id, unknown at this point, dispatch will find it
                                             ((CtiCommandMsg *)*retMsg)->insert(point.getPointID());  // point for control
-                                            ((CtiCommandMsg *)*retMsg)->insert(controlState);       
+                                            ((CtiCommandMsg *)*retMsg)->insert(controlState);
                                             retCode = true;
                                         }
                                     }
@@ -427,7 +426,7 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
                                     {
                                         int yukonValue;
                                         string traceState;
-                                        // assign last stuff	
+                                        // assign last stuff
                                         switch ((int)value)
                                         {
                                             case Dsm2_Open:
@@ -471,7 +470,7 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
                                             CHAR state[20];
                                             _snprintf (state,20,"%.0f",value);
                                             desc = getInterfaceName() + string (" status point received with an invalid state ") + string (state);
-                                            _snprintf(action,60,"%s for pointID %d", 
+                                            _snprintf(action,60,"%s for pointID %d",
                                                       translationName.c_str(),
                                                       point.getPointID());
                                             logEvent (desc,string (action));
@@ -479,9 +478,9 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
                                         }
                                         else
                                         {
-                                            *retMsg = new CtiPointDataMsg(point.getPointID(), 
-                                                                        yukonValue, 
-                                                                        quality, 
+                                            *retMsg = new CtiPointDataMsg(point.getPointID(),
+                                                                        yukonValue,
+                                                                        quality,
                                                                         StatusPointType);
 //                                            ((CtiPointDataMsg*)*retMsg)->setTime(timestamp);
                                             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -510,7 +509,7 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
 
 
 int CtiFDR_Dsm2Import::readConfig( void )
-{    
+{
     int         successful = TRUE;
     string   tempStr;
 
@@ -605,8 +604,8 @@ int CtiFDR_Dsm2Import::readConfig( void )
 
 /****************************************************************************************
 *
-*      Here Starts some C functions that are used to Start the 
-*      Interface and Stop it from the Main() of FDR.EXE.  
+*      Here Starts some C functions that are used to Start the
+*      Interface and Stop it from the Main() of FDR.EXE.
 *
 */
 
@@ -617,11 +616,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int RunInterface(void)
 *
-* Description: This is used to Start the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Start the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function creates a global FDRCygnet Object and then
 *              calls its run method to cank it up.
-* 
+*
 *************************************************************************
 */
 
@@ -638,11 +637,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int StopInterface(void)
 *
-* Description: This is used to Stop the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Stop the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function stops a global FDRCygnet Object and then
 *              deletes it.
-* 
+*
 *************************************************************************
 */
     DLLEXPORT int StopInterface( void )

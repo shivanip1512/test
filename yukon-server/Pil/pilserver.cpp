@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   pilserver
-*
-* Date:   10/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.122.2.2 $
-* DATE         :  $Date: 2008/11/21 16:14:54 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-#pragma warning( disable : 4786 )
-
 
 #include <iomanip>
 #include <iostream>
@@ -28,8 +13,6 @@
 #include <rw/toolpro/inetaddr.h>
 #include <rw/rwerr.h>
 #include <rw/thr/mutex.h>
-#include <rw/re.h>
-#undef mask_                // Stupid RogueWave re.h
 
 #include "os2_2w32.h"
 #include "cticalls.h"
@@ -68,6 +51,8 @@
 #include "utility.h"
 #include "database_connection.h"
 #include "database_reader.h"
+#include "amq_connection.h"
+#include "PorterResponseMessage.h"
 
 #include "ctistring.h"
 
@@ -523,6 +508,17 @@ void CtiPILServer::connectionThread()
 }
 
 
+void CtiPILServer::copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &returnMsg, void *connectionHandle)
+{
+    using namespace Cti::Messaging;
+
+    PorterResponseMessage msg(returnMsg, connectionHandle);
+
+    gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_PorterResponses, msg);
+}
+
+
+
 void CtiPILServer::resultThread()
 {
     {
@@ -698,6 +694,11 @@ void CtiPILServer::resultThread()
                                 if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
                                 {
                                     pRet->dump();
+                                }
+
+                                if( pRet->isA() == MSG_PCRETURN )
+                                {
+                                    copyReturnMessageToResponseMonitorQueue(*(static_cast<CtiReturnMsg *>(pRet)), InMessage->Return.Connection);
                                 }
 
                                 Conn->WriteConnQue(pRet);

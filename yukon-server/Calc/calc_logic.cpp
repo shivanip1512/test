@@ -1,7 +1,6 @@
 #include "yukon.h"
 
 #include <rw/thr/thrutil.h>
-#include <rw/collstr.h>
 #include <rw/toolpro/winsock.h>
 
 #include "dbaccess.h"

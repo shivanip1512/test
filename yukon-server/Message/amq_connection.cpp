@@ -2,15 +2,21 @@
 
 #include "utility.h"
 
+#include "StreamableMessage.h"
+
 #include "cms/connectionfactory.h"
 
 #include "amq_connection.h"
 
+using std::make_pair;
+
 namespace Cti {
+namespace Messaging {
 
 ActiveMQConnectionManager::ActiveMQConnectionManager(const std::string &broker_uri) :
     _broker_uri(broker_uri)
 {
+    _queue_names.insert(make_pair(Queue_PorterResponses, "yukon.notif.obj.amr.PorterResponseMessage"));
 }
 
 
@@ -23,6 +29,19 @@ ActiveMQConnectionManager::~ActiveMQConnectionManager()
     }
 
     delete_assoc_container(_producers);
+}
+
+
+std::string ActiveMQConnectionManager::getQueueName(Queues queue) const
+{
+    queue_name_map::const_iterator itr = _queue_names.find(queue);
+
+    if( itr != _queue_names.end() )
+    {
+        return itr->second;
+    }
+
+    return "";
 }
 
 
@@ -78,13 +97,13 @@ void ActiveMQConnectionManager::sendPendingMessages()
 }
 
 
-void ActiveMQConnectionManager::enqueueMessage(const std::string &queue, const std::string &message)
+void ActiveMQConnectionManager::enqueueEnvelope(envelope &e)
 {
-    CtiLockGuard<CtiCriticalSection> lock(_pending_message_mux);
+    {
+        CtiLockGuard<CtiCriticalSection> lock(_pending_message_mux);
 
-    envelope e = { queue, message };
-
-    _pending_messages.push(e);
+        _pending_messages.push(e);
+    }
 
     if( !isRunning() )
     {
@@ -98,20 +117,38 @@ void ActiveMQConnectionManager::enqueueMessage(const std::string &queue, const s
 }
 
 
+void ActiveMQConnectionManager::enqueueMessage(const std::string &queue, const std::string &message)
+{
+    envelope e = { queue, createTextMessage(message) };
+
+    enqueueEnvelope(e);
+}
+
+
+void ActiveMQConnectionManager::enqueueMessage(const Queues queue, const Messaging::StreamableMessage &message)
+{
+    std::string queueName = getQueueName(queue);
+
+    if( ! queueName.empty() )
+    {
+        envelope e = {queueName, createStreamMessage(message) };
+
+        enqueueEnvelope(e);
+    }
+}
+
+
 void ActiveMQConnectionManager::sendMessage(const envelope &e)
 {
-    cms::MessageProducer *producer = getProducer(e.queue);
-
-    if( producer )
+    if( cms::MessageProducer *producer = getProducer(e.queue) )
     {
-        std::auto_ptr<cms::TextMessage> message = createTextMessage(e.message);
-
-        producer->send(message.get());
+        producer->send(e.message);
     }
 }
 
 
 cms::MessageProducer *ActiveMQConnectionManager::getProducer(const std::string &queue)
+try
 {
     producer_map::iterator itr = _producers.find(queue);
 
@@ -124,15 +161,25 @@ cms::MessageProducer *ActiveMQConnectionManager::getProducer(const std::string &
 
     return itr->second;
 }
-
-
-std::auto_ptr<cms::TextMessage> ActiveMQConnectionManager::createTextMessage(const std::string &message)
+catch( cms::CMSException &e )
 {
-    std::auto_ptr<cms::TextMessage> textMessage(_session->createTextMessage());
+    return 0;
+}
 
-    textMessage->setText(message.c_str());
 
-    return textMessage;
+cms::TextMessage *ActiveMQConnectionManager::createTextMessage(const std::string &message)
+{
+    return _session->createTextMessage(message);
+}
+
+
+cms::StreamMessage *ActiveMQConnectionManager::createStreamMessage(const Messaging::StreamableMessage &message)
+{
+    cms::StreamMessage *streamMessage = _session->createStreamMessage();
+
+    message.streamInto(*streamMessage);
+
+    return streamMessage;
 }
 
 
@@ -160,4 +207,4 @@ void  ActiveMQConnectionManager::receiveMessage()
 }
 */
 }
-
+}

@@ -168,9 +168,7 @@
 #include "yukon.h"
 
 
-#include <rw\re.h>
 #include <boost/regex.hpp>
-#undef mask_                // Stupid RogueWave re.h
 
 #include "cparms.h"
 #include "logger.h"

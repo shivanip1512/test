@@ -33,8 +33,6 @@
 #include "utility.h"
 #include "errno.h"
 
-#include <rw/re.h>
-
 using namespace std;
 
 /*

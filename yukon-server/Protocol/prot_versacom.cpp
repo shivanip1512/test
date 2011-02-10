@@ -19,9 +19,6 @@
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 
-#include <rw/re.h>
-#undef mask_
-
 #include "ctidbgmem.h" // defines CTIDBG_new
 #include "cparms.h"
 #include "cmdparse.h"

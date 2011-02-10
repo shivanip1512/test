@@ -95,8 +95,6 @@
 #include "yukon.h"
 
 #include "row_reader.h"
-#include <rw/ctoken.h>
-#include <rw/collstr.h>
 
 #include "cparms.h"
 #include "dbaccess.h"

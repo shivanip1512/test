@@ -14,10 +14,10 @@
 *
 *    PURPOSE: Generic Interface used to import an ascii file
 *
-*    DESCRIPTION: 
+*    DESCRIPTION:
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrtextfilebase.cpp,v $
       Revision 1.4.24.1  2008/11/13 17:23:48  jmarks
       YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
@@ -54,7 +54,7 @@
       Interfaces FDRTextExport and FDRTextImport and all the pieces needed
       to make them compile and work
 
-   
+
 *
 *
 *
@@ -65,7 +65,6 @@
 #include "yukon.h"
 
 /** include files **/
-#include <rw/ctoken.h>
 #include "ctitime.h"
 #include "ctidate.h"
 
@@ -82,7 +81,7 @@ CtiFDRTextFileBase::CtiFDRTextFileBase(string &aInterface)
 : CtiFDRInterface(aInterface),
 _textFileParts(),
 _linkStatusID(0)
-{ 
+{
 
 }
 
@@ -93,12 +92,12 @@ CtiFDRTextFileBase::~CtiFDRTextFileBase()
 
 
 long CtiFDRTextFileBase::getLinkStatusID( void ) const
-{   
+{
     return _linkStatusID;
 }
 
 CtiFDRTextFileBase & CtiFDRTextFileBase::setLinkStatusID(const long aPointID)
-{   
+{
     _linkStatusID = aPointID;
     return *this;
 }
@@ -157,7 +156,7 @@ CtiFDRTextFileBase &CtiFDRTextFileBase::setDriveAndPath (string aPath)
 BOOL CtiFDRTextFileBase::init( void )
 {
     // init the base class
-    Inherited::init();    
+    Inherited::init();
     return TRUE;
 }
 
@@ -165,7 +164,7 @@ BOOL CtiFDRTextFileBase::init( void )
 * Function Name: CtiFDRTextFileBase::run()
 *
 * Description: runs the interface
-* 
+*
 **************************************************
 */
 BOOL CtiFDRTextFileBase::run( void )
@@ -182,8 +181,8 @@ BOOL CtiFDRTextFileBase::run( void )
 /*************************************************
 * Function Name: CtiFDRTextFileBase::stop()
 *
-* Description: stops all threads 
-* 
+* Description: stops all threads
+*
 **************************************************
 */
 BOOL CtiFDRTextFileBase::stop( void )
@@ -215,9 +214,9 @@ void CtiFDRTextFileBase::sendLinkState (int aState)
     if (getLinkStatusID() != 0)
     {
         CtiPointDataMsg     *pData;
-        pData = new CtiPointDataMsg(getLinkStatusID(), 
-                                    aState, 
-                                    NormalQuality, 
+        pData = new CtiPointDataMsg(getLinkStatusID(),
+                                    aState,
+                                    NormalQuality,
                                     StatusPointType);
         sendMessageToDispatch (pData);
     }
@@ -226,9 +225,9 @@ void CtiFDRTextFileBase::sendLinkState (int aState)
 /************************************************************************
 * Function Name: CtiFDRTextFileBase::loadTranslationLists()
 *
-* Description: Creates a collection of points and their translations for the 
-*				specified direction
-* 
+* Description: Creates a collection of points and their translations for the
+*               specified direction
+*
 *************************************************************************
 */
 bool CtiFDRTextFileBase::loadTranslationLists()

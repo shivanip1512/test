@@ -14,8 +14,6 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 #include <boost\regex.hpp>
-#include <rw\re.h>
-#undef mask_
 
 #include "dbaccess.h"
 #include "logger.h"
@@ -173,7 +171,7 @@ string CtiTablePaoExclusion::getSQLCoreStatement(long id)
 
 void CtiTablePaoExclusion::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

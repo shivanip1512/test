@@ -1,12 +1,12 @@
 /*-----------------------------------------------------------------------------
     Filename:  executor.cpp
-    
+
     Programmer:  Josh Wolberg
-    
+
     Description:    Defines Load Management executor classes.
 
     Initial Date:  2/13/2001
-    
+
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
 #include "yukon.h"
@@ -38,8 +38,6 @@
 #include "ctidate.h"
 #include "utility.h"
 
-#include <rw/collstr.h>
-
 extern ULONG _LM_DEBUG;
 
 /*===========================================================================
@@ -48,7 +46,7 @@ extern ULONG _LM_DEBUG;
 
 /*---------------------------------------------------------------------------
     Execute
-    
+
     Executes the command and places any resulting messages on the result
     queue.
 ---------------------------------------------------------------------------*/
@@ -137,7 +135,7 @@ void CtiLMCommandExecutor::Execute()
 
 /*---------------------------------------------------------------------------
     ChangeThreshold
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMCommandExecutor::ChangeThreshold()
 {
     LONG commandPAOID = _command->getPAOId();
@@ -190,7 +188,7 @@ void CtiLMCommandExecutor::ChangeThreshold()
 
 /*---------------------------------------------------------------------------
     ChangeRestoreOffset
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMCommandExecutor::ChangeRestoreOffset()
 {
     LONG commandPAOID = _command->getPAOId();
@@ -243,14 +241,14 @@ void CtiLMCommandExecutor::ChangeRestoreOffset()
 
 /*---------------------------------------------------------------------------
     ChangeCurrentOperationalState
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMCommandExecutor::ChangeCurrentOperationalState()
 {
 }
 
 /*---------------------------------------------------------------------------
     EnableControlArea
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMCommandExecutor::EnableControlArea()
 {
     LONG commandPAOID = _command->getPAOId();
@@ -287,7 +285,7 @@ void CtiLMCommandExecutor::EnableControlArea()
 
 /*---------------------------------------------------------------------------
     DisableControlArea
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMCommandExecutor::DisableControlArea()
 {
     LONG commandPAOID = _command->getPAOId();
@@ -353,7 +351,7 @@ void CtiLMCommandExecutor::DisableControlArea()
 
 /*---------------------------------------------------------------------------
     EnableProgram
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMCommandExecutor::EnableProgram()
 {
     LONG commandPAOID = _command->getPAOId();
@@ -401,7 +399,7 @@ void CtiLMCommandExecutor::EnableProgram()
     DisableProgram
     If emergency is true then stop and disable the program without causing
     any commands to be sent.
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMCommandExecutor::DisableProgram(bool emergency)
 {
     LONG commandPAOID = _command->getPAOId();
@@ -489,7 +487,7 @@ void CtiLMCommandExecutor::DisableProgram(bool emergency)
 
 /*---------------------------------------------------------------------------
     SendAllControlAreas
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMCommandExecutor::SendAllControlAreas()
 {
     CtiLMExecutorFactory f;
@@ -511,7 +509,7 @@ void CtiLMCommandExecutor::SendAllControlAreas()
 
 /*---------------------------------------------------------------------------
     ChangeDailyStartTime
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMCommandExecutor::ChangeDailyStartTime()
 {
     LONG commandPAOID = _command->getPAOId();
@@ -559,7 +557,7 @@ void CtiLMCommandExecutor::ChangeDailyStartTime()
 
 /*---------------------------------------------------------------------------
     ChangeDailyStopTime
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMCommandExecutor::ChangeDailyStopTime()
 {
     LONG commandPAOID = _command->getPAOId();
@@ -1116,7 +1114,7 @@ void CtiLMCommandExecutor::ResetPeakPointValue()
                     break;
                 }
             }
-            currentLMControlArea->setUpdatedFlag(TRUE);     
+            currentLMControlArea->setUpdatedFlag(TRUE);
             break;
         }
     }
@@ -1130,7 +1128,7 @@ void CtiLMCommandExecutor::ResetPeakPointValue()
 
 /*---------------------------------------------------------------------------
     Execute
-    
+
     Executes the command and places any resulting messages on the result
     queue.
 ---------------------------------------------------------------------------*/
@@ -1171,7 +1169,7 @@ void CtiLMManualControlRequestExecutor::Execute()
     // Set up a response if this was wrapped up in a request message
     // Fill in the response as we figure out what to say to the client
     // and then send it at the end of this function
-    CtiServerResponseMsg* response = NULL; 
+    CtiServerResponseMsg* response = NULL;
     if( _request != NULL )
     {
         response = CTIDBG_new CtiServerResponseMsg();
@@ -1190,7 +1188,7 @@ void CtiLMManualControlRequestExecutor::Execute()
 
     switch( _controlMsg->getCommand() )
     {
-    
+
     case CtiLMManualControlRequest::SCHEDULED_START:
         if( startTime <= _controlMsg->getStartTime() )
         {
@@ -1225,7 +1223,7 @@ void CtiLMManualControlRequestExecutor::Execute()
                 else
                 {
                     response->setStatus(CtiServerResponseMsg::ERR);
-                    response->setMessage("Manual Control Request Constraint Check Violations");             
+                    response->setMessage("Manual Control Request Constraint Check Violations");
                 }
             }
             //Do not actually start the program
@@ -1307,9 +1305,9 @@ void CtiLMManualControlRequestExecutor::Execute()
             break;
 
         case CtiLMManualControlRequest::USE_CONSTRAINTS:
-            (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(false);           
+            (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(false);
             // Fix up program control window if necessary
-            startTime = (boost::static_pointer_cast< CtiLMProgramDirect >(program))->getDirectStartTime();        
+            startTime = (boost::static_pointer_cast< CtiLMProgramDirect >(program))->getDirectStartTime();
             CoerceStartStopTime(program, startTime, stopTime, controlArea);
             StopProgram(program, controlArea, stopTime);
             if( response != NULL )
@@ -1353,7 +1351,7 @@ void CtiLMManualControlRequestExecutor::Execute()
                     else
                     {
                         response->setStatus(CtiServerResponseMsg::ERR);
-                        response->setMessage("Manual Gear Change Request Constraint Check Violations");             
+                        response->setMessage("Manual Gear Change Request Constraint Check Violations");
                     }
                 }
                 //Do not actually start the program
@@ -1368,7 +1366,7 @@ void CtiLMManualControlRequestExecutor::Execute()
                         dout << CtiTime() << " Gear Change being sent: " << endl;
                         dout << "     OldStopTime: " << (boost::static_pointer_cast< CtiLMProgramDirect >(program))->getDirectStopTime() <<
                              " NewStopTime: " << stopTime << endl;
-                        dout << "     OldGear: " << (boost::static_pointer_cast< CtiLMProgramDirect >(program))->getCurrentGearNumber() << 
+                        dout << "     OldGear: " << (boost::static_pointer_cast< CtiLMProgramDirect >(program))->getCurrentGearNumber() <<
                              " NewGear: " << _controlMsg->getStartGear()-1 << endl;
                     }
                     StartProgram(program, controlArea, startTime, stopTime);
@@ -1414,9 +1412,9 @@ void CtiLMManualControlRequestExecutor::Execute()
         response->setMessagePriority(1);
         CtiLMManualControlResponse* lmResp = CTIDBG_new CtiLMManualControlResponse();
         lmResp->setPAOId(_controlMsg->getPAOId());
-        lmResp->setConstraintViolations(checker.getViolations());       
+        lmResp->setConstraintViolations(checker.getViolations());
         response->setPayload(lmResp);
-        response->setID(_request->getID());     
+        response->setID(_request->getID());
 
         if( _LM_DEBUG & LM_DEBUG_OUT_MESSAGES )
         {
@@ -1470,7 +1468,7 @@ void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBaseSPtr progra
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - " << text << ", " << additional << endl;
         }
-    } // end program->getPAOType() == TYPE_LMPROGRAM_DIRECT 
+    } // end program->getPAOType() == TYPE_LMPROGRAM_DIRECT
     else if( program->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
     {
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -1644,9 +1642,9 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirectSPtr
             lmProgramDirect->setNotifyInactiveTime(gInvalidCtiTime);
         }
 
-        lmProgramDirect->setNotifyActiveTime(gInvalidCtiTime);          
+        lmProgramDirect->setNotifyActiveTime(gInvalidCtiTime);
         lmProgramDirect->setDirectStartTime(gInvalidCtiTime);
-        lmProgramDirect->setDirectStopTime(gInvalidCtiTime);    
+        lmProgramDirect->setDirectStopTime(gInvalidCtiTime);
         lmProgramDirect->setProgramState(CtiLMProgramBase::InactiveState);
         lmProgramDirect->setControlActivatedByStatusTrigger(FALSE);
         controlArea->setUpdatedFlag(TRUE);
@@ -1715,7 +1713,7 @@ void CtiLMManualControlRequestExecutor::StopCurtailmentProgram(CtiLMProgramCurta
         lmProgramCurtailment->setAdditionalInfo("none");
     }
     lmProgramCurtailment->setManualControlReceivedFlag(TRUE);
-    controlArea->setUpdatedFlag(TRUE);    
+    controlArea->setUpdatedFlag(TRUE);
 }
 
 /*
@@ -1745,7 +1743,7 @@ void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr
 
 /*---------------------------------------------------------------------------
     Execute
-    
+
     Executes the command and places any resulting messages on the result
     queue.
 ---------------------------------------------------------------------------*/
@@ -1784,7 +1782,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::Execute()
 
 /*---------------------------------------------------------------------------
     NewOffer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -1883,7 +1881,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
 
 /*---------------------------------------------------------------------------
     OfferUpdate
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate()
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -1995,7 +1993,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate()
 
 /*---------------------------------------------------------------------------
     OfferRevision
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -2117,7 +2115,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
 
 /*---------------------------------------------------------------------------
     CloseOffer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer()
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -2215,7 +2213,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer()
 
 /*---------------------------------------------------------------------------
     CancelOffer
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer()
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -2320,7 +2318,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer()
 ===========================================================================*/
 /*---------------------------------------------------------------------------
     Execute
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMControlAreaMsgExecutor::Execute()
 {
     CtiLMClientListener::getInstance()->BroadcastMessage(((CtiMessage*)_controlAreaMsg));
@@ -2332,7 +2330,7 @@ void CtiLMControlAreaMsgExecutor::Execute()
 ===========================================================================*/
 /*---------------------------------------------------------------------------
     Execute
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute()
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -2454,7 +2452,7 @@ void figureHourlyCommittedForOfferId(LONG offerId, const std::vector<CtiLMEnergy
 ===========================================================================*/
 /*---------------------------------------------------------------------------
     Execute
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -2674,12 +2672,12 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
 ===========================================================================*/
 CtiLMMultiMsgExecutor::CtiLMMultiMsgExecutor(CtiMultiMsg* multiMsg)
 {
-    _multiMsg =  multiMsg; 
+    _multiMsg =  multiMsg;
 }
 
 /*---------------------------------------------------------------------------
     Execute
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMMultiMsgExecutor::Execute()
 {
     CtiLMExecutorFactory f;
@@ -2707,7 +2705,7 @@ void CtiLMMultiMsgExecutor::Execute()
 ===========================================================================*/
 /*---------------------------------------------------------------------------
     Execute
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMForwardMsgToDispatchExecutor::Execute()
 {
     CtiLoadManager::getInstance()->sendMessageToDispatch(_ctiMessage->replicateMessage());
@@ -2720,7 +2718,7 @@ void CtiLMForwardMsgToDispatchExecutor::Execute()
 
 /*---------------------------------------------------------------------------
     Execute
-    
+
     Executes a shutdown on the server
     THIS EXECUTOR IS THE EXCEPTION
     IT MUST NOT BE EXECUTED ON THE MAIN THREAD AS THE REST OF THEM SHOULD BE

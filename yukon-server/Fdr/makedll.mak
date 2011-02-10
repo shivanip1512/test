@@ -645,7 +645,7 @@ fdrdestination.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		logger.h thread.h CtiPCPtrQueue.h
 fdrdnphelper.obj:	yukon.h precompiled.h types.h ctidbgmem.h msg_cmd.h \
-		dlldefs.h message.h ctitime.h collectable.h rwutil.h \
+		message.h ctitime.h dlldefs.h collectable.h rwutil.h \
 		database_connection.h dbaccess.h dllbase.h os2_2w32.h \
 		cticalls.h dsm2.h mutex.h guard.h utility.h queues.h numstr.h \
 		sorted_vector.h cticonnect.h netports.h dsm2err.h words.h \
@@ -933,7 +933,7 @@ fdrrdex.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctitime.h \
 		fdrsocketlayer.h fdrsocketconnection.h fdrserverconnection.h \
 		fdrrdex.h
 fdrscadahelper.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		msg_cmd.h dlldefs.h message.h ctitime.h collectable.h \
+		msg_cmd.h message.h ctitime.h dlldefs.h collectable.h \
 		rwutil.h database_connection.h dbaccess.h dllbase.h \
 		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
 		queues.h numstr.h sorted_vector.h cticonnect.h netports.h \

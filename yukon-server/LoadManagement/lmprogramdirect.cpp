@@ -43,6 +43,8 @@
 #include "utility.h"
 #include "database_writer.h"
 
+#include <rw/ordcltn.h>
+
 extern ULONG _LM_DEBUG;
 extern std::queue<CtiTableLMProgramHistory> _PROGRAM_HISTORY_QUEUE;
 
@@ -4260,7 +4262,7 @@ bool CtiLMProgramDirect::stopSubordinatePrograms(CtiMultiMsg* multiPilMsg, CtiMu
                 CtiLockGuard<CtiLogger> dout_guard(dout);
                 dout << CtiTime() << " - " <<  text << endl;
             }
-            
+
             if( (*sub_iter)->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) )
             {
                 (*sub_iter)->scheduleStopNotification(CtiTime());
@@ -5994,13 +5996,13 @@ bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* cur
 }
 
 /**
- * recordHistory assumes that the current gear object is set for 
- * the current or starting control. 
- * 
- * @param action LMHistoryActions 
- * @param time CtiTime& 
- * 
- * @return bool 
+ * recordHistory assumes that the current gear object is set for
+ * the current or starting control.
+ *
+ * @param action LMHistoryActions
+ * @param time CtiTime&
+ *
+ * @return bool
  */
 bool CtiLMProgramDirect::recordHistory(CtiTableLMProgramHistory::LMHistoryActions action, CtiTime &time)
 {
@@ -6025,13 +6027,13 @@ bool CtiLMProgramDirect::recordHistory(CtiTableLMProgramHistory::LMHistoryAction
     setProgramState
 
     Sets the current state of the program. Also writes out historical program
-    tables and requires the program to be properly loaded before it is called. 
+    tables and requires the program to be properly loaded before it is called.
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramDirect::setProgramState(LONG newState)
 {
     long currentState = getProgramState();
 
-    if( currentState != newState && 
+    if( currentState != newState &&
         newState     != CtiLMProgramBase::GearChangeState &&
         currentState != CtiLMProgramBase::GearChangeState )
     {
@@ -6057,12 +6059,12 @@ CtiLMProgramBase& CtiLMProgramDirect::setProgramState(LONG newState)
 }
 
 /**
- * Returns true if the given state is considered an active 
+ * Returns true if the given state is considered an active
  * (controlling) state. Uses states from lmprogrambase.h
- * 
- * @param state LONG 
- * 
- * @return bool 
+ *
+ * @param state LONG
+ *
+ * @return bool
  */
 bool CtiLMProgramDirect::isAControlState(int state)
 {

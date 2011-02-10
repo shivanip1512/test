@@ -702,11 +702,11 @@ dev_dnp.obj:	yukon.h precompiled.h types.h ctidbgmem.h dev_dnp.h \
 		configval.h prot_base.h xfer.h tbl_dialup.h tbl_direct.h \
 		prot_dnp.h packet_finder.h dnp_application.h dnp_objects.h \
 		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
-		dnp_object_binaryoutput.h tbl_dv_address.h porter.h \
-		devicetypes.h pt_status.h tbl_pt_status.h pt_accum.h \
-		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_accum.h \
-		tbl_pt_accumhistory.h dllyukon.h msg_cmd.h \
-		msg_lmcontrolhistory.h
+		dnp_object_binaryoutput.h tbl_dv_address.h \
+		dnp_object_analogoutput.h porter.h devicetypes.h pt_status.h \
+		tbl_pt_status.h pt_accum.h pt_numeric.h tbl_pt_unit.h \
+		tbl_unitmeasure.h tbl_pt_accum.h tbl_pt_accumhistory.h \
+		dllyukon.h msg_cmd.h msg_lmcontrolhistory.h
 dev_dr87.obj:	yukon.h precompiled.h types.h ctidbgmem.h ctitime.h \
 		dlldefs.h ctidate.h logger.h thread.h mutex.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h numstr.h \

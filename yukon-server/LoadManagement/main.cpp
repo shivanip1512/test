@@ -2,7 +2,6 @@
 
 #include <rw/toolpro/winsock.h>
 #include <rw/thr/thrutil.h>
-#include <rw/collstr.h>
 
 #include "lmcontrolareastore.h"
 #include "loadmanager.h"

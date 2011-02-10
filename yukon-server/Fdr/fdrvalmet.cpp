@@ -16,12 +16,12 @@
 *
 *    DESCRIPTION: This class implements an interface that exchanges point data
 *                 from a Valmet scada system.  The data is both status and Analog data.
-*				  Information is exchanged using sockets opened on a predefined socket 
-*				  number and also pre-defined messages between the systems.  See the 
-*				  design document for more information
+*                 Information is exchanged using sockets opened on a predefined socket
+*                 number and also pre-defined messages between the systems.  See the
+*                 design document for more information
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdrvalmet.cpp,v $
       Revision 1.15.2.1  2008/11/13 17:23:48  jmarks
       YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
@@ -96,40 +96,40 @@
 
       This is an update due to the freezing of PVCS on 4/13/2002
 
-   
+
       Rev 2.8   08 Apr 2002 14:41:36   dsutton
    updated foreigntoyukontime function to contain a flag that says whether we're processing a time sync.  If we are, we don't want to do the validity window since the timesync has a configurable window of its own
-   
+
       Rev 2.7   01 Mar 2002 13:13:30   dsutton
    added timesync processing cparms and functions
-   
+
       Rev 2.6   15 Feb 2002 11:16:42   dsutton
    added two new cparms to control data flow to VALMET that limit the number of entries sent per so many seconds.  Also changed the log wording to be entries queued, not sent to handle possible discrepancies
-   
+
       Rev 2.5   11 Feb 2002 15:03:14   dsutton
    added event logs when the connection is established or failed, unknown points, invalid states, etc
-   
+
       Rev 2.4   14 Dec 2001 17:17:40   dsutton
    the functions that load the lists of points noware updating point managers instead of creating separate lists of their own.  Hopefully this is easier to follow
-   
+
       Rev 2.3   15 Nov 2001 16:16:40   dsutton
    code for multipliers and an queue for the messages to dispatch along with fixes to RCCS/INET interface. Lazy checkin
-   
+
       Rev 2.2   26 Oct 2001 15:20:34   dsutton
    moving revision 1 to 2.x
-   
+
       Rev 1.2.1.0   26 Oct 2001 14:27:50   dsutton
    processing massive updates
-   
+
       Rev 1.2   23 Aug 2001 14:00:02   dsutton
    updated to intercept control points from the yukon side
-   
+
       Rev 1.1   20 Jul 2001 10:04:10   dsutton
    unk
-   
+
       Rev 1.0   19 Jun 2001 10:53:06   dsutton
    Initial revision.
-   
+
 *
 *
 *
@@ -147,7 +147,6 @@
 #include <stdio.h>
 
 /** include files **/
-#include <rw/ctoken.h>
 #include "ctitime.h"
 #include "ctidate.h"
 #include "utility.h"
@@ -193,7 +192,7 @@ const CHAR * CtiFDR_Valmet::KEY_LINK_TIMEOUT = "FDR_VALMET_LINK_TIMEOUT_SECONDS"
 // Constructors, Destructor, and Operators
 CtiFDR_Valmet::CtiFDR_Valmet()
 : CtiFDRSingleSocket(string(FDR_VALMET))
-{   
+{
     init();
 }
 
@@ -206,11 +205,11 @@ CtiFDR_Valmet::~CtiFDR_Valmet()
 * Function Name: CtiFDR_Valmet::config()
 *
 * Description: loads cparm config values
-* 
+*
 **************************************************
 */
 int CtiFDR_Valmet::readConfig()
-{    
+{
     int         successful = TRUE;
     string   tempStr;
 
@@ -420,7 +419,7 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
 
    /**************************
     * we allocate a valmet message here and it will be deleted
-    * inside of the write function on the connection 
+    * inside of the write function on the connection
     ***************************
     */
     valmet = new CHAR[sizeof (ValmetInterface_t)];
@@ -551,7 +550,7 @@ CHAR *CtiFDR_Valmet::buildForeignSystemHeartbeatMsg ()
 
     /**************************
     * we allocate a valmet message here and it will be deleted
-    * inside of the write function on the connection 
+    * inside of the write function on the connection
     ***************************
     */
     valmet = new CHAR[sizeof (ValmetInterface_t)];
@@ -603,7 +602,7 @@ int CtiFDR_Valmet::processTimeSyncMessage(CHAR *aData)
         CtiTime now;
         // check if the stamp is inside the window
         if (timestamp.seconds() > (now.seconds()-getTimeSyncVariation()) &&
-            timestamp.seconds() < (now.seconds()+getTimeSyncVariation())) 
+            timestamp.seconds() < (now.seconds()+getTimeSyncVariation()))
         {
             retVal = NORMAL;
         }
@@ -617,20 +616,20 @@ int CtiFDR_Valmet::processTimeSyncMessage(CHAR *aData)
                 /**********************
                 *   Straight from the help files
                 *
-                * It is not recommended that you add and subtract values 
-                * from the SYSTEMTIME structure to obtain relative times. Instead, you should 
+                * It is not recommended that you add and subtract values
+                * from the SYSTEMTIME structure to obtain relative times. Instead, you should
                 *
-                * Convert the SYSTEMTIME structure to a FILETIME structure. 
-                * Copy the resulting FILETIME structure to a ULARGE_INTEGER structure. 
-                * Use normal 64-bit arithmetic on the ULARGE_INTEGER value. 
+                * Convert the SYSTEMTIME structure to a FILETIME structure.
+                * Copy the resulting FILETIME structure to a ULARGE_INTEGER structure.
+                * Use normal 64-bit arithmetic on the ULARGE_INTEGER value.
                 ***********************
                 */
                 SYSTEMTIME  sysTime;
                 FILETIME    fileTime;
                 GetSystemTime(&sysTime);
                 if (SystemTimeToFileTime (&sysTime, &fileTime))
-                {  
-                    ULARGE_INTEGER timeNow; // 64 bit number of 100 nanosecond parts since 1601 
+                {
+                    ULARGE_INTEGER timeNow; // 64 bit number of 100 nanosecond parts since 1601
                     timeNow.LowPart = fileTime.dwLowDateTime;
                     timeNow.HighPart = fileTime.dwHighDateTime;
 
@@ -748,7 +747,7 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
          (point->getPointType() == CalculatedPointType)))
 
     {
-        // assign last stuff	
+        // assign last stuff
         quality = ForeignToYukonQuality (data->Value.Quality);
         value = ntohieeef (data->Value.LongValue);
         value *= point->getMultiplier();
@@ -1125,32 +1124,32 @@ USHORT CtiFDR_Valmet::ForeignToYukonQuality (USHORT aQuality)
 
 USHORT CtiFDR_Valmet::YukonToForeignQuality (USHORT aQuality)
 {
-	USHORT Quality = VALMET_PLUGGED;
+    USHORT Quality = VALMET_PLUGGED;
 
-	/* Test for the various CTI Qualities and translate to Valmet */
-	if (aQuality == NonUpdatedQuality)
-		Quality = VALMET_PLUGGED;
-	else if (aQuality == InvalidQuality)
-		Quality = VALMET_DATAINVALID;
-	else if (aQuality == ManualQuality)
-		Quality = VALMET_MANUALENTRY;
-	else if (aQuality == AbnormalQuality)
-		Quality = VALMET_UNREASONABLE;
-	if (aQuality == UnintializedQuality)
-		Quality = VALMET_DATAINVALID;
+    /* Test for the various CTI Qualities and translate to Valmet */
+    if (aQuality == NonUpdatedQuality)
+        Quality = VALMET_PLUGGED;
+    else if (aQuality == InvalidQuality)
+        Quality = VALMET_DATAINVALID;
+    else if (aQuality == ManualQuality)
+        Quality = VALMET_MANUALENTRY;
+    else if (aQuality == AbnormalQuality)
+        Quality = VALMET_UNREASONABLE;
+    if (aQuality == UnintializedQuality)
+        Quality = VALMET_DATAINVALID;
 
-	return(htons (Quality));
+    return(htons (Quality));
 }
 
 
 
-// Convert Valmet status to CTI Status 
+// Convert Valmet status to CTI Status
 int CtiFDR_Valmet::ForeignToYukonStatus (USHORT aStatus)
 {
     int tmpstatus=INVALID;
 
     switch (ntohs (aStatus))
-    {  
+    {
         case Valmet_Open:
             tmpstatus = OPENED;
             break;
@@ -1167,21 +1166,21 @@ int CtiFDR_Valmet::ForeignToYukonStatus (USHORT aStatus)
 
 USHORT CtiFDR_Valmet::YukonToForeignStatus (int aStatus)
 {
-	USHORT tmpstatus=Valmet_Invalid;
+    USHORT tmpstatus=Valmet_Invalid;
 
-	switch (aStatus)
-	{
-		case OPENED:
-			tmpstatus = Valmet_Open;
-			break;
-		case CLOSED:
-			tmpstatus = Valmet_Closed;
-			break;
+    switch (aStatus)
+    {
+        case OPENED:
+            tmpstatus = Valmet_Open;
+            break;
+        case CLOSED:
+            tmpstatus = Valmet_Closed;
+            break;
         case INDETERMINATE:
-			tmpstatus = Valmet_Indeterminate;
-			break;
-	}
-	return(htons (tmpstatus));
+            tmpstatus = Valmet_Indeterminate;
+            break;
+    }
+    return(htons (tmpstatus));
 }
 
 
@@ -1206,8 +1205,8 @@ CtiTime CtiFDR_Valmet::ForeignToYukonTime (PCHAR aTime, bool aTimeSyncFlag)
     ts.tm_mon--;
 
     /*********************
-    * valmet doesn't fill this in apparently so 
-    * use whatever we think daylight savings is 
+    * valmet doesn't fill this in apparently so
+    * use whatever we think daylight savings is
     *********************
     */
     ts.tm_isdst = CtiTime().isDST();
@@ -1252,7 +1251,7 @@ string CtiFDR_Valmet::YukonToForeignTime (CtiTime aTimeStamp)
     /*******************************
     * if the timestamp is less than 01-01-2000 (completely arbitrary number)
     * then set it to now because its probably an error or its uninitialized
-    * note: uninitialized points come across as 11-10-1990 
+    * note: uninitialized points come across as 11-10-1990
     ********************************
     */
     if (aTimeStamp < CtiTime(CtiDate(1,1,2001)))
@@ -1262,10 +1261,10 @@ string CtiFDR_Valmet::YukonToForeignTime (CtiTime aTimeStamp)
 
     CtiDate tmpDate (aTimeStamp);
 
-	// Place it into the Valmet structure */
-	_snprintf (tmp,
+    // Place it into the Valmet structure */
+    _snprintf (tmp,
              30,
-			 "%4ld%02ld%02ld%02ld%02ld%02ldCST",
+             "%4ld%02ld%02ld%02ld%02ld%02ldCST",
              tmpDate.year(),
              tmpDate.month(),
              tmpDate.dayOfMonth(),
@@ -1273,18 +1272,18 @@ string CtiFDR_Valmet::YukonToForeignTime (CtiTime aTimeStamp)
              aTimeStamp.minute(),
              aTimeStamp.second());
 
-	if (aTimeStamp.isDST())
-	{
-		tmp[15] = 'D';
-	}
+    if (aTimeStamp.isDST())
+    {
+        tmp[15] = 'D';
+    }
 
-	return(string (tmp));
+    return(string (tmp));
 }
 
 /****************************************************************************************
 *
-*      Here Starts some C functions that are used to Start the 
-*      Interface and Stop it from the Main() of FDR.EXE.  
+*      Here Starts some C functions that are used to Start the
+*      Interface and Stop it from the Main() of FDR.EXE.
 *
 */
 
@@ -1295,11 +1294,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int RunInterface(void)
 *
-* Description: This is used to Start the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Start the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function creates a global FDRCygnet Object and then
 *              calls its run method to cank it up.
-* 
+*
 *************************************************************************
 */
 
@@ -1316,11 +1315,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int StopInterface(void)
 *
-* Description: This is used to Stop the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Stop the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function stops a global FDRCygnet Object and then
 *              deletes it.
-* 
+*
 *************************************************************************
 */
     DLLEXPORT int StopInterface( void )

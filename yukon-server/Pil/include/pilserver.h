@@ -26,8 +26,6 @@ using std::iostream;
 
 class IM_EX_CTIPIL CtiPILServer : public CtiServer
 {
-private:
-
    BOOL                 bServerClosing;
    BOOL                 ListenerAvailable;
    RWSocket             _listenerSocket;
@@ -58,6 +56,8 @@ private:
    bool                          _broken;           // When the PILServer knows he's sick.
 
    int  getDeviceGroupMembers( string groupname, vector<long> &paoids );
+
+   void copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &returnMsg, void *connectionHandle);
 
 public:
 

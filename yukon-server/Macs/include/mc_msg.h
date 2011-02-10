@@ -63,8 +63,6 @@
 #ifndef __MSG_MCCMD_H__
 #define __MSG_MCCMD_H__
 
-#include <rw/collstr.h>
-
 #include "message.h"
 #include "mc_sched.h"
 
@@ -250,7 +248,7 @@ public:
     virtual ~CtiMCVerifyScript();
 
     virtual CtiMCVerifyScript& operator=(const CtiMCVerifyScript& ref);
-    
+
     virtual CtiMessage* replicateMessage() const;
 
     const string& getScriptName() const;
@@ -262,7 +260,7 @@ public:
 private:
 
     string _name;
-    
+
 };
 
 /*

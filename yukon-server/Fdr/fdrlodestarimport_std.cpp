@@ -90,7 +90,6 @@
 #include <fcntl.h>
 #include <io.h>
 
-#include <rw/ctoken.h>
 #include "ctitime.h"
 #include "ctidate.h"
 
@@ -160,7 +159,7 @@ BOOL CtiFDR_StandardLodeStar::init( void )
         return FALSE;
     }
 
-    loadTranslationLists(); 
+    loadTranslationLists();
 
     return TRUE;
 }
@@ -168,7 +167,7 @@ BOOL CtiFDR_StandardLodeStar::init( void )
 * Function Name: CtiFDR_StandardLodeStar::run()
 *
 * Description: runs the interface
-* 
+*
 **************************************************
 */
 BOOL CtiFDR_StandardLodeStar::run( void )
@@ -182,8 +181,8 @@ BOOL CtiFDR_StandardLodeStar::run( void )
 /*************************************************
 * Function Name: CtiFDR_StandardLodeStar::stop()
 *
-* Description: stops all threads 
-* 
+* Description: stops all threads
+*
 **************************************************
 */
 BOOL CtiFDR_StandardLodeStar::stop( void )
@@ -237,7 +236,7 @@ long  CtiFDR_StandardLodeStar::getlodeStarPointId(void)
 }
 
 void CtiFDR_StandardLodeStar::reinitialize(void)
-{ 
+{
     _stdLsFiller                 = "";
     _stdLsMeterStartReading     = 0.0;
     _stdLsMeterStopReading      = 0.0;
@@ -297,7 +296,7 @@ int CtiFDR_StandardLodeStar::getExpectedNumOfEntries()
 {
     return _stdLsExpectedNumEntries;
 }
-                                    
+
 
 
 CtiTime CtiFDR_StandardLodeStar::ForeignToYukonTime (string aTime, CHAR aDstFlag)
@@ -314,7 +313,7 @@ CtiTime CtiFDR_StandardLodeStar::ForeignToYukonTime (string aTime, CHAR aDstFlag
                     &ts.tm_mday,
                     &ts.tm_year,
                     &ts.tm_hour,
-                    &ts.tm_min/*&ts.tm_sec*/) != 5) 
+                    &ts.tm_min/*&ts.tm_sec*/) != 5)
         {
             retVal = PASTDATE;
         }
@@ -329,9 +328,9 @@ CtiTime CtiFDR_StandardLodeStar::ForeignToYukonTime (string aTime, CHAR aDstFlag
             ts.tm_sec = 0;
 
             CtiTime tempTime =  CtiTime(&ts);
-            
+
             if (aDstFlag == 'Y' || aDstFlag == 'y')
-            {               
+            {
                if ( tempTime.seconds() < endDST.seconds() &&
                     tempTime.seconds() >= beginDST.seconds() )
                {
@@ -345,7 +344,7 @@ CtiTime CtiFDR_StandardLodeStar::ForeignToYukonTime (string aTime, CHAR aDstFlag
                 ts.tm_isdst = FALSE;
             }
 
-            try 
+            try
             {
                 retVal = CtiTime(&ts);
 
@@ -368,7 +367,7 @@ CtiTime CtiFDR_StandardLodeStar::ForeignToYukonTime (string aTime, CHAR aDstFlag
 
 bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileIndex)
 {
-	bool                retCode = false;
+    bool                retCode = false;
     bool                isFirstHeaderFlag = true;
     bool                headerRecordValidFlag = true;
     string           tempString1;
@@ -404,10 +403,10 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                         {
                             isFirstHeaderFlag = false;
                             fieldNumber = 100;
-                        } 
+                        }
                         tempCharPtr += 4;
                         break;
-                    }   
+                    }
                 case 2:
                     {
                         strncpy(tempTest, tempCharPtr, 20);
@@ -415,7 +414,7 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                         _stdLsCustomerIdentifier = (string) tempTest;
                         tempCharPtr += 20;
                         break;
-                    } 
+                    }
                 case 3:
                     {
                         strncpy(tempTest, tempCharPtr, 1);
@@ -425,7 +424,7 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
 
                         boost::char_separator<char> sep(" ");
                         Boost_char_tokenizer tokenizer(_stdLsCustomerIdentifier, sep);
-                        Boost_char_tokenizer::iterator tok_iter = tokenizer.begin();     
+                        Boost_char_tokenizer::iterator tok_iter = tokenizer.begin();
 
                         string      tokenStrPartCID;// = tokenizer(" ");
                         string      tokenStr = "";
@@ -433,8 +432,8 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                         while ( tok_iter != tokenizer.end() )
                         {
                             tokenStrPartCID = *tok_iter;tok_iter++;
-                            if (firstTime) 
-                            { 
+                            if (firstTime)
+                            {
                                 tokenStr = tokenStrPartCID;
                                 firstTime = false;
                             }
@@ -453,7 +452,7 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                         }
                         bool pointFound = findTranslationNameInList(string(keyString), getReceiveFromList(), point);
                         if( pointFound )
-                        {   
+                        {
                             _pointId = point.getPointID();
                             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                             {
@@ -480,10 +479,10 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                             logEvent (desc,action);
                             _pointId = 0;
                             tmppointFound = false;
-                        }  
+                        }
                         tempCharPtr += 1;
                         break;
-                    } 
+                    }
                 case 4:
                     {
                         //Can't yet convert the timestamp string to a CtiTime because we don't have the DST flag yet
@@ -491,9 +490,9 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                         tempTest[10] = '\0';
                         tempStartTimeStr = (string) tempTest;
                         tempCharPtr += 10;
-                        break;    
-                    }   
-    
+                        break;
+                    }
+
                 case 5:
                     {
                         //Can't yet convert the timestamp string to a CtiTime because we don't have the DST flag yet
@@ -502,7 +501,7 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                         tempStopTimeStr =  (string) tempTest;
                         tempCharPtr += 10;
                         break;
-                    } 
+                    }
                 case 6:
                     {
                         strncpy(tempTest, tempCharPtr, 2);
@@ -559,7 +558,7 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                             dout << CtiTime() << " STD: UnitOfMeasure: " <<_stdLsUnitOfMeasure << "..."<<endl;
                         }
                         break;
-                    } 
+                    }
                 case 8:
                     {
                         strncpy(tempTest, tempCharPtr, 1);
@@ -577,7 +576,7 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                 case 9:
                     {
                         int count = 0;
-                        while (*tempCharPtr != '\0' && count < 30) 
+                        while (*tempCharPtr != '\0' && count < 30)
                         {
                             strncpy(temp, tempCharPtr, 1);
                             tempTest[count] = temp[0];
@@ -593,10 +592,10 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                         }
                         break;
                     }
-                       
+
                 default:
                     break;
-            }    
+            }
             fieldNumber++;
         }
     }
@@ -611,13 +610,13 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
     {
         retCode = true;
     }
-    
+
    return retCode;
 }
 
 bool CtiFDR_StandardLodeStar::decodeSecondHeaderRecord(string& aLine)
 {
-	bool                retCode = false;
+    bool                retCode = false;
     bool                isSecondHeaderFlag = true;
     bool                headerRecordValidFlag = true;
     string           tempString1;
@@ -636,7 +635,7 @@ bool CtiFDR_StandardLodeStar::decodeSecondHeaderRecord(string& aLine)
     */
 
     try
-    {   
+    {
         CtiFDRPoint fdrPoint;
         bool pointFound = findPointIdInList(_pointId, getReceiveFromList(), fdrPoint);
 
@@ -696,7 +695,7 @@ bool CtiFDR_StandardLodeStar::decodeSecondHeaderRecord(string& aLine)
                         }
                         break;
                     }
-    
+
                 case 5:
                     {
                         strncpy(tempTest, tempCharPtr, 15);
@@ -735,10 +734,10 @@ bool CtiFDR_StandardLodeStar::decodeSecondHeaderRecord(string& aLine)
                             dout << CtiTime() << " STD: PulseOffset: " <<_stdLsPulseOffset << "..."<<endl;
                         }
                         break;
-                    } 
+                    }
                 default:
                     break;
-            }  
+            }
             fieldNumber++;
         }
     }
@@ -758,7 +757,7 @@ bool CtiFDR_StandardLodeStar::decodeSecondHeaderRecord(string& aLine)
 
 bool CtiFDR_StandardLodeStar::decodeThirdHeaderRecord(string& aLine)
 {
-	bool                retCode = false;
+    bool                retCode = false;
     bool                isThirdHeaderFlag = true;
     bool                headerRecordValidFlag = true;
     string           tempString1;
@@ -779,7 +778,7 @@ bool CtiFDR_StandardLodeStar::decodeThirdHeaderRecord(string& aLine)
     {
         CtiFDRPoint fdrPoint;
         bool pointFound = findPointIdInList(_pointId, getReceiveFromList(), fdrPoint);
-        
+
         tempCharPtr = aLine.c_str();
 
         while (pointFound && (fieldNumber <= 5) && isThirdHeaderFlag && headerRecordValidFlag && (*tempCharPtr != '\0'))
@@ -854,7 +853,7 @@ bool CtiFDR_StandardLodeStar::decodeThirdHeaderRecord(string& aLine)
 
                 default:
                     break;
-            }   
+            }
             fieldNumber++;
         }
     }
@@ -874,7 +873,7 @@ bool CtiFDR_StandardLodeStar::decodeThirdHeaderRecord(string& aLine)
 
 bool CtiFDR_StandardLodeStar::decodeFourthHeaderRecord(string& aLine)
 {
-	bool                retCode = false;
+    bool                retCode = false;
     bool                isFourthHeaderFlag = true;
     bool                headerRecordValidFlag = true;
     string           tempString1;
@@ -894,7 +893,7 @@ bool CtiFDR_StandardLodeStar::decodeFourthHeaderRecord(string& aLine)
     */
 
     try
-    {   
+    {
         CtiFDRPoint fdrPoint;
         bool pointFound = findPointIdInList(_pointId, getReceiveFromList(), fdrPoint);
 
@@ -905,7 +904,7 @@ bool CtiFDR_StandardLodeStar::decodeFourthHeaderRecord(string& aLine)
             switch (fieldNumber)
             {
                 case 1:
-                    {   
+                    {
                         strncpy(tempTest, tempCharPtr, 4);
                         tempTest[4] = '\0';
                         tempString1 = (string) tempTest;
@@ -919,13 +918,13 @@ bool CtiFDR_StandardLodeStar::decodeFourthHeaderRecord(string& aLine)
                 case 2:
                     {
                         int count = 0;
-                        while (*tempCharPtr != '\0' && count < 40) 
+                        while (*tempCharPtr != '\0' && count < 40)
                         {
                             strncpy(temp, tempCharPtr, 1);
                             tempTest[count] = temp[0];
                             tempCharPtr+=1;
                             count++;
-                        } 
+                        }
                         tempTest[count] = '\0';
                         _stdLsDescriptor = (string) tempTest;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
@@ -938,7 +937,7 @@ bool CtiFDR_StandardLodeStar::decodeFourthHeaderRecord(string& aLine)
                 case 3:
                     {
                         int count = 0;
-                        while (*tempCharPtr != '\0' && count < 30) 
+                        while (*tempCharPtr != '\0' && count < 30)
                         {
                             strncpy(temp, tempCharPtr, 1);
                             tempTest[count] = temp[0];
@@ -952,12 +951,12 @@ bool CtiFDR_StandardLodeStar::decodeFourthHeaderRecord(string& aLine)
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " STD: Filler: " <<_stdLsFiller << "..."<<endl;
                         }
-                        break; 
+                        break;
                     }
 
                 default:
                     break;
-            } 
+            }
             fieldNumber++;
         }
     }
@@ -977,7 +976,7 @@ bool CtiFDR_StandardLodeStar::decodeFourthHeaderRecord(string& aLine)
 
 bool CtiFDR_StandardLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multiDispatchMsg)
 {
-	bool                retCode = false;
+    bool                retCode = false;
     bool                isDataRecordFlag = true;
     bool                dataRecordValidFlag = true;
     string           tempString1;
@@ -1001,7 +1000,7 @@ bool CtiFDR_StandardLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multi
     try
     {
         CtiFDRPoint fdrPoint;
-        
+
         bool pointFound = findPointIdInList(_pointId, getReceiveFromList(), fdrPoint);
 
         double pointMultiplier = 1.0;
@@ -1018,7 +1017,7 @@ bool CtiFDR_StandardLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multi
             switch (fieldNumber)
             {
                 case 1:
-                    { 
+                    {
                         strncpy(tempTest, tempCharPtr, 4);
                         tempTest[4] = '\0';
                         tempSortCode = atol(tempTest);
@@ -1029,13 +1028,13 @@ bool CtiFDR_StandardLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multi
                         tempCharPtr += 4;
                         break;
                     }
-                case 2:   
+                case 2:
                     {
-                        for (int i = 0; i < 12; i++) 
+                        for (int i = 0; i < 12; i++)
                         {
                             strncpy(tempTest, tempCharPtr, 5);
                             tempTest[5] = '\0';
-                            if (_stdLsAltFormat) 
+                            if (_stdLsAltFormat)
                             {
                                 intervalValue = (atof(tempTest)) * _stdLsAltPulseMultiplier;
                             }
@@ -1055,19 +1054,19 @@ bool CtiFDR_StandardLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multi
                             intervalValue *= pointMultiplier;
                             intervalValue += pointOffset;
 
-                            /*if (intervalValue == 0 && intervalStatus == 9) 
+                            /*if (intervalValue == 0 && intervalStatus == 9)
                             {
                                 i= 12;
                             }
                             else
                             { */
-                            if (multiDispatchMsg->getCount() < getExpectedNumOfEntries()) 
+                            if (multiDispatchMsg->getCount() < getExpectedNumOfEntries())
                             {
-                                
+
                                 CtiPointDataMsg* pointData = new CtiPointDataMsg(_pointId,intervalValue,importedQuality,fdrPoint.getPointType());
                                 pointData->setTime(CtiTime(CtiDate(1,1,1990)));
                                 pointData->setTags(TAG_POINT_LOAD_PROFILE_DATA);
-                                if (intervalValue == 0 && intervalStatus == 9) 
+                                if (intervalValue == 0 && intervalStatus == 9)
                                 {
                                     //CHAR tempRecStr[80];
                                     //CHAR tempIntStr[80];
@@ -1097,9 +1096,9 @@ bool CtiFDR_StandardLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multi
                         tempCharPtr += 4;  \
                         break;
                     }
-            }   
+            }
             fieldNumber++;
-        }  
+        }
     }
     catch(...)
     {
@@ -1123,11 +1122,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int RunInterface(void)
 *
-* Description: This is used to Start the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Start the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function creates a global FDRCygnet Object and then
 *              calls its run method to cank it up.
-* 
+*
 *************************************************************************
 */
 
@@ -1144,11 +1143,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int StopInterface(void)
 *
-* Description: This is used to Stop the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Stop the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function stops a global FDRCygnet Object and then
 *              deletes it.
-* 
+*
 *************************************************************************
 */
     DLLEXPORT int StopInterface( void )

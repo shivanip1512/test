@@ -131,7 +131,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <stdio.h>
 
 /** include files **/
-#include <rw/ctoken.h>
 #include "ctitime.h"
 #include "ctidate.h"
 

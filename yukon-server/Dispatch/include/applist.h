@@ -18,7 +18,6 @@
 #define __CtiAPPLIST_H__
 
 #include <rw/collect.h>
-#include <rw/collstr.h>
 
 #include <rw/pstream.h>
 #include <rw/rstream.h>

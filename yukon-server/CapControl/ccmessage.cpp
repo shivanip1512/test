@@ -14,7 +14,6 @@
 #include "ccmessage.h"
 #include "ccid.h"
 
-#include <rw/collstr.h>
 #include <time.h>
 #include "utility.h"
 

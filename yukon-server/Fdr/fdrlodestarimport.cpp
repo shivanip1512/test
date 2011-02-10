@@ -155,7 +155,6 @@
 #include <fcntl.h>
 #include <io.h>
 
-#include <rw/ctoken.h>
 #include "ctitime.h"
 #include "ctidate.h"
 

@@ -1,13 +1,13 @@
 /*-----------------------------------------------------------------------------
     Filename:  cfdata.h
-    
+
     Programmer:  Aaron Lauinger
-    
+
     Description:    Header file for wisconsin public service company(corp)
                     file format decoders.
-    
+
     Initial Date:  4/7/99
-    
+
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
 
@@ -18,9 +18,6 @@
 using std::iostream;
 
 #include <rw/collstr.h>
-
-#include <rw/ordcltn.h>
-#include <rw\re.h>
 
 #include "logger.h"
 #include "guard.h"
@@ -37,7 +34,7 @@ bool DecodeEOIFile(const string& file, std::vector<RWCollectableString*>* result
 bool DecodeWepcoFile(const string& file, std::vector<RWCollectableString*>* results);
 
 // These two functions are DecodeWepcoFile split into two
-bool DecodeWepcoFileService(const string& file, std::vector<RWCollectableString*>* results);                                  
+bool DecodeWepcoFileService(const string& file, std::vector<RWCollectableString*>* results);
 bool DecodeWepcoFileConfig(const string& file, std::vector<RWCollectableString*>* results);
 
 static bool DecodeCFDATALine( char* line, string& decoded );

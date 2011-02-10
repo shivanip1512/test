@@ -26,8 +26,6 @@
 #include <rw/thr/condtion.h>
 #include <rw/tvhset.h>
 #include <rw/tvdeque.h>
-#include <rw/ordcltn.h>
-#include <rw/collstr.h>
 
 #include "dlldefs.h"
 #include "message.h"

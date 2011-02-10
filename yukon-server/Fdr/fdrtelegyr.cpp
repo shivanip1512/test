@@ -25,7 +25,6 @@ Things to note about telegyr learned the hard way...
 
 #define _WINDLL
 
-#include <rw/ctoken.h>
 #include "ctitime.h"
 #include "ctidate.h"
 #include <boost/tokenizer.hpp>

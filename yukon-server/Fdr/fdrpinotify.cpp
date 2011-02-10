@@ -23,7 +23,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #define _WINDLL
 
-#include <rw/ctoken.h>
 #include "ctitime.h"
 #include "ctidate.h"
 
@@ -36,14 +35,14 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 /**
  * Constructor.
- */ 
+ */
 CtiFDRPiNotify::CtiFDRPiNotify()
 {
 }
 
 /**
  * Destructor.
- */ 
+ */
 CtiFDRPiNotify::~CtiFDRPiNotify()
 {
   unregisterAllPoints();
@@ -51,7 +50,7 @@ CtiFDRPiNotify::~CtiFDRPiNotify()
 
 /**
  * Begin receiving new point notifications.
- */ 
+ */
 void CtiFDRPiNotify::removeAllPoints()
 {
   unregisterAllPoints();
@@ -60,7 +59,7 @@ void CtiFDRPiNotify::removeAllPoints()
 
 /**
  * Setup receiving for all point notifications.
- */ 
+ */
 void CtiFDRPiNotify::handleNewPoints()
 {
   // register for all points in the pointMap
@@ -70,7 +69,7 @@ void CtiFDRPiNotify::handleNewPoints()
   {
     const PiPointId &piId = (*myIter).first;
     _registerList.push_back(piId);
-  
+
   }
   int32 count = _registerList.size();
   int32 initial_count = count;
@@ -90,19 +89,19 @@ void CtiFDRPiNotify::handleNewPoints()
   if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
   {
     CtiLockGuard<CtiLogger> doubt_guard( dout );
-    logNow() << "Registered for " << count 
+    logNow() << "Registered for " << count
       << " points with Pi " << endl;
   }
 }
 
 /**
  * Setup receiving for all point notifications.
- */ 
+ */
 void CtiFDRPiNotify::handleNewPoint(CtiFDRPointSPtr ctiPoint)
 {
   // we're interested in the first (and only) destination
   string tagName = ctiPoint->getDestinationList()[0].getTranslationValue("Tag Name");
-  
+
   PiPointId pid;
   int err = getPiPointIdFromTag(tagName,pid);
   if (err == 0)
@@ -145,7 +144,7 @@ void CtiFDRPiNotify::handleNewPoint(CtiFDRPointSPtr ctiPoint)
 
 /**
  * Send message to Pi to unregister for point notifications.
- */ 
+ */
 void CtiFDRPiNotify::unregisterAllPoints()
 {
   if (isConnected())
@@ -182,7 +181,7 @@ void CtiFDRPiNotify::unregisterAllPoints()
 
 /**
  * Send message to Pi to unregister for point notification.
- */ 
+ */
 void CtiFDRPiNotify::unregisterPoint(PiPointId& pid)
 {
   if (isConnected())
@@ -197,10 +196,10 @@ void CtiFDRPiNotify::unregisterPoint(PiPointId& pid)
       if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
       {
         CtiLockGuard<CtiLogger> doubt_guard( dout );
-        logNow() << "Unable to unregister for point notications from Pi point " 
-                 << pid 
+        logNow() << "Unable to unregister for point notications from Pi point "
+                 << pid
                  << ", pisn_evmdisestablish returned "
-                 << getPiErrorDescription(err, "pisn_evmdisestablish") 
+                 << getPiErrorDescription(err, "pisn_evmdisestablish")
                  << endl;
       }
     }
@@ -226,8 +225,8 @@ void CtiFDRPiNotify::unregisterPoint(PiPointId& pid)
 
 /**
  * Notification of new point.
- */ 
-void CtiFDRPiNotify::processNewPiPoint(PiPointInfo &info) 
+ */
+void CtiFDRPiNotify::processNewPiPoint(PiPointInfo &info)
 {
   _pointMap.insert(PiPointMap::value_type(info.piPointId, info));
 }
@@ -257,26 +256,26 @@ void CtiFDRPiNotify::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint,
 }
 /**
  * Check for new updates for the registered points.
- */ 
+ */
 void CtiFDRPiNotify::doUpdates()
 {
   if (_registerList.size() > 0)
   {
     const int32 points_at_a_time = 500;
-  
-    // After this has been called once, memory won't be reallocated 
+
+    // After this has been called once, memory won't be reallocated
     // and the following calls will be "cheap."
     _pointList.resize(points_at_a_time);
     _rvalList.resize(points_at_a_time);
     _istatList.resize(points_at_a_time);
     _timeList.resize(points_at_a_time);
-  
+
     // vectors are guaranteed to have contiguous memory
-    PiPointId *piIdArray = &_pointList[0];                                                                       
+    PiPointId *piIdArray = &_pointList[0];
     float *rvalArray = &_rvalList[0];
     int32 *istatArray = &_istatList[0];
     int32 *timeArray = &_timeList[0];
-    
+
     int32 pointCount = points_at_a_time;
     // loop until the number of points returned is less than number requested
     while (points_at_a_time == pointCount)
@@ -301,17 +300,17 @@ void CtiFDRPiNotify::doUpdates()
       for (int i = 0; i < pointCount; ++i)
       {
         PiPointId thisPoint = piIdArray[i];
-  
-        // Find all entries that match this Pi Point (probably one, but multiple points could 
+
+        // Find all entries that match this Pi Point (probably one, but multiple points could
         // be linked to a single Pi Point).
         pair<PiPointMap::const_iterator,PiPointMap::const_iterator> result = _pointMap.equal_range(thisPoint);
-  
+
         for (PiPointMap::const_iterator myIter = result.first;
               myIter != result.second;
               ++myIter)
         {
           const PiPointInfo &info = (*myIter).second;
-  
+
           // remove local offset (might not be thread-safe)
           struct tm *temp = NULL;
           time_t tTime = timeArray[i];
@@ -319,7 +318,7 @@ void CtiFDRPiNotify::doUpdates()
           time_t timeStamp = mktime(temp);
           // pisn_evmesceptions doesn't return error codes per point, default to 0
           handlePiUpdate(info, rvalArray[i], istatArray[i], timeStamp, 0);
-  
+
         }
       }
     }
@@ -336,13 +335,13 @@ void CtiFDRPiNotify::doUpdates()
 
 /**
  * Get the current value of all of the points.
- */ 
+ */
 void CtiFDRPiNotify::forceUpdateAllPoints()
 {
   int32 pointCount = _registerList.size();
   if (pointCount > 0) {
     PiPointId *piIdArray = &_registerList[0];
-  
+
     if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
@@ -365,7 +364,7 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
     vector<int32> errorList;
     errorList.resize(pointCount);
     int32 *errorArray = &errorList[0];
-  
+
     int err = pisn_getsnapshots(piIdArray, rvalArray, istatArray, timeArray, errorArray, pointCount);
     if (err != 0)
     {
@@ -376,7 +375,7 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
           << getPiErrorDescription(err, "pisn_getsnapshots") << endl;
       }
     }
-  
+
     for (int i = 0; i < pointCount; ++i)
     {
       // remove local offset (might not be thread-safe)
@@ -385,7 +384,7 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
 
       PiPointId thisPoint = piIdArray[i];
 
-      // Find all entries that match this Pi Point (probably one, but multiple points could 
+      // Find all entries that match this Pi Point (probably one, but multiple points could
       // be linked to a single Pi Point).
       pair<PiPointMap::const_iterator,PiPointMap::const_iterator> result = _pointMap.equal_range(thisPoint);
 

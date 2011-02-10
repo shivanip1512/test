@@ -26,7 +26,6 @@
 
 
 #include <rw/collect.h>
-#include <rw/collstr.h>
 #include <rw/tvhdict.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
@@ -146,7 +145,7 @@ static int formatError(ClientData clientData, Tcl_Interp* interp, int argc, char
 static int getYukonBaseDir(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 
 static int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
-    
+
 //MORE............
 
 static int DoOneWayRequest(Tcl_Interp* interp, string& cmd_line);

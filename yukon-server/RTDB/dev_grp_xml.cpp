@@ -5,6 +5,7 @@
 #include "prot_base.h"
 #include "tbl_dv_expresscom.h"
 #include "xfer.h"
+#include "amq_connection.h"
 
 namespace Cti {
 namespace Devices {
@@ -54,8 +55,7 @@ void XmlGroupDevice::sendMessage(const string &queueName, const CtiCommandParser
 {
     string textMessage = Protocols::XmlProtocol::createMessage(parse, rawAscii, params);
 
-    //_amq->sendMessageToQueue(queueName, textMessage);
-    gActiveMQConnection.enqueueMessage(queueName, textMessage);
+    Messaging::gActiveMQConnection.enqueueMessage(queueName, textMessage);
 }
 
 INT XmlGroupDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)

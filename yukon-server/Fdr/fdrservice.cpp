@@ -58,7 +58,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/mutex.h>
-#include <rw/ctoken.h>
 
 #include "cparms.h"
 #include "logger.h"
@@ -310,7 +309,7 @@ void CtiFDRService::Run( )
             if(pointID!=0)
             {
                 CtiThreadMonitor::State next;
-                if((next = ThreadMonitor.getState()) != previous || 
+                if((next = ThreadMonitor.getState()) != previous ||
                    CtiTime::now() > NextThreadMonitorReportTime)
                 {
                     // Any time the state changes or every (StandardMonitorTime / 2) seconds, update the point

@@ -97,7 +97,6 @@
 #include <io.h>
 
 /** include files **/
-#include <rw/ctoken.h>
 #include "ctitime.h"
 #include "ctidate.h"
 

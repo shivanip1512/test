@@ -17,7 +17,7 @@
 *    DESCRIPTION: This class implements a point list with built in mutex protection
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
 *     $Log: fdrsocketinterface.cpp,v $
 *     Revision 1.16.2.1  2008/11/13 17:23:47  jmarks
 *     YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
@@ -81,7 +81,6 @@
 #include <iostream>
 
 #include <stdio.h>
-////#include <rw/ctoken.h>
 #include "ctitime.h"
 #include "ctidate.h"
 
@@ -95,7 +94,7 @@
 
 
 CtiFDRSocketInterface::CtiFDRSocketInterface(string & interfaceType, int aPortNumber, int aWindow)
-: CtiFDRInterface(interfaceType), 
+: CtiFDRInterface(interfaceType),
     iPortNumber (aPortNumber),
     iConnectPortNumber (aPortNumber),
     iTimestampReasonabilityWindow(aWindow),
@@ -134,7 +133,7 @@ CtiFDRSocketInterface& CtiFDRSocketInterface::setListener(CtiFDRSocketConnection
 
 void CtiFDRSocketInterface::shutdownListener()
 {
-    CtiLockGuard<CtiMutex> destGuard(getListenerMux());  
+    CtiLockGuard<CtiMutex> destGuard(getListenerMux());
     iListener->closeAndFailConnection();
     delete iListener;
 }
@@ -222,7 +221,7 @@ bool CtiFDRSocketInterface::isClientConnectionValid ()
 *
 * Description: Creates a seperate collection of Status and Analog Point
 *              IDs and ACS IDs for translation.
-* 
+*
 *************************************************************************
 */
 bool CtiFDRSocketInterface::loadTranslationLists()
@@ -249,7 +248,7 @@ bool CtiFDRSocketInterface::loadTranslationLists()
 BOOL CtiFDRSocketInterface::init( void )
 {
     // init the base class
-    Inherited::init();    
+    Inherited::init();
     iPointTimeVariation = 0;
     return TRUE;
 }
@@ -258,11 +257,11 @@ BOOL CtiFDRSocketInterface::init( void )
 * Function Name: CtiFDRSocketInterface::run()
 *
 * Description: runs the interface
-* 
+*
 **************************************************
 */
 BOOL CtiFDRSocketInterface::run( void )
-{                      
+{
 
     // crank up the base class
     Inherited::run();
@@ -273,8 +272,8 @@ BOOL CtiFDRSocketInterface::run( void )
 /*************************************************
 * Function Name: CtiFDRSocketInterface::stop()
 *
-* Description: stops all threads 
-* 
+* Description: stops all threads
+*
 **************************************************
 */
 BOOL CtiFDRSocketInterface::stop( void )
@@ -323,7 +322,7 @@ int CtiFDRSocketInterface::sendAllPoints()
                 CtiFDRManager* mgrPtr = getSendToList().getPointList();
 
                 CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
-                CtiFDRManager::readerLock guard(mgrPtr->getLock());  
+                CtiFDRManager::readerLock guard(mgrPtr->getLock());
 
                 CtiFDRManager::spiterator  myIterator = mgrPtr->getMap().begin();
                 for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator)
@@ -363,7 +362,7 @@ int CtiFDRSocketInterface::sendAllPoints()
 }
 
 bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
-{   
+{
     bool retVal = true;
     bool forwardPointData=true;
     CtiPointDataMsg     *localMsg = (CtiPointDataMsg *)aMessage;
@@ -431,7 +430,7 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
                 /*******************************
                 * if the timestamp is less than 01-01-2000 (completely arbitrary number)
                 * then dont' route the point because it is uninitialized
-                * note: uninitialized points come across as 11-10-1990 
+                * note: uninitialized points come across as 11-10-1990
                 ********************************
                 */
                 if (point.getLastTimeStamp() < CtiTime(CtiDate(1,1,2001)))
@@ -449,7 +448,7 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
                     // if we haven't registered, don't bother
                     if (isRegistered())
                     {
-                        try 
+                        try
                         {
                             retVal = buildAndWriteToForeignSystem (point);
                         }
@@ -458,7 +457,7 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** building msg error" << endl;
                         }
-                    } 
+                    }
                     else
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -490,7 +489,7 @@ FLOAT CtiFDRSocketInterface::ntohieeef (LONG NetLong)
 /* Host to Network IEEE Float
  * Convert the order of an IEEE floating point from host to network.
  */
-LONG CtiFDRSocketInterface::htonieeef (FLOAT  HostFloat) 
+LONG CtiFDRSocketInterface::htonieeef (FLOAT  HostFloat)
 {
     union
     {

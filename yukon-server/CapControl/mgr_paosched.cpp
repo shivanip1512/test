@@ -15,8 +15,6 @@
 #include <stdlib.h>
 
 #include <rw/thr/prodcons.h>
-#include <rw/ctoken.h>
-#include <rw/re.h>
 
 #include <boost/regex.hpp>
 
@@ -143,7 +141,7 @@ void CtiPAOScheduleManager::doResetThr()
     {
         Sleep(1000);
         CtiTime lastPeriodicDatabaseRefresh = CtiTime();
-        
+
         ThreadStatusKeeper threadStatus("CapControl mgrPAOSchedule doResetThr");
 
         while (TRUE)
@@ -699,13 +697,13 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
             static const string sql =  "SELECT PAS.scheduleid, PAS.schedulename, PAS.nextruntime, PAS.lastruntime, "
                                          "PAS.intervalrate, PAS.disabled "
                                        "FROM paoschedule PAS";
-            
+
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection);
 
             rdr.setCommandText(sql);
             rdr.execute();
-            
+
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
                 string loggedSQLstring = rdr.asString();
@@ -830,7 +828,7 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
         if ( !schedules.empty() )
         {
             CtiTime currentDateTime = CtiTime();
-            
+
             Cti::Database::DatabaseConnection   conn;
 
             conn.beginTransaction();

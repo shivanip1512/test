@@ -13,9 +13,6 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <rw/re.h>
-
-
 #include "dsm2.h"
 #include "resolvers.h"
 #include "devicetypes.h"

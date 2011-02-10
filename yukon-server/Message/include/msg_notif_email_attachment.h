@@ -7,7 +7,7 @@
 *
 * File:   msg_notif_email_attachment
 *
-* Class:  
+* Class:
 * Date:   1/22/2004
 *
 * Author: Eric Schmit
@@ -19,9 +19,6 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
-
-#include <rw/ordcltn.h>
-#include <rw/collstr.h>
 
 #include "logger.h"
 #include "dllbase.h"

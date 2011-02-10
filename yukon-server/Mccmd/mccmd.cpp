@@ -57,9 +57,6 @@
 #include <rw/collstr.h>
 #include <rw/thr/thrutil.h>
 
-#include <rw\re.h>
-#include <rw/ctoken.h>
-
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
 
@@ -1936,7 +1933,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
                 dev_name = m_iter->second.deviceName;
             }
             else
-            {    
+            {
                 GetDeviceName(m_iter->first,dev_name);
             }
 
@@ -2084,14 +2081,14 @@ void HandleReturnMessage(CtiReturnMsg* msg,
         // Either the Device ID or the Device Name was wacky and we couldn't find it in the database.
         // Determine which and act accordingly...
 
-        // The only way to know what happened here is to check the ID. If it's greater than zero, the 
+        // The only way to know what happened here is to check the ID. If it's greater than zero, the
         // ID was not found in the database and we need to keep that ID. Otherwise we need to keep the
         // device name somehow...
 
         MACS_Return_Data data;
         data.time = msg->getMessageTime();
         data.status = msg->Status();
-        
+
         if( dev_id == 0 ) // Our request has an invalid name.
         {
             CtiCommandParser parser(msg->CommandString());
@@ -2376,11 +2373,11 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
                     cmd += "'";
                     msg->setDeviceId(0);
                 }
-                else 
+                else
                 {
                     msg->setDeviceId(paoId);
                 }
-                
+
                 msg->setCommandString(cmd);
                 msg->setMessagePriority(priority);
                 req_set.insert(msg);

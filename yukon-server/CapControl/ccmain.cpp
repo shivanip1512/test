@@ -14,7 +14,6 @@
 
 #include <rw/toolpro/winsock.h>
 #include <rw/thr/thrutil.h>
-#include <rw/collstr.h>
 
 #include "ccsubstationbusstore.h"
 #include "capcontroller.h"

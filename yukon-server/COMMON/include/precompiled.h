@@ -32,7 +32,6 @@
 #include <set>
 
 #include <rw/collect.h>
-#include <rw/ctoken.h>
 #include <rw/vstream.h>
 #include <rw/tvhdict.h>
 #include <rw/tpslist.h>

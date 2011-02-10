@@ -17,8 +17,6 @@
 
 #define __MSG_MULTI_H__
 
-#include <rw/ordcltn.h>
-
 #include "collectable.h"
 #include "dlldefs.h"
 #include "msg_pdata.h"       // get the base class

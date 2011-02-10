@@ -5,7 +5,6 @@
 #include <rw/thr/onlyptr.h>
 #include <rw/thr/thread.h>
 #include <rw/collect.h>
-#include <rw/collstr.h>
 
 #include "observe.h"
 #include "ccarea.h"

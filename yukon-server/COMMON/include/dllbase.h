@@ -67,13 +67,6 @@ typedef boost::tokenizer<boost::char_separator<char> > Boost_char_tokenizer;
 typedef boost::tokenizer<boost::char_separator<char> > Tokenizer;
 typedef boost::char_separator<char> Separator;
 
-namespace Cti {
-
-class ActiveMQConnectionManager;
-IM_EX_CTIBASE extern ActiveMQConnectionManager gActiveMQConnection;
-
-}
-
 IM_EX_CTIBASE extern CTINEXUS          PorterNexus;
 IM_EX_CTIBASE extern RWMutexLock       coutMux;
 

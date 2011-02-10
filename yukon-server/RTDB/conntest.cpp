@@ -22,8 +22,6 @@
 #include <rw/toolpro/inetaddr.h>
 #include <rw\rwerr.h>
 #include <rw\thr\mutex.h>
-#include <rw/re.h>
-#undef mask_
 
 #include "dllbase.h"
 #include "connection.h"

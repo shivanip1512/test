@@ -1,12 +1,12 @@
 /*-----------------------------------------------------------------------------
-    Filename:  decodetextcmdfile.h    
+    Filename:  decodetextcmdfile.h
     Programmer:  David Sutton
-    
-    Description:    Header file for Xcel Energy PMSI 
+
+    Description:    Header file for Xcel Energy PMSI
                     file format decoders.
-    
+
     Initial Date:  08 June 2001
-    
+
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
 
@@ -17,8 +17,6 @@
 using std::iostream;
 
 #include <rw/collstr.h>
-
-#include <rw/ordcltn.h>
 
 #include "logger.h"
 #include "guard.h"

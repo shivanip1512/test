@@ -624,7 +624,7 @@ ccstate.obj:	yukon.h precompiled.h types.h ctidbgmem.h dbaccess.h \
 		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h \
 		configkey.h configval.h observe.h
 ccstatsobject.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		ccstatsobject.h msg_cmd.h dlldefs.h message.h ctitime.h \
+		ccstatsobject.h msg_cmd.h message.h ctitime.h dlldefs.h \
 		collectable.h rwutil.h database_connection.h dbaccess.h \
 		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \
 		utility.h queues.h numstr.h sorted_vector.h cticonnect.h \
@@ -1002,7 +1002,7 @@ pointresponsedatabasedao.obj:	yukon.h precompiled.h types.h \
 		database_util.h logger.h thread.h CtiPCPtrQueue.h ccid.h
 pointresponsemanager.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		PointResponseManager.h Exceptions.h PointResponse.h \
-		ccmonitorpoint.h msg_cmd.h dlldefs.h message.h ctitime.h \
+		ccmonitorpoint.h msg_cmd.h message.h ctitime.h dlldefs.h \
 		collectable.h rwutil.h database_connection.h dbaccess.h \
 		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \
 		utility.h queues.h numstr.h sorted_vector.h cticonnect.h \

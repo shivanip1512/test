@@ -12,7 +12,6 @@ INCLPATHS+= \
 -I$(BOOST) \
 -I$(SQLAPI)\include \
 -I$(RW) \
--I$(ACTIVEMQ) \
 -I$(DBGHELP)\include
 
 .PATH.H = \
@@ -21,14 +20,10 @@ INCLPATHS+= \
 ;$(CPARMS)\include \
 ;$(BOOST) \
 ;$(RW) \
-;$(ACTIVEMQ) \
-;$(ACTIVEMQ)\cms \
-;$(ACTIVEMQ)\activemq\library \
 ;$(SQLAPI)\include \
 
 
 BASEOBJS=\
-amq_connection.obj \
 ctidate.obj \
 ctitime.obj \
 ctistring.obj \
@@ -96,7 +91,6 @@ ctibase.dll
 
 WINLIBS=kernel32.lib user32.lib advapi32.lib wsock32.lib winmm.lib
 
-ACTIVEMQLIB=$(ACTIVEMQ)\lib\activemq-cpp.lib
 SQLAPILIB=$(SQLAPI)\lib\$(SQLAPI_LIB).lib
 
 
@@ -117,7 +111,7 @@ $(COMMON_FULLBUILD):
 ctibase.dll:    $(COMMON_FULLBUILD) $(BASEOBJS) Makefile
                 @build -nologo -f $(_InputFile) id
                 @%cd $(OBJ)
-                $(CC) $(BASEOBJS) id_ctibase.obj $(WINLIBS) $(ACTIVEMQLIB) $(SQLAPILIB) $(DLLFLAGS) $(RWLIBS) $(BOOST_LIBS) $(COMPILEBASE)\lib\cticparms.lib $(DBGHELP_LIBS) /Fe..\$@ $(LINKFLAGS)
+                $(CC) $(BASEOBJS) id_ctibase.obj $(WINLIBS) $(SQLAPILIB) $(DLLFLAGS) $(RWLIBS) $(BOOST_LIBS) $(COMPILEBASE)\lib\cticparms.lib $(DBGHELP_LIBS) /Fe..\$@ $(LINKFLAGS)
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -180,11 +174,6 @@ id_ctibase.obj:    id_ctibase.cpp include\id_ctibase.h
 
 
 #UPDATE#
-amq_connection.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		utility.h ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h \
-		numstr.h sorted_vector.h connectionfactory.h amq_connection.h \
-		thread.h mutex.h guard.h critical_section.h activemqcpp.h \
-		connection.h
 attributeservice.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		AttributeService.h LitePoint.h dlldefs.h pointtypes.h \
 		PointAttribute.h resolvers.h db_entry_defines.h numstr.h \
@@ -300,8 +289,7 @@ dllbase.obj:	yukon.h precompiled.h types.h ctidbgmem.h dsm2.h mutex.h \
 		configkey.h configval.h ctinexus.h logger.h thread.h \
 		CtiPCPtrQueue.h thread_monitor.h smartmap.h \
 		readers_writer_lock.h critical_section.h queue.h \
-		thread_register_data.h amq_connection.h activemqcpp.h \
-		connection.h
+		thread_register_data.h
 elog_cli.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		dlldefs.h cticalls.h dsm2.h mutex.h guard.h utility.h \
 		ctitime.h queues.h numstr.h sorted_vector.h cticonnect.h \

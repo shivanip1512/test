@@ -25,7 +25,6 @@
 #define EXPRESSCOM_CRC_LENGTH 2
 
 #include <rw\ctoken.h>
-#include <rw\re.h>
 
 
 

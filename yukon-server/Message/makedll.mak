@@ -8,6 +8,7 @@ INCLPATHS+= \
 -I$(BOOST) \
 -I$(SQLAPI)\include \
 -I$(RW) \
+-I$(ACTIVEMQ) \
 
 
 .PATH.H = \
@@ -24,16 +25,21 @@ INCLPATHS+= \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(BOOST) \
-;$(RW)
+;$(RW) \
+;$(ACTIVEMQ) \
+;$(ACTIVEMQ)\cms \
+;$(ACTIVEMQ)\activemq\library \
 
 
 
 OBJS=\
-connection.obj \
-PointDataHandler.obj \
 DispatchConnection.obj \
 DispatchPointDataRequest.obj \
+PointDataHandler.obj \
 PointDataRequestFactory.obj \
+PorterResponseMessage.obj \
+amq_connection.obj \
+connection.obj \
 dll_msg.obj \
 message.obj \
 msg_cmd.obj \
@@ -48,20 +54,21 @@ msg_notif_email_attachment.obj \
 msg_notif_lmcontrol.obj \
 msg_pcrequest.obj \
 msg_pcreturn.obj \
-msg_signal.obj \
 msg_pdata.obj \
-msg_queuedata.obj \
-msg_requestcancel.obj \
-msg_reg.obj \
 msg_ptreg.obj \
+msg_queuedata.obj \
+msg_reg.obj \
+msg_requestcancel.obj \
 msg_server_req.obj \
 msg_server_resp.obj \
+msg_signal.obj \
 msg_tag.obj \
 msg_trace.obj \
 
 
 MESSAGE_FULLBUILD = $[Filename,$(OBJ),MessageFullBuild,target]
 
+ACTIVEMQLIB=$(ACTIVEMQ)\lib\activemq-cpp.lib
 
 CTIPROGS=\
 ctimsg.dll
@@ -82,7 +89,7 @@ ctimsg.dll:    $(MESSAGE_FULLBUILD) $(OBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(OBJS) id_ctimsg.obj -link $(RWLIBS) $(BOOST_LIBS) $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\cticparms.lib $(LINKFLAGS)
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(OBJS) id_ctimsg.obj -link $(RWLIBS) $(BOOST_LIBS) $(ACTIVEMQLIB) $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\cticparms.lib $(LINKFLAGS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -138,6 +145,11 @@ id_ctimsg.obj:    id_ctimsg.cpp include\id_ctimsg.h
 ######################################################################################
 
 #UPDATE#
+amq_connection.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
+		utility.h ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h \
+		numstr.h sorted_vector.h StreamableMessage.h \
+		connectionfactory.h amq_connection.h thread.h mutex.h guard.h \
+		critical_section.h activemqcpp.h connection.h
 connection.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		collectable.h connection.h dlldefs.h exchange.h dllbase.h \
 		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
@@ -179,7 +191,7 @@ dll_msg.obj:	yukon.h precompiled.h types.h ctidbgmem.h dsm2.h mutex.h \
 		sema.h database_reader.h row_reader.h boost_time.h \
 		boostutil.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h
+		configval.h amq_connection.h critical_section.h activemqcpp.h
 id_ctimsg.obj:	yukon.h precompiled.h types.h ctidbgmem.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h numstr.h \
 		sorted_vector.h id_ctimsg.h
@@ -191,7 +203,7 @@ message.obj:	yukon.h precompiled.h types.h ctidbgmem.h message.h \
 		optional.h sema.h database_reader.h row_reader.h boost_time.h \
 		boostutil.h logger.h thread.h CtiPCPtrQueue.h
 msg_cmd.obj:	yukon.h precompiled.h types.h ctidbgmem.h msg_cmd.h \
-		dlldefs.h message.h ctitime.h collectable.h rwutil.h \
+		message.h ctitime.h dlldefs.h collectable.h rwutil.h \
 		database_connection.h dbaccess.h dllbase.h os2_2w32.h \
 		cticalls.h dsm2.h mutex.h guard.h utility.h queues.h numstr.h \
 		sorted_vector.h cticonnect.h netports.h dsm2err.h words.h \
@@ -381,6 +393,14 @@ pointdatarequestfactory.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h configkey.h configval.h MessageListener.h \
 		DispatchPointDataRequest.h
+porterresponsemessage.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
+		PorterResponseMessage.h dlldefs.h msg_pcreturn.h msg_multi.h \
+		collectable.h msg_pdata.h pointdefs.h pointtypes.h message.h \
+		ctitime.h rwutil.h database_connection.h dbaccess.h dllbase.h \
+		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h utility.h \
+		queues.h numstr.h sorted_vector.h cticonnect.h netports.h \
+		dsm2err.h words.h optional.h sema.h database_reader.h \
+		row_reader.h boost_time.h boostutil.h
 precompiled.obj:	yukon.h precompiled.h types.h ctidbgmem.h
 test_message.obj:	yukon.h precompiled.h types.h ctidbgmem.h message.h \
 		ctitime.h dlldefs.h collectable.h rwutil.h \

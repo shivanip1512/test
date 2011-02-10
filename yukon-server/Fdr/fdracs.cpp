@@ -16,12 +16,12 @@
 *
 *    DESCRIPTION: This class implements an interface that exchanges point data
 *                 from an ACS scada system.  The data is both status and Analog data.
-*				  Information is exchanged using sockets opened on a predefined socket 
-*				  number and also pre-defined messages between the systems.  See the 
-*				  design document for more information
+*                 Information is exchanged using sockets opened on a predefined socket
+*                 number and also pre-defined messages between the systems.  See the
+*                 design document for more information
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
       $Log: fdracs.cpp,v $
       Revision 1.21.2.1  2008/11/13 17:23:46  jmarks
       YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
@@ -136,54 +136,54 @@
 
       This is an update due to the freezing of PVCS on 4/13/2002
 
-   
+
       Rev 2.8   08 Apr 2002 14:41:44   dsutton
    updated foreigntoyukontime function to contain a flag that says whether we're processing a time sync.  If we are, we don't want to do the validity window since the timesync has a configurable window of its own
-   
+
       Rev 2.7   01 Mar 2002 13:13:24   dsutton
    added timesync processing cparms and functions
-   
+
       Rev 2.6   15 Feb 2002 11:16:58   dsutton
    added two new cparms to control data flow to ACS that limit the number of entries sent per so many seconds.  Also changed the log wording to be entries queued, not sent to handle possible discrepancies
-   
+
       Rev 2.5   11 Feb 2002 15:03:08   dsutton
    added event logs when the connection is established or failed, unknown points, invalid states, etc
-   
+
       Rev 2.4   14 Dec 2001 17:17:34   dsutton
    the functions that load the lists of points noware updating point managers instead of creating separate lists of their own.  Hopefully this is easier to follow
-   
+
       Rev 2.3   15 Nov 2001 16:16:36   dsutton
    code for multipliers and an queue for the messages to dispatch along with fixes to RCCS/INET interface. Lazy checkin
-   
+
       Rev 2.2   26 Oct 2001 15:20:16   dsutton
    moving revision 1 to 2.x
-   
+
       Rev 1.7.1.0   26 Oct 2001 14:19:22   dsutton
    pointype addition, is point sendable, handling massive downloads, etc
-   
+
       Rev 1.7   23 Aug 2001 13:58:48   dsutton
    updated to intercept control points from yukon side.  Won't be sent on startu
    p or any other database reload
-   
+
       Rev 1.6   20 Jul 2001 09:58:48   dsutton
    No change.
-   
+
       Rev 1.5   19 Jun 2001 10:44:08   dsutton
    updated to inherit from a new single socket class
-   
+
       Rev 1.4   04 Jun 2001 14:21:56   dsutton
    updated logging and removed debug messages
-   
+
       Rev 1.3   04 Jun 2001 09:31:32   dsutton
    changed a few calls since things had moved
-   
+
       Rev 1.2   30 May 2001 16:45:22   dsutton
    listener now resides in the connection thread and the server socket is passed
    into the socketlayer
-   
+
       Rev 1.1   10 May 2001 11:12:12   dsutton
    updated with new socket classes
-   
+
       Rev 1.0   23 Apr 2001 11:17:58   dsutton
    Initial revision.
 *
@@ -202,7 +202,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <stdio.h>
 
 /** include files **/
-#include <rw/ctoken.h>
 #include "ctitime.h"
 #include "ctidate.h"
 
@@ -259,11 +258,11 @@ CtiFDR_ACS::~CtiFDR_ACS()
 * Function Name: CtiFDR_ACS::config()
 *
 * Description: loads cparm config values
-* 
+*
 **************************************************
 */
 int CtiFDR_ACS::readConfig()
-{    
+{
     int         successful = TRUE;
     string   tempStr;
 
@@ -430,16 +429,16 @@ bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int
     {
         boost::char_separator<char> sep1(";");
         Boost_char_tokenizer nextTranslate(translation, sep1);
-        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin();
 
         if ( tok_iter != nextTranslate.end() )
         {
             tempString1 = *tok_iter; tok_iter++;
             boost::char_separator<char> sep2(":");
             Boost_char_tokenizer nextTempToken(tempString1, sep2);
-            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin();
 
-            
+
             if( tok_iter1 != nextTempToken.end() )
             {
                 tok_iter1++;
@@ -457,14 +456,14 @@ bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int
                     // put category in final name
                     translationName= "C";
                     translationName += tempString2[0];
-            
+
                     // next token is the remote number
                     if ( tok_iter != nextTranslate.end())
                     {
                         tempString1 = *tok_iter; tok_iter++;
                         Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                        Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-    
+                        Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin();
+
                         if( tok_iter1 != nextTempToken.end() )
                         {
                             tok_iter1++;
@@ -481,14 +480,14 @@ bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int
                             {
                                 // put category in final name
                                 translationName= "R"+tempString2 + translationName;
-                
+
                                 // next token is the point number
                                 if ( tok_iter != nextTranslate.end())
                                 {
                                     tempString1 = *tok_iter; tok_iter++;
                                     Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                                    Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-        
+                                    Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin();
+
                                     if( tok_iter1 != nextTempToken.end() )
                                     {
                                         tok_iter1++;
@@ -499,25 +498,25 @@ bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int
                                         {
                                             tempString2 = "";
                                         }
-                    
+
                                         // now we have a category with a :
                                         if ( !tempString2.empty() )
                                         {
                                             // put category in final name
                                             translationName= "T" + string (itoa(translationPoint->getPointType(),wb,10)) + translationName + "P"+ tempString2;
-                    
+
                                             // add this point ID and the translated ID
                                             translationPoint->getDestinationList()[aDestinationIndex].setTranslation (translationName);
                                             successful = true;
-                    
+
                                         }   // point id invalid
                                     }
                                 }   // third token invalid
-                
+
                             }   //remote number invalid
                         }
                     }   // second token invalid
-            
+
                 }   // category invalid
             }
         }   // first token invalid
@@ -550,7 +549,7 @@ CHAR *CtiFDR_ACS::buildForeignSystemMsg (CtiFDRPoint &aPoint )
 
     /**************************
     * we allocate a acs message here and it will be deleted
-    * inside of the write function on the connection 
+    * inside of the write function on the connection
     ***************************
     */
     acs = new CHAR[sizeof (ACSInterface_t)];
@@ -572,7 +571,7 @@ CHAR *CtiFDR_ACS::buildForeignSystemMsg (CtiFDRPoint &aPoint )
                     ptr->Function = htons (SINGLE_SOCKET_VALUE);
                     YukonToForeignId (aPoint.getTranslateName(string(FDR_ACS)),
                                       ptr->Value.RemoteNumber,
-                                      ptr->Value.CategoryCode, 
+                                      ptr->Value.CategoryCode,
                                       ptr->Value.PointNumber);
                     ptr->Value.Quality = YukonToForeignQuality (aPoint.getQuality());
                     ptr->Value.LongValue = htonieeef (aPoint.getValue());
@@ -603,7 +602,7 @@ CHAR *CtiFDR_ACS::buildForeignSystemMsg (CtiFDRPoint &aPoint )
                         ptr->Function = htons (SINGLE_SOCKET_CONTROL);
                         YukonToForeignId (aPoint.getTranslateName(string(FDR_ACS)),
                                           ptr->Control.RemoteNumber,
-                                          ptr->Control.CategoryCode, 
+                                          ptr->Control.CategoryCode,
                                           ptr->Control.PointNumber);
 
                         // check for validity of the status, we only have open or closed for ACS
@@ -648,7 +647,7 @@ CHAR *CtiFDR_ACS::buildForeignSystemMsg (CtiFDRPoint &aPoint )
                         // everything for control and status is the same except function
                         YukonToForeignId (aPoint.getTranslateName(string(FDR_ACS)),
                                           ptr->Status.RemoteNumber,
-                                          ptr->Status.CategoryCode, 
+                                          ptr->Status.CategoryCode,
                                           ptr->Status.PointNumber);
                         ptr->Status.Quality = YukonToForeignQuality (aPoint.getQuality());
 
@@ -707,7 +706,7 @@ CHAR *CtiFDR_ACS::buildForeignSystemHeartbeatMsg ()
 
     /**************************
     * we allocate a acs message here and it will be deleted
-    * inside of the write function on the connection 
+    * inside of the write function on the connection
     ***************************
     */
     acs = new CHAR[sizeof (ACSInterface_t)];
@@ -755,14 +754,14 @@ int CtiFDR_ACS::processValueMessage(CHAR *aData)
     // see if the point exists
      flag = findTranslationNameInList (translationName, getReceiveFromList(), point);
 
-    if ((flag == true) && 
+    if ((flag == true) &&
         ((point.getPointType() == AnalogPointType) ||
          (point.getPointType() == PulseAccumulatorPointType) ||
          (point.getPointType() == DemandAccumulatorPointType) ||
          (point.getPointType() == CalculatedPointType)))
 
     {
-        // assign last stuff	
+        // assign last stuff
         quality = ForeignToYukonQuality (data->Value.Quality);
         value = ntohieeef (data->Value.LongValue);
 
@@ -779,8 +778,8 @@ int CtiFDR_ACS::processValueMessage(CHAR *aData)
             }
 
             desc = getInterfaceName() + string (" analog point received with an invalid timestamp ") + string (data->TimeStamp);
-            _snprintf(action,60,"Remote:%d Category:%c Point:%d for pointID %d", 
-                      ntohs(data->Value.RemoteNumber), 
+            _snprintf(action,60,"Remote:%d Category:%c Point:%d for pointID %d",
+                      ntohs(data->Value.RemoteNumber),
                       data->Value.CategoryCode,
                       ntohs(data->Value.PointNumber),
                       point.getPointID());
@@ -789,9 +788,9 @@ int CtiFDR_ACS::processValueMessage(CHAR *aData)
         }
         else
         {
-            pData = new CtiPointDataMsg(point.getPointID(), 
-                                        value, 
-                                        quality, 
+            pData = new CtiPointDataMsg(point.getPointID(),
+                                        value,
+                                        quality,
                                         point.getPointType());
 
             pData->setTime(timestamp);
@@ -825,15 +824,15 @@ int CtiFDR_ACS::processValueMessage(CHAR *aData)
                 }
 
                 desc = getInterfaceName() + string (" analog point is not listed in the translation table");
-                _snprintf(action,60,"Remote:%d Category:%c Point:%d", 
-                          ntohs(data->Value.RemoteNumber), 
+                _snprintf(action,60,"Remote:%d Category:%c Point:%d",
+                          ntohs(data->Value.RemoteNumber),
                           data->Value.CategoryCode,
                           ntohs(data->Value.PointNumber));
                 logEvent (desc,string (action));
             }
         }
         else
-        {      
+        {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Analog point ";
@@ -845,8 +844,8 @@ int CtiFDR_ACS::processValueMessage(CHAR *aData)
 
             CHAR pointID[20];
             desc = getInterfaceName() + string (" analog point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
-            _snprintf(action,60,"Remote:%d Category:%c Point:%d", 
-                      ntohs(data->Value.RemoteNumber), 
+            _snprintf(action,60,"Remote:%d Category:%c Point:%d",
+                      ntohs(data->Value.RemoteNumber),
                       data->Value.CategoryCode,
                       ntohs(data->Value.PointNumber));
             logEvent (desc,string (action));
@@ -883,7 +882,7 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
 
     if ((flag == true) && (point.getPointType() == StatusPointType))
     {
-        // assign last stuff	
+        // assign last stuff
         quality = ForeignToYukonQuality (data->Status.Quality);
 
         value = ForeignToYukonStatus (data->Status.Value);
@@ -902,8 +901,8 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
 
             CHAR state[20];
             desc = getInterfaceName() + string (" status point received with an invalid state ") + string (itoa (ntohs(data->Status.Value),state,10));
-            _snprintf(action,60,"Remote:%d Category:%c Point:%d for pointID %d", 
-                      ntohs(data->Status.RemoteNumber), 
+            _snprintf(action,60,"Remote:%d Category:%c Point:%d for pointID %d",
+                      ntohs(data->Status.RemoteNumber),
                       data->Status.CategoryCode,
                       ntohs(data->Status.PointNumber),
                       point.getPointID());
@@ -922,8 +921,8 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
                 }
 
                 desc = getInterfaceName() + string (" status point received with an invalid timestamp ") + string (data->TimeStamp);
-                _snprintf(action,60,"Remote:%d Category:%c Point:%d for pointID %d", 
-                          ntohs(data->Status.RemoteNumber), 
+                _snprintf(action,60,"Remote:%d Category:%c Point:%d for pointID %d",
+                          ntohs(data->Status.RemoteNumber),
                           data->Status.CategoryCode,
                           ntohs(data->Status.PointNumber),
                           point.getPointID());
@@ -932,9 +931,9 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
             }
             else
             {
-                pData = new CtiPointDataMsg(point.getPointID(), 
-                                            value, 
-                                            quality, 
+                pData = new CtiPointDataMsg(point.getPointID(),
+                                            value,
+                                            quality,
                                             StatusPointType);
 
                 pData->setTime(timestamp);
@@ -977,8 +976,8 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
                     dout << " from " << getInterfaceName() << " was not found" << endl;
                 }
                 desc = getInterfaceName() + string (" status point is not listed in the translation table");
-                _snprintf(action,60,"Remote:%d Category:%c Point:%d", 
-                          ntohs(data->Status.RemoteNumber), 
+                _snprintf(action,60,"Remote:%d Category:%c Point:%d",
+                          ntohs(data->Status.RemoteNumber),
                           data->Status.CategoryCode,
                           ntohs(data->Status.PointNumber));
                 logEvent (desc,string (action));
@@ -997,8 +996,8 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
 
             CHAR pointID[20];
             desc = getInterfaceName() + string (" status point is incorrectly mapped to point ") + string(ltoa(point.getPointID(),pointID,10));
-            _snprintf(action,60,"Remote:%d Category:%c Point:%d", 
-                      ntohs(data->Status.RemoteNumber), 
+            _snprintf(action,60,"Remote:%d Category:%c Point:%d",
+                      ntohs(data->Status.RemoteNumber),
                       data->Status.CategoryCode,
                       ntohs(data->Status.PointNumber));
             logEvent (desc,string (action));
@@ -1050,8 +1049,8 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
 
             CHAR state[20];
             desc = getInterfaceName() + string (" control point received with an invalid state ") + string (itoa (ntohs(data->Control.Value),state,10));
-            _snprintf(action,60,"Remote:%d Category:%c Point:%d for pointID %d", 
-                      ntohs(data->Control.RemoteNumber), 
+            _snprintf(action,60,"Remote:%d Category:%c Point:%d for pointID %d",
+                      ntohs(data->Control.RemoteNumber),
                       data->Control.CategoryCode,
                       ntohs(data->Control.PointNumber),
                       point.getPointID());
@@ -1067,7 +1066,7 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
             cmdMsg->insert( -1 );                // This is the dispatch token and is unimplemented at this time
             cmdMsg->insert(0);                   // device id, unknown at this point, dispatch will find it
             cmdMsg->insert(point.getPointID());  // point for control
-            cmdMsg->insert(controlState);       
+            cmdMsg->insert(controlState);
             sendMessageToDispatch(cmdMsg);
 
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -1105,8 +1104,8 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
                 }
 
                 desc = getInterfaceName() + string (" control point is not listed in the translation table");
-                _snprintf(action,60,"Remote:%d Category:%c Point:%d", 
-                          ntohs(data->Control.RemoteNumber), 
+                _snprintf(action,60,"Remote:%d Category:%c Point:%d",
+                          ntohs(data->Control.RemoteNumber),
                           data->Control.CategoryCode,
                           ntohs(data->Control.PointNumber));
                 logEvent (desc,string (action));
@@ -1126,8 +1125,8 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
             }
 
             desc = getInterfaceName() + string (" control point is not configured to receive controls");
-            _snprintf(action,60,"Remote:%d Category:%c Point:%d for pointID %d", 
-                      ntohs(data->Control.RemoteNumber), 
+            _snprintf(action,60,"Remote:%d Category:%c Point:%d for pointID %d",
+                      ntohs(data->Control.RemoteNumber),
                       data->Control.CategoryCode,
                       ntohs(data->Control.PointNumber),
                       point.getPointID());
@@ -1147,8 +1146,8 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
 
             CHAR pointID[20];
             desc = getInterfaceName() + string (" control point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
-            _snprintf(action,60,"Remote:%d Category:%c Point:%d", 
-                      ntohs(data->Control.RemoteNumber), 
+            _snprintf(action,60,"Remote:%d Category:%c Point:%d",
+                      ntohs(data->Control.RemoteNumber),
                       data->Control.CategoryCode,
                       ntohs(data->Control.PointNumber));
             logEvent (desc,string (action));
@@ -1186,7 +1185,7 @@ int CtiFDR_ACS::processTimeSyncMessage(CHAR *aData)
         CtiTime now;
         // check if the stamp is inside the window
         if (timestamp.seconds() > (now.seconds()-getTimeSyncVariation()) &&
-            timestamp.seconds() < (now.seconds()+getTimeSyncVariation())) 
+            timestamp.seconds() < (now.seconds()+getTimeSyncVariation()))
         {
             retVal = NORMAL;
         }
@@ -1200,20 +1199,20 @@ int CtiFDR_ACS::processTimeSyncMessage(CHAR *aData)
                 /**********************
                 *   Straight from the help files
                 *
-                * It is not recommended that you add and subtract values 
-                * from the SYSTEMTIME structure to obtain relative times. Instead, you should 
+                * It is not recommended that you add and subtract values
+                * from the SYSTEMTIME structure to obtain relative times. Instead, you should
                 *
-                * Convert the SYSTEMTIME structure to a FILETIME structure. 
-                * Copy the resulting FILETIME structure to a ULARGE_INTEGER structure. 
-                * Use normal 64-bit arithmetic on the ULARGE_INTEGER value. 
+                * Convert the SYSTEMTIME structure to a FILETIME structure.
+                * Copy the resulting FILETIME structure to a ULARGE_INTEGER structure.
+                * Use normal 64-bit arithmetic on the ULARGE_INTEGER value.
                 ***********************
                 */
                 SYSTEMTIME  sysTime;
                 FILETIME    fileTime;
                 GetSystemTime(&sysTime);
                 if (SystemTimeToFileTime (&sysTime, &fileTime))
-                {  
-                    ULARGE_INTEGER timeNow; // 64 bit number of 100 nanosecond parts since 1601 
+                {
+                    ULARGE_INTEGER timeNow; // 64 bit number of 100 nanosecond parts since 1601
                     timeNow.LowPart = fileTime.dwLowDateTime;
                     timeNow.HighPart = fileTime.dwHighDateTime;
 
@@ -1301,8 +1300,8 @@ string CtiFDR_ACS::ForeignToYukonId (USHORT remote, CHAR category, USHORT point)
 
 int CtiFDR_ACS::YukonToForeignId (string aPointName, USHORT &aRemoteNumber, CHAR &aCategory, USHORT &aPointNumber)
 {
-	USHORT tmp_remote, tmp_point, tmp_type;
-	CHAR tmp_category;
+    USHORT tmp_remote, tmp_point, tmp_type;
+    CHAR tmp_category;
     CHAR pointName[100];
 
     // put this in a characater buffer
@@ -1312,11 +1311,11 @@ int CtiFDR_ACS::YukonToForeignId (string aPointName, USHORT &aRemoteNumber, CHAR
     if (sscanf (pointName, "T%hdR%hdC%cP%hd", &tmp_type, &tmp_remote, &tmp_category, &tmp_point) != 4)
         return (!NORMAL);
 
-	// put these into our values
-	aRemoteNumber = htons(tmp_remote);
-	aPointNumber = htons(tmp_point);
-	aCategory = tmp_category;
-   	return (NORMAL);
+    // put these into our values
+    aRemoteNumber = htons(tmp_remote);
+    aPointNumber = htons(tmp_point);
+    aCategory = tmp_category;
+    return (NORMAL);
 }
 
 
@@ -1339,32 +1338,32 @@ USHORT CtiFDR_ACS::ForeignToYukonQuality (USHORT aQuality)
 
 USHORT CtiFDR_ACS::YukonToForeignQuality (USHORT aQuality)
 {
-	USHORT Quality = ACS_PLUGGED;
+    USHORT Quality = ACS_PLUGGED;
 
-	/* Test for the various CTI Qualities and translate to ACS */
-	if (aQuality == NonUpdatedQuality)
-		Quality = ACS_PLUGGED;
+    /* Test for the various CTI Qualities and translate to ACS */
+    if (aQuality == NonUpdatedQuality)
+        Quality = ACS_PLUGGED;
 
-	if (aQuality == ManualQuality)
-		Quality = ACS_MANUALENTRY;
+    if (aQuality == ManualQuality)
+        Quality = ACS_MANUALENTRY;
 
-	if (aQuality == NormalQuality)
-		Quality = ACS_NORMAL;
+    if (aQuality == NormalQuality)
+        Quality = ACS_NORMAL;
 
-	if (aQuality == UnintializedQuality)
-		Quality = ACS_PLUGGED;
-    
-	return(htons (Quality));
+    if (aQuality == UnintializedQuality)
+        Quality = ACS_PLUGGED;
+
+    return(htons (Quality));
 }
 
 
-// Convert ACS status to CTI Status 
+// Convert ACS status to CTI Status
 int CtiFDR_ACS::ForeignToYukonStatus (USHORT aStatus)
 {
     int tmpstatus=INVALID;
 
     switch (ntohs (aStatus))
-    {  
+    {
         case ACS_Open:
             tmpstatus = OPENED;
             break;
@@ -1378,18 +1377,18 @@ int CtiFDR_ACS::ForeignToYukonStatus (USHORT aStatus)
 
 USHORT CtiFDR_ACS::YukonToForeignStatus (int aStatus)
 {
-	USHORT tmpstatus=ACS_Invalid;
+    USHORT tmpstatus=ACS_Invalid;
 
-	switch (aStatus)
-	{
-		case OPENED:
-			tmpstatus = ACS_Open;
-			break;
-		case CLOSED:
-			tmpstatus = ACS_Closed;
-			break;
-	}
-	return(htons (tmpstatus));
+    switch (aStatus)
+    {
+        case OPENED:
+            tmpstatus = ACS_Open;
+            break;
+        case CLOSED:
+            tmpstatus = ACS_Closed;
+            break;
+    }
+    return(htons (tmpstatus));
 }
 
 
@@ -1465,7 +1464,7 @@ string CtiFDR_ACS::YukonToForeignTime (CtiTime aTimeStamp)
     /*******************************
     * if the timestamp is less than 01-01-2000 (completely arbitrary number)
     * then set it to now because its probably an error or its uninitialized
-    * note: uninitialized points come across as 11-10-1990 
+    * note: uninitialized points come across as 11-10-1990
     ********************************
     */
     if (aTimeStamp < CtiTime(CtiDate(1,1,2001)))
@@ -1475,9 +1474,9 @@ string CtiFDR_ACS::YukonToForeignTime (CtiTime aTimeStamp)
 
     CtiDate tmpDate (aTimeStamp);
 
-	// Place it into the ACS structure */
-	_snprintf (tmp,26,
-			 "%4ld%02ld%02ld%02ld%02ld%02ldS",
+    // Place it into the ACS structure */
+    _snprintf (tmp,26,
+             "%4ld%02ld%02ld%02ld%02ld%02ldS",
              tmpDate.year(),
              tmpDate.month(),
              tmpDate.dayOfMonth(),
@@ -1485,18 +1484,18 @@ string CtiFDR_ACS::YukonToForeignTime (CtiTime aTimeStamp)
              aTimeStamp.minute(),
              aTimeStamp.second());
 
-	if (aTimeStamp.isDST())
-	{
-		tmp[14] = 'D';
-	}
+    if (aTimeStamp.isDST())
+    {
+        tmp[14] = 'D';
+    }
 
-	return(string (tmp));
+    return(string (tmp));
 }
 
 /****************************************************************************************
 *
-*      Here Starts some C functions that are used to Start the 
-*      Interface and Stop it from the Main() of FDR.EXE.  
+*      Here Starts some C functions that are used to Start the
+*      Interface and Stop it from the Main() of FDR.EXE.
 *
 */
 
@@ -1507,11 +1506,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int RunInterface(void)
 *
-* Description: This is used to Start the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Start the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function creates a global FDRCygnet Object and then
 *              calls its run method to cank it up.
-* 
+*
 *************************************************************************
 */
 
@@ -1528,11 +1527,11 @@ extern "C" {
 /************************************************************************
 * Function Name: Extern C int StopInterface(void)
 *
-* Description: This is used to Stop the Interface from the Main() 
-*              of FDR.EXE. Each interface it Dynamicly loaded and 
+* Description: This is used to Stop the Interface from the Main()
+*              of FDR.EXE. Each interface it Dynamicly loaded and
 *              this function stops a global FDRCygnet Object and then
 *              deletes it.
-* 
+*
 *************************************************************************
 */
     DLLEXPORT int StopInterface( void )

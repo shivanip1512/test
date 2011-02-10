@@ -1,7 +1,6 @@
 #pragma once
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
-#include <rw/collstr.h>
 #include <rw/collect.h>
 #include <rw/vstream.h>
 #include "ctitime.h"

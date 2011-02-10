@@ -116,11 +116,6 @@ test_ctidate.obj:  ctidate.h
 test_ctitime.obj:  ctitime.h
 
 #UPDATE#
-amq_connection.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
-		utility.h ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h \
-		numstr.h sorted_vector.h connectionfactory.h amq_connection.h \
-		thread.h mutex.h guard.h critical_section.h activemqcpp.h \
-		connection.h
 attributeservice.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		AttributeService.h LitePoint.h dlldefs.h pointtypes.h \
 		PointAttribute.h resolvers.h db_entry_defines.h numstr.h \
@@ -236,8 +231,7 @@ dllbase.obj:	yukon.h precompiled.h types.h ctidbgmem.h dsm2.h mutex.h \
 		configkey.h configval.h ctinexus.h logger.h thread.h \
 		CtiPCPtrQueue.h thread_monitor.h smartmap.h \
 		readers_writer_lock.h critical_section.h queue.h \
-		thread_register_data.h amq_connection.h activemqcpp.h \
-		connection.h
+		thread_register_data.h
 elog_cli.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		dlldefs.h cticalls.h dsm2.h mutex.h guard.h utility.h \
 		ctitime.h queues.h numstr.h sorted_vector.h cticonnect.h \

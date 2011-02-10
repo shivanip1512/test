@@ -34,8 +34,6 @@ using std::iostream;
 
 #include <rw/collstr.h>
 
-#include <rw/ordcltn.h>
-
 #include "logger.h"
 #include "guard.h"
 #include "types.h"

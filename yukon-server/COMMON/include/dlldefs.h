@@ -1,5 +1,4 @@
-#ifndef __DLLDEFS_H__
-#define __DLLDEFS_H__
+#pragma once
 
 #define DLLEXPORT             __declspec(dllexport)
 #define DLLIMPORT             __declspec(dllimport)
@@ -44,14 +43,6 @@
    #define IM_EX_CTISVR
 #else
    #define IM_EX_CTISVR       __declspec(dllimport)
-#endif
-
-#ifdef CTIMSG                 // The ctibase.dll
-   #define IM_EX_CTIMSG       __declspec(dllexport)
-#elif defined( STI_UNDERSTAND )
-   #define IM_EX_CTIMSG
-#else
-   #define IM_EX_CTIMSG       __declspec(dllimport)
 #endif
 
 #ifdef CTIQUEUE                // The ctisvr.dll
@@ -461,13 +452,3 @@
    #define IM_EX_FDRBEPC       __declspec(dllimport)
 #endif
 
-
-
-
-
-
-
-
-
-
-#endif   // #ifndef __DLLDEFS_H__

@@ -16,9 +16,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 /** include files **/
 
-#include <rw/ctoken.h>
-
-
 #include "cparms.h"
 #include "msg_multi.h"
 #include "msg_ptreg.h"

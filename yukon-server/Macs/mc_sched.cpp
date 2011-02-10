@@ -29,7 +29,6 @@
 #include "mc_sched.h"
 #include "utility.h"
 #include "ctidate.h"
-#include <rw/collstr.h>
 
 using namespace std;
 

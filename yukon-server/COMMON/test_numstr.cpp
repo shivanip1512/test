@@ -13,9 +13,6 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <rw/re.h>
-
-
 #include "numstr.h"
 
 #define BOOST_AUTO_TEST_MAIN "Test NumStr"
