@@ -698,6 +698,8 @@ void CtiPILServer::resultThread()
 
                                 if( pRet->isA() == MSG_PCRETURN )
                                 {
+                                    //  Note that this excludes ReturnMsgs that are sent on execute, such as "... commands sent on route"
+
                                     copyReturnMessageToResponseMonitorQueue(*(static_cast<CtiReturnMsg *>(pRet)), InMessage->Return.Connection);
                                 }
 
