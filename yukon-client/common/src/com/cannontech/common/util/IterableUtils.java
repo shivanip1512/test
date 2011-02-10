@@ -102,6 +102,17 @@ public class IterableUtils {
     }
     
     /**
+     * This function provides a null safe isEmpty check for Iterables. Similar to the commons
+     * collection isEmpty function.
+     * 
+     * @param iterable An Iterable which will be checked for null or empty status.
+     * @return true if the iterable is null or empty, false otherwise.
+     */
+    public static <T> boolean isEmpty(final Iterable<T> iterable) {
+    	return (iterable == null || Iterables.isEmpty(iterable));
+    }
+    
+    /**
      * Use this when you have an Iterable of type A, and you know all of its elements can be casted to type B, 
      * and you want an Iterable of type B. This method blindly casts the objects, so any exceptions will bubble up.
      * 

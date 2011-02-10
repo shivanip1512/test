@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -30,88 +31,6 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
     private Set<Integer> substationIds;
     private Set<Integer> areaIds;
     private String[] deviceTypes;
-    
-    // query bodies
-    private static final String areaQueryHeader = "select yp.paoname devicename , yp.type deviceType , '---' area , '---' substation , " +
-    												  	"'---' subbus , '---' feeder , '---' capbank , c.capcomment , c.commenttime , yu.username " +
-	    										  "from (select * from yukonpaobject where type = 'CCAREA' and disableflag = 'Y') yp " +
-	    										  "left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid " +
-	    										  "left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED' " +
-												  "left outer join yukonuser yu on yu.userid = c.userid ";
-    
-    private static final String substationQueryHeader = "select yp.paoname devicename , yp.type deviceType , pInfo.area area , '---' substation , '---' subbus , '---' feeder , " +
-	    													"'---' capbank , c.capcomment , c.commenttime , yu.username " +
-	    											    "from (select * from yukonpaobject where type = 'CCSUBSTATION' and disableflag = 'Y') yp " +
-	    											    "join (select ypa.paoname area , ypa.paobjectid areaId, yps.paobjectid " +
-	    											  		  "from yukonpaobject ypa , yukonpaobject yps, ccsubareaassignment sa, ccsubstationsubbuslist ss " +
-	    											  		  "where yps.paobjectid = ss.substationid and sa.substationbusid = ss.substationid and " +
-	    											  			  "sa.areaid = ypa.paobjectid and yps.type like 'CCSUBSTATION') pInfo " +
-	    											    "on yp.paobjectid = pInfo.paobjectid " +
-	    											    "left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid " +
-	    											    "left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED' " +
-	    											    "left outer join yukonuser yu on yu.userid = c.userid ";
-    
-    private static final String subBusQueryHeader = "select yp.paoname devicename , yp.type deviceType , pInfo.area area , pInfo.substation substation , '---' subbus , " +
-	    												  "'---' feeder , '---' capbank , c.capcomment , c.commenttime , yu.username " +
-												    "from (select * from yukonpaobject where type = 'CCSUBBUS' and disableflag = 'Y') yp " +
-												    "join (select ypa.paoname area, ypa.paobjectid areaId, yps.paoname substation, yps.paobjectId substationId, ypsb.paobjectid " +
-												  		  "from yukonpaobject ypa, yukonpaobject yps, yukonpaobject ypsb, ccsubareaassignment sa, ccsubstationsubbuslist ss " +
-												  		  "where ypsb.paobjectid = ss.substationbusid and yps.paobjectid = ss.substationid and sa.substationbusid = ss.substationid and " +
-												  		  	  "sa.areaid = ypa.paobjectid and ypsb.type like 'CCSUBBUS') pInfo on yp.paobjectid = pInfo.paobjectid " +
-												    "left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid " +
-												    "left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED' " +
-												    "left outer join yukonuser yu on yu.userid = c.userid ";
-    
-    private static final String feederQueryHeader = "select yp.paoname devicename , yp.type deviceType , pInfo.area area , pInfo.substation substation , pInfo.subbus subbus , " +
-    													  "'---' feeder , '---' capbank , c.capcomment , c.commenttime , yu.username " +
-													"from (select * from yukonpaobject where type = 'CCFEEDER' and disableflag = 'Y') yp " +
-													"join (select ypa.paoname area, ypa.paobjectid areaId, yps.paoname substation, yps.paobjectId substationId, ypsb.paoname subbus, " +
-														  "ypsb.paobjectid subbusId, ypf.paobjectid " +
-														  "from yukonpaobject ypa, yukonpaobject yps, yukonpaobject ypsb, yukonpaobject ypf, ccsubareaassignment sa, ccsubstationsubbuslist ss, " +
-														  	  "ccfeedersubassignment fs " +
-													  	  "where ypf.paobjectid = fs.feederid and ypsb.paobjectid = fs.substationbusid and yps.paobjectid = ss.substationid and " +
-													  	  	  "fs.substationbusid = ss.substationbusid and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and " +
-													  	  	  "ypf.type like 'CCFEEDER') pInfo " +
-										  	  	    "on yp.paobjectid = pInfo.paobjectid " +
-											  	  	"left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid " +
-											  	  	"left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED' " +
-											  	  	"left outer join yukonuser yu on yu.userid = c.userid ";
-    
-    private static final String capBankQueryHeader = "select yp.paoname devicename , yp.type deviceType , pInfo.area area , pInfo.substation substation , pInfo.subbus subbus , " +
-    													   "pInfo.feeder feeder , '---' capbank , c.capcomment , c.commenttime , yu.username " +
-													 "from (select * from yukonpaobject where type = 'CAP BANK' and disableflag = 'Y') yp " +
-													 "join (select ypa.paoname area, ypa.PAObjectID areaId, yps.paoname substation, yps.paobjectId substationId, ypsb.paoname subbus, " +
-															   "ypsb.PAObjectID subbusId, ypf.paoname feeder, ypf.paobjectid feederId, ypc.paobjectid " +
-														   "from yukonpaobject ypa, yukonpaobject yps, yukonpaobject ypsb, yukonpaobject ypf, yukonpaobject ypc, ccsubareaassignment sa, " +
-														  	   "ccsubstationsubbuslist ss, ccfeedersubassignment fs, ccfeederbanklist fb, capbank c " +
-														   "where ypc.paobjectid = c.deviceid and fb.deviceid = c.deviceid and fb.feederid = fs.feederid and ypf.paobjectid = fb.feederid and " +
-														   	   "ypsb.paobjectid = fs.substationbusid and yps.paobjectid = ss.substationid and fs.substationbusid = ss.substationbusid and " +
-														   	   "sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and ypc.type like 'CAP BANK') pInfo " +
-													 "on pInfo.paobjectid = yp.paobjectid " +
-													 "left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid " +
-													 "left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED' " +
-													 "left outer join yukonuser yu on yu.userid = c.userid ";
-    
-    private static final String cbcQueryHeader = "select yp.paoname devicename , yp.type deviceType , pInfo.area area , pInfo.substation substation , " +
-	    											"pInfo.subbus subbus , pInfo.feeder feeder , pInfo.capbank capbank , c.capcomment , " +
-	    											"c.commenttime , yu.username " +
-											     "from (select * from yukonpaobject where type like 'CBC%' and disableflag = 'Y') yp " +
-											     "join (select ypa.paoname area, ypa.PAObjectID areaId, yps.paoname substation, " +
-											     			"yps.PAObjectID substationId, ypsb.paobjectid subbusId, ypf.paobjectid feederId, " +
-											     			"ypc.paobjectid capbankId, ypsb.paoname subbus, ypf.paoname feeder, ypc.paoname capbank, " +
-											     			"yp.paobjectid " +
-											     	   "from yukonpaobject yp , yukonpaobject ypa, yukonpaobject yps, " +
-											     	   		"yukonpaobject ypsb, yukonpaobject ypf, yukonpaobject ypc, ccsubareaassignment sa, " +
-											     	   		"ccsubstationsubbuslist ss, ccfeedersubassignment fs, ccfeederbanklist fb, capbank c " +
-										     	   	   "where yp.paobjectid = c.controldeviceid and ypc.paobjectid = c.deviceid and " +
-										     	   	   		"fb.deviceid = c.deviceid and fb.feederid = fs.feederid and ypf.paobjectid = fb.feederid " +
-										     	   	   		"and ypsb.paobjectid = fs.substationbusid and yps.paobjectid = ss.substationid " +
-										     	   	   		"and fs.substationbusid = ss.substationbusid and sa.substationbusid = ss.substationid " +
-										     	   	   		"and sa.areaid = ypa.paobjectid and yp.type like 'CBC%') pInfo " +
-										     	   	   "on yp.paobjectid = pInfo.paobjectid " +
-									     	   	 "left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid " +
-									     	   	 "left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED' " +
-									     	   	 "left outer join yukonuser yu on yu.userid = c.userid ";
     
     // member variables
     private List<ModelRow> data = new ArrayList<ModelRow>();
@@ -157,13 +76,22 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
     }
 
     private List<CapControlDisabledDevicesModel.ModelRow> doLoadAreaData() {
+    	final SqlStatementBuilder baseSql = new SqlStatementBuilder();
+    	
+    	baseSql.append("select yp.paoname devicename, yp.type deviceType, '---' area, '---' substation,");
+	  	baseSql.append("'---' subbus, '---' feeder, '---' capbank, c.capcomment, c.commenttime, yu.username");
+	  	baseSql.append("from (select * from yukonpaobject where type = 'CCAREA' and disableflag = 'Y') yp");
+	  	baseSql.append("left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid");
+	  	baseSql.append("left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED'");
+	  	baseSql.append("left outer join yukonuser yu on yu.userid = c.userid");
+    	              
     	ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
             	SqlStatementBuilder sql = new SqlStatementBuilder();
-            	sql.append(areaQueryHeader);
-            	if(areaIds != null && !areaIds.isEmpty()) {
+            	sql.append(baseSql);
+            	if(!IterableUtils.isEmpty(areaIds)) {
             		sql.append("where yp.paobjectid").in(subList);
             	}
             	sql.append("order by yp.paoname");
@@ -172,26 +100,40 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
             }
         };
         
-        if(areaIds != null && !areaIds.isEmpty()) {
+        if(!IterableUtils.isEmpty(areaIds)) {
         	return template.query(sqlGenerator, areaIds, ccDisabledDevicesReportRowMapper);
         } else {
         	SqlStatementBuilder sql = new SqlStatementBuilder();
-        	sql.append(areaQueryHeader);
+        	sql.append(baseSql);
             sql.append("order by yp.paoname");
         	return jdbcTemplate.query(sql, ccDisabledDevicesReportRowMapper);
         }
     }
     
     private List<CapControlDisabledDevicesModel.ModelRow> doLoadSubstationData() {
+    	final SqlStatementBuilder baseSql = new SqlStatementBuilder();
+    	
+    	baseSql.append("select yp.paoname devicename, yp.type deviceType, pInfo.area area, '---' substation, '---' subbus, '---' feeder,");
+		baseSql.append("'---' capbank, c.capcomment, c.commenttime, yu.username");
+		baseSql.append("from (select * from yukonpaobject where type = 'CCSUBSTATION' and disableflag = 'Y') yp");
+		baseSql.append("join (select ypa.paoname area, ypa.paobjectid areaId, yps.paobjectid");
+  		baseSql.append("from yukonpaobject ypa, yukonpaobject yps, ccsubareaassignment sa, ccsubstationsubbuslist ss");
+  		baseSql.append("where yps.paobjectid = ss.substationid and sa.substationbusid = ss.substationid and");
+  		baseSql.append("sa.areaid = ypa.paobjectid and yps.type like 'CCSUBSTATION') pInfo");
+  		baseSql.append("on yp.paobjectid = pInfo.paobjectid");
+  		baseSql.append("left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid");
+  		baseSql.append("left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED'");
+  		baseSql.append("left outer join yukonuser yu on yu.userid = c.userid");
+    	
     	ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
             	SqlStatementBuilder sql = new SqlStatementBuilder();
-            	sql.append(substationQueryHeader);
-                if(substationIds != null && !substationIds.isEmpty()) {
+            	sql.append(baseSql);
+                if(!IterableUtils.isEmpty(substationIds)) {
                 	sql.append("where yp.paobjectid").in(subList);
-                }else if(areaIds != null && !areaIds.isEmpty()) {
+                }else if(!IterableUtils.isEmpty(areaIds)) {
                 	sql.append("where pInfo.areaId").in(subList);
                 }
                 sql.append("order by yp.paoname, yp.type");
@@ -200,30 +142,43 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
             }
         };
         
-        if(substationIds != null && !substationIds.isEmpty()) {
+        if(!IterableUtils.isEmpty(substationIds)) {
         	return template.query(sqlGenerator, substationIds, ccDisabledDevicesReportRowMapper);
-        } else if(areaIds != null && !areaIds.isEmpty()) {
+        } else if(!IterableUtils.isEmpty(areaIds)) {
         	return template.query(sqlGenerator, areaIds, ccDisabledDevicesReportRowMapper);
         } else {
         	SqlStatementBuilder sql = new SqlStatementBuilder();
-        	sql.append(substationQueryHeader);
+        	sql.append(baseSql);
             sql.append("order by yp.paoname, yp.type");
         	return jdbcTemplate.query(sql, ccDisabledDevicesReportRowMapper);
         }
     }
     
     private List<CapControlDisabledDevicesModel.ModelRow> doLoadSubBusData() {
+    	final SqlStatementBuilder baseSql = new SqlStatementBuilder();
+    	
+    	baseSql.append("select yp.paoname devicename, yp.type deviceType, pInfo.area area, pInfo.substation substation, '---' subbus,");
+		baseSql.append("'---' feeder, '---' capbank, c.capcomment, c.commenttime, yu.username");
+		baseSql.append("from (select * from yukonpaobject where type = 'CCSUBBUS' and disableflag = 'Y') yp");
+		baseSql.append("join (select ypa.paoname area, ypa.paobjectid areaId, yps.paoname substation, yps.paobjectId substationId, ypsb.paobjectid");
+		baseSql.append("from yukonpaobject ypa, yukonpaobject yps, yukonpaobject ypsb, ccsubareaassignment sa, ccsubstationsubbuslist ss");
+		baseSql.append("where ypsb.paobjectid = ss.substationbusid and yps.paobjectid = ss.substationid and sa.substationbusid = ss.substationid and");
+		baseSql.append("sa.areaid = ypa.paobjectid and ypsb.type like 'CCSUBBUS') pInfo on yp.paobjectid = pInfo.paobjectid");
+		baseSql.append("left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid");
+		baseSql.append("left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED'");
+		baseSql.append("left outer join yukonuser yu on yu.userid = c.userid");
+    	
     	ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
             	SqlStatementBuilder sql = new SqlStatementBuilder();
-            	sql.append(subBusQueryHeader);
-            	if(subbusIds != null && !subbusIds.isEmpty()) {
+            	sql.append(baseSql);
+            	if(!IterableUtils.isEmpty(subbusIds)) {
                     sql.append("where yp.paobjectid").in(subList);
-                }else if(substationIds != null && !substationIds.isEmpty()) {
+                }else if(!IterableUtils.isEmpty(substationIds)) {
                 	sql.append("where pInfo.substationId").in(subList);
-                }else if(areaIds != null && !areaIds.isEmpty()) {
+                }else if(!IterableUtils.isEmpty(areaIds)) {
                 	sql.append("where pInfo.areaId").in(subList);
                 }
                 sql.append("order by yp.paoname, yp.type");
@@ -232,34 +187,51 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
             }
         };
         
-        if(subbusIds != null && !subbusIds.isEmpty()) {
+        if(!IterableUtils.isEmpty(subbusIds)) {
             return template.query(sqlGenerator, subbusIds, ccDisabledDevicesReportRowMapper);
-        } else if(substationIds != null && !substationIds.isEmpty()) {
+        } else if(!IterableUtils.isEmpty(substationIds)) {
         	return template.query(sqlGenerator, substationIds, ccDisabledDevicesReportRowMapper);
-        } else if(areaIds != null && !areaIds.isEmpty()) {
+        } else if(!IterableUtils.isEmpty(areaIds)) {
         	return template.query(sqlGenerator, areaIds, ccDisabledDevicesReportRowMapper);
         } else {
         	SqlStatementBuilder sql = new SqlStatementBuilder();
-        	sql.append(subBusQueryHeader);
+        	sql.append(baseSql);
             sql.append("order by yp.paoname, yp.type");
         	return jdbcTemplate.query(sql, ccDisabledDevicesReportRowMapper);
         }
     }
     
     private List<CapControlDisabledDevicesModel.ModelRow> doLoadFeederData() {
+    	final SqlStatementBuilder baseSql = new SqlStatementBuilder();
+    	
+    	baseSql.append("select yp.paoname devicename, yp.type deviceType, pInfo.area area, pInfo.substation substation, pInfo.subbus subbus,");
+    	baseSql.append("'---' feeder, '---' capbank, c.capcomment, c.commenttime, yu.username");
+    	baseSql.append("from (select * from yukonpaobject where type = 'CCFEEDER' and disableflag = 'Y') yp");
+    	baseSql.append("join (select ypa.paoname area, ypa.paobjectid areaId, yps.paoname substation, yps.paobjectId substationId, ypsb.paoname subbus,");
+		baseSql.append("ypsb.paobjectid subbusId, ypf.paobjectid");
+		baseSql.append("from yukonpaobject ypa, yukonpaobject yps, yukonpaobject ypsb, yukonpaobject ypf, ccsubareaassignment sa, ccsubstationsubbuslist ss,");
+		baseSql.append("ccfeedersubassignment fs");
+		baseSql.append("where ypf.paobjectid = fs.feederid and ypsb.paobjectid = fs.substationbusid and yps.paobjectid = ss.substationid and");
+		baseSql.append("fs.substationbusid = ss.substationbusid and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and");
+		baseSql.append("ypf.type like 'CCFEEDER') pInfo");
+	    baseSql.append("on yp.paobjectid = pInfo.paobjectid");
+	    baseSql.append("left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid");
+	    baseSql.append("left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED'");
+	    baseSql.append("left outer join yukonuser yu on yu.userid = c.userid");
+
     	ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
             	SqlStatementBuilder sql = new SqlStatementBuilder();
-            	sql.append(feederQueryHeader);
-            	if(feederIds != null && !feederIds.isEmpty()) {
+            	sql.append(baseSql);
+            	if(!IterableUtils.isEmpty(feederIds)) {
                     sql.append("where yp.paobjectid").in(subList);
-                }else if(subbusIds != null && !subbusIds.isEmpty()) {
+                }else if(!IterableUtils.isEmpty(subbusIds)) {
                 	sql.append("where pInfo.subbusId").in(subList);
-                }else if(substationIds != null && !substationIds.isEmpty()) {
+                }else if(!IterableUtils.isEmpty(substationIds)) {
                 	sql.append("where pInfo.substationId").in(subList);
-                }else if(areaIds != null && !areaIds.isEmpty()) {
+                }else if(!IterableUtils.isEmpty(areaIds)) {
                 	sql.append("where pInfo.areaId").in(subList);
                 }
                 sql.append("order by yp.paoname, yp.type");
@@ -268,38 +240,55 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
             }
         };
 
-        if(feederIds != null && !feederIds.isEmpty()) {
+        if(!IterableUtils.isEmpty(feederIds)) {
         	return template.query(sqlGenerator, feederIds, ccDisabledDevicesReportRowMapper);
-    	} else if(subbusIds != null && !subbusIds.isEmpty()) {
+    	} else if(!IterableUtils.isEmpty(subbusIds)) {
             return template.query(sqlGenerator, subbusIds, ccDisabledDevicesReportRowMapper);
-        } else if(substationIds != null && !substationIds.isEmpty()) {
+        } else if(!IterableUtils.isEmpty(substationIds)) {
         	return template.query(sqlGenerator, substationIds, ccDisabledDevicesReportRowMapper);
-        } else if(areaIds != null && !areaIds.isEmpty()) {
+        } else if(!IterableUtils.isEmpty(areaIds)) {
         	return template.query(sqlGenerator, areaIds, ccDisabledDevicesReportRowMapper);
         } else {
         	SqlStatementBuilder sql = new SqlStatementBuilder();
-        	sql.append(feederQueryHeader);
+        	sql.append(baseSql);
             sql.append("order by yp.paoname, yp.type");
         	return jdbcTemplate.query(sql, ccDisabledDevicesReportRowMapper);
         }
     }
     	
     private List<CapControlDisabledDevicesModel.ModelRow> doLoadCapBankData() {
+    	final SqlStatementBuilder baseSql = new SqlStatementBuilder();
+    	
+    	baseSql.append("select yp.paoname devicename, yp.type deviceType, pInfo.area area, pInfo.substation substation, pInfo.subbus subbus,");
+		baseSql.append("pInfo.feeder feeder, '---' capbank, c.capcomment, c.commenttime, yu.username");
+		baseSql.append("from (select * from yukonpaobject where type = 'CAP BANK' and disableflag = 'Y') yp");
+		baseSql.append("join (select ypa.paoname area, ypa.PAObjectID areaId, yps.paoname substation, yps.paobjectId substationId, ypsb.paoname subbus,");
+		baseSql.append("ypsb.PAObjectID subbusId, ypf.paoname feeder, ypf.paobjectid feederId, ypc.paobjectid");
+		baseSql.append("from yukonpaobject ypa, yukonpaobject yps, yukonpaobject ypsb, yukonpaobject ypf, yukonpaobject ypc, ccsubareaassignment sa,");
+		baseSql.append("ccsubstationsubbuslist ss, ccfeedersubassignment fs, ccfeederbanklist fb, capbank c");
+		baseSql.append("where ypc.paobjectid = c.deviceid and fb.deviceid = c.deviceid and fb.feederid = fs.feederid and ypf.paobjectid = fb.feederid and");
+		baseSql.append("ypsb.paobjectid = fs.substationbusid and yps.paobjectid = ss.substationid and fs.substationbusid = ss.substationbusid and");
+		baseSql.append("sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and ypc.type like 'CAP BANK') pInfo");
+		baseSql.append("on pInfo.paobjectid = yp.paobjectid");
+		baseSql.append("left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid");
+		baseSql.append("left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED'");
+		baseSql.append("left outer join yukonuser yu on yu.userid = c.userid");
+    	
     	ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
             	SqlStatementBuilder sql = new SqlStatementBuilder();
-            	sql.append(capBankQueryHeader);
-            	if(capBankIds != null && !capBankIds.isEmpty()) {
+            	sql.append(baseSql);
+            	if(!IterableUtils.isEmpty(capBankIds)) {
                     sql.append("where yp.paobjectid").in(subList);
-                }else if(feederIds != null && !feederIds.isEmpty()) {
+                }else if(!IterableUtils.isEmpty(feederIds)) {
                 	sql.append("where pInfo.feederId").in(subList);
-                }else if(subbusIds != null && !subbusIds.isEmpty()) {
+                }else if(!IterableUtils.isEmpty(subbusIds)) {
                 	sql.append("where pInfo.subbusId").in(subList);
-                }else if(substationIds != null && !substationIds.isEmpty()) {
+                }else if(!IterableUtils.isEmpty(substationIds)) {
                 	sql.append("where pInfo.substationId").in(subList);
-                }else if(areaIds != null && !areaIds.isEmpty()) {
+                }else if(!IterableUtils.isEmpty(areaIds)) {
                 	sql.append("where pInfo.areaId").in(subList);
                 }
                 sql.append("order by yp.paoname, yp.type");
@@ -308,40 +297,63 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
             }
         };
         
-        if(capBankIds != null && !capBankIds.isEmpty()) {
+        if(!IterableUtils.isEmpty(capBankIds)) {
         	return template.query(sqlGenerator, capBankIds, ccDisabledDevicesReportRowMapper);
-        } else if(feederIds != null && !feederIds.isEmpty()) {
+        } else if(!IterableUtils.isEmpty(feederIds)) {
         	return template.query(sqlGenerator, feederIds, ccDisabledDevicesReportRowMapper);
-    	} else if(subbusIds != null && !subbusIds.isEmpty()) {
+    	} else if(!IterableUtils.isEmpty(subbusIds)) {
             return template.query(sqlGenerator, subbusIds, ccDisabledDevicesReportRowMapper);
-        } else if(substationIds != null && !substationIds.isEmpty()) {
+        } else if(!IterableUtils.isEmpty(substationIds)) {
         	return template.query(sqlGenerator, substationIds, ccDisabledDevicesReportRowMapper);
-        } else if(areaIds != null && !areaIds.isEmpty()) {
+        } else if(!IterableUtils.isEmpty(areaIds)) {
         	return template.query(sqlGenerator, areaIds, ccDisabledDevicesReportRowMapper);
         } else {
         	SqlStatementBuilder sql = new SqlStatementBuilder();
-        	sql.append(capBankQueryHeader);
+        	sql.append(baseSql);
             sql.append("order by yp.paoname, yp.type");
         	return jdbcTemplate.query(sql, ccDisabledDevicesReportRowMapper);
         }
     }
 
     private List<CapControlDisabledDevicesModel.ModelRow> doLoadCbcData() {
+    	final SqlStatementBuilder baseSql = new SqlStatementBuilder();
+    	
+    	baseSql.append("select yp.paoname devicename, yp.type deviceType, pInfo.area area, pInfo.substation substation,");
+		baseSql.append("pInfo.subbus subbus, pInfo.feeder feeder, pInfo.capbank capbank, c.capcomment,");
+		baseSql.append("c.commenttime, yu.username");
+		baseSql.append("from (select * from yukonpaobject where type like 'CBC%' and disableflag = 'Y') yp");
+		baseSql.append("join (select ypa.paoname area, ypa.PAObjectID areaId, yps.paoname substation,");
+		baseSql.append("yps.PAObjectID substationId, ypsb.paobjectid subbusId, ypf.paobjectid feederId,");
+		baseSql.append("ypc.paobjectid capbankId, ypsb.paoname subbus, ypf.paoname feeder, ypc.paoname capbank,");
+		baseSql.append("yp.paobjectid");
+		baseSql.append("from yukonpaobject yp, yukonpaobject ypa, yukonpaobject yps,");
+		baseSql.append("yukonpaobject ypsb, yukonpaobject ypf, yukonpaobject ypc, ccsubareaassignment sa,");
+		baseSql.append("ccsubstationsubbuslist ss, ccfeedersubassignment fs, ccfeederbanklist fb, capbank c");
+		baseSql.append("where yp.paobjectid = c.controldeviceid and ypc.paobjectid = c.deviceid and");
+		baseSql.append("fb.deviceid = c.deviceid and fb.feederid = fs.feederid and ypf.paobjectid = fb.feederid");
+		baseSql.append("and ypsb.paobjectid = fs.substationbusid and yps.paobjectid = ss.substationid");
+		baseSql.append("and fs.substationbusid = ss.substationbusid and sa.substationbusid = ss.substationid");
+		baseSql.append("and sa.areaid = ypa.paobjectid and yp.type like 'CBC%') pInfo");
+		baseSql.append("on yp.paobjectid = pInfo.paobjectid");
+	    baseSql.append("left outer join (select paoid, max(commenttime) as commenttime from capcontrolcomment group by paoid) ccc on ccc.PaoID = yp.paobjectid");
+	  	baseSql.append("left outer join CAPCONTROLCOMMENT c on c.paoId = yp.paobjectid and c.commenttime = ccc.commenttime and c.action = 'DISABLED'");
+	  	baseSql.append("left outer join yukonuser yu on yu.userid = c.userid");
+    	
     	ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
             	SqlStatementBuilder sql = new SqlStatementBuilder();
-            	sql.append(cbcQueryHeader);
-            	if(capBankIds != null && !capBankIds.isEmpty()) {
+            	sql.append(baseSql);
+            	if(!IterableUtils.isEmpty(capBankIds)) {
         			sql.append("where pInfo.capbankId").in(subList);
-                }else if(feederIds != null && !feederIds.isEmpty()) {
+                }else if(!IterableUtils.isEmpty(feederIds)) {
                 	sql.append("where pInfo.feederId").in(subList);
-                }else if(subbusIds != null && !subbusIds.isEmpty()) {
+                }else if(!IterableUtils.isEmpty(subbusIds)) {
                 	sql.append("where pInfo.subbusId").in(subList);
-                }else if(substationIds != null && !substationIds.isEmpty()) {
+                }else if(!IterableUtils.isEmpty(substationIds)) {
                 	sql.append("where pInfo.substationId").in(subList);
-                }else if(areaIds != null && !areaIds.isEmpty()) {
+                }else if(!IterableUtils.isEmpty(areaIds)) {
                 	sql.append("where pInfo.areaId").in(subList);
                 }
                 sql.append("order by yp.paoname, yp.type");
@@ -350,19 +362,19 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
             }
         };
         
-        if(capBankIds != null && !capBankIds.isEmpty()) {
+        if(!IterableUtils.isEmpty(capBankIds)) {
         	return template.query(sqlGenerator, capBankIds, ccDisabledDevicesReportRowMapper);
-        } else if(feederIds != null && !feederIds.isEmpty()) {
+        } else if(!IterableUtils.isEmpty(feederIds)) {
         	return template.query(sqlGenerator, feederIds, ccDisabledDevicesReportRowMapper);
-    	} else if(subbusIds != null && !subbusIds.isEmpty()) {
+    	} else if(!IterableUtils.isEmpty(subbusIds)) {
             return template.query(sqlGenerator, subbusIds, ccDisabledDevicesReportRowMapper);
-        } else if(substationIds != null && !substationIds.isEmpty()) {
+        } else if(!IterableUtils.isEmpty(substationIds)) {
         	return template.query(sqlGenerator, substationIds, ccDisabledDevicesReportRowMapper);
-        } else if(areaIds != null && !areaIds.isEmpty()) {
+        } else if(!IterableUtils.isEmpty(areaIds)) {
         	return template.query(sqlGenerator, areaIds, ccDisabledDevicesReportRowMapper);
         } else {
         	SqlStatementBuilder sql = new SqlStatementBuilder();
-        	sql.append(cbcQueryHeader);
+        	sql.append(baseSql);
             sql.append("order by yp.paoname, yp.type");
         	return jdbcTemplate.query(sql, ccDisabledDevicesReportRowMapper);
         }
