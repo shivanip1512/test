@@ -8,9 +8,9 @@ import com.cannontech.roles.OperatorRoleDefs;
 public interface AdministratorRole {
 	public static final int ROLEID = OperatorRoleDefs.ADMINISTRATOR_ROLEID;
 	
-	public static final int ADMIN_CONFIG_ENERGY_COMPANY = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE;
-	public static final int ADMIN_CREATE_ENERGY_COMPANY = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 1;
-	public static final int ADMIN_DELETE_ENERGY_COMPANY = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 2;
+	public static final int ADMIN_EDIT_ENERGY_COMPANY = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE;
+	public static final int ADMIN_CREATE_DELETE_ENERGY_COMPANY = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 1;
+	/* -2 Previously Delete Energy Company merged into -1, Previously Create Energy Company */
 	public static final int ADMIN_MANAGE_MEMBERS = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 3;
 	public static final int ADMIN_VIEW_BATCH_COMMANDS = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 4;
 	public static final int ADMIN_VIEW_OPT_OUT_EVENTS = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 5;
@@ -27,5 +27,5 @@ public interface AdministratorRole {
     public static final int ADMIN_VIEW_LOGS = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 16;
     public static final int ADMIN_DATABASE_MIGRATION = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 17;
     public static final int ADMIN_EVENT_LOGS = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 18;
-    public static final int ADMIN_ENERGY_COMPANY_SUPER_USER = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 19;
+    public static final int ADMIN_SUPER_USER = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 19;
 }

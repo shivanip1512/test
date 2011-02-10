@@ -11,9 +11,11 @@
     <cti:includeCss link="/WebConfig/yukon/styles/admin/energyCompany.css"/>
     
     <form:form commandName="energyCompanyDto" action="/spring/adminSetup/energyCompany/create">
-        <form:hidden path="energyCompanyId"/>
         <form:hidden path="operatorGroupIds" id="operatorGroupIds"/>
         <form:hidden path="residentialGroupIds" id="residentialGroupIds"/>
+        <c:if test="${not empty parentId}">
+            <input type="hidden" name="parentId" value="${parentId}">
+        </c:if>
     
         <cti:dataGrid cols="2" tableClasses="energyCompanyHomeLayout">
         

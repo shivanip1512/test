@@ -81,10 +81,8 @@
     <entry key="yukon.web.modules.adminSetup.generalInfo.invalidEmail">Not a valid email address.</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.memberAddSuccessful">Member Added Successfully</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.memberRemoveSuccessful">Member Removed Successfully</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.confirmRemove.title">Remove Member Energy Company {0}</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.confirmRemove.message">Are you sure you want to remove the member energy company {0}?</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.confirmAdd.title">Add Member Energy Company </entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.confirmAdd.message">Are you sure you want to add the member energy company </entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.confirmDelete.title">Delete Energy Company {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.confirmDelete.message">Are you sure you want to delete the energy company {0}?</entry>
     
     <entry key="yukon.web.modules.adminSetup.applianceCategories.VIEW.pageName">Appliance Categories</entry>
     <entry key="yukon.web.modules.adminSetup.applianceCategories.VIEW.pageDescription">{0}</entry>

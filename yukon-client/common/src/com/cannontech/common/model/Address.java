@@ -93,6 +93,17 @@ public class Address {
         return address;
     }
     
+    public LiteAddress getLiteAddress(int addressId) {
+        LiteAddress liteAddress = new LiteAddress(addressId, getLocationAddress1(),
+                        getLocationAddress2(),
+                        getCityName(),
+                        getStateCode(),
+                        getZipCode());
+        liteAddress.setCounty(getCounty());
+        
+        return liteAddress;
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (o == null || !(o instanceof Address)) return false;

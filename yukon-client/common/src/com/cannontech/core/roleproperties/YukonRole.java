@@ -1,6 +1,12 @@
 package com.cannontech.core.roleproperties;
 
-import java.util.List;
+import static com.cannontech.core.roleproperties.YukonRoleCategory.Application;
+import static com.cannontech.core.roleproperties.YukonRoleCategory.CapControl;
+import static com.cannontech.core.roleproperties.YukonRoleCategory.Consumer;
+import static com.cannontech.core.roleproperties.YukonRoleCategory.LoadControl;
+import static com.cannontech.core.roleproperties.YukonRoleCategory.Notifications;
+import static com.cannontech.core.roleproperties.YukonRoleCategory.Operator;
+import static com.cannontech.core.roleproperties.YukonRoleCategory.System;
 
 import org.apache.commons.lang.Validate;
 
@@ -12,11 +18,10 @@ import com.cannontech.roles.NotificationsRoleDefs;
 import com.cannontech.roles.OperatorRoleDefs;
 import com.cannontech.roles.YukonRoleDefs;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableMap.Builder;
-
-import static com.cannontech.core.roleproperties.YukonRoleCategory.*;
+import com.google.common.collect.ImmutableMultimap;
 
 public enum YukonRole {
     APPLICATION_BILLING(Application, ApplicationRoleDefs.BILLING_ROLEID),
@@ -64,6 +69,25 @@ public enum YukonRole {
     
     private final YukonRoleCategory category;
     private final int roleId;
+    
+    private final static ImmutableMultimap<YukonRoleCategory, YukonRole> lookupByCategory;
+    static {
+        ImmutableMultimap.Builder<YukonRoleCategory, YukonRole>  builder = ImmutableMultimap.builder();
+        for (YukonRole role : values()) {
+            builder.put(role.getCategory(), role);
+        }
+        lookupByCategory = builder.build();
+    }
+
+    private final static ImmutableMap<Integer, YukonRole> lookup;
+    
+    static {
+        Builder<Integer, YukonRole> builder = ImmutableMap.builder();
+        for (YukonRole yukonRole : values()) {
+            builder.put(yukonRole.roleId, yukonRole);
+        }
+        lookup = builder.build();
+    }
 
     private YukonRole(YukonRoleCategory category, int roleId) {
         this.category = category;
@@ -74,29 +98,14 @@ public enum YukonRole {
         return category;
     }
     
-    private final static ImmutableMap<Integer, YukonRole> lookup;
-    
-    static {
-        Builder<Integer, YukonRole> builder = ImmutableMap.builder();
-        for (YukonRole yukonRole : values()) {
-            builder.put(yukonRole.roleId, yukonRole);
-        }
-        lookup = builder.build();
-    }
-    
     public static YukonRole getForId(int roleId) throws IllegalArgumentException {
         YukonRole yukonRole = lookup.get(roleId);
         Validate.notNull(yukonRole);
         return yukonRole;
     }
     
-    public static List<YukonRole> getForCategory(YukonRoleCategory category) throws IllegalArgumentException {
-        List<YukonRole> rolesInCategory = Lists.newArrayList();
-        for (YukonRole role : values()) {
-            if(role.getCategory() == category) {
-                rolesInCategory.add(role);
-            }
-        }
+    public static ImmutableCollection<YukonRole> getForCategory(YukonRoleCategory category) throws IllegalArgumentException {
+        ImmutableCollection<YukonRole> rolesInCategory = lookupByCategory.get(category);
         return rolesInCategory;
     }
     

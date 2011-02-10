@@ -301,7 +301,7 @@
 <!-- Administration Setup -->
 <entry key="yukon.web.menu.config.adminSetup.energyCompanySetup">Energy Company</entry>
 <entry key="yukon.web.menu.config.adminSetup.energyCompanySetup.home"></entry>
-<entry key="yukon.web.menu.config.adminSetup.multispeak">Multispeak</entry>
+<entry key="yukon.web.menu.config.adminSetup.multispeak">MultiSpeak</entry>
 <entry key="yukon.web.menu.config.adminSetup.multispeak.interfaces">Interfaces</entry>
 <entry key="yukon.web.menu.config.adminSetup.multispeak.route_mappings">Substation To Route Mappings</entry>
 <entry key="yukon.web.menu.config.adminSetup.multispeak.synchronization">Synchronization</entry>

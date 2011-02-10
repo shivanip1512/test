@@ -47,7 +47,7 @@ public class EnergyCompanyController {
     public String home(YukonUserContext userContext, ModelMap modelMap) {
         LiteYukonUser user = userContext.getYukonUser();
         List<LiteStarsEnergyCompany> companies = Lists.newArrayList();
-        boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_ENERGY_COMPANY_SUPER_USER, user);
+        boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
         
         if (superUser) {
             /* For super users show all energy companies. */
@@ -76,9 +76,19 @@ public class EnergyCompanyController {
     }
     
     /* Energy Company Creation Page*/
+    @RequestMapping("/energyCompany/newMember")
+    public String newMember(YukonUserContext userContext, ModelMap modelMap, int parentId) {
+        EnergyCompanyDto energyCompanyDto = new EnergyCompanyDto();
+        modelMap.addAttribute("energyCompanyDto", energyCompanyDto);
+        modelMap.addAttribute("parentId", parentId);
+        
+        return "energyCompany/create.jsp";
+    }
+    
+    /* Energy Company Creation Page*/
     @RequestMapping(value="/energyCompany/create", params="save")
-    public String create(@ModelAttribute("energyCompanyDto") EnergyCompanyDto energyCompanyDto,
-                         BindingResult bindingResult, FlashScope flashScope, YukonUserContext userContext, ModelMap modelMap) throws Exception {
+    public String create(@ModelAttribute("energyCompanyDto") EnergyCompanyDto energyCompanyDto, BindingResult bindingResult, 
+            Integer parentId, FlashScope flashScope, YukonUserContext userContext, ModelMap modelMap) throws Exception {
         
         /* Validate Input */
         energyCompanyDtoValidator.validate(energyCompanyDto, bindingResult);
@@ -87,7 +97,7 @@ public class EnergyCompanyController {
         }
         
         try {
-            LiteStarsEnergyCompany energyCompany = energyCompanyService.createEnergyCompany(energyCompanyDto, userContext.getYukonUser(), false, null);
+            LiteStarsEnergyCompany energyCompany = energyCompanyService.createEnergyCompany(energyCompanyDto, userContext.getYukonUser(), parentId);
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.createEnergyCompany.creationSuccessful", energyCompanyDto.getName()));
             modelMap.addAttribute("ecId", energyCompany.getEnergyCompanyId());
             return "redirect:/spring/adminSetup/energyCompany/general/view";

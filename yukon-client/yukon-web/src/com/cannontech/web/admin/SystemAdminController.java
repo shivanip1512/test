@@ -19,7 +19,7 @@ public class SystemAdminController {
     /* System Administration Pages */
     @RequestMapping("/systemAdmin")
     public String home(YukonUserContext userContext, ModelMap modelMap) {
-        boolean hasConfigEC = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_CONFIG_ENERGY_COMPANY, userContext.getYukonUser());
+        boolean hasConfigEC = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY, userContext.getYukonUser());
         boolean hasMultiSpeak = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP, userContext.getYukonUser());
         boolean hasUserGroupEditor = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, userContext.getYukonUser());
         

@@ -25,7 +25,7 @@ public class StaticLoadGroupMapController extends StarsInventoryActionController
                 final LiteStarsEnergyCompany energyCompany) throws Exception {
     	
         // verify user has access to admin config energy company
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_CONFIG_ENERGY_COMPANY, user.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY, user.getYukonUser());
         
     	boolean resetAll = true;
         boolean sendConfig = true;

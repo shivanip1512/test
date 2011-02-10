@@ -308,7 +308,7 @@
 
 	<tags:operationSection sectionName="Administration" sectionImageName="AdministrationLogo">
         
-        <cti:checkRolesAndProperties value="ADMIN_MULTISPEAK_SETUP, ADMIN_LM_USER_ASSIGN, ADMIN_CONFIG_ENERGY_COMPANY">
+        <cti:checkRolesAndProperties value="ADMIN_MULTISPEAK_SETUP, ADMIN_LM_USER_ASSIGN, ADMIN_EDIT_ENERGY_COMPANY">
             <a href="/spring/adminSetup/systemAdmin">
                 <tags:sectionLink>
                     System Administration
@@ -316,7 +316,7 @@
             </a>
         </cti:checkRolesAndProperties>
         
-			<cti:checkProperty property="operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY"> 
+			<cti:checkProperty property="operator.AdministratorRole.ADMIN_EDIT_ENERGY_COMPANY"> 
 	            <tags:sectionLink>
 	            	<a href="Admin/ConfigEnergyCompany.jsp">Config Energy Company</a>
 	            </tags:sectionLink>
@@ -326,12 +326,12 @@
 	            	<a href="Admin/ManageMembers.jsp">Member <br/> Management</a>
 	            </tags:sectionLink>
 			</cti:checkProperty>
-			<cti:checkProperty property="operator.AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY"> 
+			<cti:checkProperty property="operator.AdministratorRole.ADMIN_CREATE_DELETE_ENERGY_COMPANY"> 
 	            <tags:sectionLink>
 	            	<a href="Admin/NewEnergyCompany.jsp">New Energy <br/> Company</a>
 	            </tags:sectionLink>
 			</cti:checkProperty> 
-			<cti:checkProperty property="operator.AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY"> 
+			<cti:checkProperty property="operator.AdministratorRole.ADMIN_CREATE_DELETE_ENERGY_COMPANY"> 
             	<tags:sectionLink>
 	        		<form name="DeleteForm" method="post" action="<cti:url value="/servlet/StarsAdmin"/>">
 	            		<input type="hidden" name="action" value="DeleteEnergyCompany">

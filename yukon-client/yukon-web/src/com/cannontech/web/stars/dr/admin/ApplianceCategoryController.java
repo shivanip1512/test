@@ -58,7 +58,7 @@ import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/applianceCategory/*")
-@CheckRoleProperty(YukonRoleProperty.ADMIN_CONFIG_ENERGY_COMPANY)
+@CheckRoleProperty(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY)
 public class ApplianceCategoryController {
     private final static String baseKey = "yukon.web.modules.energyCompanyAdmin";
     private AssignedProgramDao assignedProgramDao;

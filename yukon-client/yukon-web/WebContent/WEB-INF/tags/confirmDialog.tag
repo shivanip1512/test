@@ -18,7 +18,7 @@
 <cti:msgScope paths="${nameKey},">
     <cti:msg2 var="confirmationMsg" key=".message" argument="${pageScope.argument}" />
 
-    <i:simplePopup id="${uniqueId}" styleClass="mediumSimplePopup" titleKey=".title" on="${pageScope.on}">
+    <i:simplePopup id="${uniqueId}" styleClass="mediumSimplePopup" titleKey=".title" on="${pageScope.on}" argument="${pageScope.argument}">
         <h3 class="dialogQuestion">${confirmationMsg}</h3>
 
         <div class="actionArea">

@@ -162,7 +162,7 @@
         <options>
           <option name="configEnergyCompany">
             <link>/operator/Admin/ConfigEnergyCompany.jsp</link>
-            <requireRoleProperty value="ADMIN_CONFIG_ENERGY_COMPANY" />
+            <requireRoleProperty value="ADMIN_EDIT_ENERGY_COMPANY" />
           </option>
 
           <option name="memberManagement">
@@ -172,13 +172,13 @@
 
           <option name="newEnergyCompany">
             <link>/operator/Admin/NewEnergyCompany.jsp</link>
-            <requireRoleProperty value="ADMIN_CREATE_ENERGY_COMPANY" />
+            <requireRoleProperty value="ADMIN_CREATE_DELETE_ENERGY_COMPANY" />
           </option>
 
           <!--
             <option name="deleteEnergyCompany">
               <link>/servlet/StarsAdmin</link>
-              <requireRoleProperty value="operator.AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY"/>
+              <requireRoleProperty value="operator.AdministratorRole.ADMIN_CREATE_DELETE_ENERGY_COMPANY"/>
             </option>
           -->
           <option name="viewBatchCommands">
@@ -1021,11 +1021,11 @@
         <menu>
             <options>
                 <option name="energyCompanySetup">
-                    <requireRoleProperty value="ADMIN_CONFIG_ENERGY_COMPANY" />
+                    <requireRoleProperty value="ADMIN_EDIT_ENERGY_COMPANY" />
                     <link>/spring/adminSetup/energyCompany/home</link>
                     <options>
                         <option name="home">
-                            <requireRoleProperty value="ADMIN_CONFIG_ENERGY_COMPANY" />
+                            <requireRoleProperty value="ADMIN_EDIT_ENERGY_COMPANY" />
                             <link>/spring/adminSetup/energyCompany/home</link>
                         </option>
                     </options>
@@ -1081,7 +1081,7 @@
                 </pages>
             </page>
             <page name="home" type="BASIC">
-                <requireRoleProperty value="ADMIN_CONFIG_ENERGY_COMPANY" />
+                <requireRoleProperty value="ADMIN_EDIT_ENERGY_COMPANY" />
                 <menu>energyCompanySetup|home"</menu>
                 <link>/spring/adminSetup/energyCompany/home?ecId=${ecId}</link>
                 <pages>

@@ -25,6 +25,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -44,7 +45,7 @@ public class GroupEditorController {
         
         List<Category> categories = Lists.newArrayList();
         for (YukonRoleCategory roleCategory : YukonRoleCategory.values()) {
-            List<YukonRole> roles = YukonRole.getForCategory(roleCategory);
+            ImmutableCollection<YukonRole> roles = YukonRole.getForCategory(roleCategory);
             if (roles.isEmpty()) continue;
             
             Category category = new Category();

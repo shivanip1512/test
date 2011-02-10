@@ -24,7 +24,7 @@
                     </ul>
                 </div>
                 
-                <cti:checkRolesAndProperties value="ADMIN_ENERGY_COMPANY_SUPER_USER">
+                <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
                     <div class="actionArea">
                         <form action="/spring/adminSetup/energyCompany/new">
                             <cti:button key="create" type="submit" name="create"/>

@@ -8,54 +8,10 @@
 
 <cti:standardPage module="adminSetup" page="generalInfo.${mode}">
 
-<script type="text/javascript">
-YEvent.observeSelectorClick('img[id^=removeMemberIcon]', function(event) {
-    var theCell = Event.findElement(event, 'td');
-    var ecId = $F(theCell.down('input[name=memberId]'));
-    var title = $F(theCell.down('input[name=title]'));
-    var message = $F(theCell.down('input[name=message]'));
-    var form = $('memberCompanyForm');
-    Element.writeAttribute(form, 'action', '/spring/adminSetup/energyCompany/general/removeMember');
-    
-    var confirmPopup = $('confirmPopup');
-    var titleBar = confirmPopup.down('div[id=confirmPopup_title]');
-    titleBar.innerHTML = title;
-    var messageContainer = confirmPopup.down('div[id=confirmMessage]');
-    messageContainer.innerHTML = message;
-    var memberId = confirmPopup.down('input[name=memberId]');
-    Element.writeAttribute(memberId, 'value', ecId);
-    confirmPopup.show();
-});
-
-YEvent.observeSelectorClick('#addMember', function(event) {
-    var form = $('memberCompanyForm');
-    Element.writeAttribute(form, 'action', '/spring/adminSetup/energyCompany/general/addMember');
-    var selectedMemberIndex = $('newMemberId').selectedIndex;
-    var selectedMember =  $('newMemberId').options[selectedMemberIndex].text; 
-    var title = $F('addTitle') + selectedMember;
-    var message = $F('addMessage') + selectedMember + '?';
-    
-    var confirmPopup = $('confirmPopup');
-    var titleBar = confirmPopup.down('div[id=confirmPopup_title]');
-    titleBar.innerHTML = title;
-    var messageContainer = confirmPopup.down('div[id=confirmMessage]');
-    messageContainer.innerHTML = message;
-    var memberId = confirmPopup.down('input[name=memberId]');
-    var newMemberId = $F('newMemberId');
-    Element.writeAttribute(memberId, 'value', newMemberId);
-    confirmPopup.show();
-});
-
-YEvent.observeSelectorClick('#confirmCancel', function(event) {
-    $('confirmPopup').hide();
-});
-
-</script>
-    
     <cti:includeCss link="/WebConfig/yukon/styles/admin/energyCompany.css"/>
     <tags:setFormEditMode mode="${mode}"/>
     
-        <cti:dataGrid cols="${cols}" tableClasses="energyCompanyHomeLayout">
+        <cti:dataGrid cols="2" tableClasses="energyCompanyHomeLayout">
         
             <%-- LEFT SIDE COLUMN --%>
             <cti:dataGridCell>
@@ -108,11 +64,17 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
                     
                     <div class="pageActionArea">
                         <cti:displayForPageEditModes modes="VIEW">
-                            <cti:button key="edit" type="submit" name="edit"/>
+                            <c:if test="${canEdit}">
+                                <cti:button key="edit" type="submit" name="edit"/>
+                            </c:if>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="EDIT">
                             <cti:button key="save" type="submit" name="save"/>
-                            <cti:button key="delete" type="submit" name="delete"/>
+                            <%-- TODO: Replace old deleting code, then uncomment this
+                            <c:if test="${canDelete}">
+                                <cti:button key="delete" type="button" id="deleteButton"/>
+                                <tags:confirmDialog nameKey=".confirmDelete" on="#deleteButton" arguments="${energyCompanyName}" submitName="delete"/>
+                            </c:if> --%>
                             <cti:button key="cancel" type="submit" name="cancel"/>
                         </cti:displayForPageEditModes>
                     </div>
@@ -123,11 +85,12 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
             <cti:displayForPageEditModes modes="VIEW">
                 
                 <%-- RIGHT SIDE COLUMN --%>
-                <cti:checkRolesAndProperties value="ADMIN_MANAGE_MEMBERS">
-                
-                    <cti:dataGridCell>
-                
-                        <tags:boxContainer2 nameKey="membersContainer">
+                <cti:dataGridCell>
+            
+                    <tags:boxContainer2 nameKey="membersContainer">
+                        <form action="/spring/adminSetup/energyCompany/general/manageMembers" method="post">
+                            <input name="ecId" type="hidden" value="${ecId}">
+                            
                             <c:choose>
                                 <c:when test="${empty members}">
                                     <div><i:inline key=".noMembers"/></div>
@@ -137,23 +100,22 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
                                         <table class="compactResultsTable">
                                             <tr>
                                                 <th><i:inline key=".companyName"/></th>
-                                                <th class="removeColumn"><i:inline key=".remove"/></th>
+                                                <c:if test="${canManageMembers}">
+                                                    <th class="removeColumn"><i:inline key=".remove"/></th>
+                                                </c:if>
                                             </tr>
                                             
                                             <c:forEach var="company" items="${members}">
                                                 <cti:url value="/spring/adminSetup/energyCompany/general/view" var="viewEcUrl">
-                                                    <cti:param name="ecId" value="${company.ecId}"/>
+                                                    <cti:param name="ecId" value="${company.energyCompanyId}"/>
                                                 </cti:url>
                                                 <tr>
                                                     <td><a href="${viewEcUrl}">${company.name}</a></td>
-                                                    <td class="removeColumn">
-                                                        <cti:img key="remove" id="removeMemberIcon${company.ecId}" styleClass="pointer"/>
-                                                        <cti:msg2 key="yukon.web.modules.adminSetup.generalInfo.confirmRemove.title" argument="${company.name}" var="title"/>
-                                                        <cti:msg2 key="yukon.web.modules.adminSetup.generalInfo.confirmRemove.message" argument="${company.name}" var="message"/>
-                                                        <input type="hidden" name="memberId" value="${company.ecId}">
-                                                        <input type="hidden" name="title" value="${title}">
-                                                        <input type="hidden" name="message" value="${message}">
-                                                    </td>
+                                                    <c:if test="${canManageMembers}">
+                                                        <td class="removeColumn">
+                                                            <input type="image" src="/WebConfig/yukon/Icons/delete.png" class="pointer hoverableImage" name="remove" value="${company.energyCompanyId}">
+                                                        </td>
+                                                    </c:if>
                                                 </tr>
                                             </c:forEach>
                                         </table>
@@ -162,41 +124,25 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
                             </c:choose>
                             
                             <div>
-                                <span style="float: left;margin-top: 15px;"><cti:button key="create" type="submit" name="create"/></span>
-                                <c:if test="${!empty memberCandidates}">
+                                <c:if test="${canCreateMembers}">
+                                    <span style="float: left;margin-top: 15px;"><cti:button key="create" type="submit" name="create"/></span>
+                                </c:if>
+                                <c:if test="${canManageMembers && !empty memberCandidates}">
                                     <span class="actionArea" style="float: right;">
-                                        <select name="newMemberId" id="newMemberId">
+                                        <select name="newMemberId">
                                             <c:forEach items="${memberCandidates}" var="member">
                                                 <option value="${member.energyCompanyId}">${member.name}</option>
                                             </c:forEach>
                                         </select>
-                                        <cti:button key="add" id="addMember"/>
-                                        <cti:msg2 key="yukon.web.modules.adminSetup.generalInfo.confirmAdd.title" var="addTitle"/>
-                                        <cti:msg2 key="yukon.web.modules.adminSetup.generalInfo.confirmAdd.message" var="addMessage"/>
-                                        <input type="hidden" id="addTitle" value="${addTitle}">
-                                        <input type="hidden" id="addMessage" value="${addMessage}">
+                                        <cti:button key="add" type="submit" name="add"/>
                                     </span>
                                 </c:if>
                             </div>
-                            
-                            <tags:simplePopup title="" id="confirmPopup" styleClass="smallSimplePopup">
-                                <form action="" method="post" id="memberCompanyForm">
-                                    <input type="hidden" name="ecId" value="${ecId}">
-                                    <input type="hidden" name="memberId" value="">
-                                    <div id="confirmMessage"></div>
-                                    <div class="actionArea">
-                                        <cti:button key="ok" type="submit"/>
-                                        <cti:button key="cancel" id="confirmCancel"/>
-                                    </div>
-                                </form>
-                            </tags:simplePopup>
-    
-                        </tags:boxContainer2>
-                        
-                    </cti:dataGridCell>
+                        </form>
+                    </tags:boxContainer2>
                     
-                </cti:checkRolesAndProperties>
-                
+                </cti:dataGridCell>
+                    
             </cti:displayForPageEditModes>
         
         </cti:dataGrid>

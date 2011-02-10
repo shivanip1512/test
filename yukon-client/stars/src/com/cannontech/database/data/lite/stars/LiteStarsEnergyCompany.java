@@ -458,7 +458,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             List<LiteYukonGroup> groups = yukonGroupDao.getGroupsForUser(user);
             for (int i = 0; i < groups.size(); i++) {
                 LiteYukonGroup group = groups.get(i);
-                if (DaoFactory.getRoleDao().getRolePropValueGroup(group, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY, null) != null) {
+                if (DaoFactory.getRoleDao().getRolePropValueGroup(group, AdministratorRole.ADMIN_EDIT_ENERGY_COMPANY, null) != null) {
                     operDftGroupID = group.getGroupID();
                     return group;
                 }

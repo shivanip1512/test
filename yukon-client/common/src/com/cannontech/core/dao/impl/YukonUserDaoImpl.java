@@ -296,7 +296,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
         sql.append("SELECT yu.*");
         sql.append("FROM yukonusergroup yug");
         sql.append("  JOIN yukonuser yu ON yug.userid = yu.userid");
-        sql.append("WHERE groupid = ").appendArgument(groupId);
+        sql.append("WHERE groupid").eq(groupId);
         
         return yukonJdbcOperations.query(sql, createRowMapper());
     }

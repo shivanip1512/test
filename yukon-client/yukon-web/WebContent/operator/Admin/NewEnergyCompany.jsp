@@ -4,7 +4,7 @@
 <%@ page import="com.cannontech.roles.yukon.SystemRole" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%
-	if (!DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY)) {
+	if (!DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CREATE_DELETE_ENERGY_COMPANY)) {
 		response.sendRedirect("../Operations.jsp");
 		return;
 	}

@@ -116,7 +116,7 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     rolePropMap.put(Integer.valueOf(EnergyCompanyRole.OPERATOR_GROUP_IDS), operGroupIDs );
                     rolePropMap.put(Integer.valueOf(EnergyCompanyRole.CUSTOMER_GROUP_IDS), custGroupIDs );
                     if (!isAddMember) {
-                        rolePropMap.put(Integer.valueOf(AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY), CtiUtilities.TRUE_STRING);
+                        rolePropMap.put(Integer.valueOf(AdministratorRole.ADMIN_EDIT_ENERGY_COMPANY), CtiUtilities.TRUE_STRING);
                     }
                     
                     String adminGroupName = companyName + " Admin Grp";

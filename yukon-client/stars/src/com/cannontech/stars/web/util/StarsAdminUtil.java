@@ -1342,7 +1342,7 @@ public class StarsAdminUtil {
 				}
 			}
 			
-			if (DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)) {
+			if (DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), AdministratorRole.ADMIN_EDIT_ENERGY_COMPANY)) {
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY) );
 			}

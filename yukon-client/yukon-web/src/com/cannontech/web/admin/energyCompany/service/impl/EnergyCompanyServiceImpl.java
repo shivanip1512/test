@@ -1,6 +1,7 @@
 package com.cannontech.web.admin.energyCompany.service.impl;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +31,12 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.web.admin.energyCompany.model.EnergyCompanyDto;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
@@ -49,7 +52,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Override
     @Transactional
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompanyDto energyCompanyDto, LiteYukonUser user,
-            boolean asMember, Integer parentId) throws Exception {
+            Integer parentId) throws Exception {
         /* Check energy company name availability */
         try {
             energyCompanyDao.getEnergyCompanyByName(energyCompanyDto.getName());
@@ -74,8 +77,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         Map<Integer, String> rolePropMap = Maps.newHashMap();
         rolePropMap.put(YukonRoleProperty.OPERATOR_GROUP_IDS.getPropertyId(), operatorGroupIds );
         rolePropMap.put(YukonRoleProperty.CUSTOMER_GROUP_IDS.getPropertyId(), energyCompanyDto.getResidentialGroupIds());
-        if (!asMember) {
-            rolePropMap.put(YukonRoleProperty.ADMIN_CONFIG_ENERGY_COMPANY.getPropertyId(), CtiUtilities.TRUE_STRING);
+        if (parentId == null) {
+            rolePropMap.put(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY.getPropertyId(), CtiUtilities.TRUE_STRING);
         }
         
         String adminGroupName = energyCompanyDto.getName() + " Admin Grp";
@@ -116,11 +119,31 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         StarsAdminUtil.updateDefaultRoute(liteEnergyCompany, energyCompanyDto.getDefaultRouteId(), user);
         
         /* Add as member to parent */
-        if (asMember) {
+        if (parentId != null) {
             StarsAdminUtil.addMember(starsDatabaseCache.getEnergyCompany(parentId), liteEnergyCompany, adminUser.getUserID());
         }
         
         return liteEnergyCompany;
+    }
+    
+    @Override
+    public Set<LiteStarsEnergyCompany> getMemberCandidates(int ecId) {
+        Set<LiteStarsEnergyCompany> allSet = Sets.newHashSet(starsDatabaseCache.getAllEnergyCompanies());
+        
+        Set<LiteStarsEnergyCompany> allAscendants = Sets.newHashSet(ECUtils.getAllAscendants(starsDatabaseCache.getEnergyCompany(ecId)));
+        
+        Set<LiteStarsEnergyCompany> alreadyMemberCompanies = Sets.newHashSet();
+        for (LiteStarsEnergyCompany energyCompany : allSet) {
+            if (energyCompany.getParent() != null) {
+                alreadyMemberCompanies.add(energyCompany);
+            }
+        }
+        
+        Set<LiteStarsEnergyCompany> exclusionSet = Sets.newHashSet(alreadyMemberCompanies);
+        exclusionSet.addAll(allAscendants);
+        exclusionSet.add(starsDatabaseCache.getDefaultEnergyCompany());
+        
+        return Sets.difference(allSet, exclusionSet);
     }
 
     @Override
