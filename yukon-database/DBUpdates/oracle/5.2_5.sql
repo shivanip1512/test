@@ -62,3 +62,4 @@ where ReadingError = .1;
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.2', 'Matt K', '10-JAN-2011', 'Latest Update', 5);
