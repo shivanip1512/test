@@ -179,7 +179,7 @@ public class OperatorOptOutController {
                 YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             
-            return view(userContext, model, accountInfoFragment);
+            return "redirect:view";
         }
 
         LocalDate today = new LocalDate(userContext.getJodaTimeZone());
