@@ -55,7 +55,7 @@
 		<include name="json-lib-2.4-jdk15.jar"/>
 		<include name="jta.jar"/>
 		<include name="jtds.jar"/>
-		<include name="junit-4.4.jar"/>
+		<include name="junit-4.8.2.jar"/>
 		<include name="loadcontrol.jar"/>
 		<include name="log4j-1.2.14.jar"/>
 		<include name="lucene-core-2.3.2.jar"/>
