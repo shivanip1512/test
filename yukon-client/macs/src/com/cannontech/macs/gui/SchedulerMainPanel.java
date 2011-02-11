@@ -115,13 +115,9 @@ public void actionPerformed(ActionEvent event)
 		{
 			executeCreateButton_ActionPerformed( event );
 		}
-		else if( event.getSource() == getEditButton() )
-		{
-			executeEditButton_ActionPerformed( event );
-		}
-        else if( event.getSource() == getViewButton() )
+		else if( event.getSource() == getEditButton() || event.getSource() == getViewButton())
         {
-            executeViewButton_ActionPerformed( event );
+			editSchedule(event);
         }		
 		/*else if( event.getSource() == schedulerFileMenu.connectMenuItem )
 		{
@@ -231,23 +227,20 @@ private void executeDeleteButton_ActionPerformed( ActionEvent event )
  * Insert the method's description here.
  * Creation date: (3/23/00 2:08:41 PM)
  */
-private void executeEditButton_ActionPerformed( ActionEvent event )
+private void editSchedule( ActionEvent event )
 {
-    if( getSelectedSchedule() == null )
+    if (getSelectedSchedule() == null) {
         return;
-    if( !getSelectedSchedule().getCurrentState().equals(Schedule.STATE_PENDING) &&
-            !getSelectedSchedule().getCurrentState().equals(Schedule.STATE_RUNNING) ) {
-        //create a new editor panel for this Schedule
+    }
+    if (isScheduleEditable()) {
         ScheduleEditorPanel editPanel = new ScheduleEditorPanel();       
         showEditViewPanel( getSelectedSchedule(), editPanel );
+    } else {
+    	ScheduleViewPanel viewPanel = new ScheduleViewPanel();       
+    	showEditViewPanel( getSelectedSchedule(), viewPanel );
     }
 }
-private void executeViewButton_ActionPerformed( ActionEvent event )
-{
-    //create a new editor panel for this Schedule
-    ScheduleViewPanel viewPanel = new ScheduleViewPanel();       
-    showEditViewPanel( getSelectedSchedule(), viewPanel );
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/23/00 2:08:41 PM)
@@ -702,11 +695,11 @@ public void handlePopUpEvent(GenericEvent event)
 			break;
 
 			case SchedulerPopUpMenu.EDIT_SCHEDULE:
-			executeEditButton_ActionPerformed( new ActionEvent(this, SchedulerPopUpMenu.EDIT_SCHEDULE, "edit") );
+				editSchedule( new ActionEvent(this, SchedulerPopUpMenu.EDIT_SCHEDULE, "edit") );
 			break;
 
 			case SchedulerPopUpMenu.VIEW_SCHEDULE:
-		    executeViewButton_ActionPerformed( new ActionEvent(this, SchedulerPopUpMenu.VIEW_SCHEDULE, "view") );
+				editSchedule( new ActionEvent(this, SchedulerPopUpMenu.VIEW_SCHEDULE, "view") );
 		    break;
 			case SchedulerPopUpMenu.ENABLEDISABLE_SCHEDULE:
 			executeEnableDisableButton_ActionPerformed( new ActionEvent(this, SchedulerPopUpMenu.ENABLEDISABLE_SCHEDULE, "enableDisable") );
@@ -804,8 +797,9 @@ public void mouseClicked(MouseEvent event)
 	{
 		if( event.isShiftDown() )
 			showDebugInfo();
-		else 
-		    executeViewButton_ActionPerformed( new ActionEvent(event.getSource(), event.getID(), "Mouse Clicked") );			    
+		else{ 
+			editSchedule( new ActionEvent(event.getSource(), event.getID(), "Mouse Clicked") );	
+		}
 	}
 }
 /**
@@ -1113,39 +1107,30 @@ private void synchTableAndButtons(Schedule selected)
    if (startStopButton == null || editButton == null || enableDisableButton == null)
 	  return;
 	
-	getDeleteScheduleButton().setEnabled(true);
-	getEnableDisableButton().setEnabled(true);
+   	boolean isEditable = isScheduleEditable();
+	getDeleteScheduleButton().setEnabled(isEditable);
+ 	getEditButton().setEnabled(isEditable);
+	getEnableDisableButton().setEnabled(isEditable);
 	getViewButton().setEnabled(true);
 
    if (selected.getCurrentState().equals(Schedule.STATE_WAITING))
    {
-   	  getEditButton().setEnabled(true);
 	  getStartStopButton().setText("Start");
-	  getStartStopButton().setEnabled(true);
 	  getEnableDisableButton().setText("Disable");
    }
    else if (selected.getCurrentState().equals(Schedule.STATE_RUNNING))
    {
-   	  getEditButton().setEnabled(false);
 	  getStartStopButton().setText("Stop");
-	  getStartStopButton().setEnabled(true);
-	  getDeleteScheduleButton().setEnabled(false);
 	  getEnableDisableButton().setText("Disable");
    }
    else if (selected.getCurrentState().equals(Schedule.STATE_DISABLED))
    {
-   	  getEditButton().setEnabled(true);
 	  getStartStopButton().setText("Start");
-	  getStartStopButton().setEnabled(false);
 	  getEnableDisableButton().setText("Enable");
    }
    else if (selected.getCurrentState().equals(Schedule.STATE_PENDING))
    {
-	   //disable all buttons!!
 	  getStartStopButton().setText("Stop");
-	  getEnableDisableButton().setEnabled(false);
-	  getEditButton().setEnabled(false);
-	  getDeleteScheduleButton().setEnabled(false);
    }
    //revalidate();
    //repaint();
@@ -1273,4 +1258,14 @@ public void valueChanged(ListSelectionEvent event) {
 			synchTableAndButtons( selected );
 	}
 }
+
+private boolean isScheduleEditable() {
+	String currentState = getSelectedSchedule().getCurrentState();
+	if (currentState.equals(Schedule.STATE_WAITING) ||
+			currentState.equals(Schedule.STATE_DISABLED)) {
+		return true;
+	}
+	return false;
+}
+
 }
