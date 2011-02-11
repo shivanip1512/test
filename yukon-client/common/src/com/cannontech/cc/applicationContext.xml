@@ -4,13 +4,13 @@
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
        
        default-lazy-init="true">
 
-  <bean id="programService" class="com.cannontech.cc.service.ProgramServiceImpl" scope="singleton" dependency-check="objects">
+  <bean id="programService" class="com.cannontech.cc.service.ProgramServiceImpl" scope="singleton">
     <property name="energyCompanyDao" ref="energyCompanyDao"/>
     <property name="baseEventDao" ref="baseEventDao"/>
     <property name="programDao" ref="programDao"/>
@@ -20,34 +20,34 @@
     <property name="availableProgramGroupDao" ref="availableProgramGroupDao"/>
     <property name="programNotificationGroupDao" ref="programNotificationGroupDao"/>
   </bean>
-  <bean id="groupService" class="com.cannontech.cc.service.GroupServiceImpl" scope="singleton" dependency-check="objects">
+  <bean id="groupService" class="com.cannontech.cc.service.GroupServiceImpl" scope="singleton">
     <property name="customerStubDao" ref="customerStubDao"/>
     <property name="groupCustomerNotifDao" ref="groupCustomerNotifDao"/>
     <property name="pointTypeHelper" ref="customerPointTypeHelper"/>
     <property name="energyCompanyDao" ref="energyCompanyDao"/>
     <property name="groupDao" ref="groupDao"/>
   </bean>
-  <bean id="eventService" class="com.cannontech.cc.service.EventService" scope="singleton" dependency-check="objects">
+  <bean id="eventService" class="com.cannontech.cc.service.EventService" scope="singleton">
     <property name="baseEventDao" ref="baseEventDao"/>
     <property name="strategyFactory" ref="strategyFactory"/>
   </bean>
-  <bean id="customerPointService" class="com.cannontech.cc.service.CustomerPointService" dependency-check="objects">
+  <bean id="customerPointService" class="com.cannontech.cc.service.CustomerPointService">
     <property name="customerStubDao" ref="customerStubDao"/>
     <property name="pointTypeHelper" ref="customerPointTypeHelper"/>
     <property name="pointAccess" ref="simplePointAccessDao"/>
     <property name="pointTypeLookup" ref="customerPointTypeLookup"/>
   </bean>
-  <bean id="customerLMProgramService" class="com.cannontech.cc.service.CustomerLMProgramService" dependency-check="objects">
+  <bean id="customerLMProgramService" class="com.cannontech.cc.service.CustomerLMProgramService">
     <property name="lmDao" ref="lmDao"/>
     <property name="lmDirectCustomerListDao" ref="lmDirectCustomerListDao"/>
   </bean>
-  <bean id="customerEventService" class="com.cannontech.cc.service.CustomerEventService" dependency-check="objects">
+  <bean id="customerEventService" class="com.cannontech.cc.service.CustomerEventService">
     <property name="customerDao" ref="customerDao"/>
     <property name="customerStubDao" ref="customerStubDao"/>
     <property name="baseEventDao" ref="baseEventDao"/>
     <property name="eventService" ref="eventService"/>
   </bean>
-  <bean id="economicService" class="com.cannontech.cc.service.EconomicService" dependency-check="objects">
+  <bean id="economicService" class="com.cannontech.cc.service.EconomicService">
     <property name="customerStubDao" ref="customerStubDao"/>
     <property name="economicEventDao" ref="economicEventDao"/>
     <property name="strategyFactory" ref="strategyFactory"/>
@@ -71,7 +71,7 @@
     <property name="programParameterDao" ref="programParameterDao"/>
   </bean>
   
-  <bean id="genericNotification" class="com.cannontech.cc.service.BaseNotificationStrategy" dependency-check="objects"
+  <bean id="genericNotification" class="com.cannontech.cc.service.BaseNotificationStrategy"
         abstract="true" parent="commercialCurtailmentStrategyBase">
     <property name="methodKey" value="notification"/>
     <property name="parameters">

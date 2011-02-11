@@ -245,7 +245,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/activemq-all-5.4.2.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/activemq-all-5.4.2.jar" sourcepath="Z:/java/Third-Party Sources/apache-activemq-5.4.2-bin.zip">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
