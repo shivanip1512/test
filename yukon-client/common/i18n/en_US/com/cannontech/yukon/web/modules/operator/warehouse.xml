@@ -45,7 +45,7 @@
     <entry key="yukon.web.modules.operator.warehouse.warehouseNotDeleted">There was a problem deleting {0}.</entry>
 
     <!-- home.jsp -->
-    <entry key="yukon.web.modules.operator.warehouse.HOME.pageDescription">war {0}</entry>
+    <entry key="yukon.web.modules.operator.warehouse.HOME.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.operator.warehouse.HOME.pageName">Warehouses</entry>
     
     <!-- edit.jsp -->
