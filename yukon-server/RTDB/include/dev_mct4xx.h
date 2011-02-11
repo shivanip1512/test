@@ -225,6 +225,9 @@ protected:
 
     virtual ConfigPartsList getPartsList() = 0;
 
+    INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList, bool readsOnly);
+    INT executeInstallReads(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList);
+
     virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList);
     virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList);
     virtual INT executeGetStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* >&vgList, std::list< CtiMessage* >&retList, std::list< OUTMESS * > &outList);

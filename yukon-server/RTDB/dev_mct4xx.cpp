@@ -1100,14 +1100,35 @@ struct ratechange_t
 };
 
 
-
-
 INT Mct4xxDevice::executePutConfig(CtiRequestMsg         *pReq,
+                                   CtiCommandParser      &parse,
+                                   OUTMESS              *&OutMessage,
+                                   list< CtiMessage * >  &vgList,
+                                   list< CtiMessage * >  &retList,
+                                   list< OUTMESS * >     &outList)
+{
+    return Mct4xxDevice::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList, false);
+}
+
+
+INT Mct4xxDevice::executeInstallReads(CtiRequestMsg         *pReq,
                                       CtiCommandParser      &parse,
                                       OUTMESS              *&OutMessage,
                                       list< CtiMessage * >  &vgList,
                                       list< CtiMessage * >  &retList,
                                       list< OUTMESS * >     &outList)
+{
+    return Mct4xxDevice::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList, true);
+}
+
+
+INT Mct4xxDevice::executePutConfig(CtiRequestMsg         *pReq,
+                                   CtiCommandParser      &parse,
+                                   OUTMESS              *&OutMessage,
+                                   list< CtiMessage * >  &vgList,
+                                   list< CtiMessage * >  &retList,
+                                   list< OUTMESS * >     &outList,
+                                   bool                   readsOnly)
 {
     bool  found = false;
     INT   nRet = NoError, sRet, function;
@@ -1134,12 +1155,12 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg         *pReq,
             || parse.getsValue("installvalue") == PutConfigPart_all )
         {
             ConfigPartsList tempList = getPartsList();
-            sRet = executePutConfigMultiple(tempList, pReq, parse, OutMessage, vgList, retList, outList, false);
+            sRet = executePutConfigMultiple(tempList, pReq, parse, OutMessage, vgList, retList, outList, readsOnly);
         }
         else
         {
             strncpy(OutMessage->Request.CommandStr, (pReq->CommandString()).c_str(), COMMAND_STR_SIZE);
-            sRet = executePutConfigSingle(pReq, parse, OutMessage, vgList, retList, outList, false);
+            sRet = executePutConfigSingle(pReq, parse, OutMessage, vgList, retList, outList, readsOnly);
         }
         incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.size());
 
@@ -1727,10 +1748,10 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList       &partsList,
             OutMessage->Priority  = MAXPRIORITY-4;//standard seen in rest of devices.
             OutMessage->TimeOut   = 2;
             OutMessage->Retry     = 2;
-            OutMessage->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
+            OutMessage->Sequence = Protocols::EmetconProtocol::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
             OutMessage->Request.RouteID   = getRouteID();
 
-            for(Mct4xxDevice::ConfigPartsList::const_iterator tempItr = partsList.begin();tempItr != partsList.end();tempItr++)
+            for(ConfigPartsList::const_iterator tempItr = partsList.begin();tempItr != partsList.end();tempItr++)
             {
                 if( tempReq != NULL && *tempItr != PutConfigPart_all)//_all == infinite loop == unhappy program == very unhappy jess
                 {

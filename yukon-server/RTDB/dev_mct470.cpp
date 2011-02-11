@@ -2020,7 +2020,11 @@ INT Mct470Device::executeGetConfig( CtiRequestMsg         *pReq,
     bool found = false;
     int function;
 
-    if(parse.isKeyValid("multiplier"))
+    if(parse.isKeyValid("install"))
+    {
+        nRet = executeInstallReads(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+    else if(parse.isKeyValid("multiplier"))
     {
         function = EmetconProtocol::GetConfig_Multiplier;
         found = getOperation(function, OutMessage->Buffer.BSt);
@@ -2393,7 +2397,7 @@ INT Mct470Device::executePutConfig( CtiRequestMsg         *pReq,
     }
     else
     {
-        nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
+        nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList, false);
     }
 
     if( errRet )
