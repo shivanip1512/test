@@ -24,7 +24,6 @@
 	<classpathentry kind="lib" path="/third-party/bsf-2.3.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/libfonts-0.1.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
-	<classpathentry kind="lib" path="/third-party/spring-webmvc.jar" sourcepath="Z:/java/Third-Party Sources/spring-framework-2.5.1-with-dependencies.zip"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
