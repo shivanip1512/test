@@ -2397,7 +2397,7 @@ INT Mct470Device::executePutConfig( CtiRequestMsg         *pReq,
     }
     else
     {
-        nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList, false);
+        nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
     }
 
     if( errRet )
