@@ -19,7 +19,7 @@
 	
 	<fileset dir="${yukon.lib}" id="yukon.lib.files">
 		<include name="activation.jar"/>
-		<include name="activemq-all-5.3.1.jar"/>
+		<include name="activemq-all-5.3.2.jar"/>
 		<include name="api.jar"/>
 		<include name="asm-attrs.jar"/>
 		<include name="asm.jar"/>
@@ -67,10 +67,8 @@
 		<include name="quartz-all-1.6.0.jar"/>
 		<include name="rwav.jar"/>
 		<include name="saaj.jar"/>
-		<include name="spring-test.jar"/>
-		<include name="spring-webmvc.jar"/>
 		<include name="spring-ws-1.5.6-all.jar"/>
-		<include name="spring.jar"/>
+		<include name="spring-*-3.0.5.jar"/>
 		<include name="SqlServer.jar"/>
 		<include name="stars.jar"/>
 		<include name="web-common.jar"/>

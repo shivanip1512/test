@@ -3,6 +3,26 @@ Main-Class: com.cannontech.sensus.SensusGpuffMain
 Class-Path:  
  lib/apache-activemq-4.1.0-incubator.jar 
  lib/log4j-1.2.14.jar 
- lib/spring.jar 
+ lib/spring-aop-3.0.5.jar 
+ lib/spring-asm-3.0.5.jar 
+ lib/spring-aspects-3.0.5.jar 
+ lib/spring-aspects.jar 
+ lib/spring-beans-3.0.5.jar 
+ lib/spring-context-3.0.5.jar 
+ lib/spring-context.support-3.0.5.jar 
+ lib/spring-core-3.0.5.jar 
+ lib/spring-expression-3.0.5.jar 
+ lib/spring-instrument-3.0.5.jar 
+ lib/spring-instrument.tomcat-3.0.5.jar 
+ lib/spring-jdbc-3.0.5.jar 
+ lib/spring-jms-3.0.5.jar 
+ lib/spring-orm-3.0.5.jar 
+ lib/spring-oxm-3.0.5.jar 
+ lib/spring-test-3.0.5.jar 
+ lib/spring-transaction-3.0.5.jar 
+ lib/spring-web-3.0.5.jar 
+ lib/spring-web.portlet-3.0.5.jar 
+ lib/spring-web.servlet-3.0.5.jar 
+ lib/spring-web.struts-3.0.5.jar 
  lib/commons-pool-1.4.jar  
  lib/commons-lang-2.3.jar 

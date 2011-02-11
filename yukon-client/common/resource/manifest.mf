@@ -10,7 +10,28 @@ Class-Path: ./
  xercesImpl.jar 
  ecs-1.4.2.jar 
  jdom.jar 
- spring.jar 
+ aopalliance.jar
+ spring-aop-3.0.5.jar 
+ spring-asm-3.0.5.jar 
+ spring-aspects-3.0.5.jar 
+ spring-aspects.jar 
+ spring-beans-3.0.5.jar 
+ spring-context-3.0.5.jar 
+ spring-context.support-3.0.5.jar 
+ spring-core-3.0.5.jar 
+ spring-expression-3.0.5.jar 
+ spring-instrument-3.0.5.jar 
+ spring-instrument.tomcat-3.0.5.jar 
+ spring-jdbc-3.0.5.jar 
+ spring-jms-3.0.5.jar 
+ spring-orm-3.0.5.jar 
+ spring-oxm-3.0.5.jar 
+ spring-test-3.0.5.jar 
+ spring-transaction-3.0.5.jar 
+ spring-web-3.0.5.jar 
+ spring-web.portlet-3.0.5.jar 
+ spring-web.servlet-3.0.5.jar 
+ spring-web.struts-3.0.5.jar 
  dom4j-1.6.1.jar 
  cglib-2.1.3.jar 
  asm.jar 
