@@ -449,7 +449,9 @@ public class OperatorAccountController {
 		LoginBackingBean loginBackingBean = new LoginBackingBean();
         LiteYukonGroup userResidentialGroupName = 
             yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.RESIDENTIAL_CUSTOMER, residentialUser);
-        loginBackingBean.setCustomerLoginGroupName(userResidentialGroupName.getGroupName());
+        if (userResidentialGroupName != null) {
+            loginBackingBean.setCustomerLoginGroupName(userResidentialGroupName.getGroupName());
+        }
         
         if (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID) {
             modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);
