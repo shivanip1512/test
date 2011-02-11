@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<y:cancelOptOutResponse xmlns:y="http://yukon.cannontech.com/api" version="1.0">
+  <y:failure>
+    <y:errorCode>CancelFailed</y:errorCode>
+    <y:errorReference>FK0190171296</y:errorReference>
+    <y:errorDescription>No scheduled opt outs found for device 3453070372</y:errorDescription>
+  </y:failure>
+</y:cancelOptOutResponse>

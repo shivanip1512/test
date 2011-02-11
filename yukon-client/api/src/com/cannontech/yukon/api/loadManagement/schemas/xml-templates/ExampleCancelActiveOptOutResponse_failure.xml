@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<y:cancelOptOutResponse xmlns:y="http://yukon.cannontech.com/api" version="1.0">
+  <y:failure>
+    <y:errorCode>CancelFailed</y:errorCode>
+    <y:errorReference>FK9632937774</y:errorReference>
+    <y:errorDescription>Device 3453070372 has no active optout</y:errorDescription>
+  </y:failure>
+</y:cancelOptOutResponse>
