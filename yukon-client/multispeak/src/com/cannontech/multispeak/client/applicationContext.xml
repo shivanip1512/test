@@ -112,9 +112,9 @@
       <property name="attrDynamicDataSource" ref="attrDynamicDataSource"/>
   </bean>
   <bean id="loadFormattedBlock" class="com.cannontech.multispeak.block.impl.LoadFormattedBlockImpl" 
-	  	dependency-check="objects" parent="yukonFormattedBlock">
+	  	 parent="yukonFormattedBlock">
   </bean>
   <bean id="outageFormattedBlock" class="com.cannontech.multispeak.block.impl.OutageFormattedBlockImpl"
-    	dependency-check="objects" parent="yukonFormattedBlock">
+    	 parent="yukonFormattedBlock">
   </bean>  
 </beans>

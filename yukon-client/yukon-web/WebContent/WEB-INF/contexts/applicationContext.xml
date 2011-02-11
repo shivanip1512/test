@@ -649,8 +649,7 @@
     
     <!-- Update Service -->
     <bean id="dataUpdaterService" class="com.cannontech.web.updater.DefaultDataUpdaterService"
-        abstract="false" lazy-init="default" autowire="default"
-        dependency-check="default">
+        abstract="false" lazy-init="default" autowire="default">
         <property name="timeSource">
             <ref bean="timeSource" />
         </property>
