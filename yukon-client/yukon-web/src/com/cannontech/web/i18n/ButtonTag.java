@@ -62,7 +62,7 @@ public class ButtonTag extends YukonTagSupport {
     public void doTag() throws JspException, IOException, NoSuchMessageException {
 
         if (StringUtils.isBlank(id)) {
-            id = UniqueIdentifierTag.generateIdentifier(getJspContext(), "labeledImage");
+            id = UniqueIdentifierTag.generateIdentifier(getJspContext(), "button");
         }
 
         String classes = "formSubmit";

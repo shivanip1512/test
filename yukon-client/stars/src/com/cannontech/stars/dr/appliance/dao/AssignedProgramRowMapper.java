@@ -15,19 +15,40 @@ import com.cannontech.stars.webconfiguration.model.WebConfiguration;
 
 public class AssignedProgramRowMapper extends
         AbstractRowMapperWithBaseQuery<AssignedProgram> {
-    private boolean sortByName;
+    public enum SortBy {
+        PROGRAM_NAME {
+            @Override
+            protected String getOrderBy(boolean sortDescending) {
+                return "LOWER(pao.paoName)" + (sortDescending ? " DESC" : "")
+                    + ", LOWER(wc.alternateDisplayName)" + (sortDescending ? " DESC" : "");
+            }},
+        PROGRAM_ORDER {
+            @Override
+            protected String getOrderBy(boolean sortDescending) {
+                return "p.programOrder" + (sortDescending ? " DESC" : "");
+            }},
+        APPLIANCE_CATEGORY_NAME {
+            @Override
+            protected String getOrderBy(boolean sortDescending) {
+                return "LOWER(ac.description)" + (sortDescending ? " DESC" : "");
+            }};
+
+        protected abstract String getOrderBy(boolean sortDescending);
+    };
+
+    private SortBy sortBy;
     private boolean sortDescending;
     private Map<Integer, WebConfiguration> webConfigurations;
-    private int highestProgramOrder;
+    private Integer highestProgramOrder;
 
     public AssignedProgramRowMapper() {
-        this(false, false, -1, null);
+        this(SortBy.PROGRAM_ORDER, false, -1, null);
     }
 
-    public AssignedProgramRowMapper(boolean sortByName, boolean sortDescending,
-            int highestProgramOrder,
+    public AssignedProgramRowMapper(SortBy sortBy, boolean sortDescending,
+                                    Integer highestProgramOrder,
             Map<Integer, WebConfiguration> webConfigurations) {
-        this.sortByName = sortByName;
+        this.sortBy = sortBy;
         this.sortDescending = sortDescending;
         this.highestProgramOrder = highestProgramOrder;
         this.webConfigurations = webConfigurations;
@@ -43,16 +64,16 @@ public class AssignedProgramRowMapper extends
         retVal.append("FROM lmProgramWebPublishing p");
         retVal.append(    "JOIN yukonWebConfiguration wc ON p.webSettingsId = wc.configurationId");
         retVal.append(    "JOIN yukonPaobject pao ON pao.paobjectId = p.deviceId");
+        retVal.append(    "JOIN applianceCategory ac ON ac.applianceCategoryId = p.applianceCategoryId");
+        // there is a "blank" row in lmProgramWebPublishing (all zeros) we have to ignore
+        retVal.append("WHERE p.applianceCategoryId").neq(0);
         return retVal;
     }
 
     @Override
     public SqlFragmentSource getOrderBy() {
         SqlStatementBuilder retVal = new SqlStatementBuilder("ORDER BY");
-        retVal.append(sortByName ? "LOWER(pao.paoName)" : "p.programOrder");
-        if (sortDescending) {
-            retVal.append("DESC");
-        }
+        retVal.append(sortBy.getOrderBy(sortDescending));
         return retVal;
     }
 
@@ -62,7 +83,7 @@ public class AssignedProgramRowMapper extends
         int applianceCategoryId = rs.getInt("applianceCategoryId");
         int assignedProgramId = rs.getInt("programId");
         int programId = rs.getInt("deviceId");
-        String programName = rs.getString("paoName");
+        String programName = programId == 0 ? null : rs.getString("paoName");
         int chanceOfControlId = rs.getInt("chanceOfControlId");
         int programOrder = rs.getInt("programOrder");
 
@@ -71,12 +92,13 @@ public class AssignedProgramRowMapper extends
         if (webConfigurations != null) {
             webConfiguration = webConfigurations.get(webConfigurationId);
         }
-        boolean isLast = programOrder == highestProgramOrder;
+        // isLast and highestProgramOrder only make sense when looking at a full appliance category.
+        boolean isLast = highestProgramOrder != null && programOrder == highestProgramOrder;
 
         AssignedProgram assignedProgram =
-            new AssignedProgram(applianceCategoryId, assignedProgramId,
-                                programId, programName, chanceOfControlId,
-                                programOrder, isLast, webConfiguration);
+            new AssignedProgram(applianceCategoryId, assignedProgramId, programId, programName,
+                                chanceOfControlId, programOrder, isLast, webConfigurationId,
+                                webConfiguration);
 
         return assignedProgram;
     }

@@ -8,7 +8,7 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <tags:setFormEditMode mode="${mode}"/>
-<cti:msgScope paths="modules.energyCompanyAdmin.editAssignedProgram">
+<cti:msgScope paths="modules.adminSetup.editAssignedProgram">
 
 <cti:displayForPageEditModes modes="EDIT,CREATE">
 <script type="text/javascript">
@@ -77,9 +77,9 @@ submitForm = function() {
 <i:inline key=".editingMultiple"/>
 </c:if>
 
-<cti:url var="submitUrl" value="/spring/stars/dr/admin/applianceCategory/saveAssignedProgram"/>
-<form:form id="inputForm" commandName="backingBean" action="${submitUrl}"
-    onsubmit="return submitForm()">
+<cti:url var="submitUrl" value="saveAssignedProgram"/>
+<form:form id="inputForm" commandName="backingBean" action="${submitUrl}" onsubmit="return submitForm()">
+    <input type="hidden" name="ecId" value="${param.ecId}"/>
     <form:hidden path="virtual"/>
     <form:hidden path="multiple"/>
     <c:if test="${backingBean.multiple}">

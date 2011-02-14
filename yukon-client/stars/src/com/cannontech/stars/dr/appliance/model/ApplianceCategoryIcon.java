@@ -32,7 +32,7 @@ public enum ApplianceCategoryIcon implements IconEnum {
 
     private ApplianceCategoryIcon(String baseFilename) {
         filename = baseFilename == null
-            ? null : "yukon/Icons/" + baseFilename + ".gif";
+            ? null : "yukon/Icons/" + baseFilename + ".png";
     }
 
     @Override

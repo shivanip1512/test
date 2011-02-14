@@ -1587,7 +1587,7 @@
     
     <bean name="availableThermostatPicker" class="com.cannontech.web.picker.v2.AvailableThermostatPicker"/>
 
-    <bean name="applianceProgramPaoPermissionCheckingPicker" class="com.cannontech.web.picker.v2.PaoPermissionCheckingPicker">
+    <bean name="applianceCategoryProgramPicker" class="com.cannontech.web.picker.v2.PaoPermissionCheckingPicker">
         <property name="permission" value="LM_VISIBLE"/>
         <property name="sqlFilters">
             <list>

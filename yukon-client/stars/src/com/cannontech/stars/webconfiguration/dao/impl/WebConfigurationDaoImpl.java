@@ -2,7 +2,6 @@ package com.cannontech.stars.webconfiguration.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +87,7 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
 
     @Override
     public Map<Integer, WebConfiguration> getForAssignedPrograms(
-            Collection<Integer> assignedProgramIds) {
+            Iterable<Integer> assignedProgramIds) {
         ChunkingSqlTemplate template =
             new ChunkingSqlTemplate(yukonJdbcTemplate);
 

@@ -8,15 +8,15 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 
-<cti:msgScope paths="modules.energyCompanyAdmin.editApplianceCategoryUnassignedProgram">
+<cti:msgScope paths="modules.adminSetup.editApplianceCategoryUnassignedProgram">
 
-<cti:url var="submitUrl" value="/spring/stars/dr/admin/applianceCategory/unassignProgram"/>
+<cti:url var="submitUrl" value="unassignProgram">
+    <cti:param name="ecId" value="${ecId}"/>
+</cti:url>
 <form id="inputForm" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('acDialog', 'inputForm')">
-    <input type="hidden" name="applianceCategoryId"
-        value="${applianceCategory.applianceCategoryId}"/>
-    <input type="hidden" name="assignedProgramId"
-        value="${assignedProgram.assignedProgramId}"/>
+    <input type="hidden" name="applianceCategoryId" value="${applianceCategory.applianceCategoryId}"/>
+    <input type="hidden" name="assignedProgramId" value="${assignedProgram.assignedProgramId}"/>
 
     <p>
         <cti:msg2 key="${confirmationQuestion}"/>

@@ -160,3 +160,10 @@ function simpleAJAXRequest(url) {
     showBusy();
     new Ajax.Request(url, options);
 }
+
+function showSimplePopup(popupId, initialFocus) {
+    $(popupId).show();
+    if (initialFocus) {
+        $(initialFocus).focus();
+    }
+}

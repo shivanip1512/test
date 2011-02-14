@@ -6,6 +6,7 @@ import java.util.List;
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
@@ -29,13 +30,20 @@ public class AssignedProgramNameFilter implements UiFilter<AssignedProgram> {
 
             @Override
             public SqlFragmentSource getWhereClauseFragment() {
-                SqlStatementBuilder retVal = new SqlStatementBuilder();
-                retVal.append("LOWER(pao.paoName) like LOWER(");
-                retVal.appendArgument('%' + name + '%');
-                retVal.append(")");
-                retVal.append("OR LOWER(wc.alternateDisplayName) like LOWER(");
-                retVal.appendArgument('%' + name + '%');
-                retVal.append(")");
+                SqlFragmentCollection retVal = SqlFragmentCollection.newOrCollection();
+
+                SqlStatementBuilder fragment = new SqlStatementBuilder();
+                fragment.append("LOWER(pao.paoName) like LOWER(");
+                fragment.appendArgument('%' + name + '%');
+                fragment.append(")");
+                retVal.add(fragment);
+
+                fragment = new SqlStatementBuilder();
+                fragment.append("LOWER(wc.alternateDisplayName) like LOWER(");
+                fragment.appendArgument('%' + name + '%');
+                fragment.append(")");
+                retVal.add(fragment);
+
                 return retVal;
             }});
 

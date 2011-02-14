@@ -1,11 +1,12 @@
 <%@ attribute name="title" required="true" %>
 <%@ attribute name="baseUrl" required="true" %>
-<%@ attribute name="id" required="false" %>
-<%@ attribute name="filterDialog" required="false" %>
+<%@ attribute name="id" %>
+<%@ attribute name="filterDialog" %>
+<%@ attribute name="defaultFilterInput" %>
 <%@ attribute name="searchResult" required="true" type="com.cannontech.common.search.SearchResult" %>
-<%@ attribute name="isFiltered" required="false" type="java.lang.Boolean" %>
-<%@ attribute name="showAllUrl" required="false" %>
-<%@ attribute name="pageByHundereds" required="false" %>
+<%@ attribute name="isFiltered" type="java.lang.Boolean" %>
+<%@ attribute name="showAllUrl" %>
+<%@ attribute name="pageByHundereds" %>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -21,7 +22,7 @@
                 <td class="titleArea">${pageScope.title}</td>
                 <td class="filterArea">
                     <c:if test="${!empty pageScope.filterDialog}">
-                        <tags:filterLink popupId="${pageScope.filterDialog}"/>
+                        <tags:filterLink popupId="${pageScope.filterDialog}" defaultFilterInput="${pageScope.defaultFilterInput}"/>
                         <c:if test="${pageScope.isFiltered}">
                             &nbsp;&nbsp;<a href="${pageScope.showAllUrl}">
                             <cti:msg key="yukon.common.paging.showAll"/>

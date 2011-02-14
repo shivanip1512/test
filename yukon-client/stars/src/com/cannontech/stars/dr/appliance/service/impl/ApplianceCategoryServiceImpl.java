@@ -14,6 +14,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.web.YukonWebConfiguration;
+import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
@@ -25,14 +26,15 @@ import com.cannontech.user.YukonUserContext;
 public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
     private StarsDatabaseCache starsDatabaseCache;
     private AssignedProgramDao assignedProgramDao;
+    private ApplianceCategoryDao applianceCategoryDao;
     private DBPersistentDao dbPersistentDao;
 
     private static final String LINE_SEPARATOR =
         System.getProperty("line.separator");
+
     @Override
     @Transactional
-    public void save(ApplianceCategory applianceCategory,
-            YukonUserContext userContext) {
+    public void save(ApplianceCategory applianceCategory, YukonUserContext userContext) {
         int applianceCategoryId = applianceCategory.getApplianceCategoryId();
         boolean isNew = (applianceCategoryId <= 0);
 
@@ -43,7 +45,7 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
         webConfiguration.setURL("");
 
         LiteStarsEnergyCompany energyCompany =
-            starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+            starsDatabaseCache.getEnergyCompany(applianceCategory.getEnergyCompanyId());
         // look up the appliance type id based on the appliance type
         int applianceTypeId =
             YukonListEntryHelper.getListEntryId(energyCompany,
@@ -61,7 +63,7 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
 
         LiteApplianceCategory liteApplianceCateogry = null;
         if (isNew) {
-            appCat.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
+            appCat.setEnergyCompanyID(applianceCategory.getEnergyCompanyId());
 
             dbPersistentDao.performDBChange(appCat, TransactionType.INSERT);
 
@@ -91,13 +93,31 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
     }
 
     @Override
+    public void delete(int applianceCategoryId, YukonUserContext userContext) {
+        int ecId = applianceCategoryDao.getEnergyCompanyForApplianceCategory(applianceCategoryId);
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
+        if (energyCompany.isApplianceCategoryInherited(applianceCategoryId)) {
+            throw new RuntimeException("Cannot delete inherited appliance category.");
+        }                
+        try {
+            StarsAdminUtil.deleteApplianceCategory(applianceCategoryId,
+                                                   energyCompany,
+                                                   userContext.getYukonUser());
+        } catch (TransactionException transactionException) {
+            throw new RuntimeException("transaction exception deleting appliance category",
+                                       transactionException);
+        }
+    }
+
+    @Override
     @Transactional
     public void assignProgram(AssignedProgram assignedProgram,
             YukonUserContext userContext) {
-        LiteStarsEnergyCompany energyCompany =
-            starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        int applianceCategoryId = assignedProgram.getApplianceCategoryId();
+        int ecId = applianceCategoryDao.getEnergyCompanyForApplianceCategory(applianceCategoryId);
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
         LiteApplianceCategory liteApplianceCategory =
-            energyCompany.getApplianceCategory(assignedProgram.getApplianceCategoryId());
+            energyCompany.getApplianceCategory(applianceCategoryId);
 
         int assignedProgramId = assignedProgram.getAssignedProgramId();
         LiteLMProgramWebPublishing liteProgram = null;
@@ -130,8 +150,8 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
     @Transactional
     public void unassignProgram(int applianceCategoryId, int assignedProgramId,
             YukonUserContext userContext) {
-        LiteStarsEnergyCompany energyCompany =
-            starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        int ecId = applianceCategoryDao.getEnergyCompanyForApplianceCategory(applianceCategoryId);
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
         try {
             StarsAdminUtil.deleteLMProgramWebPublishing(assignedProgramId,
                                                         energyCompany,
@@ -173,8 +193,8 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
 
     private void moveAssignedProgram(int applianceCategoryId,
             int assignedProgramId, YukonUserContext userContext, int offset) {
-        LiteStarsEnergyCompany energyCompany =
-            starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        int ecId = applianceCategoryDao.getEnergyCompanyForApplianceCategory(applianceCategoryId);
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
         LiteApplianceCategory liteApplianceCategory =
             energyCompany.getApplianceCategory(applianceCategoryId);
         Iterable<LiteLMProgramWebPublishing> applianceCategoryPrograms =
@@ -268,6 +288,11 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
     @Autowired
     public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
         this.assignedProgramDao = assignedProgramDao;
+    }
+
+    @Autowired
+    public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
+        this.applianceCategoryDao = applianceCategoryDao;
     }
 
     @Autowired

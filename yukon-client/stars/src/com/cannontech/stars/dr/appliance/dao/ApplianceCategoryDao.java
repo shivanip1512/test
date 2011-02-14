@@ -1,6 +1,5 @@
 package com.cannontech.stars.dr.appliance.dao;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,8 +20,10 @@ public interface ApplianceCategoryDao {
 
     public List<Integer> getApplianceCategoryIdsByEC(int energyCompanyId);    
 
+    public int getEnergyCompanyForApplianceCategory(int applianceCategoryId);
+
     public Map<Integer, ApplianceCategory> getByApplianceCategoryIds(
-            Collection<Integer> applianceCategoryIds);
+            Iterable<Integer> applianceCategoryIds);
     
     /**
      * This method will get all the energy company ids that can

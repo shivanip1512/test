@@ -449,35 +449,6 @@
     </pages>
   </module>
 
-  <module name="energyCompanyAdmin">
-    <skin name="STANDARD" />
-    <menu>
-      <options>
-        <option name="configEnergyCompany">
-          <link>/operator/Admin/ConfigEnergyCompany.jsp</link>
-        </option>
-      </options>
-    </menu>
-
-    <pages>
-      <page name="configEnergyCompany">
-        <menu>configEnergyCompany</menu>
-        <link>/operator/Admin/ConfigEnergyCompany.jsp</link>
-        <pages>
-          <page name="createApplianceCategory" type="BASIC">
-            <menu>configEnergyCompany</menu>
-            <link>/spring/stars/dr/admin/applianceCategory/create</link>
-          </page>
-          <page name="editApplianceCategory" type="DETAIL">
-            <menu>configEnergyCompany</menu>
-            <link>/spring/stars/dr/admin/applianceCategory/edit?applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
-            <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
-          </page>
-        </pages>
-      </page>
-    </pages>
-  </module>
-
   <module name="internal">
     <skin name="INNER" />
   </module>
@@ -1022,6 +993,7 @@
 
     <module name="adminSetup">
         <skin name="STANDARD" />
+        <css file="/WebConfig/yukon/styles/admin/energyCompany.css" />
         <menu>
             <options>
                 <option name="energyCompanySetup">
@@ -1104,10 +1076,32 @@
                                 <link>/spring/adminSetup/energyCompany/generalInfo?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                             </page>
-                            <page name="applianceCategories.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="applianceCategory.LIST" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
-                                <link>/spring/adminSetup/energyCompany/applianceCategories</link>
+                                <link>/spring/adminSetup/energyCompany/applianceCategory/list?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
+                                <pages>
+                                    <page name="applianceCategory.VIEW" type="DETAIL">
+                                        <menu>energyCompanySetup|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/applianceCategory/view?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
+                                        <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
+                                    </page>
+                                    <page name="applianceCategory.CREATE" type="BASIC">
+                                        <menu>energyCompanySetup|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/applianceCategory/create?ecId=${ecId}</link>
+                                    </page>
+                                    <page name="applianceCategory.EDIT" type="DETAIL">
+                                        <menu>energyCompanySetup|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/applianceCategory/edit?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
+                                        <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
+                                    </page>
+                                </pages>
+                            </page>
+                            <page name="applianceCategory.PROGRAMS" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>energyCompanySetup|home</menu>
+                                <link>/spring/adminSetup/energyCompany/applianceCategory/programs?ecId=${ecId}</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
                             </page>
                             <page name="serviceAndStorage.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
@@ -1482,12 +1476,6 @@
                             <page name="generalInfo.EDIT" type="DETAIL_CHILD_WITH_INFO">
                                 <menu>energyCompany|home</menu>
                                 <link>/spring/stars/operator/energyCompany/generalInfo?ecId=${ecId}</link>
-                                <labelArgument>${energyCompanyName}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
-                            </page>
-                            <page name="applianceCategories.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>energyCompany|home</menu>
-                                <link>/spring/stars/operator/energyCompany/applianceCategories</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
                             </page>

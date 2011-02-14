@@ -177,13 +177,13 @@
                <value>classpath:com/cannontech/yukon/web/modules/adminSetup/root</value>
                <value>classpath:com/cannontech/yukon/web/modules/adminSetup/energyCompany</value>
                <value>classpath:com/cannontech/yukon/web/modules/adminSetup/userGroupEditor</value>
+               <value>classpath:com/cannontech/yukon/web/modules/adminSetup/applianceCategory</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/groupCommander</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/metering</value>
                <value>classpath:com/cannontech/yukon/web/modules/dr/demandResponse</value>
                <value>classpath:com/cannontech/yukon/web/modules/capcontrol/root</value>
                <value>classpath:com/cannontech/yukon/web/modules/capcontrol/ivvc</value>               
                <value>classpath:com/cannontech/yukon/web/modules/stars/survey</value>
-               <value>classpath:com/cannontech/yukon/web/modules/stars/drAdmin</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/root</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/general</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/account</value>

@@ -1,6 +1,5 @@
 package com.cannontech.stars.webconfiguration.dao;
 
-import java.util.Collection;
 import java.util.Map;
 
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
@@ -12,8 +11,7 @@ public interface WebConfigurationDao {
 
     public WebConfiguration getForAssignedProgram(int assignedProgramId);
 
-    public Map<Integer, WebConfiguration> getForAssignedPrograms(
-            Collection<Integer> assignedProgramIds);
+    public Map<Integer, WebConfiguration> getForAssignedPrograms(Iterable<Integer> assignedProgramIds);
 
     public Map<Integer, WebConfiguration> getForProgramsForApplianceCateogry(
             int applianceCategoryId);

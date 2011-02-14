@@ -20,15 +20,16 @@ public class AssignedProgram {
     private String controlPercentIcon;
     private String environmentIcon;
 
+    private int webConfigurationId;
     private WebConfiguration webConfiguration;
 
     public AssignedProgram() {
         name = new AssignedProgramName();
     }
 
-    public AssignedProgram(int applianceCategoryId, int assignedProgramId,
-            int programId, String programName, int chanceOfControlId,
-            int programOrder, boolean isLast, WebConfiguration webConfiguration) {
+    public AssignedProgram(int applianceCategoryId, int assignedProgramId, int programId,
+            String programName, int chanceOfControlId, int programOrder, boolean isLast,
+            int webConfigurationId, WebConfiguration webConfiguration) {
         this.applianceCategoryId = applianceCategoryId;
         this.assignedProgramId = assignedProgramId;
         this.programId = programId;
@@ -36,6 +37,7 @@ public class AssignedProgram {
         this.chanceOfControlId = chanceOfControlId;
         this.programOrder = programOrder;
         this.isLast = isLast;
+        this.webConfigurationId = webConfigurationId;
         setWebConfiguration(webConfiguration);
     }
 
@@ -71,6 +73,11 @@ public class AssignedProgram {
         this.programId = programId;
     }
 
+    /**
+     * Get the PAO program name for an assigned program.  This method is not valid for virtual
+     * programs.  For virtual programs, this method will return the display name but as a rule,
+     * where virtual programs are involved getDisplayName should be used instead.
+     */
     public String getProgramName() {
         if (programId == 0 ) {
             return name.getDisplayName();
@@ -182,6 +189,14 @@ public class AssignedProgram {
 
     public AssignedProgramName getName() {
         return name;
+    }
+
+    public int getWebConfigurationId() {
+        return webConfigurationId;
+    }
+
+    public void setWebConfigurationId(int webConfigurationId) {
+        this.webConfigurationId = webConfigurationId;
     }
 
     public WebConfiguration getWebConfiguration() {

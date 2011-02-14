@@ -11,10 +11,10 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 
 public class AssignedProgramForApplianceCategoryFilter implements UiFilter<AssignedProgram> {
-    private int applianceCategoryId;
+    private Iterable<Integer> applianceCategoryIds;
 
-    public AssignedProgramForApplianceCategoryFilter(int applianceCategoryId) {
-        this.applianceCategoryId = applianceCategoryId;
+    public AssignedProgramForApplianceCategoryFilter(Iterable<Integer> applianceCategoryIds) {
+        this.applianceCategoryIds = applianceCategoryIds;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class AssignedProgramForApplianceCategoryFilter implements UiFilter<Assig
             @Override
             public SqlFragmentSource getWhereClauseFragment() {
                 SqlStatementBuilder retVal = new SqlStatementBuilder();
-                retVal.append("p.applianceCategoryId").eq(applianceCategoryId);
+                retVal.append("p.applianceCategoryId").in(applianceCategoryIds);
                 return retVal;
             }});
 

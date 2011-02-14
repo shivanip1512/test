@@ -382,13 +382,13 @@ function deleteWarehouse(form, warehouseId) {
 		if (category.getInherited()) {
 %>
                                     <td width="25%" class="TableCell" colspan="2"> 
-                                      <input type="button" name="Edit9" value="View" onClick="location.href='/spring/stars/dr/admin/applianceCategory/view?applianceCategoryId=<%= category.getApplianceCategoryID() %>'">
+                                      <input type="button" name="Edit9" value="View" onClick="location.href='/spring/adminSetup/energyCompany/applianceCategory/view?applianceCategoryId=<%= category.getApplianceCategoryID() %>&ecId=<%= liteEC.getLiteID() %>'">
                                       (Inherited) </td>
                                     <%
 		} else {
 %>
                                     <td width="10%" class="TableCell"> 
-                                      <input type="button" name="Edit" value="Edit" onclick="location.href='/spring/stars/dr/admin/applianceCategory/edit?applianceCategoryId=<%= category.getApplianceCategoryID() %>'">
+                                      <input type="button" name="Edit" value="Edit" onclick="location.href='/spring/adminSetup/energyCompany/applianceCategory/view?applianceCategoryId=<%= category.getApplianceCategoryID() %>&ecId=<%= liteEC.getLiteID() %>'">
                                     </td>
                                     <td width="15%" class="TableCell"> 
                                       <input type="submit" name="Delete" value="Delete" onclick="this.form.AppCatID.value=<%= category.getApplianceCategoryID() %>; return confirmDeleteAppCat();">
@@ -410,7 +410,7 @@ function deleteWarehouse(form, warehouseId) {
                                 <input type="submit" name="DeleteAll" value="Delete All" onclick="this.form.AppCatID.value=-1; return confirmDeleteAllAppCats();">
                               </td>
                               <td width="80%"> 
-                                <input type="button" name="New" value="New" onclick="location.href='/spring/stars/dr/admin/applianceCategory/create'">
+                                <input type="button" name="New" value="New" onclick="location.href='/spring/adminSetup/energyCompany/applianceCategory/create?ecId=<%= liteEC.getLiteID() %>'">
                               </td>
                             </tr>
                           </table>

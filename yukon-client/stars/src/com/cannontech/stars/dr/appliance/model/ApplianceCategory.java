@@ -10,6 +10,7 @@ public class ApplianceCategory {
     private String name;
     private ApplianceTypeEnum applianceType;
     private boolean consumerSelectable;
+    private int energyCompanyId;
 
     private WebConfiguration webConfiguration;
 
@@ -19,13 +20,14 @@ public class ApplianceCategory {
         webConfiguration = new WebConfiguration();
     }
 
-    public ApplianceCategory(int applianceCategoryId, String name,
-            ApplianceTypeEnum applianceType, boolean consumerSelectable,
-            WebConfiguration webConfiguration) {
+    public ApplianceCategory(int applianceCategoryId, String name, ApplianceTypeEnum applianceType,
+                             boolean consumerSelectable, int energyCompanyId,
+                             WebConfiguration webConfiguration) {
         this.applianceCategoryId = applianceCategoryId;
         this.name = name;
         this.applianceType = applianceType;
         this.consumerSelectable = consumerSelectable;
+        this.energyCompanyId = energyCompanyId;
         this.webConfiguration = webConfiguration;
     }
 
@@ -69,6 +71,14 @@ public class ApplianceCategory {
 
     public void setConsumerSelectable(boolean consumerSelectable) {
         this.consumerSelectable = consumerSelectable;
+    }
+
+    public int getEnergyCompanyId() {
+        return energyCompanyId;
+    }
+
+    public void setEnergyCompanyId(int energyCompanyId) {
+        this.energyCompanyId = energyCompanyId;
     }
 
     public WebConfiguration getWebConfiguration() {

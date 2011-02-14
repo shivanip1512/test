@@ -8,6 +8,8 @@ public interface ApplianceCategoryService {
     public void save(ApplianceCategory applianceCategory,
             YukonUserContext userContext);
 
+    public void delete(int applianceCategoryId, YukonUserContext userContext);
+
     public void assignProgram(AssignedProgram assignedProgram,
             YukonUserContext userContext);
 

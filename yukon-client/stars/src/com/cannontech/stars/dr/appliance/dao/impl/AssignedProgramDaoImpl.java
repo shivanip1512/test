@@ -18,6 +18,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramRowMapper;
+import com.cannontech.stars.dr.appliance.dao.AssignedProgramRowMapper.SortBy;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
@@ -34,7 +35,7 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
         AssignedProgramRowMapper rowMapper = new AssignedProgramRowMapper();
         final SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(rowMapper.getBaseQuery());
-        sql.append("WHERE p.programId").eq(assignedProgramId);
+        sql.append("AND p.programId").eq(assignedProgramId);
 
         AssignedProgram assignedProgram =
             yukonJdbcTemplate.queryForObject(sql, rowMapper);
@@ -54,7 +55,7 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
             new ChunkingSqlTemplate(yukonJdbcTemplate);
 
         final AssignedProgramRowMapper rowMapper =
-            new AssignedProgramRowMapper(true, false, -1, webConfigurations);
+            new AssignedProgramRowMapper(SortBy.PROGRAM_NAME, false, -1, webConfigurations);
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();

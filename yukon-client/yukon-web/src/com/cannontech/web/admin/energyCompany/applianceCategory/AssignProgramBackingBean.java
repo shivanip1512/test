@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.admin;
+package com.cannontech.web.admin.energyCompany.applianceCategory;
 
 import org.apache.commons.lang.Validate;
 

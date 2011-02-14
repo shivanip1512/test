@@ -39,3 +39,7 @@ div.notes {
 tr.pickerRow td.value span[id^='picker_'] {
     vertical-align: top;
 }
+
+#applianceCategoryPrograms {
+    margin-top: 20px;
+}
