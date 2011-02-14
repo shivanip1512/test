@@ -248,12 +248,12 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                         row.totalOptOutHours = 0.0;
                         row.totalOptOutHoursDuringControl = 0.0;
                     } else {
-                        row.controlHours = new Double(1.0 * totals[TOTAL_CONTROL_HOURS]);
-                        row.enrolledCustomers = (int)totals[ENROLLED_CUSTOMERS].doubleValue();
-                        row.enrolledInventory = (int)totals[ENROLLED_INVENTORY].doubleValue();
-                        row.optOutEvents = (int)totals[TOTAL_OPT_OUT_EVENTS].doubleValue();
-                        row.totalOptOutHours = new Double(1.0 * totals[TOTAL_OPT_OUT_HOURS]);
-                        row.totalOptOutHoursDuringControl = new Double(1.0 * totals[TOTAL_OPT_OUT_HOURS_DURING_CONTROL]);
+                        row.controlHours = totals[TOTAL_CONTROL_HOURS];
+                        row.enrolledCustomers = totals[ENROLLED_CUSTOMERS].intValue();
+                        row.enrolledInventory = totals[ENROLLED_INVENTORY].intValue();
+                        row.optOutEvents = totals[TOTAL_OPT_OUT_EVENTS].intValue();
+                        row.totalOptOutHours = totals[TOTAL_OPT_OUT_HOURS];
+                        row.totalOptOutHoursDuringControl = totals[TOTAL_OPT_OUT_HOURS_DURING_CONTROL];
                     }
                     data.add(row);
                 }
