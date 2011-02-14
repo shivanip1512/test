@@ -282,16 +282,16 @@ public:
     CtiCCEventLogMsg(LONG logId, LONG pointId, LONG spAreaId, LONG areaId, LONG stationId, LONG subId, LONG feederId, LONG eventType, LONG seqId, LONG value,
                      string text, string userName, DOUBLE kvarBefore= 0, DOUBLE kvarAfter = 0, DOUBLE kvarChange = 0,
                      string ipAddress = string("(N/A)"), LONG actionId = -1, string stateInfo = string("(N/A)"),
-                     DOUBLE aVar = 0, DOUBLE bVar = 0, DOUBLE cVar = 0) :
+                     DOUBLE aVar = 0, DOUBLE bVar = 0, DOUBLE cVar = 0,  int regulatorId = 0) :
         _logId(logId), _timeStamp(CtiTime()), _pointId(pointId), _spAreaId(spAreaId),_areaId(areaId),_stationId(stationId),_subId(subId),
         _feederId(feederId), _eventType(eventType), _seqId(seqId), _value(value), _text(text), _userName(userName),
         _kvarBefore(kvarBefore), _kvarAfter(kvarAfter), _kvarChange(kvarChange), _ipAddress(ipAddress),
-        _actionId(actionId), _stateInfo(stateInfo), _aVar(aVar), _bVar(bVar), _cVar(cVar) { }; //provided for polymorphic persitence only
+        _actionId(actionId), _stateInfo(stateInfo), _aVar(aVar), _bVar(bVar), _cVar(cVar), _regulatorId(regulatorId) { }; //provided for polymorphic persitence only
 
     CtiCCEventLogMsg(string text, int regulatorId = 0) : _userName("cap control"), _text(text), _logId(0),
         _pointId(SYS_PID_CAPCONTROL), _spAreaId(0),_areaId(0),_stationId(0),_subId(0),
         _feederId(0), _eventType(capControlIvvcTapOperation), _seqId(0), _value(0),
-        _kvarBefore(0), _kvarAfter(0), _kvarChange(0),
+        _kvarBefore(0), _kvarAfter(0), _kvarChange(0), _ipAddress(0),
         _actionId(0), _aVar(0), _bVar(0), _cVar(0), _regulatorId(regulatorId) { };
 
     CtiCCEventLogMsg (const CtiCCEventLogMsg& aRef);
