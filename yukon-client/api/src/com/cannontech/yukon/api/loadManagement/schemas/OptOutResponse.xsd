@@ -12,7 +12,7 @@
         </xsd:documentation>
     </xsd:annotation>
     
-    <xsd:complexType name = "OptOutResponse">
+    <xsd:complexType name ="OptOutResponse">
       <xsd:complexContent>
         <xsd:extension base="yukon:YukonMessage">
           <xsd:choice>
@@ -23,6 +23,6 @@
       </xsd:complexContent>
     </xsd:complexType>
     
-    <xsd:element name = "optOutResponse" type="OptOutResponse"/>
+    <xsd:element name = "optOutResponse" type="yukon:OptOutResponse"/>
 
 </xsd:schema>
