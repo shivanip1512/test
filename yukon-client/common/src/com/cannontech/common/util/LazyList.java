@@ -8,25 +8,7 @@ import com.google.common.collect.ForwardingList;
 import com.google.common.collect.Lists;
 
 public class LazyList<T> extends ForwardingList<T> {
-    private final static class SimpleSupplier<T> implements Supplier<T> {
-        private final Class<T> classToSupply;
-        public SimpleSupplier(Class<T> classToSupply) {
-            this.classToSupply = classToSupply;
-        }
-
-        @Override
-        public T get() {
-            try {
-                return classToSupply.newInstance();
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-	private List<T> backingList;
+    private List<T> backingList;
 	private Supplier<T> supplier;
 
 	public LazyList(List<T> backingList, Supplier<T> supplier) {

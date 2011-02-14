@@ -13,6 +13,8 @@
 
 	<!-- PorterResponseMonitorController edit.jsp -->
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.sectionHeader.title">Edit</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.removedRow">This rule will be removed.</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.undoLink">Undo</entry>
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.add.label">Add Rule</entry>
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
@@ -24,16 +26,13 @@
     <entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.deleteConfirmation.message">Are you sure you want to delete {0}?</entry>
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.update.label">Update</entry>
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.monitoringEnable.label">Enable</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.monitoringEnable.labelBusy">Enabling</entry>
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.monitoringDisable.label">Disable</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.monitoringDisable.labelBusy">Disabling</entry>
     
     <!-- PorterResponseMonitorController shared keys -->
     <entry key="yukon.web.modules.amr.porterResponseMonitor.title">Porter Response Monitoring</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.monitoring">Monitoring</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.attribute">Attribute</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.cancel">Cancel</entry>
-    <entry key="yukon.web.modules.amr.porterResponseMonitor.cancel.labelBusy">Canceling</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.name">Name</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.stateGroup">State Group</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.title">Porter Response Monitor Rules</entry>
@@ -50,18 +49,35 @@
          <br><br>
          Success: Whether or not the transaction was a success or failure.
          <br><br>
-         Errors: The errors to process. This field must be populated with non-negative, unique, comma separated integers.
+         Errors: The errors to process. This field must be either blank or populated with non-negative, unique, comma separated integers.
          <br><br>
          Match: The match style.
          <br><br>
-         Action: The message to be sent to all multispeak vendors supporting ODEventNotification messages.
+         State: The State that should be associated with this specific Rule.
          <br><br>
     ]]></entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.deviceGroup">Device Group</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.popupInfo.deviceGroup.title">Device Group Picker Help</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.popupInfo.deviceGroup"><![CDATA[
+         <br>
+         The group of devices who's porter responses will be monitored.
+         <br><br>
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.errorCodesVerboseMsg">*A more detailed version of this table can be found here:</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.errorCodesSupportLink">Error Codes Support Page</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.errorCodesPopup">Error Codes</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.errorCodesPopup.header.code">Code</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.errorCodesPopup.header.category">Category</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.errorCodesPopup.header.description">Description</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.errorCodesPopup.header.porter">Porter</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.errorCodesPopup.header.troubleshoot">Troubleshooting Options</entry>
 
     <!-- PorterResponseMonitorController addRuleTableRow.jsp -->
     <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.delete.hoverText">Click to remove</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.rulesTable.removedRow">This rule will be removed.</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.rulesTable.undoLink">Undo</entry>
 
 	<!-- PorterResponseMonitorController PorterResponseMonitorMatchStyle.java -->
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.matchStyle.none">None</entry>
@@ -69,10 +85,9 @@
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.matchStyle.all">All</entry>
 
 	<!-- validation errors -->
-	<entry key="yukon.web.modules.amr.porterResponseMonitor.empty.name">Name cannot be blank.</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitor.alreadyExists.name">Name already exists.</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.alreadyExists.name">Name already exists</entry>
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.uniqueOrder">Order values must be unique</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.errorCodesFormat">Error field must be populated with non-negative, unique, comma separated integers</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.rulesTable.errorCodesFormat">Error field must be either blank or populated with non-negative, unique, comma separated integers</entry>
 
 	<!-- FlashScope messages -->
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.created">Porter Response Monitor Created</entry>

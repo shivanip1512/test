@@ -211,6 +211,7 @@
                <value>classpath:com/cannontech/yukon/web/modules/support/databaseMigrationTemplate</value>
                <value>classpath:com/cannontech/yukon/web/modules/support/root</value>
                <value>classpath:com/cannontech/yukon/web/modules/support/eventViewer</value>
+               <value>classpath:com/cannontech/yukon/web/modules/support/errorCodesViewer</value>
                <value>classpath:com/cannontech/yukon/web/modules/deviceConfig/root</value>
                <value>classpath:com/cannontech/yukon/web/modules/widgets/commandScheduleWidget</value>
                <value>classpath:com/cannontech/yukon/web/modules/widgets/deviceReconfigMonitorsWidget</value>

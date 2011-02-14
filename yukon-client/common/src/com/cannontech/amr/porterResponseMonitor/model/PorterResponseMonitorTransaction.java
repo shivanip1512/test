@@ -11,7 +11,7 @@ public class PorterResponseMonitorTransaction {
     
     public PorterResponseMonitorTransaction(int paoId, int errorCode) {
         this.paoId = paoId;
-        errorCodes.add(errorCode);
+        addErrorCode(errorCode);
     }
 
     public boolean isSuccess() {

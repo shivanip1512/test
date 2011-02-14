@@ -6,14 +6,20 @@ public class PorterResponseMessage {
     private int connectionId;
     private int paoId;
     private int errorCode;
-    private boolean expectMore;
+    private boolean finalMsg;
 
+    /**
+     * used to correlate messages within a connection
+     */
     public int getUserMessageId() {
         return userMessageId;
     }
     public void setUserMessageId(int userMessageId) {
         this.userMessageId = userMessageId;
     }
+    /**
+     * has no meaning (e.g. it can't be looked up in the DB)
+     */
     public int getConnectionId() {
         return connectionId;
     }
@@ -32,10 +38,10 @@ public class PorterResponseMessage {
     public void setErrorCode(int errorCode) {
         this.errorCode = errorCode;
     }
-    public boolean isExpectMore() {
-        return expectMore;
+    public boolean isFinalMsg() {
+        return finalMsg;
     }
-    public void setExpectMore(boolean expectMore) {
-        this.expectMore = expectMore;
+    public void setFinalMsg(boolean finalMsg) {
+        this.finalMsg = finalMsg;
     }
 }

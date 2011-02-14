@@ -3,7 +3,6 @@ package com.cannontech.amr.errors.dao.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,11 +18,13 @@ import org.jdom.output.XMLOutputter;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
     private Logger log = YukonLogManager.getLogger(DeviceErrorTranslatorDaoImpl.class);
     private InputStream errorDefinitions;
-    private Map<Integer, DeviceErrorDescription> store = new HashMap<Integer, DeviceErrorDescription>();
+    private Map<Integer, DeviceErrorDescription> store;
     private DeviceErrorDescription defaultTranslation;
 
     public DeviceErrorDescription translateErrorCode(int error) {
@@ -40,6 +41,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
 
     @SuppressWarnings("unchecked")
     public void initialize() throws JDOMException, IOException {
+        Builder<Integer, DeviceErrorDescription> mapBuilder = ImmutableMap.builder();
         Format compactFormat = Format.getCompactFormat();
         compactFormat.setOmitDeclaration(true);
         compactFormat.setOmitEncoding(true);
@@ -77,15 +79,22 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
             if (errorCode == null) {
                 defaultTranslation = dded;
             } else {
-                store.put(errorCode, dded);
+                mapBuilder.put(errorCode, dded);
             }
         }
         Validate.notNull(defaultTranslation, "No default translation found");
-        log.info("Device error code descriptions loaded: " + children.size());
+        
+        store = mapBuilder.build();
+        
+        log.info("Device error code descriptions loaded: " + store.size());
     }
 
     public void setErrorDefinitions(InputStream errorDefinitions) {
         this.errorDefinitions = errorDefinitions;
     }
 
+    @Override
+    public Iterable<DeviceErrorDescription> getAllErrors() {
+        return store.values();
+    }
 }

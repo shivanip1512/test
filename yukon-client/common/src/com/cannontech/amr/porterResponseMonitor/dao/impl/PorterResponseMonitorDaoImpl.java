@@ -52,6 +52,7 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 			PorterResponseMonitor retVal = new PorterResponseMonitor();
 			retVal.setMonitorId(rs.getInt("monitorId"));
 			retVal.setName(rs.getString("name"));
+			retVal.setGroupName(rs.getString("groupName"));
             retVal.setStateGroup(stateDao.getLiteStateGroup(rs.getInt("stateGroupId")));
             String attributeKey = rs.getString("attribute");
             Attribute attribute = attributeService.resolveAttributeName(attributeKey);
@@ -80,21 +81,27 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 			PorterResponseMonitorErrorCode retVal = new PorterResponseMonitorErrorCode();
 			retVal.setErrorCodeId(rs.getInt("errorCodeId"));
 			retVal.setRuleId(rs.getInt("ruleId"));
-			retVal.setErrorCode(rs.getInt("errorCode"));
+			retVal.setErrorCode(rs.getNullableInt("errorCode"));
 			return retVal;
 		}
 	};
 
 	@Override
+	@Transactional
 	public List<PorterResponseMonitor> getAllMonitors() {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT MonitorId, Name, StateGroupId, Attribute, EvaluatorStatus");
+		sql.append("SELECT MonitorId, Name, GroupName, StateGroupId, Attribute, EvaluatorStatus");
 		sql.append("FROM PorterResponseMonitor");
 		sql.append("ORDER BY MonitorId");
 
-		List<PorterResponseMonitor> porterResponseMonitorList = yukonJdbcTemplate.query(sql, monitorRowMapper);
+		List<PorterResponseMonitor> monitorList = yukonJdbcTemplate.query(sql, monitorRowMapper);
 
-		return porterResponseMonitorList;
+		for (PorterResponseMonitor monitor : monitorList) {
+		    List<PorterResponseMonitorRule> rules = getRulesByMonitorId(monitor.getMonitorId());
+		    monitor.setRules(rules);
+		}
+
+		return monitorList;
 	}
 
 	@Override
@@ -102,7 +109,7 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 	public PorterResponseMonitor getMonitorById(final Integer monitorId) throws NotFoundException {
 
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT MonitorId, Name, StateGroupId, Attribute, EvaluatorStatus");
+		sql.append("SELECT MonitorId, Name, GroupName, StateGroupId, Attribute, EvaluatorStatus");
 		sql.append("FROM PorterResponseMonitor");
 		sql.append("WHERE MonitorId").eq(monitorId);
 
@@ -149,7 +156,6 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 	}
 
 	@Override
-	@Transactional
 	public boolean deleteMonitor(int monitorId) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("DELETE FROM PorterResponseMonitor");
@@ -178,6 +184,7 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 	private AdvancedFieldMapper<PorterResponseMonitor> monitorFieldMapper = new AdvancedFieldMapper<PorterResponseMonitor>() {
 		public void extractValues(SqlParameterSink p, PorterResponseMonitor monitor) {
 			p.addValue("Name", monitor.getName());
+			p.addValue("GroupName", monitor.getGroupName());
 			p.addValue("StateGroupId", monitor.getStateGroup().getStateGroupID());
 			p.addValue("Attribute", monitor.getAttribute());
 			p.addValue("EvaluatorStatus", monitor.getEvaluatorStatus());

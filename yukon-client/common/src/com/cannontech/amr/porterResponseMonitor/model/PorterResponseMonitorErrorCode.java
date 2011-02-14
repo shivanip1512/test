@@ -3,7 +3,13 @@ package com.cannontech.amr.porterResponseMonitor.model;
 public class PorterResponseMonitorErrorCode {
 	private Integer errorCodeId;
 	private Integer ruleId;
-	private int errorCode;
+	private Integer errorCode;
+
+    public PorterResponseMonitorErrorCode() {}
+
+	public PorterResponseMonitorErrorCode(Integer errorCode) {
+	    this.errorCode = errorCode;
+	}
 
 	public Integer getErrorCodeId() {
 		return errorCodeId;
@@ -21,11 +27,11 @@ public class PorterResponseMonitorErrorCode {
 		this.ruleId = ruleId;
 	}
 
-	public int getErrorCode() {
+	public Integer getErrorCode() {
 		return errorCode;
 	}
 
-	public void setErrorCode(int errorCode) {
+	public void setErrorCode(Integer errorCode) {
 		this.errorCode = errorCode;
 	}
 }

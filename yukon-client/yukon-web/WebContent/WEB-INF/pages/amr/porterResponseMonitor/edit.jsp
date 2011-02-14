@@ -15,61 +15,85 @@
 		<cti:crumbLink><i:inline key=".title" /></cti:crumbLink>
 	</cti:breadCrumbs>
 
-	<h2><i:inline key=".title" /></h2>
+    <cti:url var="fullErrorCodesURL" value="/spring/support/errorCodes/view"/>
+
+    <i:simplePopup titleKey=".errorCodesPopup" id="errorCodesHelpPopup" on="#errorHelp">
+        <div class="mediumDialogScrollArea">
+        <table id="errorCodes" class="resultsTable">
+            <tr>
+                <th><i:inline key=".errorCodesPopup.header.code" /></th>
+                <th><i:inline key=".errorCodesPopup.header.porter" /></th>
+            </tr>
+            <c:forEach items="${allErrors}" var="error">
+                <tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
+                    <td nowrap="nowrap">${error.errorCode}</td>
+                    <td>${error.description}</td>
+                </tr>
+            </c:forEach>
+        </table><br>
+        <span class="footerLink">
+            <i:inline key=".errorCodesVerboseMsg"/>
+            <a href="${fullErrorCodesURL}"><i:inline key=".errorCodesSupportLink"/></a>
+        </span>
+        </div>
+    </i:simplePopup>
+
+    <h2><i:inline key=".title" /></h2>
 	<br>
 
 <script type="text/javascript">
 
-	addTableRow = function (monitorId, largestOrder) {
-	    if (addTableRow.nextOrder < largestOrder) {
-	        addTableRow.nextOrder = largestOrder;
+YEvent.observeSelectorClick('.removeRow', function(event) {
+    var theRow = event.findElement('tr');
+    var rowToDelete = document.createElement('input');
+    rowToDelete.type = 'hidden';
+    rowToDelete.name = 'rulesToRemove';
+    rowToDelete.value = theRow.id.substring(5); //omit "rule_"
+    rowToDelete.id =  'deleteInput_' + theRow.id;
+    $('updateForm').appendChild(rowToDelete);
+    theRow.hide();
+    theRow.next().show();
+});
+
+YEvent.observeSelectorClick('.undoRemovedRow', function(event) {
+    var theUndoRow = event.findElement('tr');
+    $('deleteInput_' + theUndoRow.previous().id).remove();
+    theUndoRow.hide();
+    theUndoRow.previous().show();
+});
+
+addTableRow = function () {
+	var url = '/spring/amr/porterResponseMonitor/addRule';
+	var maxOrder = 0;
+    var numRows = $$('.ruleTableRow').length
+    for (var i = 0; i < numRows; i++) {
+        var order = $('rulesTableBody').down('.ruleOrder', i).value;
+	    if (maxOrder < order) {
+	        maxOrder = order;
 	    }
-		var url = '/spring/amr/porterResponseMonitor/addRule';
-		var index = $$('.ruleCounter').length;
-	    var newRow = $('defaultRow').cloneNode(true);
-	    $('rulesTableBody').appendChild(newRow);
+    }
 
-	    new Ajax.Request(url,{
-	        parameters: {'index': index, 'monitorId' : monitorId, 'nextOrder' : ++addTableRow.nextOrder},
-	        onSuccess: function(transport) {
-	            var dummyHolder = document.createElement('div');
-	            dummyHolder.innerHTML = transport.responseText;
-	            var replacementRow = $(dummyHolder).getElementsBySelector('tr')[0];
-	            $('rulesTableBody').replaceChild(replacementRow, newRow);
-	        },
-	        onFailure: function() { 
-		        newRow.remove();
-	        }
-	    });
-	}
-    addTableRow.nextOrder = 0;
+    var newRow = $('defaultRuleRow').cloneNode(true);
+    $('rulesTableBody').appendChild(newRow);
 
-	removeTableRow = function (rowId) {
-		//If this is a new row then just remove it
-		//Else hide it and show the undo row
-		if (rowId.indexOf('new_') == 0) {
-			$(rowId).remove();
-		} else {
-    		var rowToDelete = document.createElement('input');
-    		rowToDelete.type = 'hidden';
-    		rowToDelete.name = 'rulesToRemove';
-    		rowToDelete.value = rowId;
-    		rowToDelete.id =  'deleteInput_' + rowId;
-    		$('updateForm').appendChild(rowToDelete);
-
-    		$(rowId).hide();
-    	    $(rowId + '_undo').show();
-		}
-	}
-
-	undoRemoveTableRow = function (rowId) {
-		$('deleteInput_' + rowId).remove();
-		$(rowId + '_undo').hide();
-		$(rowId).show();
-	}
+    new Ajax.Request(url,{
+        parameters: {'monitorId': ${monitorDto.monitorId}, 'maxOrder': maxOrder},
+        onSuccess: function(transport) {
+            var dummyHolder = document.createElement('div');
+            dummyHolder.innerHTML = transport.responseText;
+            var replacementRow = $(dummyHolder).down('tr');
+            var undoRow = replacementRow.next();
+            $('rulesTableBody').replaceChild(replacementRow, newRow);
+            $('rulesTableBody').appendChild(undoRow);
+        },
+        onFailure: function() { 
+	        newRow.remove();
+        }
+    });
+}
 </script>
 
-	<form:form id="updateForm" commandName="monitor"
+	<form:form id="updateForm" commandName="monitorDto"
 		action="/spring/amr/porterResponseMonitor/update" method="post">
 
 		<form:hidden path="monitorId" />
@@ -82,22 +106,31 @@
 				<%-- name --%>
 				<tags:inputNameValue nameKey=".name" path="name" size="50" maxlength="50" />
 
-                <%-- attribute --%>
-                <tags:nameValue2 nameKey=".attribute">
-                    <form:select path="attribute">
-                        <c:forEach items="${allAttributes}" var="attributeVar">
-                            <form:option value="${attributeVar}">${attributeVar.description}</form:option>
-                        </c:forEach>
-                    </form:select>
+                <cti:msg2 var="deviceGroupTitle" key=".popupInfo.deviceGroup.title"/>
+
+                <%-- device group --%>
+                <tags:nameValue2 nameKey=".deviceGroup">
+                    <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
+                    <tags:deviceGroupNameSelector fieldName="groupName"
+                        fieldValue="${monitorDto.groupName}" dataJson="${groupDataJson}"
+                        linkGroupName="true" />
+                    <tags:helpInfoPopup title="${deviceGroupTitle}">
+                        <cti:msg2 key=".popupInfo.deviceGroup" htmlEscape="false" />
+                    </tags:helpInfoPopup>
                 </tags:nameValue2>
 
+                <%-- attribute --%>
+                <tags:selectNameValue items="${allAttributes}" itemLabel="description"
+                    itemValue="key" nameKey=".attribute" path="attribute" />
+
+                <%-- state group --%>
                 <tags:nameValue2 nameKey=".stateGroup">
-                    <spring:escapeBody htmlEscape="true">${monitor.stateGroup.stateGroupName}</spring:escapeBody>
+                    <spring:escapeBody htmlEscape="true">${monitorDto.stateGroup.stateGroupName}</spring:escapeBody>
                 </tags:nameValue2>
 
                 <%-- enable/disable monitoring --%>
                 <tags:nameValue2 nameKey=".monitoring">
-					<i:inline key="${monitor.evaluatorStatus}" />
+					<i:inline key="${monitorDto.evaluatorStatus}" />
 				</tags:nameValue2>
 
 			</tags:nameValueContainer2>
@@ -107,7 +140,7 @@
 			cellStyle="padding-right:20px;width:50%">
 
 			<table style="display: none">
-				<tr id="defaultRow">
+				<tr id="defaultRuleRow">
 					<td colspan="6" style="text-align: center">
 						<img src="/WebConfig/yukon/Icons/indicator_arrows.gif">
 					</td>
@@ -121,36 +154,29 @@
 						<thead>
 							<tr>
 								<th><i:inline key=".rulesTable.header.ruleOrder" /></th>
-								<th><i:inline key=".rulesTable.header.success" /></th>
-								<th><i:inline key=".rulesTable.header.errors" /></th>
-								<th><i:inline key=".rulesTable.header.matchStyle" /></th>
-								<th><i:inline key=".rulesTable.header.state" /></th>
+                                <th><i:inline key=".rulesTable.header.success" /></th>
+                                <th><i:inline key=".rulesTable.header.errors" /> 
+                                    <cti:img id="errorHelp" key="help" styleClass="pointer hoverableImage"/>
+                                </th>
+                                <th><i:inline key=".rulesTable.header.matchStyle" /></th>
+                                <th><i:inline key=".rulesTable.header.state" /></th>
 								<th class="removeColumn"><i:inline key=".rulesTable.header.remove" /></th>
 							</tr>
 						</thead>
 						<tbody id="rulesTableBody">
-                            <c:set var="largestOrder" value="0"/>
-							<c:forEach var="rule" varStatus="status" items="${monitor.rules}">
-                                <c:if test="${largestOrder < rule.ruleOrder}">
-                                    <c:set var="largestOrder" value="${rule.ruleOrder}"/>
-                                </c:if>
-								<c:set var="rowId" value="${rule.ruleId}" />
-								<c:set var="newRow" value="false" />
-								<c:if test="${empty rowId}">
-									<c:set var="rowId" value="new_${status.index}" />
-									<c:set var="newRow" value="true" />
-								</c:if>
-								<tr id="${rowId}" class="ruleCounter">
+							<c:forEach var="ruleEntry" items="${monitorDto.rules}">
+								<c:set var="key" value="${ruleEntry.key}" />
+								<tr id="rule_${key}" class="ruleTableRow">
 									<td>
-										<form:hidden path="rules[${status.index}].ruleId" id="rules[${status.index}].ruleId" />
-										<form:input path="rules[${status.index}].ruleOrder" size="1" />
+										<form:hidden path="rules[${key}].ruleId" />
+										<form:input path="rules[${key}].ruleOrder" cssClass="ruleOrder" size="1" />
 									</td>
-									<td><form:checkbox path="rules[${status.index}].success" /></td>
+									<td><form:checkbox path="rules[${key}].success" /></td>
 									<td nowrap="nowrap">
-										<input type="text" size="5" value="${errorCodesMap[rule.ruleId]}" name="monitorCodes" />
+                                        <form:input size="5" path="rules[${key}].errorCodes"/>
 									</td>
 									<td>
-										<form:select id="matchStyleSelect" path="rules[${status.index}].matchStyle">
+										<form:select path="rules[${key}].matchStyle">
 											<c:forEach var="style" items="${matchStyleChoices}">
 												<form:option value="${style}">
 													<i:inline key="${style.formatKey}" />
@@ -159,8 +185,8 @@
 										</form:select>
 									</td>
 									<td>
-										<form:select id="stateSelect" path="rules[${status.index}].state">
-											<c:forEach var="state" items="${monitor.stateGroup.statesList}">
+										<form:select path="rules[${key}].state">
+											<c:forEach var="state" items="${monitorDto.stateGroup.statesList}">
 												<form:option value="${state.liteID}">
 													<spring:escapeBody htmlEscape="true">
                                                         ${state.stateText}
@@ -170,24 +196,22 @@
 										</form:select>
 									</td>
 									<td class="removeColumn">
-										<cti:img key="rulesTable.delete" href="javascript:removeTableRow('${rowId}')" />
+										<cti:img key="rulesTable.delete" styleClass="removeRow pointer"/>
 									</td>
 								</tr>
-								<c:if test="${newRow == false}">
-									<tr style="display: none" id="${rule.ruleId}_undo" class="removed">
-										<td colspan="5" align="center">This rule will be removed.</td>
-										<td colspan="1" align="center">
-											<a href="javascript:undoRemoveTableRow('${rule.ruleId}')">Undo</a>
-										</td>
-									</tr>
-								</c:if>
+								<tr style="display: none" id="rule_${key}_undo" class="removed">
+									<td colspan="5" class="removed"><i:inline key=".rulesTable.removedRow"/></td>
+									<td colspan="1" class="removed">
+										<span class="undoRemovedRow pointer"><i:inline key=".rulesTable.undoLink"/></span>
+									</td>
+								</tr>
 							</c:forEach>
 						</tbody>
 					</table>
 					</div>
 					<br>
 					<span style="float: right;">
-						<cti:button key="rulesTable.add" onclick="addTableRow('${monitor.monitorId}','${largestOrder}')" />
+						<cti:button key="rulesTable.add" onclick="addTableRow()" />
 					</span>
 				</tags:boxContainer2>
 			</cti:dataGridCell>
@@ -199,13 +223,13 @@
             <cti:button key="update" type="submit"/>
 
             <c:set var="monitoringKey" value="monitoringEnable"/>
-			<c:if test="${monitor.evaluatorStatus eq 'ENABLED'}">
+			<c:if test="${monitorDto.evaluatorStatus eq 'ENABLED'}">
                 <c:set var="monitoringKey" value="monitoringDisable"/>
 			</c:if>
 
             <cti:button key="${monitoringKey}" type="submit" name="toggleEnabled"/>
 			<cti:button id="deleteButton" key="delete"/>
-			<tags:confirmDialog nameKey=".deleteConfirmation" argument="${monitor.name}" submitName="delete" on="#deleteButton"/>
+			<tags:confirmDialog nameKey=".deleteConfirmation" argument="${monitorDto.name}" submitName="delete" on="#deleteButton"/>
 
             <cti:button key="cancel" type="submit" name="cancel"/>
 		</div>

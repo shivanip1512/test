@@ -866,8 +866,20 @@ ul.errorMessage {
     color:#777777;
 }
 
-.removed {
+tr.removed {
     background-color:#EFEFEF;
+    border-top: 2px solid #ccc;
+}
+
+td.removed {
+    height: 25px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+span.undoRemovedRow {
+    text-decoration: underline;
+    color: blue;
 }
 
 table.collectionActionAlignment > tbody > tr > td {
@@ -952,11 +964,10 @@ label.simpleLink:hover > span {
     text-decoration: underline;
 }
 
-span.footerLink span {
+span.footerLink {
     font-size:12px;
 }
 
-span.footerLink span,
 span.simpleLink span {
 	vertical-align: middle;
 }
@@ -1022,6 +1033,12 @@ h3.dialogQuestion {
     height: 200px;
     overflow: auto;
     overflow-x: hidden;
+}
+
+.mediumDialogScrollArea {
+    max-height: 500px;
+    overflow: auto;
+    padding: 5px 0;
 }
 
 div.padded {

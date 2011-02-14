@@ -51,7 +51,7 @@
 
 					<%-- monitor name --%>
 					<td class="${tdClass}">
-						<a href="${viewMonitorUrl}" title="<i:inline key=".porterResponseMonitoring"/> ${monitor.name})">${monitor.name}</a>
+						<a href="${viewMonitorUrl}" title="<i:inline key=".porterResponseMonitoring"/> (${monitor.name})">${monitor.name}</a>
 					</td>
 
 					<%-- enable/disable --%>

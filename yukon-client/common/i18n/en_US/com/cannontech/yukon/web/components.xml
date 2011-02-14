@@ -48,6 +48,10 @@
     <entry key="yukon.web.components.image.info.imageUrl">/WebConfig/yukon/Icons/information.gif</entry>
     <entry key="yukon.web.components.image.info.hoverUrl">/WebConfig/yukon/Icons/information_over.gif</entry>
     <entry key="yukon.web.components.image.info.hoverText">Info</entry>
+	
+    <entry key="yukon.web.components.image.help.imageUrl">/WebConfig/yukon/Icons/help.gif</entry>
+    <entry key="yukon.web.components.image.help.hoverUrl">/WebConfig/yukon/Icons/help_over.gif</entry>
+    <entry key="yukon.web.components.image.help.hoverText">What's This?</entry>
     
     <entry key="yukon.web.components.image.copy.imageUrl">/WebConfig/yukon/Icons/copy.gif</entry>
     <entry key="yukon.web.components.image.copy.hoverUrl">/WebConfig/yukon/Icons/copy_over.gif</entry>

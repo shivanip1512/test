@@ -11,10 +11,6 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
-
-<c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
-<c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
-
 <cti:includeScript link="/JavaScript/simpleCookies.js"/>
 <cti:includeScript link="/JavaScript/hideReveal.js"/>
 
@@ -49,7 +45,7 @@
 
 			<c:if test="${not empty pageScope.helpText}">
 				<a href="javascript:void(0);" onclick="$('boxContainerInfoPopup_${thisId}').toggle();" >
-            	<img src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
+                    <cti:img key="help"/>
             	</a>
         	</c:if>
         	

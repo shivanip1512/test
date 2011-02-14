@@ -35,15 +35,4 @@
   <bean id="outagePointMonitorProcessor" class="com.cannontech.amr.monitors.impl.OutagePointMonitorProcessorFactory"/>
     
   <bean id="statusPointMonitorProcessor" class="com.cannontech.amr.monitors.impl.StatusPointMonitorProcessorFactory"/>
-  <!--  removing until Alex fixes
-  <bean id="porterResponseMessageListener" class="com.cannontech.amr.porterResponseMonitor.service.PorterResponseMessageListener" />
-    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-        <property name="destinationName" value="yukon.notif.obj.amr.PorterResponseMessage" />
-        <property name="pubSubDomain" value="true"/>
-        <property name="concurrentConsumers" value="1"/>
-        <property name="connectionFactory" ref="connectionFactory" />
-        <property name="taskExecutor" ref="globalTaskExecutor"/>
-        <property name="messageListener" ref="porterResponseMessageListener"/>
-    </bean>
- -->
 </beans>

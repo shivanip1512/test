@@ -5,6 +5,9 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -18,13 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.monitors.message.PorterResponseMessage;
 import com.cannontech.amr.porterResponseMonitor.dao.PorterResponseMonitorDao;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
-import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorErrorCode;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRule;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorTransaction;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -35,9 +38,7 @@ import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.PointData;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import com.google.common.collect.MapMaker;
 
 public class PorterResponseMessageListener implements MessageListener {
 
@@ -47,8 +48,11 @@ public class PorterResponseMessageListener implements MessageListener {
     private DynamicDataSource dynamicDataSource;
     private PorterResponseMonitorDao porterResponseMonitorDao;
     private static final Logger log = YukonLogManager.getLogger(PorterResponseMessageListener.class);
-    private Map<Integer, PorterResponseMonitor> monitors = Maps.newHashMap();
-    private Map<TransactionIdentifier, PorterResponseMonitorTransaction> transactions = Maps.newHashMap();
+    private Map<Integer, PorterResponseMonitor> monitors = new ConcurrentHashMap<Integer, PorterResponseMonitor>();
+
+    //Map entries will be removed after 12 hours
+    private ConcurrentMap<TransactionIdentifier, PorterResponseMonitorTransaction> transactions
+                = new MapMaker().expiration(12, TimeUnit.HOURS).makeMap();
 
     @PostConstruct
     public void initialize() {
@@ -87,6 +91,11 @@ public class PorterResponseMessageListener implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
+        if (monitors.isEmpty()) { //possibly also add a check in here for if there are no statusPointMonitors
+            log.trace("Recieved porter response message from jms queue: not processing because " +
+            		"no monitors are configured");
+            return;
+        }
         if (message instanceof ObjectMessage) {
             ObjectMessage objMessage = (ObjectMessage) message;
             try {
@@ -101,7 +110,6 @@ public class PorterResponseMessageListener implements MessageListener {
         }
     }
 
-    
     /**
      * IMPORTANT: ensure this guy is only called from a single thread to guarantee the ordering of the
      * message such that the "expectMore" flag actually makes sense.
@@ -110,7 +118,7 @@ public class PorterResponseMessageListener implements MessageListener {
     private synchronized void handleMessage(PorterResponseMessage message) {
         TransactionIdentifier transactionId = new TransactionIdentifier(message);
 
-        if (!message.isExpectMore()) {
+        if (message.isFinalMsg()) {
             PorterResponseMonitorTransaction transaction = transactions.remove(transactionId);
 
             if (transaction != null) {
@@ -131,31 +139,48 @@ public class PorterResponseMessageListener implements MessageListener {
     }
 
     private void processTransaction(PorterResponseMonitorTransaction transaction) {
-        if (monitors.isEmpty()) {
-            log.trace("Recieved porter response transaction from jms queue: not generating point data because no monitors are configured");
-            return;
-        }
-        log.debug("Processing porter response message transaction from jms queue: " + transaction);
-
-        Set<Integer> transactionErrorCodes = transaction.getErrorCodes();
-
         for (PorterResponseMonitor monitor : monitors.values()) {
             for (PorterResponseMonitorRule rule : monitor.getRules()) {
-                Set<Integer> ruleErrorCodes = getErrorCodesAsIntegerList(rule.getErrorCodes());
-
-                if (rule.isSuccess() == transaction.isSuccess()) {
-                    if (rule.getMatchStyle().getMatchStyle().matches(transactionErrorCodes, ruleErrorCodes)) {
-                        sendPointData(monitor, rule, transaction);
-                    }
+                if(shouldSendPointData(rule, transaction)) {
+                    sendPointData(monitor, rule, transaction);
+                    break;
                 }
             }
         }
     }
 
+    public static boolean shouldSendPointData(PorterResponseMonitorRule rule, PorterResponseMonitorTransaction transaction) {
+        Set<Integer> ruleErrorCodes = rule.getErrorCodesAsIntegers();
+
+        if (rule.isSuccess() == transaction.isSuccess()) {
+            if (rule.getMatchStyle().getMatchStyle().matches(transaction.getErrorCodes(), ruleErrorCodes)) { 
+                LogHelper.trace(log, "found matching rule for rule %s, on transaction %s", rule, transaction);
+                return true;
+            }
+        }
+
+        LogHelper.trace(log, "did not find matching rule for rule %s, on transaction %s", rule, transaction);
+        return false;
+    }
+
     private void sendPointData(PorterResponseMonitor monitor, PorterResponseMonitorRule rule, PorterResponseMonitorTransaction transaction) {
-        YukonPao yukonPao = paoDao.getYukonPao(transaction.getPaoId());
-        LitePoint litePoint = attributeService.getPointForAttribute(yukonPao, monitor.getAttribute());
+        //The two DB hits below are a possible point of efficiency improvement. Leaving as is for now
+        YukonPao yukonPao;
+        yukonPao = paoDao.getYukonPao(transaction.getPaoId());
+        LitePoint litePoint;
+        try {
+            litePoint = attributeService.getPointForAttribute(yukonPao, monitor.getAttribute());
+        } catch (IllegalUseOfAttribute e) {
+            LogHelper.debug(log, "Attribute %s configured on PorterResponseMonitor [monitorId: %s] " +
+            		"could not be found on yukonPao [paoId: %s, paoType: %s]", monitor.getAttribute().getDescription(), 
+            		monitor.getMonitorId(), yukonPao.getPaoIdentifier().getPaoId(), yukonPao.getPaoIdentifier().getPaoType());
+            return;
+        }
+
         if (litePoint.getStateGroupID() != monitor.getStateGroup().getStateGroupID()) {
+            LogHelper.debug(log, "Point [pointId: %s, pointName: %s] with StateGroupId of %s does not match StateGroupId of %s " +
+            		"of PorterResponseMonitor [monitorId: %s]", litePoint.getPointID(), litePoint.getPointName(), 
+            		litePoint.getStateGroupID(), monitor.getStateGroup().getStateGroupID(), monitor.getMonitorId());
             return;
         }
 
@@ -166,15 +191,8 @@ public class PorterResponseMessageListener implements MessageListener {
         pointData.setType(litePoint.getPointTypeEnum().getPointTypeId());
         dynamicDataSource.putValue(pointData);
 
-        LogHelper.debug(log, "Generated PointData: %s", pointData);
-    }
-
-    private Set<Integer> getErrorCodesAsIntegerList(List<PorterResponseMonitorErrorCode> errorCodes) {
-        List<Integer> errorCodesAsIntegers = Lists.newArrayList();
-        for (PorterResponseMonitorErrorCode errorCode : errorCodes) {
-            errorCodesAsIntegers.add(errorCode.getErrorCode());
-        }
-        return Sets.newHashSet(errorCodesAsIntegers);
+        LogHelper.debug(log, "Successfully generated PointData [pointId: %s, value: %s, type: %s]",
+                        pointData.getId(), pointData.getValue(), pointData.getType());
     }
 
     private class TransactionIdentifier {
