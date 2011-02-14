@@ -300,6 +300,8 @@ public class PorterResponseMonitorController {
 
 	private void setupAddRule(ModelMap model, int monitorId, int maxOrder) {
 	    PorterResponseMonitor monitor = porterResponseMonitorDao.getMonitorById(monitorId);
+        List<PorterResponseMonitorMatchStyle> matchStyleChoices = getMatchStyleChoices();
+        model.addAttribute("matchStyleChoices", matchStyleChoices);
 	    List<LiteState> statesList = monitor.getStateGroup().getStatesList();
 	    model.addAttribute("statesList", statesList);
 		model.addAttribute("nextOrder", ++maxOrder);
