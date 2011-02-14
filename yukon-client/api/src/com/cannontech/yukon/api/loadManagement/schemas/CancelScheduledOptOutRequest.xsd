@@ -4,7 +4,8 @@
             xmlns:yukon="http://yukon.cannontech.com/api" 
             targetNamespace="http://yukon.cannontech.com/api"
             elementFormDefault="qualified" version="1.0">
-    
+            
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
     <xsd:include schemaLocation="../../common/schemas/Types.xsd"/>
 
     <xsd:annotation>
@@ -24,5 +25,5 @@
       </xsd:complexContent>
     </xsd:complexType>
     
-    <xsd:element name = "cancelScheduledOptOutRequest" type="CancelScheduledOptOutRequest"/>
+    <xsd:element name = "cancelScheduledOptOutRequest" type="yukon:CancelScheduledOptOutRequest"/>
 </xsd:schema>
