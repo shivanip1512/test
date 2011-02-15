@@ -85,13 +85,13 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
                 }
                 
                 PointValueHolder nextValue = richPointData.getPointValue();
+                PointValueHolder previousValue = null; // store this outside the loop because it is valid for every processor 
                 
                 LogHelper.debug(log, "Point %s caught by Status Point Monitor: %s with value: %s", richPointData.getPaoPointIdentifier(), statusPointMonitor, nextValue);
                 
                 for (StatusPointMonitorProcessor statusPointMonitorProcessor : statusPointMonitor.getProcessors()) {
                     
-                    boolean needPreviousValue = needPreviousValue(statusPointMonitorProcessor);
-                    PointValueHolder previousValue = null;
+                    boolean needPreviousValue = previousValue == null && needPreviousValue(statusPointMonitorProcessor); 
                     if (needPreviousValue) {
                         previousValue = getPreviousValueForPoint(nextValue);
                     }
@@ -107,6 +107,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
                         
                         log.debug("Outage message pushed to jms queue: " + outageJmsMessage);
                         jmsTemplate.convertAndSend("yukon.notif.obj.amr.OutageJmsMessage", outageJmsMessage);
+                        break; // once we've found a match, stop evaluating processors
                     }
                 }
             }
