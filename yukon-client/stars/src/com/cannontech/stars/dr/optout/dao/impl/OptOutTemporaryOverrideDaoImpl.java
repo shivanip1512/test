@@ -224,7 +224,6 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
         }
     }
 	
-	// I added this for symetry, but it is never used!
 	private final class OptOutCountsTemporaryOverrideRowMapper implements YukonRowMapper<OptOutCountsTemporaryOverride> {
 	    
 	    @Override
