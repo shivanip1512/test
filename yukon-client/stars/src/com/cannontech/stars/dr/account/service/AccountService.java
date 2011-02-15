@@ -25,13 +25,26 @@ public interface AccountService {
     public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException;
     
     /**
-     * Method to update an account
-     * The energy company is for the user is retrieved, then updateAccount(UpdatableAccount updatableAccount, LiteStarsEnergyCompany ec) is called.
+     * Method to update an account.
+     * The energy company for the user is retrieved, then updateAccount(UpdatableAccount updatableAccount, int accountId, LiteYukonUser user) is called.
+     * This means that this method cannot be used to update accounts on member energy companies since the account to update is looked up using
+     * the account number in the user's energy company. Account numbers can be reused between different energy companies.
      * @param updatableAccount
      * @param user
      * @throws NotFoundException
      */
     public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) throws InvalidAccountNumberException;
+    
+    
+    /**
+     * Method to update an account.  Use this method when possible.  This method can update accounts on member energy
+     * companies since the account is lookup by the accountid, not the account number on the user's energy company.
+     * @param updatableAccount
+     * @param accountId
+     * @param user user that initiated the action, only used for logging
+     * @throws InvalidAccountNumberException
+     */
+    public void updateAccount(UpdatableAccount updatableAccount, int accountId, LiteYukonUser user) throws InvalidAccountNumberException;
     
     /**
      * Method to delete an account

@@ -2,6 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="operator" page="accountList">
 
@@ -42,6 +43,9 @@
 		    		<th><i:inline key=".nameHeader"/></th>
 		    		<th><i:inline key=".phoneNumberHeader"/></th>
 		    		<th><i:inline key=".addressHeader"/></th>
+                    <c:if test="${searchMembers}">
+                        <th><i:inline key=".energyCompanyHeader"/></th>
+                    </c:if>
 		    	</tr>
 		    	
 		    	<c:forEach var="accountSearchResult" items="${accountSearchResultHolder.accountSearchResults.resultList}">
@@ -68,6 +72,12 @@
 		    			<td style="padding-bottom:8px;">
 		    				<tags:address address="${accountSearchResult.address}"/>
 		    			</td>
+                        
+                        <c:if test="${searchMembers}">
+                            <td>
+                                <spring:escapeBody htmlEscape="true">${accountSearchResult.energyCompanyName}</spring:escapeBody>
+                            </td>
+                        </c:if>
 		    		
 		    		</tr>
 		    	

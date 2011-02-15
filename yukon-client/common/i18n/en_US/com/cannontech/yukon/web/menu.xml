@@ -63,7 +63,7 @@
 <entry key="yukon.web.menu.portal.analysis.surveys">Surveys</entry>
 
 <!-- Administration -->
-<entry key="yukon.web.menu.portal.administration">Administration</entry>
+<entry key="yukon.web.menu.portal.administration">System Administration</entry>
 <entry key="yukon.web.menu.portal.administration.configEnergyCompany">Config Energy Company</entry>
 <entry key="yukon.web.menu.portal.administration.memberManagement">Member Management</entry>
 <entry key="yukon.web.menu.portal.administration.newEnergyCompany">New Energy Company</entry>

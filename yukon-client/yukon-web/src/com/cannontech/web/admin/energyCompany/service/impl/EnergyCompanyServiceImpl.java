@@ -1,5 +1,6 @@
 package com.cannontech.web.admin.energyCompany.service.impl;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -7,19 +8,21 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.EnergyCompanyNameUnavailableException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.UserNameUnavailableException;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
+import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
@@ -31,8 +34,12 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.web.util.StarsAdminUtil;
+import com.cannontech.user.checker.UserChecker;
+import com.cannontech.user.checker.UserCheckerBase;
 import com.cannontech.web.admin.energyCompany.model.EnergyCompanyDto;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 import com.google.common.collect.Maps;
@@ -48,6 +55,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     private DBPersistentDao dbPersistentDao;
     private LiteStarsEnergyCompanyFactory energyCompanyFactory;
     private StarsDatabaseCache starsDatabaseCache;
+    private RolePropertyDao rolePropertyDao;
+    private ECMappingDao ecMappingDao;
     
     @Override
     @Transactional
@@ -161,7 +170,119 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         
         return Sets.difference(allSet, exclusionSet);
     }
-
+    
+    @Override
+    public boolean canEditEnergyCompany(LiteYukonUser user, int ecId) {
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
+        boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
+        boolean edit = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY, user);
+        boolean manage = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);
+        boolean isOperator =energyCompany.getOperatorLoginIDs().contains(user.getUserID());
+        boolean isParentOp = isParentOperator(user.getUserID(), ecId);
+        
+        /* Can edit 
+         * IF user is a 'super user'
+         * OR user is energy companies operator and has edit energy company role property
+         * OR user is operator of one of the parent energy companies 
+         *     AND has manage members role property 
+         *     AND has edit energy company role property */
+        boolean canEdit = superUser || (edit && (isOperator ||(isParentOp && manage)));
+        
+        return canEdit;
+    }
+    
+    @Override
+    public boolean canManageMembers(LiteYukonUser user, int ecId) {
+        boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
+        return superUser || rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);
+    }
+    
+    @Override
+    public boolean canCreateMembers(LiteYukonUser user) {
+        boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
+        boolean manageMembers = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);
+        boolean createAndDelete = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_CREATE_DELETE_ENERGY_COMPANY, user);
+        
+        return superUser || (manageMembers && createAndDelete);
+    }
+    
+    @Override
+    public boolean canDeleteEnergyCompany(LiteYukonUser user, int ecId) {
+        boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
+        boolean createAndDelete = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_CREATE_DELETE_ENERGY_COMPANY, user);
+        boolean manageMembers = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);
+        boolean isOperator = starsDatabaseCache.getEnergyCompany(ecId).getOperatorLoginIDs().contains(user.getUserID()); 
+        
+        /* Can delete
+         * IF user is a 'super user'
+         * OR user is operator of one of my parent energy companies and has manage members role property
+         * OR user is energy companies operator and has create/delete energy company role property */
+        return superUser 
+            || (isParentOperator(user.getUserID(), ecId) && manageMembers && createAndDelete)
+            || (isOperator && createAndDelete);
+    }
+    
+    @Override
+    public boolean isParentOperator(int userId, int ecId) {
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
+        List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
+        allAscendants.remove(energyCompany); /* Remove this ec since that is a different rp check */
+        for (LiteStarsEnergyCompany parentEc : allAscendants) {
+            if (parentEc.getOperatorLoginIDs().contains(userId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean isOperator(LiteYukonUser user){
+        for (LiteStarsEnergyCompany ec : starsDatabaseCache.getAllEnergyCompanies()) {
+            if (ec.getOperatorLoginIDs().contains(user.getUserID())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    @Override
+    public void verifyViewPageAccess(LiteYukonUser user, int ecId) {
+        if (rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user)) return;
+        /* Check my own and all my anticendants operator login list for this user's id. */
+        for (int energyCompanyId : ecMappingDao.getParentEnergyCompanyIds(ecId)) {
+            LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+            if(energyCompany.getOperatorLoginIDs().contains(user.getUserID())) return;
+        }
+        throw new NotAuthorizedException("User " + user.getUsername() + " is not authorized to view energy company with id " + ecId);
+    }
+    
+    @Override
+    public void verifyEditPageAccess(LiteYukonUser user, int ecId) {
+        if (!canEditEnergyCompany(user, ecId)) {
+            throw new NotAuthorizedException("User " + user.getUsername() + " is not authorized to edit energy company with id " + ecId);
+        }
+    }
+    
+    @Override
+    public UserChecker createEcOperatorChecker() {
+        
+        UserCheckerBase checker = new UserCheckerBase() {
+            @Override
+            public boolean check(LiteYukonUser user) {
+                boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
+                boolean isEcOperator = isOperator(user);
+                
+                if (superUser || isEcOperator) {
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+            
+        };
+        return checker;
+    }
+    
     @Override
     @Transactional
     public void deleteEnergyCompany(int energyCompanyId) {
@@ -205,6 +326,16 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
+    }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
+    
+    @Autowired
+    public void setEcMappingDao(ECMappingDao ecMappingDao) {
+        this.ecMappingDao = ecMappingDao;
     }
     
 }

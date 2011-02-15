@@ -8,7 +8,6 @@
 
 <cti:standardPage module="adminSetup" page="generalInfo.${mode}">
 
-    <cti:includeCss link="/WebConfig/yukon/styles/admin/energyCompany.css"/>
     <tags:setFormEditMode mode="${mode}"/>
     
         <cti:dataGrid cols="2" tableClasses="energyCompanyHomeLayout">

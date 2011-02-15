@@ -11,7 +11,7 @@ public interface StarsCustAccountInformationDao {
     /**
      * This method returns the liteStarCustAccountInformation for the supplied accountId.
      */
-    public LiteStarsCustAccountInformation getbyAccountId(int accountId);
+    public LiteStarsCustAccountInformation getByAccountId(int accountId);
     
     /**
      * This method does validation as well as getting the lite stars customer account information.

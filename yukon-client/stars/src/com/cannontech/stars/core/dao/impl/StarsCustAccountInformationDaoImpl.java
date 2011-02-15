@@ -40,7 +40,7 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
     
     @Override
     @Transactional(readOnly = true)
-    public LiteStarsCustAccountInformation getbyAccountId(int accountId) {
+    public LiteStarsCustAccountInformation getByAccountId(int accountId) {
         final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT ac.AccountID, ac.AccountSiteID, ac.AccountNumber, ac.CustomerID, ac.BillingAddressID, ac.AccountNotes, "); //1-6 
         sqlBuilder.append("  acs.SiteInformationID, acs.SiteNumber, acs.StreetAddressID, acs.PropertyNotes, acs.CustAtHome, acs.CustomerStatus, "); //7-12
@@ -68,7 +68,7 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
         // Get all the accessible energy companies
         Set<Integer> childEnergycompanyIds = ecMappingDao.getChildEnergyCompanyIds(energyCompanyId);
 
-        LiteStarsCustAccountInformation info = getbyAccountId(accountId);
+        LiteStarsCustAccountInformation info = getByAccountId(accountId);
         if (!childEnergycompanyIds.contains(info.getEnergyCompanyId())) {
             // do explicit security log statement
             return null;

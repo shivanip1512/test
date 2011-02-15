@@ -8,8 +8,6 @@
 
 <cti:standardPage module="adminSetup" page="home">
 
-    <cti:includeCss link="/WebConfig/yukon/styles/admin/energyCompany.css"/>
-
     <cti:dataGrid cols="2" tableClasses="energyCompanyHomeLayout">
     
         <%-- LEFT SIDE COLUMN --%>
@@ -19,7 +17,11 @@
                 <div class="membersContainer">
                     <ul>
                         <c:forEach items="${companies}" var="company" varStatus="status">
-                            <li><a href="/spring/adminSetup/energyCompany/general/view?ecId=${company.energyCompanyId}">${company.name}</a></li>
+                            <li>
+                                <a href="/spring/adminSetup/energyCompany/general/view?ecId=${company.energyCompanyId}">
+                                    <spring:escapeBody htmlEscape="true">${company.name}</spring:escapeBody>
+                                </a>
+                            </li>
                         </c:forEach>
                     </ul>
                 </div>

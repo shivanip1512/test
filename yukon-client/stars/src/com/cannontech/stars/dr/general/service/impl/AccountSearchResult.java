@@ -15,12 +15,13 @@ public class AccountSearchResult {
 	private LiteContactNotification homePhoneNotif ;
 	private LiteContactNotification workPhoneNotif;
 	private Address address;
+	private String energyCompanyName;
 	
 	public AccountSearchResult(int accountId, int energyCompanyId,
 			                   String accountNumber, String altTrackingNumber,
 			                   String firstName, String lastName, String companyName,
 							   LiteContactNotification homePhoneNotif, LiteContactNotification workPhoneNotif, 
-							   Address address) {
+							   Address address, String energyCompanyName) {
 		
 		this.accountId = accountId;
 		this.energyCompanyId = energyCompanyId;
@@ -32,29 +33,37 @@ public class AccountSearchResult {
 		this.homePhoneNotif = homePhoneNotif;
 		this.workPhoneNotif = workPhoneNotif;
 		this.address = address;
+		this.energyCompanyName = energyCompanyName;
 	}
 	
 	public int getAccountId() {
 		return accountId;
 	}
+	
 	public int getEnergyCompanyId() {
 		return energyCompanyId;
 	}
+	
 	public String getAccountNumber() {
 		return accountNumber;
 	}
+	
 	public String getAltTrackingNumber() {
 		return altTrackingNumber;
 	}
+	
 	public String getFirstName() {
 		return firstName;
 	}
+	
 	public String getLastName() {
 		return lastName;
 	}
+	
 	public String getCompanyName() {
 		return companyName;
 	}
+	
 	public String getCombinedName() {
 		
 		// name
@@ -67,13 +76,25 @@ public class AccountSearchResult {
     	
 		return name;
 	}
+	
 	public LiteContactNotification getHomePhoneNotif() {
 		return homePhoneNotif;
 	}
+	
 	public LiteContactNotification getWorkPhoneNotif() {
 		return workPhoneNotif;
 	}
+	
 	public Address getAddress() {
 		return address;
 	}
+
+    public String getEnergyCompanyName() {
+        return energyCompanyName;
+    }
+
+    public void setEnergyCompanyName(String energyCompanyName) {
+        this.energyCompanyName = energyCompanyName;
+    }
+
 }

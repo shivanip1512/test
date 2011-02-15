@@ -72,7 +72,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                 if (StringUtils.isBlank(password)) {
                     newUser.setAuthType(AuthType.NONE);
                 }
-                yukonUserDao.addLiteYukonUserWithPassword(newUser, password, energyCompanyId, groups);
+                yukonUserDao.addLiteYukonUserWithPassword(newUser, password, groups);
                 
                 // Update primaryContact to new loginId
                 LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);

@@ -103,7 +103,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         boolean automaticConfigurationEnabled = 
             energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.AUTOMATIC_CONFIGURATION, yukonEnergyCompany);
 
-        LiteStarsCustAccountInformation liteCustomerAccount = starsCustAccountInformationDao.getbyAccountId(accountId);
+        LiteStarsCustAccountInformation liteCustomerAccount = starsCustAccountInformationDao.getByAccountId(accountId);
         List<LiteStarsLMProgram> previouslyEnrolledPrograms = liteCustomerAccount.getPrograms();
 
         try {
@@ -266,7 +266,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         final int customerAccountId = customerAccount.getAccountId();
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
         LiteStarsCustAccountInformation liteCustomerAccount = 
-            starsCustAccountInformationDao.getbyAccountId(customerAccountId);
+            starsCustAccountInformationDao.getByAccountId(customerAccountId);
         boolean trackHardwareAddressingEnabled = 
             energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany);
         

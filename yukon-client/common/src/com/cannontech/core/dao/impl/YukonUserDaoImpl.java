@@ -86,8 +86,14 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	}
 	
 	@Override
+    @Transactional
+    public void addLiteYukonUserWithPassword(LiteYukonUser user, String password, int energyCompanyId, List<LiteYukonGroup> groups) throws DataAccessException {
+        addLiteYukonUserWithPassword(user, password, groups);
+    }
+
+    @Override
 	@Transactional
-	public void addLiteYukonUserWithPassword(LiteYukonUser user, String password, int energyCompanyId, List<LiteYukonGroup> groups) throws DataAccessException {
+	public void addLiteYukonUserWithPassword(LiteYukonUser user, String password, List<LiteYukonGroup> groups) throws DataAccessException {
 	    int userId = nextValueHelper.getNextValue("YukonUser");
 	    user.setUserID(userId);
 	    SqlStatementBuilder sql = new SqlStatementBuilder();

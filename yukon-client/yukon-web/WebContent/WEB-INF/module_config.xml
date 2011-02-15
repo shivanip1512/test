@@ -759,57 +759,6 @@
     <skin name="PURPLE" />
   </module>
 
-  <module name="multispeak">
-    <skin name="STANDARD" />
-    <css file="/WebContent/setupStyle.css" />
-
-    <menu>
-      <options>
-
-        <option name="multispeak">
-          <link>/spring/multispeak/setup/home</link>
-          <options>
-            <option name="interfaces">
-              <link>/spring/multispeak/setup/home</link>
-            </option>
-            <option name="route_mappings">
-              <link>/spring/multispeak/setup/routemapping/mappings</link>
-            </option>
-            <option name="lm_mappings">
-              <link>/spring/multispeak/setup/lmMappings/home</link>
-              <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
-            </option>
-          </options>
-        </option>
-
-        <option name="sync">
-          <link>/spring/multispeak/setup/deviceGroupSync/home</link>
-          <options>
-            <option name="device_group_sync">
-              <link>/spring/multispeak/setup/deviceGroupSync/home</link>
-              <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
-            </option>
-          </options>
-        </option>
-
-      </options>
-    </menu>
-    
-    <pages>
-		<page name="deviceGroupSyncHome" type="BASIC">
-			<requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
-			<menu>sync|device_group_sync</menu>
-			<link>/spring/multispeak/setup/deviceGroupSync/home</link>
-		</page>
-		<page name="deviceGroupSyncProgress" type="BASIC">
-			<requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
-			<menu>sync|device_group_sync</menu>
-			<link>/spring/multispeak/setup/deviceGroupSync/progress</link>
-		</page>
-	</pages>
-
-  </module>
-
   <module name="debug">
     <skin name="STANDARD" />
 
@@ -993,31 +942,31 @@
 
     <module name="adminSetup">
         <skin name="STANDARD" />
-        <css file="/WebConfig/yukon/styles/admin/energyCompany.css" />
+        <css file="/WebConfig/yukon/styles/admin/adminSetup.css"/>
         <menu>
             <options>
                 <option name="energyCompanySetup">
-                    <requireRoleProperty value="ADMIN_EDIT_ENERGY_COMPANY" />
+                    <requireEcOperator/>
                     <link>/spring/adminSetup/energyCompany/home</link>
                     <options>
                         <option name="home">
-                            <requireRoleProperty value="ADMIN_EDIT_ENERGY_COMPANY" />
                             <link>/spring/adminSetup/energyCompany/home</link>
                         </option>
                     </options>
                 </option>
                 <option name="multispeak">
                     <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
-                    <link>/spring/adminSetup/multispeak</link>
+                    <link>/spring/multispeak/setup/home</link>
                     <options>
                         <option name="interfaces">
-                            <link>/spring/adminSetup/multispeak/interfaces</link>
+                            <link>/spring/multispeak/setup/home</link>
                         </option>
-                        <option name="route_mappings">
-                            <link>/spring/adminSetup/multispeak/routeMappings</link>
+                        <option name="lm_mappings">
+                            <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
+                            <link>/spring/multispeak/setup/lmMappings/home</link>
                         </option>
                         <option name="synchronization">
-                            <link>/spring/adminSetup/multispeak/sync</link>
+                            <link>/spring/multispeak/setup/deviceGroupSync/home</link>
                         </option>
                     </options>
                 </option>
@@ -1033,10 +982,26 @@
         </menu>
         
         <pages>
-            <page name="multispeak" type="BASIC">
+            <page name="mspSetup" type="BASIC">
                 <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
                 <menu>multispeak|interfaces</menu>
-                <link>/spring/adminSetup/multispeak/interfaces</link>
+                <link>/spring/multispeak/setup/home</link>
+                <pages>
+                    <page name="lmMappings" type="BASIC">
+                        <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
+                        <menu>multispeak|lm_mappings</menu>
+                        <link>/spring/multispeak/setup/lmMappings/home</link>
+                    </page>
+                    <page name="deviceGroupSyncHome" type="BASIC">
+                        <menu>multispeak|synchronization</menu>
+                        <link>/spring/multispeak/setup/deviceGroupSync/home</link>
+                    </page>
+                    <page name="deviceGroupSyncProgress" type="BASIC">
+                        <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
+                        <menu>multispeak|synchronization</menu>
+                        <link>/spring/multispeak/setup/deviceGroupSync/progress</link>
+                    </page>
+                </pages>
             </page>
             <page name="userGroupEditor" type="BASIC">
                 <menu>userGroupEditor|home</menu>
@@ -1057,7 +1022,6 @@
                 </pages>
             </page>
             <page name="home" type="BASIC">
-                <requireRoleProperty value="ADMIN_EDIT_ENERGY_COMPANY" />
                 <menu>energyCompanySetup|home"</menu>
                 <link>/spring/adminSetup/energyCompany/home?ecId=${ecId}</link>
                 <pages>

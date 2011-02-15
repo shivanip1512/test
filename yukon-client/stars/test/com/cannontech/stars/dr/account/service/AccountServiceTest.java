@@ -250,7 +250,7 @@ public class AccountServiceTest {
         newuser.setUsername(dto.getUserName());
         newuser.setLoginStatus(LoginStatusEnum.ENABLED);
         newuser.setAuthType(AuthType.NONE);
-        yukonUserDaoMock.addLiteYukonUserWithPassword(newuser, dto.getPassword(), 0, list );
+        yukonUserDaoMock.addLiteYukonUserWithPassword(newuser, dto.getPassword(), list );
         dbPersistantDaoMock.processDBChange(new DBChangeMsg(user.getLiteID(),
             DBChangeMsg.CHANGE_YUKON_USER_DB,
             DBChangeMsg.CAT_YUKON_USER,

@@ -8,8 +8,6 @@
 
 <cti:standardPage module="adminSetup" page="createEnergyCompany">
 
-    <cti:includeCss link="/WebConfig/yukon/styles/admin/energyCompany.css"/>
-    
     <form:form commandName="energyCompanyDto" action="/spring/adminSetup/energyCompany/create">
         <form:hidden path="operatorGroupIds" id="operatorGroupIds"/>
         <form:hidden path="residentialGroupIds" id="residentialGroupIds"/>

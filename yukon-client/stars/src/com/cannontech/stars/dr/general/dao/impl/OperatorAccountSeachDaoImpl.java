@@ -23,6 +23,7 @@ import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.stars.dr.general.dao.OperatorAccountSearchDao;
@@ -37,6 +38,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 	
 	private YukonJdbcOperations yukonJdbcOperations;
 	private ContactNotificationDao contactNotificationDao;
+	private StarsDatabaseCache starsDatabaseCache;
 	
 	private AccountSearchResultRowMapper accountSearchResultRowMapper;
 	
@@ -308,7 +310,10 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 	    	LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContactId, ContactNotificationType.HOME_PHONE);
 	        LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContactId, ContactNotificationType.WORK_PHONE);
 			
-	        return new AccountSearchResult(accountId, energyCompanyId, accountNumber, altTrackingNumber, firstName, lastName, companyName, homePhoneNotif, workPhoneNotif, address);
+	        String energyCompanyName = starsDatabaseCache.getEnergyCompany(energyCompanyId).getName();
+	        
+	        return new AccountSearchResult(accountId, energyCompanyId, accountNumber, altTrackingNumber, firstName, 
+	                                       lastName, companyName, homePhoneNotif, workPhoneNotif, address, energyCompanyName);
 		}
 	}
      
@@ -322,4 +327,10 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 	public void setContactNotificationDao(ContactNotificationDao contactNotificationDao) {
 		this.contactNotificationDao = contactNotificationDao;
 	}
+	
+	@Autowired
+	public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+        this.starsDatabaseCache = starsDatabaseCache;
+    }
+	
 }

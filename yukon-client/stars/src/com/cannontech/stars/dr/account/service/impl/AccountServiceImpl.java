@@ -54,6 +54,7 @@ import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.dao.CallReportDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -76,6 +77,7 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 
@@ -114,12 +116,14 @@ public class AccountServiceImpl implements AccountService {
     private PhoneNumberFormattingService phoneNumberFormattingService;
     private YukonUserContextService yukonUserContextService;
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
     
     // ADD ACCOUNT
     @Override
     @Transactional
     public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
-    	
+    	/* Add the account to the user's energy company,  we do not have a mechanism to allow 
+    	 * an operator user of a parent energy company to add accounts to member energy companies. */
     	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(operator);
         AccountDto accountDto = updatableAccount.getAccountDto();
         String accountNumber = updatableAccount.getAccountNumber();
@@ -155,7 +159,6 @@ public class AccountServiceImpl implements AccountService {
          * AuthType. If it's empty set the password to a space(done by dao);
          */
         LiteYukonUser user = null;
-        AuthType authType = null; // To be used later when we add AuthType to the xml messaging.
         String emptyPassword = "";
         AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, user);
         if(!StringUtils.isBlank(accountDto.getUserName())) {
@@ -175,16 +178,12 @@ public class AccountServiceImpl implements AccountService {
             }
             String password = accountDto.getPassword();
             if(password != null) {
-                if(authType == null) {
-                    user.setAuthType(defaultAuthType);
-                }else {
-                    user.setAuthType(authType);
-                }
+                user.setAuthType(defaultAuthType);
             }else {
                 user.setAuthType(AuthType.NONE);
                 password = emptyPassword;
             }
-            yukonUserDao.addLiteYukonUserWithPassword(user, password, energyCompany.getEnergyCompanyId(), groups);
+            yukonUserDao.addLiteYukonUserWithPassword(user, password, groups);
             dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(),
                 DBChangeMsg.CHANGE_YUKON_USER_DB,
                 DBChangeMsg.CAT_YUKON_USER,
@@ -408,9 +407,9 @@ public class AccountServiceImpl implements AccountService {
 
     private void deleteAccount(CustomerAccount account, LiteYukonUser user) {
 
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(account.getAccountId());
 
-        LiteStarsCustAccountInformation customerInfo = starsCustAccountInformationDao.getById(account.getAccountId(), energyCompany.getEnergyCompanyId());
+        LiteStarsCustAccountInformation customerInfo = starsCustAccountInformationDao.getByAccountId(account.getAccountId());
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
         LiteSiteInformation siteInfo = siteInformationDao.getSiteInfoById(accountSite.getSiteInformationId());
         LiteCustomer liteCustomer = customerDao.getLiteCustomer(account.getCustomerId());
@@ -508,7 +507,7 @@ public class AccountServiceImpl implements AccountService {
                 userId != UserUtils.USER_YUKON_ID) {
             yukonUserDao.deleteUser(userId);
             starsDatabaseCache.deleteStarsYukonUser( userId );
-            dbPersistantDao.processDBChange(new DBChangeMsg(energyCompany.getUser().getUserID(),
+            dbPersistantDao.processDBChange(new DBChangeMsg(energyCompany.getEnergyCompanyUser().getUserID(),
                                    DBChangeMsg.CHANGE_YUKON_USER_DB,
                                    DBChangeMsg.CAT_YUKON_USER,
                                    DBChangeMsg.CAT_YUKON_USER,
@@ -530,13 +529,27 @@ public class AccountServiceImpl implements AccountService {
         accountEventLogService.accountDeleted(user, account.getAccountNumber());
     }
     
-    
-    // UPDATE ACCOUNT
     @Override
     @Transactional
     public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) {
+        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        
+        int energyCompanyId = energyCompany.getEnergyCompanyId();
+        String accountNumber = updatableAccount.getAccountNumber();
+        
+        CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, energyCompanyId);
+        int accountId = account.getAccountId();
+        
+        updateAccount(updatableAccount, accountId, user);
+    }
     
-    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+    
+    // UPDATE ACCOUNT
+    @Transactional
+    @Override
+    public void updateAccount(UpdatableAccount updatableAccount, int accountId, LiteYukonUser user) {
+    
+    	YukonEnergyCompany energyCompanyOfAccount = yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountId);
         AccountDto accountDto = updatableAccount.getAccountDto();
         String accountNumber = updatableAccount.getAccountNumber();
         String username = accountDto.getUserName(); 
@@ -547,29 +560,23 @@ public class AccountServiceImpl implements AccountService {
         if(StringUtils.isBlank(accountNumber)) {
             log.error("Account " + accountNumber + " could not be updated: The provided account number cannot be empty.");
             throw new InvalidAccountNumberException("The provided account number cannot be empty.");
+            
         }
         
-        CustomerAccount  account = null;
-        try {
-            account = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyId());
-        } catch (NotFoundException e ) {
-            log.error("Account " + accountNumber + " could not be updated: Unable to find account for account#: " + accountNumber);
-            throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber, e);
-        }
+        CustomerAccount  account = customerAccountDao.getById(accountId);
         
+        /* If updating the account number, verify the new one is available */
         boolean accountNumberUpdate = false;
         String updatedAccountNumber = accountDto.getAccountNumber();
         if (StringUtils.isNotBlank(updatedAccountNumber) && !updatedAccountNumber.equals(accountNumber)) {
         		
     		try {
-                CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(updatedAccountNumber, energyCompany.getEnergyCompanyId());
+                CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(updatedAccountNumber, energyCompanyOfAccount.getEnergyCompanyId());
                 if (customerAccount != null){
                 	log.error("Account " + accountNumber + " could not be updated: The provided new account number already exists (" + updatedAccountNumber + ").");
                     throw new AccountNumberUnavailableException("The provided new account number already exists (" + updatedAccountNumber + ").");
                 }
-            } catch (NotFoundException e ) {
-            	// if an account is not found, then there is no risk of it already existing
-            }
+            } catch (NotFoundException e ) {/* Ignore, new account number is available */}
 
             accountNumberUpdate = true;
         }
@@ -616,7 +623,6 @@ public class AccountServiceImpl implements AccountService {
          *  to a space(done by dao).
          */
         int newLoginId = UserUtils.USER_DEFAULT_ID;
-        AuthType authType = null; // To be used later when we add AuthType to the xml messaging.
         AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, null);
         String emptyPassword = ""; // Dao will end up setting this to a space for oracle reasons.
         if(StringUtils.isNotBlank(username)) {
@@ -629,11 +635,7 @@ public class AccountServiceImpl implements AccountService {
                 // passwords should be handled better than plain text
                 String password = accountDto.getPassword();
                 if(password != null) {
-                    if(authType == null) {
-                        login.setAuthType(defaultAuthType);
-                    }else {
-                        login.setAuthType(authType);
-                    }
+                    login.setAuthType(defaultAuthType);
                     if(authenticationService.supportsPasswordSet(login.getAuthType())) {
                         authenticationService.setPassword(login, SqlUtils.convertStringToDbValue(password));
                     }
@@ -659,16 +661,12 @@ public class AccountServiceImpl implements AccountService {
                 }
                 String password = accountDto.getPassword();
                 if(password != null) {
-                    if(authType == null) {
-                        newUser.setAuthType(defaultAuthType);
-                    }else {
-                        newUser.setAuthType(authType);
-                    }
+                    newUser.setAuthType(defaultAuthType);
                 }else {
                     newUser.setAuthType(AuthType.NONE);
                     password = emptyPassword;
                 }
-                yukonUserDao.addLiteYukonUserWithPassword(newUser, password, energyCompany.getEnergyCompanyId(), groups);
+                yukonUserDao.addLiteYukonUserWithPassword(newUser, password, groups);
                 newLoginId = newUser.getUserID();
                 dbPersistantDao.processDBChange(new DBChangeMsg(newUser.getLiteID(),
                     DBChangeMsg.CHANGE_YUKON_USER_DB,
@@ -919,7 +917,7 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Update mapping
          */
-        ecMappingDao.updateECToAccountMapping(account.getAccountId(), energyCompany.getEnergyCompanyId());
+        ecMappingDao.updateECToAccountMapping(account.getAccountId(), energyCompanyOfAccount.getEnergyCompanyId());
         
         /*
          * Update Login
@@ -1062,9 +1060,7 @@ public class AccountServiceImpl implements AccountService {
         return retrievedDto;
     }
     
-    //==============================================================================================
     // HELPER METHODS
-    //==============================================================================================
     
     private CustomerAccount getCustomerAccountForAccountNumberAndEnergyCompany(String accountNumber, LiteStarsEnergyCompany ec) {
     	
@@ -1125,9 +1121,7 @@ public class AccountServiceImpl implements AccountService {
     	return CtiUtilities.STRING_NONE.equals(value) ? "" : value;
     }
     
-    //==============================================================================================
     // INJECTED DEPENDANCIES
-    //==============================================================================================
     
     @Autowired
     public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
@@ -1283,4 +1277,10 @@ public class AccountServiceImpl implements AccountService {
     public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
 		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
 	}
+    
+    @Autowired
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    }
+    
 }

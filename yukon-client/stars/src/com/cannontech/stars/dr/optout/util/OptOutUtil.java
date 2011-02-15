@@ -29,7 +29,7 @@ public final class OptOutUtil {
         final StarsCustAccountInformationDao starsCustAccountInformationDao = 
             YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
         
-        LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getbyAccountId(customerAccountId);
+        LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getByAccountId(customerAccountId);
         
         StarsLMProgramHistory programHistory = 
             StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo, energyCompany);

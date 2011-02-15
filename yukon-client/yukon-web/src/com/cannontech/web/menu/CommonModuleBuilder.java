@@ -21,6 +21,7 @@ import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionServi
 import com.cannontech.user.checker.AggregateAndUserChecker;
 import com.cannontech.user.checker.NullUserChecker;
 import com.cannontech.user.checker.UserChecker;
+import com.cannontech.web.admin.energyCompany.service.EnergyCompanyService;
 import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.SimpleMenuOptionAction;
 import com.cannontech.web.menu.option.SimpleMenuOptionLink;
@@ -49,6 +50,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
     private final String menuKeyPrefix = "yukon.web.menu.portal";
     private final String menuKeyModPrefix = "yukon.web.menu.config.";
     private ConfigurationSource configurationSource;
+    private EnergyCompanyService energyCompanyService;
     
     public CommonModuleBuilder(Resource moduleConfigFile) throws CommonMenuException {
         this.moduleConfigFile = moduleConfigFile;
@@ -286,8 +288,11 @@ public class CommonModuleBuilder implements ModuleBuilder {
             Element child = (Element) iter.next();
             UserChecker checker  = null;
             String prop = child.getAttributeValue("value");
-            if (child.getName().equals("requireRoleProperty")) {
+            String name = child.getName();
+            if (name.equals("requireRoleProperty")) {
                 checker = roleAndPropertyDescriptionService.compile(prop);
+            } else if (name.equals("requireEcOperator")) {
+                checker = energyCompanyService.createEcOperatorChecker();
             }
             
             if (checker != null) {
@@ -345,6 +350,11 @@ public class CommonModuleBuilder implements ModuleBuilder {
     @Autowired
     public void setConfigurationSource(ConfigurationSource configurationSource) {
         this.configurationSource = configurationSource;
+    }
+    
+    @Autowired
+    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
+        this.energyCompanyService = energyCompanyService;
     }
     
 }

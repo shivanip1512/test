@@ -1112,6 +1112,8 @@
         <property name="cachingWidgetParameterGrabber" ref="hbcTrendWidgetCachingWidgetParameterGrabber" />
     </bean> 
 
+    <bean id="operationsSetupTagPrototype" class="com.cannontech.web.taglib.OperationsSetupTag"/>
+
     <bean id="attributeResolverTagPrototype" class="com.cannontech.web.taglib.AttributeResolverTag">
         <property name="deviceDao" ref="deviceDao" />
         <property name="attributeService" ref="attributeService"/>

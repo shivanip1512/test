@@ -1,13 +1,9 @@
-<!--
-	Main portal for operators
--->
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%@ page import="com.cannontech.roles.operator.InventoryRole" %>
 <%@ page import="com.cannontech.roles.operator.WorkOrderRole" %>
-
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:verifyRolesAndProperties value="
     CONSUMER_INFO, 
@@ -38,6 +34,7 @@
 
 <div id="main">
 
+<cti:operationsSetup/>
 <cti:starsOperations/>
 
 <cti:checkRole role="ConsumerInfoRole.ROLEID">
@@ -308,81 +305,93 @@
 
 	<tags:operationSection sectionName="Administration" sectionImageName="AdministrationLogo">
         
-        <cti:checkRolesAndProperties value="ADMIN_MULTISPEAK_SETUP, ADMIN_LM_USER_ASSIGN, ADMIN_EDIT_ENERGY_COMPANY">
+        <c:if test="${showSystemAdmin}">
             <a href="/spring/adminSetup/systemAdmin">
                 <tags:sectionLink>
-                    System Administration
+                    <cti:msg key="yukon.web.menu.portal.administration"/>
                 </tags:sectionLink>
             </a>
-        </cti:checkRolesAndProperties>
+        </c:if>
         
-			<cti:checkProperty property="operator.AdministratorRole.ADMIN_EDIT_ENERGY_COMPANY"> 
-	            <tags:sectionLink>
-	            	<a href="Admin/ConfigEnergyCompany.jsp">Config Energy Company</a>
-	            </tags:sectionLink>
-			</cti:checkProperty>
-			<cti:checkProperty property="operator.AdministratorRole.ADMIN_MANAGE_MEMBERS"> 
-	            <tags:sectionLink>
-	            	<a href="Admin/ManageMembers.jsp">Member <br/> Management</a>
-	            </tags:sectionLink>
-			</cti:checkProperty>
-			<cti:checkProperty property="operator.AdministratorRole.ADMIN_CREATE_DELETE_ENERGY_COMPANY"> 
-	            <tags:sectionLink>
-	            	<a href="Admin/NewEnergyCompany.jsp">New Energy <br/> Company</a>
-	            </tags:sectionLink>
-			</cti:checkProperty> 
-			<cti:checkProperty property="operator.AdministratorRole.ADMIN_CREATE_DELETE_ENERGY_COMPANY"> 
-            	<tags:sectionLink>
-	        		<form name="DeleteForm" method="post" action="<cti:url value="/servlet/StarsAdmin"/>">
-	            		<input type="hidden" name="action" value="DeleteEnergyCompany">
-	            		<input type="hidden" name="REDIRECT" value="<cti:url value="/servlet/LoginController?ACTION=LOGOUT"/>">
+		<cti:checkProperty property="operator.AdministratorRole.ADMIN_EDIT_ENERGY_COMPANY">
+            <tags:sectionLink>
+            	<a href="Admin/ConfigEnergyCompany.jsp">Config Energy Company</a>
+            </tags:sectionLink>
+		</cti:checkProperty>
+        
+		<cti:checkProperty property="operator.AdministratorRole.ADMIN_MANAGE_MEMBERS">
+            <tags:sectionLink>
+            	<a href="Admin/ManageMembers.jsp">Member <br/> Management</a>
+            </tags:sectionLink>
+		</cti:checkProperty>
+        
+		<cti:checkProperty property="operator.AdministratorRole.ADMIN_CREATE_DELETE_ENERGY_COMPANY">
+            <tags:sectionLink>
+            	<a href="Admin/NewEnergyCompany.jsp">New Energy <br/> Company</a>
+            </tags:sectionLink>
+		</cti:checkProperty> 
+        
+		<cti:checkProperty property="operator.AdministratorRole.ADMIN_CREATE_DELETE_ENERGY_COMPANY">
+        	<tags:sectionLink>
+        		<form name="DeleteForm" method="post" action="<cti:url value="/servlet/StarsAdmin"/>">
+            		<input type="hidden" name="action" value="DeleteEnergyCompany">
+            		<input type="hidden" name="REDIRECT" value="<cti:url value="/servlet/LoginController?ACTION=LOGOUT"/>">
 
-              			<a href="javascript:confirmDelete()">Delete Energy Company</a>
-		        	</form>
-	            </tags:sectionLink>
-			</cti:checkProperty>
-			<cti:checkProperty property="operator.AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS"> 
-	            <tags:sectionLink>
-	            	<a href="Admin/SwitchCommands.jsp">View Batch Commands</a>
-	            </tags:sectionLink>
-			</cti:checkProperty>
-			<cti:checkProperty property="operator.AdministratorRole.ADMIN_VIEW_OPT_OUT_EVENTS"> 
-	            <tags:sectionLink>
-	            	<a href="/spring/stars/operator/optOut/admin/viewScheduled">
-                        <cti:msg key="yukon.web.menu.portal.administration.viewScheduledOptOutEvents"/>
-                    </a>
-	            </tags:sectionLink>
-			</cti:checkProperty> 
-			<cti:checkProperty property="operator.AdministratorRole.ADMIN_MULTISPEAK_SETUP">
-	            <tags:sectionLink>
-	            	<a href="/spring/multispeak/setup/home">MultiSpeak Setup</a>
-	            </tags:sectionLink>
-			</cti:checkProperty>
-			<cti:checkProperty property="AdministratorRole.ADMIN_LM_USER_ASSIGN"> 
-	            <tags:sectionLink>
-	            	<a href="/spring/editor/userGroupSelector">User/Group Editor</a>
-	            </tags:sectionLink>
-			</cti:checkProperty>
-			<cti:checkRolesAndProperties value="OPERATOR_ADMINISTRATOR"> 
-                    <tags:sectionLink>
-            	        <a href="/spring/support/">Support</a>
-                    </tags:sectionLink>
-			</cti:checkRolesAndProperties>
-			<cti:checkRolesAndProperties value="ADMIN_VIEW_LOGS"> 
-                    <tags:sectionLink>
-            	        <a href="/spring/support/logging/menu?file=/">View Logs</a>
-                    </tags:sectionLink>
-			</cti:checkRolesAndProperties>
-			<cti:checkProperty property="AdministratorRole.ADMIN_MANAGE_INDEXES"> 
-                    <tags:sectionLink>
-            	        <a href="/index/manage">Manage Indexes</a>
-                    </tags:sectionLink>
-			</cti:checkProperty>
-                   <cti:checkProperty property="AdministratorRole.ADMIN_VIEW_CONFIG"> 
-	               <tags:sectionLink>
-		   	    	<a href="<cti:url value="/spring/deviceConfiguration?home"/>">Device Configuration</a>
-		        </tags:sectionLink>
-	        </cti:checkProperty>
+          			<a href="javascript:confirmDelete()">Delete Energy Company</a>
+	        	</form>
+            </tags:sectionLink>
+		</cti:checkProperty>
+        
+		<cti:checkProperty property="operator.AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS"> 
+            <tags:sectionLink>
+            	<a href="Admin/SwitchCommands.jsp">View Batch Commands</a>
+            </tags:sectionLink>
+		</cti:checkProperty>
+        
+		<cti:checkProperty property="operator.AdministratorRole.ADMIN_VIEW_OPT_OUT_EVENTS"> 
+            <tags:sectionLink>
+            	<a href="/spring/stars/operator/optOut/admin/viewScheduled">
+                    <cti:msg key="yukon.web.menu.portal.administration.viewScheduledOptOutEvents"/>
+                </a>
+            </tags:sectionLink>
+		</cti:checkProperty>
+        
+		<cti:checkProperty property="operator.AdministratorRole.ADMIN_MULTISPEAK_SETUP">
+            <tags:sectionLink>
+            	<a href="/spring/multispeak/setup/home">MultiSpeak Setup</a>
+            </tags:sectionLink>
+		</cti:checkProperty>
+        
+		<cti:checkProperty property="AdministratorRole.ADMIN_LM_USER_ASSIGN"> 
+            <tags:sectionLink>
+            	<a href="/spring/editor/userGroupSelector">User/Group Editor</a>
+            </tags:sectionLink>
+		</cti:checkProperty>
+        
+		<cti:checkRolesAndProperties value="OPERATOR_ADMINISTRATOR"> 
+            <tags:sectionLink>
+    	        <a href="/spring/support/">Support</a>
+            </tags:sectionLink>
+		</cti:checkRolesAndProperties>
+        
+		<cti:checkRolesAndProperties value="ADMIN_VIEW_LOGS"> 
+            <tags:sectionLink>
+    	        <a href="/spring/support/logging/menu?file=/">View Logs</a>
+            </tags:sectionLink>
+		</cti:checkRolesAndProperties>
+        
+		<cti:checkProperty property="AdministratorRole.ADMIN_MANAGE_INDEXES"> 
+            <tags:sectionLink>
+    	        <a href="/index/manage">Manage Indexes</a>
+            </tags:sectionLink>
+		</cti:checkProperty>
+        
+        <cti:checkProperty property="AdministratorRole.ADMIN_VIEW_CONFIG"> 
+            <tags:sectionLink>
+	   	    	<a href="<cti:url value="/spring/deviceConfiguration?home"/>">Device Configuration</a>
+	        </tags:sectionLink>
+        </cti:checkProperty>
+        
 	</tags:operationSection>
 	
 </cti:checkRole>

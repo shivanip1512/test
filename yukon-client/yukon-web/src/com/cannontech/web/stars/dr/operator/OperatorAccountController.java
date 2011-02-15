@@ -37,13 +37,13 @@ import com.cannontech.common.model.Substation;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.service.AuthenticationService;
-import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.YukonGroupService;
+import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -278,6 +278,9 @@ public class OperatorAccountController {
 		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
 		AccountSearchResultHolder accountSearchResultHolder = operatorGeneralSearchService.customerAccountSearch(searchBy, searchValue, startIndex, itemsPerPage, energyCompany, userContext);
 		
+		boolean adminManageMembers = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, userContext.getYukonUser());
+		modelMap.addAttribute("searchMembers", adminManageMembers && energyCompany.hasChildEnergyCompanies());
+		
 		// account edit
 		if (accountSearchResultHolder.isSingleResult() && !accountSearchResultHolder.isHasWarning()) {
 			
@@ -389,9 +392,9 @@ public class OperatorAccountController {
     	         * login will get created incorrectly, much pain and suffering will follow.
     	         * 
     	         * TLDR - make sure you never set the login fields on the AccountDto here and only use the login fields on the LoginBackingBean */
-    	        Integer accountId = (Integer) transactionTemplate.execute(new TransactionCallback() {
+    	        Integer accountId = transactionTemplate.execute(new TransactionCallback<Integer>() {
     	            
-    	            public Object doInTransaction(TransactionStatus status) {
+    	            public Integer doInTransaction(TransactionStatus status) {
     	                /* Create the account */
             	        int accountId = accountService.addAccount(updatableAccount, user);
             	        if(createLogin) {
@@ -546,11 +549,11 @@ public class OperatorAccountController {
 			
 			if (!bindingResult.hasErrors()) {
 			    
-                transactionTemplate.execute(new TransactionCallback() {
+                transactionTemplate.execute(new TransactionCallback<Object>() {
                     
                     public Object doInTransaction(TransactionStatus status) {
                         /* see IMPORTANT NOTE comment in createAccount method, same rules apply here */
-        				accountService.updateAccount(updatableAccount, userContext.getYukonUser());
+        				accountService.updateAccount(updatableAccount, accountId, userContext.getYukonUser());
         				operatorAccountService.updateAccount(accountId, accountGeneral.getOperatorGeneralUiExtras());
         				if(!ignoreLogin) {
                             if (LoginModeEnum.CREATE.equals(LoginModeEnum.valueOf(loginMode))) {

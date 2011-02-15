@@ -1751,6 +1751,12 @@
     </tag>
     
     <tag>
+        <name>operationsSetup</name>
+	    <tag-class>com.cannontech.web.taglib.OperationsSetupTag</tag-class>
+    	<body-content>empty</body-content>
+	</tag>
+    
+    <tag>
         <name>starsOperations</name>
 	    <tag-class>com.cannontech.web.taglib.StarsOperationsTag</tag-class>
     	<body-content>empty</body-content>

@@ -7,7 +7,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="operator" page="warehouse.${mode}">
-    <cti:includeCss link="/WebConfig/yukon/styles/admin/energyCompany.css"/>
     
      <tags:setFormEditMode mode="${mode}"/>
      
