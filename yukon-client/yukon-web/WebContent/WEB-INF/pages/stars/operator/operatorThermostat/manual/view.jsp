@@ -14,11 +14,11 @@
     
     <cti:msg var="degreesCelsius" key="yukon.web.modules.operator.thermostatManual.degreesCelsius" />
     <cti:msg var="degreesFahrenheit" key="yukon.web.modules.operator.thermostatManual.degreesFahrenheit" />
-    <cti:msg var="holdConfirmOn" key="yukon.web.modules.operator.thermostatManual.hold.on"/>
-    <cti:msg var="holdConfirmOff" key="yukon.web.modules.operator.thermostatManual.hold.off"/>
+    <cti:msg var="holdConfirmOn" key="yukon.web.modules.operator.thermostatManual.hold.on" javaScriptEscape="true"/>
+    <cti:msg var="holdConfirmOff" key="yukon.web.modules.operator.thermostatManual.hold.off" javaScriptEscape="true"/>
 
 <script type="text/javascript">
-YEvent.observeSelectorClick('input[id=sendSettingsSubmit]', function(event) {    
+YEvent.observeSelectorClick('#sendSettingsSubmit', function(event) {    
     var confirmPopup = $('confirmPopup');
     
     var parentElement = Event.findElement(event, 'table');
