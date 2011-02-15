@@ -37,10 +37,6 @@ public class OptOutCountHolder {
 	}
 	
 	public boolean isOptOutsRemaining() {
-		return remainingOptOuts > 0 || remainingOptOuts == OptOutService.NO_OPT_OUT_LIMIT;
-	}
-	
-	public boolean isOptOutsRemainingAfterScheduled() {
 	    if(remainingOptOuts == OptOutService.NO_OPT_OUT_LIMIT) {
 	        return true;
 	    }

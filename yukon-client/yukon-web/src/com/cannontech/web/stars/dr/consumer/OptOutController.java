@@ -119,16 +119,10 @@ public class OptOutController extends AbstractConsumerController {
     	    
     	    //Checks if the device can receive an OptOut command from the user. If the device is not
     	    //currently opted out and/or has no OptOut scheduled, the flag is set to true
-    	    if(inventory.isCurrentlyOptedOut()) {
-    	        if(inventory.getCurrentlyScheduledOptOut()==null && optOutCountHolder.isOptOutsRemaining()) {
-    	            optOutsAvailable = true;
-    	        }
-    	    } else {
-    	        if(optOutCountHolder.isOptOutsRemainingAfterScheduled()) {
-    	            optOutsAvailable = true;
-    	        }
+    	    if(optOutCountHolder.isOptOutsRemaining() &&
+    	       (!inventory.isCurrentlyOptedOut() || optOutCountHolder.getScheduledOptOuts()==0)) {
+    	        optOutsAvailable = true;
     	    }
-
     	}
     	model.addAttribute("displayableInventories", displayableInventories);
         model.addAttribute("optOutCounts", optOutCounts);
@@ -180,7 +174,6 @@ public class OptOutController extends AbstractConsumerController {
             
             // Check if device can't be opted out on one specific day provided by the user.
             if(!optOutCountHolder.isOptOutsRemaining() ||
-               (optOutCountHolder.getRemainingOptOuts()==1 && inventory.getCurrentlyScheduledOptOut()!=null) ||
                (isSameDay && inventory.isCurrentlyOptedOut()) ||
                (!isSameDay && inventory.getCurrentlyScheduledOptOut()!= null)) { 
                 noOptOutsAvailableLookup.put(inventory, true);

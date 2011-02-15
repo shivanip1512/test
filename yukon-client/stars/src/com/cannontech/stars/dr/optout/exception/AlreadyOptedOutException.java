@@ -5,24 +5,20 @@ package com.cannontech.stars.dr.optout.exception;
  */
 public class AlreadyOptedOutException extends OptOutException {
 
-    String serialNumber;
+    String message;
 
     public AlreadyOptedOutException(String serialNumber) {
         super("DeviceAlreadyOptedOut");
-        this.serialNumber = serialNumber;
+        message = "Device " + serialNumber + " is already opted out.";
+    }
+    
+    public AlreadyOptedOutException(int inventoryId) {
+        super("DeviceAlreadyOptedOut");
+        message = "Inventory with id " + inventoryId + " is already opted out";
     }
 
     @Override
     public String getMessage() {
-        return "Device " + serialNumber + " is already opted out.";
+        return message;
     }
-
-    public String getSerialNumber() {
-        return serialNumber;
-    }
-
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
-    }
-
 }

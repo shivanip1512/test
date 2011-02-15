@@ -36,7 +36,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.StarsEventLogService;
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Result;
 import com.cannontech.common.util.TimeUtil;
@@ -82,7 +81,6 @@ import com.cannontech.stars.dr.optout.exception.InvalidOptOutStartDateException;
 import com.cannontech.stars.dr.optout.exception.NotOptedOutException;
 import com.cannontech.stars.dr.optout.exception.OptOutAlreadyScheduledException;
 import com.cannontech.stars.dr.optout.exception.OptOutCountLimitException;
-import com.cannontech.stars.dr.optout.exception.OptOutException;
 import com.cannontech.stars.dr.optout.model.OptOutAction;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
@@ -241,15 +239,7 @@ public class OptOutServiceImpl implements OptOutService {
                 // Ignore/Cancel scheduled requests from automated OptOut task, if already opted out
                 boolean alreadyOptedOut = optOutEventDao.isOptedOut(inventoryId, customerAccountId);
                 if (alreadyOptedOut && request.getEventId() == null) {
-                    
-                    // AlreadyOptedOutException originally extended RuntimeException
-                    // Convert it to a RuntimeException to avoid modifying a lot of working
-                    // code fragments
-                    try {
-                        throw new AlreadyOptedOutException("");
-                    } catch (AlreadyOptedOutException e) {
-                        new RuntimeException(e.getMessage());
-                    }
+                        throw new AlreadyOptedOutException(inventoryId);
                 }
                 if (request.getEventId() != null) {
                     // Get any overdue scheduled opt out - that is the event we should be starting                  
@@ -343,10 +333,7 @@ public class OptOutServiceImpl implements OptOutService {
     public void optOutWithPriorValidation(final CustomerAccount customerAccount,
                                           final OptOutRequest request,
                                           final LiteYukonUser user, final OptOutCounts optOutCounts)
-                                      throws CommandCompletionException, OptOutException, NotAuthorizedException {
-
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT,
-                                       user);
+        throws CommandCompletionException {
         if (request.getStartDate() != null) {
             DateTime currentTime = new DateTime();
             DateTime startTime = new DateTime(request.getStartDate());
@@ -378,7 +365,7 @@ public class OptOutServiceImpl implements OptOutService {
             if (optOutCounts == OptOutCounts.COUNT) {
                 OptOutCountHolder optOutCountHolder = getCurrentOptOutCount(lmHardwareBase.getInventoryId(),
                                                                             customerAccount.getAccountId());
-                if (!optOutCountHolder.isOptOutsRemainingAfterScheduled()) {
+                if (!optOutCountHolder.isOptOutsRemaining()) {
                     throw new OptOutCountLimitException(lmHardwareBase.getManufacturerSerialNumber());
                 }
             }
