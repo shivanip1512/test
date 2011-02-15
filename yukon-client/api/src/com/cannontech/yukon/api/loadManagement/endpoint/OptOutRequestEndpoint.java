@@ -11,6 +11,8 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -33,7 +35,8 @@ public class OptOutRequestEndpoint {
     private AccountEventLogService accountEventLogService;
     private OptOutService optOutService;
     private CustomerAccountDao customerAccountDao;
-    private LMHardwareBaseDao lmHardwareBaseDao;
+    private LMHardwareBaseDao lmHardwareBaseDao; 
+    private RolePropertyDao rolePropertyDao;
 
     private Namespace ns = YukonXml.getYukonNamespace();
 
@@ -51,6 +54,7 @@ public class OptOutRequestEndpoint {
         
         Element fe = null;
         try {
+            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
             CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(optOutHelper.getAccountNumber(), user);
             LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getBySerialNumber(optOutHelper.getSerialNumber());
             
@@ -106,5 +110,10 @@ public class OptOutRequestEndpoint {
     @Autowired
     public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
         this.accountEventLogService = accountEventLogService;
+    }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
 }
