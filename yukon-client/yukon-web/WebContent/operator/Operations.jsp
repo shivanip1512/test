@@ -308,7 +308,7 @@
         <c:if test="${showSystemAdmin}">
             <a href="/spring/adminSetup/systemAdmin">
                 <tags:sectionLink>
-                    <cti:msg key="yukon.web.menu.portal.administration"/>
+                    <cti:msg key="yukon.web.menu.portal.administration.systemAdministration"/>
                 </tags:sectionLink>
             </a>
         </c:if>
@@ -324,12 +324,6 @@
             	<a href="Admin/ManageMembers.jsp">Member <br/> Management</a>
             </tags:sectionLink>
 		</cti:checkProperty>
-        
-		<cti:checkProperty property="operator.AdministratorRole.ADMIN_CREATE_DELETE_ENERGY_COMPANY">
-            <tags:sectionLink>
-            	<a href="Admin/NewEnergyCompany.jsp">New Energy <br/> Company</a>
-            </tags:sectionLink>
-		</cti:checkProperty> 
         
 		<cti:checkProperty property="operator.AdministratorRole.ADMIN_CREATE_DELETE_ENERGY_COMPANY">
         	<tags:sectionLink>
@@ -353,18 +347,6 @@
             	<a href="/spring/stars/operator/optOut/admin/viewScheduled">
                     <cti:msg key="yukon.web.menu.portal.administration.viewScheduledOptOutEvents"/>
                 </a>
-            </tags:sectionLink>
-		</cti:checkProperty>
-        
-		<cti:checkProperty property="operator.AdministratorRole.ADMIN_MULTISPEAK_SETUP">
-            <tags:sectionLink>
-            	<a href="/spring/multispeak/setup/home">MultiSpeak Setup</a>
-            </tags:sectionLink>
-		</cti:checkProperty>
-        
-		<cti:checkProperty property="AdministratorRole.ADMIN_LM_USER_ASSIGN"> 
-            <tags:sectionLink>
-            	<a href="/spring/editor/userGroupSelector">User/Group Editor</a>
             </tags:sectionLink>
 		</cti:checkProperty>
         

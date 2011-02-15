@@ -3,24 +3,11 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
-<cti:msg var="pageTitle" key="yukon.web.modules.multispeak.lmMappings.pageTitle" />
+<cti:standardPage module="adminSetup" page="lmMappings">
 
-<cti:standardPage title="${pageTitle}" module="multispeak">
-
-	<cti:standardMenu menuSelection="multispeak|mappings"/>
-	
 	<cti:includeScript link="/JavaScript/lmMappings.js"/>
 	
-	<cti:breadCrumbs>
-	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-	    <cti:crumbLink url="/spring/multispeak/setup/home" title="MultiSpeak"  />
-	    <cti:crumbLink title="${pageTitle}" />
-	</cti:breadCrumbs>
-	
-	<h2>${pageTitle}</h2>
-    
-    <br>
-    <tags:boxContainer title="${pageTitle}" id="container" hideEnabled="false">
+    <tags:boxContainer2 nameKey="mappingsContainer" id="container" hideEnabled="false">
 
 		<%-- FIND/ADD MAPPINGS --%>
 		<br>
@@ -88,6 +75,6 @@
 		</tags:sectionContainer>
 	    
 	    
-	</tags:boxContainer>
+	</tags:boxContainer2>
 
 </cti:standardPage>

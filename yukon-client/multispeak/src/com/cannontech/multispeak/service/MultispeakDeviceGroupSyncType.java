@@ -25,6 +25,6 @@ public enum MultispeakDeviceGroupSyncType implements DisplayableEnum {
 	
 	@Override
 	public String getFormatKey() {
-		return "yukon.web.modules.multispeak.deviceGroupSync.multispeakDeviceGroupSyncType." + this;
+		return "yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncType." + this;
 	}
 }

@@ -5,16 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="pageTitle" key="yukon.web.modules.multispeak.mspSetup.pageTitle" />
-
-<cti:standardPage title="MultiSpeak Interfaces" module="multispeak" page="mspSetup">
-	<cti:breadCrumbs>
-	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-	    <cti:crumbLink url="/spring/multispeak/setup/home" title="MultiSpeak"  />
-	    &gt; Interfaces
-	</cti:breadCrumbs>
-	<cti:standardMenu menuSelection="multispeak|interfaces"/>
-
+<cti:standardPage module="adminSetup"  page="interfaces">
 	<cti:includeCss link="/WebConfig/yukon/CannonStyle.css"/>
 	<cti:includeCss link="/WebConfig/yukon/StandardStyles.css"/>
 
@@ -68,8 +59,6 @@
 
 	</script>
     
-	<h2>${pageTitle}</h2>
-	<br>
     	<tags:formElementContainer nameKey="mspSetup">	
 			<cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:40px;">
 			<cti:dataGridCell>

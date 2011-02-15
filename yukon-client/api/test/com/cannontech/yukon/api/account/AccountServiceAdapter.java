@@ -51,4 +51,10 @@ public class AccountServiceAdapter implements AccountService {
 	public AccountDto getAccountDto(int accountId, int energyCompanyId, YukonUserContext userContext) {
 		throw new UnsupportedOperationException("Not Implemented");
 	}
+
+    @Override
+    public void updateAccount(UpdatableAccount updatableAccount, int accountId, LiteYukonUser user)
+            throws InvalidAccountNumberException {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
 }

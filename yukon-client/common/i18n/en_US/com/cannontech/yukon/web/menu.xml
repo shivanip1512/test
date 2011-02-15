@@ -63,19 +63,19 @@
 <entry key="yukon.web.menu.portal.analysis.surveys">Surveys</entry>
 
 <!-- Administration -->
-<entry key="yukon.web.menu.portal.administration">System Administration</entry>
-<entry key="yukon.web.menu.portal.administration.configEnergyCompany">Config Energy Company</entry>
+<entry key="yukon.web.menu.portal.administration">Administration</entry>
+<entry key="yukon.web.menu.portal.administration.systemAdministration">System Administration</entry>
 <entry key="yukon.web.menu.portal.administration.memberManagement">Member Management</entry>
-<entry key="yukon.web.menu.portal.administration.newEnergyCompany">New Energy Company</entry>
-<entry key="yukon.web.menu.portal.administration.deleteEnergyCompany">Delete Energy Company</entry>
 <entry key="yukon.web.menu.portal.administration.viewBatchCommands">View Batch Commands</entry>
 <entry key="yukon.web.menu.portal.administration.viewScheduledOptOutEvents">View Scheduled Opt Out Events</entry>
-<entry key="yukon.web.menu.portal.administration.multispeakSetup">MultiSpeak Setup</entry>
-<entry key="yukon.web.menu.portal.administration.userGroupEditor">User/Group Editor</entry>
 <entry key="yukon.web.menu.portal.administration.support">Support</entry>
 <entry key="yukon.web.menu.portal.administration.viewLogs">View Logs</entry>
 <entry key="yukon.web.menu.portal.administration.manageIndexes">Manage Indexes</entry>
 <entry key="yukon.web.menu.portal.administration.deviceConfiguration">Device Configuration</entry>
+<!-- TODO: remove these since they now live in system administration -->
+<entry key="yukon.web.menu.portal.administration.userGroupEditor">User/Group Editor</entry>
+<entry key="yukon.web.menu.portal.administration.newEnergyCompany">New Energy Company</entry>
+<entry key="yukon.web.menu.portal.administration.configEnergyCompany">Config Energy Company</entry>
 
 <!--  -->
 <entry key="yukon.web.menu.subMenuDefaultTitle">Display Menu for {0}</entry>
@@ -304,7 +304,7 @@
 <entry key="yukon.web.menu.config.adminSetup.energyCompanySetup.home"></entry>
 <entry key="yukon.web.menu.config.adminSetup.multispeak">MultiSpeak</entry>
 <entry key="yukon.web.menu.config.adminSetup.multispeak.interfaces">Interfaces</entry>
-<entry key="yukon.web.menu.config.adminSetup.multispeak.route_mappings">Substation To Route Mappings</entry>
+<entry key="yukon.web.menu.config.adminSetup.multispeak.lm_mappings">LM Mappings</entry>
 <entry key="yukon.web.menu.config.adminSetup.multispeak.synchronization">Synchronization</entry>
 <entry key="yukon.web.menu.config.adminSetup.userGroupEditor">User/Group</entry>
 <entry key="yukon.web.menu.config.adminSetup.userGroupEditor.home"></entry>

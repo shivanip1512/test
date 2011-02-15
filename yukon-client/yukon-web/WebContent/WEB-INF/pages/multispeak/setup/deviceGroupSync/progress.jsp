@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:standardPage module="multispeak" page="deviceGroupSyncProgress">
+<cti:standardPage module="adminSetup" page="deviceGroupSyncProgress">
 
 	<cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
 

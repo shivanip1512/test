@@ -11,6 +11,6 @@ public enum MultispeakDeviceGroupSyncTypeProcessorType implements DisplayableEnu
 	
 	@Override
 	public String getFormatKey() {
-		return "yukon.web.modules.multispeak.deviceGroupSync.multispeakDeviceGroupSyncTypeProcessorType." + this;
+		return "yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncTypeProcessorType." + this;
 	}
 }

@@ -60,14 +60,14 @@ public class MultispeakDeviceGroupSyncController {
         
 		int vendorId = multispeakFuncs.getPrimaryCIS();
 		if (vendorId <= 0) {
-			flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.deviceGroupSyncHome.error.noCisVendorId"));
+			flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.deviceGroupSyncHome.error.noCisVendorId"));
 			return "redirect:home";
 		}
 		
 		MultispeakDeviceGroupSyncType multispeakDeviceGroupSyncType = MultispeakDeviceGroupSyncType.valueOf(deviceGroupSyncType);
 		multispeakDeviceGroupSyncService.startSyncForType(multispeakDeviceGroupSyncType, userContext);
 		
-		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.deviceGroupSyncHome.startOk"));
+		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.deviceGroupSyncHome.startOk"));
         return "redirect:progress";
     }
 	
@@ -95,7 +95,7 @@ public class MultispeakDeviceGroupSyncController {
         
 		multispeakDeviceGroupSyncService.getProgress().cancel();
 		
-		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.deviceGroupSyncProgress.cancelOk"));
+		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.deviceGroupSyncProgress.cancelOk"));
 		
         return "redirect:progress";
     }

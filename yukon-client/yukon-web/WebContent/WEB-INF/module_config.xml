@@ -170,17 +170,6 @@
             <requireRoleProperty value="ADMIN_MANAGE_MEMBERS" />
           </option>
 
-          <option name="newEnergyCompany">
-            <link>/operator/Admin/NewEnergyCompany.jsp</link>
-            <requireRoleProperty value="ADMIN_CREATE_DELETE_ENERGY_COMPANY" />
-          </option>
-
-          <!--
-            <option name="deleteEnergyCompany">
-              <link>/servlet/StarsAdmin</link>
-              <requireRoleProperty value="operator.AdministratorRole.ADMIN_CREATE_DELETE_ENERGY_COMPANY"/>
-            </option>
-          -->
           <option name="viewBatchCommands">
             <link>/operator/Admin/SwitchCommands.jsp</link>
             <requireRoleProperty value="ADMIN_VIEW_BATCH_COMMANDS" />
@@ -189,16 +178,6 @@
           <option name="viewScheduledOptOutEvents">
             <link>/operator/Admin/OptOutEvents.jsp</link>
             <requireRoleProperty value="ADMIN_VIEW_OPT_OUT_EVENTS" />
-          </option>
-
-          <option name="multispeakSetup">
-            <link>/spring/multispeak/setup/home</link>
-            <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
-          </option>
-
-          <option name="userGroupEditor">
-            <link>/spring/editor/userGroupSelector</link>
-            <requireRoleProperty value="ADMIN_LM_USER_ASSIGN" />
           </option>
 
           <option name="support">
@@ -982,7 +961,7 @@
         </menu>
         
         <pages>
-            <page name="mspSetup" type="BASIC">
+            <page name="interfaces" type="BASIC">
                 <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
                 <menu>multispeak|interfaces</menu>
                 <link>/spring/multispeak/setup/home</link>

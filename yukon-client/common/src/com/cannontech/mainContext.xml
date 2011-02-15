@@ -176,6 +176,7 @@
                <value>classpath:com/cannontech/yukon/dr/program</value>
                <value>classpath:com/cannontech/yukon/web/modules/adminSetup/root</value>
                <value>classpath:com/cannontech/yukon/web/modules/adminSetup/energyCompany</value>
+               <value>classpath:com/cannontech/yukon/web/modules/adminSetup/multispeak</value>
                <value>classpath:com/cannontech/yukon/web/modules/adminSetup/userGroupEditor</value>
                <value>classpath:com/cannontech/yukon/web/modules/adminSetup/applianceCategory</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/groupCommander</value>
@@ -201,10 +202,6 @@
                <value>classpath:com/cannontech/yukon/web/modules/operator/workOrder</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/inventory</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/warehouse</value>
-               <value>classpath:com/cannontech/yukon/web/modules/multispeak/root</value>
-               <value>classpath:com/cannontech/yukon/web/modules/multispeak/lmMappings</value>
-			   <value>classpath:com/cannontech/yukon/web/modules/multispeak/mspSetup</value>
-			   <value>classpath:com/cannontech/yukon/web/modules/multispeak/deviceGroupSync</value>
                <value>classpath:com/cannontech/yukon/web/modules/visualDisplays/visualDisplays</value>
                <value>classpath:com/cannontech/yukon/web/modules/trending</value>
                <value>classpath:com/cannontech/yukon/web/modules/support/databaseMigration</value>

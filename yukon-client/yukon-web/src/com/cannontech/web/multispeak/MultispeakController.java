@@ -97,7 +97,7 @@ public class MultispeakController {
                 boolean isCreateNew = ServletRequestUtils.getBooleanParameter(request, "isCreateNew", false);
                 addOrUpdateMspVendor(request, mspVendor, flashScope, isCreateNew);
             } catch (DuplicateException e) {
-                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.exception",e.getMessage()));
+                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.exception",e.getMessage()));
             }
     
         } else {
@@ -118,14 +118,14 @@ public class MultispeakController {
         Integer vendorId = ServletRequestUtils.getIntParameter(request, "mspVendorId", defaultMspVendor.getVendorID());
 
         if( defaultMspVendor.getVendorID().intValue() == vendorId.intValue()) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.deleteDefaultMessage",defaultMspVendor.getCompanyName()));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.deleteDefaultMessage",defaultMspVendor.getCompanyName()));
         }else {
             MultispeakVendor deletedMspVendor = multispeakDao.getMultispeakVendor(vendorId);
             if( multispeakFuncs.isPrimaryCIS(deletedMspVendor)){
-                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.deletePrimaryMessage", deletedMspVendor.getCompanyName()));
+                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.deletePrimaryMessage", deletedMspVendor.getCompanyName()));
             } else {
                 multispeakDao.deleteMultispeakVendor(vendorId);
-                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.deleted", deletedMspVendor.getCompanyName()));
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.deleted", deletedMspVendor.getCompanyName()));
             }
         }
         return "redirect:home";
@@ -267,34 +267,34 @@ public class MultispeakController {
 
         String param = request.getParameter("mspCompanyName");
         if( StringUtils.isBlank(param) ) {
-            messages.add(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.invalidCompanyName"));
+            messages.add(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.invalidCompanyName"));
         }
         
         param = request.getParameter("mspMaxInitiateRequestObjects");
         if( StringUtils.isBlank(param) || !StringUtils.isNumeric(param)) {
-            messages.add(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.invalidMaxInitiateRequestObjects"));
+            messages.add(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.invalidMaxInitiateRequestObjects"));
         }
         
         param = request.getParameter("mspRequestMessageTimeout");
         if( StringUtils.isBlank(param) || !StringUtils.isNumeric(param)) {
-            messages.add(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.invalidRequestMessageTimeout"));
+            messages.add(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.invalidRequestMessageTimeout"));
         }
         
         param = request.getParameter("mspMaxReturnRecords");
         if( StringUtils.isBlank(param) || !StringUtils.isNumeric(param)) {
-            messages.add(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.invalidMaxReturnRecords"));
+            messages.add(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.invalidMaxReturnRecords"));
         }
         
         param = request.getParameter("mspTemplateNameDefault");
         if( StringUtils.isBlank(param)) {
-            messages.add(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.invalidTemplateNameDefault"));
+            messages.add(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.invalidTemplateNameDefault"));
         }
 
         boolean mspPaoNameUsesExtension = ServletRequestUtils.getBooleanParameter(request, "mspPaoNameUsesExtension", false);   //if not found, then it wasn't checked
         if (mspPaoNameUsesExtension) {  //if using extensions, then must have an extension name
             String mspPaoNameAliasExtension = ServletRequestUtils.getStringParameter(request, "mspPaoNameAliasExtension", null);
             if (StringUtils.isBlank(mspPaoNameAliasExtension)) {
-                messages.add(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.invalidPaoNameAliasExtension"));
+                messages.add(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.invalidPaoNameAliasExtension"));
             }               
         }
         
@@ -302,7 +302,7 @@ public class MultispeakController {
         try {
             new URL(param);
         } catch (MalformedURLException e) {
-            messages.add(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.invalidURL"));
+            messages.add(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.invalidURL"));
         }
         flashScope.setError(messages);
         return (messages.size() == 0);
@@ -321,10 +321,10 @@ public class MultispeakController {
 
         if (add) {
             multispeakDao.addMultispeakVendor(mspVendor);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.added", mspVendor.getCompanyName()));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.added", mspVendor.getCompanyName()));
         } else {
             multispeakDao.updateMultispeakVendor(mspVendor);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.updated", mspVendor.getCompanyName()));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.updated", mspVendor.getCompanyName()));
 
             if(defaultMspVendor.getVendorID().intValue() == mspVendor.getVendorID().intValue()) {
                 updateRolePropertyValues(request);

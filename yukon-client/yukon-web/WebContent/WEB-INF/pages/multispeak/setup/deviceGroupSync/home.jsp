@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="deviceGroupSync" tagdir="/WEB-INF/tags/deviceGroupSync" %>
 
-<cti:standardPage module="multispeak" page="deviceGroupSyncHome">
+<cti:standardPage module="adminSetup" page="deviceGroupSyncHome">
 
 	<cti:includeCss link="/WebConfig/yukon/styles/multispeak/deviceGroupSync.css"/>
 	<cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
