@@ -253,7 +253,7 @@ public class RoleDaoImpl implements RoleDao {
     public Set<YukonRole> getRolesForGroup(LiteYukonGroup liteYukonGroup) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT RoleId");
+        sql.append("SELECT DISTINCT RoleId");
         sql.append("FROM YukonGroupRole YGR");
         sql.append("WHERE YGR.GroupId").eq(liteYukonGroup.getGroupID());
         List<YukonRole> rolesForGroup = yukonJdbcTemplate.query(sql, new YukonRoleRowMapper());
@@ -266,8 +266,7 @@ public class RoleDaoImpl implements RoleDao {
 
         @Override
         public YukonRole mapRow(YukonResultSet rs) throws SQLException {
-            int roleId = rs.getInt("roleId");
-            return YukonRole.getForId(roleId);
+            return rs.getEnum("roleId", YukonRole.class);
         }
 
     }

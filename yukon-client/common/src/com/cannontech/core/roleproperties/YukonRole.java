@@ -10,6 +10,7 @@ import static com.cannontech.core.roleproperties.YukonRoleCategory.System;
 
 import org.apache.commons.lang.Validate;
 
+import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.roles.ApplicationRoleDefs;
 import com.cannontech.roles.CapControlRoleDefs;
 import com.cannontech.roles.ConsumerRoleDefs;
@@ -23,7 +24,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableMultimap;
 
-public enum YukonRole {
+public enum YukonRole implements DatabaseRepresentationSource {
     APPLICATION_BILLING(Application, ApplicationRoleDefs.BILLING_ROLEID),
     COMMANDER(Application, ApplicationRoleDefs.COMMANDER_ROLEID),
     DATABASE_EDITOR(Application, ApplicationRoleDefs.DATABASE_EDITOR_ROLEID),
@@ -110,6 +111,11 @@ public enum YukonRole {
     }
     
     public int getRoleId() {
+        return roleId;
+    }
+
+    @Override
+    public Object getDatabaseRepresentation() {
         return roleId;
     }
 

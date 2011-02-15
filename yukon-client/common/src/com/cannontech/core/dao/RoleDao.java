@@ -122,7 +122,7 @@ public interface RoleDao {
     
     /**
      * This method returns all of the roles for a given login group.  This method should not be
-     * used for user validation.  
+     * used for user validation. This method will return an empty set if the user is not apart of any groups.
      */
     public Set<YukonRole> getRolesForGroup(LiteYukonGroup liteYukonGroup);
 
