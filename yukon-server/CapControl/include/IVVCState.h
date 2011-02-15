@@ -20,10 +20,8 @@ class IVVCState
             CommsStatus() : cbcsLost(false), regulatorsLost(false), voltagesLost(false) {  }
         };
 
-
         enum State
         {
-            IVVC_DISABLED,
             IVVC_WAIT,
             IVVC_PRESCAN_LOOP,
             IVVC_ANALYZE_DATA,
@@ -31,7 +29,6 @@ class IVVCState
             IVVC_CONTROLLED_LOOP,
             IVVC_VERIFY_CONTROL_LOOP,
             IVVC_POSTSCAN_LOOP,
-            IVVC_COMMS_LOST,
             IVVC_OPERATE_TAP
         };
 
@@ -88,27 +85,24 @@ class IVVCState
         void setShowNoRegulatorAttachedMsg(const bool flag);
         bool isShowNoRegulatorAttachedMsg() const;
 
+
         bool isCbcCommsLost() const;
         void setCbcCommsLost(const bool flag);
 
-        bool doAnalysis() const
-        {
-            return _doAnalysis;
-        }
+        bool isRegulatorCommsLost() const;
+        void setRegulatorCommsLost(const bool flag);
 
-        void setDoAnalysis(const bool flag)
-        {
-            _doAnalysis = flag;
-        }
+        bool isVoltageCommsLost() const;
+        void setVoltageCommsLost(const bool flag);
 
-        void setCbcCommsRetryCount(const unsigned long retryCount)
-        {
-            _cbcCommsRetryCount = retryCount;
-        }
-        unsigned long getCbcCommsRetryCount() const
-        {
-            return _cbcCommsRetryCount;
-        }
+        void setCbcCommsRetryCount(const unsigned long retryCount);
+        unsigned long getCbcCommsRetryCount() const;
+
+        void setRegulatorCommsRetryCount(const unsigned long retryCount);
+        unsigned long getRegulatorCommsRetryCount() const;
+
+        void setVoltageCommsRetryCount(const unsigned long retryCount);
+        unsigned long getVoltageCommsRetryCount() const;
 
         void setConsecutiveCapBankOps(const unsigned ops);
         const unsigned getConsecutiveCapBankOps() const;
@@ -153,15 +147,16 @@ class IVVCState
         bool _showSubbusDisableMsg;
         bool _showRegulatorAutoModeMsg;
         bool _showNoRegulatorAttachedMsg;
-        bool _commsLost;
-        bool _cbcCommsLost;
 
-        bool _doAnalysis;
+        bool _cbcCommsLost;
+        bool _regulatorCommsLost;
+        bool _voltageCommsLost;
 
         unsigned _consecutiveCapBankOps;
 
-        unsigned long _commsRetryCount;
         unsigned long _cbcCommsRetryCount;
+        unsigned long _regulatorCommsRetryCount;
+        unsigned long _voltageCommsRetryCount;
 
         std::set<long> _reportedControllers;
 };

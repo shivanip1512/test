@@ -51,6 +51,9 @@ class IVVCAlgorithm
 
         bool allRegulatorsInRemoteMode(const long subbusId) const;
 
+        void handleCbcCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr subbus);
+
+
         PointDataRequestFactoryPtr _requestFactory;
 };
 

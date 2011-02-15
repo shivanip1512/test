@@ -141,9 +141,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     }
 
     DispatchConnectionPtr dispatchConnection = CtiCapController::getInstance()->getDispatchConnection();
-    IVVCState::State currentState = state->getState();
 
-    switch (currentState)
+    switch ( state->getState() )
     {
         case IVVCState::IVVC_WAIT:
         {
@@ -237,24 +236,54 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     request->reportStatusToLog();
                 }
 
-                state->setState(IVVCState::IVVC_WAIT);
-
                 if ( commsStatuses.voltagesLost )   // don't analyse but also don't go comms lost.
                 {
-                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    state->setVoltageCommsRetryCount( state->getVoltageCommsRetryCount() + 1 );
+                    if ( state->getVoltageCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - IVVC Algorithm: Analysis Interval: Missing one or more additional voltage points." << endl;
+                        state->setState(IVVCState::IVVC_WAIT);
+                        state->setVoltageCommsRetryCount( 0 );
+
+                        if ( ! state->isVoltageCommsLost() )
+                        {
+                            state->setVoltageCommsLost( true );
+                            if (_CC_DEBUG & CC_DEBUG_IVVC)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - IVVC Algorithm: Analysis Interval: Missing one or more additional voltage points." << endl;
+                            }
+                        }
                     }
+                }
+                else
+                {
+                    state->setVoltageCommsRetryCount( 0 );
+                    state->setVoltageCommsLost( false );
                 }
 
                 if ( commsStatuses.regulatorsLost ) // don't analyse but also don't go comms lost.
                 {
-                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    state->setRegulatorCommsRetryCount( state->getRegulatorCommsRetryCount() + 1 );
+                    if ( state->getRegulatorCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - IVVC Algorithm: Analysis Interval: Missing one or more Voltage Regulator points." << endl;
+                        state->setState(IVVCState::IVVC_WAIT);
+                        state->setRegulatorCommsRetryCount( 0 );
+
+                        if ( ! state->isRegulatorCommsLost() )
+                        {
+                            state->setRegulatorCommsLost( true );
+                            if (_CC_DEBUG & CC_DEBUG_IVVC)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - IVVC Algorithm: Analysis Interval: Missing one or more Voltage Regulator points." << endl;
+                            }
+                        }
                     }
+                }
+                else
+                {
+                    state->setRegulatorCommsRetryCount( 0 );
+                    state->setRegulatorCommsLost( true );
                 }
 
                 if ( commsStatuses.cbcsLost )
@@ -262,15 +291,27 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     state->setCbcCommsRetryCount(state->getCbcCommsRetryCount() + 1);
                     if (state->getCbcCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
                     {
+                        state->setState(IVVCState::IVVC_WAIT);
                         state->setCbcCommsRetryCount(0);
-                        state->setState(IVVCState::IVVC_COMMS_LOST);
-                        request->reportStatusToLog();
 
-                        if (_CC_DEBUG & CC_DEBUG_IVVC)
+                        bool showCommsLostMsg = false;
+                        if ( ! state->isCbcCommsLost() )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - IVVC Algorithm: Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost." << endl;
+                            showCommsLostMsg = true;
+                            state->setCbcCommsLost(true);
+                            handleCbcCommsLost( state, subbus );
                         }
+
+                        if ( showCommsLostMsg )
+                        {
+                            if (_CC_DEBUG & CC_DEBUG_IVVC)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - IVVC Algorithm: Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost." << endl;
+                            }
+                        }
+
+                        request->reportStatusToLog();
                     }
                 }
                 break;
@@ -284,6 +325,15 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 }
                 request->reportStatusToLog();
                 state->setState(IVVCState::IVVC_ANALYZE_DATA);
+
+                // clear various comms lost flags and counters
+
+                state->setVoltageCommsRetryCount( 0 );
+                state->setVoltageCommsLost( false );
+
+                state->setRegulatorCommsRetryCount( 0 );
+                state->setRegulatorCommsLost( false );
+
                 state->setCbcCommsRetryCount(0);
 
                 if ( state->isCbcCommsLost() )
@@ -493,117 +543,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             break;//never fall through past this
         }
-        case IVVCState::IVVC_COMMS_LOST:
-        {
-            state->setState(IVVCState::IVVC_WAIT);
-
-            if ( ! state->isCbcCommsLost() )
-            {
-                state->setCbcCommsLost(true);
-
-                // Switch the voltage regulators to auto mode.
-                {
-                    if (_CC_DEBUG & CC_DEBUG_IVVC)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - IVVC Algorithm: Comms lost, sending remote control disable. " << endl;
-                    }
-
-                    ZoneManager & zoneManager = store->getZoneManager();
-                    Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus(subbusId);
-
-                    for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
-                    {
-                        long regulatorID = zoneManager.getZone(ID)->getRegulatorId();
-
-                        if (regulatorID > 0)
-                        {
-                            if ( isVoltageRegulatorInRemoteMode(regulatorID) )
-                            {
-                                CtiCCExecutorFactory::createExecutor( new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE,
-                                                                                        regulatorID ) )->execute();
-                            }
-                        }
-                    }
-                }
-
-                // Write to the event log.
-                {
-                    LONG stationId, areaId, spAreaId;
-                    store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
-
-                    CtiMultiMsg* ccEvents = new CtiMultiMsg();
-                    ccEvents->insert(
-                        new CtiCCEventLogMsg(
-                                0,
-                                SYS_PID_CAPCONTROL,
-                                spAreaId,
-                                areaId,
-                                stationId,
-                                subbus->getPaoId(),
-                                0,
-                                capControlIvvcCommStatus,
-                                0,
-                                0,
-                                "IVVC Comms Lost",
-                                "cap control") );
-
-                    PointValueMap rejectedPoints = state->getGroupRequest()->getRejectedPointValues();
-                    std::set<long> missingIds = state->getGroupRequest()->getMissingPoints();
-
-                    for each (const PointValueMap::value_type& pv in rejectedPoints)
-                    {
-                        std::ostringstream  eventText;
-
-                        eventText
-                            << "IVVC Rejected Point Response - Quality: 0x"
-                            << std::hex << pv.second.quality << std::dec
-                            << " - Timestamp: "
-                            << pv.second.timestamp;
-
-                        ccEvents->insert(
-                            new CtiCCEventLogMsg(
-                                    0,
-                                    pv.first,
-                                    spAreaId,
-                                    areaId,
-                                    stationId,
-                                    subbus->getPaoId(),
-                                    0,
-                                    capControlIvvcRejectedPoint,
-                                    0,
-                                    pv.second.value,
-                                    eventText.str(),
-                                    "cap control") );
-
-                        // remove the rejected point Ids the set of missingIds to reduce log entries.
-                        missingIds.erase( pv.first );
-                    }
-
-                    for each (long ID in missingIds)
-                    {
-                        ccEvents->insert(
-                            new CtiCCEventLogMsg(
-                                    0,
-                                    ID,
-                                    spAreaId,
-                                    areaId,
-                                    stationId,
-                                    subbus->getPaoId(),
-                                    0,
-                                    capControlIvvcMissingPoint,
-                                    0,
-                                    0,
-                                    "IVVC Missing Point Response",
-                                    "cap control") );
-                    }
-
-                    sendEvents(dispatchConnection, ccEvents);
-                }
-            }
-            break;
-        }
-
         case IVVCState::IVVC_OPERATE_TAP:
         {
             // This state just sends TAP up/down messages
@@ -981,7 +920,8 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
     if( _CC_DEBUG & CC_DEBUG_IVVC )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - IVVC Algorithm: Voltage Regulator Keep Alive messages sent." << endl;
+        dout << CtiTime() << " - IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
+                          << subbus->getPaoName() << endl;
     }
 }
 
@@ -1609,4 +1549,114 @@ double IVVCAlgorithm::calculateBusWeight(const double Kv, const double Vf, const
 
     return (voltageWeight + powerFactorWeight);
 }
+
+
+void IVVCAlgorithm::handleCbcCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr subbus)
+{
+    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+
+    // Switch the voltage regulators to auto mode.
+    {
+        if (_CC_DEBUG & CC_DEBUG_IVVC)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - IVVC Algorithm: Comms lost, sending remote control disable. " << endl;
+        }
+
+        ZoneManager & zoneManager = store->getZoneManager();
+        Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
+
+        for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
+        {
+            long regulatorID = zoneManager.getZone(ID)->getRegulatorId();
+
+            if (regulatorID > 0)
+            {
+                if ( isVoltageRegulatorInRemoteMode(regulatorID) )
+                {
+                    CtiCCExecutorFactory::createExecutor( new CtiCCCommand( CtiCCCommand::VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE,
+                                                                            regulatorID ) )->execute();
+                }
+            }
+        }
+    }
+
+    // Write to the event log.
+    {
+        LONG stationId, areaId, spAreaId;
+        store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
+
+        CtiMultiMsg* ccEvents = new CtiMultiMsg();
+        ccEvents->insert(
+            new CtiCCEventLogMsg(
+                    0,
+                    SYS_PID_CAPCONTROL,
+                    spAreaId,
+                    areaId,
+                    stationId,
+                    subbus->getPaoId(),
+                    0,
+                    capControlIvvcCommStatus,
+                    0,
+                    0,
+                    "IVVC Comms Lost",
+                    "cap control") );
+
+        PointValueMap rejectedPoints = state->getGroupRequest()->getRejectedPointValues();
+        std::set<long> missingIds = state->getGroupRequest()->getMissingPoints();
+
+        for each (const PointValueMap::value_type& pv in rejectedPoints)
+        {
+            std::ostringstream  eventText;
+
+            eventText
+                << "IVVC Rejected Point Response - Quality: 0x"
+                << std::hex << pv.second.quality << std::dec
+                << " - Timestamp: "
+                << pv.second.timestamp;
+
+            ccEvents->insert(
+                new CtiCCEventLogMsg(
+                        0,
+                        pv.first,
+                        spAreaId,
+                        areaId,
+                        stationId,
+                        subbus->getPaoId(),
+                        0,
+                        capControlIvvcRejectedPoint,
+                        0,
+                        pv.second.value,
+                        eventText.str(),
+                        "cap control") );
+
+            // remove the rejected point Ids the set of missingIds to reduce log entries.
+            missingIds.erase( pv.first );
+        }
+
+        for each (long ID in missingIds)
+        {
+            ccEvents->insert(
+                new CtiCCEventLogMsg(
+                        0,
+                        ID,
+                        spAreaId,
+                        areaId,
+                        stationId,
+                        subbus->getPaoId(),
+                        0,
+                        capControlIvvcMissingPoint,
+                        0,
+                        0,
+                        "IVVC Missing Point Response",
+                        "cap control") );
+        }
+
+        DispatchConnectionPtr dispatchConnection = CtiCapController::getInstance()->getDispatchConnection();
+
+        sendEvents(dispatchConnection, ccEvents);
+    }
+}
+
+
 

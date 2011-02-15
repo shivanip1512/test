@@ -11,8 +11,12 @@ IVVCState::IVVCState() :
     _showRegulatorAutoModeMsg(true),
     _showNoRegulatorAttachedMsg(true),
     _remoteMode(false),
-    _commsLost(false),
+    _cbcCommsLost(false),
+    _regulatorCommsLost(false),
+    _voltageCommsLost(false),
     _cbcCommsRetryCount(0),
+    _regulatorCommsRetryCount(0),
+    _voltageCommsRetryCount(0),
     _firstPass(true)
 {
 }
@@ -190,6 +194,23 @@ const std::set<long>& IVVCState::getReportedControllers()
 }
 
 
+
+void IVVCState::setConsecutiveCapBankOps(const unsigned ops)
+{
+    _consecutiveCapBankOps = ops;
+}
+
+const unsigned IVVCState::getConsecutiveCapBankOps() const
+{
+    return _consecutiveCapBankOps;
+}
+
+
+
+/*
+    Comms lost flags
+*/
+
 bool IVVCState::isCbcCommsLost() const
 {
     return _cbcCommsLost;
@@ -200,13 +221,55 @@ void IVVCState::setCbcCommsLost(const bool flag)
     _cbcCommsLost = flag;
 }
 
-void IVVCState::setConsecutiveCapBankOps(const unsigned ops)
+bool IVVCState::isRegulatorCommsLost() const
 {
-    _consecutiveCapBankOps = ops;
+    return _regulatorCommsLost;
 }
 
-const unsigned IVVCState::getConsecutiveCapBankOps() const
+void IVVCState::setRegulatorCommsLost(const bool flag)
 {
-    return _consecutiveCapBankOps;
+    _regulatorCommsLost = flag;
+}
+
+bool IVVCState::isVoltageCommsLost() const
+{
+    return _voltageCommsLost;
+}
+
+void IVVCState::setVoltageCommsLost(const bool flag)
+{
+    _voltageCommsLost = flag;
+}
+
+/*
+    Comms Retry counts
+*/
+void IVVCState::setCbcCommsRetryCount(const unsigned long retryCount)
+{
+    _cbcCommsRetryCount = retryCount;
+}
+unsigned long IVVCState::getCbcCommsRetryCount() const
+{
+    return _cbcCommsRetryCount;
+}
+
+void IVVCState::setRegulatorCommsRetryCount(const unsigned long retryCount)
+{
+    _regulatorCommsRetryCount = retryCount;
+}
+
+unsigned long IVVCState::getRegulatorCommsRetryCount() const
+{
+    return _regulatorCommsRetryCount;
+}
+
+void IVVCState::setVoltageCommsRetryCount(const unsigned long retryCount)
+{
+    _voltageCommsRetryCount = retryCount;
+}
+
+unsigned long IVVCState::getVoltageCommsRetryCount() const
+{
+    return _voltageCommsRetryCount;
 }
 
