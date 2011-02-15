@@ -531,33 +531,41 @@ public class OptOutServiceImpl implements OptOutService {
 	private void cancelOptOutEvent(OptOutEvent ooe, LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
 			
 		Integer inventoryId = ooe.getInventoryId();
-		LiteStarsLMHardware inventory = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
-		CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(inventoryId);
-		
-		cancelSingleOptOut(ooe, customerAccount, inventory, energyCompany, user);
-	}
-	
-	private void cancelSingleOptOut(OptOutEvent event, CustomerAccount customerAccount, LiteStarsLMHardware inventory, LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
+		LiteStarsLMHardware inventory = null;
+		try {
+		    inventory = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
+		} catch (NotFoundException e) {
+		    // Inventory wasn't found, was probably deleted via web interface,
+		    // In this case just change event to CANCEL_SENT and save it to DB
+            ooe.setState(OptOutEventState.CANCEL_SENT);
+            ooe.setStopDate(new Instant());
+            ooe.setEventCounts(OptOutCounts.DONT_COUNT);
+            optOutEventDao.save(ooe, OptOutAction.CANCEL, user);
+            
+            logger.error(e);
+            
+            return;
+		}
 		
 		try {
-			
-			this.sendCancelCommandAndNotification(inventory, energyCompany, user, event, customerAccount);
-			
-			// Update event state
-			event.setState(OptOutEventState.CANCEL_SENT);
-			event.setStopDate(new Instant());
-			
-			// Update the count state to don't count since we force-canceled this opt out
-			event.setEventCounts(OptOutCounts.DONT_COUNT);
-			
-			optOutEventDao.save(event, OptOutAction.CANCEL, user);
-			
-			this.cancelLMHardwareControlGroupOptOut(inventory.getInventoryID(), customerAccount, event, user);
-			
+		    CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(inventoryId);
+            
+            sendCancelCommandAndNotification(inventory, energyCompany, user, ooe, customerAccount);
+            
+            // Update event state
+            ooe.setState(OptOutEventState.CANCEL_SENT);
+            ooe.setStopDate(new Instant());
+            
+            // Update the count state to don't count since we force-canceled this opt out
+            ooe.setEventCounts(OptOutCounts.DONT_COUNT);
+            
+            optOutEventDao.save(ooe, OptOutAction.CANCEL, user);
+            
+            cancelLMHardwareControlGroupOptOut(inventory.getInventoryID(), customerAccount, ooe, user);
 		} catch (CommandCompletionException e) {
-			// Can't do much - tried to cancel opt out.  Log the error and 
-			// continue to cancel other opt outs
-			logger.error(e);
+		    // Can't do much - tried to cancel opt out.  Log the error and 
+            // continue to cancel other opt outs
+            logger.error(e);
 		}
 	}
 	
