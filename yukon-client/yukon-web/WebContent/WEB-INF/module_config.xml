@@ -1108,13 +1108,6 @@
                         </option>
                     </options>
                 </option>
-                <option name="energyCompany">
-                    <options>
-                        <option name="home">
-                            <link>/spring/stars/operator/energyCompany/home</link>
-                        </option>
-                    </options>
-                </option>
             </options>
         </menu>
 
