@@ -23,7 +23,26 @@ public class SearchResult<T> {
         result.setStartIndex(0);
         return result;
     }
-
+    
+    /**
+     * Returns a SearchResult containing a specific "page" of items, based on the specified
+     * parameters.
+     */
+    public SearchResult<T> pageBasedForWholeList(int currentPage, int itemsPerPage, List<T> itemList) {
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        int toIndex = startIndex + itemsPerPage;
+        int numberOfResults = itemList.size();
+        
+        if(numberOfResults < toIndex) toIndex = numberOfResults;
+        itemList = itemList.subList(startIndex, toIndex);
+        
+        SearchResult<T> result = new SearchResult<T>();
+        result.setResultList(itemList);
+        result.setBounds(startIndex, itemsPerPage, numberOfResults);
+        
+        return result;
+    }
+    
     /**
      * @param start O-based index from which to start
      * @param count number of items the caller wanted back

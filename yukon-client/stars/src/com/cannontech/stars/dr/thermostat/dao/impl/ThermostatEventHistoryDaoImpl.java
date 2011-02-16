@@ -22,6 +22,9 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
+import com.cannontech.stars.dr.thermostat.model.ManualThermostatEvent;
+import com.cannontech.stars.dr.thermostat.model.RestoreThermostatEvent;
+import com.cannontech.stars.dr.thermostat.model.ScheduleThermostatEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatEventType;
 import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
@@ -70,20 +73,18 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
     
     @Override
     public void logRestoreEvent(LiteYukonUser user, int thermostatId) {
-        ThermostatEvent event = new ThermostatEvent();
+        RestoreThermostatEvent event = new RestoreThermostatEvent();
         event.setUserName(user.getUsername());
         event.setThermostatId(thermostatId);
-        event.setEventType(ThermostatEventType.RESTORE);
         event.setEventTime(new Instant());
         logEvent(event);
     }
     
     @Override
     public void logScheduleEvent(LiteYukonUser user, int thermostatId, int scheduleId, ThermostatScheduleMode scheduleMode){
-        ThermostatEvent event = new ThermostatEvent();
+        ScheduleThermostatEvent event = new ScheduleThermostatEvent();
         event.setUserName(user.getUsername());
         event.setThermostatId(thermostatId);
-        event.setEventType(ThermostatEventType.SCHEDULE);
         event.setEventTime(new Instant());
         event.setScheduleId(scheduleId);
         event.setScheduleMode(scheduleMode);
@@ -98,10 +99,9 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
                                   ThermostatFanState fan, 
                                   boolean hold) {
         
-        ThermostatEvent event = new ThermostatEvent();
+        ManualThermostatEvent event = new ManualThermostatEvent();
         event.setUserName(user.getUsername());
         event.setThermostatId(thermostatId);
-        event.setEventType(ThermostatEventType.MANUAL);
         event.setEventTime(new Instant());
         event.setManualFan(fan);
         event.setManualHold(hold);
@@ -115,15 +115,16 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
             String thermostatName = thermostatService.getThermostatNameFromId(event.getThermostatId());
             event.setThermostatName(thermostatName);
             
-            if(event.getEventType() == ThermostatEventType.SCHEDULE){
+            if(event instanceof ScheduleThermostatEvent){
                 String scheduleName = null;
+                ScheduleThermostatEvent scheduleEvent = (ScheduleThermostatEvent) event;
                 try {
-                    AccountThermostatSchedule ats = accountThermostatScheduleDao.getById(event.getScheduleId());
+                    AccountThermostatSchedule ats = accountThermostatScheduleDao.getById(scheduleEvent.getScheduleId());
                     scheduleName = ats.getScheduleName();
                 } catch(EmptyResultDataAccessException e) {
                     //leave schedule name as null string - schedule has been deleted
                 }
-                event.setScheduleName(scheduleName);
+                scheduleEvent.setScheduleName(scheduleName);
             }
         }
     }
@@ -131,34 +132,52 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
     private final YukonRowMapper<ThermostatEvent> thermostatEventHistoryRowMapper = new YukonRowMapper<ThermostatEvent>() {
         @Override
         public ThermostatEvent mapRow(YukonResultSet rs) throws SQLException {
-            ThermostatEvent retVal = new ThermostatEvent();
+            ThermostatEvent retVal = null;
+            
+            ThermostatEventType eventType = rs.getEnum("eventType", ThermostatEventType.class);
+            if(eventType == ThermostatEventType.SCHEDULE) {
+                ScheduleThermostatEvent event = new ScheduleThermostatEvent();
+                event.setScheduleId(rs.getInt("scheduleId"));
+                event.setScheduleMode(rs.getEnum("scheduleMode", ThermostatScheduleMode.class));
+                retVal = event;
+            } else if(eventType == ThermostatEventType.MANUAL) {
+                ManualThermostatEvent event = new ManualThermostatEvent();
+                event.setManualTemp(rs.getInt("manualTemp"));
+                event.setManualMode(rs.getEnum("manualMode", ThermostatMode.class));
+                event.setManualFan(rs.getEnum("manualFan", ThermostatFanState.class));
+                event.setManualHold(rs.getEnum("manualHold", YNBoolean.class).getBoolean());
+                retVal = event;
+            } else if(eventType == ThermostatEventType.RESTORE) {
+                retVal = new RestoreThermostatEvent();
+            }
             retVal.setEventId(rs.getInt("eventId"));
-            retVal.setEventType(rs.getEnum("eventType", ThermostatEventType.class));
             retVal.setUserName(rs.getString("userName"));
             retVal.setEventTime(new DateTime(rs.getDate("eventTime")).toInstant());
             retVal.setThermostatId(rs.getInt("thermostatId"));
-            retVal.setManualTemp(rs.getInt("manualTemp"));
-            retVal.setManualMode(rs.getEnum("manualMode", ThermostatMode.class));
-            retVal.setManualFan(rs.getEnum("manualFan", ThermostatFanState.class));
-            retVal.setManualHold(rs.getEnum("manualHold", YNBoolean.class).getBoolean());
-            retVal.setScheduleId(rs.getInt("scheduleId"));
-            retVal.setScheduleMode(rs.getEnum("scheduleMode", ThermostatScheduleMode.class));
             return retVal;
         }
     };
     
     private FieldMapper<ThermostatEvent> thermostatEventFieldMapper = new FieldMapper<ThermostatEvent>() {
         public void extractValues(MapSqlParameterSource msps, ThermostatEvent thermostatEvent) {
-            msps.addValue("EventType", thermostatEvent.getEventType());
             msps.addValue("UserName", thermostatEvent.getUserName());
             msps.addValue("EventTime", thermostatEvent.getEventTime());
             msps.addValue("ThermostatId", thermostatEvent.getThermostatId());
-            msps.addValue("ManualTemp", thermostatEvent.getManualTemp());
-            msps.addValue("ManualFan", thermostatEvent.getManualFan());
-            msps.addValue("ManualMode", thermostatEvent.getManualMode());
-            msps.addValue("ManualHold", YNBoolean.valueOf(thermostatEvent.isManualHold()));
-            msps.addValue("ScheduleId", thermostatEvent.getScheduleId());
-            msps.addValue("ScheduleMode", thermostatEvent.getScheduleMode());
+            if(thermostatEvent instanceof ManualThermostatEvent) {
+                ManualThermostatEvent manualEvent = (ManualThermostatEvent) thermostatEvent;
+                msps.addValue("ManualTemp", manualEvent.getManualTemp());
+                msps.addValue("ManualFan", manualEvent.getManualFan());
+                msps.addValue("ManualMode", manualEvent.getManualMode());
+                msps.addValue("ManualHold", YNBoolean.valueOf(manualEvent.isManualHold()));
+                msps.addValue("EventType", ThermostatEventType.MANUAL);
+            } else if(thermostatEvent instanceof ScheduleThermostatEvent) {
+                ScheduleThermostatEvent scheduleEvent = (ScheduleThermostatEvent) thermostatEvent;
+                msps.addValue("ScheduleId", scheduleEvent.getScheduleId());
+                msps.addValue("ScheduleMode", scheduleEvent.getScheduleMode());
+                msps.addValue("EventType", ThermostatEventType.SCHEDULE);
+            } else if(thermostatEvent instanceof RestoreThermostatEvent) {
+                msps.addValue("EventType", ThermostatEventType.RESTORE);
+            }
         }
         public Number getPrimaryKey(ThermostatEvent thermostatEvent) {
             return thermostatEvent.getEventId();

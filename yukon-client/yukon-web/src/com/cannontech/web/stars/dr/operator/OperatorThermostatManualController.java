@@ -85,16 +85,8 @@ public class OperatorThermostatManualController {
 
         int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 10);
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
-        int startIndex = (currentPage - 1) * itemsPerPage;
-        int toIndex = startIndex + itemsPerPage;
-        int numberOfResults = eventHistoryList.size();
-        
-        if(numberOfResults < toIndex) toIndex = numberOfResults;
-        eventHistoryList = eventHistoryList.subList(startIndex, toIndex);
-        
-        SearchResult<ThermostatEvent> result = new SearchResult<ThermostatEvent>();
-        result.setResultList(eventHistoryList);
-        result.setBounds(startIndex, itemsPerPage, numberOfResults);
+
+        SearchResult<ThermostatEvent> result = new SearchResult<ThermostatEvent>().pageBasedForWholeList(currentPage, itemsPerPage, eventHistoryList);
         modelMap.addAttribute("searchResult", result);
         modelMap.addAttribute("eventHistoryList", result.getResultList());
         
