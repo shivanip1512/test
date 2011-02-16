@@ -31,11 +31,13 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
-import com.cannontech.core.roleproperties.dao.impl.EnergyCompanyRolePropertyDaoImpl.SerialNumberValidation;
+import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.CollectionCreationException;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -62,6 +64,7 @@ public class InventoryFilterController {
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private FilterModelValidator filterModelValidator;
     private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
     
     /* Setup Filter Rules */
     @RequestMapping(value = "setupFilterRules")
@@ -83,7 +86,8 @@ public class InventoryFilterController {
         FilterRuleType filterRuleType = FilterRuleType.valueOf(ruleType);
         RuleModel newRule = new RuleModel(filterRuleType);
         
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
         YukonSelectionList devTypeList = energyCompany.getYukonSelectionList(YukonSelectionListEnum.DEVICE_TYPE.getListName());
         newRule.setDeviceType(devTypeList.getYukonListEntries().get(0).getEntryID());
         
@@ -114,7 +118,8 @@ public class InventoryFilterController {
         
         Set<InventoryIdentifier> inventory = null;
         
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
         try {
             inventory = inventoryOperationsFilterService.getInventory(filterModel.getFilterMode(), 
                                 filterModel.getFilterRules(), energyCompany.getDefaultDateTimeZone(), userContext);
@@ -149,17 +154,17 @@ public class InventoryFilterController {
     }
     
     public void setupFilterSelectionModelMap(ModelMap modelMap, YukonUserContext userContext) {
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-        modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        modelMap.addAttribute("energyCompanyId", yukonEnergyCompany.getEnergyCompanyId());
     }
     
     @ModelAttribute(value="ruleTypes")
     public List<FilterRuleType> getRuleTypes(YukonUserContext userContext) {
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         
         List<FilterRuleType> ruleTypes = Lists.newArrayList(FilterRuleType.values());
         SerialNumberValidation value = energyCompanyRolePropertyDao.getPropertyEnumValue(
-            YukonRoleProperty.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, energyCompany);
+            YukonRoleProperty.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, yukonEnergyCompany);
         
         if (value == SerialNumberValidation.ALPHANUMERIC) {
             ruleTypes.remove(FilterRuleType.SERIAL_NUMBER_RANGE);
@@ -216,6 +221,11 @@ public class InventoryFilterController {
     @Autowired
     public void setFilterModelValidator(FilterModelValidator filterModelValidator) {
         this.filterModelValidator = filterModelValidator;
+    }
+    
+    @Autowired
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
     
 }

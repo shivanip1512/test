@@ -29,7 +29,7 @@
 		links.put(linkPageName, new String[] {linkImg, linkHtml});
 	}
     
-    EnergyCompanyRolePropertyDao ecRpDao = DaoFactory.getEnergyCompanyRolePropertyDao();
+    EnergyCompanyRolePropertyDao ecRpDao = YukonSpringHook.getBean("energyCompanyRolePropertyDao", EnergyCompanyRolePropertyDao.class);
     boolean allowRanges = ecRpDao.getPropertyEnumValue(
         YukonRoleProperty.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, liteEC) == SerialNumberValidation.NUMERIC;
 %>

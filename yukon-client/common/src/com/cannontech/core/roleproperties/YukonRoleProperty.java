@@ -9,8 +9,8 @@ import org.apache.commons.lang.Validate;
 
 import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.core.authentication.service.AuthType;
-import com.cannontech.core.roleproperties.dao.impl.EnergyCompanyRolePropertyDaoImpl.SerialNumberValidation;
 import com.cannontech.core.roleproperties.enums.CsrfTokenMode;
+import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
 import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;

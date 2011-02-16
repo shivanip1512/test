@@ -62,7 +62,16 @@
 	                <td width="200"> 
 	                	<select name="FilterType" size="1" style="width: 200px" onChange="changeFilterType(this.value)" >
 	                    	<c:forEach var="filterEntry" items="${filterBean.availableFilters.yukonListEntries}">
-								<option value='<c:out value="${filterEntry.yukonDefID}"/>'> <c:out value="${filterEntry.entryText}"/> </option>
+                                <c:choose>
+                                    <c:when test="${filterEntry.yukonDefID == 2908 || filterEntry.yukonDefID == 2909}">
+                                        <c:if test="${filterBean.rangeValid}">
+                                            <option value='<c:out value="${filterEntry.yukonDefID}"/>'> <c:out value="${filterEntry.entryText}"/> </option>
+                                        </c:if>
+                                    </c:when>
+                                    <c:otherwise>
+								        <option value='<c:out value="${filterEntry.yukonDefID}"/>'> <c:out value="${filterEntry.entryText}"/> </option>
+                                    </c:otherwise>
+                                </c:choose>
 							</c:forEach>
 	                    </select>
 	            	</td>

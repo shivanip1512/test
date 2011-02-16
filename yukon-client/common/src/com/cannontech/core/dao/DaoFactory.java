@@ -1,6 +1,5 @@
 package com.cannontech.core.dao;
 
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 
@@ -56,10 +55,6 @@ public class DaoFactory {
     
     public static EnergyCompanyDao getEnergyCompanyDao() {
         return (EnergyCompanyDao) YukonSpringHook.getBean("energyCompanyDao");
-    }
-    
-    public static EnergyCompanyRolePropertyDao getEnergyCompanyRolePropertyDao() {
-        return (EnergyCompanyRolePropertyDao) YukonSpringHook.getBean("energyCompanyRolePropertyDao");
     }
     
     public static GraphDao getGraphDao() {

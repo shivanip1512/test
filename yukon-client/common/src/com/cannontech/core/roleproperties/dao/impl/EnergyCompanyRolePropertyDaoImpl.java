@@ -14,11 +14,6 @@ public class EnergyCompanyRolePropertyDaoImpl implements EnergyCompanyRoleProper
     
     private RolePropertyDao rolePropertyDao;
     
-    public enum SerialNumberValidation {
-        NUMERIC,
-        ALPHANUMERIC
-    }
-
     @Override
     public boolean checkAllProperties(YukonEnergyCompany energyCompany, YukonRoleProperty firstProperty, YukonRoleProperty... otherProperties) {
         verifyEnergyCompanyRoleProperties(firstProperty, otherProperties);

@@ -61,7 +61,7 @@
 <%@page import="com.cannontech.stars.core.dao.StarsCustAccountInformationDao"%>
 <%@page import="com.cannontech.core.roleproperties.dao.RolePropertyDao"%>
 <%@page import="com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao"%>
-<%@page import="com.cannontech.core.roleproperties.dao.impl.EnergyCompanyRolePropertyDaoImpl.SerialNumberValidation"%>
+<%@page import="com.cannontech.core.roleproperties.enums.SerialNumberValidation"%>
 <%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 <jsp:directive.page import="com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService"/>
 <jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"/>

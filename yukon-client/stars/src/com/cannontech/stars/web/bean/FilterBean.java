@@ -7,14 +7,14 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.impl.EnergyCompanyRolePropertyDaoImpl.SerialNumberValidation;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
+import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
@@ -22,6 +22,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.roles.operator.AdministratorRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.ECUtils;
 
 
@@ -92,17 +93,15 @@ public class FilterBean
     public YukonSelectionList getAvailableFilters() {
         if (availableFilters == null){
             availableFilters = energyCompany.getYukonSelectionList(filterListName, true, true);
-            SerialNumberValidation value = DaoFactory.getEnergyCompanyRolePropertyDao().getPropertyEnumValue(
-                YukonRoleProperty.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, energyCompany);
-            if (value == SerialNumberValidation.ALPHANUMERIC) {
-                YukonListEntry min = energyCompany.getYukonListEntry(filterListName, YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN);
-                YukonListEntry max = energyCompany.getYukonListEntry(filterListName, YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX);
-                availableFilters.getYukonListEntries().remove(min);
-                availableFilters.getYukonListEntries().remove(max);
-            }
-            
         }
         return availableFilters;
+    }
+    
+    public boolean isRangeValid() {
+        EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao = YukonSpringHook.getBean("energyCompanyRolePropertyDao", EnergyCompanyRolePropertyDao.class);
+        SerialNumberValidation value = energyCompanyRolePropertyDao.getPropertyEnumValue(
+            YukonRoleProperty.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, energyCompany);
+        return (value == SerialNumberValidation.NUMERIC);
     }
     
     public List<LiteStarsEnergyCompany> getAvailableMembers()
