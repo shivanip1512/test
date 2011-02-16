@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.ActivityLogger;
@@ -650,16 +649,6 @@ public class ThermostatServiceImpl implements ThermostatService {
                                 customerId,
                                 ActivityLogActions.THERMOSTAT_SCHEDULE_ACTION,
                                 logMessage.toString());
-    }
-    
-    @Override
-    public String getAccountThermostatScheduleNameFromId(int atsId) {
-        try {
-            AccountThermostatSchedule ats = accountThermostatScheduleDao.getById(atsId);
-            return ats.getScheduleName();
-        } catch(EmptyResultDataAccessException e) {
-            return null;
-        }
     }
     
     @Override

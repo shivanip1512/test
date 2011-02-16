@@ -288,7 +288,7 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
                         <c:otherwise>
                             <table class="compactResultsTable smallPadding">
                                 <thead>
-                                    <tr id="header">
+                                    <tr>
                                         <c:if test="${multipleThermostatsSelected}">
                                             <th><cti:msg key="yukon.web.modules.operator.thermostatManual.thermostatHeader"/></th>
                                         </c:if>
@@ -298,22 +298,22 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
                                         <th><cti:msg key="yukon.web.modules.operator.thermostatManual.detailsHeader"/></th>
                                     </tr>
                                 </thead>
-                                <tbody id="tableBody">
+                                <tbody>
                                     <c:forEach var="historyItem" items="${eventHistoryList}">
                                         <tr class="<tags:alternateRow odd="" even="altRow"/>">
                                             <!-- Thermostat -->
                                             <c:if test="${multipleThermostatsSelected}">
                                                 <td>
-                                                    ${historyItem.thermostatName}
+                                                    ${fn:escapeXml(historyItem.thermostatName)}
                                                 </td>
                                             </c:if>
                                             <!-- Type -->
                                             <td>
-                                                <cti:msg key="yukon.web.modules.operator.thermostatManual.${historyItem.eventType}"/>
+                                                <cti:msg key="${historyItem.eventType}"/>
                                             </td>
                                             <!-- User -->
                                             <td> 
-                                                ${historyItem.userName}
+                                                ${fn:escapeXml(historyItem.userName)}
                                             </td>
                                             <!-- Date -->
                                             <td>
@@ -335,10 +335,10 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
                                                     </c:choose>
                                                     <!-- Heat/Cool Mode -->
                                                     <cti:msg key="yukon.web.modules.operator.thermostatManual.unitMode" /> 
-                                                    <cti:msg key="yukon.web.modules.operator.thermostatManual.mode.${historyItem.manualMode}" />, 
+                                                    <cti:msg key="${historyItem.manualMode}" />, 
                                                     <!-- Fan Setting -->
                                                     <cti:msg key="yukon.web.modules.operator.thermostatManual.manualDetailsFan" /> 
-                                                    <cti:msg key="yukon.web.modules.operator.thermostatManual.fan.${historyItem.manualFan}" />
+                                                    <cti:msg key="${historyItem.manualFan}" />
                                                     <!-- Hold Setting -->
                                                     <c:if test="${historyItem.manualHold == true}">
                                                         (<cti:msg key="yukon.web.modules.operator.thermostatManual.hold"/>)

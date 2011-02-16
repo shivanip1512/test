@@ -141,14 +141,15 @@
         <b>or</b><br><br>
         Click <b>RUN PROGRAM</b> to revert to your thermostat program.
     ]]></entry>
+    <entry key="yukon.dr.consumer.thermostat.historyTableTitle">Command History</entry>
     <entry key="yukon.dr.consumer.thermostat.noItems">No command history available.</entry>
     <entry key="yukon.dr.consumer.thermostat.thermostatHeader">Thermostat</entry>
     <entry key="yukon.dr.consumer.thermostat.typeHeader">Type</entry>
     <entry key="yukon.dr.consumer.thermostat.dateHeader">Date</entry>
     <entry key="yukon.dr.consumer.thermostat.detailsHeader">Details</entry>
-    <entry key="yukon.dr.consumer.thermostat.MANUAL">Manual</entry>
-    <entry key="yukon.dr.consumer.thermostat.RESTORE">Restore</entry>
-    <entry key="yukon.dr.consumer.thermostat.SCHEDULE">Schedule</entry>
+    <entry key="yukon.dr.consumer.thermostat.eventType.MANUAL">Manual</entry>
+    <entry key="yukon.dr.consumer.thermostat.eventType.RESTORE">Restore</entry>
+    <entry key="yukon.dr.consumer.thermostat.eventType.SCHEDULE">Schedule</entry>
     <entry key="yukon.dr.consumer.thermostat.manualDetailsTemp">Temp: {0}</entry>
     <entry key="yukon.dr.consumer.thermostat.manualDetailsFan">Fan:</entry>
     <entry key="yukon.dr.consumer.thermostat.scheduleDetails">Schedule: {0}</entry>

@@ -249,7 +249,7 @@
     <div class="boxContainer">
         <div class="boxContainer_titleBar">
             <div class="boxContainer_title">
-                Command History
+                <cti:msg key="yukon.dr.consumer.thermostat.historyTableTitle"/>
             </div>
         </div>
         <div class="boxContainer_content">
@@ -260,7 +260,7 @@
                 <c:otherwise>
                     <table class="compactResultsTable smallPadding">
                         <thead>
-                            <tr id="header">
+                            <tr>
                                 <c:if test="${multipleThermostatsSelected}">
                                     <th><cti:msg key="yukon.dr.consumer.thermostat.thermostatHeader"/></th>
                                 </c:if>
@@ -269,18 +269,18 @@
                                 <th><cti:msg key="yukon.dr.consumer.thermostat.detailsHeader"/></th>
                             </tr>
                          </thead>
-                         <tbody id="tableBody">
+                         <tbody>
                             <c:forEach var="historyItem" items="${eventHistoryList}">
                                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
                                     <!-- Thermostat -->
                                     <c:if test="${multipleThermostatsSelected}">
                                         <td>
-                                            ${historyItem.thermostatName}
+                                            ${fn:escapeXml(historyItem.thermostatName)}
                                         </td>
                                     </c:if>
                                     <!-- Type -->
                                     <td>
-                                        <cti:msg key="yukon.dr.consumer.thermostat.${historyItem.eventType}"/>
+                                        <cti:msg key="${historyItem.eventType}"/>
                                     </td>
                                     <!-- Date -->
                                     <td>
@@ -302,10 +302,10 @@
                                             </c:choose>
                                             <!-- Heat/Cool Mode -->
                                             <cti:msg key="yukon.dr.consumer.thermostat.unitMode" /> 
-                                            <cti:msg key="yukon.dr.consumer.thermostat.mode.${historyItem.manualMode}" />, 
+                                            <cti:msg key="${historyItem.manualMode}" />, 
                                             <!-- Fan Setting-->
                                             <cti:msg key="yukon.dr.consumer.thermostat.manualDetailsFan" /> 
-                                            <cti:msg key="yukon.dr.consumer.thermostat.fan.${historyItem.manualFan}" />
+                                            <cti:msg key="${historyItem.manualFan}" />
                                             <!-- Hold Setting -->
                                             <c:if test="${historyItem.manualHold == true}">
                                                 (<cti:msg key="yukon.dr.consumer.thermostat.hold"/>)

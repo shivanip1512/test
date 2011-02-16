@@ -1,6 +1,6 @@
 package com.cannontech.stars.dr.thermostat.model;
 
-import org.joda.time.DateTime;
+import org.joda.time.Instant;
 
 import com.cannontech.common.util.CtiUtilities;
 
@@ -9,8 +9,8 @@ public class ThermostatEvent implements Comparable<ThermostatEvent>{
     private Integer eventId;
     private ThermostatEventType eventType;
     private String userName;
-    private DateTime eventTime;
-    private Integer thermostatId;
+    private Instant eventTime;
+    private int thermostatId;
     private String thermostatName;
     
     //only used for manual events
@@ -53,11 +53,11 @@ public class ThermostatEvent implements Comparable<ThermostatEvent>{
         this.userName = userName;
     }
 
-    public DateTime getEventTime() {
+    public Instant getEventTime() {
         return eventTime;
     }
 
-    public void setEventTime(DateTime eventTime) {
+    public void setEventTime(Instant eventTime) {
         this.eventTime = eventTime;
     }
 

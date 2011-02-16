@@ -2,12 +2,13 @@ package com.cannontech.stars.dr.thermostat.model;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.stars.dr.hardware.model.ListEntryEnum;
 
 /**
  * Enum which represents thermostat fan modes
  */
-public enum ThermostatFanState implements ListEntryEnum {
+public enum ThermostatFanState implements ListEntryEnum, DisplayableEnum {
     DEFAULT(YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_DEFAULT, "default"), 
     AUTO(YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_AUTO, "auto"), 
     CIRCULATE(YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_CIRCULATE, "circulate"),
@@ -56,7 +57,7 @@ public enum ThermostatFanState implements ListEntryEnum {
      * I18N key for the display text for this action
      * @return Display key
      */
-    public String getDisplayKey() {
+    public String getFormatKey() {
         return keyPrefix + name();
     }
 

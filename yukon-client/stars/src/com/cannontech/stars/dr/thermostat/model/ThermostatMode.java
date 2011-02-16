@@ -2,13 +2,14 @@ package com.cannontech.stars.dr.thermostat.model;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.stars.dr.hardware.model.HeatCoolSettingType;
 import com.cannontech.stars.dr.hardware.model.ListEntryEnum;
 
 /**
  * Enum which represents thermostat modes
  */
-public enum ThermostatMode implements ListEntryEnum {
+public enum ThermostatMode implements ListEntryEnum, DisplayableEnum {
     DEFAULT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT, "default", HeatCoolSettingType.OTHER), 
     COOL(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL, "cool", HeatCoolSettingType.COOL), 
     HEAT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT, "heat", HeatCoolSettingType.HEAT), 
@@ -68,8 +69,8 @@ public enum ThermostatMode implements ListEntryEnum {
     /**
      * I18N key for the display text for this action
      * @return Display key
-     */
-    public String getDisplayKey() {
+     */    
+    public String getFormatKey() {
         return keyPrefix + name();
     }
     

@@ -1,12 +1,13 @@
 package com.cannontech.stars.dr.thermostat.dao.impl;
 
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -18,7 +19,9 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
+import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatEventType;
 import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
@@ -32,6 +35,7 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<ThermostatEvent> thermostatEventTemplate;
     private ThermostatService thermostatService;
+    private AccountThermostatScheduleDao accountThermostatScheduleDao;
     
     @Override
     public List<ThermostatEvent> getEventsByThermostatIds(List<Integer> thermostatIds) {
@@ -70,7 +74,7 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
         event.setUserName(user.getUsername());
         event.setThermostatId(thermostatId);
         event.setEventType(ThermostatEventType.RESTORE);
-        event.setEventTime(new DateTime());
+        event.setEventTime(new Instant());
         logEvent(event);
     }
     
@@ -80,7 +84,7 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
         event.setUserName(user.getUsername());
         event.setThermostatId(thermostatId);
         event.setEventType(ThermostatEventType.SCHEDULE);
-        event.setEventTime(new DateTime());
+        event.setEventTime(new Instant());
         event.setScheduleId(scheduleId);
         event.setScheduleMode(scheduleMode);
         logEvent(event);
@@ -98,7 +102,7 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
         event.setUserName(user.getUsername());
         event.setThermostatId(thermostatId);
         event.setEventType(ThermostatEventType.MANUAL);
-        event.setEventTime(new DateTime());
+        event.setEventTime(new Instant());
         event.setManualFan(fan);
         event.setManualHold(hold);
         event.setManualMode(thermostatMode);
@@ -112,7 +116,13 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
             event.setThermostatName(thermostatName);
             
             if(event.getEventType() == ThermostatEventType.SCHEDULE){
-                String scheduleName = thermostatService.getAccountThermostatScheduleNameFromId(event.getScheduleId());
+                String scheduleName = null;
+                try {
+                    AccountThermostatSchedule ats = accountThermostatScheduleDao.getById(event.getScheduleId());
+                    scheduleName = ats.getScheduleName();
+                } catch(EmptyResultDataAccessException e) {
+                    //leave schedule name as null string - schedule has been deleted
+                }
                 event.setScheduleName(scheduleName);
             }
         }
@@ -125,8 +135,7 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
             retVal.setEventId(rs.getInt("eventId"));
             retVal.setEventType(rs.getEnum("eventType", ThermostatEventType.class));
             retVal.setUserName(rs.getString("userName"));
-            Date timestamp = rs.getDate("eventTime");
-            retVal.setEventTime(new DateTime(timestamp));
+            retVal.setEventTime(new DateTime(rs.getDate("eventTime")).toInstant());
             retVal.setThermostatId(rs.getInt("thermostatId"));
             retVal.setManualTemp(rs.getInt("manualTemp"));
             retVal.setManualMode(rs.getEnum("manualMode", ThermostatMode.class));
@@ -142,7 +151,7 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
         public void extractValues(MapSqlParameterSource msps, ThermostatEvent thermostatEvent) {
             msps.addValue("EventType", thermostatEvent.getEventType());
             msps.addValue("UserName", thermostatEvent.getUserName());
-            msps.addValue("EventTime", thermostatEvent.getEventTime().toDate());
+            msps.addValue("EventTime", thermostatEvent.getEventTime());
             msps.addValue("ThermostatId", thermostatEvent.getThermostatId());
             msps.addValue("ManualTemp", thermostatEvent.getManualTemp());
             msps.addValue("ManualFan", thermostatEvent.getManualFan());
@@ -179,5 +188,10 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
     @Autowired
     public void setThermostatService(ThermostatService thermostatService) {
         this.thermostatService = thermostatService;
+    }
+    
+    @Autowired
+    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
+        this.accountThermostatScheduleDao = accountThermostatScheduleDao;
     }
 }
