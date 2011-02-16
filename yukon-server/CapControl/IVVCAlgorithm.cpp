@@ -283,7 +283,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 else
                 {
                     state->setRegulatorCommsRetryCount( 0 );
-                    state->setRegulatorCommsLost( true );
+                    state->setRegulatorCommsLost( false );
                 }
 
                 if ( commsStatuses.cbcsLost )
