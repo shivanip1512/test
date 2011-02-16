@@ -12,7 +12,7 @@
 	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
 	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
-	<classpathentry kind="lib" path="/third-party/axis.jar" sourcepath="C:/axis1_2/src"/>
+	<classpathentry kind="lib" path="/third-party/axis.jar" />
 	<classpathentry kind="lib" path="/third-party/jaxrpc.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/yukonappserver"/>
 	<classpathentry kind="lib" path="/third-party/commons-discovery.jar"/>

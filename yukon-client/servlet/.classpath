@@ -25,7 +25,7 @@
 	<classpathentry kind="src" path="/tools"/>
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="src" path="/multispeak"/>
-	<classpathentry kind="lib" path="/third-party/axis.jar" sourcepath="C:/axis1_2/src"/>
+	<classpathentry kind="lib" path="/third-party/axis.jar"/>
 	<classpathentry kind="lib" path="/third-party/jaxrpc.jar"/>
 	<classpathentry kind="lib" path="/third-party/jsp-api.jar"/>
 	<classpathentry kind="lib" path="/third-party/servlet-api.jar" sourcepath="Z:/java/Third-Party Sources/apache-tomcat-5.5.20-src.zip"/>
