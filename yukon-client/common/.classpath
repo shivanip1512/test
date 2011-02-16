@@ -215,17 +215,17 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/org.springframework.integration-1.0.3.RELEASE.jar" sourcepath="Z:/java/Third-Party Sources/spring-integration-1.0.3-src/org.springframework.integration/src/main/java">
+	<classpathentry kind="lib" path="/third-party/org.springframework.integration-1.0.3.RELEASE.jar" >
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/org.springframework.integration.adapter-1.0.3.RELEASE.jar" sourcepath="Z:/java/Third-Party Sources/spring-integration-1.0.3-src">
+	<classpathentry kind="lib" path="/third-party/org.springframework.integration.adapter-1.0.3.RELEASE.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/org.springframework.integration.jms-1.0.3.RELEASE.jar" sourcepath="Z:/java/Third-Party Sources/spring-integration-1.0.3-src/org.springframework.integration.jms/src/main/java">
+	<classpathentry kind="lib" path="/third-party/org.springframework.integration.jms-1.0.3.RELEASE.jar" >
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>

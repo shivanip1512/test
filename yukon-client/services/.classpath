@@ -23,9 +23,9 @@
 	<classpathentry kind="lib" path="/third-party/mx4j-rimpl.jar"/>
 	<classpathentry kind="lib" path="/third-party/mx4j-rjmx.jar"/>
 	<classpathentry kind="lib" path="/third-party/xbean-spring-3.4.jar"/>
-	<classpathentry kind="lib" path="/third-party/org.springframework.integration-1.0.3.RELEASE.jar" sourcepath="Z:/java/Third-Party Sources/spring-integration-1.0.3-src/org.springframework.integration/src/main/java"/>
-	<classpathentry kind="lib" path="/third-party/org.springframework.integration.adapter-1.0.3.RELEASE.jar" sourcepath="Z:/java/Third-Party Sources/spring-integration-1.0.3-src"/>
-	<classpathentry kind="lib" path="/third-party/org.springframework.integration.jms-1.0.3.RELEASE.jar" sourcepath="Z:/java/Third-Party Sources/spring-integration-1.0.3-src/org.springframework.integration.jms/src/main/java"/>
+	<classpathentry kind="lib" path="/third-party/org.springframework.integration-1.0.3.RELEASE.jar"/>
+	<classpathentry kind="lib" path="/third-party/org.springframework.integration.adapter-1.0.3.RELEASE.jar"/>
+	<classpathentry kind="lib" path="/third-party/org.springframework.integration.jms-1.0.3.RELEASE.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/stars"/>
 	<classpathentry kind="output" path="bin"/>
