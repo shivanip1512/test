@@ -20,7 +20,6 @@ import com.cannontech.core.dao.UserNameUnavailableException;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
-import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YNBoolean;
@@ -35,6 +34,7 @@ import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.web.util.StarsAdminUtil;
@@ -47,6 +47,7 @@ import com.google.common.collect.Sets;
 
 public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
+    private ECMappingDao ecMappingDao;
     private EnergyCompanyDao energyCompanyDao;
     private YukonUserDao yukonUserDao;
     private YukonGroupDao yukonGroupDao;
@@ -54,9 +55,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     private ContactNotificationDao contactNotificationDao;
     private DBPersistentDao dbPersistentDao;
     private LiteStarsEnergyCompanyFactory energyCompanyFactory;
+    private SiteInformationDao siteInformationDao;
     private StarsDatabaseCache starsDatabaseCache;
     private RolePropertyDao rolePropertyDao;
-    private ECMappingDao ecMappingDao;
     
     @Override
     @Transactional
@@ -288,6 +289,56 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     public void deleteEnergyCompany(int energyCompanyId) {
     }
 
+    public void addRouteToEnergyCompany(int energyCompanyId, int routeId) {
+        
+        ecMappingDao.addECToRouteMapping(energyCompanyId, routeId);
+        
+        dbPersistentDao.processDatabaseChange(DbChangeType.ADD, 
+                                              DbChangeCategory.ENERGY_COMPANY_ROUTES,
+                                              energyCompanyId);
+
+    }
+
+    public int removeRouteFromEnergyCompany(int energyCompanyId, int routeId) {
+        
+        int rowsDeleted = ecMappingDao.deleteECToRouteMapping(energyCompanyId, routeId);
+        
+        dbPersistentDao.processDatabaseChange(DbChangeType.DELETE, 
+                                              DbChangeCategory.ENERGY_COMPANY_ROUTES,
+                                              energyCompanyId);
+
+        return rowsDeleted;
+    }
+
+    public void addSubstationToEnergyCompany(int energyCompanyId, int substationId) {
+        
+        ecMappingDao.addECToSubstationMapping(energyCompanyId, substationId);
+        
+        dbPersistentDao.processDatabaseChange(DbChangeType.ADD, 
+                                              DbChangeCategory.ENERGY_COMPANY_SUBSTATIONS,
+                                              energyCompanyId);
+
+    }
+    
+    @Transactional
+    public int removeSubstationFromEnergyCompany(int energyCompanyId, int substationId) {
+        
+        int rowsDeleted = ecMappingDao.deleteECToSubstationMapping(energyCompanyId, substationId);
+        siteInformationDao.resetSubstation(substationId);
+        
+        dbPersistentDao.processDatabaseChange(DbChangeType.DELETE, 
+                                              DbChangeCategory.ENERGY_COMPANY_SUBSTATIONS,
+                                              energyCompanyId);
+
+        return rowsDeleted;
+    }
+    
+    // DI Setters
+    @Autowired
+    public void setEcMappingDao(ECMappingDao ecMappingDao) {
+        this.ecMappingDao = ecMappingDao;
+    }
+    
     @Autowired
     public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
         this.energyCompanyDao = energyCompanyDao;
@@ -324,6 +375,11 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     }
     
     @Autowired
+    public void setSiteInformationDao(SiteInformationDao siteInformationDao) {
+        this.siteInformationDao = siteInformationDao;
+    }
+    
+    @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
     }
@@ -331,11 +387,6 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
     }
     
 }

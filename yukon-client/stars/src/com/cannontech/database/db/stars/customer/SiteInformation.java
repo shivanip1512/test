@@ -93,6 +93,10 @@ public class SiteInformation extends DBPersistent {
         return nextValueId;
     }
     
+    /**
+     * @deprecated Use the siteInformationDao.resetSubstation method instead of this method.
+     */
+    @Deprecated
     public static void resetSubstation(int substationID) {
     	String sql = "UPDATE " + TABLE_NAME + " SET SubstationID = 0 WHERE SubstationID = " + substationID;
     	SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );

@@ -1,18 +1,9 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<cti:standardPage title="Substation To Route Mappings" module="multispeak">
-	<cti:standardMenu menuSelection="multispeak|mappings"/>
-	<cti:breadCrumbs>
-    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    <cti:crumbLink url="/spring/multispeak/setup/home" title="MultiSpeak"  />
-    &gt; Substation To Route Mapping
-	</cti:breadCrumbs>
+<cti:standardPage page="substationToRouteMapping" module="adminSetup">
 	
     <cti:includeScript link="/JavaScript/mspmappings.js" />
     <cti:includeScript link="/JavaScript/yukonGeneral.js"/>
-
-	<h2>Substation To Route Mapping</h2>
-	<br>
 
     <table>
         <tr>

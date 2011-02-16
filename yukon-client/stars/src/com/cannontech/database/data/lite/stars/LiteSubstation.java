@@ -6,6 +6,7 @@
  */
 package com.cannontech.database.data.lite.stars;
 
+import com.cannontech.common.model.Substation;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
 
@@ -31,6 +32,13 @@ public class LiteSubstation extends LiteBase {
 		setLiteType( LiteTypes.STARS_SUBSTATION );
 	}
 	
+	public LiteSubstation(Substation substation) {
+	    super();
+	    setSubstationID(substation.getId());
+	    setSubstationName(substation.getName());
+	    setLiteType( LiteTypes.STARS_SUBSTATION );
+	}
+	
 	public int getSubstationID() {
 		return getLiteID();
 	}
@@ -39,30 +47,18 @@ public class LiteSubstation extends LiteBase {
 		setLiteID(substationID);
 	}
 
-	/**
-	 * @return
-	 */
 	public int getRouteID() {
 		return routeID;
 	}
 
-	/**
-	 * @return
-	 */
 	public String getSubstationName() {
 		return substationName;
 	}
 
-	/**
-	 * @param i
-	 */
 	public void setRouteID(int i) {
 		routeID = i;
 	}
 
-	/**
-	 * @param string
-	 */
 	public void setSubstationName(String string) {
 		substationName = string;
 	}

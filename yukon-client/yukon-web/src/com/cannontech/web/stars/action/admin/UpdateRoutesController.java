@@ -18,7 +18,6 @@ import com.cannontech.web.stars.action.StarsAdminActionController;
 
 public class UpdateRoutesController extends StarsAdminActionController {
 
-    @SuppressWarnings("unchecked")
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response,
             final HttpSession session, final StarsYukonUser user, 

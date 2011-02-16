@@ -623,7 +623,6 @@ public class StarsLiteFactory {
 	public static void setLiteSubstation(LiteSubstation liteSub, com.cannontech.database.db.stars.Substation sub) {
 		liteSub.setSubstationID( sub.getSubstationID().intValue() );
 		liteSub.setSubstationName( sub.getSubstationName() );
-		liteSub.setRouteID( sub.getRouteID().intValue() );
 	}
 	
 	public static void setLiteWebConfiguration(LiteWebConfiguration liteConfig, com.cannontech.database.db.web.YukonWebConfiguration config) {
@@ -1046,7 +1045,6 @@ public class StarsLiteFactory {
 	public static void setSubstation(com.cannontech.database.db.stars.Substation sub, LiteSubstation liteSub) {
 		sub.setSubstationID( new Integer(liteSub.getSubstationID()) );
 		sub.setSubstationName( liteSub.getSubstationName() );
-		sub.setRouteID( new Integer(liteSub.getRouteID()) );
 	}
 	
 	

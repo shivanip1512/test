@@ -12,6 +12,8 @@ public enum DbChangeCategory {
     GRAPH("Graph"),
     HOLIDAY_SCHEDULE("HolidaySchedule"),
     ENERGY_COMPANY("EnergyCompany"),
+    ENERGY_COMPANY_ROUTES("EnergyCompanyRoutes"),
+    ENERGY_COMPANY_SUBSTATIONS("EnergyCompanySubstation"),
     ENERGY_COMPANY_DEFAULT_ROUTE("EnergyCompanyDefaultRoute"),
     YUKON_USER("YukonUser"),
     CUSTOMER("Customer"),

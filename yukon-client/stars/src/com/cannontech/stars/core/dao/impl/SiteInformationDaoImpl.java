@@ -60,8 +60,10 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
     public LiteSiteInformation getSiteInfoById(int siteInfoId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT SiteId, Feeder, Pole, TransformerSize, ServiceVoltage, SubstationId");
-        sql.append("FROM SiteInformation WHERE SiteId = ?");
-        LiteSiteInformation siteInfo = yukonJdbcTemplate.queryForObject(sql.toString(), rowMapper, siteInfoId); 
+        sql.append("FROM SiteInformation");
+        sql.append("WHERE SiteId").eq(siteInfoId);
+
+        LiteSiteInformation siteInfo = yukonJdbcTemplate.queryForObject(sql, rowMapper); 
         return siteInfo;
     }
     
@@ -118,6 +120,16 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
         // TODO Auto-generated method stub
 
     }
+    
+    @Override
+    public int resetSubstation(int substationId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE SiteInformation");
+        sql.append("SET SubstationId = 0");
+        sql.append("WHERE SubstationId").eq(substationId);
+        
+        return yukonJdbcTemplate.update(sql);
+    }
 
     @Override
     @Transactional
@@ -125,6 +137,7 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
         siteInfoTemplate.update(liteSiteInformation);
     }
     
+    // DI Setters
     @Autowired
     public void setYukonJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;

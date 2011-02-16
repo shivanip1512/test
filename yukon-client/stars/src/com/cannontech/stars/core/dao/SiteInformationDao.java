@@ -43,4 +43,11 @@ public interface SiteInformationDao {
      * @return
      */
     public String getSubstationNameById(int subId) throws NotFoundException;
+
+    /**
+     * This method sets all the substationIds of the given substationId to 0.
+     * @return Returns the number of rows modified.
+     */
+    public int resetSubstation(int substationId);
+
 }

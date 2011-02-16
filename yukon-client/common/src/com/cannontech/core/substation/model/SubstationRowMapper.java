@@ -11,8 +11,7 @@ public final class SubstationRowMapper implements
 		ParameterizedRowMapper<Substation> {
 	public Substation mapRow(ResultSet rs, int rowNum) throws SQLException {
 	    Substation substation = new Substation(rs.getInt("SubstationID"),
-	                              rs.getString("SubstationName"),
-	                              rs.getInt("LMRouteID"));
+	                              rs.getString("SubstationName"));
 		return substation;
 	}
 }

@@ -94,9 +94,30 @@
     <entry key="yukon.web.modules.adminSetup.serviceAndStorage.VIEW.pageName">Service And Storage</entry>
     <entry key="yukon.web.modules.adminSetup.serviceAndStorage.VIEW.pageDescription">{0}</entry>
 
-    <entry key="yukon.web.modules.adminSetup.substations.VIEW.pageName">Substations</entry>
-    <entry key="yukon.web.modules.adminSetup.substations.VIEW.pageDescription">{0}</entry>
 
+    <!-- routesAndSubstations.jsp -->
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.title">Substation and Routes</entry>
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.VIEW.pageName">Substations And Routes</entry>
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.VIEW.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.substations.title">Substations</entry>
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.substation">Substation</entry>
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.noSubstations">No Substations</entry>    
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.substationAdded">Substation Added Successfully</entry>    
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.substationRemoved">Substation Removed Successfully</entry>    
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.confirmSubstationRemove.title">Remove Substation {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.confirmSubstationRemove.message">Are you sure you want to remove the substation {0}?</entry>
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.substationToRouteMapping">Substation to Route Mapping</entry>
+
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.routes.title">Routes</entry>
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.route">Route</entry>
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.noRoutes">No Routes</entry>    
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.remove">Remove</entry>
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.inherited">(inherited)</entry>
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.routeAdded">Route Added Successfully</entry>    
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.routeRemoved">Route Removed Successfully</entry>    
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.confirmRouteRemove.title">Remove Route {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.confirmRouteRemove.message">Are you sure you want to remove the route {0}?</entry>
+    
     <entry key="yukon.web.modules.adminSetup.routes.VIEW.pageName">Routes</entry>
     <entry key="yukon.web.modules.adminSetup.routes.VIEW.pageDescription">{0}</entry>
 

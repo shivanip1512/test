@@ -416,14 +416,13 @@ public class StarsAdminUtil {
 		}
 	}
 	
-	public static LiteSubstation createSubstation(String subName, int routeID, LiteStarsEnergyCompany energyCompany)
+	public static LiteSubstation createSubstation(String subName, LiteStarsEnergyCompany energyCompany)
 		throws TransactionException
 	{
 		com.cannontech.database.data.stars.Substation sub = new com.cannontech.database.data.stars.Substation();
 		com.cannontech.database.db.stars.Substation subDB = sub.getSubstation();
 		
 		subDB.setSubstationName( subName );
-		subDB.setRouteID( new Integer(routeID) );
 		sub.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 		
 		sub = Transaction.createTransaction( Transaction.INSERT, sub ).execute();

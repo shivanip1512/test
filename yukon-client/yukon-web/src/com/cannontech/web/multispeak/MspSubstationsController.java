@@ -83,7 +83,6 @@ public class MspSubstationsController {
 
             Substation substation = new Substation();
             substation.setName(mspSubstationName);
-            substation.setRouteId(0);
 
             substationDao.add(substation);
         }

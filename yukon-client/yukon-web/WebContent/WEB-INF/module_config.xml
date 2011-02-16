@@ -957,10 +957,23 @@
                         </option>
                     </options>
                 </option>
+                <option name="substationToRouteMapping">
+                    <link>/spring/adminSetup/setup/routemapping/mappings</link>
+                    <options>
+                        <option name="home">
+                            <link>/spring/adminSetup/setup/routemapping/mappings</link>
+                        </option>
+                    </options>
+                </option>
             </options>
         </menu>
         
         <pages>
+            <page name="substationToRouteMapping" type="BASIC">
+                <menu>substationToRouteMapping|home</menu>
+                <link>/spring/adminSetup/setup/routemapping/mappings</link>
+            </page>
+        
             <page name="interfaces" type="BASIC">
                 <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
                 <menu>multispeak|interfaces</menu>
@@ -1051,15 +1064,17 @@
                                 <link>/spring/adminSetup/energyCompany/serviceAndStorage</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                             </page>
-                            <page name="substations.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="routesAndSubstations.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
-                                <link>/spring/adminSetup/energyCompany/substations</link>
+                                <link>/spring/adminSetup/energyCompany/routesAndSubstations/view?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
-                            </page>
-                            <page name="routes.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>energyCompanySetup|home</menu>
-                                <link>/spring/adminSetup/energyCompany/routes</link>
-                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <pages>
+                                    <page name="routesAndSubstations.EDIT" type="DETAIL_CHILD_WITH_INFO">
+                                        <menu>energyCompanySetup|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/routesAndSubstations/edit?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                    </page>
+                                </pages>
                             </page>
                             <page name="lists.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>

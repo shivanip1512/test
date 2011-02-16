@@ -74,5 +74,26 @@ public interface EnergyCompanyService {
     public boolean isOperator(LiteYukonUser user);
 
     public UserChecker createEcOperatorChecker();
-
+    
+    /**
+     * This method adds a route to the supplied energy company.
+     */
+    public void addRouteToEnergyCompany(int energyCompanyId, int routeId);
+        
+    /**
+     * This method removes a route from the given energy company
+     */
+    public int removeRouteFromEnergyCompany(int energyCompanyId, int routeId);
+ 
+    /**
+     * This method adds a substation to the given energy company.
+     */
+    public void addSubstationToEnergyCompany(int energyCompanyId, int substationId);
+    
+    /**
+     * This method removes a substation from an energy company.  It handles removing the mapping entry,
+     * setting all the relevant siteInfo substations to 0, and also sends out a db change message.
+     * @return returns 1 if a substation was deleted.
+     */
+    public int removeSubstationFromEnergyCompany(int energyCompanyId, int substationId);    
 }

@@ -1,7 +1,5 @@
 package com.cannontech.web.stars.action.admin;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -13,7 +11,6 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.web.stars.action.StarsAdminActionController;
@@ -40,7 +37,6 @@ public class UpdateSubstationController extends StarsAdminActionController {
             }
 
             subDB.setSubstationName( request.getParameter("SubName") );
-            subDB.setRouteID( Integer.valueOf(request.getParameter("Route")) );
 
             if (newSubstation) {
                 sub.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );

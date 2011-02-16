@@ -49,6 +49,16 @@ public interface ECMappingDao {
     public LiteStarsEnergyCompany getContactEC(int contactId);
 
     /**
+     * This method returns all of the routeIds associated to the given energyCompanyId
+     */
+    public List<Integer> getRouteIdsForEnergyCompanyId(int energyCompanyId);
+    
+    /**
+     * This method returns all the substationIds associated to the given energyCompanyId
+     */
+    public List<Integer> getSubstationIdsForEnergyCompanyId(int energycompanyId);
+
+    /**
      * Method to add an energy company to account mapping
      * @param ecToAccountMapping
      */
@@ -74,6 +84,34 @@ public interface ECMappingDao {
      */
     public void addECToCallReportMapping(int energyCompanyId, int callId);
     
+    /**
+     * Method to add an energy company to route mapping
+     * @param energyCompanyId
+     * @param routeId
+     */
+    public void addECToRouteMapping(int energyCompanyId, int routeId);
+
+
+    /**
+     * Method to add an energy company to substation mapping
+     * @param energyCompanyId
+     * @param substationId
+     */
+    public void addECToSubstationMapping(int energyCompanyId, int substationId);
+
+    
+    /**
+     * Method to delete energy company to substation mappings
+     * @param routeIds
+     */
+    public int deleteECToSubstationMapping(int energyCompanyId, int substationId);
+    
+    /**
+     * Method to delete energy company to route mappings
+     * @param routeIds
+     */
+    public int deleteECToRouteMapping(int energyCompanyId, int routeId);
+
     /**
      * Method to delete energy company to call report mappings
      * @param callReportIds

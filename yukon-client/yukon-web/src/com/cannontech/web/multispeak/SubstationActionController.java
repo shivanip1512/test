@@ -14,15 +14,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.model.Substation;
-import com.cannontech.core.substation.dao.SubstationDao;
-import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.substation.dao.SubstationDao;
+import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-@CheckRoleProperty(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP)
 public class SubstationActionController extends  MultiActionController {
     
     private SubstationDao substationDao;
@@ -40,7 +38,6 @@ public class SubstationActionController extends  MultiActionController {
 
         Substation substation = new Substation();
         substation.setName(name);
-        substation.setRouteId(0);
         substationDao.add(substation);
         
         return mav;

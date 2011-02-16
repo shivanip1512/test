@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -65,6 +66,28 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     }
     
     @Override
+    public List<Integer> getRouteIdsForEnergyCompanyId(int energyCompanyId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT RouteId");
+        sql.append("FROM ECToRouteMapping");
+        sql.append("WHERE EnergyCompanyId").eq(energyCompanyId);
+        
+        return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+    }
+    
+    @Override
+    public List<Integer> getSubstationIdsForEnergyCompanyId(int energycompanyId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT SubstationId");
+        sql.append("FROM ECToSubstationMapping");
+        sql.append("WHERE EnergyCompanyId").eq(energycompanyId);
+
+        return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+    }
+
+    @Override
     public LiteStarsEnergyCompany getContactEC(int contactId) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -108,7 +131,6 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         String sql = "DELETE FROM ECToAccountMapping WHERE AccountId = ?";
         yukonJdbcTemplate.update(sql, accountId);
     }
-    
 
     /**
      * Method to delete energy company to inventory mapping 
@@ -203,7 +225,48 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
             return sql.toString();
         }
     }
+
     
+    @Override
+    public void addECToRouteMapping(int energyCompanyId, int routeId){
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO ECToRouteMapping");
+        sql.values(energyCompanyId, routeId);
+        
+        yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public int deleteECToRouteMapping(int energyCompanyId, int routeId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM ECToRouteMapping");
+        sql.append("WHERE EnergyCompanyId").eq(energyCompanyId);
+        sql.append("AND RouteId").eq(routeId);
+        
+        return yukonJdbcTemplate.update(sql);
+    }
+
+    @Override
+    public void addECToSubstationMapping(int energyCompanyId, int substationId){
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO ECToSubstationMapping");
+        sql.values(energyCompanyId, substationId);
+        
+        yukonJdbcTemplate.update(sql);
+    }
+   
+    @Override
+    public int deleteECToSubstationMapping(int energyCompanyId, int substationId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM ECToSubstationMapping");
+        sql.append("WHERE EnergyCompanyId").eq(energyCompanyId);
+        sql.append("AND SubstationId").eq(substationId);
+        
+        return yukonJdbcTemplate.update(sql);
+    }
+
     @Override
     public Set<YukonEnergyCompany> getChildEnergyCompanies(int energyCompanyId) {
         

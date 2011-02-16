@@ -13,12 +13,8 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.common.model.Route;
 import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-@CheckRoleProperty(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP)
 public class RouteActionController extends  MultiActionController {
     private SubstationToRouteMappingDao strmDao;
 

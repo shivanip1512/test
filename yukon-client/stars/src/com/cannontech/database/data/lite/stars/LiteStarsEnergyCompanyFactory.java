@@ -15,6 +15,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
@@ -24,6 +25,7 @@ public class LiteStarsEnergyCompanyFactory {
     private AddressDao addressDao;
     private AsyncDynamicDataSource asyncDynamicDataSource;
     private DBPersistentDao dbPersistentDao;
+    private ECMappingDao ecMappingDao;
     private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     private PaoPermissionService paoPermissionService;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
@@ -50,6 +52,7 @@ public class LiteStarsEnergyCompanyFactory {
     private void applyPropertySetters(final LiteStarsEnergyCompany energyCompany) {
         energyCompany.setAddressDao(addressDao);
         energyCompany.setDbPersistentDao(dbPersistentDao);
+        energyCompany.setEcMappingDao(ecMappingDao);
         energyCompany.setEnergyCompanyRolePropertyDao(energyCompanyRolePropertyDao);
         energyCompany.setPaoPermissionService(paoPermissionService);
         energyCompany.setStarsCustAccountInformationDao(starsCustAccountInformationDao);
@@ -76,6 +79,31 @@ public class LiteStarsEnergyCompanyFactory {
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY_DEFAULT_ROUTE,
                                                               defaultRouteEventListener);
 
+        DatabaseChangeEventListener ecRouteEventListener = new DatabaseChangeEventListener() {
+            @Override
+            public void eventReceived(DatabaseChangeEvent event) {
+                if (event.getPrimaryKey() == energyCompany.getEnergyCompanyId()) {
+                    energyCompany.resetRouteIds();
+                }
+            }
+        };
+
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY_ROUTES,
+                                                              ecRouteEventListener);
+
+        DatabaseChangeEventListener ecSubstationEventListener = new DatabaseChangeEventListener() {
+            @Override
+            public void eventReceived(DatabaseChangeEvent event) {
+                if (event.getPrimaryKey() == energyCompany.getEnergyCompanyId()) {
+                    energyCompany.resetSubstations();
+                }
+            }
+        };
+
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY_SUBSTATIONS,
+                                                              ecSubstationEventListener);
+
+        
         
         DatabaseChangeEventListener applianceCategoryEventListener = new DatabaseChangeEventListener() {
             @Override
@@ -102,6 +130,11 @@ public class LiteStarsEnergyCompanyFactory {
     @Autowired
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
         this.dbPersistentDao = dbPersistentDao;
+    }
+    
+    @Autowired
+    public void setEcMappingDao(ECMappingDao ecMappingDao) {
+        this.ecMappingDao = ecMappingDao;
     }
     
     @Autowired

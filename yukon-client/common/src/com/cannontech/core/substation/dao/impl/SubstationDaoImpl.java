@@ -30,12 +30,12 @@ public class SubstationDaoImpl implements SubstationDao {
         rowMapper = new SubstationRowMapper();
 
         insertSql = new SqlStatementBuilder();
-        insertSql.append("INSERT INTO Substation (SubstationID,SubstationName,LMRouteID)");
-        insertSql.append("VALUES(?,?,?)");
+        insertSql.append("INSERT INTO Substation (SubstationID,SubstationName)");
+        insertSql.append("VALUES(?,?)");
         
         updateSql = new SqlStatementBuilder();
         updateSql.append("UPDATE Substation");
-        updateSql.append("SET SubstationName = ?, LMRouteID = ?");
+        updateSql.append("SET SubstationName = ?");
         updateSql.append("WHERE SubstationID = ?");
         
         deleteSql = new SqlStatementBuilder();
@@ -43,7 +43,7 @@ public class SubstationDaoImpl implements SubstationDao {
         deleteSql.append("WHERE SubstationID = ?");
         
         selectAllSql = new SqlStatementBuilder();
-        selectAllSql.append("SELECT SubstationID, SubstationName, LMRouteID");
+        selectAllSql.append("SELECT SubstationID, SubstationName");
         selectAllSql.append("FROM Substation");
         selectAllSql.append("WHERE SubstationID != 0");
         
@@ -66,8 +66,7 @@ public class SubstationDaoImpl implements SubstationDao {
         
         int result = yukonJdbcTemplate.update(insertSql.toString(), 
                                      substation.getId(),
-                                     substation.getName(), 
-                                     substation.getRouteId());
+                                     substation.getName());
         return (result == 1);
     }
 
@@ -79,7 +78,6 @@ public class SubstationDaoImpl implements SubstationDao {
     public boolean update(final Substation substation) {
         int result = yukonJdbcTemplate.update(updateSql.toString(), 
                                      substation.getName(),
-                                     substation.getRouteId(),
                                      substation.getId());
         return (result == 1);
     }

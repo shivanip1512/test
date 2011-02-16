@@ -1,0 +1,59 @@
+table.energyCompanyHomeLayout {
+    width: 100%;
+}
+
+table.energyCompanyHomeLayout td.first,
+table.energyCompanyHomeLayout td.last {
+    vertical-align: top;
+    width: 50%;
+}
+
+table.energyCompanyHomeLayout td.last {
+    padding-left: 30px;
+}
+
+div.ecContainer {
+    max-height: 193px;
+    overflow: auto;
+    overflow-x: hidden;
+}
+
+ul.groupLists li {
+    list-style: disc;
+}
+
+div.membersContainer {
+    max-height: 300px;
+    overflow: auto;
+    overflow-x: hidden;
+}
+
+div.membersContainer ul li {
+    padding-bottom: 2px;
+}
+
+div.notes {
+    padding-bottom: 5px;
+}
+
+tr.pickerRow td.value span[id^='picker_'] {
+    vertical-align: top;
+}
+
+#applianceCategoryPrograms {
+    margin-top: 20px;
+}
+
+/* Route and Substation Layout Settings */
+table.routeAndSubstationLayout {
+    width: 100%;
+}
+
+table.routeAndSubstationLayout td.first, td.last {
+    vertical-align: top;
+    width: 50%;
+}
+
+table.routeAndSubstationLayout td.last {
+    padding-left: 30px;
+}

@@ -36,7 +36,6 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -64,10 +63,12 @@ import com.cannontech.database.db.stars.appliance.ApplianceCategory;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.database.db.user.YukonGroup;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
@@ -93,6 +94,7 @@ import com.google.common.collect.Iterables;
 public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompany {
     private AddressDao addressDao;
     private DBPersistentDao dbPersistentDao;
+    private ECMappingDao ecMappingDao;
     private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     private PaoPermissionService paoPermissionService;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
@@ -813,19 +815,13 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                 }
                 
                 if (foundInParent) {
-                    ECToGenericMapping map = new ECToGenericMapping();
-                    map.setEnergyCompanyID( getEnergyCompanyId() );
-                    map.setItemID( routeID );
-                    map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
                     
-                    try {
-                        dbPersistentDao.performDBChange(map, TransactionType.DELETE);
-                    } catch (PersistenceException e) {
-                        CTILogger.error( e.getMessage(), e );
-                    }
-                    
-                    
+                    ecMappingDao.deleteECToRouteMapping(getEnergyCompanyId(), routeID);
                     it.remove();
+                    
+                    dbPersistentDao.processDatabaseChange(DbChangeType.DELETE, 
+                                                          DbChangeCategory.ENERGY_COMPANY_ROUTES,
+                                                          getEnergyCompanyId());
                 }
                 else
                     routeList.add( liteRoute );
@@ -873,30 +869,19 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         if (routeIDs == null) {
             routeIDs = new ArrayList<Integer>();
             
-            ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems(
-                    getEnergyCompanyId(), ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
-            
-            if (items != null) {
-                for (int i = 0; i < items.length; i++)
-                    routeIDs.add( items[i].getItemID() );
-            }
+            routeIDs = ecMappingDao.getRouteIdsForEnergyCompanyId(getEnergyCompanyId());
             
             if (getDefaultRouteId() > 0) {
                 // Make sure the default route ID is in the list
                 Integer dftRouteID = new Integer( getDefaultRouteId() );
                 
                 if (!routeIDs.contains( dftRouteID )) {
-                    ECToGenericMapping map = new ECToGenericMapping();
-                    map.setEnergyCompanyID( getEnergyCompanyId() );
-                    map.setItemID( dftRouteID );
-                    map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_ROUTE );
-                    
-                    try {
-                        dbPersistentDao.performDBChange(map, TransactionType.INSERT);
-                        routeIDs.add( dftRouteID );
-                    } catch (PersistenceException e) {
-                        CTILogger.error( e.getMessage(), e );
-                    }
+                    routeIDs.add(dftRouteID);
+
+                    ecMappingDao.addECToRouteMapping(getEnergyCompanyId(), dftRouteID);
+                    dbPersistentDao.processDatabaseChange(DbChangeType.ADD, 
+                                                          DbChangeCategory.ENERGY_COMPANY_ROUTES,
+                                                          getEnergyCompanyId());
                 }
             }
         }
@@ -1098,6 +1083,23 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         
         return null;
     }
+    
+    /**
+     * This method resets the substation variable to null for the given energy company.  This will cause the
+     * get methods to look up the substations from the database next time instead of using the cached value.
+     */
+    public void resetSubstations() {
+        substations = null;
+    }
+    
+    /**
+     * This method resets the routes variable to null for the given energy company.  This will cause the
+     * get methods to look up the routes from the database next time instead of using the cached value.
+     */
+    public void resetRouteIds() {
+        routeIDs = null;
+    }
+
     
     public LiteAddress getAddress(int addressID) {
         LiteAddress address = addressDao.getByAddressId(addressID); 
@@ -1984,6 +1986,10 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         this.dbPersistentDao = dbPersistentDao;
     }
     
+    public void setEcMappingDao(ECMappingDao ecMappingDao) {
+        this.ecMappingDao = ecMappingDao;
+    }
+        
     public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
         this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
     }
