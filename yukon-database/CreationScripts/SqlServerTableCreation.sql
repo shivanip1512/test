@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/16/2011 12:11:31 PM                        */
+/* Created on:     2/16/2011 1:26:41 PM                         */
 /*==============================================================*/
 
 
@@ -14691,13 +14691,14 @@ alter table DEVICEGROUP
 go
 
 alter table DEVICEGROUPMEMBER
-   add constraint FK_DevGrpMember_DeviceGroup foreign key (DeviceGroupID)
-      references DEVICEGROUP (DeviceGroupId)
+   add constraint FK_DeviceGroupMember_DEVICE foreign key (YukonPaoId)
+      references DEVICE (DEVICEID)
+         on delete cascade
 go
 
 alter table DEVICEGROUPMEMBER
-   add constraint FK_DeviceGroupMember_DEVICE foreign key (YukonPaoId)
-      references DEVICE (DEVICEID)
+   add constraint FK_DevGrpMember_DeviceGroup foreign key (DeviceGroupID)
+      references DEVICEGROUP (DeviceGroupId)
          on delete cascade
 go
 

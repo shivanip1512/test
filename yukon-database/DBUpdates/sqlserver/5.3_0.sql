@@ -115,6 +115,16 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId IN (-40052, -20154);
 /* End YUK-9436 */
 
+/* Start YUK-9118 */
+ALTER TABLE DeviceGroupMember
+DROP CONSTRAINT FK_DevGrpMember_DeviceGroup;
+
+ALTER TABLE DeviceGroupMember
+    ADD CONSTRAINT FK_DevGrpMember_DeviceGroup FOREIGN KEY (DeviceGroupId)
+        REFERENCES DeviceGroup (DeviceGroupId)
+            ON DELETE CASCADE;
+/* End YUK-9118 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
