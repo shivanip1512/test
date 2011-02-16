@@ -69,8 +69,8 @@ WHERE CoolTemp <= 0;
 WHILE (SELECT MAX(CoolTemp) FROM AcctThermostatScheduleEntry) > 100
 BEGIN
 	UPDATE AcctThermostatScheduleEntry
-		SET CoolTemp = ((CoolTemp - 32)/1.8)
-		WHERE CoolTemp > 100
+	SET CoolTemp = ((CoolTemp - 32)/1.8)
+	WHERE CoolTemp > 100
 END
 /* @end-block */
 
@@ -78,8 +78,8 @@ END
 WHILE (SELECT MIN(CoolTemp) FROM AcctThermostatScheduleEntry) < 38
 BEGIN
 	UPDATE AcctThermostatScheduleEntry
-		SET CoolTemp = ((CoolTemp *1.8) + 32)
-		WHERE CoolTemp < 38
+	SET CoolTemp = ((CoolTemp *1.8) + 32)
+	WHERE CoolTemp < 38
 END
 /* @end-block */
 
@@ -90,18 +90,18 @@ WHERE HeatTemp <= 0;
 /* @start-block */
 WHILE (SELECT MAX(HeatTemp) FROM AcctThermostatScheduleEntry) > 100
 BEGIN
-      UPDATE AcctThermostatScheduleEntry
-            SET HeatTemp = ((HeatTemp - 32)/1.8)
-            WHERE HeatTemp > 100
+	UPDATE AcctThermostatScheduleEntry
+	SET HeatTemp = ((HeatTemp - 32)/1.8)
+    WHERE HeatTemp > 100
 END 
 /* @end-block */
 
 /* @start-block */
 WHILE (SELECT MIN(HeatTemp) FROM AcctThermostatScheduleEntry) < 38
 BEGIN
-      UPDATE AcctThermostatScheduleEntry
-            SET HeatTemp = ((HeatTemp * 1.8) + 32)
-            WHERE HeatTemp < 38
+	UPDATE AcctThermostatScheduleEntry
+	SET HeatTemp = ((HeatTemp * 1.8) + 32)
+	WHERE HeatTemp < 38
 END 
 /* @end-block */
 /* End YUK-8691 */
