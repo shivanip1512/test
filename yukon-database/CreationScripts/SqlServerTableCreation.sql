@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/7/2011 11:12:51 PM                         */
+/* Created on:     2/15/2011 5:56:59 PM                         */
 /*==============================================================*/
 
 
@@ -2305,6 +2305,20 @@ if exists (select 1
            where  id = object_id('ECToLMCustomerEventMapping')
             and   type = 'U')
    drop table ECToLMCustomerEventMapping
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ECToRouteMapping')
+            and   type = 'U')
+   drop table ECToRouteMapping
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ECToSubstationMapping')
+            and   type = 'U')
+   drop table ECToSubstationMapping
 go
 
 if exists (select 1
@@ -8025,6 +8039,26 @@ EventID ASC
 go
 
 /*==============================================================*/
+/* Table: ECToRouteMapping                                      */
+/*==============================================================*/
+create table ECToRouteMapping (
+   EnergyCompanyId      numeric              not null,
+   RouteId              numeric              not null,
+   constraint PK_ECToRouteMap primary key nonclustered (EnergyCompanyId, RouteId)
+)
+go
+
+/*==============================================================*/
+/* Table: ECToSubstationMapping                                 */
+/*==============================================================*/
+create table ECToSubstationMapping (
+   EnergyCompanyId      numeric              not null,
+   SubstationId         numeric              not null,
+   constraint PK_ECToSubMap primary key nonclustered (EnergyCompanyId, SubstationId)
+)
+go
+
+/*==============================================================*/
 /* Table: ECToWorkOrderMapping                                  */
 /*==============================================================*/
 create table ECToWorkOrderMapping (
@@ -11028,7 +11062,6 @@ go
 create table Substation (
    SubstationID         numeric              not null,
    SubstationName       varchar(50)          null,
-   LMRouteID            numeric              null,
    constraint PK_SUBSTATION primary key (SubstationID)
 )
 go
@@ -15097,6 +15130,30 @@ alter table ECToLMCustomerEventMapping
       references LMCustomerEventBase (EventID)
 go
 
+alter table ECToRouteMapping
+   add constraint FK_ECToRouteMap_EC foreign key (EnergyCompanyId)
+      references EnergyCompany (EnergyCompanyID)
+         on delete cascade
+go
+
+alter table ECToRouteMapping
+   add constraint FK_ECToRouteMap_Route foreign key (RouteId)
+      references Route (RouteID)
+         on delete cascade
+go
+
+alter table ECToSubstationMapping
+   add constraint FK_ECToSubMap_EC foreign key (EnergyCompanyId)
+      references EnergyCompany (EnergyCompanyID)
+         on delete cascade
+go
+
+alter table ECToSubstationMapping
+   add constraint FK_ECToSubMap_Sub foreign key (SubstationId)
+      references Substation (SubstationID)
+         on delete cascade
+go
+
 alter table ECToWorkOrderMapping
    add constraint FK_ECTWrk_Enc2 foreign key (EnergyCompanyID)
       references EnergyCompany (EnergyCompanyID)
@@ -16275,11 +16332,6 @@ alter table StatusPointMonitorProcessor
    add constraint FK_StatPointMonProc_StatPointM foreign key (StatusPointMonitorId)
       references StatusPointMonitor (StatusPointMonitorId)
          on delete cascade
-go
-
-alter table Substation
-   add constraint FK_Sub_Rt foreign key (LMRouteID)
-      references Route (RouteID)
 go
 
 alter table SubstationToRouteMapping
