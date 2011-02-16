@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.dr.optout.model.OptOutCountsDto;
+import com.cannontech.stars.dr.optout.model.OptOutCountsTemporaryOverride;
 import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 
 /**
@@ -42,13 +42,13 @@ public interface OptOutStatusService {
 	 * @param user
 	 * @return
 	 */
-	public OptOutCountsDto getDefaultOptOutCounts(LiteYukonUser user);
+	public OptOutCountsTemporaryOverride getDefaultOptOutCounts(LiteYukonUser user);
 	
 	/**
 	 * Return all OptOutTemporaryOverride settings where programId != null (and OptOutType==COUNTS).
 	 * @param user
 	 * @return
 	 */
-	public List<OptOutCountsDto> getProgramSpecificOptOutCounts(LiteYukonUser user);
+	public List<OptOutCountsTemporaryOverride> getProgramSpecificOptOutCounts(LiteYukonUser user);
 
 }

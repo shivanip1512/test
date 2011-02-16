@@ -1,6 +1,5 @@
 package com.cannontech.stars.dr.optout.model;
 
-import java.util.Comparator;
 import java.util.Date;
 
 public class OptOutCountsDto {
@@ -26,16 +25,4 @@ public class OptOutCountsDto {
 		return startDate;
 	}
 	
-	public static Comparator<OptOutCountsDto> getStartTimeComparator() {
-		
-		Comparator<OptOutCountsDto> c = new Comparator<OptOutCountsDto>() {
-			
-			@Override
-			public int compare(OptOutCountsDto o1, OptOutCountsDto o2) {
-				return o1.getStartDate().compareTo(o2.getStartDate());
-			}
-		};
-		
-		return c;
-	}
 }

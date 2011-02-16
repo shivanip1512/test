@@ -3,7 +3,6 @@ package com.cannontech.stars.dr.optout.service.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +83,7 @@ import com.cannontech.stars.dr.optout.exception.OptOutCountLimitException;
 import com.cannontech.stars.dr.optout.model.OptOutAction;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
-import com.cannontech.stars.dr.optout.model.OptOutCountsDto;
+import com.cannontech.stars.dr.optout.model.OptOutCountsTemporaryOverride;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.dr.optout.model.OptOutLimit;
@@ -169,11 +168,11 @@ public class OptOutServiceImpl implements OptOutService {
             }
         }
         
-        OptOutCountsDto defaultOptOutCountsSetting = optOutStatusService.getDefaultOptOutCounts(user); 
-        Map<Integer, OptOutCountsDto> optOutCountsSettingsByProgramIdMap = new HashMap<Integer, OptOutCountsDto>();
-        List<OptOutCountsDto> programSpecificOptOutCounts = optOutStatusService.getProgramSpecificOptOutCounts(user);
-        for (OptOutCountsDto setting : programSpecificOptOutCounts) {
-            optOutCountsSettingsByProgramIdMap.put(setting.getProgramId(), setting);
+        OptOutCountsTemporaryOverride defaultOptOutCountsSetting = optOutStatusService.getDefaultOptOutCounts(user); 
+        Map<Integer, OptOutCountsTemporaryOverride> optOutCountsSettingsByProgramIdMap = Maps.newHashMap();
+        List<OptOutCountsTemporaryOverride> programSpecificOptOutCounts = optOutStatusService.getProgramSpecificOptOutCounts(user);
+        for (OptOutCountsTemporaryOverride setting : programSpecificOptOutCounts) {
+            optOutCountsSettingsByProgramIdMap.put(setting.getAssignedProgramId(), setting);
         }
         
         for(Integer inventoryId : inventoryIdList) { 
@@ -186,20 +185,20 @@ public class OptOutServiceImpl implements OptOutService {
                 
                 List<DisplayableInventoryEnrollment> programs = displayableInventoryEnrollmentDao.find(customerAccount.getAccountId(), inventoryId);
                 
-                List<OptOutCountsDto> optOutCountSettingsForPrograms = Lists.newArrayList();
+                List<OptOutCountsTemporaryOverride> optOutCountSettingsForPrograms = Lists.newArrayList();
                 for (DisplayableInventoryEnrollment program : programs) {
                     int programId = program.getAssignedProgramId();
-                    OptOutCountsDto oocs = optOutCountsSettingsByProgramIdMap.get(programId);
+                    OptOutCountsTemporaryOverride oocs = optOutCountsSettingsByProgramIdMap.get(programId);
                     if (oocs != null) {
                         optOutCountSettingsForPrograms.add(oocs);
                     }
                 }
                     
-                OptOutCountsDto optOutCountsDtoKeeper;
+                OptOutCountsTemporaryOverride optOutCountsDtoKeeper;
                 if (optOutCountSettingsForPrograms.size() == 0) {
                     optOutCountsDtoKeeper = defaultOptOutCountsSetting;
                 } else {
-                    Ordering<OptOutCountsDto> ordering = Ordering.from(OptOutCountsDto.getStartTimeComparator());
+                    Ordering<OptOutCountsTemporaryOverride> ordering = Ordering.from(OptOutCountsTemporaryOverride.getStartTimeComparator());
                     optOutCountsDtoKeeper = ordering.max(optOutCountSettingsForPrograms); // tie breaker, keep the one with most RECENT StartDate (max)
                 }
                 optOutCountsKeeper = optOutCountsDtoKeeper.getOptOutCounts();

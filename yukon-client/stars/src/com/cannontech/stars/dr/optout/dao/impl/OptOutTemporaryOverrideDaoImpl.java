@@ -9,7 +9,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -19,10 +18,9 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideDao;
 import com.cannontech.stars.dr.optout.dao.OptOutTemporaryOverrideType;
 import com.cannontech.stars.dr.optout.exception.NoTemporaryOverrideException;
-import com.cannontech.stars.dr.optout.model.OptOutCounts;
-import com.cannontech.stars.dr.optout.model.OptOutCountsDto;
 import com.cannontech.stars.dr.optout.model.OptOutCountsTemporaryOverride;
 import com.cannontech.stars.dr.optout.model.OptOutEnabledTemporaryOverride;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 
 /**
  * Implementation class for OptOutEventDao
@@ -35,19 +33,19 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 	private EnergyCompanyDao energyCompanyDao;
 	
 	@Override
-	public List<OptOutCountsDto> getAllOptOutCounts(LiteEnergyCompany energyCompany) throws NoTemporaryOverrideException {
+	public List<OptOutCountsTemporaryOverride> getAllOptOutCounts(LiteEnergyCompany energyCompany) throws NoTemporaryOverrideException {
 		
 		Date now = new Date();
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT OptOutValue, ProgramId, StartDate");
+		sql.append("SELECT *");
 		sql.append("FROM OptOutTemporaryOverride");
 		sql.append("WHERE OptOutType").eq(OptOutTemporaryOverrideType.COUNTS);
 		sql.append("	AND StartDate").lte(now);
 		sql.append("	AND StopDate").gt(now);
 		sql.append("	AND EnergyCompanyId").eq(energyCompany.getEnergyCompanyID());
 		
-		List<OptOutCountsDto> settings = yukonJdbcTemplate.query(sql, new OptOutCountsDtoRowMapper());
+		List<OptOutCountsTemporaryOverride> settings = yukonJdbcTemplate.query(sql, new OptOutCountsTemporaryOverrideRowMapper());
 			
 		if (settings.size() == 0) {
 			// Opt out counts has not been temporarily overridden for this energy company
@@ -190,21 +188,6 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 	}
 	
 	// Row Mappers
-	private final class OptOutCountsDtoRowMapper implements YukonRowMapper<OptOutCountsDto> {
-
-        @Override
-        public final OptOutCountsDto mapRow(YukonResultSet rs) throws SQLException {
-            
-            int optOutValue = rs.getInt("OptOutValue");
-            OptOutCounts optOutCounts = OptOutCounts.valueOf(optOutValue);
-            Integer programId = rs.getNullableInt("ProgramId");
-            Date startDate = rs.getInstant("StartDate").toDate();
-            OptOutCountsDto setting = new OptOutCountsDto(optOutCounts, programId, startDate);
-            return setting;
-        }
-
-    }
-    
 	private final class OptOutEnabledTemporaryOverrideRowMapper implements YukonRowMapper<OptOutEnabledTemporaryOverride> {
 
         @Override
