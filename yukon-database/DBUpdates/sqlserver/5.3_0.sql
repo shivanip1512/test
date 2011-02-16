@@ -83,7 +83,10 @@ ALTER TABLE ECToRouteMapping
 
 /* Removed lmRouteId from the substation table */
 ALTER TABLE Substation
-    DROP COLUMN LmRouteId;
+DROP CONSTRAINT FK_Sub_Rt;
+
+ALTER TABLE Substation
+DROP COLUMN LmRouteId;
 /* End YUK-9504 */
 
 /* Start YUK-9489 */

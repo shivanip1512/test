@@ -83,7 +83,7 @@ ON DELETE CASCADE;
 
 /* Removed lmRouteId from the substation table */ 
 ALTER TABLE Substation 
-    DROP COLUMN LmRouteId;
+DROP COLUMN LmRouteId;
 /* End YUK-9504 */
 
 /* Start YUK-9489 */
