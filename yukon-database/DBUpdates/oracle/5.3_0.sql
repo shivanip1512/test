@@ -86,6 +86,20 @@ ALTER TABLE Substation
     DROP COLUMN LmRouteId;
 /* End YUK-9504 */
 
+/* Start YUK-9489 */
+UPDATE YukonRoleProperty 
+SET KeyName = 'Create/Delete Energy Company', 
+    Description = 'Controls access to create and delete an energy company.' 
+WHERE RolePropertyId = -20001;
+
+DELETE FROM YukonUserRole 
+WHERE RolePropertyId = -20002; 
+DELETE FROM YukonGroupRole 
+WHERE RolePropertyId = -20002; 
+DELETE FROM YukonRoleProperty 
+WHERE RolePropertyId = -20002;
+/* End YUK-9489 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

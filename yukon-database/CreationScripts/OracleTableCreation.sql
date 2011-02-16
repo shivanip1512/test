@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/15/2011 5:57:57 PM                         */
+/* Created on:     2/16/2011 12:05:15 AM                        */
 /*==============================================================*/
 
 
@@ -9609,8 +9609,7 @@ INSERT INTO YukonRoleProperty VALUES(-20167,-201,'Opt Out Survey Edit','false','
 
 /* Operator Administrator Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20000,-200,'Config Energy Company','false','Controls whether to allow configuring the energy company');
-INSERT INTO YukonRoleProperty VALUES(-20001,-200,'Create Energy Company','false','Controls whether to allow creating a new energy company');
-INSERT INTO YukonRoleProperty VALUES(-20002,-200,'Delete Energy Company','false','Controls whether to allow deleting the energy company');
+INSERT INTO YukonRoleProperty VALUES(-20001,-200,'Create/Delete Energy Company','false','Controls access to create and delete an energy company');
 INSERT INTO YukonRoleProperty VALUES(-20003,-200,'Manage Members','false','Controls whether to allow managing the energy company''s members');
 INSERT INTO YukonRoleProperty VALUES(-20004,-200,'View Batch Commands','false','Controls whether to allow monitoring of all batched switch commands');
 INSERT INTO YukonRoleProperty VALUES(-20005,-200,'View Opt Out Events','false','Controls whether to allow monitoring of all scheduled opt out events');
@@ -10072,7 +10071,6 @@ INSERT INTO YukonUserRole VALUES(-1007, -100, -108, -10811, '(none)');
 INSERT INTO YukonUserRole VALUES(-1010, -100, -200, -20000, '(none)');
 INSERT INTO YukonUserRole VALUES(-1011, -100, -200, -20001, 'true');
 
-INSERT INTO YukonUserRole VALUES(-1012, -100, -200, -20002, '(none)');
 INSERT INTO YukonUserRole VALUES(-1013, -100, -200, -20003, '(none)');
 INSERT INTO YukonUserRole VALUES(-1014, -100, -200, -20004, '(none)');
 INSERT INTO YukonUserRole VALUES(-1015, -100, -200, -20005, '(none)');
