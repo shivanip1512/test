@@ -532,7 +532,7 @@ public class OptOutServiceImpl implements OptOutService {
 		Integer inventoryId = ooe.getInventoryId();
 		LiteStarsLMHardware inventory = null;
 		try {
-		    inventory = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
+		    inventory = starsInventoryBaseDao.getHardwareByInventoryId(inventoryId);
 		} catch (NotFoundException e) {
 		    // Inventory wasn't found, was probably deleted via web interface,
 		    // In this case just change event to CANCEL_SENT and save it to DB
@@ -541,7 +541,7 @@ public class OptOutServiceImpl implements OptOutService {
             ooe.setEventCounts(OptOutCounts.DONT_COUNT);
             optOutEventDao.save(ooe, OptOutAction.CANCEL, user);
             
-            logger.error(e);
+            logger.warn("Unable to send cancel because inventory couldn't be found" + inventoryId, e);
             
             return;
 		}
