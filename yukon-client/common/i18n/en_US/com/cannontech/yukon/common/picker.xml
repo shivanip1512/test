@@ -30,6 +30,7 @@
 <entry key="yukon.web.picker.capControlAreaPicker.dialogTitle">Select Area</entry>
 <entry key="yukon.web.picker.cbcPicker.dialogTitle">Select Controller</entry>
 <entry key="yukon.web.picker.lmDevicePicker.dialogTitle">Select Device</entry>
+<entry key="yukon.web.picker.lmProgramOrScenarioPicker.dialogTitle">Select Device</entry>
 <entry key="yukon.web.picker.devicePicker.dialogTitle">Select Device</entry>
 <entry key="yukon.web.picker.meterPicker.dialogTitle">Select Meter</entry>
 <entry key="yukon.web.picker.voltageRegulatorPicker.dialogTitle">Select Regulator</entry>
@@ -60,6 +61,7 @@
 <entry key="yukon.web.picker.voltPointPicker.dialogTitle">Select Point</entry>
 <entry key="yukon.web.picker.twoStatePointPicker.dialogTitle">Select Point</entry>
 <entry key="yukon.web.picker.filterablePointPicker.dialogTitle">Select Point</entry>
+<entry key="yukon.web.picker.statusPointPicker.dialogTitle">Select Point</entry>
 
 <!-- User Picker -->
 <entry key="yukon.web.picker.user.name">User</entry>

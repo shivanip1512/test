@@ -3,9 +3,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
-<cti:standardPage module="adminSetup" page="lmMappings">
-
-	<cti:includeScript link="/JavaScript/lmMappings.js"/>
+<cti:standardPage module="adminSetup" page="lmMappings">	
+  <cti:includeScript link="/JavaScript/lmMappings.js"/>
 	
     <tags:boxContainer2 nameKey="mappingsContainer" id="container" hideEnabled="false">
 
@@ -41,16 +40,14 @@
 					    	</tags:nameValue>
 					    
 					    	<tags:nameValue name="" nameColumnWidth="200px">
-					    		
-					    		<cti:paoPicker pickerId="paoPicker" 	
-					    					paoIdField="mappedNameId" 
-					    					paoNameElement="mappedName"
-					    					constraint="com.cannontech.common.search.criteria.LMProgramOrScenarioCriteria" 
-					    					finalTriggerAction="setMappedNameId">
-	                        	</cti:paoPicker>
-	                        	
+					    		 <tags:pickerDialog id="paoPicker"
+                                    type="lmProgramOrScenarioPicker"
+                                    destinationFieldId="mappedNameId"
+                                    extraDestinationFields="paoName:mappedName;" 
+                                    endAction="setMappedNameId"
+                                    linkType="none"/> 
 					    		<input type="button" id="searchButton" value="Search" onclick="doLmMappingNameSearch();" class="formSubmit">
-					    		<input type="button" id="addButton" value="Set New Mapping" onclick="paoPicker.showPicker();" class="formSubmit">
+					    		<input type="button" id="addButton" value="Set New Mapping" onclick="validateAndShow();" class="formSubmit">
 					    		<img src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;" id="waitImg">
 	                        
 					    	</tags:nameValue>

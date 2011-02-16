@@ -5,7 +5,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:verbatim>
     <script type="text/javascript">
-        var specAreaVoltReductionPointPicker = new PointPicker('specAreaVoltReductionPointValue','com.cannontech.common.search.criteria.StatusPointCriteria','pointName:specAreaVoltReductionPoint;deviceName:areaDevice','specAreaVoltReductionPointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
+        var specAreaVoltReductionPointPicker = new Picker('statusPointPicker', '', 'specAreaVoltReductionPointPicker', 'pointName:specAreaVoltReductionPoint;deviceName:areaDevice');
+        specAreaVoltReductionPointPicker.destinationFieldId = 'specAreaVoltReductionPointValue';
     </script>
 </f:verbatim>
 
@@ -44,7 +45,7 @@
     
                         <x:htmlTag value="br"/>
     
-                        <h:outputLink  value="javascript:specAreaVoltReductionPointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
+                        <h:outputLink  value="javascript:specAreaVoltReductionPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point"/>
                         </h:outputLink>
                  

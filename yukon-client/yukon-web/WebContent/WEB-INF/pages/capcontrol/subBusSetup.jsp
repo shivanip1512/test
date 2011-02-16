@@ -5,13 +5,26 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:verbatim>
     <script type="text/javascript">
-   		var substationBusDisableBusPointPicker = new PointPicker('subDisablePointValue','com.cannontech.common.search.criteria.VoltReductionCriteria','pointName:disableBusPoint;deviceName:disableBusDevice','substationBusDisableBusPointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
-    	var substationBusVoltReductionPointPicker = new PointPicker('subReductionPointValue','com.cannontech.common.search.criteria.VoltReductionCriteria','pointName:substationBusVoltReductionPoint;deviceName:substationBusDevice','substationBusVoltReductionPointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
-    	var sub_Var_PointPicker = new PointPicker('var_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:sub_Var_Point;deviceName:sub_Var_Device','sub_Var_PointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
-        var sub_Var_PhaseB_PointPicker = new PointPicker('var_phase_b_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:sub_Var_PhaseB_Point;deviceName:sub_Var_PhaseB_Device','sub_Var_PhaseB_PointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
-        var sub_Var_PhaseC_PointPicker = new PointPicker('var_phase_c_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:sub_Var_PhaseC_Point;deviceName:sub_Var_PhaseC_Device','sub_Var_PhaseC_PointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
-		var subWattPointPicker = new PointPicker('watt_point','com.cannontech.common.search.criteria.CCWattCriteria','pointName:subWattPoint;deviceName:subWattDevice','subWattPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
-		var subVoltPointPicker = new PointPicker('volt_point','com.cannontech.common.search.criteria.CCVoltCriteria','pointName:subVoltPoint;deviceName:subVoltDevice','subVoltPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
+        var substationBusDisableBusPointPicker = new Picker('voltReductionPointPicker', '', 'substationBusDisableBusPointPicker', 'pointName:disableBusPoint;deviceName:disableBusDevice');
+        substationBusDisableBusPointPicker.destinationFieldId = 'subDisablePointValue';
+        
+        var substationBusVoltReductionPointPicker = new Picker('voltReductionPointPicker', '', 'substationBusVoltReductionPointPicker', 'pointName:substationBusVoltReductionPoint;deviceName:substationBusDevice');
+        substationBusVoltReductionPointPicker.destinationFieldId = 'subReductionPointValue';
+        
+        var sub_Var_PointPicker = new Picker('varPointPicker', '', 'sub_Var_PointPicker', 'pointName:sub_Var_Point;deviceName:sub_Var_Device','sub_Var_PointPicker');
+        sub_Var_PointPicker.destinationFieldId = 'var_point';
+        
+        var sub_Var_PhaseB_PointPicker = new Picker('varPointPicker', '', 'sub_Var_PhaseB_PointPicker', 'pointName:sub_Var_PhaseB_Point;deviceName:sub_Var_PhaseB_Device');
+        sub_Var_PhaseB_PointPicker.destinationFieldId = 'var_phase_b_point';
+        
+        var sub_Var_PhaseC_PointPicker = new Picker('varPointPicker', '', 'sub_Var_PhaseC_PointPicker', 'pointName:sub_Var_PhaseC_Point;deviceName:sub_Var_PhaseC_Device');
+        sub_Var_PhaseC_PointPicker.destinationFieldId = 'var_phase_c_point';
+        
+        var subWattPointPicker = new Picker('wattPointPicker', '', 'subWattPointPicker', 'pointName:subWattPoint;deviceName:subWattDevice');
+        subWattPointPicker.destinationFieldId = 'watt_point';
+        
+        var subVoltPointPicker = new Picker('voltPointPicker', '', 'subVoltPointPicker', 'pointName:subVoltPoint;deviceName:subVoltDevice');
+        subVoltPointPicker.destinationFieldId = 'volt_point';
     </script>
 </f:verbatim>
 
@@ -58,7 +71,7 @@
 	    
                         <x:htmlTag value="br"/>
 	    
-                        <h:outputLink  value="javascript:substationBusVoltReductionPointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
+                        <h:outputLink  value="javascript:substationBusVoltReductionPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point"/>
                         </h:outputLink>
 	
@@ -90,7 +103,7 @@
 	    
                         <x:htmlTag value="br"/>
 	    
-                        <h:outputLink  value="javascript:substationBusDisableBusPointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
+                        <h:outputLink  value="javascript:substationBusDisableBusPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point"/>
                         </h:outputLink>
 	
@@ -212,7 +225,7 @@
     
                         <x:htmlTag value="br"/> 
     
-                        <h:outputLink  value="javascript:sub_Var_PointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
+                        <h:outputLink  value="javascript:sub_Var_PointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point" rendered="#{!capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}"/>
                             <h:outputText value="Select point for Phase A" rendered="#{capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}"/>
                         </h:outputLink>
@@ -231,7 +244,7 @@
 	
                             <x:htmlTag value="br"/> 
 	
-                            <h:outputLink  value="javascript:sub_Var_PhaseB_PointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
+                            <h:outputLink  value="javascript:sub_Var_PhaseB_PointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
                                 <h:outputText value="Select point for Phase B"/>
                             </h:outputLink>
 	
@@ -247,7 +260,7 @@
                  
                             <x:htmlTag value="br"/> 
     
-                            <h:outputLink  value="javascript:sub_Var_PhaseC_PointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
+                            <h:outputLink  value="javascript:sub_Var_PhaseC_PointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
                                 <h:outputText value="Select point for Phase C"/>
                             </h:outputLink>
     
@@ -285,7 +298,7 @@
 	    
                         <x:htmlTag value="br"/> 
 	    
-                        <h:outputLink  value="javascript:subWattPointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
+                        <h:outputLink  value="javascript:subWattPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point..."/>
                         </h:outputLink>
                     </x:div>
@@ -317,7 +330,7 @@
 	    
                         <x:htmlTag value="br"/> 
 	                
-                        <h:outputLink  value="javascript:subVoltPointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
+                        <h:outputLink  value="javascript:subVoltPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point..."/>
                         </h:outputLink>
                     </x:div>

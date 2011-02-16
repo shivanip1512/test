@@ -4,10 +4,7 @@
 
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
-<cti:includeScript link="/JavaScript/itemPicker.js" />
 <cti:includeScript link="/JavaScript/tableCreation.js" />
-<cti:includeScript link="/JavaScript/paoPicker.js" />
-<cti:includeCss link="/WebConfig/yukon/styles/itemPicker.css" />
         
 <cti:standardPage title="Capbank Locations" module="capcontrol">
 

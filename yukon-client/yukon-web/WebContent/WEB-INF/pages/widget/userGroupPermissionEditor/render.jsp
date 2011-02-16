@@ -2,10 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:includeScript link="/JavaScript/itemPicker.js" />
 <cti:includeScript link="/JavaScript/tableCreation.js" />
-<cti:includeScript link="/JavaScript/paoPicker.js" />
-<cti:includeCss link="/WebConfig/yukon/styles/itemPicker.css" />
 
 <c:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
 <c:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>

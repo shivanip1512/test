@@ -11,13 +11,9 @@
 <c:set value="Send Time Syncs" var="sendTimeSyncsCommand" />
 
 <cti:standardPage title="Schedule Assignment" module="capcontrol" page="scheduleAssignments">
-
-	<cti:includeScript link="/JavaScript/itemPicker.js" />
 	<cti:includeScript link="/JavaScript/tableCreation.js" />
-	<cti:includeScript link="/JavaScript/paoPicker.js" />
 	<cti:includeScript link="/JavaScript/simpleDialog.js"/>
 	<cti:includeScript link="/JavaScript/picker.js" />
-	<cti:includeCss link="/WebConfig/yukon/styles/itemPicker.css" />
 	<cti:standardMenu menuSelection="view|scheduleassignment"/>
 	<cti:breadCrumbs>
 		<cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />

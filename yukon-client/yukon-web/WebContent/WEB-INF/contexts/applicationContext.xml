@@ -1504,6 +1504,12 @@
             <bean class="com.cannontech.common.search.criteria.LMDeviceCriteria"/>
         </property>
     </bean>
+    <bean name="lmProgramOrScenarioPicker" parent="abstractPaoPicker"
+        class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria">
+           <bean class="com.cannontech.common.search.criteria.LMProgramOrScenarioCriteria"/>
+        </property>  
+    </bean>
     <bean name="devicePicker" parent="abstractPaoPicker"
         class="com.cannontech.web.picker.v2.PaoPicker">
         <property name="criteria">
@@ -1564,6 +1570,12 @@
             <bean class="com.cannontech.common.search.criteria.CCTwoStatePointCriteria"/>
         </property>
     </bean>
+    <bean name="statusPointPicker" parent="abstractPointPicker"
+        class="com.cannontech.web.picker.v2.PointPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.StatusPointCriteria"/>
+        </property>
+    </bean> 
 
 	<bean name="availableCapBankPicker" class="com.cannontech.web.picker.v2.AvailableCapBankPicker"/>
 	<bean name="availableVoltageRegulatorPicker" class="com.cannontech.web.picker.v2.AvailableVoltageRegulatorPicker"/>
@@ -1589,7 +1601,7 @@
     
     <bean name="availableThermostatPicker" class="com.cannontech.web.picker.v2.AvailableThermostatPicker"/>
 
-    <bean name="applianceCategoryProgramPicker" class="com.cannontech.web.picker.v2.PaoPermissionCheckingPicker">
+    <bean name="applianceProgramPaoPermissionCheckingPicker" class="com.cannontech.web.picker.v2.PaoPermissionCheckingPicker">
         <property name="permission" value="LM_VISIBLE"/>
         <property name="sqlFilters">
             <list>

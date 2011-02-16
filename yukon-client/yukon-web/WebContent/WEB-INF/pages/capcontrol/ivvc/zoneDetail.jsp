@@ -8,12 +8,9 @@
 <cti:msgScope paths="modules.capcontrol.ivvc.zoneDetail">
 
 <cti:standardPage title="${title}" module="capcontrol">
-	<cti:includeScript link="/JavaScript/itemPicker.js" />
 	<cti:includeScript link="/JavaScript/tableCreation.js" />
-	<cti:includeScript link="/JavaScript/paoPicker.js" />
 	<cti:includeScript link="/JavaScript/simpleDialog.js"/>
 	<cti:includeScript link="/JavaScript/picker.js" />
-	<cti:includeCss link="/WebConfig/yukon/styles/itemPicker.css" />
 	
 	<%@include file="/capcontrol/capcontrolHeader.jspf"%>
 	<cti:includeCss link="/capcontrol/css/ivvc.css"/>

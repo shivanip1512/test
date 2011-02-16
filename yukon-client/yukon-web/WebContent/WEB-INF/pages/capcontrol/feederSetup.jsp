@@ -5,11 +5,16 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:verbatim>
 	<script type="text/javascript">
-        var feederVarPointPicker = new PointPicker('varPoint','com.cannontech.common.search.criteria.CCVarCriteria','pointName:feederVarPoint;deviceName:feederVarDevice','feederVarPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
-        var feederVarPhaseBPointPicker = new PointPicker('varPhaseBPoint','com.cannontech.common.search.criteria.CCVarCriteria','pointName:feederVarPhaseBPoint;deviceName:feederVarPhaseBDevice','feederVarPhaseBPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
-        var feederVarPhaseCPointPicker = new PointPicker('varPhaseCPoint','com.cannontech.common.search.criteria.CCVarCriteria','pointName:feederVarPhaseCPoint;deviceName:feederVarPhaseCDevice','feederVarPhaseCPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
-        var feederWattPointPicker = new PointPicker('wattPoint','com.cannontech.common.search.criteria.CCWattCriteria','pointName:feederWattPoint;deviceName:feederWattDevice','feederWattPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
-        var feederVoltPointPicker = new PointPicker('voltPoint','com.cannontech.common.search.criteria.CCVoltCriteria','pointName:feederVoltPoint;deviceName:feederVoltDevice','feederVoltPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
+	    var feederVarPointPicker = new Picker('varPointPicker', '', 'feederVarPointPicker', 'pointName:feederVarPoint;deviceName:feederVarDevice');
+	    feederVarPointPicker.destinationFieldId = 'varPoint';
+	    var feederVarPhaseBPointPicker = new Picker('varPointPicker', '', 'feederVarPhaseBPointPicker', 'pointName:feederVarPhaseBPoint;deviceName:feederVarPhaseBDevice');
+        feederVarPhaseBPointPicker.destinationFieldId = 'varPhaseBPoint';
+        var feederVarPhaseCPointPicker = new Picker('varPointPicker', '', 'feederVarPhaseCPointPicker', 'pointName:feederVarPhaseCPoint;deviceName:feederVarPhaseCDevice');
+        feederVarPhaseCPointPicker.destinationFieldId = 'varPhaseCPoint';
+        var feederWattPointPicker = new Picker('wattPointPicker', '', 'feederWattPointPicker', 'pointName:feederWattPoint;deviceName:feederWattDevice');
+        feederWattPointPicker.destinationFieldId = 'wattPoint';
+        var feederVoltPointPicker = new Picker('voltPointPicker', '', 'feederVoltPointPicker', 'pointName:feederVoltPoint;deviceName:feederVoltDevice','feederVoltPointPicker');
+        feederVoltPointPicker.destinationFieldId = 'voltPoint';
     </script>
 </f:verbatim>
 <f:subview id="feederSetup" rendered="#{capControlForm.visibleTabs['CBCFeeder']}">
@@ -143,7 +148,7 @@
 	
 						<x:htmlTag value="br"/>
 	
-						<h:outputLink value="javascript:feederVarPointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
+						<h:outputLink value="javascript:feederVarPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
 							<h:outputText value="Select point for Phase A"
 								rendered="#{capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean}" />
 							<h:outputText value="Select point"
@@ -173,7 +178,7 @@
 	
 							<h:outputLink
                                 rendered="#{capControlForm.editingAuthorized}"
-								value="javascript:feederVarPhaseBPointPicker.showPicker()">
+								value="javascript:feederVarPhaseBPointPicker.show()">
 								<h:outputText value="Select point for Phase B" />
 							</h:outputLink>
 	
@@ -197,7 +202,7 @@
 	
 							<h:outputLink
                                 rendered="#{capControlForm.editingAuthorized}"
-								value="javascript:feederVarPhaseCPointPicker.showPicker()">
+								value="javascript:feederVarPhaseCPointPicker.show()">
 								<h:outputText value="Select point for Phase C" />
 							</h:outputLink>
 	
@@ -235,7 +240,7 @@
 						
 	                    <x:htmlTag value="br"/>
 	
-						<h:outputLink value="javascript:feederWattPointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
+						<h:outputLink value="javascript:feederWattPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
 							<h:outputText value="Select point..." />
 						</h:outputLink>
 					</x:div>
@@ -270,7 +275,7 @@
 						
 						<x:htmlTag value="br"/>
 						
-						<h:outputLink value="javascript:feederVoltPointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
+						<h:outputLink value="javascript:feederVoltPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
 							<h:outputText value="Select point..." />
 						</h:outputLink>
 					</x:div>

@@ -10,13 +10,10 @@
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/simpleDialog.js"/>
-    <cti:includeScript link="/JavaScript/itemPicker.js" />
     <cti:includeScript link="/JavaScript/tableCreation.js" />
-    <cti:includeScript link="/JavaScript/paoPicker.js" />
     <cti:includeScript link="/JavaScript/picker.js" />
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/itemPicker.css" />
     
     <script>
         function removeRule(row) {

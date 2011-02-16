@@ -17,16 +17,12 @@
 
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
 
-<cti:includeScript link="/JavaScript/itemPicker.js"/>
-<cti:includeScript link="/JavaScript/pointPicker.js"/>
-<cti:includeScript link="/JavaScript/paoPicker.js"/>
 <cti:includeScript link="/JavaScript/tableCreation.js"/>
 <cti:includeScript link="/JavaScript/scrollDiv.js"/>
 <cti:includeScript link="/capcontrol/js/capcontrolGeneral.js"/>
 <cti:includeScript link="/JavaScript/GreyBox/AmiJS.js"/>
 <cti:includeScript link="/JavaScript/GreyBox/greybox.js"/>
 
-<cti:includeCss link="/WebConfig/yukon/styles/itemPicker.css"/>
 <cti:includeCss link="/editor/css/greybox/greybox.css"/>
 <cti:includeCss link="/editor/css/CapcontrolEditorStyles.css"/>
 

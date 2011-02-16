@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.LiteAddress" %>
@@ -97,24 +98,16 @@
             boolean viewOnly = src.equalsIgnoreCase("SelectInv");
 %>
 <c:set target="${detailBean}" property="currentInventory" value="${currentInv}" />
-<html>
-<head>
-<title>Energy Services Operations Center</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/yukon/styles/calendarControl.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
+<tags:busyBox/>
 
-<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/StandardStyles.css" >
-<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/YukonGeneralStyles.css" >
-<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/itemPicker.css" >
-
-<script type="text/javascript" src="/JavaScript/itemPicker.js"></script>
-<script type="text/javascript" src="/JavaScript/paoPicker.js"></script>
-<script type="text/javascript" src="/JavaScript/tableCreation.js"></script>
-
-<script type="text/javascript" src="../../JavaScript/calendarControl.js"></script>
+<cti:includeScript link="/JavaScript/calendarControl.js"/>
+<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
+<cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
 <script type="text/javascript">
+
+function init(){}
+
 function deleteHardware(form) {
 <% if (liteInv.getAccountID() > 0) { %>
 	if (!confirm("The hardware is currently assigned to a customer account. Are you sure you want to delete it from inventory?"))
@@ -181,31 +174,19 @@ Event.observe(window, 'load', function() {
 });
 
 var setChoosenYukonDevice = function() {
-	
-	if ($('choosenYukonDeviceId').value.strip() == '') {
-		alert('Select a Yukon device.');
-		return;
-	}
-
-	new Ajax.Request('/spring/stars/hardware/info/getMeterAddress', {
-        
+    
+    new Ajax.Request('/spring/stars/hardware/info/getMeterAddress', {
         'parameters': {'deviceId':$('choosenYukonDeviceId').value.strip()},
         'method': 'get',
         'onSuccess': function(transport, json) {
-        
             $('SerialNo').value = json.address;
             $('SerialNo').readOnly = true;
         }
-      }
-    );
-
-	$('choosenYukonDeviceNameField').value = $('choosenYukonDeviceNameSpan').innerHTML;
-
+    });
+    
+    return true;
 }
 </script>
-</head>
-
-<body class="Background" leftmargin="0" topmargin="0">
 
 <cti:msg key="yukon.common.calendarcontrol.months" var="months"/>
 <cti:msg key="yukon.common.calendarcontrol.days" var="days"/>
@@ -412,7 +393,7 @@ var setChoosenYukonDevice = function() {
                         
                         
                       <%-- YUKON DEVICE for Two Way LCR--%>
-	                  <tr id="twoWayLcr_TR" style="display:none;">
+	                  <tr id="twoWayLcr_TR" >
 	                  
 	                  	<td colspan="2">
 	                  		<table border="0" cellspacing="0" cellpadding="0">
@@ -465,15 +446,14 @@ var setChoosenYukonDevice = function() {
 	                                </td>
 	                                <td width="500"> 
 	                                	<input type="hidden" id="choosenYukonDeviceId" name="choosenYukonDeviceId" value="<%= twoWayLcrYukonDeviceIdStr %>" style="display:none;">
-	                              		<span id="choosenYukonDeviceNameSpan" style="display:none;"></span>
-	                              		<cti:paoPicker pickerId="paoPicker" 	
-						    					paoIdField="choosenYukonDeviceId" 
-						    					constraint="com.cannontech.common.search.criteria.TwoWayLcrCriteria" 
-						    					paoNameElement="choosenYukonDeviceNameSpan"
-						    					finalTriggerAction="setChoosenYukonDevice">
-						    			</cti:paoPicker>
+                                         <tags:pickerDialog id="paoPicker"
+                                            type="twoWayLcrPicker"
+                                            destinationFieldId="choosenYukonDeviceId"
+                                            extraDestinationFields="paoName:choosenYukonDeviceNameField;" 
+                                            endAction="setChoosenYukonDevice"
+                                            linkType="none"/>
 	                                  <input type="text" name="choosenYukonDeviceNameField" id="choosenYukonDeviceNameField" value="<%= twoWayLcrYukonDeviceName %>" readonly> 
-	                                  <input type="button" value="Choose" onclick="paoPicker.showPicker();$('existingYukDevRadio').checked=true;">
+	                                  <input type="button" value="Choose" onclick="paoPicker.show();$('existingYukDevRadio').checked=true;">
 	                                </td>
 	                              </tr>
 	                           </table>
@@ -877,5 +857,4 @@ var setChoosenYukonDevice = function() {
 	</tr>
 </table>
 <br>
-</body>
-</html>
+</cti:standardPage>

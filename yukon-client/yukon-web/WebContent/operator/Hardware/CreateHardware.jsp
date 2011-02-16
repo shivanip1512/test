@@ -3,6 +3,7 @@
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%
 	if (request.getParameter("Init") != null) {
 		// The "Create Hardware" link in the nav is clicked
@@ -53,26 +54,14 @@
 	YukonSelectionList devTypeList = member.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 	
 %>
-<html>
-<head>
-<title>Energy Services Operations Center</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
+<tags:busyBox/>
 
-<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/StandardStyles.css" >
-<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/YukonGeneralStyles.css" >
-<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/itemPicker.css" >
-
-<script type="text/javascript" src="/JavaScript/itemPicker.js"></script>
-<script type="text/javascript" src="/JavaScript/paoPicker.js"></script>
-<script type="text/javascript" src="/JavaScript/tableCreation.js"></script>
-
+<cti:includeScript link="/JavaScript/calendarControl.js"/>
+<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
+<cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
 
 <script language="JavaScript">
-
-
-
 
 function changeMember(form) {
 	form.attributes["action"].value = "CreateHardware.jsp";
@@ -126,11 +115,6 @@ function twoWayLCRCheck(el) {
 }
 
 var setChoosenYukonDevice = function() {
-	
-	if ($('choosenYukonDeviceId').value.strip() == '') {
-		alert('Select a Yukon device.');
-		return;
-	}
 
 	new Ajax.Request('/spring/stars/hardware/info/getMeterAddress', {
         
@@ -144,13 +128,11 @@ var setChoosenYukonDevice = function() {
       }
     );
 	
-	$('choosenYukonDeviceNameField').value = $('choosenYukonDeviceNameSpan').innerHTML;
+	return true;
 }
 
 </script>
-</head>
 
-<body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -377,10 +359,7 @@ String savedYukonDeviceCreationStyleRadio = "NEW";
 if (savedReq.getProperty("yukonDeviceCreationStyleRadio") != null)
 	savedYukonDeviceCreationStyleRadio = savedReq.getProperty("yukonDeviceCreationStyleRadio");
 %>
-                  
-                  
-                  <tr id="twoWayLcr_TR" style="display:none;">
-                  
+                  <tr id="twoWayLcr_TR" style="display: none">
                   	<td colspan="2">
                   		<table border="0" cellspacing="0" cellpadding="0">
                         <tr> 
@@ -439,15 +418,14 @@ if (savedReq.getProperty("yukonDeviceDemandRate") != null)
                                 </td>
                                 <td width="500"> 
                                 	<input type="hidden" id="choosenYukonDeviceId" name="choosenYukonDeviceId" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("choosenYukonDeviceId")) %>" style="display:none;">
-                              		<span id="choosenYukonDeviceNameSpan" style="display:none;"></span>
-                              		<cti:paoPicker pickerId="paoPicker" 	
-					    					paoIdField="choosenYukonDeviceId" 
-					    					constraint="com.cannontech.common.search.criteria.TwoWayLcrCriteria" 
-					    					paoNameElement="choosenYukonDeviceNameSpan"
-					    					finalTriggerAction="setChoosenYukonDevice">
-					    			</cti:paoPicker>
+                                         <tags:pickerDialog id="paoPicker"
+                                            type="twoWayLcrPicker"
+                                            destinationFieldId="choosenYukonDeviceId"
+                                            extraDestinationFields="paoName:choosenYukonDeviceNameField;" 
+                                            endAction="setChoosenYukonDevice"
+                                            linkType="none"/>
                                   <input type="text" name="choosenYukonDeviceNameField" id="choosenYukonDeviceNameField" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("choosenYukonDeviceNameField")) %>" readonly> 
-                                  <input type="button" value="Choose" onclick="paoPicker.showPicker();$('existingYukDevRadio').checked=true;">
+                                  <input type="button" value="Choose" onclick="paoPicker.show();$('existingYukDevRadio').checked=true;">
                                 </td>
                               </tr>
                            </table>
@@ -521,5 +499,4 @@ if (savedReq.getProperty("yukonDeviceDemandRate") != null)
   </tr>
 </table>
 <br>
-</body>
-</html>
+</cti:standardPage>

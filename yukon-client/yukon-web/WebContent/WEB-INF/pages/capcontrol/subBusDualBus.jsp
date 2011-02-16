@@ -4,16 +4,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <f:verbatim>
 <script type="text/javascript">
-
-var switchPointPicker = new PointPicker(
-    'switch_point',
-    'com.cannontech.common.search.criteria.CCTwoStatePointCriteria',
-    'pointName:switchPointName;deviceName:switchPointDevice',
-    'switchPointPicker',
-    '', 
-    Prototype.emptyFunction,
-    Prototype.emptyFunction);
-
+var switchPointPicker = new Picker('twoStatePointPicker', '', 'switchPointPicker', 'pointName:switchPointName;deviceName:switchPointDevice');
+switchPointPicker.destinationFieldId = 'switch_point';
 </script>
 </f:verbatim>
 <f:subview id="altDualBusSetup" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">
@@ -61,7 +53,7 @@ var switchPointPicker = new PointPicker(
                             <x:outputText id="switchPointName" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.switchPointID]}" /> 
                             
                             <x:htmlTag value="br"/>
-		                    <h:outputLink  value="javascript:switchPointPicker.showPicker()" rendered="#{capControlForm.editingAuthorized}">
+		                    <h:outputLink  value="javascript:switchPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
                                 <h:outputText value="Select point..."/>
 		                    </h:outputLink>
 		                </x:div>

@@ -13,85 +13,10 @@
 
     <context:component-scan base-package="com.cannontech.web.picker"/>
 
-    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
-        <property name="order" value="1"/>
-    </bean>
-
-    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-        <property name="mappings">
-            <value>
-                /point/test=testpage
-                /point/*=PointPickerController
-                /pao/*=PaoPickerController
-                /multi/*=MultiPickerController
-            </value>
-        </property>
-        <property name="order" value="2"/>
-    </bean>    
-    
     <bean id="viewResolver"
       class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="prefix" value="/WEB-INF/pages/picker/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
-    
-    <bean id="testpage" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-      <property name="viewName" value="point/test"/>
-    </bean>
-  
-    <bean id="PointPickerController" class="com.cannontech.web.picker.PointPickerController" >
-        <property name="cacheSeconds">
-            <value type="int">0</value>
-        </property>
-        <property name="validators">
-            <null />
-        </property>
-        <property name="methodNameResolver">
-           <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver"/>
-        </property>
-        <property name="requireSession">
-            <value type="boolean">true</value>
-        </property>
-        <property name="synchronizeOnSession">
-            <value type="boolean">true</value>
-        </property>
-        <property name="pointDeviceSearcher" ref="pointDeviceSearcher"/>
-    </bean>
-
-    <bean id="PaoPickerController" class="com.cannontech.web.picker.pao.PaoPickerController" >
-        <property name="cacheSeconds">
-            <value type="int">0</value>
-        </property>
-        <property name="validators">
-            <null />
-        </property>
-        <property name="methodNameResolver">
-           <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver"/>
-        </property>
-        <property name="requireSession">
-            <value type="boolean">true</value>
-        </property>
-        <property name="synchronizeOnSession">
-            <value type="boolean">true</value>
-        </property>
-        <property name="paoTypeSearcher" ref="paoTypeSearcher"/>
-    </bean>
-    
-    <bean id="MultiPickerController" class="com.cannontech.web.picker.multi.MultiPickerController" >
-        <property name="cacheSeconds">
-            <value type="int">0</value>
-        </property>
-        <property name="methodNameResolver">
-           <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver"/>
-        </property>
-        <property name="requireSession">
-            <value type="boolean">true</value>
-        </property>
-        <property name="synchronizeOnSession">
-            <value type="boolean">true</value>
-        </property>
-        <property name="paoTypeSearcher" ref="paoTypeSearcher"/>
-    </bean>
-    
 </beans>

@@ -1,24 +1,32 @@
 var currentOrderByColum = 'STRATEGY';
 var currentAscendingOrder = true;
 
+var validateAndShow = function(){
+    if ($('strategyName').value.strip() == '' || $('substationName').value.strip() == ''){
+        alert('Strategy and Substation names are required.');
+        return;
+    }
+    
+
+    paoPicker.show();
+}
+
 var setMappedNameId = function() {
-	
-	if ($('strategyName').value.strip() == '' || $('substationName').value.strip() == ''){
-		alert('Strategy and Substation names are required.');
-		return null;
-	}
-	
-	toggleLmMappingsWaitIndicators(true, $('addButton'));
-	if ($('mappedNameId').value.strip() == '') {
-		alert('Select a Program/Scenario name.');
-		return;
-	}
+    
+    toggleLmMappingsWaitIndicators(true, $('addButton'));
+    if ($('mappedNameId').value.strip() == '') {
+        alert('Select a Program/Scenario name.');
+        return;
+    }
+    
+    var success = true;
 
 	getMappedName(function(mappedName) {
 	
 		var overwrite = true;
 		if (mappedName != null && mappedName != $('mappedName').innerHTML) {
 			overwrite = confirm('Strategy/Substation ' + $('strategyName').value + '/' + $('substationName').value + ' is already mapped to "' + mappedName + '", are you want to overwrite it with "' + $('mappedName').innerHTML + '"?');
+		    success = overwrite;
 		} 
 	
 		if (overwrite) {
@@ -51,6 +59,8 @@ var setMappedNameId = function() {
 		}
 	
 	});
+	
+	return success;
 }
 
 function getMappedName(callback) {
