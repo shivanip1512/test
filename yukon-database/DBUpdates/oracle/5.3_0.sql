@@ -100,6 +100,18 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId = -20002;
 /* End YUK-9489 */
 
+/* Start YUK-9436 */
+INSERT INTO YukonRoleProperty
+VALUES(-1119,-2,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment');
+
+DELETE FROM YukonUserRole
+WHERE RolePropertyId IN (-40052, -20154);
+DELETE FROM YukonGroupRole
+WHERE RolePropertyId IN (-40052, -20154);
+DELETE FROM YukonRoleProperty
+WHERE RolePropertyId IN (-40052, -20154);
+/* End YUK-9436 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/16/2011 12:10:33 AM                        */
+/* Created on:     2/16/2011 12:11:31 PM                        */
 /*==============================================================*/
 
 
@@ -11706,7 +11706,6 @@ insert into yukongrouprole values (-529,-300,-400,-40009,'true');
 insert into yukongrouprole values (-530,-300,-400,-40010,'true');
 
 insert into yukongrouprole values (-551,-300,-400,-40051,'false');
-insert into yukongrouprole values (-552,-300,-400,-40052,'false');
 insert into yukongrouprole values (-555,-300,-400,-40055,'(none)');
 insert into yukongrouprole values (-600,-300,-400,-40100,'(none)');
 insert into yukongrouprole values (-602,-300,-400,-40102,'(none)');
@@ -11741,7 +11740,6 @@ insert into yukongrouprole values (-738,-301,-201,-20118,'true');
 insert into yukongrouprole values (-751,-301,-201,-20151,'true');
 insert into yukongrouprole values (-752,-301,-201,-20152,'(none)');
 insert into yukongrouprole values (-753,-301,-201,-20153,'(none)');
-insert into yukongrouprole values (-754,-301,-201,-20154,'false');
 insert into yukongrouprole values (-755,-301,-201,-20155,'true');
 insert into yukongrouprole values (-756,-301,-201,-20156,'true');
 insert into yukongrouprole values (-757,-301,-201,-20157,'(none)');
@@ -11862,7 +11860,6 @@ insert into yukongrouprole values (-2038,-303,-201,-20118,'(none)');
 insert into yukongrouprole values (-2051,-303,-201,-20151,'(none)');
 insert into yukongrouprole values (-2052,-303,-201,-20152,'(none)');
 insert into yukongrouprole values (-2053,-303,-201,-20153,'(none)');
-insert into yukongrouprole values (-2054,-303,-201,-20154,'(none)');
 insert into yukongrouprole values (-2055,-303,-201,-20155,'true');
 insert into yukongrouprole values (-2056,-303,-201,-20156,'(none)');
 insert into yukongrouprole values (-2057,-303,-201,-20157,'(none)');
@@ -11910,7 +11907,6 @@ insert into yukongrouprole values (-2229,-304,-400,-40009,'(none)');
 insert into yukongrouprole values (-2230,-304,-400,-40010,'(none)');
 
 insert into yukongrouprole values (-2251,-304,-400,-40051,'(none)');
-insert into yukongrouprole values (-2252,-304,-400,-40052,'(none)');
 insert into yukongrouprole values (-2255,-304,-400,-40055,'(none)');
 insert into yukongrouprole values (-2300,-304,-400,-40100,'(none)');
 insert into yukongrouprole values (-2302,-304,-400,-40102,'(none)');
@@ -12788,7 +12784,6 @@ INSERT INTO YukonRoleProperty VALUES(-20121,-201,'Web Service LM Control Access'
 INSERT INTO YukonRoleProperty VALUES(-20151,-201,'New Account Wizard','true','Controls whether to enable the new account wizard');
 INSERT INTO YukonRoleProperty VALUES(-20152,-201,'Import Customer Account','(none)','Controls whether to enable the customer account importing feature');
 INSERT INTO YukonRoleProperty VALUES(-20153,-201,'Inventory Checking','true','Controls whether to perform inventory checking while creating or updating hardware information');
-INSERT INTO YukonRoleProperty VALUES(-20154,-201,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment');
 INSERT INTO YukonRoleProperty VALUES(-20155,-201,'Order Number Auto Generation','false','Controls whether the order number is automatically generated or entered by user');
 INSERT INTO YukonRoleProperty VALUES(-20156,-201,'Call Number Auto Generation','false','Controls whether the call number is automatically generated or entered by user');
 INSERT INTO YukonRoleProperty VALUES(-20157,-201,'Opt Out Period','(none)','The duration, in days, for the customer Opt Out period. (Use commas to separate multiple values: Ex. 1,3,4,5)');
@@ -12908,7 +12903,6 @@ INSERT INTO YukonRoleProperty VALUES(-40009,-400,'Change Login Username','true',
 INSERT INTO YukonRoleProperty VALUES(-40010,-400,'Thermostats All','false','Controls whether to allow programming multiple thermostats at one time');
 INSERT INTO YukonRoleProperty VALUES(-40011,-400,'Change Login Password','true','Controls access for customers to change their own login password'); 
 INSERT INTO YukonRoleProperty VALUES(-40051,-400,'Hide Opt Out Box','false','Controls whether to show the opt out box on the programs opt out page');
-INSERT INTO YukonRoleProperty VALUES(-40052,-400,'Automatic Configuration','false','Controls whether to automatically send out config command when changing program enrollment');
 INSERT INTO YukonRoleProperty VALUES(-40055,-400,'Opt Out Period','(none)','The duration, in days, for the customer Opt Out period. (Use commas to separate multiple values: Ex. 1,3,4,5)');
 INSERT INTO YukonRoleProperty VALUES(-40056,-400,'Opt Out Limits',' ','Contains information on Opt Out limits.');
 INSERT INTO YukonRoleProperty VALUES(-40100,-400,'Link FAQ','(none)','The customized FAQ link');
