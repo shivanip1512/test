@@ -59,67 +59,75 @@ where ReadingError = .1;
 /* End YUK-9475 */
 
 /* Start YUK-8691 */
-UPDATE AcctThermostatScheduleEntry SET CoolTemp = 72 WHERE CoolTemp <= 0;
+UPDATE AcctThermostatScheduleEntry
+SET CoolTemp = 72 
+WHERE CoolTemp <= 0;
 
 /* @start-block */
 DECLARE
-i NUMBER;
+    i NUMBER;
 BEGIN
-    SELECT MAX(CoolTemp) into i FROM AcctThermostatScheduleEntry;
+    SELECT MAX(CoolTemp) INTO i FROM AcctThermostatScheduleEntry;
 WHILE (i > 100)
     LOOP
         UPDATE AcctThermostatScheduleEntry
-            SET CoolTemp = ((CoolTemp - 32)/1.8)
-            WHERE CoolTemp > 100;
-SELECT MAX(CoolTemp) into i FROM AcctThermostatScheduleEntry;
-END LOOP;
+        SET CoolTemp = ((CoolTemp - 32)/1.8)
+        WHERE CoolTemp > 100;
+        
+		SELECT MAX(CoolTemp) INTO i FROM AcctThermostatScheduleEntry;
+	END LOOP;
 END;
 /* @end-block */
 
 /* @start-block */
 DECLARE
-i NUMBER;
+    i NUMBER;
 BEGIN
-    SELECT MIN(CoolTemp) into i FROM AcctThermostatScheduleEntry;
+    SELECT MIN(CoolTemp) INTO i FROM AcctThermostatScheduleEntry;
 WHILE (i < 38)
     LOOP
         UPDATE AcctThermostatScheduleEntry
-            SET CoolTemp = ((CoolTemp * 1.8) + 32)
-            WHERE CoolTemp < 38;
-SELECT MIN(CoolTemp) into i FROM AcctThermostatScheduleEntry;
-END LOOP;
+        SET CoolTemp = ((CoolTemp * 1.8) + 32)
+        WHERE CoolTemp < 38;
+        
+		SELECT MIN(CoolTemp) INTO i FROM AcctThermostatScheduleEntry;
+	END LOOP;
 END;
 /* @end-block */
 
-UPDATE AcctThermostatScheduleEntry SET HeatTemp = 72 WHERE HeatTemp <= 0;
+UPDATE AcctThermostatScheduleEntry
+SET HeatTemp = 72
+WHERE HeatTemp <= 0;
 
 /* @start-block */
 DECLARE
-i NUMBER;
+    i NUMBER;
 BEGIN
-    SELECT MAX(HeatTemp) into i FROM AcctThermostatScheduleEntry;
+    SELECT MAX(HeatTemp) INTO i FROM AcctThermostatScheduleEntry;
 WHILE (i > 100)
-LOOP
-    UPDATE AcctThermostatScheduleEntry
+    LOOP
+        UPDATE AcctThermostatScheduleEntry
         SET HeatTemp = ((HeatTemp - 32)/1.8)
         WHERE HeatTemp > 100;
-SELECT MAX(HeatTemp) into i FROM AcctThermostatScheduleEntry;
-END LOOP;
+        
+		SELECT MAX(HeatTemp) INTO i FROM AcctThermostatScheduleEntry;
+	END LOOP;
 END;
 /* @end-block */
 
 /* @start-block */
 DECLARE
-i NUMBER;
+    i NUMBER;
 BEGIN
-    SELECT MIN(HeatTemp) into i FROM AcctThermostatScheduleEntry;
+    SELECT MIN(HeatTemp) INTO i FROM AcctThermostatScheduleEntry;
 WHILE (i < 38)
-LOOP
-    UPDATE AcctThermostatScheduleEntry
+    LOOP
+        UPDATE AcctThermostatScheduleEntry
         SET HeatTemp = ((HeatTemp * 1.8) + 32)
         WHERE HeatTemp < 38;
-SELECT MIN(HeatTemp) into i FROM AcctThermostatScheduleEntry;
-END LOOP;
+        
+		SELECT MIN(HeatTemp) INTO i FROM AcctThermostatScheduleEntry;
+	END LOOP;
 END;
 /* @end-block */
 /* End YUK-8691 */
