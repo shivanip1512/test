@@ -8,7 +8,9 @@
 
     <xsd:annotation>
         <xsd:documentation xml:lang="en">
-            <!-- TODO -->
+           Response for an opt out attempt by the user through API. The message informs 
+           the client if the opt out could have been processed successfully. In case of a 
+           failure the message contains the causing issue as well.
         </xsd:documentation>
     </xsd:annotation>
     

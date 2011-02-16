@@ -11,7 +11,8 @@
 
     <xsd:annotation>
         <xsd:documentation xml:lang="en">
-         //TODO 
+         Request an opt out for an account and hardware.
+         Exclusion of startDate will schedule the opt out for 'now'. 
         </xsd:documentation>
     </xsd:annotation>
     
