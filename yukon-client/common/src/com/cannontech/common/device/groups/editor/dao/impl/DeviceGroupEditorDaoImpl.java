@@ -378,11 +378,11 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
             removeGroup(childGroup);
         }
         
-        String sql1 = "DELETE FROM DeviceGroupMember where DeviceGroupId = ?";
-        jdbcTemplate.update(sql1, group.getId());
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM DeviceGroup");
+        sql.append("WHERE DeviceGroupId").eq(group.getId());
         
-        String sql2 = "DELETE FROM DeviceGroup WHERE DeviceGroupId = ?";
-        jdbcTemplate.update(sql2, group.getId());
+        jdbcTemplate.update(sql);
         
     }
 
