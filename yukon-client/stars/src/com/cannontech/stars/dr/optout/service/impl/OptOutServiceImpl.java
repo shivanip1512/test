@@ -80,6 +80,7 @@ import com.cannontech.stars.dr.optout.exception.InvalidOptOutStartDateException;
 import com.cannontech.stars.dr.optout.exception.NotOptedOutException;
 import com.cannontech.stars.dr.optout.exception.OptOutAlreadyScheduledException;
 import com.cannontech.stars.dr.optout.exception.OptOutCountLimitException;
+import com.cannontech.stars.dr.optout.exception.OptOutException;
 import com.cannontech.stars.dr.optout.model.OptOutAction;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
@@ -332,10 +333,10 @@ public class OptOutServiceImpl implements OptOutService {
     public void optOutWithPriorValidation(final CustomerAccount customerAccount,
                                           final OptOutRequest request,
                                           final LiteYukonUser user, final OptOutCounts optOutCounts)
-        throws CommandCompletionException {
+        throws CommandCompletionException, OptOutException {
         if (request.getStartDate() != null) {
-            DateTime currentTime = new DateTime();
-            DateTime startTime = new DateTime(request.getStartDate());
+            Instant currentTime = new Instant();
+            Instant startTime = new Instant(request.getStartDate());
 
             if (startTime.isBefore(currentTime)) {
                 throw new InvalidOptOutStartDateException();

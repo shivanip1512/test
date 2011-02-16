@@ -1,8 +1,6 @@
 package com.cannontech.stars.dr.optout.exception;
 
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
-
-public abstract class OptOutException extends CommandCompletionException {
+public abstract class OptOutException extends RuntimeException {
 
     private String errorCode;
 
