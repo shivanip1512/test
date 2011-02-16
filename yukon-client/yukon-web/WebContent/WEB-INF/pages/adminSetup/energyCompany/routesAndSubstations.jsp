@@ -58,14 +58,16 @@
                 </c:choose>
                 
                 <div>
-                    <span class="actionArea" style="float: right;">
-                        <select name="routeId">
-                            <c:forEach items="${availableRoutes}" var="routeCandidate">
-                                <option value="${routeCandidate.yukonID}"><spring:escapeBody htmlEscape="true">${routeCandidate.paoName}</spring:escapeBody></option>
-                            </c:forEach>
-                        </select>
-                        <cti:button key="add" type="submit" name="addRoute"/>
-                    </span>
+                    <c:if test="${not empty availableRoutes}">
+                        <span class="actionArea" style="float: right;">
+                            <select name="routeId">
+                                <c:forEach items="${availableRoutes}" var="routeCandidate">
+                                    <option value="${routeCandidate.yukonID}"><spring:escapeBody htmlEscape="true">${routeCandidate.paoName}</spring:escapeBody></option>
+                                </c:forEach>
+                            </select>
+                            <cti:button key="add" type="submit" name="addRoute"/>
+                        </span>
+                    </c:if>
                 </div>
             </form>
         </tags:boxContainer2>
@@ -113,14 +115,16 @@
                 </c:choose>
                 
                 <div>
-                    <span class="actionArea" style="float: right;">
-                        <select name="substationId">
-                            <c:forEach items="${availableSubstations}" var="substationCandidate">
-                                <option value="${substationCandidate.substationID}"><spring:escapeBody htmlEscape="true">${substationCandidate.substationName}</spring:escapeBody></option>
-                            </c:forEach>
-                        </select>
-                        <cti:button key="add" type="submit" name="addSubstation"/>
-                    </span>
+                    <c:if test="${not empty availableSubstations}">
+                        <span class="actionArea" style="float: right;">
+                            <select name="substationId">
+                                <c:forEach items="${availableSubstations}" var="substationCandidate">
+                                    <option value="${substationCandidate.substationID}"><spring:escapeBody htmlEscape="true">${substationCandidate.substationName}</spring:escapeBody></option>
+                                </c:forEach>
+                            </select>
+                            <cti:button key="add" type="submit" name="addSubstation"/>
+                        </span>
+                    </c:if>
                     
                     <br>
                     <a href="/spring/multispeak/setup/routemapping/mappings"><i:inline key=".substationToRouteMapping" /></a>

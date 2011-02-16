@@ -958,10 +958,10 @@
                     </options>
                 </option>
                 <option name="substationToRouteMapping">
-                    <link>/spring/adminSetup/setup/routemapping/mappings</link>
+                    <link>/spring/multispeak/setup/routemapping/mappings</link>
                     <options>
                         <option name="home">
-                            <link>/spring/adminSetup/setup/routemapping/mappings</link>
+                            <link>/spring/multispeak/setup/routemapping/mappings</link>
                         </option>
                     </options>
                 </option>
@@ -971,7 +971,7 @@
         <pages>
             <page name="substationToRouteMapping" type="BASIC">
                 <menu>substationToRouteMapping|home</menu>
-                <link>/spring/adminSetup/setup/routemapping/mappings</link>
+                <link>/spring/multispeak/setup/routemapping/mappings</link>
             </page>
         
             <page name="interfaces" type="BASIC">
