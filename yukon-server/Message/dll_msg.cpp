@@ -1,19 +1,5 @@
 #include "yukon.h"
-/*
-#include <winbase.h>
-#include <winsock.h>
-#include <stdio.h>
-#include <string.h>
-#include <process.h>
 
-#include <rw\thr\mutex.h>
-
-#include "dsm2.h"
-#include "os2_2w32.h"
-#include "cticalls.h"
-#include "connection.h"
-
-#include "dllbase.h"*/
 #include "utility.h"
 #include "dlldefs.h"
 #include "cparms.h"
@@ -51,7 +37,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 namespace Cti {
 namespace Messaging {
 
-IM_EX_MSG ActiveMQConnectionManager gActiveMQConnection(gConfigParms.getValueAsString("JMS_CLIENT_CONNECTION"));
+IM_EX_MSG ActiveMQConnectionManager gActiveMQConnection(gConfigParms.getValueAsString("JMS_CLIENT_CONNECTION", "tcp://127.0.0.1:61616"));
 
 }
 }
