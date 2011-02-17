@@ -72,6 +72,14 @@ ActiveMQConnectionManager::~ActiveMQConnectionManager()
     }
 
     delete_assoc_container(_producers);
+
+    _connection.reset();
+    _session.reset();
+
+    if( _initialized )
+    {
+        activemq::library::ActiveMQCPP::shutdownLibrary();
+    }
 }
 
 
