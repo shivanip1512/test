@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/17/2011 11:41:54 AM                        */
+/* Created on:     2/17/2011 12:45:49 PM                        */
 /*==============================================================*/
 
 
@@ -12782,6 +12782,7 @@ INSERT INTO YukonRoleProperty VALUES(-20015,-200,'Manage Indexes','true','Contro
 INSERT INTO YukonRoleProperty VALUES(-20016,-200,'View Logs','true','Controls access to view or download log files.');
 INSERT INTO YukonRoleProperty VALUES(-20017,-200,'Database Migration','false','Controls access to database migration tool.');
 INSERT INTO YukonRoleProperty VALUES(-20018,-200,'Event Logs','false','Controls access to event logs feature.');
+INSERT INTO YukonRoleProperty VALUES(-20019,-200,'Admin Super User','false','Allows full control of all energy companies and other administrator features.'); 
 
 /* Operator Metering Role Properties*/
 INSERT INTO YukonRoleProperty VALUES(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
@@ -13236,6 +13237,7 @@ INSERT INTO YukonUserRole VALUES(-1016, -100, -200, -20006, '(none)');
 INSERT INTO YukonUserRole VALUES(-1017, -100, -200, -20007, '(none)');
 INSERT INTO YukonUserRole VALUES(-1018, -100, -200, -20008, '(none)');
 INSERT INTO YukonUserRole VALUES(-1019, -100, -200, -20009, '(none)');
+INSERT INTO YukonUserRole VALUES(-1020, -100, -200, -20019, 'true');
 
 /* Adding the Energy Company Role to DefaultCTI */
 INSERT INTO YukonUserRole VALUES(-1100, -100, -2, -1100, '(none)');
@@ -13249,7 +13251,7 @@ INSERT INTO YukonUserRole VALUES(-1109, -100, -2, -1109, '(none)');
 INSERT INTO YukonUserRole VALUES(-1110, -100, -2, -1110, '(none)');
 INSERT INTO YukonUserRole VALUES(-1111, -100, -2, -1111, '(none)');
 INSERT INTO YukonUserRole VALUES(-1112, -100, -2, -1112, '(none)');
-INSERT INTO YukonUserRole VALUES(-1114, -100, -2, -1114, '(none)'); 
+INSERT INTO YukonUserRole VALUES(-1114, -100, -2, -1114, '(none)');
 
 /* Adding the IVR role to DefaultCTI */
 INSERT INTO YukonUserRole VALUES(-1200, -100, -801, -80100, '(none)'); 

@@ -165,6 +165,14 @@ DELETE FROM YukonServices
 WHERE ServiceId = -4;
 /* End YUK-9015 */
 
+/* Start YUK-9482 */
+INSERT INTO YukonRoleProperty
+VALUES(-20019,-200,'Admin Super User','false','Allows full control of all energy companies and other administrator features.');
+
+INSERT INTO YukonUserRole
+VALUES(-1020, -100, -200, -20019, 'true');
+/* End YUK-9482 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
