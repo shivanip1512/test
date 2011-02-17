@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/17/2011 10:43:54 AM                        */
+/* Created on:     2/17/2011 11:01:13 AM                        */
 /*==============================================================*/
 
 
@@ -673,11 +673,11 @@ go
 
 if exists (select 1
             from  sysindexes
-           where  id    = object_id('LMCONTROLAREATRIGGER')
+           where  id    = object_id('LMControlAreaTrigger')
             and   name  = 'INDX_UNQ_LMCNTRTR_TRID'
             and   indid > 0
             and   indid < 255)
-   drop index LMCONTROLAREATRIGGER.INDX_UNQ_LMCNTRTR_TRID
+   drop index LMControlAreaTrigger.INDX_UNQ_LMCNTRTR_TRID
 go
 
 if exists (select 1
@@ -2582,13 +2582,6 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('LMCONTROLAREATRIGGER')
-            and   type = 'U')
-   drop table LMCONTROLAREATRIGGER
-go
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('LMConfigurationBase')
             and   type = 'U')
    drop table LMConfigurationBase
@@ -2634,6 +2627,13 @@ if exists (select 1
            where  id = object_id('LMControlArea')
             and   type = 'U')
    drop table LMControlArea
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMControlAreaTrigger')
+            and   type = 'U')
+   drop table LMControlAreaTrigger
 go
 
 if exists (select 1
@@ -8731,35 +8731,6 @@ create table LMCONTROLAREAPROGRAM (
 go
 
 /*==============================================================*/
-/* Table: LMCONTROLAREATRIGGER                                  */
-/*==============================================================*/
-create table LMCONTROLAREATRIGGER (
-   DEVICEID             numeric              not null,
-   TRIGGERNUMBER        numeric              not null,
-   TRIGGERTYPE          varchar(20)          not null,
-   POINTID              numeric              not null,
-   NORMALSTATE          numeric              not null,
-   THRESHOLD            float                not null,
-   PROJECTIONTYPE       varchar(14)          not null,
-   PROJECTIONPOINTS     numeric              not null,
-   PROJECTAHEADDURATION numeric              not null,
-   THRESHOLDKICKPERCENT numeric              not null,
-   MINRESTOREOFFSET     float                not null,
-   PEAKPOINTID          numeric              not null,
-   TriggerID            numeric              not null,
-   constraint PK_LMCONTROLAREATRIGGER primary key (DEVICEID, TRIGGERNUMBER)
-)
-go
-
-/*==============================================================*/
-/* Index: INDX_UNQ_LMCNTRTR_TRID                                */
-/*==============================================================*/
-create unique index INDX_UNQ_LMCNTRTR_TRID on LMCONTROLAREATRIGGER (
-TriggerID ASC
-)
-go
-
-/*==============================================================*/
 /* Table: LMConfigurationBase                                   */
 /*==============================================================*/
 create table LMConfigurationBase (
@@ -8855,6 +8826,36 @@ create table LMControlArea (
    DEFDAILYSTOPTIME     numeric              not null,
    REQUIREALLTRIGGERSACTIVEFLAG varchar(1)           not null,
    constraint PK_LMCONTROLAREA primary key (DEVICEID)
+)
+go
+
+/*==============================================================*/
+/* Table: LMControlAreaTrigger                                  */
+/*==============================================================*/
+create table LMControlAreaTrigger (
+   DeviceId             numeric              not null,
+   TriggerNumber        numeric              not null,
+   TriggerType          varchar(20)          not null,
+   PointId              numeric              not null,
+   NormalState          numeric              not null,
+   Threshold            float                not null,
+   ProjectionType       varchar(14)          not null,
+   ProjectionPoints     numeric              not null,
+   ProjectAheadDuration numeric              not null,
+   ThresholdKickPercent numeric              not null,
+   MinRestoreOffset     float                not null,
+   PeakPointId          numeric              not null,
+   TriggerId            numeric              not null,
+   ThresholdPointId     numeric              not null,
+   constraint PK_LMCONTROLAREATRIGGER primary key nonclustered (DeviceId, TriggerNumber)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_UNQ_LMCNTRTR_TRID                                */
+/*==============================================================*/
+create unique index INDX_UNQ_LMCNTRTR_TRID on LMControlAreaTrigger (
+TriggerId ASC
 )
 go
 
@@ -15009,7 +15010,7 @@ go
 
 alter table DynamicLMControlAreaTrigger
    add constraint FK_LMCntArTr_DyLMCnArTr foreign key (DeviceID, TriggerNumber)
-      references LMCONTROLAREATRIGGER (DEVICEID, TRIGGERNUMBER)
+      references LMControlAreaTrigger (DeviceId, TriggerNumber)
 go
 
 alter table DynamicLMControlHistory
@@ -15412,21 +15413,6 @@ alter table LMCONTROLAREAPROGRAM
       references LMPROGRAM (DeviceID)
 go
 
-alter table LMCONTROLAREATRIGGER
-   add constraint FK_LMCntlArea_LMCntlArTrig foreign key (DEVICEID)
-      references LMControlArea (DEVICEID)
-go
-
-alter table LMCONTROLAREATRIGGER
-   add constraint FK_Point_LMCntlArTrig foreign key (POINTID)
-      references POINT (POINTID)
-go
-
-alter table LMCONTROLAREATRIGGER
-   add constraint FK_Point_LMCtrlArTrigPk foreign key (PEAKPOINTID)
-      references POINT (POINTID)
-go
-
 alter table LMConfigurationExpressCom
    add constraint FK_LMCfgXcom_LMCfg foreign key (ConfigurationID)
       references LMConfigurationBase (ConfigurationID)
@@ -15455,6 +15441,21 @@ go
 alter table LMControlArea
    add constraint FK_LmCntAr_YukPAO foreign key (DEVICEID)
       references YukonPAObject (PAObjectID)
+go
+
+alter table LMControlAreaTrigger
+   add constraint FK_LMCntlArea_LMCntlArTrig foreign key (DeviceId)
+      references LMControlArea (DEVICEID)
+go
+
+alter table LMControlAreaTrigger
+   add constraint FK_Point_LMCntlArTrig foreign key (PointId)
+      references POINT (POINTID)
+go
+
+alter table LMControlAreaTrigger
+   add constraint FK_Point_LMCtrlArTrigPk foreign key (PeakPointId)
+      references POINT (POINTID)
 go
 
 alter table LMControlHistory

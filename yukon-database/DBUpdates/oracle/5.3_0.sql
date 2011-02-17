@@ -129,6 +129,17 @@ SET KeyName = 'Edit Energy Company',
 WHERE RolePropertyId = -20000;
 /* End YUK-9493 */
 
+/* Start YUK-9445 */
+ALTER TABLE LmControlAreaTrigger 
+ADD ThresholdPointId NUMBER; 
+
+UPDATE LmControlAreaTrigger 
+SET ThresholdPointId = 0; 
+
+ALTER TABLE LmControlAreaTrigger 
+MODIFY ThresholdPointId NUMBER NOT NULL; 
+/* End YUK-9445 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
