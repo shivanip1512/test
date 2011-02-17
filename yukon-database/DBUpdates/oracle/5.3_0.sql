@@ -122,6 +122,13 @@ ALTER TABLE DeviceGroupMember
             ON DELETE CASCADE;
 /* End YUK-9118 */
 
+/* Start YUK-9493 */
+UPDATE YukonRoleProperty
+SET KeyName = 'Edit Energy Company', 
+    Description = 'Controls access to edit the user''s energy company settings.'
+WHERE RolePropertyId = -20000;
+/* End YUK-9493 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
