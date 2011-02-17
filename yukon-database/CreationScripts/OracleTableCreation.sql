@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/17/2011 11:32:12 AM                        */
+/* Created on:     2/17/2011 11:39:35 AM                        */
 /*==============================================================*/
 
 
@@ -9911,7 +9911,6 @@ create table YukonServices  (
 
 INSERT INTO YukonServices VALUES (-2, 'WebGraph', 'com.cannontech.jmx.services.DynamicWebGraph', 'ServiceManager');
 INSERT INTO YukonServices VALUES (-3, 'Calc_Historical', 'com.cannontech.jmx.services.DynamicCalcHist', 'ServiceManager');
-INSERT INTO YukonServices VALUES (-4, 'CBC_OneLine_Gen', 'com.cannontech.jmx.services.DynamicCBCOneLine', 'ServiceManager');
 INSERT INTO YukonServices VALUES (-5, 'MCT410_BulkImporter', 'com.cannontech.jmx.services.DynamicImp', 'ServiceManager');
 INSERT INTO YukonServices VALUES (-6, 'Price_Server', 'com.cannontech.jmx.services.DynamicPriceServer', 'ServiceManager');
 INSERT INTO YukonServices VALUES (8, 'PointInjector', 'classpath:com/cannontech/services/points/pointInjectionContext.xml', 'ServiceManager');

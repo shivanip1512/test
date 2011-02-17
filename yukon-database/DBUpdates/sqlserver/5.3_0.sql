@@ -163,6 +163,11 @@ AND EntryId != 0;
 DROP TABLE CustomerFAQ; 
 /* End YUK-9404 */
 
+/* Start YUK-9015 */
+DELETE FROM YukonServices
+WHERE ServiceId = -4;
+/* End YUK-9015 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
