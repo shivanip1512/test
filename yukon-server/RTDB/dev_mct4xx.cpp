@@ -2125,51 +2125,57 @@ int Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser
 
     if (deviceConfig)
     {
-        char timezoneOffset = deviceConfig->getLongValueFromKey(MCTStrings::TimeZoneOffset);
+        if( ! readsOnly )
+        {
+            char timezoneOffset = deviceConfig->getLongValueFromKey(MCTStrings::TimeZoneOffset);
 
-        if (!getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt))
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            nRet = NoConfigData;
-        }
-        else if(timezoneOffset == std::numeric_limits<long>::min())
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            nRet = NoConfigData;
-        }
-        else
-        {
-            timezoneOffset = timezoneOffset * 4; //The timezone offset in the mct is in 15 minute increments.
-            if(parse.isKeyValid("force")
-               || (char)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) != timezoneOffset)
+            if (!getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt))
             {
-                if( !parse.isKeyValid("verify") )
-                {
-                    //  the bstruct IO is set above by getOperation()
-                    OutMessage->Buffer.BSt.Message[0] = (timezoneOffset);
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    nRet = NORMAL;
-                }
-                else
-                {
-                    nRet = ConfigNotCurrent;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
+            }
+            else if(timezoneOffset == std::numeric_limits<long>::min())
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
             }
             else
             {
-                nRet = ConfigCurrent;
+                timezoneOffset = timezoneOffset * 4; //The timezone offset in the mct is in 15 minute increments.
+                if(parse.isKeyValid("force")
+                   || (char)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) != timezoneOffset)
+                {
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        //  the bstruct IO is set above by getOperation()
+                        OutMessage->Buffer.BSt.Message[0] = (timezoneOffset);
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        nRet = NORMAL;
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
+                }
             }
         }
 
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL || readsOnly == true)
+        if (nRet == NORMAL)
         {
-            OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
-            OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-            OutMessage->Priority             += 1;//return to normal
+            if (getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt))
+            {
+                OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
+                OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                OutMessage->Priority             += 1;//return to normal
+            }
         }
     }
     else
@@ -2186,51 +2192,57 @@ int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &pa
 
     if(deviceConfig)
     {
-        long spid = deviceConfig->getLongValueFromKey(MCTStrings::ServiceProviderID);
+        if( ! readsOnly )
+        {
+            long spid = deviceConfig->getLongValueFromKey(MCTStrings::ServiceProviderID);
 
-        if(!getOperation(EmetconProtocol::PutConfig_SPID, OutMessage->Buffer.BSt))
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            nRet = NoConfigData;
-        }
-        else if(spid == std::numeric_limits<long>::min())
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            nRet = NoConfigData;
-        }
-        else
-        {
-
-            if(parse.isKeyValid("force")
-               || (char)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID) != spid)
+            if(!getOperation(EmetconProtocol::PutConfig_SPID, OutMessage->Buffer.BSt))
             {
-                if( !parse.isKeyValid("verify") )
-                {
-                    //the bstruct IO is set above by getOperation()
-                    OutMessage->Buffer.BSt.Message[0] = (spid);
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    nRet = NORMAL;
-                }
-                else
-                {
-                    nRet = ConfigNotCurrent;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
+            }
+            else if(spid == std::numeric_limits<long>::min())
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
             }
             else
             {
-                nRet = ConfigCurrent;
+
+                if(parse.isKeyValid("force")
+                   || (char)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID) != spid)
+                {
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        //the bstruct IO is set above by getOperation()
+                        OutMessage->Buffer.BSt.Message[0] = (spid);
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                        nRet = NORMAL;
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
+                }
             }
         }
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL || readsOnly == true)
+        if (nRet == NORMAL)
         {
-            OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
-            OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-            OutMessage->Priority             += 1;//return to normal
+            if(getOperation(EmetconProtocol::PutConfig_SPID, OutMessage->Buffer.BSt))
+            {
+                OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
+                OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                OutMessage->Priority             += 1;//return to normal
+            }
         }
     }
     else
@@ -2248,52 +2260,55 @@ int Mct4xxDevice::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiComm
 
     if (deviceConfig)
     {
-        long configuration = deviceConfig->getLongValueFromKey(MCTStrings::Configuration);
-
-        if (configuration == std::numeric_limits<long>::min())
+        if( ! readsOnly )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            nRet = NoConfigData;
-        }
-        else
-        {
+            long configuration = deviceConfig->getLongValueFromKey(MCTStrings::Configuration);
 
-            long dynamicPaoConfigByte = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
-            if (getType() == TYPEMCT470)
+            if (configuration == std::numeric_limits<long>::min())
             {
-                dynamicPaoConfigByte = dynamicPaoConfigByte & 0xFF;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
             }
             else
             {
-                dynamicPaoConfigByte = dynamicPaoConfigByte & 0x0F;
-            }
 
-            if (parse.isKeyValid("force") ||
-                dynamicPaoConfigByte != configuration )
-            {
-                if( !parse.isKeyValid("verify") )
+                long dynamicPaoConfigByte = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
+                if (getType() == TYPEMCT470)
                 {
-                    OutMessage->Buffer.BSt.Message[0] = configuration;
-                    OutMessage->Buffer.BSt.Function = FuncWrite_ConfigAlarmMaskPos;
-                    OutMessage->Buffer.BSt.Length = 1; //We are only writing a single byte, the command supports more.
-                    OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    nRet = NORMAL;
+                    dynamicPaoConfigByte = dynamicPaoConfigByte & 0xFF;
                 }
                 else
                 {
-                    nRet = ConfigNotCurrent;
+                    dynamicPaoConfigByte = dynamicPaoConfigByte & 0x0F;
                 }
-            }
-            else
-            {
-                nRet = ConfigCurrent;
+
+                if (parse.isKeyValid("force") ||
+                    dynamicPaoConfigByte != configuration )
+                {
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Message[0] = configuration;
+                        OutMessage->Buffer.BSt.Function = FuncWrite_ConfigAlarmMaskPos;
+                        OutMessage->Buffer.BSt.Length = 1; //We are only writing a single byte, the command supports more.
+                        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                        nRet = NORMAL;
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
+                }
             }
         }
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL || readsOnly == true)
+        if (nRet == NORMAL)
         {
             OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
             OutMessage->Buffer.BSt.Function   = Memory_ConfigurationPos;
@@ -2318,50 +2333,56 @@ int Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCo
 
     if (deviceConfig)
     {
-        long timeAdjustTolerance = deviceConfig->getLongValueFromKey(MCTStrings::TimeAdjustTolerance);
+        if( ! readsOnly )
+        {
+            long timeAdjustTolerance = deviceConfig->getLongValueFromKey(MCTStrings::TimeAdjustTolerance);
 
-        if(!getOperation(EmetconProtocol::PutConfig_TimeAdjustTolerance, OutMessage->Buffer.BSt))
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            nRet = NoConfigData;
-        }
-        else if (timeAdjustTolerance == std::numeric_limits<long>::min())
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            nRet = NoConfigData;
-        }
-        else
-        {
-            if (parse.isKeyValid("force") ||
-                CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance) != timeAdjustTolerance )
+            if(!getOperation(EmetconProtocol::PutConfig_TimeAdjustTolerance, OutMessage->Buffer.BSt))
             {
-                if( !parse.isKeyValid("verify") )
-                {
-                    //the bstruct IO is set above by getOperation()
-                    OutMessage->Buffer.BSt.Message[0] = timeAdjustTolerance;
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    nRet = NORMAL;
-                }
-                else
-                {
-                    nRet = ConfigNotCurrent;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
+            }
+            else if (timeAdjustTolerance == std::numeric_limits<long>::min())
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
             }
             else
             {
-                nRet = ConfigCurrent;
+                if (parse.isKeyValid("force") ||
+                    CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance) != timeAdjustTolerance )
+                {
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        //the bstruct IO is set above by getOperation()
+                        OutMessage->Buffer.BSt.Message[0] = timeAdjustTolerance;
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                        nRet = NORMAL;
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
+                }
             }
         }
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL || readsOnly == true)
+        if (nRet == NORMAL)
         {
-            OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
-            OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-            OutMessage->Priority             += 1;//return to normal
+            if(getOperation(EmetconProtocol::PutConfig_TimeAdjustTolerance, OutMessage->Buffer.BSt))
+            {
+                OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
+                OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                OutMessage->Priority             += 1;//return to normal
+            }
         }
     }
     else

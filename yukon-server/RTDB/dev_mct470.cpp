@@ -2560,119 +2560,91 @@ int Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &pars
     long value, tempTime;
     if(deviceConfig)
     {
-        long times[4][5];
-        long rates[4][6];
-        string rateStringValues[4][6], timeStringValues[4][5],
-               daySchedule1, daySchedule2, daySchedule3, daySchedule4,
-               dynDaySchedule1, dynDaySchedule2, dynDaySchedule3, dynDaySchedule4;
-        long defaultTOURate;
-        long dayTable;
-
-        // Unfortunatelly the arrays have a 0 offset, while the schedules times/rates are referenced with a 1 offset
-        // Also note that rate "0" is the midnight rate.
-        string mondayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::MondaySchedule);
-        string tuesdayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::TuesdaySchedule);
-        string wednesdayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::WednesdaySchedule);
-        string thursdayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::ThursdaySchedule);
-        string fridayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::FridaySchedule);
-        string saturdayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::SaturdaySchedule);
-        string sundayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::SundaySchedule);
-        string holidayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::HolidaySchedule);
-
-        long mondaySchedule = resolveScheduleName(mondayScheduleStr);
-        long tuesdaySchedule = resolveScheduleName(tuesdayScheduleStr);
-        long wednesdaySchedule = resolveScheduleName(wednesdayScheduleStr);
-        long thursdaySchedule = resolveScheduleName(thursdayScheduleStr);
-        long fridaySchedule = resolveScheduleName(fridayScheduleStr);
-        long saturdaySchedule = resolveScheduleName(saturdayScheduleStr);
-        long sundaySchedule = resolveScheduleName(sundayScheduleStr);
-        long holidaySchedule = resolveScheduleName(holidayScheduleStr);
-
-        //These are all string values
-        string test = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time1);
-        timeStringValues[0][0] = test;
-        timeStringValues[0][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time2);
-        timeStringValues[0][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time3);
-        timeStringValues[0][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time4);
-        timeStringValues[0][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time5);
-        timeStringValues[1][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time1);
-        timeStringValues[1][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time2);
-        timeStringValues[1][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time3);
-        timeStringValues[1][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time4);
-        timeStringValues[1][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time5);
-        timeStringValues[2][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time1);
-        timeStringValues[2][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time2);
-        timeStringValues[2][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time3);
-        timeStringValues[2][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time4);
-        timeStringValues[2][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time5);
-        timeStringValues[3][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time1);
-        timeStringValues[3][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time2);
-        timeStringValues[3][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time3);
-        timeStringValues[3][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time4);
-        timeStringValues[3][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time5);
-
-        rateStringValues[0][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate1);
-        rateStringValues[0][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate2);
-        rateStringValues[0][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate3);
-        rateStringValues[0][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate4);
-        rateStringValues[0][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate5);
-        rateStringValues[0][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate0);
-        rateStringValues[1][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate1);
-        rateStringValues[1][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate2);
-        rateStringValues[1][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate3);
-        rateStringValues[1][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate4);
-        rateStringValues[1][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate5);
-        rateStringValues[1][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate0);
-        rateStringValues[2][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate1);
-        rateStringValues[2][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate2);
-        rateStringValues[2][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate3);
-        rateStringValues[2][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate4);
-        rateStringValues[2][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate5);
-        rateStringValues[2][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate0);
-        rateStringValues[3][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate1);
-        rateStringValues[3][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate2);
-        rateStringValues[3][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate3);
-        rateStringValues[3][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate4);
-        rateStringValues[3][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate5);
-        rateStringValues[3][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate0);
-
-        string defaultTOURateString = deviceConfig->getValueFromKey(MCTStrings::DefaultTOURate);
-
-        for( int i = 0; i < 4; i++ )
+        if( ! readsOnly )
         {
-            for( int j = 0; j < 6; j++ )
-            {
-                if( rateStringValues[i][j].empty() )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - bad rate string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    nRet = NoConfigData;
-                }
-            }
-        }
+            long times[4][5];
+            long rates[4][6];
+            string rateStringValues[4][6], timeStringValues[4][5],
+                   daySchedule1, daySchedule2, daySchedule3, daySchedule4,
+                   dynDaySchedule1, dynDaySchedule2, dynDaySchedule3, dynDaySchedule4;
+            long defaultTOURate;
+            long dayTable;
 
-        for( int i = 0; i < 4; i++ )
-        {
-            for( int j = 0; j < 5; j++ )
-            {
-                if( timeStringValues[i][j].length() < 4 ) //A time needs at least 4 digits X:XX
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - bad time string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    nRet = NoConfigData;
-                }
-            }
-        }
+            // Unfortunatelly the arrays have a 0 offset, while the schedules times/rates are referenced with a 1 offset
+            // Also note that rate "0" is the midnight rate.
+            string mondayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::MondaySchedule);
+            string tuesdayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::TuesdaySchedule);
+            string wednesdayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::WednesdaySchedule);
+            string thursdayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::ThursdaySchedule);
+            string fridayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::FridaySchedule);
+            string saturdayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::SaturdaySchedule);
+            string sundayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::SundaySchedule);
+            string holidayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::HolidaySchedule);
 
-        if( nRet != NoConfigData )
-        {
-            //Do conversions from strings to longs here.
+            long mondaySchedule = resolveScheduleName(mondayScheduleStr);
+            long tuesdaySchedule = resolveScheduleName(tuesdayScheduleStr);
+            long wednesdaySchedule = resolveScheduleName(wednesdayScheduleStr);
+            long thursdaySchedule = resolveScheduleName(thursdayScheduleStr);
+            long fridaySchedule = resolveScheduleName(fridayScheduleStr);
+            long saturdaySchedule = resolveScheduleName(saturdayScheduleStr);
+            long sundaySchedule = resolveScheduleName(sundayScheduleStr);
+            long holidaySchedule = resolveScheduleName(holidayScheduleStr);
+
+            //These are all string values
+            string test = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time1);
+            timeStringValues[0][0] = test;
+            timeStringValues[0][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time2);
+            timeStringValues[0][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time3);
+            timeStringValues[0][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time4);
+            timeStringValues[0][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time5);
+            timeStringValues[1][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time1);
+            timeStringValues[1][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time2);
+            timeStringValues[1][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time3);
+            timeStringValues[1][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time4);
+            timeStringValues[1][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time5);
+            timeStringValues[2][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time1);
+            timeStringValues[2][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time2);
+            timeStringValues[2][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time3);
+            timeStringValues[2][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time4);
+            timeStringValues[2][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time5);
+            timeStringValues[3][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time1);
+            timeStringValues[3][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time2);
+            timeStringValues[3][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time3);
+            timeStringValues[3][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time4);
+            timeStringValues[3][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time5);
+
+            rateStringValues[0][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate1);
+            rateStringValues[0][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate2);
+            rateStringValues[0][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate3);
+            rateStringValues[0][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate4);
+            rateStringValues[0][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate5);
+            rateStringValues[0][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate0);
+            rateStringValues[1][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate1);
+            rateStringValues[1][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate2);
+            rateStringValues[1][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate3);
+            rateStringValues[1][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate4);
+            rateStringValues[1][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate5);
+            rateStringValues[1][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate0);
+            rateStringValues[2][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate1);
+            rateStringValues[2][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate2);
+            rateStringValues[2][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate3);
+            rateStringValues[2][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate4);
+            rateStringValues[2][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate5);
+            rateStringValues[2][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate0);
+            rateStringValues[3][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate1);
+            rateStringValues[3][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate2);
+            rateStringValues[3][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate3);
+            rateStringValues[3][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate4);
+            rateStringValues[3][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate5);
+            rateStringValues[3][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate0);
+
+            string defaultTOURateString = deviceConfig->getValueFromKey(MCTStrings::DefaultTOURate);
+
             for( int i = 0; i < 4; i++ )
             {
                 for( int j = 0; j < 6; j++ )
                 {
-                    rates[i][j] = rateStringValues[i][j][0] - 'A';
-                    if( rates[i][j] < 0 || rates[i][j] > 3 )
+                    if( rateStringValues[i][j].empty() )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - bad rate string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2680,148 +2652,179 @@ int Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &pars
                     }
                 }
             }
+
             for( int i = 0; i < 4; i++ )
             {
                 for( int j = 0; j < 5; j++ )
                 {
-                    // Im going to remove the :, get the remaining value, and do simple math on it. I think this
-                    // results in less error checking needed.
-                    timeStringValues[i][j].erase(timeStringValues[i][j].find(':'), 1);
-                    tempTime = strtol(timeStringValues[i][j].data(),NULL,10);
-                    times[i][j] = ((tempTime/100) * 60) + (tempTime%100);
-                }
-            }
-            // Time is currently the actual minutes, we need the difference. Also the MCT has 5 minute resolution.
-            for( int i = 0; i < 4; i++ )
-            {
-                for( int j = 4; j > 0; j-- )
-                {
-                    times[i][j] = times[i][j]-times[i][j-1];
-                    times[i][j] = times[i][j]/5;
-                    if( times[i][j] < 0 || times[i][j] > 255 )
+                    if( timeStringValues[i][j].length() < 4 ) //A time needs at least 4 digits X:XX
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - time sequencing **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - bad time string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         nRet = NoConfigData;
                     }
                 }
             }
-            if( !defaultTOURateString.empty() )
+
+            if( nRet != NoConfigData )
             {
-                defaultTOURate = defaultTOURateString[0] - 'A';
-                if( defaultTOURate < 0 || defaultTOURate > 3 )
+                //Do conversions from strings to longs here.
+                for( int i = 0; i < 4; i++ )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - bad default rate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    nRet = NoConfigData;
+                    for( int j = 0; j < 6; j++ )
+                    {
+                        rates[i][j] = rateStringValues[i][j][0] - 'A';
+                        if( rates[i][j] < 0 || rates[i][j] > 3 )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - bad rate string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            nRet = NoConfigData;
+                        }
+                    }
                 }
-            }
-            else
-            {
-                nRet = NoConfigData;
-            }
-        }
-
-        if( nRet == NoConfigData ||
-            mondaySchedule == std::numeric_limits<long>::min() ||
-            tuesdaySchedule == std::numeric_limits<long>::min() ||
-            fridaySchedule == std::numeric_limits<long>::min() ||
-            saturdaySchedule == std::numeric_limits<long>::min() ||
-            sundaySchedule == std::numeric_limits<long>::min() ||
-            holidaySchedule == std::numeric_limits<long>::min() ||
-            wednesdaySchedule == std::numeric_limits<long>::min() ||
-            thursdaySchedule == std::numeric_limits<long>::min() )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            nRet = NoConfigData;
-        }
-        else
-        {
-            dayTable = holidaySchedule << 14;
-            dayTable |= saturdaySchedule << 12;
-            dayTable |= fridaySchedule << 10;
-            dayTable |= thursdaySchedule << 8;
-            dayTable |= wednesdaySchedule << 6;
-            dayTable |= tuesdaySchedule << 4;
-            dayTable |= mondaySchedule << 2;
-            dayTable |= sundaySchedule;
-
-            createTOUDayScheduleString(daySchedule1, times[0], rates[0]);
-            createTOUDayScheduleString(daySchedule2, times[1], rates[1]);
-            createTOUDayScheduleString(daySchedule3, times[2], rates[2]);
-            createTOUDayScheduleString(daySchedule4, times[3], rates[3]);
-            CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, dynDaySchedule1);
-            CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, dynDaySchedule2);
-            CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, dynDaySchedule3);
-            CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, dynDaySchedule4);
-
-            if (parse.isKeyValid("force")
-                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DayTable) != dayTable
-                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate) != defaultTOURate
-                || dynDaySchedule1 != daySchedule1
-                || dynDaySchedule2 != daySchedule2
-                || dynDaySchedule3 != daySchedule3
-                || dynDaySchedule4 != daySchedule4)
-            {
-                if( !parse.isKeyValid("verify") )
+                for( int i = 0; i < 4; i++ )
                 {
-                    OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule1Pos;
-                    OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule1Len;
-                    OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (char)(dayTable>>8);
-                    OutMessage->Buffer.BSt.Message[1] = (char)dayTable;
-                    OutMessage->Buffer.BSt.Message[2] = (char)times[0][0];
-                    OutMessage->Buffer.BSt.Message[3] = (char)times[0][1];
-                    OutMessage->Buffer.BSt.Message[4] = (char)times[0][2];
-                    OutMessage->Buffer.BSt.Message[5] = (char)times[0][3];
-                    OutMessage->Buffer.BSt.Message[6] = (char)times[0][4];
-                    OutMessage->Buffer.BSt.Message[7] = (char)( ((rates[1][4]<<6)&0xC0) | ((rates[1][3]<<4)&0x30) | ((rates[0][4]<<2)&0x0C) | (rates[0][3]&0x03) );
-                    OutMessage->Buffer.BSt.Message[8] = (char)( ((rates[0][2]<<6)&0xC0) | ((rates[0][1]<<4)&0x30) | ((rates[0][0]<<2)&0x0C) | (rates[0][5]&0x03) );
-                    OutMessage->Buffer.BSt.Message[9] =  (char)times[1][0];
-                    OutMessage->Buffer.BSt.Message[10] = (char)times[1][1];
-                    OutMessage->Buffer.BSt.Message[11] = (char)times[1][2];
-                    OutMessage->Buffer.BSt.Message[12] = (char)times[1][3];
-                    OutMessage->Buffer.BSt.Message[13] = (char)times[1][4];
-                    OutMessage->Buffer.BSt.Message[14] = (char)( ((rates[1][2]<<6)&0xC0) | ((rates[1][1]<<4)&0x30) | ((rates[1][0]<<2)&0x0C) | (rates[1][5]&0x03) );
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                    OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule2Pos;
-                    OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule2Len;
-                    OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (char)times[2][0];
-                    OutMessage->Buffer.BSt.Message[1] = (char)times[2][1];
-                    OutMessage->Buffer.BSt.Message[2] = (char)times[2][2];
-                    OutMessage->Buffer.BSt.Message[3] = (char)times[2][3];
-                    OutMessage->Buffer.BSt.Message[4] = (char)times[2][4];
-                    OutMessage->Buffer.BSt.Message[5] = (char)( ((rates[2][4]<<2)&0x0C) | (rates[2][3]&0x03) );
-                    OutMessage->Buffer.BSt.Message[6] = (char)( ((rates[2][2]<<6)&0xC0) | ((rates[2][1]<<4)&0x30) | ((rates[2][0]<<2)&0x0C) | (rates[2][5]&0x03) );
-
-                    OutMessage->Buffer.BSt.Message[7] = (char)times[3][0];
-                    OutMessage->Buffer.BSt.Message[8] = (char)times[3][1];
-                    OutMessage->Buffer.BSt.Message[9] = (char)times[3][2];
-                    OutMessage->Buffer.BSt.Message[10] = (char)times[3][3];
-                    OutMessage->Buffer.BSt.Message[11] = (char)times[3][4];
-                    OutMessage->Buffer.BSt.Message[12] = (char)( ((rates[3][4]<<2)&0x0C) | (rates[3][3]&0x03) );
-                    OutMessage->Buffer.BSt.Message[13] = (char)( ((rates[3][2]<<6)&0xC0) | ((rates[3][1]<<4)&0x30) | ((rates[3][0]<<2)&0x0C) | (rates[3][5]&0x03) );
-                    OutMessage->Buffer.BSt.Message[14] = (char)(defaultTOURate);
-
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                    for( int j = 0; j < 5; j++ )
+                    {
+                        // Im going to remove the :, get the remaining value, and do simple math on it. I think this
+                        // results in less error checking needed.
+                        timeStringValues[i][j].erase(timeStringValues[i][j].find(':'), 1);
+                        tempTime = strtol(timeStringValues[i][j].data(),NULL,10);
+                        times[i][j] = ((tempTime/100) * 60) + (tempTime%100);
+                    }
+                }
+                // Time is currently the actual minutes, we need the difference. Also the MCT has 5 minute resolution.
+                for( int i = 0; i < 4; i++ )
+                {
+                    for( int j = 4; j > 0; j-- )
+                    {
+                        times[i][j] = times[i][j]-times[i][j-1];
+                        times[i][j] = times[i][j]/5;
+                        if( times[i][j] < 0 || times[i][j] > 255 )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - time sequencing **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            nRet = NoConfigData;
+                        }
+                    }
+                }
+                if( !defaultTOURateString.empty() )
+                {
+                    defaultTOURate = defaultTOURateString[0] - 'A';
+                    if( defaultTOURate < 0 || defaultTOURate > 3 )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - bad default rate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        nRet = NoConfigData;
+                    }
                 }
                 else
                 {
-                    nRet = ConfigNotCurrent;
+                    nRet = NoConfigData;
                 }
+            }
+
+            if( nRet == NoConfigData ||
+                mondaySchedule == std::numeric_limits<long>::min() ||
+                tuesdaySchedule == std::numeric_limits<long>::min() ||
+                fridaySchedule == std::numeric_limits<long>::min() ||
+                saturdaySchedule == std::numeric_limits<long>::min() ||
+                sundaySchedule == std::numeric_limits<long>::min() ||
+                holidaySchedule == std::numeric_limits<long>::min() ||
+                wednesdaySchedule == std::numeric_limits<long>::min() ||
+                thursdaySchedule == std::numeric_limits<long>::min() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
             }
             else
             {
-                nRet = ConfigCurrent;
+                dayTable = holidaySchedule << 14;
+                dayTable |= saturdaySchedule << 12;
+                dayTable |= fridaySchedule << 10;
+                dayTable |= thursdaySchedule << 8;
+                dayTable |= wednesdaySchedule << 6;
+                dayTable |= tuesdaySchedule << 4;
+                dayTable |= mondaySchedule << 2;
+                dayTable |= sundaySchedule;
+
+                createTOUDayScheduleString(daySchedule1, times[0], rates[0]);
+                createTOUDayScheduleString(daySchedule2, times[1], rates[1]);
+                createTOUDayScheduleString(daySchedule3, times[2], rates[2]);
+                createTOUDayScheduleString(daySchedule4, times[3], rates[3]);
+                CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, dynDaySchedule1);
+                CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, dynDaySchedule2);
+                CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, dynDaySchedule3);
+                CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, dynDaySchedule4);
+
+                if (parse.isKeyValid("force")
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DayTable) != dayTable
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate) != defaultTOURate
+                    || dynDaySchedule1 != daySchedule1
+                    || dynDaySchedule2 != daySchedule2
+                    || dynDaySchedule3 != daySchedule3
+                    || dynDaySchedule4 != daySchedule4)
+                {
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule1Pos;
+                        OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule1Len;
+                        OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (char)(dayTable>>8);
+                        OutMessage->Buffer.BSt.Message[1] = (char)dayTable;
+                        OutMessage->Buffer.BSt.Message[2] = (char)times[0][0];
+                        OutMessage->Buffer.BSt.Message[3] = (char)times[0][1];
+                        OutMessage->Buffer.BSt.Message[4] = (char)times[0][2];
+                        OutMessage->Buffer.BSt.Message[5] = (char)times[0][3];
+                        OutMessage->Buffer.BSt.Message[6] = (char)times[0][4];
+                        OutMessage->Buffer.BSt.Message[7] = (char)( ((rates[1][4]<<6)&0xC0) | ((rates[1][3]<<4)&0x30) | ((rates[0][4]<<2)&0x0C) | (rates[0][3]&0x03) );
+                        OutMessage->Buffer.BSt.Message[8] = (char)( ((rates[0][2]<<6)&0xC0) | ((rates[0][1]<<4)&0x30) | ((rates[0][0]<<2)&0x0C) | (rates[0][5]&0x03) );
+                        OutMessage->Buffer.BSt.Message[9] =  (char)times[1][0];
+                        OutMessage->Buffer.BSt.Message[10] = (char)times[1][1];
+                        OutMessage->Buffer.BSt.Message[11] = (char)times[1][2];
+                        OutMessage->Buffer.BSt.Message[12] = (char)times[1][3];
+                        OutMessage->Buffer.BSt.Message[13] = (char)times[1][4];
+                        OutMessage->Buffer.BSt.Message[14] = (char)( ((rates[1][2]<<6)&0xC0) | ((rates[1][1]<<4)&0x30) | ((rates[1][0]<<2)&0x0C) | (rates[1][5]&0x03) );
+
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                        OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule2Pos;
+                        OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule2Len;
+                        OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (char)times[2][0];
+                        OutMessage->Buffer.BSt.Message[1] = (char)times[2][1];
+                        OutMessage->Buffer.BSt.Message[2] = (char)times[2][2];
+                        OutMessage->Buffer.BSt.Message[3] = (char)times[2][3];
+                        OutMessage->Buffer.BSt.Message[4] = (char)times[2][4];
+                        OutMessage->Buffer.BSt.Message[5] = (char)( ((rates[2][4]<<2)&0x0C) | (rates[2][3]&0x03) );
+                        OutMessage->Buffer.BSt.Message[6] = (char)( ((rates[2][2]<<6)&0xC0) | ((rates[2][1]<<4)&0x30) | ((rates[2][0]<<2)&0x0C) | (rates[2][5]&0x03) );
+
+                        OutMessage->Buffer.BSt.Message[7] = (char)times[3][0];
+                        OutMessage->Buffer.BSt.Message[8] = (char)times[3][1];
+                        OutMessage->Buffer.BSt.Message[9] = (char)times[3][2];
+                        OutMessage->Buffer.BSt.Message[10] = (char)times[3][3];
+                        OutMessage->Buffer.BSt.Message[11] = (char)times[3][4];
+                        OutMessage->Buffer.BSt.Message[12] = (char)( ((rates[3][4]<<2)&0x0C) | (rates[3][3]&0x03) );
+                        OutMessage->Buffer.BSt.Message[13] = (char)( ((rates[3][2]<<6)&0xC0) | ((rates[3][1]<<4)&0x30) | ((rates[3][0]<<2)&0x0C) | (rates[3][5]&0x03) );
+                        OutMessage->Buffer.BSt.Message[14] = (char)(defaultTOURate);
+
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
+                }
             }
         }
 
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL || readsOnly == true)
+        if (nRet == NORMAL)
         {
             // Set up the reads here
             OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
@@ -2877,83 +2880,86 @@ int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiComm
 
         long spid = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID);
 
-        if( spid == std::numeric_limits<long>::min() )
+        if( ! readsOnly )
         {
-            //We dont have it in dynamic pao info yet, we will get it from the config tables
-            if(deviceConfig->getLongValueFromKey(MCTStrings::ServiceProviderID) != std::numeric_limits<long>::min() )
+            if( spid == std::numeric_limits<long>::min() )
             {
-                spid = deviceConfig->getLongValueFromKey(MCTStrings::ServiceProviderID);
+                //We dont have it in dynamic pao info yet, we will get it from the config tables
+                if(deviceConfig->getLongValueFromKey(MCTStrings::ServiceProviderID) != std::numeric_limits<long>::min() )
+                {
+                    spid = deviceConfig->getLongValueFromKey(MCTStrings::ServiceProviderID);
+                }
+                else
+                {
+                    spid = gMCT400SeriesSPID;
+                }
+            }
+
+            if (   channel1 == std::numeric_limits<long>::min()
+                || channel2 == std::numeric_limits<long>::min()
+                || peakKwResolution1 == std::numeric_limits<double>::min()
+                || lastIntervalDemandResolution1 == std::numeric_limits<double>::min()
+                || lpResolution1 == std::numeric_limits<double>::min()
+                || peakKwResolution2 == std::numeric_limits<double>::min()
+                || lastIntervalDemandResolution2 == std::numeric_limits<double>::min()
+                || lpResolution2 == std::numeric_limits<double>::min())
+            {
+                if( getMCTDebugLevel(DebugLevel_Configs) )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Configs - no or bad value stored, LPChannel " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                nRet = NoConfigData;
             }
             else
             {
-                spid = gMCT400SeriesSPID;
-            }
-        }
-
-        if (   channel1 == std::numeric_limits<long>::min()
-            || channel2 == std::numeric_limits<long>::min()
-            || peakKwResolution1 == std::numeric_limits<double>::min()
-            || lastIntervalDemandResolution1 == std::numeric_limits<double>::min()
-            || lpResolution1 == std::numeric_limits<double>::min()
-            || peakKwResolution2 == std::numeric_limits<double>::min()
-            || lastIntervalDemandResolution2 == std::numeric_limits<double>::min()
-            || lpResolution2 == std::numeric_limits<double>::min())
-        {
-            if( getMCTDebugLevel(DebugLevel_Configs) )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Configs - no or bad value stored, LPChannel " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            nRet = NoConfigData;
-        }
-        else
-        {
-            if ((setupRatioBytesBasedOnMeterType(channel1,multiplier1,peakKwResolution1,lastIntervalDemandResolution1,lpResolution1,ratio1,kRatio1) == NORMAL) &&
-                (setupRatioBytesBasedOnMeterType(channel2,multiplier2,peakKwResolution2,lastIntervalDemandResolution2,lpResolution2,ratio2,kRatio2) == NORMAL))
-            {
-                if (parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1)  != channel1
-                                              || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2) != channel2
-                                              || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio1) != ratio1
-                                              || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio2) != ratio2
-                                              || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio1) != kRatio1
-                                              || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio2) != kRatio2)
+                if ((setupRatioBytesBasedOnMeterType(channel1,multiplier1,peakKwResolution1,lastIntervalDemandResolution1,lpResolution1,ratio1,kRatio1) == NORMAL) &&
+                    (setupRatioBytesBasedOnMeterType(channel2,multiplier2,peakKwResolution2,lastIntervalDemandResolution2,lpResolution2,ratio2,kRatio2) == NORMAL))
                 {
-                    if( !parse.isKeyValid("verify") )
+                    if (parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1)  != channel1
+                                                  || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2) != channel2
+                                                  || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio1) != ratio1
+                                                  || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio2) != ratio2
+                                                  || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio1) != kRatio1
+                                                  || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio2) != kRatio2)
                     {
-                        OutMessage->Buffer.BSt.Function    = FuncWrite_SetupLPChannelsPos;
-                        OutMessage->Buffer.BSt.Length      = FuncWrite_SetupLPChannelsLen;
-                        OutMessage->Buffer.BSt.IO          = EmetconProtocol::IO_Function_Write;
-                        OutMessage->Buffer.BSt.Message[0]  = spid;
-                        OutMessage->Buffer.BSt.Message[1]  = 1;
-                        OutMessage->Buffer.BSt.Message[2]  = (channel1);
-                        OutMessage->Buffer.BSt.Message[3]  = (ratio1>>8);
-                        OutMessage->Buffer.BSt.Message[4]  = (ratio1);
-                        OutMessage->Buffer.BSt.Message[5]  = (kRatio1>>8);
-                        OutMessage->Buffer.BSt.Message[6]  = (kRatio1);
-                        OutMessage->Buffer.BSt.Message[7]  = 2;
-                        OutMessage->Buffer.BSt.Message[8]  = (channel2);
-                        OutMessage->Buffer.BSt.Message[9]  = (ratio2>>8);
-                        OutMessage->Buffer.BSt.Message[10] = (ratio2);
-                        OutMessage->Buffer.BSt.Message[11] = (kRatio2>>8);
-                        OutMessage->Buffer.BSt.Message[12] = (kRatio2);
+                        if( !parse.isKeyValid("verify") )
+                        {
+                            OutMessage->Buffer.BSt.Function    = FuncWrite_SetupLPChannelsPos;
+                            OutMessage->Buffer.BSt.Length      = FuncWrite_SetupLPChannelsLen;
+                            OutMessage->Buffer.BSt.IO          = EmetconProtocol::IO_Function_Write;
+                            OutMessage->Buffer.BSt.Message[0]  = spid;
+                            OutMessage->Buffer.BSt.Message[1]  = 1;
+                            OutMessage->Buffer.BSt.Message[2]  = (channel1);
+                            OutMessage->Buffer.BSt.Message[3]  = (ratio1>>8);
+                            OutMessage->Buffer.BSt.Message[4]  = (ratio1);
+                            OutMessage->Buffer.BSt.Message[5]  = (kRatio1>>8);
+                            OutMessage->Buffer.BSt.Message[6]  = (kRatio1);
+                            OutMessage->Buffer.BSt.Message[7]  = 2;
+                            OutMessage->Buffer.BSt.Message[8]  = (channel2);
+                            OutMessage->Buffer.BSt.Message[9]  = (ratio2>>8);
+                            OutMessage->Buffer.BSt.Message[10] = (ratio2);
+                            OutMessage->Buffer.BSt.Message[11] = (kRatio2>>8);
+                            OutMessage->Buffer.BSt.Message[12] = (kRatio2);
 
-                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
+                        }
+                        else
+                        {
+                            nRet = ConfigNotCurrent;
+                        }
                     }
-                    else
+                    else if( nRet == NORMAL )
                     {
-                        nRet = ConfigNotCurrent;
+                        nRet = ConfigCurrent;
                     }
-                }
-                else if( nRet == NORMAL )
-                {
-                    nRet = ConfigCurrent;
                 }
             }
         }
 
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL || readsOnly == true)
+        if (nRet == NORMAL)
         {
             OutMessage->Buffer.BSt.Function   = FuncRead_LoadProfileChannel12Pos;
             OutMessage->Buffer.BSt.Length     = FuncRead_LoadProfileChannel12Len;
@@ -2963,82 +2969,85 @@ int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiComm
             OutMessage->Priority             += 1;//return to normal
         }
 
-        multiplier1 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier3);
-        channel1 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig3);
-        peakKwResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::PeakKwResolution3);
-        lastIntervalDemandResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::LastIntervalDemandResolution3);
-        lpResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::LoadProfileResolution3);
-
-        multiplier2 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier4);
-        channel2 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig4);
-        peakKwResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::PeakKwResolution4);
-        lastIntervalDemandResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::LastIntervalDemandResolution4);
-        lpResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::LoadProfileResolution4);
-
-        if (   channel1 == std::numeric_limits<long>::min()
-            || channel2 == std::numeric_limits<long>::min()
-            || peakKwResolution1 == std::numeric_limits<double>::min()
-            || lastIntervalDemandResolution1 == std::numeric_limits<double>::min()
-            || lpResolution1 == std::numeric_limits<double>::min()
-            || peakKwResolution2 == std::numeric_limits<double>::min()
-            || lastIntervalDemandResolution2 == std::numeric_limits<double>::min()
-            || lpResolution2 == std::numeric_limits<double>::min())
+        if( ! readsOnly )
         {
-            if( getMCTDebugLevel(DebugLevel_Configs) )
+            multiplier1 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier3);
+            channel1 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig3);
+            peakKwResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::PeakKwResolution3);
+            lastIntervalDemandResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::LastIntervalDemandResolution3);
+            lpResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::LoadProfileResolution3);
+
+            multiplier2 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier4);
+            channel2 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig4);
+            peakKwResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::PeakKwResolution4);
+            lastIntervalDemandResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::LastIntervalDemandResolution4);
+            lpResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::LoadProfileResolution4);
+
+            if (   channel1 == std::numeric_limits<long>::min()
+                || channel2 == std::numeric_limits<long>::min()
+                || peakKwResolution1 == std::numeric_limits<double>::min()
+                || lastIntervalDemandResolution1 == std::numeric_limits<double>::min()
+                || lpResolution1 == std::numeric_limits<double>::min()
+                || peakKwResolution2 == std::numeric_limits<double>::min()
+                || lastIntervalDemandResolution2 == std::numeric_limits<double>::min()
+                || lpResolution2 == std::numeric_limits<double>::min())
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Configs - no or bad value stored, LPChannel " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            nRet = NoConfigData;
-        }
-        else
-        {
-            if ((setupRatioBytesBasedOnMeterType(channel1,multiplier1,peakKwResolution1,lastIntervalDemandResolution1,lpResolution1,ratio1,kRatio1) == NORMAL) &&
-                (setupRatioBytesBasedOnMeterType(channel2,multiplier2,peakKwResolution2,lastIntervalDemandResolution2,lpResolution2,ratio2,kRatio2) == NORMAL))
-            {
-                if( parse.isKeyValid("force")
-                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3) != channel1
-                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4) != channel2
-                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio3)    != ratio1
-                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio4)    != ratio2
-                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio3)        != kRatio1
-                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio4)        != kRatio2 )
+                if( getMCTDebugLevel(DebugLevel_Configs) )
                 {
-                    if( !parse.isKeyValid("verify") )
-                    {
-                        OutMessage->Buffer.BSt.Function    = FuncWrite_SetupLPChannelsPos;
-                        OutMessage->Buffer.BSt.Length      = FuncWrite_SetupLPChannelsLen;
-                        OutMessage->Buffer.BSt.IO          = EmetconProtocol::IO_Function_Write;
-                        OutMessage->Buffer.BSt.Message[0]  = spid;
-                        OutMessage->Buffer.BSt.Message[1]  = 3;
-                        OutMessage->Buffer.BSt.Message[2]  = (channel1);
-                        OutMessage->Buffer.BSt.Message[3]  = (ratio1>>8);
-                        OutMessage->Buffer.BSt.Message[4]  = (ratio1);
-                        OutMessage->Buffer.BSt.Message[5]  = (kRatio1>>8);
-                        OutMessage->Buffer.BSt.Message[6]  = (kRatio1);
-                        OutMessage->Buffer.BSt.Message[7]  = 4;
-                        OutMessage->Buffer.BSt.Message[8]  = (channel2);
-                        OutMessage->Buffer.BSt.Message[9]  = (ratio2>>8);
-                        OutMessage->Buffer.BSt.Message[10] = (ratio2);
-                        OutMessage->Buffer.BSt.Message[11] = (kRatio2>>8);
-                        OutMessage->Buffer.BSt.Message[12] = (kRatio2);
-
-                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    }
-                    else
-                    {
-                        nRet = ConfigNotCurrent;
-                    }
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Configs - no or bad value stored, LPChannel " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
-                else if( nRet == NORMAL )
+                nRet = NoConfigData;
+            }
+            else
+            {
+                if ((setupRatioBytesBasedOnMeterType(channel1,multiplier1,peakKwResolution1,lastIntervalDemandResolution1,lpResolution1,ratio1,kRatio1) == NORMAL) &&
+                    (setupRatioBytesBasedOnMeterType(channel2,multiplier2,peakKwResolution2,lastIntervalDemandResolution2,lpResolution2,ratio2,kRatio2) == NORMAL))
                 {
-                    nRet = ConfigCurrent;
+                    if( parse.isKeyValid("force")
+                        || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3) != channel1
+                        || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4) != channel2
+                        || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio3)    != ratio1
+                        || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio4)    != ratio2
+                        || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio3)        != kRatio1
+                        || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio4)        != kRatio2 )
+                    {
+                        if( !parse.isKeyValid("verify") )
+                        {
+                            OutMessage->Buffer.BSt.Function    = FuncWrite_SetupLPChannelsPos;
+                            OutMessage->Buffer.BSt.Length      = FuncWrite_SetupLPChannelsLen;
+                            OutMessage->Buffer.BSt.IO          = EmetconProtocol::IO_Function_Write;
+                            OutMessage->Buffer.BSt.Message[0]  = spid;
+                            OutMessage->Buffer.BSt.Message[1]  = 3;
+                            OutMessage->Buffer.BSt.Message[2]  = (channel1);
+                            OutMessage->Buffer.BSt.Message[3]  = (ratio1>>8);
+                            OutMessage->Buffer.BSt.Message[4]  = (ratio1);
+                            OutMessage->Buffer.BSt.Message[5]  = (kRatio1>>8);
+                            OutMessage->Buffer.BSt.Message[6]  = (kRatio1);
+                            OutMessage->Buffer.BSt.Message[7]  = 4;
+                            OutMessage->Buffer.BSt.Message[8]  = (channel2);
+                            OutMessage->Buffer.BSt.Message[9]  = (ratio2>>8);
+                            OutMessage->Buffer.BSt.Message[10] = (ratio2);
+                            OutMessage->Buffer.BSt.Message[11] = (kRatio2>>8);
+                            OutMessage->Buffer.BSt.Message[12] = (kRatio2);
+
+                            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        }
+                        else
+                        {
+                            nRet = ConfigNotCurrent;
+                        }
+                    }
+                    else if( nRet == NORMAL )
+                    {
+                        nRet = ConfigCurrent;
+                    }
                 }
             }
         }
 
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL || readsOnly == true)
+        if (nRet == NORMAL)
         {
             OutMessage->Buffer.BSt.Function   = FuncRead_LoadProfileChannel34Pos;
             OutMessage->Buffer.BSt.Length     = FuncRead_LoadProfileChannel34Len;
@@ -3064,54 +3073,57 @@ int Mct470Device::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser &p
 
     if (deviceConfig)
     {
-        long relayATimer = deviceConfig->getLongValueFromKey(MCTStrings::RelayATimer);
-        long relayBTimer = deviceConfig->getLongValueFromKey(MCTStrings::RelayBTimer);
-        long spid = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID);
+        if( ! readsOnly )
+        {
+            long relayATimer = deviceConfig->getLongValueFromKey(MCTStrings::RelayATimer);
+            long relayBTimer = deviceConfig->getLongValueFromKey(MCTStrings::RelayBTimer);
+            long spid = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID);
 
-        if (spid == std::numeric_limits<long>::min())
-        {
-            // We dont have it in dynamic pao info yet, we will get it from the config tables
-            spid = deviceConfig->getLongValueFromKey(MCTStrings::ServiceProviderID);
-        }
-
-        if (relayATimer == std::numeric_limits<long>::min()
-            || relayBTimer == std::numeric_limits<long>::min()
-            || spid == std::numeric_limits<long>::min())
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            nRet = NoConfigData;
-        }
-        else
-        {
-            if (parse.isKeyValid("force")
-                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_RelayATimer) != relayATimer
-                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_RelayBTimer) != relayBTimer)
+            if (spid == std::numeric_limits<long>::min())
             {
-                if (!parse.isKeyValid("verify"))
-                {
-                    OutMessage->Buffer.BSt.Function   = FuncWrite_RelaysPos;
-                    OutMessage->Buffer.BSt.Length     = FuncWrite_RelaysLen;
-                    OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = spid;
-                    OutMessage->Buffer.BSt.Message[1] = relayATimer;
-                    OutMessage->Buffer.BSt.Message[2] = relayBTimer;
+                // We dont have it in dynamic pao info yet, we will get it from the config tables
+                spid = deviceConfig->getLongValueFromKey(MCTStrings::ServiceProviderID);
+            }
 
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                }
-                else
-                {
-                    nRet = ConfigNotCurrent;
-                }
+            if (relayATimer == std::numeric_limits<long>::min()
+                || relayBTimer == std::numeric_limits<long>::min()
+                || spid == std::numeric_limits<long>::min())
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
             }
             else
             {
-                nRet = ConfigCurrent;
+                if (parse.isKeyValid("force")
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_RelayATimer) != relayATimer
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_RelayBTimer) != relayBTimer)
+                {
+                    if (!parse.isKeyValid("verify"))
+                    {
+                        OutMessage->Buffer.BSt.Function   = FuncWrite_RelaysPos;
+                        OutMessage->Buffer.BSt.Length     = FuncWrite_RelaysLen;
+                        OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0] = spid;
+                        OutMessage->Buffer.BSt.Message[1] = relayATimer;
+                        OutMessage->Buffer.BSt.Message[2] = relayBTimer;
+
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
+                }
             }
         }
 
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL || readsOnly == true)
+        if (nRet == NORMAL)
         {
             OutMessage->Buffer.BSt.Function   = Memory_RelayATimerPos;
             OutMessage->Buffer.BSt.Length     = Memory_RelayATimerLen + Memory_RelayBTimerLen;
@@ -3137,44 +3149,47 @@ int Mct470Device::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser 
 
     if( deviceConfig )
     {
-        long demand = deviceConfig->getLongValueFromKey(MCTStrings::DemandInterval);
-        long loadProfile1 = deviceConfig->getLongValueFromKey(MCTStrings::LoadProfileInterval);
+        if( ! readsOnly )
+        {
+            long demand = deviceConfig->getLongValueFromKey(MCTStrings::DemandInterval);
+            long loadProfile1 = deviceConfig->getLongValueFromKey(MCTStrings::LoadProfileInterval);
 
-        if( demand == std::numeric_limits<long>::min()
-            || loadProfile1 == std::numeric_limits<long>::min())
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            nRet = NoConfigData;
-        }
-        else
-        {
-            if( parse.isKeyValid("force")
-                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandInterval) != demand
-                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) != loadProfile1)
+            if( demand == std::numeric_limits<long>::min()
+                || loadProfile1 == std::numeric_limits<long>::min())
             {
-                if( !parse.isKeyValid("verify") )
-                {
-                    OutMessage->Buffer.BSt.Function   = FuncWrite_IntervalsPos;
-                    OutMessage->Buffer.BSt.Length     = FuncWrite_IntervalsLen-1; //Not setting loadProfile2
-                    OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (char)demand;
-                    OutMessage->Buffer.BSt.Message[1] = (char)loadProfile1;
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                }
-                else
-                {
-                    nRet = ConfigNotCurrent;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
             }
             else
             {
-                nRet = ConfigCurrent;
+                if( parse.isKeyValid("force")
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandInterval) != demand
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) != loadProfile1)
+                {
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = FuncWrite_IntervalsPos;
+                        OutMessage->Buffer.BSt.Length     = FuncWrite_IntervalsLen-1; //Not setting loadProfile2
+                        OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (char)demand;
+                        OutMessage->Buffer.BSt.Message[1] = (char)loadProfile1;
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
+                }
             }
         }
 
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL || readsOnly == true)
+        if (nRet == NORMAL)
         {
             OutMessage->Buffer.BSt.Function   = Memory_IntervalsPos;
             OutMessage->Buffer.BSt.Length     = Memory_IntervalsLen;
@@ -3199,53 +3214,56 @@ int Mct470Device::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandP
 
     if (deviceConfig)
     {
-        long tableReadInterval = deviceConfig->getLongValueFromKey(MCTStrings::TableReadInterval);
-        long meterNumber = deviceConfig->getLongValueFromKey(MCTStrings::MeterNumber);
-        long tableType = deviceConfig->getLongValueFromKey(MCTStrings::TableType);
-        long spid = deviceConfig->getLongValueFromKey(MCTStrings::ServiceProviderID);
+        if( ! readsOnly )
+        {
+            long tableReadInterval = deviceConfig->getLongValueFromKey(MCTStrings::TableReadInterval);
+            long meterNumber = deviceConfig->getLongValueFromKey(MCTStrings::MeterNumber);
+            long tableType = deviceConfig->getLongValueFromKey(MCTStrings::TableType);
+            long spid = deviceConfig->getLongValueFromKey(MCTStrings::ServiceProviderID);
 
-        if (tableReadInterval == std::numeric_limits<long>::min() ||
-            meterNumber == std::numeric_limits<long>::min() ||
-            tableType == std::numeric_limits<long>::min() ||
-            spid == std::numeric_limits<long>::min())
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            nRet = NoConfigData;
-        }
-        else
-        {
-            if( parse.isKeyValid("force")
-                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableReadInterval) != tableReadInterval
-                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedMeterNumber) != meterNumber
-                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) != tableType
-                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID) != spid )
+            if (tableReadInterval == std::numeric_limits<long>::min() ||
+                meterNumber == std::numeric_limits<long>::min() ||
+                tableType == std::numeric_limits<long>::min() ||
+                spid == std::numeric_limits<long>::min())
             {
-                if( !parse.isKeyValid("verify") )
-                {
-                    OutMessage->Buffer.BSt.Function   = FuncWrite_PrecannedTablePos;
-                    OutMessage->Buffer.BSt.Length     = FuncWrite_PrecannedTableLen;
-                    OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
-                    OutMessage->Buffer.BSt.Message[0] = (char)spid;
-                    OutMessage->Buffer.BSt.Message[1] = (char)tableReadInterval;
-                    OutMessage->Buffer.BSt.Message[2] = (char)meterNumber;
-                    OutMessage->Buffer.BSt.Message[3] = (char)tableType;
-                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                }
-                else
-                {
-                    nRet = ConfigNotCurrent;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
             }
             else
             {
-                nRet = ConfigCurrent;
+                if( parse.isKeyValid("force")
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableReadInterval) != tableReadInterval
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedMeterNumber) != meterNumber
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) != tableType
+                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID) != spid )
+                {
+                    if( !parse.isKeyValid("verify") )
+                    {
+                        OutMessage->Buffer.BSt.Function   = FuncWrite_PrecannedTablePos;
+                        OutMessage->Buffer.BSt.Length     = FuncWrite_PrecannedTableLen;
+                        OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
+                        OutMessage->Buffer.BSt.Message[0] = (char)spid;
+                        OutMessage->Buffer.BSt.Message[1] = (char)tableReadInterval;
+                        OutMessage->Buffer.BSt.Message[2] = (char)meterNumber;
+                        OutMessage->Buffer.BSt.Message[3] = (char)tableType;
+                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    }
+                    else
+                    {
+                        nRet = ConfigNotCurrent;
+                    }
+                }
+                else
+                {
+                    nRet = ConfigCurrent;
+                }
             }
         }
 
         //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL || readsOnly == true)
+        if (nRet == NORMAL)
         {
             OutMessage->Buffer.BSt.Function   = FuncRead_PrecannedTablePos;
             OutMessage->Buffer.BSt.Length     = FuncRead_PrecannedTableLen;
