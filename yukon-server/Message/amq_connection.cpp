@@ -1,22 +1,65 @@
 #include "yukon.h"
 
-#include "utility.h"
+#include "amq_connection.h"
 
 #include "StreamableMessage.h"
 
+#include "utility.h"
+
 #include "cms/connectionfactory.h"
 
-#include "amq_connection.h"
-
 using std::make_pair;
+using std::auto_ptr;
+using std::string;
+using boost::scoped_ptr;
 
 namespace Cti {
 namespace Messaging {
 
-ActiveMQConnectionManager::ActiveMQConnectionManager(const std::string &broker_uri) :
-    _broker_uri(broker_uri)
+struct amq_envelope
 {
-    _queue_names.insert(make_pair(Queue_PorterResponses, "yukon.notif.obj.amr.PorterResponseMessage"));
+    string queue;
+
+    virtual ~amq_envelope() {}
+
+    virtual auto_ptr<cms::Message> extractMessage(cms::Session &session) const = 0;
+};
+
+struct string_envelope : amq_envelope
+{
+    string message;
+
+    auto_ptr<cms::Message> extractMessage(cms::Session &session) const
+    {
+        return auto_ptr<cms::Message>(session.createTextMessage(message));
+    }
+};
+
+struct streamable_envelope : amq_envelope
+{
+    scoped_ptr<StreamableMessage> message;
+
+    auto_ptr<cms::Message> extractMessage(cms::Session &session) const
+    {
+        if( ! message.get() )
+        {
+            return auto_ptr<cms::Message>();
+        }
+
+        auto_ptr<cms::StreamMessage> streamMessage(session.createStreamMessage());
+
+        message->streamInto(*streamMessage);
+
+        return streamMessage;
+    }
+};
+
+
+ActiveMQConnectionManager::ActiveMQConnectionManager(const string &broker_uri) :
+    _broker_uri(broker_uri),
+    _initialized(false)
+{
+    _queue_names.insert(make_pair(Queue_PorterResponses, "yukon.notif.stream.amr.PorterResponseMessage"));
 }
 
 
@@ -47,8 +90,6 @@ std::string ActiveMQConnectionManager::getQueueName(Queues queue) const
 
 void ActiveMQConnectionManager::run()
 {
-    initialize();
-
     while( !isSet(SHUTDOWN) )
     {
         sendPendingMessages();
@@ -58,51 +99,86 @@ void ActiveMQConnectionManager::run()
 }
 
 
-void ActiveMQConnectionManager::initialize()
+void ActiveMQConnectionManager::validateSetup()
 {
-    activemq::library::ActiveMQCPP::initializeLibrary();
+    if( ! _initialized )
+    {
+        //  can throw std::runtime_exception
+        activemq::library::ActiveMQCPP::initializeLibrary();
 
-    std::auto_ptr<cms::ConnectionFactory> connectionFactory(cms::ConnectionFactory::createCMSConnectionFactory(_broker_uri));
+        _initialized = true;
+    }
 
-    _connection.reset(connectionFactory->createConnection());
+    if( ! _connection.get() )
+    {
+        scoped_ptr<cms::ConnectionFactory> connectionFactory;
 
-    _connection->start();
+        connectionFactory.reset(cms::ConnectionFactory::createCMSConnectionFactory(_broker_uri));
 
-    _session.reset(_connection->createSession());
+        scoped_ptr<cms::Connection> connection;
+
+        connection.reset(connectionFactory->createConnection());
+
+        connection->start();
+
+        _connection.swap(connection);
+    }
+
+    if( ! _session.get() )
+    {
+        _session.reset(_connection->createSession());
+    }
 }
 
 
 void ActiveMQConnectionManager::sendPendingMessages()
+try
 {
-    std::queue<envelope> tmpQueue;
+    validateSetup();
 
     {
         //  lock as little as possible - just empty out the pending queue and let go
-        CtiLockGuard<CtiCriticalSection> lock(_pending_message_mux);
+        CtiLockGuard<CtiCriticalSection> lock(_incoming_message_mux);
 
-        tmpQueue = _pending_messages;
-
-        while( !_pending_messages.empty() )
+        while( !_incoming_messages.empty() )
         {
-            _pending_messages.pop();
+            //  guarantee that we cannot have null pointers in _pending_messages
+            if( _incoming_messages.front() )
+            {
+                _pending_messages.push(_incoming_messages.front());
+            }
+
+            _incoming_messages.pop();
         }
     }
 
-    while( !tmpQueue.empty() )
+    while( !_pending_messages.empty() )
     {
-        sendMessage(tmpQueue.front());
+        scoped_ptr<amq_envelope> e(_pending_messages.front());
 
-        tmpQueue.pop();
+        _pending_messages.pop();
+
+        //  _session must be valid if we passed validateSetup()
+        sendMessage(*_session, *e);
     }
+}
+catch( cms::CMSException &e )
+{
+    //  possibly add an increasing delay if we keep throwing exceptions?
+    return;
+}
+catch( std::runtime_error &e )
+{
+    return;
 }
 
 
-void ActiveMQConnectionManager::enqueueEnvelope(envelope &e)
+void ActiveMQConnectionManager::enqueueEnvelope(auto_ptr<amq_envelope> e)
 {
     {
-        CtiLockGuard<CtiCriticalSection> lock(_pending_message_mux);
+        CtiLockGuard<CtiCriticalSection> lock(_incoming_message_mux);
 
-        _pending_messages.push(e);
+        _incoming_messages.push(e.release());
     }
 
     if( !isRunning() )
@@ -117,84 +193,91 @@ void ActiveMQConnectionManager::enqueueEnvelope(envelope &e)
 }
 
 
-void ActiveMQConnectionManager::enqueueMessage(const std::string &queue, const std::string &message)
+void ActiveMQConnectionManager::enqueueMessage(const std::string &queueName, const std::string &message)
 {
-    envelope e = { queue, createTextMessage(message) };
+    string_envelope *e = new string_envelope;
 
-    enqueueEnvelope(e);
+    e->queue   = queueName;
+    e->message = message;
+
+    enqueueEnvelope(auto_ptr<amq_envelope>(e));
 }
 
 
-void ActiveMQConnectionManager::enqueueMessage(const Queues queue, const Messaging::StreamableMessage &message)
+void ActiveMQConnectionManager::enqueueMessage(const Queues queueId, auto_ptr<StreamableMessage> message)
 {
-    std::string queueName = getQueueName(queue);
+    std::string queueName = getQueueName(queueId);
 
     if( ! queueName.empty() )
     {
-        envelope e = {queueName, createStreamMessage(message) };
+        streamable_envelope *se = new streamable_envelope;
 
-        enqueueEnvelope(e);
+        se->queue   = queueName;
+        se->message.reset(message.release());
+
+        enqueueEnvelope(auto_ptr<amq_envelope>(se));
     }
 }
 
 
-void ActiveMQConnectionManager::sendMessage(const envelope &e)
+void ActiveMQConnectionManager::sendMessage(cms::Session &session, const amq_envelope &e)
 {
-    if( cms::MessageProducer *producer = getProducer(e.queue) )
+    if( cms::MessageProducer *producer = getProducer(session, e.queue) )
     {
-        producer->send(e.message);
+        auto_ptr<cms::Message> m(e.extractMessage(session));
+
+        if( m.get() )
+        {
+            producer->send(m.get());
+        }
     }
 }
 
 
-cms::MessageProducer *ActiveMQConnectionManager::getProducer(const std::string &queue)
-try
+cms::MessageProducer *ActiveMQConnectionManager::getProducer(cms::Session &session, const std::string &queueName)
 {
-    producer_map::iterator itr = _producers.find(queue);
+    producer_map::iterator itr = _producers.find(queueName);
 
     if( itr == _producers.end() )
     {
-        cms::MessageProducer *producer = _session->createProducer(_session->createQueue(queue));
+        try
+        {
+            //  if it doesn't exist, try to make one
+            if( const cms::Queue *queue = session.createQueue(queueName) )
+            {
+                if( cms::MessageProducer *producer = session.createProducer(queue) )
+                {
+                    itr = _producers.insert(make_pair(queueName, producer)).first;
+                }
+            }
+        }
+        catch( cms::CMSException &e )
+        {
+            return 0;
+        }
+    }
 
-        itr = _producers.insert(make_pair(queue, producer)).first;
+    if( itr == _producers.end() )
+    {
+        return 0;
     }
 
     return itr->second;
-}
-catch( cms::CMSException &e )
-{
-    return 0;
-}
-
-
-cms::TextMessage *ActiveMQConnectionManager::createTextMessage(const std::string &message)
-{
-    return _session->createTextMessage(message);
-}
-
-
-cms::StreamMessage *ActiveMQConnectionManager::createStreamMessage(const Messaging::StreamableMessage &message)
-{
-    cms::StreamMessage *streamMessage = _session->createStreamMessage();
-
-    message.streamInto(*streamMessage);
-
-    return streamMessage;
 }
 
 
 /*
 void  ActiveMQConnectionManager::receiveMessage()
 {
-    std::auto_ptr<cms::Connection>      consumer_connection (connectionFactory->createConnection());
+    scoped_ptr<cms::Connection>      consumer_connection (connectionFactory->createConnection());
     consumer_connection->start();
-    std::auto_ptr<cms::Session>         consumer_session    (consumer_connection->createSession());
-    std::auto_ptr<cms::Topic>           consumer_topic      (consumer_session->createTopic("EXAMPLE-TOPIC"));
-    std::auto_ptr<cms::MessageConsumer> myConsumer          (consumer_session->createConsumer(consumer_topic.get()));
+    scoped_ptr<cms::Session>         consumer_session    (consumer_connection->createSession());
+    scoped_ptr<cms::Topic>           consumer_topic      (consumer_session->createTopic("EXAMPLE-TOPIC"));
+    scoped_ptr<cms::MessageConsumer> myConsumer          (consumer_session->createConsumer(consumer_topic.get()));
 
 
-    std::auto_ptr<cms::Message>     consumed_message(myConsumer->receive());
-    std::auto_ptr<cms::TextMessage> consumed_text_message(dynamic_cast<cms::TextMessage *>(consumed_message.get()));
+    scoped_ptr<cms::Message>     consumed_message(myConsumer->receive());
+    scoped_ptr<cms::TextMessage> consumed_text_message(dynamic_cast<cms::TextMessage *>(consumed_message.get()));
 
     //  did the dynamic cast work?
     if( consumed_text_message.get() )

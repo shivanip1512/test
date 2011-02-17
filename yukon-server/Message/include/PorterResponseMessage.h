@@ -14,7 +14,7 @@ class IM_EX_MSG PorterResponseMessage : public StreamableMessage
     long _connectionId;
     long _deviceId;
     long _userMessageId;
-    long _status;
+    int  _status;
     bool _final;
 
 public:

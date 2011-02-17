@@ -51,7 +51,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 namespace Cti {
 namespace Messaging {
 
-IM_EX_MSG ActiveMQConnectionManager gActiveMQConnection(gConfigParms.getValueAsString("ACTIVEMQ_BROKER_URI"));
+IM_EX_MSG ActiveMQConnectionManager gActiveMQConnection(gConfigParms.getValueAsString("JMS_CLIENT_CONNECTION"));
 
 }
 }

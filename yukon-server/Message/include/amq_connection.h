@@ -12,6 +12,7 @@ namespace Cti {
 namespace Messaging {
 
 class StreamableMessage;
+struct amq_envelope;
 
 class IM_EX_MSG ActiveMQConnectionManager : private CtiThread
 {
@@ -21,38 +22,33 @@ public:
 
 private:
 
-    struct envelope
-    {
-        std::string queue;
-        cms::Message *message;
-    };
-
     void run();
 
-    void initialize();
+    void validateSetup();
 
     void sendPendingMessages();
 
-    void sendMessage(const envelope &e);
+    void sendMessage(cms::Session &session, const amq_envelope &e);
 
-    cms::MessageProducer *getProducer(const std::string &queue);
+    cms::MessageProducer *getProducer(cms::Session &session, const std::string &queue);
 
-    cms::TextMessage   *createTextMessage  (const std::string &message);
-    cms::StreamMessage *createStreamMessage(const StreamableMessage &message);
-
-    void enqueueEnvelope(envelope &e);
+    void enqueueEnvelope(std::auto_ptr<amq_envelope> e);
 
     std::string getQueueName(Queues queue) const;
 
-    std::auto_ptr<cms::Connection> _connection;
-    std::auto_ptr<cms::Session>    _session;
+    bool _initialized;
+
+    boost::scoped_ptr<cms::Connection> _connection;
+    boost::scoped_ptr<cms::Session>    _session;
 
     const std::string _broker_uri;
 
-    std::queue<envelope> _pending_messages;
-    CtiCriticalSection   _pending_message_mux;
+    std::queue<amq_envelope *> _incoming_messages;
+    CtiCriticalSection   _incoming_message_mux;
 
-    typedef std::map<std::string, cms::MessageProducer * > producer_map;
+    std::queue<amq_envelope *> _pending_messages;
+
+    typedef std::map<std::string, cms::MessageProducer *> producer_map;
 
     producer_map _producers;
 
@@ -70,9 +66,9 @@ public:
      * @deprecated  Prefer {@link #enqueueMessage(const Queues
      *              queue, const StreamableMessage &message);}
      */
-    void enqueueMessage(const std::string &queue, const std::string &message);
+    void enqueueMessage(const std::string &queueName, const std::string &message);
 
-    void enqueueMessage(const Queues queue, const StreamableMessage &message);
+    void enqueueMessage(const Queues queueId, std::auto_ptr<StreamableMessage> message);
 
     enum Queues
     {

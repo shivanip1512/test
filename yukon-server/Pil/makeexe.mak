@@ -202,7 +202,7 @@ pilserver.obj:	yukon.h precompiled.h types.h ctidbgmem.h os2_2w32.h \
 		readers_writer_lock.h mgr_device.h rtdb.h slctdev.h \
 		mgr_point.h mgr_route.h repeaterrole.h mgr_config.h msg_cmd.h \
 		rte_ccu.h rte_xcu.h tbl_rtcarrier.h tbl_rtrepeater.h \
-		amq_connection.h ctistring.h
+		amq_connection.h PorterResponseMessage.h ctistring.h
 piltest.obj:	yukon.h precompiled.h types.h ctidbgmem.h queue.h \
 		cparms.h dlldefs.h rwutil.h database_connection.h dbaccess.h \
 		dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h guard.h \

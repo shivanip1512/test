@@ -512,7 +512,7 @@ void CtiPILServer::copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &r
 {
     using namespace Cti::Messaging;
 
-    PorterResponseMessage msg(returnMsg, connectionHandle);
+    std::auto_ptr<StreamableMessage> msg(new PorterResponseMessage(returnMsg, connectionHandle));
 
     gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_PorterResponses, msg);
 }
