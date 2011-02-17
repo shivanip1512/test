@@ -140,6 +140,26 @@ ALTER TABLE LmControlAreaTrigger
 MODIFY ThresholdPointId NUMBER NOT NULL; 
 /* End YUK-9445 */
 
+/* Start YUK-9404 */
+DELETE FROM ECToGenericMapping 
+WHERE MappingCategory = 'CustomerFAQ'; 
+
+DELETE FROM YukonListEntry 
+WHERE ListId IN (SELECT ListId 
+                  FROM YukonSelectionList 
+                  WHERE ListName IN ('CustomerFAQGroup', 'QuestionType', 'AnswerType'); 
+
+DELETE FROM YukonSelectionList 
+WHERE ListName IN ('CustomerFAQGroup', 'QuestionType', 'AnswerType'); 
+
+DELETE FROM YukonListEntry 
+WHERE EntryId IN (SELECT SubjectId 
+                   FROM CustomerFAQ) 
+AND EntryId != 0; 
+
+DROP TABLE CustomerFAQ; 
+/* End YUK-9404 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

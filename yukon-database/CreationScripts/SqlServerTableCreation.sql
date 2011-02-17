@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/17/2011 11:01:13 AM                        */
+/* Created on:     2/17/2011 11:31:15 AM                        */
 /*==============================================================*/
 
 
@@ -1745,13 +1745,6 @@ if exists (select 1
            where  id = object_id('CustomerBaseLinePoint')
             and   type = 'U')
    drop table CustomerBaseLinePoint
-go
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('CustomerFAQ')
-            and   type = 'U')
-   drop table CustomerFAQ
 go
 
 if exists (select 1
@@ -5569,26 +5562,6 @@ create table CustomerBaseLinePoint (
    constraint PK_CUSTOMERBASELINEPOINT primary key (CustomerID, PointID)
 )
 go
-
-/*==============================================================*/
-/* Table: CustomerFAQ                                           */
-/*==============================================================*/
-create table CustomerFAQ (
-   QuestionID           numeric              not null,
-   SubjectID            numeric              null,
-   Question             varchar(200)         null,
-   Answer               varchar(500)         null,
-   constraint PK_CUSTOMERFAQ primary key (QuestionID)
-)
-go
-
-insert into CustomerFAQ values(1,1231,'How long does it take for my program to become effective after adding or changing a program?','Immediately! You can take advantage of energy savings the moment you decide to. Just make your selection on the "Programs - Add/Change" page, click the submit button, and select Yes at the prompt.');
-insert into CustomerFAQ values(2,1231,'How do I find out more about my program or other programs?','Go to the "Programs - Add/Change" page and click the Program Details button. You will find all of the information you need here regarding the program, amount of control, and savings.');
-insert into CustomerFAQ values(3,1231,'Can I sign up for more than one program?','Certainly! The more programs you enroll in, the more energy savings you will receive.');
-insert into CustomerFAQ values(4,1232,'Can I control my thermostat even if I do not know my current settings?','Yes. You may select the temperature change (up or down) in degrees without knowing the current temperature or simply set a new specific temperature. If pre-cooling, you may also select a new specific temperature or select the number of degress to decrease in temperature.');
-insert into CustomerFAQ values(5,1232,'What does the Fan setting do?','The fan setting controls the operation of the fan. <br>Auto - the fan runs only as necessary to maintain the current temperature settings. <br>On - the fan runs continuously. <br>Off - the fan does not run.');
-insert into CustomerFAQ values(6,1232,'Does the utility company have access to my thermostat?','The utility only has access to your thermostat for control based on the programs you have signed up for. When not being controlled, you have complete control of your thermostat.');
-insert into CustomerFAQ values(7,1233,'How much credit do I receive if I opt out while controlling?','You will receive credit for the portion of time you were controlled.');
 
 /*==============================================================*/
 /* Table: CustomerLoginSerialGroup                              */
@@ -12111,10 +12084,6 @@ insert into YukonListEntry values (1176,1015,0,'Tuesday',2106);
 insert into YukonListEntry values (1177,1015,0,'Wednesday',2107);
 insert into YukonListEntry values (1178,1015,0,'Thursday',2108);
 insert into YukonListEntry values (1179,1015,0,'Friday',2109);
-insert into YukonListEntry values (1191,1016,0,'Signup',2201);
-insert into YukonListEntry values (1192,1016,0,'Exit',2202);
-insert into YukonListEntry values (1201,1017,0,'Selection',2301);
-insert into YukonListEntry values (1202,1017,0,'Free Form',2302);
 insert into YukonListEntry values (1211,1018,0,'(Default)',2401);
 insert into YukonListEntry values (1212,1018,0,'Cool',2402);
 insert into YukonListEntry values (1213,1018,0,'Heat',2403);
@@ -12124,9 +12093,6 @@ insert into YukonListEntry values (1216,1018,0,'Emergency Heat',2406);
 insert into YukonListEntry values (1221,1019,0,'(Default)',2501);
 insert into YukonListEntry values (1222,1019,0,'Auto',2502);
 insert into YukonListEntry values (1223,1019,0,'On',2503);
-insert into YukonListEntry values (1231,1020,1,'PROGRAMS',0);
-insert into YukonListEntry values (1232,1020,2,'THERMOSTAT CONTROL',0);
-insert into YukonListEntry values (1233,1020,3,'SAVINGS',0);
 INSERT INTO YukonListEntry VALUES (1224,1019,0,'Circulate',2504); 
 
 insert into YukonListEntry values (1251,1050,0,'Last Updated Time',3201);
@@ -13059,11 +13025,8 @@ INSERT INTO YukonSelectionList VALUES(1012,'A','(none)','Appliance manufacturer 
 INSERT INTO YukonSelectionList VALUES(1013,'A','(none)','Appliance location selection','ApplianceLocation','Y',-1);
 INSERT INTO YukonSelectionList VALUES(1014,'N','(none)','Chance of control selection','ChanceOfControl','Y',-1);
 INSERT INTO YukonSelectionList VALUES(1015,'N','(none)','Thermostat settings time of week selection','TimeOfWeek','N',-1);
-INSERT INTO YukonSelectionList VALUES(1016,'N','(none)','Question type selection','QuestionType','N',-1);
-INSERT INTO YukonSelectionList VALUES(1017,'N','(none)','Answer type selection','AnswerType','N',-1);
 INSERT INTO YukonSelectionList VALUES(1018,'N','(none)','Thermostat mode selection','ThermostatMode','N',-1);
 INSERT INTO YukonSelectionList VALUES(1019,'N','(none)','Thermostat fan state selection','ThermostatFanState','N',-1);
-INSERT INTO YukonSelectionList VALUES(1020,'O','(none)','Customer FAQ groups','CustomerFAQGroup','N',-1);
 INSERT INTO YukonSelectionList VALUES(1021,'N','(none)','Residence type selection','ResidenceType','Y',-1);
 INSERT INTO YukonSelectionList VALUES(1022,'N','(none)','Construction material selection','ConstructionMaterial','Y',-1);
 INSERT INTO YukonSelectionList VALUES(1023,'N','(none)','Decade built selection','DecadeBuilt','Y',-1);
@@ -14566,11 +14529,6 @@ go
 alter table CustomerBaseLinePoint
    add constraint FK_CstBseLn_ClcBse foreign key (PointID)
       references CALCBASE (POINTID)
-go
-
-alter table CustomerFAQ
-   add constraint FK_CsLsEn_CsF foreign key (SubjectID)
-      references YukonListEntry (EntryID)
 go
 
 alter table CustomerLoginSerialGroup
