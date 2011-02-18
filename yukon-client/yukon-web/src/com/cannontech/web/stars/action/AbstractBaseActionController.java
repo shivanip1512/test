@@ -12,6 +12,7 @@ import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonListDao;
@@ -35,6 +36,7 @@ public abstract class AbstractBaseActionController implements Controller {
     protected PaoDao paoDao;
     protected ContactDao contactDao;
     protected ContactNotificationDao contactNotificationDao;
+    protected DBPersistentDao dbPersistentDao;
     protected AuthDao authDao;
     protected RoleDao roleDao;
     protected YukonListDao yukonListDao;
@@ -85,6 +87,11 @@ public abstract class AbstractBaseActionController implements Controller {
     
     public void setContactDao(final ContactDao contactDao) {
         this.contactDao = contactDao;
+    }
+    
+    @Required
+    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
     }
     
     public void setAuthDao(final AuthDao authDao) {

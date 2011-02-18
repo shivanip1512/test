@@ -9,7 +9,6 @@ package com.cannontech.stars.util.task;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -64,8 +63,10 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 	
 	private final Logger log = YukonLogManager.getLogger(getClass());
 	
-	public DeleteEnergyCompanyTask(int energyCompanyID) {
-		this.energyCompanyID = energyCompanyID;
+	public DeleteEnergyCompanyTask(int energyCompanyId, DBPersistentDao dbPersistentDao, YukonListDao yukonListDao) {
+		this.energyCompanyID = energyCompanyId;
+        this.dbPersistentDao = dbPersistentDao;
+        this.yukonListDao = yukonListDao;
 	}
 
 	/* (non-Javadoc)
@@ -109,7 +110,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		if (energyCompanyID == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID) {
+        if (energyCompanyID == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID) {
 			status = STATUS_ERROR;
 			errorMsg = "Energy company ID is not specified";
 			return;
@@ -373,16 +374,4 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 				errorMsg = "Failed to delete the energy company";
 		}
 	}
-
-	// DI Setters
-	@Autowired
-	public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-	
-	@Autowired
-	public void setYukonListDao(YukonListDao yukonListDao) {
-        this.yukonListDao = yukonListDao;
-    }
-	
 }

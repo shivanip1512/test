@@ -8,6 +8,7 @@
         <property name="authDao" ref="authDao"/>
         <property name="contactDao" ref="contactDao"/>
         <property name="contactNotificationDao" ref="contactNotificationDao"/>
+        <property name="dbPersistentDao" ref="dbPersistentDao"/>
         <property name="energyCompanyDao" ref="energyCompanyDao"/>
         <property name="paoDao" ref="paoDao"/>
         <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
