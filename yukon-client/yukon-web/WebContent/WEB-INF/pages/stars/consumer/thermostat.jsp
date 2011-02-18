@@ -12,6 +12,59 @@
     
     <cti:msg var="degreesCelsius" key="yukon.dr.consumer.thermostat.degreesCelsius" />
     <cti:msg var="degreesFahrenheit" key="yukon.dr.consumer.thermostat.degreesFahrenheit" />
+    <cti:msg var="holdConfirmOn" key="yukon.dr.consumer.thermostat.hold.on" javaScriptEscape="true"/>
+    <cti:msg var="holdConfirmOff" key="yukon.dr.consumer.thermostat.hold.off" javaScriptEscape="true"/>
+    
+<script type="text/javascript">
+YEvent.observeSelectorClick('#sendSettingsSubmit', function(event) {    
+    var confirmPopup = $('confirmPopup');
+    
+    var parentElement = Event.findElement(event, 'table');
+
+    var inputs = parentElement.getElementsByTagName('input');
+    var i;
+    for (i = 0; i< inputs.length; i++) {
+        var input = inputs[i];
+        var name = input.name;
+        if (input.type=='submit'
+            || input.type=='button'
+            || name == 'accountId'
+            || name == 'thermostatIds') {
+            continue;
+        }
+        var formElement = confirmPopup.down('input[name='+name+']');
+        if (name=='hold') {
+            if (input.checked == true) {
+                formElement.setAttribute('value', true);
+            } else {
+                formElement.setAttribute('value', false);
+            }
+        } else {
+            formElement.setAttribute('value', $F(input));
+        }
+
+        if (name=='hold') {
+            var confirmElement = $('holdConfirm').down('td.value');
+            if (input.checked == true) {
+                confirmElement.innerHTML = "${holdConfirmOn}";
+            } else {
+                confirmElement.innerHTML = "${holdConfirmOff}";
+            }
+        }
+        
+        if (name == 'temperature') {
+            $('temperatureValueConfirm').innerHTML = $F(input);
+        } else if (name=='temperatureUnit') {
+            $('temperatureUnitConfirm').innerHTML = $F(input);
+        }
+    }
+    confirmPopup.show();
+});
+
+YEvent.observeSelectorClick('#confirmCancel', function(event) {
+    $('confirmPopup').hide();
+});
+</script> 
     
     <c:set var="multipleThermostatsSelected" value="${fn:length(fn:split(thermostatIds, ',')) > 1}"></c:set>
     
@@ -134,13 +187,13 @@
                                                 </tr>
                                                 <tr>
                                                     <td class="arrow"><img id="coolArrow" src="${arrow}" <c:if test="${eventMode != 'COOL'}">style="display: none;" </c:if>></td>
-                                                    <td class="clickable subItem" onClick="setMode('COOL')">
+                                                    <td class="clickable subItem" onClick="setMode('COOL', this)">
                                                         <cti:msg key="yukon.dr.consumer.thermostat.mode.COOL" />
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td class="arrow"><img id="heatArrow" src="${arrow}" <c:if test="${eventMode != 'HEAT'}">style="display: none;"</c:if>></td>
-                                                    <td class="clickable subItem" onClick="setMode('HEAT')">
+                                                    <td class="clickable subItem" onClick="setMode('HEAT', this)">
                                                         <cti:msg key="yukon.dr.consumer.thermostat.mode.HEAT" />
                                                     </td>
                                                 </tr>
@@ -149,7 +202,7 @@
                                                     <c:when test="${thermostat.type == 'EXPRESSSTAT_HEAT_PUMP'}">
                                                         <tr>
                                                             <td class="arrow"><img id="emHeatArrow" src="${arrow}" <c:if test="${eventMode != 'EMERGENCY_HEAT'}">style="display: none;" </c:if>></td>
-                                                            <td class="clickable subItem" onClick="setMode('EMERGENCY_HEAT')">
+                                                            <td class="clickable subItem" onClick="setMode('EMERGENCY_HEAT', this)">
                                                                 <cti:msg key="yukon.dr.consumer.thermostat.mode.EMERGENCY_HEAT" />
                                                             </td>
                                                         </tr>
@@ -161,7 +214,7 @@
                                                 </c:choose>
                                                 <tr>
                                                     <td class="arrow"><img id="offArrow" src="${arrow}" <c:if test="${eventMode != 'OFF'}">style="display: none;" </c:if>></td>
-                                                    <td class="clickable subItem" onClick="setMode('OFF')">
+                                                    <td class="clickable subItem" onClick="setMode('OFF', this)">
                                                         <cti:msg key="yukon.dr.consumer.thermostat.mode.OFF" />
                                                     </td>
                                                 </tr>
@@ -181,7 +234,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td class="arrow"><img id="autoArrow" src="${arrow}" <c:if test="${eventFanState != 'AUTO'}">style="display: none;" </c:if>></td>
-                                                    <td class="clickable subItem" onClick="setFan('autoArrow', 'AUTO')">
+                                                    <td class="clickable subItem" onClick="setFan('autoArrow', 'AUTO', this)">
                                                         <cti:msg key="yukon.dr.consumer.thermostat.fan.AUTO" />
                                                     </td>
                                                 </tr>
@@ -191,7 +244,7 @@
                                                     <c:when test="${thermostat.type == 'UTILITY_PRO'}">
                                                         <tr>
                                                             <td class="arrow"><img id="circulateArrow" src="${arrow}" <c:if test="${eventFanState != 'CIRCULATE'}">style="display: none;" </c:if>></td>
-                                                            <td class="clickable subItem" onClick="setFan('circulateArrow', 'CIRCULATE')">
+                                                            <td class="clickable subItem" onClick="setFan('circulateArrow', 'CIRCULATE', this)">
                                                                 <cti:msg key="yukon.dr.consumer.thermostat.fan.CIRCULATE" />
                                                             </td>
                                                         </tr>
@@ -203,7 +256,7 @@
                                                 
                                                 <tr>
                                                     <td class="arrow"><img id="onArrow" src="${arrow}" <c:if test="${eventFanState != 'ON'}">style="display: none;" </c:if>></td>
-                                                    <td class="clickable subItem" onClick="setFan('onArrow', 'ON')">
+                                                    <td class="clickable subItem" onClick="setFan('onArrow', 'ON', this)">
                                                         <cti:msg key="yukon.dr.consumer.thermostat.fan.ON" />
                                                     </td>
                                                 </tr>
@@ -220,7 +273,7 @@
                                     <tr>
                                         <td colspan="4" style="text-align: center; padding-bottom: 5px;">
                                             <cti:msg var="saveText" key="yukon.dr.consumer.thermostat.submit" />
-                                            <input type="submit" value="${saveText}" />
+                                            <input id="sendSettingsSubmit" type="button" value="${saveText}" class="formSubmit"/>
                                         </td>
                                     </tr>
                                 </table>
@@ -337,5 +390,49 @@
             </c:choose>
         </div>
     </div>
+    
+    <%-- Confirm Dialog for send settings --%>
+     <cti:msg2 key="yukon.dr.consumer.thermostat.sendConfirm.title" var="confirmDialogTitle"/>
+     <tags:simplePopup title="${confirmDialogTitle}" id="confirmPopup" styleClass="smallSimplePopup">
+        <c:set var="initalModeConfirm" value="yukon.dr.consumer.thermostat.mode.${eventMode}"/>
+        <c:set var="initalFanConfirm" value="yukon.dr.consumer.thermostat.fan.${eventFanState}"/>
+        
+        <form action="/spring/stars/consumer/thermostat/manual" method="post">
+        
+            <input type="hidden" name="accountId"  value="${accountId}" />
+            <input type="hidden" name="thermostatIds"  value="${thermostatIds}" />
+            <input type="hidden" name="fan" value=""/>
+            <input type="hidden" name="temperature"/>
+            <input type="hidden" name="temperatureUnit" value=""/>
+            <input type="hidden" name="mode" value="">
+            <input type="hidden" name="hold"/>
+
+            <div id="confirmMessage"><cti:msg2 key="yukon.dr.consumer.thermostat.sendConfirm.message"/></div>
+            <br/>
+            
+            <tags:nameValueContainer2>
+                <tags:nameValue2 nameKey="yukon.dr.consumer.thermostat.temperature" rowId="temperatureConfirm">
+                    <span id="temperatureValueConfirm"></span>&deg;<span id="temperatureUnitConfirm"></span>
+                </tags:nameValue2>
+                
+                <tags:nameValue2 nameKey="yukon.dr.consumer.thermostat.mode" rowId="modeConfirm">
+                    <cti:msg2 key="${initalModeConfirm}"/>
+                </tags:nameValue2>
+                
+                <tags:nameValue2 nameKey="yukon.dr.consumer.thermostat.fan" rowId="fanConfirm">
+                    <cti:msg2 key="${initalFanConfirm}"/>
+                </tags:nameValue2>
+                
+                <tags:nameValue2 nameKey="yukon.dr.consumer.thermostat.hold" rowId="holdConfirm">
+                </tags:nameValue2>
+                
+            </tags:nameValueContainer2>
+            
+            <div class="actionArea">
+                <cti:button key="ok" type="submit"/> 
+                <cti:button key="cancel" id="confirmCancel" />
+            </div>
+        </form>
+    </tags:simplePopup> 
     
 </cti:standardPage>

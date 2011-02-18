@@ -109,6 +109,8 @@
     <entry key="yukon.dr.consumer.thermostat.decrementTemp">&amp;#9660;</entry>
     <entry key="yukon.dr.consumer.thermostat.arrow">/WebConfig/yukon/Icons/triangle-right.gif</entry>
     <entry key="yukon.dr.consumer.thermostat.hold">Hold</entry>
+    <entry key="yukon.dr.consumer.thermostat.hold.on">On</entry>
+    <entry key="yukon.dr.consumer.thermostat.hold.off">Off</entry>
     <entry key="yukon.dr.consumer.thermostat.mode">MODE</entry>
     <entry key="yukon.dr.consumer.thermostat.mode.AUTO">Auto</entry>
     <entry key="yukon.dr.consumer.thermostat.mode.COOL">Cool</entry>
@@ -158,6 +160,9 @@
     <entry key="yukon.dr.consumer.thermostat.WEEKDAY_WEEKEND">Weekday, Weekend</entry>
     <entry key="yukon.dr.consumer.thermostat.ALL">All</entry>
     <entry key="yukon.dr.consumer.thermostat.deletedSchedule">(Deleted schedule)</entry>
+    <entry key="yukon.dr.consumer.thermostat.sendConfirm.title">Confirm New Thermostat Settings</entry>
+    <entry key="yukon.dr.consumer.thermostat.sendConfirm.message">Proceed with the following thermostat settings?</entry>
+    <entry key="yukon.dr.consumer.thermostat.temperature">Temperature</entry>
    
     <!--  scheduleHints.jsp -->
     <entry key="yukon.dr.consumer.scheduleHints.header">Thermostat Schedule - Hints and Details</entry>

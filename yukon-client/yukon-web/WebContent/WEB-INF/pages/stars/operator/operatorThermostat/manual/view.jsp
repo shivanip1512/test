@@ -25,25 +25,39 @@ YEvent.observeSelectorClick('#sendSettingsSubmit', function(event) {
 
     var inputs = parentElement.select('input');  
     var i;
-    for(i = 0; i< inputs.length; i++) {
+    for (i = 0; i< inputs.length; i++) {
         var input = inputs[i];
-        if(input.type=='submit') {
+        var name = input.name;
+        if (input.type=='submit'
+            || input.type=='button'
+            || name == 'accountId'
+            || name == 'thermostatIds') {
             continue;
         }
-        var formElement = confirmPopup.down('input[name='+input.name+']');
-        var confirmElement = $(input.name+'Confirm');
-        Element.writeAttribute(formElement, 'value', $F(input));
-        
-        if(input.name=='hold') {
-            if(input.checked == true) {
+        var formElement = confirmPopup.down('input[name='+name+']');
+        if (name=='hold') {
+            if (input.checked == true) {
+                formElement.setAttribute('value', true);
+            } else {
+                formElement.setAttribute('value', false);
+            }
+        } else {
+            formElement.setAttribute('value', $F(input));
+        }
+
+        if (name=='hold') {
+            var confirmElement = $('holdConfirm').down('td.value');
+            if (input.checked == true) {
                 confirmElement.innerHTML = "${holdConfirmOn}";
             } else {
                 confirmElement.innerHTML = "${holdConfirmOff}";
             }
         }
         
-        if(input.name=='temperature' || input.name=='temperatureUnit') {
-            confirmElement.innerHTML = $F(input);
+        if (name == 'temperature') {
+            $('temperatureValueConfirm').innerHTML = $F(input);
+        } else if (name=='temperatureUnit') {
+            $('temperatureUnitConfirm').innerHTML = $F(input);
         }
     }
     confirmPopup.show();
@@ -246,7 +260,7 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
 			                                    <tr>
 			                                        <td colspan="4" style="text-align: center; padding-bottom: 5px;">
 			                                            <cti:msg var="saveText" key="yukon.web.modules.operator.thermostatManual.submit" />
-			                                            <input id="sendSettingsSubmit" type="submit" value="${saveText}" style="width:80px;" onclick="return false"/>
+			                                            <input id="sendSettingsSubmit" type="button" value="${saveText}" class="formSubmit"/>
 			                                        </td>
 			                                    </tr>
 			                               </table>
@@ -392,32 +406,29 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
             <input type="hidden" name="temperature"/>
             <input type="hidden" name="temperatureUnit" value=""/>
             <input type="hidden" name="mode" value="">
-            <input type="checkbox" name="hold" style="display: none"/>
+            <input type="hidden" name="hold"/>
 
             <div id="confirmMessage"><cti:msg2 key=".sendConfirm.message"/></div>
             <br/>
-            <table class="resultsTable">
-                <tr>
-                    <td>Temperature</td>
-                    <td>
-                        <span id="temperatureConfirm"></span>
-                        &deg;<span id="temperatureUnitConfirm"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><cti:msg key="yukon.web.modules.operator.thermostatManual.mode"/></td>
-                    <td id="modeConfirm"><cti:msg2 key="${initalModeConfirm }"/></td>
-                </tr>
-                <tr>
-                    <td><cti:msg key="yukon.web.modules.operator.thermostatManual.fan" /></td>
-                    <td id="fanConfirm"><cti:msg2 key="${initalFanConfirm }"/></td>
-                </tr>
-                <tr>
-                    <td><cti:msg key="yukon.web.modules.operator.thermostatManual.hold"/></td>
-                    <td id="holdConfirm"></td>
-                </tr>
-            </table>
-      
+            
+            <tags:nameValueContainer2>
+                <tags:nameValue2 nameKey=".temperature" rowId="temperatureConfirm">
+                    <span id="temperatureValueConfirm"></span>&deg;<span id="temperatureUnitConfirm"></span>
+                </tags:nameValue2>
+                
+                <tags:nameValue2 nameKey=".mode" rowId="modeConfirm">
+                    <cti:msg2 key="${initalModeConfirm }"/>
+                </tags:nameValue2>
+                
+                <tags:nameValue2 nameKey=".fan" rowId="fanConfirm">
+                    <cti:msg2 key="${initalFanConfirm }"/>
+                </tags:nameValue2>
+                
+                <tags:nameValue2 nameKey=".hold" rowId="holdConfirm">
+                </tags:nameValue2>
+                
+            </tags:nameValueContainer2>
+            
             <div class="actionArea">
                 <cti:button key="ok" type="submit"/> 
                 <cti:button key="cancel" id="confirmCancel" />

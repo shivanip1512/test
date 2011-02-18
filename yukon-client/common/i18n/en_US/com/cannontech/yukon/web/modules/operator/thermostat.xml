@@ -29,6 +29,7 @@
 	<entry key="yukon.web.modules.operator.thermostatManual.thermostatNamesHeader">Thermostats</entry>
 	<entry key="yukon.web.modules.operator.thermostatManual.manualUiContainerHeader.title">Thermostat Manual</entry>
 	
+    <entry key="yukon.web.modules.operator.thermostatManual.temperature">Temperature</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.multipleLabel">Multiple Thermostats</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.edit">edit</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.save">Save</entry>

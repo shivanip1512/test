@@ -402,6 +402,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     }
     
     @Override
+    @Transactional
     public int createHardware(HardwareDto hardwareDto, int accountId, YukonUserContext userContext) throws ObjectInOtherEnergyCompanyException {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
         int inventoryId;

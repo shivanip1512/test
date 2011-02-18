@@ -144,7 +144,7 @@
             $('temperature').setStyle({color: 'black'});
             $('temperature').disable();
         } 
-        $('modeConfirm').innerHTML = element.innerHTML;
+        $('modeConfirm').down('td.value').innerHTML = element.innerHTML;
     }
     
     function setFan(arrow, fan, element){
@@ -153,7 +153,7 @@
         $('circulateArrow').hide();
         $('onArrow').hide();
         $(arrow).show();
-        $('fanConfirm').innerHTML = element.innerHTML;
+        $('fanConfirm').down('td.value').innerHTML = element.innerHTML;
     }
     
     function editName(){
