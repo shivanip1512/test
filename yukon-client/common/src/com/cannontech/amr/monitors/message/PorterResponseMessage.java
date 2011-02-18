@@ -18,7 +18,7 @@ public class PorterResponseMessage {
         this.userMessageId = userMessageId;
     }
     /**
-     * has no meaning (e.g. it can't be looked up in the DB)
+     * has no meaning (i.e. it can't be looked up in the DB)
      */
     public int getConnectionId() {
         return connectionId;

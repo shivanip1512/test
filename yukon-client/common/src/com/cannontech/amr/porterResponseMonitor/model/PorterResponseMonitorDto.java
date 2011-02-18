@@ -18,7 +18,7 @@ public class PorterResponseMonitorDto {
     private Attribute attribute;
     private MonitorEvaluatorStatus evaluatorStatus;
     private final Map<Integer, PorterResponseMonitorRuleDto> rules = 
-        new LazyLinkedHashMap<Integer, PorterResponseMonitorRuleDto>(PorterResponseMonitorRuleDto.class);
+        new LazyLinkedHashMap<Integer, PorterResponseMonitorRuleDto>(Integer.class, PorterResponseMonitorRuleDto.class);
     private static final AtomicInteger nextKey = new AtomicInteger();
 
     public PorterResponseMonitorDto() {

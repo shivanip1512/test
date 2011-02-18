@@ -7,6 +7,7 @@ import java.util.Set;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class PorterResponseMonitorRule implements Comparable<PorterResponseMonitorRule>{
 	private Integer ruleId;
@@ -15,7 +16,7 @@ public class PorterResponseMonitorRule implements Comparable<PorterResponseMonit
 	private List<PorterResponseMonitorErrorCode> errorCodes = Lists.newArrayList();
 	private PorterResponseMonitorMatchStyle matchStyle = PorterResponseMonitorMatchStyle.any;
 	private String state;
-    private Set<Integer> errorCodesAsIntegers;
+    private Set<Integer> errorCodesAsIntegers = Sets.newHashSet();
 
 	public PorterResponseMonitorRule() {
 	}
