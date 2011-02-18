@@ -81,7 +81,7 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 			PorterResponseMonitorErrorCode retVal = new PorterResponseMonitorErrorCode();
 			retVal.setErrorCodeId(rs.getInt("errorCodeId"));
 			retVal.setRuleId(rs.getInt("ruleId"));
-			retVal.setErrorCode(rs.getNullableInt("errorCode"));
+			retVal.setErrorCode(rs.getInt("errorCode"));
 			return retVal;
 		}
 	};

@@ -23,7 +23,6 @@
 
     <bean name="/database/info" class="com.cannontech.web.support.DatabaseInformationController"/>
     <bean name="/" class="com.cannontech.web.support.InformationController"/>
-    <bean id="errorCodesViewerController" class="com.cannontech.web.support.ErrorCodesViewerController"/>
 
     <bean name="/scheduler/*" class="com.cannontech.web.support.SchedulerDebugController">
         <property name="jobManager" ref="jobManager"/>

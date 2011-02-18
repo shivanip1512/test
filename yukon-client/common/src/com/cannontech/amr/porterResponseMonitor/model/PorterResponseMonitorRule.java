@@ -86,10 +86,10 @@ public class PorterResponseMonitorRule implements Comparable<PorterResponseMonit
     }
 
 	public void setErrorCodes(List<PorterResponseMonitorErrorCode> errorCodes) {
-		this.errorCodes = errorCodes;
-		Builder<Integer> builder = ImmutableSet.builder();
+	    Builder<Integer> builder = ImmutableSet.builder();
         for (PorterResponseMonitorErrorCode errorCode : errorCodes) {
             if (errorCode.getErrorCode() != null) {
+                this.errorCodes.add(errorCode);
                 builder.add(errorCode.getErrorCode());
             }
         }
