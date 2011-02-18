@@ -60,7 +60,7 @@
     <entry key="yukon.web.modules.amr.porterResponseMonitor.popupInfo.deviceGroup.title">Device Group Picker Help</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.popupInfo.deviceGroup"><![CDATA[
          <br>
-         The group of devices who's porter responses will be monitored.
+         The group of devices whose porter responses will be monitored.
          <br><br>
     ]]></entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.errorCodesVerboseMsg">*A more detailed version of this table can be found here:</entry>
