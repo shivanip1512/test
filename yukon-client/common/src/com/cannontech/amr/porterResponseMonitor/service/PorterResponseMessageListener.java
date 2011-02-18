@@ -84,6 +84,7 @@ public class PorterResponseMessageListener implements MessageListener {
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
                 monitors.remove(event.getPrimaryKey());
+                setAllMonitorsDisabled();
             }
         };
 
