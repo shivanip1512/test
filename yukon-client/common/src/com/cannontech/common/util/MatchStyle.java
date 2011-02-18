@@ -14,11 +14,23 @@ public enum MatchStyle {
 			return Sets.intersection(a, b).isEmpty();
 		}
 	},
-	any {
+	some {
 		@Override
 		public boolean matches(Set<?> a, Set<?> b) {
 			return !Sets.intersection(a, b).isEmpty();
 		}
+	},
+	any {
+	    @Override
+	    public boolean matches(Set<?> a, Set<?> b) {
+	        return b.isEmpty() || !Sets.intersection(a, b).isEmpty();
+	    }
+	},
+	notany {
+	    @Override
+	    public boolean matches(Set<?> a, Set<?> b) {
+	        return !b.isEmpty() && Sets.intersection(a, b).isEmpty();
+	    }
 	},
 	all {
 		@Override
@@ -55,6 +67,18 @@ public enum MatchStyle {
 		public boolean matches(Set<?> a, Set<?> b) {
 			return !a.equals(b);
 		}
+	},
+	empty {
+	    @Override
+	    public boolean matches(Set<?> a, Set<?> b) {
+	        return a.isEmpty();
+	    }
+	},
+	notempty {
+	    @Override
+	    public boolean matches(Set<?> a, Set<?> b) {
+	        return !a.isEmpty();
+	    }
 	};
 
 	public abstract boolean matches(Set<?> a, Set<?> b);
