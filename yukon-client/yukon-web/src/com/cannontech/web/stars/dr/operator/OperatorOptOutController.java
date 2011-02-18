@@ -96,12 +96,16 @@ public class OperatorOptOutController {
     @RequestMapping
     public String view(YukonUserContext userContext, ModelMap model,
             AccountInfoFragment accountInfoFragment) {
-
+        setupOptOutModelMapBasics(accountInfoFragment, model, userContext);
         LocalDate today = new LocalDate(userContext.getJodaTimeZone());
         OptOutBackingBean optOutBackingBean = new OptOutBackingBean();
         optOutBackingBean.setStartDate(today);
         model.addAttribute("optOutBackingBean", optOutBackingBean);
+        return prepareModelForView(userContext, model, accountInfoFragment);
+    }
 
+    private String prepareModelForView(YukonUserContext userContext, ModelMap model,
+                                       AccountInfoFragment accountInfoFragment) {
         // Get the list of current and scheduled opt outs
         List<OptOutEventDto> currentOptOutList =
             optOutEventDao.getCurrentOptOuts(accountInfoFragment.getAccountId());
@@ -124,7 +128,7 @@ public class OperatorOptOutController {
 
         boolean allOptedOut = true;
         boolean optOutsAvailable = false;
-        for(DisplayableInventory inventory : displayableInventories) {
+        for (DisplayableInventory inventory : displayableInventories) {
 
             if (!inventory.isCurrentlyOptedOut()) {
                 allOptedOut = false;
@@ -148,7 +152,7 @@ public class OperatorOptOutController {
         OptOutLimit currentOptOutLimit =
             optOutService.getCurrentOptOutLimit(accountInfoFragment.getAccountId());
         int optOutLimit = OptOutService.NO_OPT_OUT_LIMIT;
-        if(currentOptOutLimit != null) {
+        if (currentOptOutLimit != null) {
             optOutLimit = currentOptOutLimit.getLimit();
         }
 
@@ -156,7 +160,6 @@ public class OperatorOptOutController {
         model.addAttribute("allOptedOut", allOptedOut);
         model.addAttribute("optOutsAvailable", optOutsAvailable);
 
-        setupOptOutModelMapBasics(accountInfoFragment, model, userContext);
         return "operator/program/optOut/optOut.jsp";
     }
 
@@ -178,8 +181,8 @@ public class OperatorOptOutController {
             List<MessageSourceResolvable> messages =
                 YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            
-            return "redirect:view";
+
+            return prepareModelForView(userContext, model, accountInfoFragment);
         }
 
         LocalDate today = new LocalDate(userContext.getJodaTimeZone());
