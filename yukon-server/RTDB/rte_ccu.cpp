@@ -315,9 +315,8 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
                                     list< OUTMESS* >     &outList)
 {
     INT           status = NORMAL;
-    string        resultString;
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), string(), status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+    CtiReturnMsg *retReturn = new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), string(), status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
 
     if(OutMessage->EventCode & BWORD)
     {
@@ -358,8 +357,6 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
         parse.setValue("control_interval", EmetconProtocol::calculateControlInterval(parse.getiValue("shed", 0)));
         parse.setValue("control_reduction", 100 );
     }
-
-    resultString = "Emetcon DLC command sent on route " + getName();
 
     /* Things are now ready to go */
     switch( _transmitterDevice->getType() )
@@ -425,20 +422,21 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
         }
     }
 
+    string resultString = "Emetcon DLC command sent on route " + getName();
+
+    retReturn->setResultString(resultString);
+
+    if( (OutMessage->MessageFlags & MessageFlag_ExpectMore)
+        || parse.isTwoWay()
+        || parse.isDisconnect())
+    {
+        retReturn->setExpectMore(true);
+    }
+
+    retList.push_back(retReturn);
+
     outList.push_back(OutMessage);
     OutMessage = 0;
-
-    if(retReturn)
-    {
-        retReturn->setResultString(resultString);
-
-        if (parse.isTwoWay() || parse.isDisconnect())
-        {
-            retReturn->setExpectMore(true);
-        }
-
-        retList.push_back(retReturn);
-    }
 
     return status;
 }

@@ -415,7 +415,7 @@ INT Mct4xxDevice::executeGetValue( CtiRequestMsg        *pReq,
 
             ReturnMsg->setResultString(lp_status_string.c_str());
 
-            retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList, true );
+            retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList );
 
             delete OutMessage;
             OutMessage = 0;
@@ -445,7 +445,7 @@ INT Mct4xxDevice::executeGetValue( CtiRequestMsg        *pReq,
                 ReturnMsg->setResultString(getName() + " / No active load profile requests to cancel\n");
             }
 
-            retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList, true );
+            retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList );
 
             delete OutMessage;
             OutMessage = 0;
@@ -627,7 +627,7 @@ INT Mct4xxDevice::executeGetValue( CtiRequestMsg        *pReq,
 
                             ReturnMsg->setResultString(time_error_string);
 
-                            retMsgHandler( OutMessage->Request.CommandStr, BADPARAM, ReturnMsg, vgList, retList, false );
+                            retMsgHandler( OutMessage->Request.CommandStr, BADPARAM, ReturnMsg, vgList, retList );
 
                             delete OutMessage;
                             OutMessage = 0;
@@ -665,7 +665,9 @@ INT Mct4xxDevice::executeGetValue( CtiRequestMsg        *pReq,
                                 ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
                                 ReturnMsg->setResultString(getName() + " / Load profile request submitted for background processing - use \"getvalue lp status\" to check progress");
 
-                                retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList, true );
+                                pReq->setConnectionHandle(0);
+
+                                retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList );
 
                                 OutMessage->Priority = 8;
                                 //  make sure the OM doesn't report back to Commander
@@ -727,7 +729,7 @@ INT Mct4xxDevice::executeGetValue( CtiRequestMsg        *pReq,
                                 ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
                                 ReturnMsg->setResultString(getName() + " / Long load profile read setup error");
 
-                                retMsgHandler( OutMessage->Request.CommandStr, ErrorInvalidTimestamp, ReturnMsg, vgList, retList, false );
+                                retMsgHandler( OutMessage->Request.CommandStr, ErrorInvalidTimestamp, ReturnMsg, vgList, retList );
 
                                 _llpInterest.time    = 0;
                                 _llpInterest.channel = 0;
@@ -779,7 +781,7 @@ INT Mct4xxDevice::executeGetValue( CtiRequestMsg        *pReq,
                                 ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
                                 ReturnMsg->setResultString(getName() + " / Load profile reporting not supported for this device's SSPEC revision");
 
-                                retMsgHandler( OutMessage->Request.CommandStr, ErrorInvalidSSPEC, ReturnMsg, vgList, retList, false );
+                                retMsgHandler( OutMessage->Request.CommandStr, ErrorInvalidSSPEC, ReturnMsg, vgList, retList );
 
                                 delete OutMessage;
                                 OutMessage = 0;
@@ -1659,7 +1661,12 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg         *pReq,
             unsigned long interval_beginning_time = _llpInterest.time - interval_len;
 
             OutMessage->Sequence = function;
-            OutMessage->Request.OptionsField = pReq->OptionsField();
+
+            //  this request came from a "getvalue lp" command, so make sure to report ExpectMore during Route->ExecuteRequest()
+            if( OutMessage->Request.OptionsField = pReq->OptionsField() )
+            {
+                OutMessage->MessageFlags |= MessageFlag_ExpectMore;
+            }
 
             OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
 
@@ -1684,8 +1691,8 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg         *pReq,
     }
 
     return nRet;
-
 }
+
 
 INT Mct4xxDevice::executePutValue(CtiRequestMsg         *pReq,
                                      CtiCommandParser      &parse,
@@ -2071,7 +2078,7 @@ INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
 
                             ReturnMsg->setResultString(error_string);
 
-                            retMsgHandler(InMessage->Return.CommandStr, BADPARAM, ReturnMsg.release(), vgList, retList, true);
+                            retMsgHandler(InMessage->Return.CommandStr, BADPARAM, ReturnMsg.release(), vgList, retList);
                         }
                     }
                 }
@@ -2079,7 +2086,7 @@ INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                 {
                     ReturnMsg->setResultString(getName() + " / period of interest sent");
 
-                    retMsgHandler(InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, true);
+                    retMsgHandler(InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList);
                 }
 
                 break;
