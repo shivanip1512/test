@@ -29,7 +29,7 @@ public class DeleteEnergyCompanyController extends StarsAdminActionController {
             return;
         }
 
-        TimeConsumingTask task = new DeleteEnergyCompanyTask( user.getEnergyCompanyID() );
+        TimeConsumingTask task = new DeleteEnergyCompanyTask( user.getEnergyCompanyID(), dbPersistentDao, yukonListDao);
         // addTask starts the task
         long id = ProgressChecker.addTask( task );
 
