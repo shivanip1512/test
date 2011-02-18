@@ -18,6 +18,7 @@ import javax.jms.ObjectMessage;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.monitors.message.PorterResponseMessage;
 import com.cannontech.amr.porterResponseMonitor.dao.PorterResponseMonitorDao;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
@@ -49,6 +50,7 @@ public class PorterResponseMessageListener implements MessageListener {
     private PorterResponseMonitorDao porterResponseMonitorDao;
     private static final Logger log = YukonLogManager.getLogger(PorterResponseMessageListener.class);
     private Map<Integer, PorterResponseMonitor> monitors = new ConcurrentHashMap<Integer, PorterResponseMonitor>();
+    private boolean allMonitorsDisabled = false;
 
     //Map entries will be removed after 12 hours
     private ConcurrentMap<TransactionIdentifier, PorterResponseMonitorTransaction> transactions
@@ -60,7 +62,7 @@ public class PorterResponseMessageListener implements MessageListener {
         for (PorterResponseMonitor monitor : monitorsList) {
             monitors.put(monitor.getMonitorId(), monitor);
         }
-
+        setAllMonitorsDisabled();
         createDatabaseChangeListener();
     }
 
@@ -71,6 +73,7 @@ public class PorterResponseMessageListener implements MessageListener {
                 PorterResponseMonitor newMonitor = 
                     porterResponseMonitorDao.getMonitorById(event.getPrimaryKey());
                 monitors.put(newMonitor.getMonitorId(), newMonitor);
+                setAllMonitorsDisabled();
             }
         };
 
@@ -91,9 +94,9 @@ public class PorterResponseMessageListener implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
-        if (monitors.isEmpty()) { //possibly also add a check in here for if there are no statusPointMonitors
+        if (monitors.isEmpty() || allMonitorsDisabled) { //possibly also add a check in here for if there are no statusPointMonitors
             log.trace("Recieved porter response message from jms queue: not processing because " +
-            		"no monitors are configured");
+            		"no monitors exist or they are all disabled");
             return;
         }
         if (message instanceof ObjectMessage) {
@@ -115,13 +118,16 @@ public class PorterResponseMessageListener implements MessageListener {
      * message such that the "expectMore" flag actually makes sense.
      * @param message
      */
-    private synchronized void handleMessage(PorterResponseMessage message) {
+    public synchronized void handleMessage(PorterResponseMessage message) {
         TransactionIdentifier transactionId = new TransactionIdentifier(message);
 
         if (message.isFinalMsg()) {
             PorterResponseMonitorTransaction transaction = transactions.remove(transactionId);
 
             if (transaction != null) {
+                if (transaction.getPaoId() != message.getPaoId()) {
+                    LogHelper.warn(log, "PaoId stored in transaction [%s] does not match PaoId of message [%s]", transaction.getPaoId(), message.getPaoId());
+                }
                 transaction.addErrorCode(message.getErrorCode());
             } else {
                 transaction = new PorterResponseMonitorTransaction(message.getPaoId(), message.getErrorCode());
@@ -130,6 +136,9 @@ public class PorterResponseMessageListener implements MessageListener {
         } else {
             PorterResponseMonitorTransaction transaction = transactions.get(transactionId);
             if (transaction != null) {
+                if (transaction.getPaoId() != message.getPaoId()) {
+                    LogHelper.warn(log, "PaoId stored in transaction [%s] does not match PaoId of message [%s]", transaction.getPaoId(), message.getPaoId());
+                }
                 transaction.addErrorCode(message.getErrorCode());
             } else {
                 transaction = new PorterResponseMonitorTransaction(message.getPaoId(), message.getErrorCode());
@@ -140,16 +149,18 @@ public class PorterResponseMessageListener implements MessageListener {
 
     private void processTransaction(PorterResponseMonitorTransaction transaction) {
         for (PorterResponseMonitor monitor : monitors.values()) {
-            for (PorterResponseMonitorRule rule : monitor.getRules()) {
-                if(shouldSendPointData(rule, transaction)) {
-                    sendPointData(monitor, rule, transaction);
-                    break;
+            if (monitor.getEvaluatorStatus() == MonitorEvaluatorStatus.ENABLED) {
+                for (PorterResponseMonitorRule rule : monitor.getRules()) {
+                    if(shouldSendPointData(transaction, rule)) {
+                        sendPointData(monitor, rule, transaction);
+                        break;
+                    }
                 }
             }
         }
     }
 
-    public static boolean shouldSendPointData(PorterResponseMonitorRule rule, PorterResponseMonitorTransaction transaction) {
+    private boolean shouldSendPointData(PorterResponseMonitorTransaction transaction, PorterResponseMonitorRule rule) {
         Set<Integer> ruleErrorCodes = rule.getErrorCodesAsIntegers();
 
         if (rule.isSuccess() == transaction.isSuccess()) {
@@ -163,7 +174,7 @@ public class PorterResponseMessageListener implements MessageListener {
         return false;
     }
 
-    private void sendPointData(PorterResponseMonitor monitor, PorterResponseMonitorRule rule, PorterResponseMonitorTransaction transaction) {
+    protected void sendPointData(PorterResponseMonitor monitor, PorterResponseMonitorRule rule, PorterResponseMonitorTransaction transaction) {
         //The two DB hits below are a possible point of efficiency improvement. Leaving as is for now
         YukonPao yukonPao;
         yukonPao = paoDao.getYukonPao(transaction.getPaoId());
@@ -235,6 +246,23 @@ public class PorterResponseMessageListener implements MessageListener {
         private PorterResponseMessageListener getOuterType() {
             return PorterResponseMessageListener.this;
         }
+    }
+    
+    private void setAllMonitorsDisabled() {
+        for (PorterResponseMonitor monitor: monitors.values()) {
+            if (monitor.getEvaluatorStatus() == MonitorEvaluatorStatus.ENABLED) {
+                allMonitorsDisabled = false;
+                return;
+            }
+        }
+        allMonitorsDisabled = true;
+    }
+    
+    /** 
+     * Only for testing
+     */
+    public void setMonitors(Map<Integer, PorterResponseMonitor> monitors) {
+        this.monitors = monitors;
     }
 
     @Autowired
