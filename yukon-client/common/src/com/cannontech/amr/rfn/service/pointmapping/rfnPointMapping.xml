@@ -18,6 +18,13 @@
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
             </modifiers>
+            <modifiers match="none">
+                <modifier>TOU Rate A</modifier>
+                <modifier>TOU Rate B</modifier>
+                <modifier>TOU Rate C</modifier>
+                <modifier>TOU Rate D</modifier>
+                <modifier>TOU Rate E</modifier>
+            </modifiers>
         </point>
         <point name="Received kWh"> 
             <uom>Wh</uom>
@@ -30,6 +37,13 @@
             <modifiers match="none">
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
+             </modifiers>
+            <modifiers match="none">
+                <modifier>TOU Rate A</modifier>
+                <modifier>TOU Rate B</modifier>
+                <modifier>TOU Rate C</modifier>
+                <modifier>TOU Rate D</modifier>
+                <modifier>TOU Rate E</modifier>
             </modifiers>
         </point>
         <point name="Net kWh"> 
@@ -41,6 +55,13 @@
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
+            </modifiers>
+            <modifiers match="none">
+                <modifier>TOU Rate A</modifier>
+                <modifier>TOU Rate B</modifier>
+                <modifier>TOU Rate C</modifier>
+                <modifier>TOU Rate D</modifier>
+                <modifier>TOU Rate E</modifier>
             </modifiers>
         </point>
         <point name="Delivered kVArh"> 
@@ -148,7 +169,7 @@
                 <modifier>Primary</modifier>
             </modifiers>
         </point>
-        <point name="Voltage Primary">
+        <point name="Voltage Secondary">
             <uom>V</uom>
             <parseSiPrefix/> 
             <modifiers match="all"> 
@@ -182,6 +203,13 @@
             <modifiers match="none">
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
+            </modifiers>
+            <modifiers match="none">
+                <modifier>TOU Rate A</modifier>
+                <modifier>TOU Rate B</modifier>
+                <modifier>TOU Rate C</modifier>
+                <modifier>TOU Rate D</modifier>
+                <modifier>TOU Rate E</modifier>
             </modifiers>
         </point>
         <point name="Received kW"> 

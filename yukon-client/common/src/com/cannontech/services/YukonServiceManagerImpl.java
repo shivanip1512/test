@@ -70,7 +70,7 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
 
         // try as context file
         try {
-            ConfigurableApplicationContext context2 = new YukonBaseXmlApplicationContext(serviceName, applicationContext);
+            ConfigurableApplicationContext context2 = new YukonBaseXmlApplicationContext(applicationContext, "classpath:com/cannontech/services/server/serviceManagerContext.xml", serviceName);
             log.debug("loaded as context: " + context2);
             contexts.add(context2);
             return true;

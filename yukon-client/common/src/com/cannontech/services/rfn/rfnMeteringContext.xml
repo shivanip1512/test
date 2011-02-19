@@ -11,18 +11,14 @@
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
   http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.0.xsd">
 
-    <context:component-scan base-package="com.cannontech.services.monitors"/>
-    
-    <!-- Enabling @AspectJ Support -->
-    <aop:aspectj-autoproxy/>
-      
     <bean id="meterReadingArchiveRequestListener" class="com.cannontech.amr.rfn.endpoint.MeterReadingArchiveRequestListener" />
     
     <jms:listener-container 
         connection-factory="connectionFactory" 
         destination-type="queue"
-        concurrency="3"
-        container-type="simple">
+        concurrency="3" 
+        container-type="simple"
+        container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
         <jms:listener destination="yukon.rr.obj.amr.rfn.MeterReadingArchiveRequest" ref="meterReadingArchiveRequestListener" method="handleArchiveRequest"/>
         <jms:listener destination="yukon.rr.obj.amr.rfn.MeterReadingArchiveProcessingRequest" ref="meterReadingArchiveRequestListener" method="handleArchiveProcessingRequest"/>
     </jms:listener-container>
@@ -31,7 +27,8 @@
         connection-factory="connectionFactory" 
         destination-type="queue"
         concurrency="1"
-        container-type="simple">
+        container-type="simple"
+        container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
         <jms:listener destination="yukon.rr.obj.amr.rfn.MeterReadingArchiveRequest.create" ref="meterReadingArchiveRequestListener" method="handleArchiveRequest_create"/>
     </jms:listener-container>
 

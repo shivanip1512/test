@@ -17,17 +17,6 @@
   http://www.springframework.org/schema/integration/jms
   http://www.springframework.org/schema/integration/jms/spring-integration-jms-1.0.xsd">
 
-    <context:annotation-config/>
-       
-    <!-- Enabling @AspectJ Support -->
-    <aop:aspectj-autoproxy/>
-    
-    <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
-        <property name="assembler" ref="assembler"/>
-        <property name="namingStrategy" ref="namingStrategy"/>
-        <property name="autodetect" value="true"/>
-    </bean>
-      
 	<bean class="com.cannontech.common.validation.RawPointHistoryValidationService"/>    
 
 </beans>

@@ -1,5 +1,6 @@
 package com.cannontech.message.dispatch.message;
 
+import org.joda.time.Instant;
 import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.common.point.PointQuality;
@@ -127,6 +128,7 @@ public class PointData extends com.cannontech.message.util.Message implements Po
         ToStringCreator tsc = new ToStringCreator(this);
         tsc.append("id", getId());
         tsc.append("value", getValue());
+        tsc.append("timestamp", new Instant(getPointDataTimeStamp()));
         tsc.append("type", getType());
         tsc.append("quality", getPointQuality().getQuality());
         return tsc.toString(); 

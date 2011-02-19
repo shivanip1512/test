@@ -14,13 +14,13 @@ public class YukonBaseXmlApplicationContext extends AbstractXmlApplicationContex
      * Create a new FileSystemXmlApplicationContext with the given parent,
      * loading the definitions from the given XML files and automatically
      * refreshing the context.
-     * @param configLocations array of file paths
      * @param parent the parent context
+     * @param configLocations array of file paths
      * @throws BeansException if context creation failed
      */
-    public YukonBaseXmlApplicationContext(String configLocation, ApplicationContext parent) throws BeansException {
+    public YukonBaseXmlApplicationContext(ApplicationContext parent, String... configLocation) throws BeansException {
         super(parent);
-        setConfigLocations(new String[]{configLocation});
+        setConfigLocations(configLocation);
         refresh();
     }
 

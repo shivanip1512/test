@@ -11,6 +11,10 @@ public interface RfnMeteringEventLogService {
 
     @YukonEventLog(transactionality=ExecutorTransactionality.ASYNCHRONOUS, category="system.rfn")
     public void receivedDataForUnkownMeterTemplate(String templateName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.ASYNCHRONOUS, category="system.rfn")
+    public void unableToCreateMeterFromTemplate(String templateName, String sensorManufacturer,
+            String sensorModel, String sensorSerialNumber);
     
 
 }

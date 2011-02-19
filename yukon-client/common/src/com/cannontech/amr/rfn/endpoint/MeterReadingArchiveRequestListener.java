@@ -36,6 +36,7 @@ import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
+import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.events.loggers.RfnMeteringEventLogService;
 import com.cannontech.common.pao.YukonDevice;
@@ -73,8 +74,9 @@ public class MeterReadingArchiveRequestListener {
 
     private String meterTemplatePrefix;
     private Map<RfnMeterIdentifier, RfnMeter> existingMeterLookup;
-    private Map<String, Boolean> uncreatableTemplates;
+    private Map<String, Boolean> recentlyUncreatableTemplates;
     private ConcurrentHashMultiset<String> unknownTemplatesEncountered = ConcurrentHashMultiset.create();
+    private ConcurrentHashMultiset<RfnMeterIdentifier> uncreatableDevices = ConcurrentHashMultiset.create();
     private Set<String> templatesToIgnore;
 
     private AtomicInteger meterLookupAttempt = new AtomicInteger();
@@ -111,7 +113,7 @@ public class MeterReadingArchiveRequestListener {
                 }
             });
         
-        uncreatableTemplates = new MapMaker()
+        recentlyUncreatableTemplates = new MapMaker()
             .concurrencyLevel(10)
             .expiration(5, TimeUnit.SECONDS)
             .makeMap();
@@ -122,7 +124,7 @@ public class MeterReadingArchiveRequestListener {
                 if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
                     // no reason to be too delicate here
                     existingMeterLookup.clear();
-                    uncreatableTemplates.clear();
+                    recentlyUncreatableTemplates.clear();
                 }
             }
         });
@@ -223,7 +225,7 @@ public class MeterReadingArchiveRequestListener {
         } catch (IgnoredTemplateException e) {
             LogHelper.debug(log, "Unable to create meter for %s because template is ignored", meterIdentifier);
         } catch (Exception e) {
-            LogHelper.debug(log, "Unable to create meter for %s: %s", meterIdentifier, e);
+            LogHelper.debug(log, "Creation failed for %s: %s", meterIdentifier, e);
             if (log.isTraceEnabled()) {
                 log.trace("stack dump of creation failure", e);
             }
@@ -258,8 +260,10 @@ public class MeterReadingArchiveRequestListener {
                 if (templatesToIgnore.contains(templateName)) {
                     throw new IgnoredTemplateException();
                 }
-                if (uncreatableTemplates.containsKey(templateName)) {
+                if (recentlyUncreatableTemplates.containsKey(templateName)) {
+                    // we already tried to create this template within the last few seconds and failed
                     unknownTemplatesEncountered.add(templateName, 1);
+                    uncreatableDevices.add(meterIdentifier);
                     throw new BadTemplateDeviceCreationException(templateName);
                 }
                 try {
@@ -271,12 +275,23 @@ public class MeterReadingArchiveRequestListener {
                     rfnMeteringEventLogService.createdNewMeterAutomatically(meter.getPaoIdentifier().getPaoId(), meter.getMeterIdentifier().getCombinedIdentifier(), templateName, deviceName);
                     return meter;
                 } catch (BadTemplateDeviceCreationException e) {
-                    uncreatableTemplates.put(templateName, Boolean.TRUE);
+                    recentlyUncreatableTemplates.put(templateName, Boolean.TRUE);
+                    uncreatableDevices.add(meterIdentifier, 1);
                     int oldCount = unknownTemplatesEncountered.add(templateName, 1);
                     if (oldCount == 0) {
                         // we may log this multiple times if the server is restarted, but this if statement
                         // seems to be a good idea to prevent excess 
                         rfnMeteringEventLogService.receivedDataForUnkownMeterTemplate(templateName);
+                        log.warn("Unable to create meter with template for " + meterIdentifier, e);
+                    }
+                    throw e;
+                } catch (DeviceCreationException e) {
+                    int oldCount = uncreatableDevices.add(meterIdentifier, 1);
+                    if (oldCount == 0) {
+                        // we may log this multiple times if the server is restarted, but this if statement
+                        // seems to be a good idea to prevent excess 
+                        rfnMeteringEventLogService.unableToCreateMeterFromTemplate(templateName, meterIdentifier.getSensorManufacturer(), meterIdentifier.getSensorModel(), meterIdentifier.getSensorSerialNumber());
+                        log.warn("Unable to create meter for " + meterIdentifier, e);
                     }
                     throw e;
                 }
