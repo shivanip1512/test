@@ -1028,7 +1028,10 @@ bool CtiDeviceBase::getDirtyInfo(std::vector<CtiTableDynamicPaoInfo *> &dirty_in
 
         for( itr = _paoInfo.begin(); itr != itr_end; itr++ )
         {
-            itr->setOwner(app_id);
+            if( itr->getOwnerID() == Application_Invalid )
+            {
+                itr->setOwner(app_id);
+            }
 
             if( itr->isDirty() )
             {
