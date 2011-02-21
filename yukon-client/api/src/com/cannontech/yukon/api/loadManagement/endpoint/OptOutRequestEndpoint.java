@@ -1,5 +1,8 @@
 package com.cannontech.yukon.api.loadManagement.endpoint;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.jdom.Element;
@@ -69,8 +72,7 @@ public class OptOutRequestEndpoint {
                                                              optOutHelper.getStartDate());
             
             OptOutRequest request = new OptOutRequest();
-           
-            List<Integer>inventoryIds = Lists.asList(lmHardwareBase.getInventoryId(), null);
+            List<Integer>inventoryIds = Collections.singletonList(lmHardwareBase.getInventoryId());
             request.setInventoryIdList(inventoryIds);  
             request.setDurationInHours(optOutHelper.getDuration().getMillis()/(1000*60*60));
             

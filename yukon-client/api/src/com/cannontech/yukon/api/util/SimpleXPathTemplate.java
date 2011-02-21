@@ -260,9 +260,12 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         } catch (XPathException e) {
             return null;
         }
+      
+        if (instantStr == null) {
+            return null;
+        }
         
         return new Instant(instantStr);
-        
     }
     
     /**
