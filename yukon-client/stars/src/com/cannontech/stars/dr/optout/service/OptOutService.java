@@ -59,7 +59,7 @@ public interface OptOutService {
      * @param optOutCounts - Determines if the opt out counts towards the user's opt out limit
      * @throws CommandCompletionException, OptOutException, NotAuthorizedException
      */
-    public void optOutWithPriorValidation(CustomerAccount customerAccount, OptOutRequest request,
+    public void optOutWithValidation(CustomerAccount customerAccount, OptOutRequest request,
                                           LiteYukonUser user, OptOutCounts optOutCounts) 
         throws CommandCompletionException;
 

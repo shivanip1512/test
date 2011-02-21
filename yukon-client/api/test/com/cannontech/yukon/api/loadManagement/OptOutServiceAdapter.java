@@ -166,7 +166,7 @@ public class OptOutServiceAdapter implements OptOutService {
     }
 
     @Override
-    public void optOutWithPriorValidation(CustomerAccount customerAccount, OptOutRequest request,
+    public void optOutWithValidation(CustomerAccount customerAccount, OptOutRequest request,
                                           LiteYukonUser user, OptOutCounts optOutCounts)
             throws CommandCompletionException, OptOutException, NotAuthorizedException {
         throw new UnsupportedOperationException("not implemented");

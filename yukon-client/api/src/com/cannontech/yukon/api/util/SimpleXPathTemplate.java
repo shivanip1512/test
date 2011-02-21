@@ -35,6 +35,7 @@ import javax.xml.xpath.XPathFactoryConfigurationException;
 
 import org.jdom.input.SAXBuilder;
 import org.jdom.transform.JDOMSource;
+import org.joda.time.Instant;
 import org.springframework.xml.namespace.SimpleNamespaceContext;
 import org.springframework.xml.transform.TransformerObjectSupport;
 import org.springframework.xml.transform.TraxUtils;
@@ -206,6 +207,19 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     }
     
     /**
+     * Evaluate value at expression as a Integer.
+     * Returns null if the expression defines a node that does not exists.
+     * @param expression
+     * @return
+     * @throws XPathException
+     */
+    public Integer evaluateAsInt(String expression) throws XPathException {
+        
+        Double num = evaluateNumber(expression);
+        return num == null ? null : num.intValue();
+    }
+    
+    /**
      * Helper for long, float, double, etc evaluators. 
 	 * Evaluates number from expression. Returns null if expression defines node that does
 	 * not exists, or if the number is NaN. Otherwise, return the number as a Double to be
@@ -236,6 +250,19 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     	}
     	
         return (String) evaluate(expression, XPathConstants.STRING);
+    }
+    
+    public Instant evaluateAsInstant(String expression) throws XPathException {
+        
+        String instantStr; 
+        try{
+            instantStr = evaluateAsString(expression);
+        } catch (XPathException e) {
+            return null;
+        }
+        
+        return new Instant(instantStr);
+        
     }
     
     /**

@@ -10,7 +10,7 @@ public class OptOutHelper {
     private String accountNumber;
     private String serialNumber;
     private Instant startDate;
-    private Period duration;
+    private Period period;
     private OptOutCounts optOutCounts;
     
     public String getAccountNumber() {
@@ -31,17 +31,19 @@ public class OptOutHelper {
     public void setStartDate(Instant startDate) {
         this.startDate = startDate;
     }
-    public Period getDuration() {
-        return duration;
-    }
-    public void setDuration(Period duration) {
-        this.duration = duration;
-    }
     public OptOutCounts getOptOutCounts() {
         return optOutCounts;
     }
     public void setOptOutCounts(OptOutCounts optOutCounts) {
         this.optOutCounts = optOutCounts;
     }
+    public Period getPeriod() {
+        return period;
+    }
+    public void setPeriod(Period period) {
+        this.period = period;
+    }
+    
+    
     
 }

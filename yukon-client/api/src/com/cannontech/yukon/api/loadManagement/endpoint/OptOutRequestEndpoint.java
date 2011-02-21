@@ -1,6 +1,6 @@
 package com.cannontech.yukon.api.loadManagement.endpoint;
 
-import java.util.LinkedList;
+import java.util.List;
 
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -13,7 +13,9 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
@@ -29,6 +31,7 @@ import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
+import com.google.common.collect.Lists;
 
 @Endpoint
 public class OptOutRequestEndpoint {
@@ -55,7 +58,10 @@ public class OptOutRequestEndpoint {
         Element fe = null;
         try {
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
-            CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(optOutHelper.getAccountNumber(), user);
+            LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompanyByUser(user);
+            CustomerAccount customerAccount = 
+                customerAccountDao.getByAccountNumberForDescendentsOfEnergyCompany(optOutHelper.getAccountNumber(), 
+                                                                                   energyCompany);
             LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getBySerialNumber(optOutHelper.getSerialNumber());
             
             accountEventLogService.optOutAttemptedThroughApi(user, customerAccount.getAccountNumber(),
@@ -64,17 +70,15 @@ public class OptOutRequestEndpoint {
             
             OptOutRequest request = new OptOutRequest();
            
-
-            LinkedList<Integer> inventoryIds = new LinkedList<Integer>();
-            inventoryIds.add(lmHardwareBase.getInventoryId());
+            List<Integer>inventoryIds = Lists.asList(lmHardwareBase.getInventoryId(), null);
             request.setInventoryIdList(inventoryIds);  
-            request.setDurationInHours(optOutHelper.getDuration().getHours());
+            request.setDurationInHours(optOutHelper.getPeriod().getHours());
             
             if(optOutHelper.getStartDate()!=null) {
                 request.setStartDate(optOutHelper.getStartDate());
             }
            
-            optOutService.optOutWithPriorValidation(customerAccount, request, user, optOutHelper.getOptOutCounts());
+            optOutService.optOutWithValidation(customerAccount, request, user, optOutHelper.getOptOutCounts());
             
             resp.addContent(XmlUtils.createStringElement("success", ns, ""));
         } catch (OptOutException e) {

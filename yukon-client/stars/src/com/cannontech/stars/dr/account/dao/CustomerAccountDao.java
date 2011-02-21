@@ -9,6 +9,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public interface CustomerAccountDao {
 
@@ -20,6 +21,15 @@ public interface CustomerAccountDao {
     
     public CustomerAccount getById(int accountId);
     
+    /**
+     * Uses {@link com.cannontech.database.cache.StarsDatabaseCache#getEnergyCompanyByUser(LiteYukonUser)}
+     * to get the Energy Company for the user, then calls {@link #getByAccountNumberForDescendentsOfEnergyCompany(String, YukonEnergyCompany)}.
+     * @param accountNumber
+     * @param user the user calling the method, only makes sense as an operator
+     * @return
+     * @deprecated call getByAccountNumberForDescendentsOfEnergyCompany directly, get EC from YukonEnergyCompanyService
+     */
+    @Deprecated
     public CustomerAccount getByAccountNumber(String accountNumber, LiteYukonUser user);
     
     /**
@@ -58,6 +68,18 @@ public interface CustomerAccountDao {
     public CustomerAccount getByAccountNumber(String accountNumber, int energyCompanyId);
     
     public CustomerAccount getByAccountNumber(String accountNumber, List<Integer> energyCompanyIds);
+    
+    
+    /**
+     * Searches for an account number with one energy company and its descendants. Caller should
+     * probably call {@link YukonEnergyCompanyService#getEnergyCompanyByOperator(LiteYukonUser)} before
+     * calling this method.
+     * @param accountNumber
+     * @param yukonEnergyCompany - the top level energy company which will be searched
+     * @return
+     */
+    public CustomerAccount getByAccountNumberForDescendentsOfEnergyCompany(String accountNumber, 
+                                                                           YukonEnergyCompany yukonEnergyCompany);
     
     /**
      * Method to get a total count of the number of customer accounts in the system.

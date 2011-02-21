@@ -37,6 +37,7 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountRowMapper;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
@@ -152,12 +153,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CustomerAccount getByAccountNumber(final String accountNumber, final LiteYukonUser user) {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-        List<LiteStarsEnergyCompany> allDescendants = ECUtils.getAllDescendants(energyCompany);
-        List<Integer> energyCompanyIds = new ArrayList<Integer>();
-        for (LiteStarsEnergyCompany liteStarsEnergyCompany : allDescendants) {
-            energyCompanyIds.add(liteStarsEnergyCompany.getEnergyCompanyId());
-        }
-        return getByAccountNumber(accountNumber, energyCompanyIds);
+        return getByAccountNumberForDescendentsOfEnergyCompany(accountNumber, energyCompany);
     }
     
     @Override
@@ -180,6 +176,18 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
             throw new NotFoundException("Account with account number: " + accountNumber + " could not be found.", e);
         }
         return account;
+    }
+    
+    @Override
+    public CustomerAccount getByAccountNumberForDescendentsOfEnergyCompany(final String accountNumber,
+                                                               YukonEnergyCompany yukonEnergyCompany) {
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
+        List<LiteStarsEnergyCompany> allDescendants = ECUtils.getAllDescendants(energyCompany);
+        List<Integer> energyCompanyIds = new ArrayList<Integer>();
+        for (LiteStarsEnergyCompany liteStarsEnergyCompany : allDescendants) {
+            energyCompanyIds.add(liteStarsEnergyCompany.getEnergyCompanyId());
+        }
+        return getByAccountNumber(accountNumber, energyCompanyIds);
     }
 
     @Transactional(readOnly = true)

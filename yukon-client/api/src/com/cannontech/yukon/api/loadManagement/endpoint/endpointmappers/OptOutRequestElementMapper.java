@@ -1,7 +1,5 @@
 package com.cannontech.yukon.api.loadManagement.endpoint.endpointmappers;
 
-import java.util.Date;
-
 import org.jdom.Element;
 import org.joda.time.Instant;
 import org.joda.time.Period;
@@ -18,21 +16,18 @@ public class OptOutRequestElementMapper implements ObjectMapper<Element, OptOutH
     @Override
     public OptOutHelper map(Element optOutRequest) throws ObjectMappingException {
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(optOutRequest);
-
         OptOutHelper optOutHelper = new OptOutHelper();
 
         String accountNumber = template.evaluateAsString("//y:accountNumber");
         String serialNumber = template.evaluateAsString("//y:serialNumber");
-        Date startDate = template.evaluateAsDate("//y:startDate");
-        long durationInHours = template.evaluateAsLong("//y:durationInHours");
+        Instant startDate = template.evaluateAsInstant("//y:startDate");
+        int periodInHours = template.evaluateAsInt("//y:durationInHours");
         boolean optOutCountsBool = template.evaluateAsBooleanWithDefault("//y:counts", true);
 
         optOutHelper.setAccountNumber(accountNumber);
         optOutHelper.setSerialNumber(serialNumber);
-        optOutHelper.setDuration(Period.hours((int) durationInHours));
-        if (startDate != null) {
-            optOutHelper.setStartDate(new Instant(startDate));
-        }
+        optOutHelper.setPeriod(Period.hours(periodInHours));
+        optOutHelper.setStartDate(startDate);
         optOutHelper.setOptOutCounts(OptOutCounts.valueOf(optOutCountsBool));
         return optOutHelper;
     }

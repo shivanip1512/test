@@ -330,7 +330,7 @@ public class OptOutServiceImpl implements OptOutService {
 	
     @Override
     @Transactional
-    public void optOutWithPriorValidation(final CustomerAccount customerAccount,
+    public void optOutWithValidation(final CustomerAccount customerAccount,
                                           final OptOutRequest request,
                                           final LiteYukonUser user, final OptOutCounts optOutCounts)
         throws CommandCompletionException, OptOutException {
