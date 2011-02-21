@@ -1,8 +1,8 @@
 package com.cannontech.yukon.api.loadManagement.endpoint.endpointmappers;
 
 import org.jdom.Element;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.joda.time.Period;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.util.ObjectMapper;
@@ -21,12 +21,12 @@ public class OptOutRequestElementMapper implements ObjectMapper<Element, OptOutH
         String accountNumber = template.evaluateAsString("//y:accountNumber");
         String serialNumber = template.evaluateAsString("//y:serialNumber");
         Instant startDate = template.evaluateAsInstant("//y:startDate");
-        int periodInHours = template.evaluateAsInt("//y:durationInHours");
+        long durationInHours = template.evaluateAsLong("//y:durationInHours");
         boolean optOutCountsBool = template.evaluateAsBooleanWithDefault("//y:counts", true);
 
         optOutHelper.setAccountNumber(accountNumber);
         optOutHelper.setSerialNumber(serialNumber);
-        optOutHelper.setPeriod(Period.hours(periodInHours));
+        optOutHelper.setDuration(Duration.standardHours(durationInHours));
         optOutHelper.setStartDate(startDate);
         optOutHelper.setOptOutCounts(OptOutCounts.valueOf(optOutCountsBool));
         return optOutHelper;

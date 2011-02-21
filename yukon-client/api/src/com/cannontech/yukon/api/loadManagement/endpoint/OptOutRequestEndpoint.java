@@ -72,7 +72,7 @@ public class OptOutRequestEndpoint {
            
             List<Integer>inventoryIds = Lists.asList(lmHardwareBase.getInventoryId(), null);
             request.setInventoryIdList(inventoryIds);  
-            request.setDurationInHours(optOutHelper.getPeriod().getHours());
+            request.setDurationInHours(optOutHelper.getDuration().getMillis()/(1000*60*60));
             
             if(optOutHelper.getStartDate()!=null) {
                 request.setStartDate(optOutHelper.getStartDate());
