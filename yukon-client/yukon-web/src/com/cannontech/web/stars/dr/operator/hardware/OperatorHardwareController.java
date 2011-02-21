@@ -443,7 +443,7 @@ public class OperatorHardwareController {
     @RequestMapping
     public String serviceCompanyInfo(ModelMap modelMap, YukonUserContext userContext, int serviceCompanyId) throws ServletRequestBindingException {
         ServiceCompanyDto serviceCompanyDto = serviceCompanyDao.getCompanyById(serviceCompanyId);
-        LiteAddress serviceCompanyAddress = addressDao.getByAddressId(serviceCompanyDto.getAddressId());
+        LiteAddress serviceCompanyAddress = addressDao.getByAddressId(serviceCompanyDto.getAddress().getAddressID());
         Address address = Address.getDisplayableAddress(serviceCompanyAddress);
         
         modelMap.addAttribute("companyName", serviceCompanyDto.getCompanyName());

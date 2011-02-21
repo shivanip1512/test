@@ -10,6 +10,7 @@
 <%@ attribute name="size" required="false" type="java.lang.String"%>
 <%@ attribute name="maxlength" required="false" type="java.lang.String"%>
 <%@ attribute name="autocomplete" required="false" type="java.lang.Boolean"%>
+<%@ attribute name="inputClass" required="false" type="java.lang.String"%>
 <%@ attribute name="id"%>
 <%@ attribute name="onkeyup"%>
 <%@ attribute name="onchange"%>
@@ -25,9 +26,8 @@ ${status.value}
 <%-- EDIT/CREATE MODE --%>
 <cti:displayForPageEditModes modes="EDIT,CREATE">
 
-<c:set var="inputClass" value=""/>
 <c:if test="${status.error}">
-	<c:set var="inputClass" value="error"/>
+	<c:set var="inputClass" value="error ${pageScope.inputClass}"/>
 </c:if>
 <c:if test="${empty pageScope.id}">
     <c:set var="id" value="${path}"/>

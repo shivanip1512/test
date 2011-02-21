@@ -1762,4 +1762,7 @@
     <bean class="com.cannontech.web.stars.dr.consumer.OptOutControllerHelper"/>    
     
     <bean id="warehouseService" class="com.cannontech.web.stars.dr.operator.warehouse.service.impl.WarehouseServiceImpl"/>
+    <bean id="serviceCompanyService" class="com.cannontech.web.admin.energyCompany.serviceCompany.service.impl.ServiceCompanyServiceImpl"/>
+    <bean id="serviceCompanyDtoValidator" class="com.cannontech.web.admin.energyCompany.serviceCompany.model.ServiceCompanyDtoValidator"/>
+    <bean id="DesignationCodeDtoValidator" class="com.cannontech.web.admin.energyCompany.serviceCompany.model.DesignationCodeDtoValidator"/>
 </beans>

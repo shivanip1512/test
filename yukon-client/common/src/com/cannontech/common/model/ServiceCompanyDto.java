@@ -1,13 +1,31 @@
 package com.cannontech.common.model;
 
+import java.util.List;
+
+import com.cannontech.common.util.LazyList;
+import com.cannontech.database.data.lite.LiteAddress;
+import com.cannontech.database.data.lite.LiteContact;
+
 public class ServiceCompanyDto {
+    //Service Company
     private int companyId;
     private String companyName;
-    private int addressId;
     private String mainPhoneNumber;
     private String mainFaxNumber;
-    private int primaryContactId;
     private String hiType;
+    
+    /* RELATIONS */
+    //address
+    private LiteAddress address;
+    
+    //primary contact
+    private LiteContact primaryContact;
+    
+    //contact notification
+    private String emailContactNotification;
+    
+    //designation codes
+    private List<DesignationCodeDto> designationCodes = LazyList.ofInstance(DesignationCodeDto.class);
     
     public int getCompanyId() {
         return companyId;
@@ -23,14 +41,6 @@ public class ServiceCompanyDto {
     
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
-    }
-    
-    public int getAddressId() {
-        return addressId;
-    }
-    
-    public void setAddressId(int addressId) {
-        this.addressId = addressId;
     }
     
     public String getMainPhoneNumber() {
@@ -49,19 +59,43 @@ public class ServiceCompanyDto {
         this.mainFaxNumber = mainFaxNumber;
     }
     
-    public int getPrimaryContactId() {
-        return primaryContactId;
-    }
-    
-    public void setPrimaryContactId(int primaryContactId) {
-        this.primaryContactId = primaryContactId;
-    }
-    
     public String getHiType() {
         return hiType;
     }
     
     public void setHiType(String hiType) {
         this.hiType = hiType;
+    }
+
+    public void setPrimaryContact(LiteContact primaryContact) {
+        this.primaryContact = primaryContact;
+    }
+
+    public LiteContact getPrimaryContact() {
+        return primaryContact;
+    }
+
+    public void setAddress(LiteAddress address) {
+        this.address = address;
+    }
+
+    public LiteAddress getAddress() {
+        return address;
+    }
+
+    public void setDesignationCodes(List<DesignationCodeDto> designationCodes) {
+        this.designationCodes = designationCodes;
+    }
+
+    public List<DesignationCodeDto> getDesignationCodes() {
+        return designationCodes;
+    }
+
+    public void setEmailContactNotification(String contactNotification) {
+        this.emailContactNotification = contactNotification;
+    }
+
+    public String getEmailContactNotification() {
+        return emailContactNotification;
     }
 }

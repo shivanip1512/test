@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.create.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.create.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.create.label">Create</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.name">Name</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.mainPhone">Main Phone</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.mainFax">Main Fax</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.companyName">Company Name</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.HIType">Company Type</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.message">Are you sure you want to delete this Service Company?</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.primaryContact.firstName">First Name</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.primaryContact.lastName">Last Name</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.primaryContact.fullName">Name</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.primaryContactPicker.label">Primary Contact</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.locationAddress1">Street Address</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.locationAddress2">Street Address 2</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.cityName">City</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.stateCode">State</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.zipCode">Zip</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.notes">Notes</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.save">Save</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.email">Email</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.title">Service Companies</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.generalInfoSection.title">General Information</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.addressSection.title">Address</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.primaryContactSection.title">Contact</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.designationCodeSection.title">Designation Codes</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.availableLogins">Associated Login</entry>
+    
+    <!--  Validation -->
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.serviceCompanyDto.serviceCompany.nameRequired">The Service Company name cannot be empty.</entry>
+    
+    <!--  Generic success/fail messages -->
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.serviceCompanyCreated">Successfully created the Service Company.</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.serviceCompanyNotCreated">There was a problem creating the Service Company.</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.serviceCompanyUpdated">Successfully updated the Service Company.</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.serviceCompanyNotUpdated">There was a problem updating the Service Company.</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.serviceCompanyDeleted">Successfully deleted the Service Company.</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.serviceCompanyNotDeleted">There was a problem deleting the Service Company.</entry>
+    
+    
+    <!-- home.jsp -->
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.HOME.pageName">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.HOME.pageDescription">Warehouses</entry>
+
+    <!-- home.jsp -->
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.HOME.pageName">Service Companies</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.CREATE.pageName">Create Service Company</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.EDIT.pageName">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.EDIT.contextualPageName">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.EDIT.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.VIEW.pageName">Service Company {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.VIEW.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.delete.label">Delete</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.delete.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.infoContainer">Service Companies</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.edit.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.gif</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.edit.label">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.assignDesignationCode.label">Add Zip Code</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.add.label">Add Service Company</entry>
+
+</properties>

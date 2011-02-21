@@ -1054,10 +1054,32 @@
                                 </pages>
                             </page>
                             <page name="applianceCategory.PROGRAMS" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>energyCompanySetup|home</menu>
-                                <link>/spring/adminSetup/energyCompany/applianceCategory/programs?ecId=${ecId}</link>
-                                <labelArgument>${energyCompanyName}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
+                                <link>/spring/adminSetup/energyCompany/applianceCategory/programs?ecId=${ecId}</link>
+                                <menu>energyCompanySetup|home</menu>
+                            </page>
+                            <page name="serviceCompany.HOME" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <link>/spring/adminSetup/energyCompany/serviceCompany/home?ecId=${ecId}</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <menu>energyCompanySetup|home</menu>
+                                <pages>
+                                    <page name="serviceCompany.VIEW" type="DETAIL" contributeToMenu="false">
+                                        <menu>energyCompanySetup|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/serviceCompany/view?id=${id}</link>
+                                        <labelArgument>${serviceCompany.companyName}</labelArgument>
+                                        <pages>
+                                            <page name="serviceCompany.EDIT" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
+                                                <menu>energyCompanySetup|home</menu>
+                                                <link>/spring/adminSetup/energyCompany/serviceCompany/edit?serviceCompany=${warehouseId}</link>
+                                                <labelArgument>${serviceCompany.companyName}</labelArgument>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="serviceCompany.CREATE" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
+                                        <menu>energyCompanySetup|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/serviceCompany/create?id=${id}</link>
+                                    </page>
+                                </pages>
                             </page>
                             <page name="serviceAndStorage.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
@@ -1450,32 +1472,6 @@
                                     <page name="warehouse.CREATE" type="DETAIL" contributeToMenu="false">
                                         <menu>energyCompany|home</menu>
                                         <link>/spring/stars/operator/energyCompany/warehouse/create?id=${id}</link>
-                                    </page>
-                                </pages>
-                            </page>
-                            <page name="serviceCompany.HOME" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>energyCompany|home</menu>
-                                <link>/spring/stars/operator/energyCompany/serviceCompany/index?ecId=${ecId}</link>
-                                <labelArgument>${energyCompanyName}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
-                                <pages>
-                                    <page name="serviceCompany.VIEW" type="DETAIL_WITH_INFO" contributeToMenu="false">
-                                        <menu>energyCompany|home</menu>
-                                        <link>/spring/stars/operator/energyCompany/serviceCompanye/view?id=${id}</link>
-                                        <labelArgument>${energyCompanyName}</labelArgument>
-                                        <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
-                                    </page>
-                                    <page name="serviceCompany.CREATE" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
-                                        <menu>energyCompany|home</menu>
-                                        <link>/spring/stars/operator/energyCompany/serviceCompany/create?id=${id}</link>
-                                        <labelArgument>${energyCompanyName}</labelArgument>
-                                        <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
-                                    </page>
-                                    <page name="serviceCompany.EDIT" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
-                                        <menu>energyCompany|home</menu>
-                                        <link>/spring/stars/operator/energyCompany/serviceCompany/edit?serviceCompany=${warehouseId}</link>
-                                        <labelArgument>${energyCompanyName}</labelArgument>
-                                        <infoInclude>/WEB-INF/pages/stars/operator/energyCompany/ecInfoFragment.jsp</infoInclude>
                                     </page>
                                 </pages>
                             </page>

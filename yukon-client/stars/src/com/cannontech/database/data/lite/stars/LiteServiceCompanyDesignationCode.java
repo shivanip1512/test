@@ -1,6 +1,7 @@
 package com.cannontech.database.data.lite.stars;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.data.lite.LiteBase;
@@ -16,7 +17,7 @@ import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class LiteServiceCompanyDesignationCode extends LiteBase {
+public class LiteServiceCompanyDesignationCode extends LiteBase implements DatabaseRepresentationSource {
 	private int designationCodeID = 0;
 	private String designationCodeValue = null;
 	private int serviceCompanyID = ServiceCompany.NONE_INT;
@@ -93,5 +94,10 @@ public class LiteServiceCompanyDesignationCode extends LiteBase {
 			}
 			catch (java.sql.SQLException e) {}
 		}
-	}	
+	}
+
+    @Override
+    public Object getDatabaseRepresentation() {
+        return designationCodeID;
+    }	
 }

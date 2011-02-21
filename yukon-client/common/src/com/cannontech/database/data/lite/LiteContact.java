@@ -29,6 +29,11 @@ public class LiteContact extends LiteBase
 
 	//contains instances of com.cannontech.database.data.lite.LiteContactNotification
 	private Vector<LiteContactNotification> liteContactNotifications = null;
+	
+	public LiteContact() {
+	    super();
+	    setLiteType(LiteTypes.CONTACT);
+	}
 
 	/**
 	 * LiteContact

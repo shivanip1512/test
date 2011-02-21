@@ -40,6 +40,51 @@ tr.pickerRow td.value span[id^='picker_'] {
     vertical-align: top;
 }
 
+.search_list {
+    height: 8em;
+    width: 150px;
+    margin: 10px 0;
+    border: solid 1px #CCCCCC;
+    overflow-y:scroll;
+}
+
+.search_list li {
+    padding: 2px 5px;
+}
+
+.search_list li:hover {
+    background: #EFEFEF;
+}
+
+ul.filtering li {
+    color: #AAAAAA;
+}
+
+ul.filtering li.filtered {
+    color: inherit;
+    background-color: lightBlue;
+}
+
+input.found {
+    background-color: lightBlue;
+}
+
+input.notFound {
+    background-color: pink;
+}
+
+input.default {
+    color: #AAAAAA;
+}
+
+#findDesignationCode {
+    border: solid 1px #CCCCCC;
+    padding: 2px;
+    font-size: 14px;
+    width: 150px;
+}
+
 #applianceCategoryPrograms {
     margin-top: 20px;
 }
+

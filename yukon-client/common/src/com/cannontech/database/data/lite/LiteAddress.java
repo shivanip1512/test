@@ -34,7 +34,12 @@ public class LiteAddress extends LiteBase {
 		setLiteType( LiteTypes.ADDRESS );
 	}
 	
-	public LiteAddress(int addressID, String locationAddr1, String locationAddr2, String city, String state, String zip) {
+	public LiteAddress(int addressID, 
+	                   String locationAddr1, 
+	                   String locationAddr2, 
+	                   String city, 
+	                   String state, 
+	                   String zip) {
 		super();
 		setAddressID( addressID );
 		locationAddress1 = locationAddr1;

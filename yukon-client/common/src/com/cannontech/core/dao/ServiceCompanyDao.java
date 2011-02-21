@@ -18,4 +18,16 @@ public interface ServiceCompanyDao {
      */
     public List<ServiceCompanyDto> getAllServiceCompanies();
     
+    /**
+     * Returns a list of all the relevant service companies wrt to a specific energy company
+     * @param energyCompanyId
+     * @return list of service company dtos
+     */
+    public List<ServiceCompanyDto> getAllServiceCompaniesForEnergyCompany(int energyCompanyId);
+    
+    public void create(ServiceCompanyDto serviceCompany, int energyCompanyId);
+    
+    public void update(ServiceCompanyDto serviceCompany);
+    
+    public void delete(int serviceCompanyId);
 }
