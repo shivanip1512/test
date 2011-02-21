@@ -2,6 +2,8 @@ package com.cannontech.stars.dr.hardware.service.impl;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +31,9 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
+import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
+import com.cannontech.stars.dr.optout.model.OptOutEventDto;
+import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.user.YukonUserContext;
@@ -45,6 +50,8 @@ public class HardwareServiceImpl implements HardwareService {
     private LMHardwareEventDao lmHardwareEventDao;
     private StarsDatabaseCache starsDatabaseCache;
     private StarsInventoryBaseDao starsInventoryBaseDao;
+    private OptOutService optOutService;
+    private OptOutEventDao optOutEventDao;
     
     @Override
     @Transactional
@@ -55,6 +62,18 @@ public class HardwareServiceImpl implements HardwareService {
         LiteInventoryBase liteInventoryBase = starsInventoryBaseDao.getByInventoryId(inventoryId);
         CustomerAccount customerAccount = customerAccountDao.getById(accountId);
         boolean deleteMCT = false;
+        
+        //Cancel all optouts for that hardware
+        
+        List<OptOutEventDto> optOutEvents = optOutEventDao.getCurrentOptOuts(accountId, inventoryId);
+        
+        LinkedList<Integer> optOutEventIdList = new LinkedList<Integer>();
+        
+        for(OptOutEventDto event : optOutEvents){
+            optOutEventIdList.add(event.getEventId());
+        }
+        
+        optOutService.cancelOptOut(optOutEventIdList, userContext.getYukonUser());
         
         /* Unenroll the hardware */
         LMHardwareBase lmHardwareBase = null;
@@ -165,4 +184,14 @@ public class HardwareServiceImpl implements HardwareService {
     public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
 		this.starsInventoryBaseDao = starsInventoryBaseDao;
 	}
+    
+    @Autowired
+    public void setOptOutService(OptOutService optOutService) {
+        this.optOutService = optOutService;
+    }
+    
+    @Autowired
+    public void setOptOutEventDao(OptOutEventDao optOutEventDao) {
+        this.optOutEventDao = optOutEventDao;
+    }
 }
