@@ -14,6 +14,12 @@ DROP COLUMN ParamValues;
 DELETE FROM ECToGenericMapping 
 WHERE MappingCategory = 'InterviewQuestion'; 
 
+ALTER TABLE InterviewQuestion
+DROP CONSTRAINT FK_IntQ_CsLsEn;
+
+ALTER TABLE InterviewQuestion
+DROP CONSTRAINT FK_IntQ_CsLsEn2;
+
 DELETE FROM YukonListEntry 
 WHERE EntryId IN (SELECT AnswerType 
                   FROM InterviewQuestion)
@@ -134,13 +140,13 @@ WHERE RolePropertyId = -20000;
 
 /* Start YUK-9445 */
 ALTER TABLE LmControlAreaTrigger 
-ADD ThresholdPointId NUMBER; 
+ADD ThresholdPointId NUMERIC; 
 
 UPDATE LmControlAreaTrigger 
 SET ThresholdPointId = 0; 
 
 ALTER TABLE LmControlAreaTrigger 
-ALTER COLUMN ThresholdPointId NUMBER NOT NULL; 
+ALTER COLUMN ThresholdPointId NUMERIC NOT NULL; 
 /* End YUK-9445 */
 
 /* Start YUK-9404 */

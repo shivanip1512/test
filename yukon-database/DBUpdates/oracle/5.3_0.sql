@@ -14,6 +14,12 @@ DROP COLUMN ParamValues;
 DELETE FROM ECToGenericMapping 
 WHERE MappingCategory = 'InterviewQuestion'; 
 
+ALTER TABLE InterviewQuestion
+DROP CONSTRAINT FK_IntQ_CsLsEn;
+
+ALTER TABLE InterviewQuestion
+DROP CONSTRAINT FK_IntQ_CsLsEn2;
+
 DELETE FROM YukonListEntry 
 WHERE EntryId IN (SELECT AnswerType 
                   FROM InterviewQuestion)
