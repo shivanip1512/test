@@ -141,9 +141,11 @@ WHERE RolePropertyId = -20000;
 /* Start YUK-9445 */
 ALTER TABLE LmControlAreaTrigger 
 ADD ThresholdPointId NUMERIC; 
+GO;
 
 UPDATE LmControlAreaTrigger 
 SET ThresholdPointId = 0; 
+GO;
 
 ALTER TABLE LmControlAreaTrigger 
 ALTER COLUMN ThresholdPointId NUMERIC NOT NULL; 
