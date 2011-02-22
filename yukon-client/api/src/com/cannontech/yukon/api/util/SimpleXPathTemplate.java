@@ -252,20 +252,22 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         return (String) evaluate(expression, XPathConstants.STRING);
     }
     
+    /**
+     * Parse an element for an Instant. If the the element doesn't exist or doesn't 
+     * represent a valid date, it returns null. Otherwise it creates a Date object
+     * from the string and uses the Date to generate an Instant. 
+     * @param expression
+     * @return
+     * @throws XPathException
+     */
     public Instant evaluateAsInstant(String expression) throws XPathException {
         
-        String instantStr; 
-        try{
-            instantStr = evaluateAsString(expression);
-        } catch (XPathException e) {
-            return null;
-        }
-      
-        if (instantStr == null) {
+        Date date = evaluateAsDate(expression);
+        if (date == null) {
             return null;
         }
         
-        return new Instant(instantStr);
+        return new Instant(date);
     }
     
     /**

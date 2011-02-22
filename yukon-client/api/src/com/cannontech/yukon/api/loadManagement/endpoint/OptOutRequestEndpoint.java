@@ -1,8 +1,6 @@
 package com.cannontech.yukon.api.loadManagement.endpoint;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.jdom.Element;
@@ -34,7 +32,6 @@ import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
-import com.google.common.collect.Lists;
 
 @Endpoint
 public class OptOutRequestEndpoint {
@@ -74,9 +71,9 @@ public class OptOutRequestEndpoint {
             OptOutRequest request = new OptOutRequest();
             List<Integer>inventoryIds = Collections.singletonList(lmHardwareBase.getInventoryId());
             request.setInventoryIdList(inventoryIds);  
-            request.setDurationInHours(optOutHelper.getDuration().getMillis()/(1000*60*60));
-            
-            if(optOutHelper.getStartDate()!=null) {
+            request.setDurationInHours(optOutHelper.getDuration().toPeriod().toStandardHours().getHours());
+          
+            if (optOutHelper.getStartDate() != null) {
                 request.setStartDate(optOutHelper.getStartDate());
             }
            
@@ -90,7 +87,7 @@ public class OptOutRequestEndpoint {
         } catch (NotFoundException e){
             fe = XMLFailureGenerator.generateFailure(optOutRequest, e, "NotFound", e.getMessage());
         } finally {
-            if(fe!=null) {
+            if (fe != null) {
                 resp.addContent(fe);
             }
         }
