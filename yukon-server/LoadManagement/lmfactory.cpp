@@ -9,6 +9,7 @@
 #include "devicetypes.h"
 
 #include "lmgroupversacom.h"
+#include "lmgroupdigisep.h"
 #include "lmgroupemetcon.h"
 #include "lmgroupexpresscom.h"
 #include "lmgroupmct.h"
@@ -54,6 +55,9 @@ CtiLMGroupPtr CtiLMGroupFactory::createLMGroup(Cti::RowReader &rdr)
     case TYPE_LMGROUP_EXPRESSCOM:
     case TYPE_LMGROUP_XML://having XML return expresscom, LM doesn't need anything more.
         lm_group = CTIDBG_new CtiLMGroupExpresscom(rdr);
+        break;
+    case TYPE_LMGROUP_DIGI_SEP:
+        lm_group = CTIDBG_new LMGroupDigiSEP(rdr);
         break;
     case TYPE_LMGROUP_MCT:
         lm_group = CTIDBG_new CtiLMGroupMCT(rdr);

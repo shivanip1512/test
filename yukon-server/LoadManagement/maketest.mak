@@ -74,6 +74,7 @@ $(OBJ)\lmgroupsa305.obj \
 $(OBJ)\lmgroupsa105.obj \
 $(OBJ)\lmgroupsa205.obj \
 $(OBJ)\lmgroupsadigital.obj \
+$(OBJ)\lmgroupdigisep.obj \
 $(OBJ)\lmgroupgolay.obj \
 $(OBJ)\lmgroupversacom.obj \
 $(OBJ)\lmmessage.obj \
@@ -86,6 +87,7 @@ $(OBJ)\lmprogramenergyexchange.obj \
 $(OBJ)\lmprogramthermostatgear.obj \
 $(OBJ)\lmservice.obj \
 $(OBJ)\lmutility.obj \
+$(OBJ)\sepcyclegear.obj \
 $(OBJ)\loadmanager.obj
 
 ALL: loadmanagement

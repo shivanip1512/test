@@ -42,6 +42,7 @@
 #include "ctidate.h"
 #include "utility.h"
 #include "database_writer.h"
+#include "smartgearbase.h"
 
 #include <rw/ordcltn.h>
 
@@ -629,7 +630,45 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                     ResetGroups();
                 }
 
-                if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TimeRefreshMethod) )
+                SmartGearBase *smartGearObject = currentGearObject->getSmartGear();
+
+                if( smartGearObject != NULL ) 
+                {
+                    for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
+                    {
+                        LONG shedTime = getDirectStopTime().seconds() - CtiTime::now().seconds();
+    
+                        // .checkControl below can modify (shorten) the shed time
+                        CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
+                        if( getConstraintOverride() || (con_checker.checkControl(shedTime, true) && !hasGroupExceededMaxDailyOps(currentLMGroup))  )
+                        {
+                            if( smartGearObject->attemptControl(currentLMGroup, shedTime, expectedLoadReduced) )
+                            {
+                                setLastControlSent(CtiTime());
+                            }
+                        }
+                        else
+                        {
+                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                            {
+                                con_checker.dumpViolations();
+                            }
+                        }
+
+                        if( getProgramState() == CtiLMProgramBase::InactiveState )
+                        {
+                            // Let the world know we are starting up!
+                            scheduleStartNotification(CtiTime());
+                        }
+
+                    }
+
+                    if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+                    {
+                        setProgramState(CtiLMProgramBase::FullyActiveState);
+                    }
+                }
+                else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TimeRefreshMethod) )
                 {
                     LONG refreshRate = currentGearObject->getMethodRate();
                     LONG shedTime = currentGearObject->getMethodPeriod();
@@ -1189,8 +1228,34 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
         if( _currentgearnumber < _lmprogramdirectgears.size() )
         {
             currentGearObject = getCurrentGearObject();
+            SmartGearBase *smartGearObject = currentGearObject->getSmartGear();
 
-            if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TimeRefreshMethod) )
+            if( smartGearObject != NULL ) 
+            {
+                for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
+                {
+                    LONG shedTime = getDirectStopTime().seconds() - CtiTime::now().seconds();
+
+                    // .checkControl below can modify (shorten) the shed time
+                    CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
+                    if( getConstraintOverride() || con_checker.checkControl(shedTime, true) )
+                    {
+                        if( smartGearObject->attemptControl(currentLMGroup, shedTime, expectedLoadReduced) )
+                        {
+                            setLastControlSent(CtiTime());
+                        }
+                    }
+                    else
+                    {
+                        if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                        {
+                            con_checker.dumpViolations();
+                        }
+                    }
+                }
+                setProgramState(CtiLMProgramBase::ManualActiveState);
+            }
+            else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TimeRefreshMethod) )
             {
                 bool do_ramp = (currentGearObject->getRampInPercent() > 0);
 //                ResetGroups(); this also clears out next control times!
@@ -2595,7 +2660,66 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
 
     if( currentGearObject != NULL && previousGearObject != NULL && _lmprogramdirectgroups.size() > 0 )
     {
-        if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod) )
+        SmartGearBase *smartGearObject = currentGearObject->getSmartGear();
+
+        if( smartGearObject != NULL )
+        {
+            LONG shedTime = getDirectStopTime().seconds() - CtiTime::now().seconds();
+
+            if( _LM_DEBUG & LM_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Gear change for all groups, LM Program: " << getPAOName() << endl;
+            }
+
+            int numberOfActiveGroups = 0;
+            for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
+            {
+                CtiLMGroupPtr currentLMGroup  = *i;
+                // .checkControl below can modify (shorten) the shed time
+                CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
+                if( getConstraintOverride() || con_checker.checkControl(shedTime, true) )
+                {
+                    if( smartGearObject->attemptControl(currentLMGroup, shedTime, expectedLoadReduced) )
+                    {
+                        setLastControlSent(CtiTime());
+                    }
+                }
+                else
+                {
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                    {
+                        con_checker.dumpViolations();
+                    }
+                }
+
+                if( currentLMGroup->getGroupControlState() == CtiLMGroupBase::ActiveState )
+                {
+                    numberOfActiveGroups++;
+                }
+            }
+
+            
+
+            if( getProgramState() != CtiLMProgramBase::ManualActiveState &&
+                getProgramState() != CtiLMProgramBase::TimedActiveState )
+            {
+                if( numberOfActiveGroups == _lmprogramdirectgroups.size() )
+                {
+                    setProgramState(CtiLMProgramBase::FullyActiveState);
+                }
+                else if( numberOfActiveGroups == 0 )
+                {
+                    setProgramState(CtiLMProgramBase::InactiveState);
+                    ResetGroups();
+                }
+                else
+                {
+                    setProgramState(CtiLMProgramBase::ActiveState);
+                }
+            }
+        }
+        else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod) )
         {
             if( !stringCompareIgnoreCase(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::SmartCycleMethod) ||
                 !stringCompareIgnoreCase(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
@@ -3502,8 +3626,58 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
 
     if( currentGearObject != NULL && _lmprogramdirectgroups.size() > 0 )
     {
+        SmartGearBase *smartGearObject = currentGearObject->getSmartGear();
 
-        if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod) )
+        if( smartGearObject != NULL ) 
+        {
+            for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
+            {
+                LONG shedTime = getDirectStopTime().seconds() - CtiTime::now().seconds();
+
+                // .checkControl below can modify (shorten) the shed time
+                CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
+                if( getConstraintOverride() || con_checker.checkControl(shedTime, true) )
+                {
+                    double expectedLoadReduced; // Apparently unused in refreshStandardProgramControl.
+                    if( smartGearObject->attemptControl(currentLMGroup, shedTime, expectedLoadReduced) )
+                    {
+                        setLastControlSent(CtiTime());
+                    }
+                }
+                else
+                {
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                    {
+                        con_checker.dumpViolations();
+                    }
+                }
+
+                if( currentLMGroup->getGroupControlState() == CtiLMGroupBase::ActiveState )
+                {
+                    numberOfActiveGroups++;
+                }
+            }
+
+            if( returnBoolean &&
+                getProgramState() != CtiLMProgramBase::ManualActiveState &&
+                getProgramState() != CtiLMProgramBase::TimedActiveState )
+            {
+                if( numberOfActiveGroups == _lmprogramdirectgroups.size() )
+                {
+                    setProgramState(CtiLMProgramBase::FullyActiveState);
+                }
+                else if( numberOfActiveGroups == 0 )
+                {
+                    setProgramState(CtiLMProgramBase::InactiveState);
+                    ResetGroups();
+                }
+                else
+                {
+                    setProgramState(CtiLMProgramBase::ActiveState);
+                }
+            }
+        }
+        else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod) )
         {
             long refresh_rate = currentGearObject->getMethodRate();
             long shed_time = currentGearObject->getMethodPeriod();
@@ -4289,12 +4463,32 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
     {
         string tempControlMethod = currentGearObject->getControlMethod();
         string tempMethodStopType = currentGearObject->getMethodStopType();
+
+        SmartGearBase *smartGearObject = currentGearObject->getSmartGear();
+
         for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
         {
             CtiLMGroupPtr currentLMGroup  = *i;
             if( secondsFrom1901 > currentLMGroup->getControlStartTime().seconds() + getMinActivateTime() ||
                 getManualControlReceivedFlag() )
             {
+                if( smartGearObject != NULL )
+                {
+                    CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
+                    if( !(getConstraintOverride() || con_checker.checkRestore()) )
+                    {
+                        con_checker.dumpViolations();
+                        return false;
+                    }
+                    else
+                    {
+                        if( smartGearObject->stopControl(currentLMGroup) )
+                        {
+                            setLastControlSent(CtiTime());
+                        }
+                    }
+                }
+                else
                 if( !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::SmartCycleMethod ) ||
                     !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::TrueCycleMethod ) ||
                     !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::MagnitudeCycleMethod) ||
@@ -5463,9 +5657,15 @@ ULONG CtiLMProgramDirect::estimateOffTime(ULONG proposed_gear, ULONG start, ULON
     string method = cur_gear->getControlMethod();
     long control_time = stop - start;
 
-    if( method == CtiLMProgramDirectGear::TimeRefreshMethod.c_str() ||
-        method == CtiLMProgramDirectGear::LatchingMethod.c_str() ||
-        method == CtiLMProgramDirectGear::SimpleThermostatRampingMethod.c_str() )
+    SmartGearBase *smartGear = cur_gear->getSmartGear();
+
+    if( smartGear != NULL )
+    {
+        return smartGear->estimateOffTime(control_time);
+    }
+    else if( method == CtiLMProgramDirectGear::TimeRefreshMethod.c_str() ||
+             method == CtiLMProgramDirectGear::LatchingMethod.c_str() ||
+             method == CtiLMProgramDirectGear::SimpleThermostatRampingMethod.c_str() )
     {
         return control_time;
     }

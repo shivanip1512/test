@@ -339,6 +339,11 @@ const string& CtiLMProgramDirectGear::getFrontRampOption() const
     return _front_ramp_option;
 }
 
+const string& CtiLMProgramDirectGear::getBackRampOption() const
+{
+    return _back_ramp_option;
+}
+
 /*----------------------------------------------------------------------------
   getKWReduction
 
@@ -781,6 +786,7 @@ const string CtiLMProgramDirectGear::ThermostatRampingMethod = "ThermostatRampin
 const string CtiLMProgramDirectGear::SimpleThermostatRampingMethod = "SimpleThermostatRamping";
 const string CtiLMProgramDirectGear::TargetCycleMethod = "TargetCycle";
 const string CtiLMProgramDirectGear::MagnitudeCycleMethod = "MagnitudeCycle";
+const string CtiLMProgramDirectGear::SEPCycleMethod = "SEPCycle";
 const string CtiLMProgramDirectGear::NoControlMethod = "NoControl";
 
 //Possible method stop types

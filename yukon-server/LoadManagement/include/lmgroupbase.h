@@ -139,6 +139,8 @@ public:
                                                     LONG precoolTime, LONG precoolHoldTime, LONG maxTempChange,
                                                     LONG totalTime, LONG rampOutTime, LONG minutesFromBegin,
                                                     int priority) const;// CtiLMGroupExpresscom
+    virtual bool sendSEPCycleControl(long controlMinutes, long cyclePercent, bool isTrueCycle, bool randomizeStart, bool randomizeStop);
+    virtual bool sendStopControl(bool stopImmediatelly);
 
     //pure virtuals
     virtual CtiLMGroupBase* replicate() const = 0;

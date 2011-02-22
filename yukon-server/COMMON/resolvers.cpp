@@ -593,6 +593,10 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPE_LMGROUP_XML;
     }
+    else if(rwsTemp == "digi sep group")
+    {
+        nRet = TYPE_LMGROUP_DIGI_SEP;
+    }
     else if(rwsTemp == "mct group")
     {
         nRet = TYPE_LMGROUP_MCT;
@@ -1212,6 +1216,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPE_LMGROUP_VERSACOM:
         case TYPE_LMGROUP_EXPRESSCOM:
         case TYPE_LMGROUP_XML:
+        case TYPE_LMGROUP_DIGI_SEP:
         case TYPE_LMGROUP_MCT:
         case TYPE_LMGROUP_GOLAY:
         case TYPE_LMGROUP_SADIGITAL:

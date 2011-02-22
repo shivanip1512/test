@@ -38,6 +38,7 @@ DispatchPointDataRequest.obj \
 PointDataHandler.obj \
 PointDataRequestFactory.obj \
 PorterResponseMessage.obj \
+LMSepControlMessage.obj \
 amq_connection.obj \
 connection.obj \
 dll_msg.obj \

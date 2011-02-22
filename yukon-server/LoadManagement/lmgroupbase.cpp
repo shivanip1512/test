@@ -885,6 +885,24 @@ CtiRequestMsg* CtiLMGroupBase::createTrueCycleRequestMsg(LONG percent, LONG peri
     return NULL;
 }
 
+bool CtiLMGroupBase::sendStopControl(bool stopImmediatelly)
+{
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Can not sendStopControl this group type, in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    return false;
+}
+
+bool CtiLMGroupBase::sendSEPCycleControl(long controlMinutes, long cyclePercent, bool isTrueCycle, bool randomizeStart, bool randomizeStop)
+{
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Can not SEP control this group type, in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    return false;
+}
+
 /*-------------------------------------------------------------------------
     createTargetCycleRequestMsg
 

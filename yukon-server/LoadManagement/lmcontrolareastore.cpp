@@ -49,6 +49,7 @@
 #include "lmcontrolareatrigger.h"
 #include "lmprogramdirectgear.h"
 #include "lmprogramcontrolwindow.h"
+#include "sepcyclegear.h"
 #include "resolvers.h"
 #include "desolvers.h"
 #include "devicetypes.h"
@@ -1022,10 +1023,20 @@ void CtiLMControlAreaStore::reset()
 
                 while( rdr() )
                 {
+                    string controlmethod;
                     CtiLMProgramDirectGear* newDirectGear = NULL;
+
+                    rdr["controlmethod"] >> controlmethod;
                     if( rdr["settings"].isNull() )
                     {
-                        newDirectGear = CTIDBG_new CtiLMProgramDirectGear(rdr);
+                        if( !stringCompareIgnoreCase(controlmethod,CtiLMProgramDirectGear::SEPCycleMethod) )
+                        {
+                            newDirectGear = CTIDBG_new SEPCycleGear(rdr);
+                        }
+                        else
+                        {
+                            newDirectGear = CTIDBG_new CtiLMProgramDirectGear(rdr);
+                        }
                     }
                     else
                     {

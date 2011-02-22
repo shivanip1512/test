@@ -15,6 +15,7 @@ INCLPATHS+= \
 -I$(BOOST) \
 -I$(RW) \
 -I$(SQLAPI)\include \
+-I$(ACTIVEMQ) \
 
 
 .PATH.H = \
@@ -28,8 +29,10 @@ INCLPATHS+= \
 ;$(SERVER)\include \
 ;$(MSG)\include \
 ;$(BOOST) \
-;$(RW)
-
+;$(RW) \
+;$(ACTIVEMQ) \
+;$(ACTIVEMQ)\cms \
+;$(ACTIVEMQ)\activemq\library \
 
 
 LIBS=\
@@ -61,6 +64,7 @@ lmenergyexchangeoffer.obj \
 lmenergyexchangeofferrevision.obj \
 lmfactory.obj \
 lmgroupbase.obj \
+lmgroupdigisep.obj \
 lmgroupemetcon.obj \
 lmgroupexpresscom.obj \
 lmgroupmacro.obj \
@@ -85,6 +89,7 @@ lmservice.obj \
 loadmanager.obj \
 lmutility.obj \
 main.obj \
+sepcyclegear.obj \
 
 TARGS = loadmanagement.exe
 
@@ -297,11 +302,12 @@ lmcontrolareastore.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		lmgroupexpresscom.h lmgroupmct.h lmgroupripple.h \
 		lmgrouppoint.h lmgroupsa105.h lmgroupsa205.h lmgroupsa305.h \
 		lmgroupsadigital.h lmgroupgolay.h lmprogramcontrolwindow.h \
-		resolvers.h db_entry_defines.h desolvers.h devicetypes.h \
-		ctibase.h ctinexus.h configparms.h msg_dbchg.h loadmanager.h \
-		executor.h ctdpcptrq.h msg_server_req.h lmmessage.h \
-		clientconn.h ConstraintViolation.h lmfactory.h \
-		tbl_paoexclusion.h database_writer.h row_writer.h
+		sepcyclegear.h smartgearbase.h resolvers.h db_entry_defines.h \
+		desolvers.h devicetypes.h ctibase.h ctinexus.h configparms.h \
+		msg_dbchg.h loadmanager.h executor.h ctdpcptrq.h \
+		msg_server_req.h lmmessage.h clientconn.h \
+		ConstraintViolation.h lmfactory.h tbl_paoexclusion.h \
+		database_writer.h row_writer.h
 lmcontrolareatrigger.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
 		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
@@ -459,10 +465,11 @@ lmfactory.obj:	yukon.h precompiled.h types.h ctidbgmem.h lmfactory.h \
 		dsm2err.h words.h optional.h sema.h database_reader.h \
 		row_reader.h boost_time.h msg_cmd.h logger.h thread.h \
 		CtiPCPtrQueue.h resolvers.h pointtypes.h db_entry_defines.h \
-		devicetypes.h lmgroupversacom.h lmgroupemetcon.h \
-		lmgroupexpresscom.h lmgroupmct.h lmgroupripple.h \
-		lmgrouppoint.h lmgroupsa105.h lmgroupsa205.h lmgroupsa305.h \
-		lmgroupsadigital.h lmgroupgolay.h lmgroupmacro.h
+		devicetypes.h lmgroupversacom.h lmgroupdigisep.h \
+		lmgroupemetcon.h lmgroupexpresscom.h lmgroupmct.h \
+		lmgroupripple.h lmgrouppoint.h lmgroupsa105.h lmgroupsa205.h \
+		lmgroupsa305.h lmgroupsadigital.h lmgroupgolay.h \
+		lmgroupmacro.h
 lmgroupbase.obj:	yukon.h precompiled.h types.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h \
 		guard.h utility.h ctitime.h queues.h numstr.h sorted_vector.h \
@@ -482,6 +489,17 @@ lmgroupbase.obj:	yukon.h precompiled.h types.h ctidbgmem.h dbaccess.h \
 		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
 		ctibase.h ctinexus.h resolvers.h db_entry_defines.h \
 		database_writer.h row_writer.h
+lmgroupdigisep.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
+		lmgroupdigisep.h lmgroupbase.h boostutil.h utility.h \
+		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h numstr.h \
+		sorted_vector.h dbmemobject.h observe.h msg_pcrequest.h \
+		message.h collectable.h rwutil.h database_connection.h \
+		dbaccess.h dllbase.h dsm2.h mutex.h guard.h cticonnect.h \
+		netports.h dsm2err.h words.h optional.h sema.h \
+		database_reader.h row_reader.h boost_time.h msg_cmd.h lmid.h \
+		logger.h thread.h CtiPCPtrQueue.h amq_connection.h \
+		critical_section.h activemqcpp.h connection.h \
+		lmsepcontrolmessage.h
 lmgroupemetcon.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
 		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
@@ -765,7 +783,8 @@ lmprogramdirect.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
 		ctibase.h ctinexus.h msg_signal.h msg_notif_lmcontrol.h \
 		lmprogramthermostatgear.h lmprogramcontrolwindow.h \
-		lmconstraint.h lmutility.h database_writer.h row_writer.h
+		lmconstraint.h lmutility.h database_writer.h row_writer.h \
+		smartgearbase.h
 lmprogramdirectgear.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
 		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
@@ -913,6 +932,16 @@ main.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		lmservice.h cservice.h clistener.h precomp.h Monitor.h \
 		CServiceConfig.h rtdb.h hashkey.h hash_functions.h
 precompiled.obj:	yukon.h precompiled.h types.h ctidbgmem.h
+sepcyclegear.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
+		sepcyclegear.h smartgearbase.h lmprogramdirectgear.h \
+		observe.h dlldefs.h utility.h ctitime.h queues.h cticalls.h \
+		os2_2w32.h numstr.h sorted_vector.h row_reader.h \
+		lmgroupbase.h boostutil.h dbmemobject.h msg_pcrequest.h \
+		message.h collectable.h rwutil.h database_connection.h \
+		dbaccess.h dllbase.h dsm2.h mutex.h guard.h cticonnect.h \
+		netports.h dsm2err.h words.h optional.h sema.h \
+		database_reader.h boost_time.h msg_cmd.h logger.h thread.h \
+		CtiPCPtrQueue.h
 test_lmprogram.obj:	yukon.h precompiled.h types.h ctidbgmem.h \
 		lmprogramdirect.h boostutil.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h os2_2w32.h numstr.h sorted_vector.h \

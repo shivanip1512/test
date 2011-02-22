@@ -53,6 +53,7 @@
 #define CTILMDYNAMICCONTROLAREAMSG_ID           637
 #define CTILMDYNAMICLMTRIGGERMSG_ID             638
 #define CTILMCONSTRAINTVIOLATION_ID             639
+#define LMGROUPDIGISEP_ID                       640
 
 
 /*

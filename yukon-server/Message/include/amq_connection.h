@@ -72,7 +72,8 @@ public:
 
     enum Queues
     {
-        Queue_PorterResponses
+        Queue_PorterResponses,
+        Queue_SmartEnergyProfileControl
     };
 };
 

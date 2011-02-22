@@ -130,6 +130,7 @@
 #define TYPE_LMGROUP_POINT                   2010
 #define TYPE_LMGROUP_EXPRESSCOM              2015
 #define TYPE_LMGROUP_XML                     2016
+#define TYPE_LMGROUP_DIGI_SEP                2017
 #define TYPE_LMGROUP_MCT                     2020
 
 #define TYPE_LMGROUP_GOLAY                   2030

@@ -23,6 +23,8 @@
 #include "observe.h"
 #include "row_reader.h"
                 
+class SmartGearBase;
+                
 class CtiLMProgramDirectGear : public RWCollectable
 {
 
@@ -60,6 +62,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     LONG getRampOutInterval() const;
     LONG getRampOutPercent() const;
     const string& getFrontRampOption() const;
+    const string& getBackRampOption() const;
     DOUBLE getKWReduction() const;
         
     CtiLMProgramDirectGear& setProgramPAOId(LONG paoid);
@@ -86,6 +89,10 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     CtiLMProgramDirectGear& setRampOutPercent(LONG outpercent);
     CtiLMProgramDirectGear& setKWReduction(DOUBLE kw);
 
+    // If this class has smart functionality, this call returns a SmartGearBase pointer.
+    // If not, it will return null.
+    virtual SmartGearBase *getSmartGear() { return NULL; }
+
     virtual CtiLMProgramDirectGear* replicate() const;
 
     //Members inherited from RWCollectable
@@ -108,6 +115,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     static const string ThermostatRampingMethod;
     static const string TargetCycleMethod;
     static const string SimpleThermostatRampingMethod;
+    static const string SEPCycleMethod;
     static const string NoControlMethod;
 
     //Possible method stop types
