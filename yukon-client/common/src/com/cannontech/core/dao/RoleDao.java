@@ -1,5 +1,6 @@
 package com.cannontech.core.dao;
 
+import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.core.roleproperties.YukonRole;
@@ -7,7 +8,6 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.google.common.collect.SetMultimap;
 
 public interface RoleDao {
 
@@ -114,12 +114,18 @@ public interface RoleDao {
     public boolean checkGlobalRoleProperty(int rolePropertyID);
     
     /**
-     * This method returns a multimap that contains the groups of a given user and the roles that
-     * are associated with the given groups.  This method should not be used for user validation.
-     * This method will return an empty multimap if the user is not apart of any groups.
+     * This method returns a map that contains the roles and the groups associated with those roles.
+     * This method should not be used for user validation.
+     * This method will return an empty map if the user is not apart of any groups.
      */
-    public SetMultimap<LiteYukonGroup, YukonRole> getGroupsAndRolesForUser(LiteYukonUser user);
+    public Map<YukonRole, LiteYukonGroup> getRolesAndGroupsForUser(LiteYukonUser user);
     
+    /**
+     * This method returns all of the roles for a given user.  This method should not be
+     * used for user validation. This method will return an empty set if the user does not have any YukonRoles.
+     */
+    public Set<YukonRole> getRolesForUser(LiteYukonUser user);
+
     /**
      * This method returns all of the roles for a given login group.  This method should not be
      * used for user validation. This method will return an empty set if the user is not apart of any groups.
