@@ -8,7 +8,6 @@
     <xsd:include schemaLocation="../../common/schemas/Types.xsd" />
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
     <xsd:include schemaLocation="../../common/schemas/Failure.xsd" />
-
     <xsd:include schemaLocation="CancelAllCurrentOverridesRequest.xsd" />
     <xsd:include schemaLocation="CancelAllCurrentOverridesResponse.xsd" />
     <xsd:include schemaLocation="CountOverridesTowardsLimitRequest.xsd" />
@@ -51,6 +50,10 @@
     <xsd:include schemaLocation="TotalOverriddenDevicesTypes.xsd" />
     <xsd:include schemaLocation="ResetOverrideCountBySerialNumberRequest.xsd" />
     <xsd:include schemaLocation="ResetOverrideCountBySerialNumberResponse.xsd" />
-	
-    
+    <xsd:include schemaLocation="OptOutRequest.xsd" />
+    <xsd:include schemaLocation="OptOutResponse.xsd" />
+    <xsd:include schemaLocation="CancelActiveOptOutRequest.xsd" />
+    <xsd:include schemaLocation="CancelActiveOptOutResponse.xsd" />
+    <xsd:include schemaLocation="CancelScheduledOptOutRequest.xsd" />
+    <xsd:include schemaLocation="CancelScheduledOptOutResponse.xsd" />
 </xsd:schema>

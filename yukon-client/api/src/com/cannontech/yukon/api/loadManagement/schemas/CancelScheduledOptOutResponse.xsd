@@ -13,7 +13,7 @@
         </xsd:documentation>
     </xsd:annotation>
     
-    <xsd:complexType name = "CancelOptOutResponse">
+    <xsd:complexType name = "CancelScheduledOptOutResponse">
       <xsd:complexContent>
         <xsd:extension base="yukon:YukonMessage">
           <xsd:choice>
@@ -24,6 +24,6 @@
       </xsd:complexContent>
     </xsd:complexType>
     
-    <xsd:element name = "cancelOptOutResponse" type="yukon:CancelOptOutResponse"/>
+    <xsd:element name = "cancelScheduledOptOutResponse" type="yukon:CancelScheduledOptOutResponse"/>
 
 </xsd:schema>

@@ -15,7 +15,9 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
@@ -57,7 +59,7 @@ public class CancelScheduledOptOutRequestEndpoint {
         CancelOptOutHelper cancelOptOutHelper = template.evaluateAsObject("//y:cancelScheduledOptOutRequest", 
                                                               new NodeToElementMapperWrapper<CancelOptOutHelper>(new CancelOptOutRequestMapper()));
 
-        Element resp = new Element("cancelOptOutResponse", ns);
+        Element resp = new Element("cancelScheduledOptOutResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         Element fe = null;
@@ -67,7 +69,10 @@ public class CancelScheduledOptOutRequestEndpoint {
         
         try {
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
-            customerAccount = customerAccountDao.getByAccountNumber(cancelOptOutHelper.getAccountNumber(), user);
+            LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompanyByUser(user);
+            customerAccount = 
+                customerAccountDao.getByAccountNumberForDescendentsOfEnergyCompany(cancelOptOutHelper.getAccountNumber(), 
+                                                                                   energyCompany);
             lmHardwareBase = lmHardwareBaseDao.getBySerialNumber(cancelOptOutHelper.getSerialNumber());
             
             List<OptOutEventDto> events =

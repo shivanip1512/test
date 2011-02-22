@@ -15,7 +15,9 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
@@ -57,7 +59,7 @@ public class CancelActiveOptOutRequestEndpoint {
         CancelOptOutHelper cancelOptOutHelper = template.evaluateAsObject("//y:cancelActiveOptOutRequest", 
                                                               new NodeToElementMapperWrapper<CancelOptOutHelper>(new CancelOptOutRequestMapper()));
 
-        Element resp = new Element("cancelOptOutResponse", ns);
+        Element resp = new Element("cancelActiveOptOutResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         Element fe = null;
@@ -67,33 +69,36 @@ public class CancelActiveOptOutRequestEndpoint {
         
         try {
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
-            customerAccount = customerAccountDao.getByAccountNumber(cancelOptOutHelper.getAccountNumber(), user);
+            LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompanyByUser(user);
+            customerAccount =
+                customerAccountDao.getByAccountNumberForDescendentsOfEnergyCompany(cancelOptOutHelper.getAccountNumber(),
+                                                                                   energyCompany);
             lmHardwareBase = lmHardwareBaseDao.getBySerialNumber(cancelOptOutHelper.getSerialNumber());
-            boolean isOptedOut = optOutEventDao.isOptedOut(lmHardwareBase.getInventoryId(),
-                                                           customerAccount.getAccountId());
-            if (!isOptedOut){
-                throw new CancelOptOutException("Device " + lmHardwareBase.getManufacturerSerialNumber() +
-                                                " has no active optout");
-            }
             
             List<OptOutEventDto> events =
                 optOutEventDao.getCurrentOptOuts(customerAccount.getAccountId(), lmHardwareBase.getInventoryId());
             
             LinkedList<Integer> eventIdList = new LinkedList<Integer>();
             
-            for (OptOutEventDto event: events) {
-                if (event.getState() == OptOutEventState.START_OPT_OUT_SENT || 
-                    event.getState() == OptOutEventState.RESET_SENT){
+            for (OptOutEventDto event : events) {
+                if (event.getState() == OptOutEventState.START_OPT_OUT_SENT ||
+                    event.getState() == OptOutEventState.RESET_SENT) {
                     eventIdList.add(event.getEventId());
-                    accountEventLogService.optOutCancelAttemptedThroughApi(user, customerAccount.getAccountNumber(), 
+                    accountEventLogService.optOutCancelAttemptedThroughApi(user, customerAccount.getAccountNumber(),
                                                                            lmHardwareBase.getManufacturerSerialNumber(),
                                                                            new Instant(event.getStartDate()),
                                                                            new Instant(event.getStopDate()));
                 }
             }
             
-            optOutService.cancelOptOut(eventIdList, user);
-            resp.addContent(XmlUtils.createStringElement("success", ns, ""));
+            if (eventIdList.isEmpty()) {
+                CancelOptOutException e = new CancelOptOutException("Device " + lmHardwareBase.getManufacturerSerialNumber() +
+                                                                    " has no active optout");
+                fe = XMLFailureGenerator.generateFailure(newOptOutCancelRequest, e, e.getErrorCode(), e.getMessage());
+            } else {
+                optOutService.cancelOptOut(eventIdList, user);
+                resp.addContent(XmlUtils.createStringElement("success", ns, "The opt out was canceled successfully"));
+            }
             
         } catch (NotAuthorizedException e) {
             fe = XMLFailureGenerator.generateFailure(newOptOutCancelRequest, e, "UserNotAuthorized", e.getMessage());
