@@ -2392,7 +2392,8 @@ INT Mct470Device::executePutConfig( CtiRequestMsg         *pReq,
                 unsigned long master     = parse.getiValue("ied dnp master address");
                 unsigned long outstation = parse.getiValue("ied dnp outstation address");
 
-                if( master > 0xffff )
+                if( master == 0 ||
+                    master >  0xffff )
                 {
                     errRet->setResultString("Invalid master DNP address (" + CtiNumStr(master) + ")");
                     nRet = BADPARAM;
@@ -2401,7 +2402,8 @@ INT Mct470Device::executePutConfig( CtiRequestMsg         *pReq,
                     retList.push_back(errRet);
                     errRet = 0;
                 }
-                else if( outstation > 0xffff )
+                else if( outstation == 0 ||
+                         outstation >  0xffff )
                 {
                     errRet->setResultString("Invalid outstation DNP address (" + CtiNumStr(master) + ")");
                     nRet = BADPARAM;
