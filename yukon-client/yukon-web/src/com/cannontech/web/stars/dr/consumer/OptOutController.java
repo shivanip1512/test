@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.survey.dao.SurveyDao;
@@ -52,8 +54,8 @@ import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.model.OptOutBackingBean;
-import com.cannontech.web.stars.dr.operator.model.SurveyResultValidator;
 import com.cannontech.web.stars.dr.operator.model.OptOutBackingBean.SurveyResult;
+import com.cannontech.web.stars.dr.operator.model.SurveyResultValidator;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -117,12 +119,12 @@ public class OptOutController extends AbstractConsumerController {
 				allOptedOut = false;
 			}
     	    
-    	    //Checks if the device can receive an OptOut command from the user. If the device is not
-    	    //currently opted out and/or has no OptOut scheduled, the flag is set to true
-    	    if(optOutCountHolder.isOptOutsRemaining() &&
-    	       (!inventory.isCurrentlyOptedOut() || optOutCountHolder.getScheduledOptOuts()==0)) {
-    	        optOutsAvailable = true;
-    	    }
+            // Checks if the device can receive an OptOut command from the user. If the device is
+            // not currently opted out and/or has no OptOut scheduled, the flag is set to true
+            if (optOutCountHolder.isOptOutsRemaining() &&
+                (!inventory.isCurrentlyOptedOut() || optOutCountHolder.getScheduledOptOuts() == 0)) {
+                optOutsAvailable = true;
+            }
     	}
     	model.addAttribute("displayableInventories", displayableInventories);
         model.addAttribute("optOutCounts", optOutCounts);
@@ -173,16 +175,16 @@ public class OptOutController extends AbstractConsumerController {
             OptOutCountHolder optOutCountHolder = optOutCounts.get(inventory.getInventoryId());
             
             // Check if device can't be opted out on one specific day provided by the user.
-            if(!optOutCountHolder.isOptOutsRemaining() ||
-               (isSameDay && inventory.isCurrentlyOptedOut()) ||
-               (!isSameDay && inventory.getCurrentlyScheduledOptOut()!= null)) { 
+            if (!optOutCountHolder.isOptOutsRemaining() ||
+                (isSameDay && inventory.isCurrentlyOptedOut()) ||
+                (!isSameDay && inventory.getCurrentlyScheduledOptOut() != null)) {
                 noOptOutsAvailableLookup.put(inventory, true);
             } else {
                 noOptOutsAvailableLookup.put(inventory, false);
                 optOutableInventories.add(inventory);
             }
         }
-        
+
         model.addAttribute("noOptOutsAvailableLookup", noOptOutsAvailableLookup);
         boolean hasDeviceSelection =
             rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_OPT_OUT_DEVICE_SELECTION, user);
