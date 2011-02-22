@@ -136,7 +136,7 @@
     <!-- substation to route mapping.jsp -->
     <entry key="yukon.web.modules.adminSetup.substationToRouteMapping.pageName">Substation To Route Mapping</entry>
     <entry key="yukon.web.modules.adminSetup.substationToRouteMapping.pageDescription">{0}</entry>
-    <entry key="yukon.web.menu.config.adminSetup.substationToRouteMapping">Substation To Route Mapping</entry>
+    <entry key="yukon.web.menu.config.adminSetup.substationToRouteMapping">Substations</entry>
     <entry key="yukon.web.menu.config.adminSetup.substationToRouteMapping.home"></entry>
     
     
