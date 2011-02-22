@@ -124,8 +124,12 @@
     <entry key="yukon.web.modules.adminSetup.lists.VIEW.pageName">Lists</entry>
     <entry key="yukon.web.modules.adminSetup.lists.VIEW.pageDescription">{0}</entry>
 
+    <!-- Schedule Pages -->
     <entry key="yukon.web.modules.adminSetup.schedules.VIEW.pageName">Schedules</entry>
     <entry key="yukon.web.modules.adminSetup.schedules.VIEW.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.schedules.EDIT.pageName">Default Thermostat Setting for {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.schedules.EDIT.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.schedules.scheduleSaved">Schedule Saved Successfully</entry>
 
     <entry key="yukon.web.modules.adminSetup.settlement.VIEW.pageName">Settlement</entry>
     <entry key="yukon.web.modules.adminSetup.settlement.VIEW.pageDescription">{0}</entry>

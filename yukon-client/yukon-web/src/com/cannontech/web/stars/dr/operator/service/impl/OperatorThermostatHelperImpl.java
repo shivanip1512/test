@@ -80,17 +80,17 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 
             for (AccountThermostatScheduleEntry atsEntry : atsEntryList) {
             	
-            	int time = atsEntry.getStartTimeMinutes();
-                int coolTemp = atsEntry.getCoolTemp();
-                int heatTemp = atsEntry.getHeatTemp();
+            	Integer time = atsEntry.getStartTimeMinutes();
+            	Integer coolTemp = atsEntry.getCoolTemp();
+            	Integer heatTemp = atsEntry.getHeatTemp();
 
                 JSONObject timeTemp = new JSONObject();
                 timeTemp.put("time", time);
                 
                 String tempUnit = (isFahrenheit) ? CtiUtilities.FAHRENHEIT_CHARACTER : CtiUtilities.CELSIUS_CHARACTER;
                 
-                coolTemp = (int)CtiUtilities.convertTemperature(coolTemp, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
-                heatTemp = (int)CtiUtilities.convertTemperature(heatTemp, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
+                coolTemp = (Integer)CtiUtilities.convertTemperature(coolTemp, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
+                heatTemp = (Integer)CtiUtilities.convertTemperature(heatTemp, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
                 
                 timeTemp.put("coolTemp", coolTemp);
                 timeTemp.put("heatTemp", heatTemp);
@@ -112,6 +112,8 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 		JSONObject scheduleObject = new JSONObject(jsonString);
         JSONObject seasonObject = scheduleObject.getJSONObject("season");
 
+        AccountThermostatSchedule accountThermostatSchedule = accountThermostatScheduleDao.getById(accountThermostatScheduleId);
+
         List<AccountThermostatScheduleEntry> atsEntries = Lists.newArrayList();
 
         Set<TimeOfWeek> associatedTimeOfWeeks = mode.getAssociatedTimeOfWeeks();
@@ -127,9 +129,21 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
         		continue; // this time of week doesn't exist - continue to the next
         	}
 
-            for (Object object : timeOfWeekArray.toArray()) {
+        	List timeOfWeekList = Lists.newArrayList(timeOfWeekArray.toArray());
+            for (int i = 0; i < timeOfWeekList.size(); i++) {
             	
-                JSONObject jsonObject = (JSONObject) object;
+                if(accountThermostatSchedule.getThermostatType().getPeriodStyle() == ThermostatSchedulePeriodStyle.TWO_TIMES &&
+                   i < 2) {
+                   
+                    AccountThermostatScheduleEntry entry = new AccountThermostatScheduleEntry();
+                    entry.setAccountThermostatScheduleId(accountThermostatScheduleId);
+                    entry.setTimeOfWeek(timeOfWeek);
+                    atsEntries.add(entry);
+                    continue;
+                    
+                }
+
+                JSONObject jsonObject = (JSONObject) timeOfWeekList.get(i);
 
                 int timeMinutes = jsonObject.getInt("time");
                 int coolTemp = jsonObject.getInt("coolTemp");

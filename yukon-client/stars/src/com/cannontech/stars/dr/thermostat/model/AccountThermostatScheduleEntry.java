@@ -9,10 +9,10 @@ public class AccountThermostatScheduleEntry {
 
 	private int accountThermostatScheduleEntryId = 0;
 	private int accountThermostatScheduleId;
-	private int startTime;            //in seconds
+	private Integer startTime;            //in seconds
 	private TimeOfWeek timeOfWeek;
-	private int	coolTemp;
-	private int	heatTemp;
+	private Integer	coolTemp;
+	private Integer	heatTemp;
 	
 	public AccountThermostatScheduleEntry() {
 	}
@@ -76,8 +76,11 @@ public class AccountThermostatScheduleEntry {
         return LocalTime.fromMillisOfDay(startTime*1000);
 	}
 	
-	public int getStartTimeMinutes() {
-		return startTime / 60;
+	public Integer getStartTimeMinutes() {
+	    if (startTime == null) {
+	        return null;
+	    }
+	    return startTime / 60;
 	}
 
 	public boolean isEqualStartTimeAndTemps(AccountThermostatScheduleEntry other) {

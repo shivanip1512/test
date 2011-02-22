@@ -1105,8 +1105,15 @@
                             </page>
                             <page name="schedules.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
-                                <link>/spring/adminSetup/energyCompany/schedules</link>
+                                <link>/spring/adminSetup/energyCompany/schedules/view?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
+                                <pages>
+                                    <page name="schedules.EDIT" type="DETAIL">
+                                        <menu>energyCompanySetup|home</menu>
+                                        <link>/spring/adminSetup/energyCompany/schedules/edit?ecId=${ecId}&amp;type=${type}</link>
+                                        <labelArgument>${typeStr}</labelArgument>
+                                    </page>
+                                </pages>
                             </page>
                             <page name="settlement.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
