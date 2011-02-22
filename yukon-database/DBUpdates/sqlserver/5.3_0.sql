@@ -173,7 +173,7 @@ DROP TABLE CustomerFAQ;
 
 /* Start YUK-9015 */
 DELETE FROM YukonServices
-WHERE ServiceId = -4;
+WHERE ABS(ServiceId) = 4;
 /* End YUK-9015 */
 
 /* Start YUK-9482 */
