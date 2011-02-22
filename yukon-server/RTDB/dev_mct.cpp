@@ -807,6 +807,7 @@ INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
         case EmetconProtocol::PutConfig_ChannelSetup:
         case EmetconProtocol::PutConfig_IEDClass:
         case EmetconProtocol::PutConfig_IEDScan:
+        case EmetconProtocol::PutConfig_IEDDNPAddress:
         case EmetconProtocol::PutConfig_GroupAddress_Bronze:
         case EmetconProtocol::PutConfig_GroupAddress_GoldSilver:
         case EmetconProtocol::PutConfig_GroupAddress_Lead:

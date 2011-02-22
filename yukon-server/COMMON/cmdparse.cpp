@@ -1612,6 +1612,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
     static const boost::regex    re_meter_parameters("(centron|meter) (ratio|parameters)");
     static const boost::regex    re_tou_schedule("tou schedule [0-9]");
     static const boost::regex    re_dnp( CtiString("dnp ") +  str_num);
+    static const boost::regex    re_dnp_address("dnp address");
 
     int roleNum, channel;
     CtiTokenizer   tok(CmdStr);
@@ -1783,6 +1784,10 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
                     {
                         _cmd["start address"] = atoi(temp2.data());
                     }
+                }
+                if(!(token = CmdStr.match(re_dnp_address)).empty())
+                {
+                    _cmd["ied dnp address"] = true;
                 }
             }
         }
@@ -2240,6 +2245,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     static const boost::regex  re_ied_class("ied class [0-9]+ [0-9]+");
     static const boost::regex  re_ied_scan ("ied scan [0-9]+ [0-9]+");
     static const boost::regex  re_ied_config ("ied configure( +[a-zA-Z0-9]+)+");
+    static const boost::regex  re_ied_dnp_address (CtiString("ied dnp address master ") + str_anynum + CtiString(" outstation ") + str_anynum);
     static const boost::regex  re_ied_mask (CtiString(" alarmmask " )+ str_anynum + CtiString(" ") + str_anynum);
     static const boost::regex  re_group_address("group (enable|disable)");
     static const boost::regex  re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
@@ -2316,6 +2322,19 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 {
                     _cmd["dstenabled"] = CtiParseValue(false);
                 }
+            }
+            if(!(token = CmdStr.match(re_ied_dnp_address)).empty())
+            {
+                CtiTokenizer cmdtok(token);
+                cmdtok();  //  go past "ied"
+                cmdtok();  //  go past "dnp"
+                cmdtok();  //  go past "address"
+
+                cmdtok();  //  go past "master"
+                _cmd["ied dnp master address"]     = strtol(cmdtok().c_str(), &p, 0);  //  0 allows both decimal and hex (if prefixed with 0x)
+
+                cmdtok();  //  go past "outstation"
+                _cmd["ied dnp outstation address"] = strtol(cmdtok().c_str(), &p, 0);  //  0 allows both decimal and hex (if prefixed with 0x)
             }
         }
         if(CmdStr.contains(" onoffpeak"))

@@ -118,6 +118,7 @@ public:
         GetConfig_IEDPassword,
         GetConfig_IEDTime,
         GetConfig_IEDDNP,
+        GetConfig_IEDDNPAddress,
         GetConfig_Role,  //  only for repeaters
         GetConfig_Raw,
         GetConfig_Intervals,
@@ -188,6 +189,7 @@ public:
         PutConfig_PhaseDetectClear,
         PutConfig_AlarmMask,
         PutConfig_Parameters,
+        PutConfig_IEDDNPAddress,
 
         PutConfig_ARMC,
         PutConfig_ARML,

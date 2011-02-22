@@ -137,6 +137,8 @@ Mct470Device::CommandSet Mct470Device::initCommandStore( )
     cs.insert(CommandStore(EmetconProtocol::GetStatus_IEDDNP,           EmetconProtocol::IO_Function_Read,  FuncRead_IED_Precanned_Last,  13));
     cs.insert(CommandStore(EmetconProtocol::GetConfig_IEDTime,          EmetconProtocol::IO_Function_Read,  FuncRead_IED_TOU_MeterStatus, 13));  //  magic number
     cs.insert(CommandStore(EmetconProtocol::GetConfig_IEDDNP,           EmetconProtocol::IO_Function_Read,  FuncRead_IED_DNPTablePos,     FuncRead_IED_DNPTableLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_IEDDNPAddress,    EmetconProtocol::IO_Read,           Memory_IedDnpAddressPos,      Memory_IedDnpAddressLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_IEDDNPAddress,    EmetconProtocol::IO_Write,          Memory_IedDnpAddressPos,      Memory_IedDnpAddressLen));
     cs.insert(CommandStore(EmetconProtocol::PutValue_IEDReset,          EmetconProtocol::IO_Function_Write, FuncWrite_IEDCommand,         FuncWrite_IEDCommandLen));
     cs.insert(CommandStore(EmetconProtocol::PutStatus_FreezeOne,        EmetconProtocol::IO_Write,          Command_FreezeOne,             0));
     cs.insert(CommandStore(EmetconProtocol::PutStatus_FreezeTwo,        EmetconProtocol::IO_Write,          Command_FreezeTwo,             0));
@@ -1327,6 +1329,8 @@ INT Mct470Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 
         case EmetconProtocol::GetStatus_IEDDNP:         status = decodeGetStatusDNP(InMessage, TimeNow, vgList, retList, outList);          break;
 
+        case EmetconProtocol::GetConfig_IEDDNPAddress:  status = decodeGetConfigIedDnpAddress(InMessage, TimeNow, vgList, retList, outList);    break;
+
         case EmetconProtocol::GetStatus_LoadProfile:    status = decodeGetStatusLoadProfile(InMessage, TimeNow, vgList, retList, outList);  break;
 
         case EmetconProtocol::GetConfig_Intervals:      status = decodeGetConfigIntervals(InMessage, TimeNow, vgList, retList, outList);    break;
@@ -2087,30 +2091,38 @@ INT Mct470Device::executeGetConfig( CtiRequestMsg         *pReq,
         }
         else if( parse.isKeyValid("dnp") )
         {
-            if( parse.isKeyValid("start address") )
+            if( parse.isKeyValid("ied dnp address") )
             {
-                function = EmetconProtocol::PutConfig_Raw;
-                OutMessage->Buffer.BSt.Function = FuncWrite_DNPReqTable;
-                OutMessage->Buffer.BSt.Length = 1;
-                OutMessage->Buffer.BSt.IO = EmetconProtocol::IO_Function_Write;
-                OutMessage->Buffer.BSt.Message[0] = parse.getiValue("start address");
-                OutMessage->DeviceID  = getID();
-                OutMessage->TargetID  = getID();
-                OutMessage->Port      = getPortID();
-                OutMessage->Remote    = getAddress();
-                OutMessage->TimeOut   = 2;
-                OutMessage->Sequence  = function;         // Helps us figure it out later!
-                OutMessage->Retry     = 2;
-                OutMessage->Request.RouteID   = getRouteID();
+                function = EmetconProtocol::GetConfig_IEDDNPAddress;
+                found = getOperation(function, OutMessage->Buffer.BSt);
+            }
+            else
+            {
+                if( parse.isKeyValid("start address") )
+                {
+                    function = EmetconProtocol::PutConfig_Raw;
+                    OutMessage->Buffer.BSt.Function = FuncWrite_DNPReqTable;
+                    OutMessage->Buffer.BSt.Length = 1;
+                    OutMessage->Buffer.BSt.IO = EmetconProtocol::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0] = parse.getiValue("start address");
+                    OutMessage->DeviceID  = getID();
+                    OutMessage->TargetID  = getID();
+                    OutMessage->Port      = getPortID();
+                    OutMessage->Remote    = getAddress();
+                    OutMessage->TimeOut   = 2;
+                    OutMessage->Sequence  = function;         // Helps us figure it out later!
+                    OutMessage->Retry     = 2;
+                    OutMessage->Request.RouteID   = getRouteID();
 
-                strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
-                outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                    strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                }
+
+                function = EmetconProtocol::GetConfig_IEDDNP;
+                found = getOperation(function, OutMessage->Buffer.BSt);
                 incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
             }
-
-            function = EmetconProtocol::GetConfig_IEDDNP;
-            found = getOperation(function, OutMessage->Buffer.BSt);
-            incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
         }
     }
     else
@@ -2371,28 +2383,67 @@ INT Mct470Device::executePutConfig( CtiRequestMsg         *pReq,
     }
     else if( parse.isKeyValid("ied") )
     {
-        IED_Types iedType = IED_Type_None;
-        string tempVal = parse.getsValue("iedtype");
-
-        if( tempVal.length() != 0 )
+        if( parse.isKeyValid("ied dnp master address") )
         {
-            found = true;
-            iedType = resolveIEDType(tempVal);
+            function = EmetconProtocol::PutConfig_IEDDNPAddress;
 
-            char multipleMeters = parse.getiValue("hasmultiplemeters", 0);
-            char dstEnabled = parse.getiValue("dstenabled", 1);
+            if( found = getOperation(function, OutMessage->Buffer.BSt) )
+            {
+                unsigned long master     = parse.getiValue("ied dnp master address");
+                unsigned long outstation = parse.getiValue("ied dnp outstation address");
 
-            char configuration = (iedType << 4) | (multipleMeters << 2) | dstEnabled;
+                if( master > 0xffff )
+                {
+                    errRet->setResultString("Invalid master DNP address (" + CtiNumStr(master) + ")");
+                    nRet = BADPARAM;
+                    found = false;
 
-            int event1Mask = parse.getiValue("eventmask1",  0xFF);
-            int event2Mask = parse.getiValue("eventmask2",  0xFF);
+                    retList.push_back(errRet);
+                    errRet = 0;
+                }
+                else if( outstation > 0xffff )
+                {
+                    errRet->setResultString("Invalid outstation DNP address (" + CtiNumStr(master) + ")");
+                    nRet = BADPARAM;
+                    found = false;
 
-            OutMessage->Buffer.BSt.Message[0] = (configuration);
-            OutMessage->Buffer.BSt.Message[1] = (event1Mask);
-            OutMessage->Buffer.BSt.Message[2] = (event2Mask);
+                    retList.push_back(errRet);
+                    errRet = 0;
+                }
+                else
+                {
+                    OutMessage->Buffer.BSt.Message[0] = master >> 8;
+                    OutMessage->Buffer.BSt.Message[1] = master;
+                    OutMessage->Buffer.BSt.Message[2] = outstation >> 8;
+                    OutMessage->Buffer.BSt.Message[3] = outstation;
+                }
+            }
+        }
+        else
+        {
+            IED_Types iedType = IED_Type_None;
+            string tempVal = parse.getsValue("iedtype");
 
-            function = EmetconProtocol::PutConfig_Options;
-            getOperation(function, OutMessage->Buffer.BSt);
+            if( tempVal.length() != 0 )
+            {
+                found = true;
+                iedType = resolveIEDType(tempVal);
+
+                char multipleMeters = parse.getiValue("hasmultiplemeters", 0);
+                char dstEnabled = parse.getiValue("dstenabled", 1);
+
+                char configuration = (iedType << 4) | (multipleMeters << 2) | dstEnabled;
+
+                int event1Mask = parse.getiValue("eventmask1",  0xFF);
+                int event2Mask = parse.getiValue("eventmask2",  0xFF);
+
+                OutMessage->Buffer.BSt.Message[0] = (configuration);
+                OutMessage->Buffer.BSt.Message[1] = (event1Mask);
+                OutMessage->Buffer.BSt.Message[2] = (event2Mask);
+
+                function = EmetconProtocol::PutConfig_Options;
+                getOperation(function, OutMessage->Buffer.BSt);
+            }
         }
     }
     else
@@ -5023,6 +5074,40 @@ INT Mct470Device::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNow, 
 
             return MEMORY;
         }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString(resultString);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+
+INT Mct470Device::decodeGetConfigIedDnpAddress(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+        string resultString;
+
+        unsigned long master     = DSt->Message[0] << 8 | DSt->Message[1];
+        unsigned long outstation = DSt->Message[2] << 8 | DSt->Message[3];
+
+        resultString += getName() + " / IED DNP addresses:\n";
+
+        resultString += getName() + " / IED DNP master address: " + CtiNumStr(master) + " (" + CtiNumStr(master).xhex(4) + ")\n";
+        resultString += getName() + " / IED DNP outstation address: " + CtiNumStr(outstation) + " (" + CtiNumStr(outstation).xhex(4) + ")\n";
+
+        ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
         ReturnMsg->setResultString(resultString);
