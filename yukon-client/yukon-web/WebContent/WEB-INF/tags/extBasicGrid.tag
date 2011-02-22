@@ -26,7 +26,7 @@
 </c:if>
 
 <script type="text/javascript">
-    Ext.onReady(function(){
+Event.observe(window, 'load', function() {
     
         var gridMaker = new ExtGridMaker();
         var grid = gridMaker.getBasicGrid(${height}, ${width}, ${cti:jsonString(columnInfo)}, '${cti:escapeJavaScript(dataUrl)}', ${pageScope.showLoadMask}, ${pageScope.refreshRate});

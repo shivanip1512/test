@@ -6,16 +6,12 @@
 <%@ attribute name="id" required="true" type="java.lang.String" description="Used to give the variable unique names so that multiple tags can be used on a single page without conflicting"%>
 <%@ attribute name="state" required="true" type="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState" description="Used to configure the controls to a certain state. Pass a new CronExpressionTagState to configure to default state."%>
 
-<cti:includeScript link="/JavaScript/extjs/ext-base.js"/>
-<cti:includeScript link="/JavaScript/extjs/ext-all.js"/>
-
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
 
 <script type="text/javascript">
 
-	Ext.onReady(function(){
-
+    Event.observe(window, 'load', function() {
 		${id}_cronExpFreqChange($('${id}_cronExpFreq'));
 	});
 

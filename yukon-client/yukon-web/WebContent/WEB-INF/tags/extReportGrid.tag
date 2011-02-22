@@ -31,7 +31,7 @@
 
 <script type="text/javascript">
     
-    Ext.onReady(function(){
+Event.observe(window, 'load', function() {
     
         var gridMaker = new ExtGridMaker();
         var grid = gridMaker.getReportGrid('${title}', ${height}, ${width}, ${cti:jsonString(columnInfo)}, '${cti:escapeJavaScript(dataUrl)}', '${cti:escapeJavaScript(csvUrl)}', '${cti:escapeJavaScript(pdfUrl)}', ${pageScope.showLoadMask}, ${pageScope.refreshRate});

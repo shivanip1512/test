@@ -65,7 +65,7 @@
     
     <script type="text/javascript">
 
-	    Ext.onReady(function(){
+    Event.observe(window, 'load', function() {
 	    	toggleReadFrequencyOptions();
 		});
 	

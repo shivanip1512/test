@@ -12,7 +12,7 @@
 <cti:includeScript link="/JavaScript/ctiExtEditorGrid.js"/>
 
 <script type="text/javascript">
-    Ext.onReady(function(){
+Event.observe(window, 'load', function() {
        initializeGrid('gridDiv', ${cti:jsonString(metaObject)}, '${cti:escapeJavaScript(dataUrl)}', '${cti:escapeJavaScript(editUrl)}');
     });
 </script>
