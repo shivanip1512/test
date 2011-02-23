@@ -3,7 +3,6 @@ package com.cannontech.stars.dr.thermostat.dao.impl;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,7 +151,7 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
             }
             retVal.setEventId(rs.getInt("eventId"));
             retVal.setUserName(rs.getString("userName"));
-            retVal.setEventTime(new DateTime(rs.getDate("eventTime")).toInstant());
+            retVal.setEventTime(rs.getInstant("eventTime"));
             retVal.setThermostatId(rs.getInt("thermostatId"));
             return retVal;
         }
