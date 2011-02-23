@@ -7,7 +7,7 @@ package com.cannontech.database.data.device.lm;
 public class LMProgramDirectGroup extends LMGroup 
 {
 	private com.cannontech.database.db.device.lm.LMProgramDirectGroup lmProgramDirectGroup = null;
-	private java.util.Vector lmProgramDirectVector = null;
+
 /**
  * LMGroupEmetcon constructor comment.
  */
@@ -40,18 +40,7 @@ public com.cannontech.database.db.device.lm.LMProgramDirectGroup getLmProgramDir
 		
 	return lmProgramDirectGroup;
 }
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 4:39:58 PM)
- * @return java.util.Vector
- */
-public java.util.Vector getLmProgramDirectVector() 
-{
-	if( lmProgramDirectVector == null )
-		lmProgramDirectVector = new java.util.Vector(10);
-	
-	return lmProgramDirectVector;
-}
+
 /**
  * retrieve method comment.
  */
@@ -59,21 +48,6 @@ public void retrieve() throws java.sql.SQLException
 {
 	super.retrieve();
 	getLmProgramDirectGroup().retrieve();
-
-	/*try
-	{
-		com.cannontech.database.db.notification.NotificationDestination rArray[] = com.cannontech.database.db.notification.NotificationDestination.getNotificationDestinations( getNotificationGroup().getNotificationGroupID() );
-
-		for( int i = 0; i < rArray.length; i++ )
-		{
-			rArray[i].setDbConnection(getDbConnection());
-			destinationVector.addElement( rArray[i] );
-		}
-	}
-	catch(java.sql.SQLException e )
-	{
-		//not necessarily an error
-	}*/
 
 }
 /**
@@ -102,14 +76,6 @@ public void setDeviceID(Integer deviceID) {
  */
 public void setLmProgramDirectGroup(com.cannontech.database.db.device.lm.LMProgramDirectGroup newLmProgramDirectGroup) {
 	lmProgramDirectGroup = newLmProgramDirectGroup;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 4:39:58 PM)
- * @param newLmProgramDirectVector java.util.Vector
- */
-public void setLmProgramDirectVector(java.util.Vector newLmProgramDirectVector) {
-	lmProgramDirectVector = newLmProgramDirectVector;
 }
 /**
  * update method comment.

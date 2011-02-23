@@ -1,20 +1,15 @@
 package com.cannontech.database.db.device.lm;
 
+import java.sql.SQLException;
 import java.sql.Statement;
 
+import java.util.Vector;
+
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.data.device.lm.LatchingGear;
-import com.cannontech.database.data.device.lm.MasterCycleGear;
-import com.cannontech.database.data.device.lm.NoControlGear;
-import com.cannontech.database.data.device.lm.MagnitudeCycleGear;
-import com.cannontech.database.data.device.lm.RotationGear;
 import com.cannontech.database.data.device.lm.SimpleThermostatRampingGear;
-import com.cannontech.database.data.device.lm.SmartCycleGear;
-import com.cannontech.database.data.device.lm.TargetCycleGear;
 import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
-import com.cannontech.database.data.device.lm.TimeRefreshGear;
-import com.cannontech.database.data.device.lm.TrueCycleGear;
 import com.cannontech.database.db.NestedDBPersistent;
 
 /**
@@ -100,7 +95,7 @@ public abstract class LMProgramDirectGear
 	/**
 	 * add method comment.
 	 */
-	public void add() throws java.sql.SQLException
+	public void add() throws SQLException
 	{
 		if (getGearID() == null)
 			setGearID( new Integer(getNextGearID(getDbConnection())) );
@@ -124,7 +119,7 @@ public abstract class LMProgramDirectGear
 	/**
 	 * delete method comment.
 	 */
-	public void delete() throws java.sql.SQLException
+	public void delete() throws SQLException
 	{
 		delete(TABLE_NAME, "GearID", getGearID());
 	}
@@ -136,7 +131,6 @@ public abstract class LMProgramDirectGear
 	public static final void deleteAllDirectGears(
 		Integer deviceID,
 		java.sql.Connection conn)
-		throws java.sql.SQLException
 	{
 		String tGear = "DELETE FROM " + LMThermostatGear.TABLE_NAME +
 							" where gearid in (select gearid from " + TABLE_NAME + 
@@ -149,26 +143,19 @@ public abstract class LMProgramDirectGear
 
 		Statement stmt = null;
 
-		try
-		{
+		try {
 			stmt = conn.createStatement();
 			stmt.execute( tGear );
 			stmt.execute( dGear );
 		}
-		catch (java.sql.SQLException e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		finally
-		{
-			try
-			{
+		catch (SQLException e) {
+			CTILogger.error( e.getMessage(), e );
+		} finally {
+			try {
 				if (stmt != null)
 					stmt.close();
-			}
-			catch (java.sql.SQLException e2)
-			{
-				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
+			} catch (SQLException e2) {
+				CTILogger.error( e2.getMessage(), e2 ); //something is up
 			}
 		}
 
@@ -179,10 +166,9 @@ public abstract class LMProgramDirectGear
 	 * @return LMProgramDirectGear[]
 	 * @param stateGroup java.lang.Integer
 	 */
-	public static final java.util.Vector getAllDirectGears( Integer deviceID, java.sql.Connection conn)
-		throws java.sql.SQLException
+	public static final Vector<LMProgramDirectGear> getAllDirectGears( Integer deviceID, java.sql.Connection conn)
 	{
-		java.util.Vector gearList = new java.util.Vector();
+		Vector<LMProgramDirectGear> gearList = new Vector<LMProgramDirectGear>();
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
 
@@ -254,27 +240,23 @@ public abstract class LMProgramDirectGear
 				gearList.add(gear);
 			}
 
-		}
-		catch (java.sql.SQLException e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		finally
-		{
+		} catch (SQLException e) {
+			CTILogger.error( e.getMessage(), e );
+		} finally {
 			SqlUtils.close(rset, pstmt);
 		}
 
 		return gearList;
 	}
 	
-public static final java.util.Vector getTheGearIDs(
+public static final Vector<Integer> getTheGearIDs(
 		Integer deviceID,
 		java.sql.Connection conn)
-		throws java.sql.SQLException
+		throws SQLException
 {
 		String sql = "SELECT GearID FROM " + TABLE_NAME + " WHERE deviceID=" + deviceID;
 
-	java.util.Vector someIDs = new java.util.Vector();
+	Vector<Integer> someIDs = new Vector<Integer>();
 		
 	if (conn == null)
 		throw new IllegalArgumentException("Received a (null) database connection");
@@ -284,9 +266,6 @@ public static final java.util.Vector getTheGearIDs(
 
 	try
    	{
-       	if (conn == null)
-           	throw new IllegalArgumentException("Received a (null) database connection");
-
        	pstmt = conn.prepareStatement(sql.toString());
 
        	rset = pstmt.executeQuery();
@@ -297,21 +276,17 @@ public static final java.util.Vector getTheGearIDs(
        	}
 		return someIDs;
         
-   	}
-   	catch (java.sql.SQLException e)
-   	{
+   	} catch (SQLException e) {
        	e.printStackTrace();
-   	}
-   	finally
-   	{
+   	} finally {
    		SqlUtils.close(rset, pstmt);
    	}
  
-    throw new java.sql.SQLException("Unable to retrieve the gearIDs where deviceID = " + deviceID);
+    throw new SQLException("Unable to retrieve the gearIDs where deviceID = " + deviceID);
 }
 
 public static final Integer getDefaultGearID(Integer programID, java.sql.Connection conn)
-		throws java.sql.SQLException
+		throws SQLException
 {
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
@@ -331,19 +306,14 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 		 {
 			return new Integer(rset.getInt(1));
 		 }
-		
-        
 	}
-	catch (java.sql.SQLException e)
-	{
+	catch (SQLException e) {
 		e.printStackTrace();
-	}
-	finally
-	{
+	} finally {
 		SqlUtils.close(rset, pstmt);
 	}
  
-	throw new java.sql.SQLException("Unable to retrieve a gearid for the program with id " + programID);
+	throw new SQLException("Unable to retrieve a gearid for the program with id " + programID);
 }
 	/**
 	 * Insert the method's description here.
@@ -544,12 +514,12 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
     
     public java.lang.Integer getBackRampTime()
     {
-        return frontRampTime;
+        return backRampTime;
     }
 	/**
 	 * retrieve method comment.
 	 */
-	public void retrieve() throws java.sql.SQLException
+	public void retrieve() throws SQLException
 	{
 		Object constraintValues[] = { getGearID() };
 		Object results[] = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
@@ -792,7 +762,7 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 	/**
 	 * update method comment.
 	 */
-	public void update() throws java.sql.SQLException
+	public void update() throws SQLException
 	{
 		Object setValues[] =
 		{ 
@@ -841,7 +811,7 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
     * @return LMProgramDirectGear[]
     * @param stateGroup java.lang.Integer
     */
-   public static final int getNextGearID( java.sql.Connection conn ) throws java.sql.SQLException
+   public static final int getNextGearID( java.sql.Connection conn ) throws SQLException
    {
       java.sql.PreparedStatement pstmt = null;
       java.sql.ResultSet rset = null;
@@ -862,17 +832,13 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
             return rset.getInt(1);
          }
 
-      }
-      catch (java.sql.SQLException e)
-      {
-         com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-      }
-      finally
-      {
+      } catch (SQLException e) {
+    	  CTILogger.error( e.getMessage(), e );
+      } finally {
     	  SqlUtils.close(rset, pstmt);
       }
 
-      throw new java.sql.SQLException("Unable to retrieve the next GearID");
+      throw new SQLException("Unable to retrieve the next GearID");
    }
    
 public Double getKWReduction() {

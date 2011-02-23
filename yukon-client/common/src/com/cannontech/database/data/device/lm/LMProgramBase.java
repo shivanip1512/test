@@ -5,8 +5,11 @@ package com.cannontech.database.data.device.lm;
  * Creation date: (12/6/00 3:54:11 PM)
  * @author: 
  */
+import java.util.Vector;
+
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.db.device.lm.DeviceListItem;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.cannontech.database.db.device.lm.LMProgramControlWindow;
@@ -16,11 +19,11 @@ public abstract class LMProgramBase extends com.cannontech.database.data.pao.Yuk
 	com.cannontech.database.db.device.lm.LMProgram program = null;
 
 	// should only contain LMProgramControlWindow objects
-	private java.util.Vector lmProgramControlWindowVector = null;
+	private Vector<LMProgramControlWindow> lmProgramControlWindowVector = null;
 
 	//used to store a list of data for each program. 
 	// This should only contain DBPersistant items that implement DeviceListItem !!!!
-	private java.util.Vector lmProgramStorageVector = null;
+	private Vector<DeviceListItem> lmProgramStorageVector = null;
 
 	public static final String OPSTATE_AUTOMATIC = "Automatic";
 	public static final String OPSTATE_MANUALONLY = "ManualOnly";
@@ -44,8 +47,9 @@ public void add() throws java.sql.SQLException
     super.add();
 	getProgram().add();
 
-	for( int i = 0; i < getLmProgramControlWindowVector().size(); i++ )
-		((LMProgramControlWindow)getLmProgramControlWindowVector().elementAt(i)).add();
+	for (LMProgramControlWindow lmProgramControlWindow : getLmProgramControlWindowVector()) {
+		lmProgramControlWindow.add();
+	}
 }
 /**
  * This method was created in VisualAge.
@@ -69,10 +73,10 @@ public void delete() throws java.sql.SQLException
  * Creation date: (3/16/2001 12:14:54 PM)
  * @return java.util.Vector
  */
-public java.util.Vector getLmProgramControlWindowVector() 
+public Vector<LMProgramControlWindow> getLmProgramControlWindowVector() 
 {
 	if( lmProgramControlWindowVector == null )
-		lmProgramControlWindowVector = new java.util.Vector(2);
+		lmProgramControlWindowVector = new Vector<LMProgramControlWindow>(2);
 	
 	return lmProgramControlWindowVector;
 }
@@ -81,43 +85,22 @@ public java.util.Vector getLmProgramControlWindowVector()
  * Creation date: (3/16/2001 12:16:22 PM)
  * @return java.util.Vector
  */
-public java.util.Vector getLmProgramStorageVector()
+public Vector<DeviceListItem> getLmProgramStorageVector()
 {
-    file : //lmProgramStorageVector.add()
+	if (lmProgramStorageVector == null)
+		lmProgramStorageVector = new Vector<DeviceListItem>(10) {
+			public void add(int i, DeviceListItem o) {
+				super.add(i, o);
+			}
 
-    if (lmProgramStorageVector == null)
-        lmProgramStorageVector = new java.util.Vector(10)
-    {
-        public void add(int i, Object o)
-    {
-            if (o instanceof com.cannontech.database.db.device.lm.DeviceListItem)
-                super.add(i, o);
-            else
-                throw new IllegalArgumentException(
-                    "Can only add com.cannontech.database.db.device.lm.DeviceListItem elements," +
-                    "tried to add : " + o.getClass().getName());
-        }
+			public boolean add(DeviceListItem o) {
+				return super.add(o);
+			}
 
-        public boolean add(Object o)
-    {
-            if (o instanceof com.cannontech.database.db.device.lm.DeviceListItem)
-                return super.add(o);
-            else
-                throw new IllegalArgumentException(
-                    "Can only addcom.cannontech.database.db.device.lm.DeviceListItem elements," +
-                    "tried to add :"  + o.getClass().getName());
-        }
-
-        public void addElement(Object o)
-    {
-            if (o instanceof com.cannontech.database.db.device.lm.DeviceListItem)
-                super.addElement(o);
-            else
-                throw new IllegalArgumentException(
-                    "Can only addcom.cannontech.database.db.device.lm.DeviceListItem elements," + 
-                    "tried to add : " + o.getClass().getName());
-        }
-    };
+			public void addElement(DeviceListItem o) {
+				super.addElement(o);
+			}
+		};
 
     return lmProgramStorageVector;
 }
@@ -157,15 +140,16 @@ public void setDbConnection(java.sql.Connection conn)
 	super.setDbConnection(conn);
 	getProgram().setDbConnection(conn);
 
-	for( int i = 0; i < getLmProgramControlWindowVector().size(); i++ )
-		((LMProgramControlWindow)getLmProgramControlWindowVector().elementAt(i)).setDbConnection( conn );
+	for (LMProgramControlWindow lmProgramControlWindow : getLmProgramControlWindowVector()) {
+		lmProgramControlWindow.setDbConnection(conn);
+	}
 }
 /**
  * Insert the method's description here.
  * Creation date: (3/16/2001 12:14:54 PM)
  * @param newLmProgramControlWindowVector java.util.Vector
  */
-public void setLmProgramControlWindowVector(java.util.Vector newLmProgramControlWindowVector) {
+public void setLmProgramControlWindowVector(Vector<LMProgramControlWindow> newLmProgramControlWindowVector) {
 	lmProgramControlWindowVector = newLmProgramControlWindowVector;
 }
 /**
@@ -173,7 +157,7 @@ public void setLmProgramControlWindowVector(java.util.Vector newLmProgramControl
  * Creation date: (3/16/2001 12:16:22 PM)
  * @param newLmControlAreaProgramVector java.util.Vector
  */
-public void setLmProgramStorageVector(java.util.Vector newlmProgramStorageVector) 
+public void setLmProgramStorageVector(Vector<DeviceListItem> newlmProgramStorageVector) 
 {
 	lmProgramStorageVector = newlmProgramStorageVector;
 }
@@ -194,8 +178,9 @@ public void setPAObjectID(Integer paoID)
 	super.setPAObjectID(paoID);
 	getProgram().setDeviceID(paoID);
 
-	for( int i = 0; i < getLmProgramControlWindowVector().size(); i++ )
-		((LMProgramControlWindow)getLmProgramControlWindowVector().elementAt(i)).setDeviceID( paoID );
+	for (LMProgramControlWindow lmProgramControlWindow : getLmProgramControlWindowVector()) {
+		lmProgramControlWindow.setDeviceID(paoID);
+	}
 }
 /**
  * Insert the method's description here.
@@ -225,7 +210,8 @@ public void update() throws java.sql.SQLException
 	//delete all the program windows
 	LMProgramControlWindow.deleteAllProgramControlWindows( getPAObjectID(), getDbConnection() );
 	
-	for( int i = 0; i < getLmProgramControlWindowVector().size(); i++ )
-		((LMProgramControlWindow)getLmProgramControlWindowVector().elementAt(i)).add();
+	for (LMProgramControlWindow lmProgramControlWindow : getLmProgramControlWindowVector()) {
+		lmProgramControlWindow.add();
+	}
 }
 }

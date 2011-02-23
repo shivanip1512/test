@@ -1,269 +1,217 @@
 package com.cannontech.database.data.device.lm;
 
-import com.cannontech.database.db.NestedDBPersistent;
+import java.util.Vector;
+
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.NestedDBPersistentComparators;
-import com.cannontech.database.db.device.lm.LMControlAreaProgram;
+import com.cannontech.database.db.device.lm.DeviceListItem;
 import com.cannontech.database.db.device.lm.LMDirectNotificationGroupList;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
+import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 
-public class LMProgramDirect extends LMProgramBase
-{
+public class LMProgramDirect extends LMProgramBase {
+
 	private com.cannontech.database.db.device.lm.LMProgramDirect directProgram = null;
+	private Vector<LMProgramDirectGear> lmProgramDirectGearVector = null;
+	private Vector<LMDirectNotificationGroupList> lmProgramDirectNotifyGroupVector = null;
 
-	//this vector should only contain com.cannontech.database.db.device.lm.LMProgramDirectGear
-	private java.util.Vector lmProgramDirectGearVector = null;
-	private java.util.Vector lmProgramDirectNotifyGroupVector = null;
-/**
- * LMProgramBase constructor comment.
- */
-public LMProgramDirect() {
-	super();
-	
-	getYukonPAObject().setType( com.cannontech.database.data.pao.PAOGroups.STRING_LM_DIRECT_PROGRAM[0] );
-}
-/**
- * This method was created in VisualAge.
- */
-public void add() throws java.sql.SQLException 
-{
-	super.add();
-	getDirectProgram().add();
+	/**
+	 * LMProgramBase constructor comment.
+	 */
+	public LMProgramDirect() {
+		super();
 
-	//delete all the current gears from the DB
-	//LMProgramDirectGear.deleteAllDirectGears( getDevice().getDeviceID() );
-
-	//add the gears
-	for( int i = 0; i < getLmProgramDirectGearVector().size(); i++ )
-		((LMProgramDirectGear)getLmProgramDirectGearVector().elementAt(i)).add();
-
-
-	//add all the Groups for this DirectProgram
-	for( int i = 0; i < getLmProgramStorageVector().size(); i++ )
-	{
-		((com.cannontech.database.db.device.lm.LMProgramDirectGroup)getLmProgramStorageVector().elementAt(i)).setDeviceID( getPAObjectID() );
-		((com.cannontech.database.db.device.lm.LMProgramDirectGroup)getLmProgramStorageVector().elementAt(i)).setDbConnection( getDbConnection() );		
-		((com.cannontech.database.db.device.lm.LMProgramDirectGroup)getLmProgramStorageVector().elementAt(i)).add();
+		getYukonPAObject().setType(PAOGroups.STRING_LM_DIRECT_PROGRAM[0]);
 	}
-	
-	//add the customers
-	for( int i = 0; i < getLmProgramDirectNotifyGroupVector().size(); i++ )
-		((LMDirectNotificationGroupList)getLmProgramDirectNotifyGroupVector().elementAt(i)).add();
-}
-/**
- * This method was created in VisualAge.
- */
-public void delete() throws java.sql.SQLException
-{
-	
-	//delete all of our direct customers first
-	  delete(
-		  LMDirectNotificationGroupList.TABLE_NAME,
-		  LMDirectNotificationGroupList.CONSTRAINT_COLUMNS[0],
-		  getPAObjectID() );
-	
-	LMProgramDirectGear.deleteAllDirectGears( getPAObjectID(), getDbConnection() );
-   
-	com.cannontech.database.db.device.lm.LMProgramDirectGroup.deleteAllDirectGroups( 
-         getPAObjectID(), getDbConnection() );
+
+	/**
+	 * This method was created in VisualAge.
+	 */
+	public void add() throws java.sql.SQLException {
+		super.add();
+		getDirectProgram().add();
+
+		// delete all the current gears from the DB
+		// LMProgramDirectGear.deleteAllDirectGears( getDevice().getDeviceID()
+		// );
+
+		// add the gears
+		for (LMProgramDirectGear lmProgramDirectGear : getLmProgramDirectGearVector()) {
+			lmProgramDirectGear.add();
+		}
+
+		// add all the Groups for this DirectProgram
+		for (DeviceListItem deviceListItem : getLmProgramStorageVector()) {
+			if (deviceListItem instanceof LMProgramDirectGroup) {
+				LMProgramDirectGroup lmProgramDirectGroup = (LMProgramDirectGroup) deviceListItem;
+				lmProgramDirectGroup.setDeviceID(getPAObjectID());
+				lmProgramDirectGroup.setDbConnection(getDbConnection());
+				lmProgramDirectGroup.add();
+			}
+		}
+
+		// add the customers
+		for (LMDirectNotificationGroupList lmDirectNotificationGroupList : getLmProgramDirectNotifyGroupVector()) {
+			lmDirectNotificationGroupList.add();
+		}
+	}
+
+	/**
+	 * This method was created in VisualAge.
+	 */
+	public void delete() throws java.sql.SQLException {
+
+		// delete all of our direct customers first
+		delete(LMDirectNotificationGroupList.TABLE_NAME,
+				LMDirectNotificationGroupList.CONSTRAINT_COLUMNS[0],
+				getPAObjectID());
+
+		LMProgramDirectGear.deleteAllDirectGears(getPAObjectID(),
+				getDbConnection());
+
+		com.cannontech.database.db.device.lm.LMProgramDirectGroup
+				.deleteAllDirectGroups(getPAObjectID(), getDbConnection());
+
+		deleteFromDynamicTables();
+
+		getDirectProgram().delete();
+		super.delete();
+	}
+
+	private void deleteFromDynamicTables() throws java.sql.SQLException {
+		delete("DynamicLMProgramDirect", "deviceID", getPAObjectID());
+		// delete("DynamicLMGroup", "LMProgramID", getPAObjectID() );
+	}
+
+	public com.cannontech.database.db.device.lm.LMProgramDirect getDirectProgram() {
+		if (directProgram == null) {
+			directProgram = new com.cannontech.database.db.device.lm.LMProgramDirect();
+		}
+
+		return directProgram;
+	}
+
+	public Vector<LMProgramDirectGear> getLmProgramDirectGearVector() {
+		if (lmProgramDirectGearVector == null) {
+			lmProgramDirectGearVector = new Vector<LMProgramDirectGear>(10);
+		}
+
+		return lmProgramDirectGearVector;
+	}
+
+	public Vector<LMDirectNotificationGroupList> getLmProgramDirectNotifyGroupVector() {
+		if (lmProgramDirectNotifyGroupVector == null) {
+			lmProgramDirectNotifyGroupVector = new Vector<LMDirectNotificationGroupList>();
+		}
+
+		return lmProgramDirectNotifyGroupVector;
+	}
+
+	public void retrieve() throws java.sql.SQLException {
+		super.retrieve();
+		getDirectProgram().retrieve();
+
+		// retrieve all the gears for this Program
+		Vector<LMProgramDirectGear> gears = LMProgramDirectGear.getAllDirectGears(getPAObjectID(), getDbConnection());
+		getLmProgramDirectGearVector().clear();
+		for (LMProgramDirectGear gear : gears) {
+			getLmProgramDirectGearVector().add(gear);
+		}
+
+		// retrieve all the Groups for this Program
+		com.cannontech.database.db.device.lm.LMProgramDirectGroup[] groups = 
+			com.cannontech.database.db.device.lm.LMProgramDirectGroup.getAllDirectGroups(getPAObjectID());
+		getLmProgramStorageVector().clear();
+		for (int i = 0; i < groups.length; i++) {
+			getLmProgramStorageVector().add(groups[i]);
+		}
+
+		LMDirectNotificationGroupList[] customers = 
+			com.cannontech.database.db.device.lm.LMProgramDirect.getAllNotificationGroupsList(
+					getPAObjectID(),getDbConnection());
+		getLmProgramDirectNotifyGroupVector().clear();
+		for (LMDirectNotificationGroupList customer: customers) {
+			getLmProgramDirectNotifyGroupVector().add(customer);
+		}
+	}
+
+	public void setDbConnection(java.sql.Connection conn) {
+		super.setDbConnection(conn);
+		getDirectProgram().setDbConnection(conn);
+
+		for (LMProgramDirectGear lmProgramDirectGear : getLmProgramDirectGearVector()) {
+			lmProgramDirectGear.setDbConnection(conn);
+		}
 		
-	deleteFromDynamicTables();
-	
-	getDirectProgram().delete();
-	super.delete();
-}
+		for (LMDirectNotificationGroupList lmDirectNotificationGroupList: getLmProgramDirectNotifyGroupVector()) {
+			lmDirectNotificationGroupList.setDbConnection(conn);
+		}
+	}
 
-/**
- * Insert the method's description here.
- * Creation date: (10/18/2001 11:11:51 AM)
- */
-private void deleteFromDynamicTables() throws java.sql.SQLException
-{
-	delete("DynamicLMProgramDirect", "deviceID", getPAObjectID() );
-	//delete("DynamicLMGroup", "LMProgramID", getPAObjectID() );
-}
+	public void setDirectProgram(com.cannontech.database.db.device.lm.LMProgramDirect newDirectProgram) {
+		directProgram = newDirectProgram;
+	}
 
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 3:46:23 PM)
- * @return com.cannontech.database.db.device.lm.LMProgramDirect
- */
-public com.cannontech.database.db.device.lm.LMProgramDirect getDirectProgram() 
-{
-	if( directProgram == null )
-		directProgram = new com.cannontech.database.db.device.lm.LMProgramDirect();
+	public void setLmProgramDirectGearVector(Vector<LMProgramDirectGear> newLmProgramDirectGearVector) {
+		lmProgramDirectGearVector = newLmProgramDirectGearVector;
+	}
 
-	return directProgram;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 5:12:30 PM)
- * @return java.util.Vector
- */
-public java.util.Vector getLmProgramDirectGearVector() 
-{
-	if( lmProgramDirectGearVector == null )
-		lmProgramDirectGearVector = new java.util.Vector(10);
+	public void setPAObjectID(Integer paoID) {
+		super.setPAObjectID(paoID);
+		getDirectProgram().setDeviceID(paoID);
 
-	return lmProgramDirectGearVector;
-}
-
-public java.util.Vector getLmProgramDirectNotifyGroupVector()
-{
-	if( lmProgramDirectNotifyGroupVector == null )
-		lmProgramDirectNotifyGroupVector = new java.util.Vector();
+		for (LMProgramDirectGear lmProgramDirectGear : getLmProgramDirectGearVector()) {
+			lmProgramDirectGear.setDeviceID(paoID);
+		}
 		
-	return lmProgramDirectNotifyGroupVector;
-}
-/**
- * This method was created in VisualAge.
- */
-public void retrieve() throws java.sql.SQLException
-{
-	super.retrieve();
-	getDirectProgram().retrieve();
-
-	//retrieve all the gears for this Program
-	java.util.Vector gears = LMProgramDirectGear.getAllDirectGears( getPAObjectID(), getDbConnection() );
-	getLmProgramDirectGearVector().clear();
-	for( int i = 0; i < gears.size(); i++ )
-		getLmProgramDirectGearVector().add( gears.elementAt(i) );
-
-	//retrieve all the Groups for this Program
-	com.cannontech.database.db.device.lm.LMProgramDirectGroup[] groups = com.cannontech.database.db.device.lm.LMProgramDirectGroup.getAllDirectGroups( getPAObjectID() );
-    getLmProgramStorageVector().clear();
-	for( int i = 0; i < groups.length; i++ )
-		getLmProgramStorageVector().add( groups[i] );
-		
-	LMDirectNotificationGroupList[] customers = com.cannontech.database.db.device.lm.LMProgramDirect.getAllNotificationGroupsList( 
-		getPAObjectID(), getDbConnection() );
-    getLmProgramDirectNotifyGroupVector().clear();
-	for( int i = 0; i < customers.length; i++ )
-		getLmProgramDirectNotifyGroupVector().add( customers[i] );
-	
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/4/00 3:32:03 PM)
- * @param conn java.sql.Connection
- */
-public void setDbConnection(java.sql.Connection conn) 
-{
-	super.setDbConnection(conn);
-	getDirectProgram().setDbConnection(conn);
-
-	for( int i = 0; i < getLmProgramDirectGearVector().size(); i++ )
-		((LMProgramDirectGear)getLmProgramDirectGearVector().elementAt(i)).setDbConnection(conn);
-		
-	for( int i = 0; i < getLmProgramDirectNotifyGroupVector().size(); i++ )
-		((LMDirectNotificationGroupList)getLmProgramDirectNotifyGroupVector().elementAt(i)).setDbConnection(conn);
-
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 3:46:23 PM)
- * @param newDirectProgram com.cannontech.database.db.device.lm.LMProgramDirect
- */
-public void setDirectProgram(com.cannontech.database.db.device.lm.LMProgramDirect newDirectProgram) {
-	directProgram = newDirectProgram;
-}
-/**
- * Insert the method's description here.
- * Creation date: (3/16/2001 5:12:30 PM)
- * @param newLmProgramDirectGearVector java.util.Vector
- */
-public void setLmProgramDirectGearVector(java.util.Vector newLmProgramDirectGearVector) {
-	lmProgramDirectGearVector = newLmProgramDirectGearVector;
-}
-/**
- * This method was created in VisualAge.
- * @param deviceID java.lang.Integer
- */
-public void setPAObjectID(Integer paoID)
-{
-	super.setPAObjectID(paoID);
-	getDirectProgram().setDeviceID(paoID);
-
-	for( int i = 0; i < getLmProgramDirectGearVector().size(); i++ )
-		((LMProgramDirectGear)getLmProgramDirectGearVector().elementAt(i)).setDeviceID( paoID );
-	
-	for( int i = 0; i < getLmProgramDirectNotifyGroupVector().size(); i++ )
-		((LMDirectNotificationGroupList)getLmProgramDirectNotifyGroupVector().elementAt(i)).setDeviceID(paoID);
-}
-/**
- * This method was created in VisualAge.
- */
-public void update() throws java.sql.SQLException
-{
-	super.update();
-	getDirectProgram().update();
-	java.util.Vector gearVector = new java.util.Vector();
-
-	//grab all the previous gear entries for this program
-	java.util.Vector oldGears = LMProgramDirectGear.getAllDirectGears(getPAObjectID(), getDbConnection());
-	
-	//unleash the power of the NestedDBPersistent
-	gearVector = NestedDBPersistentComparators.NestedDBPersistentCompare(oldGears, getLmProgramDirectGearVector(), NestedDBPersistentComparators.lmDirectGearComparator);
-
-	//throw the gears into the Db
-	for( int i = 0; i < gearVector.size(); i++ )
-	{
-		((LMProgramDirectGear)gearVector.elementAt(i)).setDeviceID( getPAObjectID() );
-		((NestedDBPersistent)gearVector.elementAt(i)).executeNestedOp();
-
+		for (LMDirectNotificationGroupList lmDirectNotificationGroupList: getLmProgramDirectNotifyGroupVector()) {
+			lmDirectNotificationGroupList.setDeviceID(paoID);
+		}
 	}
 
-	//delete all the current associated groups from the DB
-	com.cannontech.database.db.device.lm.LMProgramDirectGroup.deleteAllDirectGroups( 
-         getPAObjectID(), getDbConnection() );
+	public void update() throws java.sql.SQLException {
+		super.update();
+		getDirectProgram().update();
+		Vector<LMProgramDirectGear> gearVector = new Vector<LMProgramDirectGear>();
 
+		// grab all the previous gear entries for this program
+		Vector<LMProgramDirectGear> oldGears = LMProgramDirectGear.getAllDirectGears(
+				getPAObjectID(), getDbConnection());
 
-	//add the groups
-	for( int i = 0; i < getLmProgramStorageVector().size(); i++ )
-	{
-		((com.cannontech.database.db.device.lm.LMProgramDirectGroup)getLmProgramStorageVector().elementAt(i)).setDeviceID( getPAObjectID() );
-		((com.cannontech.database.db.device.lm.LMProgramDirectGroup)getLmProgramStorageVector().elementAt(i)).setDbConnection( getDbConnection() );
-		((com.cannontech.database.db.device.lm.LMProgramDirectGroup)getLmProgramStorageVector().elementAt(i)).add();
+		// unleash the power of the NestedDBPersistent
+		gearVector = NestedDBPersistentComparators.NestedDBPersistentCompare(
+				oldGears, getLmProgramDirectGearVector(),
+				NestedDBPersistentComparators.lmDirectGearComparator);
+
+		// throw the gears into the Db
+		for (LMProgramDirectGear lmProgramDirectGear : gearVector) {
+			lmProgramDirectGear.setDeviceID(getPAObjectID());
+			lmProgramDirectGear.executeNestedOp();
+
+		}
+
+		// delete all the current associated groups from the DB
+		com.cannontech.database.db.device.lm.LMProgramDirectGroup
+				.deleteAllDirectGroups(getPAObjectID(), getDbConnection());
+
+		// add the groups
+		for (DeviceListItem deviceListItem : getLmProgramStorageVector()) {
+			if (deviceListItem instanceof LMProgramDirectGroup) {
+				LMProgramDirectGroup lmProgramDirectGroup = (LMProgramDirectGroup)deviceListItem;
+				lmProgramDirectGroup.setDeviceID(getPAObjectID());
+				lmProgramDirectGroup.setDbConnection(getDbConnection());
+				lmProgramDirectGroup.add();
+			}
+		}
+
+		// delete all of our energy exchange customers first
+		delete(LMDirectNotificationGroupList.TABLE_NAME,
+				LMDirectNotificationGroupList.CONSTRAINT_COLUMNS[0],
+				getPAObjectID());
+
+		for (LMDirectNotificationGroupList lmDirectNotificationGroupList : getLmProgramDirectNotifyGroupVector()) {
+			lmDirectNotificationGroupList.setDeviceID(getDirectProgram().getDeviceID());
+			lmDirectNotificationGroupList.add();
+		}
 	}
-	
-	//delete all of our energy exchange customers first
-	delete( 
-		LMDirectNotificationGroupList.TABLE_NAME, 
-		LMDirectNotificationGroupList.CONSTRAINT_COLUMNS[0],
-		getPAObjectID() );
-
-	for( int i = 0; i < getLmProgramDirectNotifyGroupVector().size(); i++ )
-	{
-		((LMDirectNotificationGroupList)getLmProgramDirectNotifyGroupVector().elementAt(i)).setDeviceID( getDirectProgram().getDeviceID() );
-		((LMDirectNotificationGroupList)getLmProgramDirectNotifyGroupVector().elementAt(i)).add();
-	}
-
-}
-
-public final static boolean belongsToControlArea(Integer programID) throws java.sql.SQLException 
-{	
-	return belongsToControlArea(programID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-}
-/**
- * This method was created in VisualAge.
- * @param pointID java.lang.Integer
- */
-
-//try to avoid using this...it is extremely slow for the big dawgs...
-public final static boolean belongsToControlArea(Integer programID, String databaseAlias) throws java.sql.SQLException 
-{
-	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("SELECT DeviceID FROM " + LMControlAreaProgram.TABLE_NAME + " WHERE LMProgramDeviceID=" + programID,
-													databaseAlias );
-
-	try
-	{
-		stmt.execute();
-		return (stmt.getRowCount() > 0 );
-	}
-	catch( Exception e )
-	{
-		return false;
-	}
-
-}
 }
