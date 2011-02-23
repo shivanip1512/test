@@ -153,7 +153,7 @@ WHERE MappingCategory = 'CustomerFAQ';
 DELETE FROM YukonListEntry 
 WHERE ListId IN (SELECT ListId 
                   FROM YukonSelectionList 
-                  WHERE ListName IN ('CustomerFAQGroup', 'QuestionType', 'AnswerType'); 
+                  WHERE ListName IN ('CustomerFAQGroup', 'QuestionType', 'AnswerType')); 
 
 DELETE FROM YukonSelectionList 
 WHERE ListName IN ('CustomerFAQGroup', 'QuestionType', 'AnswerType'); 
