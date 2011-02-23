@@ -254,6 +254,25 @@ INSERT INTO YukonRoleProperty VALUES (-20218,-202,'Porter Response Monitor','fal
 INSERT INTO YukonServices VALUES (-15, 'PorterResponseMonitor', 'classpath:com/cannontech/services/porterResponseMonitor/porterResponseMonitorContext.xml', 'ServiceManager');
 /* End YUK-9461 */
 
+/* Start YUK-9455 */
+UPDATE EventLog 
+SET EventType = 'stars.account.optOut.optOutCancelAttemptedByOperator'
+WHERE EventType = 'stars.account.optOut.optOutCancelAtteptedByOperator';
+
+UPDATE EventLog 
+SET EventType = 'stars.account.optOut.optOutCancelAttemptedByConsumer'
+WHERE EventType = 'stars.account.optOut.optOutCancelAtteptedByConsumer'; 
+
+UPDATE EventLog
+SET EventType = 'stars.' + EventType
+WHERE EventType LIKE 'account.account%'
+OR EventType LIKE 'account.enrollment%'
+OR EventType LIKE 'account.optOut%'
+OR EventType LIKE 'account.appliance%'
+OR EventType LIKE 'account.contactInfo%'
+OR EventType LIKE 'account.thermostat%';
+/* End YUK-9455 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
