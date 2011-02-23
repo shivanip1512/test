@@ -187,6 +187,73 @@ INSERT INTO YukonUserRole
 VALUES(-1020, -100, -200, -20019, 'true');
 /* End YUK-9482 */
 
+/* Start YUK-9461 */
+CREATE TABLE PorterResponseMonitor (
+   MonitorId            NUMERIC              NOT NULL,
+   Name                 VARCHAR(255)         NOT NULL,
+   GroupName            VARCHAR(255)         NOT NULL,
+   StateGroupId         NUMERIC              NOT NULL,
+   Attribute            VARCHAR(255)         NOT NULL,
+   EvaluatorStatus      VARCHAR(255)         NOT NULL,
+   CONSTRAINT PK_PortRespMonId PRIMARY KEY (MonitorId)
+);
+GO
+
+CREATE UNIQUE INDEX Indx_PortRespMon_Name_UNQ ON PorterResponseMonitor (
+   Name ASC
+);
+
+CREATE TABLE PorterResponseMonitorRule (
+   RuleId               NUMERIC              NOT NULL,
+   RuleOrder            NUMERIC              NOT NULL,
+   MonitorId            NUMERIC              NOT NULL,
+   Success              CHAR(1)              NOT NULL,
+   MatchStyle           VARCHAR(40)          NOT NULL,
+   State                VARCHAR(40)          NOT NULL,
+   CONSTRAINT PK_PortRespMonRuleId PRIMARY KEY (RuleId)
+);
+GO
+
+CREATE UNIQUE INDEX Indx_PortRespMonRule_RO_MI_UNQ ON PorterResponseMonitorRule (
+   RuleOrder ASC,
+   MonitorId ASC
+);
+
+CREATE TABLE PorterResponseMonitorErrorCode (
+   ErrorCodeId          NUMERIC              NOT NULL,
+   RuleId               NUMERIC              NOT NULL,
+   ErrorCode            NUMERIC              NOT NULL,
+   CONSTRAINT PK_PortRespMonErrorCodeId PRIMARY KEY (ErrorCodeId)
+);
+GO
+
+CREATE UNIQUE INDEX Indx_PortRespMonErr_RI_EC_UNQ ON PorterResponseMonitorErrorCode (
+   RuleId ASC,
+   ErrorCode ASC
+);
+
+ALTER TABLE PorterResponseMonitor
+    ADD CONSTRAINT FK_PortRespMon_StateGroup FOREIGN KEY (StateGroupId)
+        REFERENCES StateGroup (StateGroupId);
+GO
+
+ALTER TABLE PorterResponseMonitorRule
+    ADD CONSTRAINT FK_PortRespMonRule_PortRespMon FOREIGN KEY (MonitorId)
+        REFERENCES PorterResponseMonitor (MonitorId)
+            ON DELETE CASCADE;
+GO
+
+ALTER TABLE PorterResponseMonitorErrorCode
+    ADD CONSTRAINT FK_PortRespMonErr_PortRespMonR FOREIGN KEY (RuleId)
+        REFERENCES PorterResponseMonitorRule (RuleId)
+            ON DELETE CASCADE;
+GO
+
+INSERT INTO YukonRoleProperty VALUES (-20218,-202,'Porter Response Monitor','false','Controls access to the Porter Response Monitor');
+
+INSERT INTO YukonServices VALUES (-15, 'PorterResponseMonitor', 'classpath:com/cannontech/services/porterResponseMonitor/porterResponseMonitorContext.xml', 'ServiceManager');
+/* End YUK-9461 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

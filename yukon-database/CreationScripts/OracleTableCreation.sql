@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/17/2011 12:48:23 PM                        */
+/* Created on:     2/23/2011 1:53:27 PM                         */
 /*==============================================================*/
 
 
@@ -232,6 +232,12 @@ drop index Indx_PointStGrpID;
 drop index INDX_UOMID_POINTID;
 
 drop index INDX_IPAdd_SockPortNum_UNQ;
+
+drop index Indx_PortRespMon_Name_UNQ;
+
+drop index Indx_PortRespMonErr_RI_EC_UNQ;
+
+drop index Indx_PortRespMonRule_RO_MI_UNQ;
 
 drop index Index_PointID;
 
@@ -890,6 +896,12 @@ drop table PointAlarming cascade constraints;
 drop table PointToZoneMapping cascade constraints;
 
 drop table PortTiming cascade constraints;
+
+drop table PorterResponseMonitor cascade constraints;
+
+drop table PorterResponseMonitorErrorCode cascade constraints;
+
+drop table PorterResponseMonitorRule cascade constraints;
 
 drop table PurchasePlan cascade constraints;
 
@@ -7411,6 +7423,65 @@ create table PortTiming  (
 );
 
 /*==============================================================*/
+/* Table: PorterResponseMonitor                                 */
+/*==============================================================*/
+create table PorterResponseMonitor  (
+   MonitorId            NUMBER                          not null,
+   Name                 VARCHAR2(255)                   not null,
+   GroupName            VARCHAR2(255)                   not null,
+   StateGroupId         NUMBER                          not null,
+   Attribute            VARCHAR2(255)                   not null,
+   EvaluatorStatus      VARCHAR2(255)                   not null,
+   constraint PK_PortRespMonId primary key (MonitorId)
+);
+
+/*==============================================================*/
+/* Index: Indx_PortRespMon_Name_UNQ                             */
+/*==============================================================*/
+create unique index Indx_PortRespMon_Name_UNQ on PorterResponseMonitor (
+   Name ASC
+);
+
+/*==============================================================*/
+/* Table: PorterResponseMonitorErrorCode                        */
+/*==============================================================*/
+create table PorterResponseMonitorErrorCode  (
+   ErrorCodeId          NUMBER                          not null,
+   RuleId               NUMBER,
+   ErrorCode            NUMBER                          not null,
+   constraint PK_PortRespMonErrorCodeId primary key (ErrorCodeId)
+);
+
+/*==============================================================*/
+/* Index: Indx_PortRespMonErr_RI_EC_UNQ                         */
+/*==============================================================*/
+create unique index Indx_PortRespMonErr_RI_EC_UNQ on PorterResponseMonitorErrorCode (
+   RuleId ASC,
+   ErrorCode ASC
+);
+
+/*==============================================================*/
+/* Table: PorterResponseMonitorRule                             */
+/*==============================================================*/
+create table PorterResponseMonitorRule  (
+   RuleId               NUMBER                          not null,
+   RuleOrder            NUMBER                          not null,
+   MonitorId            NUMBER                          not null,
+   Success              CHAR(1)                         not null,
+   MatchStyle           VARCHAR2(40)                    not null,
+   State                VARCHAR2(40)                    not null,
+   constraint PK_PortRespMonRuleId primary key (RuleId)
+);
+
+/*==============================================================*/
+/* Index: Indx_PortRespMonRule_RO_MI_UNQ                        */
+/*==============================================================*/
+create unique index Indx_PortRespMonRule_RO_MI_UNQ on PorterResponseMonitorRule (
+   RuleOrder ASC,
+   MonitorId ASC
+);
+
+/*==============================================================*/
 /* Table: PurchasePlan                                          */
 /*==============================================================*/
 create table PurchasePlan  (
@@ -9610,6 +9681,7 @@ INSERT INTO YukonRoleProperty VALUES(-20214,-202,'Tamper Flag Processing','false
 INSERT INTO YukonRoleProperty VALUES(-20215,-202,'Phase Detection','false','Controls access to Phase Detection.');
 INSERT INTO YukonRoleProperty VALUES(-20216,-202,'Validation Engine','false','Controls access to Validation Processing');
 INSERT INTO YukonRoleProperty VALUES(-20217,-202,'Status Point Monitor','false','Controls access to the Status Point Monitor');
+INSERT INTO YukonRoleProperty VALUES(-20218,-202,'Porter Response Monitor','false','Controls access to the Porter Response Monitor');
 
 /* Operator Esubstation Drawings Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
@@ -9920,6 +9992,7 @@ INSERT INTO YukonServices VALUES (10, 'OptOut', 'classpath:com/cannontech/servic
 INSERT INTO YukonServices VALUES (11, 'RawPointHistoryValidation', 'classpath:com/cannontech/services/validation/validationServerContext.xml', 'ServiceManager');
 INSERT INTO YukonServices VALUES (13, 'Eka', 'classpath:com/cannontech/services/rfn/rfnMeteringContext.xml', 'ServiceManager');
 INSERT INTO yukonServices VALUES (14, 'Inventory Management', 'classpath:com/cannontech/services/dr/inventoryContext.xml', 'ServiceManager'); 
+INSERT INTO YukonServices VALUES (-15, 'PorterResponseMonitor', 'classpath:com/cannontech/services/porterResponseMonitor/porterResponseMonitorContext.xml', 'ServiceManager');
 
 /*==============================================================*/
 /* Table: YukonUser                                             */
@@ -12455,6 +12528,20 @@ alter table PointToZoneMapping
 alter table PortTiming
    add constraint SYS_C0013163 foreign key (PORTID)
       references CommPort (PORTID);
+
+alter table PorterResponseMonitor
+   add constraint FK_PortRespMon_StateGroup foreign key (StateGroupId)
+      references STATEGROUP (StateGroupId);
+
+alter table PorterResponseMonitorErrorCode
+   add constraint FK_PortRespMonErr_PortRespMonR foreign key (RuleId)
+      references PorterResponseMonitorRule (RuleId)
+      on delete cascade;
+
+alter table PorterResponseMonitorRule
+   add constraint FK_PortRespMonRule_PortRespMon foreign key (MonitorId)
+      references PorterResponseMonitor (MonitorId)
+      on delete cascade;
 
 alter table PurchasePlan
    add constraint FK_PRCHSPL_REF_EC foreign key (EnergyCompanyID)

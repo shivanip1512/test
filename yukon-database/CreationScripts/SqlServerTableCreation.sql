@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/17/2011 12:45:49 PM                        */
+/* Created on:     2/23/2011 1:56:20 PM                         */
 /*==============================================================*/
 
 
@@ -957,6 +957,33 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index PORTTERMINALSERVER.INDX_IPAdd_SockPortNum_UNQ
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('PorterResponseMonitor')
+            and   name  = 'Indx_PortRespMon_Name_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index PorterResponseMonitor.Indx_PortRespMon_Name_UNQ
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('PorterResponseMonitorErrorCode')
+            and   name  = 'Indx_PortRespMonErr_RI_EC_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index PorterResponseMonitorErrorCode.Indx_PortRespMonErr_RI_EC_UNQ
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('PorterResponseMonitorRule')
+            and   name  = 'Indx_PortRespMonRule_RO_MI_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index PorterResponseMonitorRule.Indx_PortRespMonRule_RO_MI_UNQ
 go
 
 if exists (select 1
@@ -3306,6 +3333,27 @@ if exists (select 1
            where  id = object_id('PortTiming')
             and   type = 'U')
    drop table PortTiming
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PorterResponseMonitor')
+            and   type = 'U')
+   drop table PorterResponseMonitor
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PorterResponseMonitorErrorCode')
+            and   type = 'U')
+   drop table PorterResponseMonitorErrorCode
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('PorterResponseMonitorRule')
+            and   type = 'U')
+   drop table PorterResponseMonitorRule
 go
 
 if exists (select 1
@@ -10525,6 +10573,71 @@ create table PortTiming (
 go
 
 /*==============================================================*/
+/* Table: PorterResponseMonitor                                 */
+/*==============================================================*/
+create table PorterResponseMonitor (
+   MonitorId            numeric              not null,
+   Name                 varchar(255)         not null,
+   GroupName            varchar(255)         not null,
+   StateGroupId         numeric              not null,
+   Attribute            varchar(255)         not null,
+   EvaluatorStatus      varchar(255)         not null,
+   constraint PK_PortRespMonId primary key nonclustered (MonitorId)
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_PortRespMon_Name_UNQ                             */
+/*==============================================================*/
+create unique index Indx_PortRespMon_Name_UNQ on PorterResponseMonitor (
+Name ASC
+)
+go
+
+/*==============================================================*/
+/* Table: PorterResponseMonitorErrorCode                        */
+/*==============================================================*/
+create table PorterResponseMonitorErrorCode (
+   ErrorCodeId          numeric              not null,
+   RuleId               numeric              null,
+   ErrorCode            numeric              not null,
+   constraint PK_PortRespMonErrorCodeId primary key nonclustered (ErrorCodeId)
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_PortRespMonErr_RI_EC_UNQ                         */
+/*==============================================================*/
+create unique index Indx_PortRespMonErr_RI_EC_UNQ on PorterResponseMonitorErrorCode (
+RuleId ASC,
+ErrorCode ASC
+)
+go
+
+/*==============================================================*/
+/* Table: PorterResponseMonitorRule                             */
+/*==============================================================*/
+create table PorterResponseMonitorRule (
+   RuleId               numeric              not null,
+   RuleOrder            numeric              not null,
+   MonitorId            numeric              not null,
+   Success              char(1)              not null,
+   MatchStyle           varchar(40)          not null,
+   State                varchar(40)          not null,
+   constraint PK_PortRespMonRuleId primary key nonclustered (RuleId)
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_PortRespMonRule_RO_MI_UNQ                        */
+/*==============================================================*/
+create unique index Indx_PortRespMonRule_RO_MI_UNQ on PorterResponseMonitorRule (
+RuleOrder ASC,
+MonitorId ASC
+)
+go
+
+/*==============================================================*/
 /* Table: PurchasePlan                                          */
 /*==============================================================*/
 create table PurchasePlan (
@@ -12798,6 +12911,7 @@ INSERT INTO YukonRoleProperty VALUES(-20214,-202,'Tamper Flag Processing','false
 INSERT INTO YukonRoleProperty VALUES(-20215,-202,'Phase Detection','false','Controls access to Phase Detection.');
 INSERT INTO YukonRoleProperty VALUES(-20216,-202,'Validation Engine','false','Controls access to Validation Processing');
 INSERT INTO YukonRoleProperty VALUES(-20217,-202,'Status Point Monitor','false','Controls access to the Status Point Monitor');
+INSERT INTO YukonRoleProperty VALUES(-20218,-202,'Porter Response Monitor','false','Controls access to the Porter Response Monitor');
 
 /* Operator Esubstation Drawings Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
@@ -13111,6 +13225,7 @@ INSERT INTO YukonServices VALUES (10, 'OptOut', 'classpath:com/cannontech/servic
 INSERT INTO YukonServices VALUES (11, 'RawPointHistoryValidation', 'classpath:com/cannontech/services/validation/validationServerContext.xml', 'ServiceManager');
 INSERT INTO YukonServices VALUES (13, 'Eka', 'classpath:com/cannontech/services/rfn/rfnMeteringContext.xml', 'ServiceManager');
 INSERT INTO yukonServices VALUES (14, 'Inventory Management', 'classpath:com/cannontech/services/dr/inventoryContext.xml', 'ServiceManager'); 
+INSERT INTO YukonServices VALUES (-15, 'PorterResponseMonitor', 'classpath:com/cannontech/services/porterResponseMonitor/porterResponseMonitorContext.xml', 'ServiceManager');
 
 /*==============================================================*/
 /* Table: YukonUser                                             */
@@ -16176,6 +16291,23 @@ go
 alter table PortTiming
    add constraint SYS_C0013163 foreign key (PORTID)
       references CommPort (PORTID)
+go
+
+alter table PorterResponseMonitor
+   add constraint FK_PortRespMon_StateGroup foreign key (StateGroupId)
+      references STATEGROUP (StateGroupId)
+go
+
+alter table PorterResponseMonitorErrorCode
+   add constraint FK_PortRespMonErr_PortRespMonR foreign key (RuleId)
+      references PorterResponseMonitorRule (RuleId)
+         on delete cascade
+go
+
+alter table PorterResponseMonitorRule
+   add constraint FK_PortRespMonRule_PortRespMon foreign key (MonitorId)
+      references PorterResponseMonitor (MonitorId)
+         on delete cascade
 go
 
 alter table PurchasePlan
