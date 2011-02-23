@@ -150,6 +150,9 @@ MODIFY ThresholdPointId NUMBER NOT NULL;
 DELETE FROM ECToGenericMapping 
 WHERE MappingCategory = 'CustomerFAQ'; 
 
+ALTER TABLE CustomerFAQ
+DROP CONSTRAINT FK_CsLsEn_CsF;
+
 DELETE FROM YukonListEntry 
 WHERE ListId IN (SELECT ListId 
                   FROM YukonSelectionList 
