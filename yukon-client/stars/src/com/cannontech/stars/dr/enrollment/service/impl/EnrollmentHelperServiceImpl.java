@@ -190,9 +190,9 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         } else {
 
             /**
-             * This method also take care of the validation for the applianceCategory, program, and loadGroup
-             * and includes checking to see if they belong to one another.
-             */
+             * This method also take care of the validation for the applianceCategory, program, and loadGroup
+             * and includes checking to see if they belong to one another.
+             */
             Program program = programService.getByProgramName(enrollmentHelper.getProgramName(), yukonEnergyCompany); 
 
             Set<Integer> appCatEnergyCompanyIds = applianceCategoryDao.getAppCatEnergyCompanyIds(yukonEnergyCompany);

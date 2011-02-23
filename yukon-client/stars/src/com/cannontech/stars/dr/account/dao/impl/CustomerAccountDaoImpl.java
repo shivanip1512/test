@@ -184,7 +184,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         List<LiteStarsEnergyCompany> allDescendants = ECUtils.getAllDescendants(energyCompany);
         List<Integer> energyCompanyIds = 
-            Lists.transform(allDescendants, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdsFunction());
+            Lists.transform(allDescendants, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdFunction());
         return getByAccountNumber(accountNumber, energyCompanyIds);
     }
 

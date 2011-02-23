@@ -1967,7 +1967,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     /**
      * This is a helper method to get the Function to transform YukonEnergyCompanies to energyCompanyIds.
      */
-    public static Function<YukonEnergyCompany, Integer> getEnergyCompanyToEnergyCompanyIdsFunction(){
+    public static Function<YukonEnergyCompany, Integer> getEnergyCompanyToEnergyCompanyIdFunction(){
         return new Function<YukonEnergyCompany, Integer>() {
             @Override
             public Integer apply(YukonEnergyCompany yukonEnergyCompany) {

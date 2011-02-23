@@ -273,15 +273,12 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
 
         // Get all of the child energy companies including itself for the supplied energy company id.
-        List<Integer> childEnergyCompanyIds = energyCompany.getAllEnergyCompaniesDownward();
-        Set<YukonEnergyCompany> availableChildEnergyCompanies = Sets.newHashSetWithExpectedSize(childEnergyCompanyIds.size());
-        for (int childEnergyCompanyId : childEnergyCompanyIds) {
-            YukonEnergyCompany childEnergyCompany = starsDatabaseCache.getEnergyCompany(childEnergyCompanyId);
-            availableChildEnergyCompanies.add(childEnergyCompany);
-        }
+        List<LiteStarsEnergyCompany> availableChildEnergyCompanies = ECUtils.getAllDescendants(energyCompany);
         
-        return availableChildEnergyCompanies;
-
+        Set<YukonEnergyCompany> availableEnergyCompanies = Sets.newHashSet();
+        availableEnergyCompanies.addAll(availableChildEnergyCompanies);
+                
+        return availableEnergyCompanies;
     }
 
     @Override
@@ -289,7 +286,7 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         Set<YukonEnergyCompany> childEnergyCompanies = getChildEnergyCompanies(energyCompanyId);
         
         Collection<Integer> childEnergyCompanyIds = 
-            Collections2.transform(childEnergyCompanies, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdsFunction());
+            Collections2.transform(childEnergyCompanies, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdFunction());
         
         return Sets.newHashSet(childEnergyCompanyIds);
         
@@ -318,7 +315,7 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         //  Get all the energy companies to the supplied energy company id.
         List<LiteStarsEnergyCompany> allParentEnergyCompanies = ECUtils.getAllAscendants(energyCompany);
         List<Integer> energyCompaniesIdList = 
-            Lists.transform(allParentEnergyCompanies, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdsFunction());
+            Lists.transform(allParentEnergyCompanies, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdFunction());
         
         return Sets.newLinkedHashSet(energyCompaniesIdList);
 

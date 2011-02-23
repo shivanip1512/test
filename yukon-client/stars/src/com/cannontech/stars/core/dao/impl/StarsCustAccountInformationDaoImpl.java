@@ -87,9 +87,9 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
                 @Override
                 public String generate(List<Integer> subList) {
                     SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-                    sqlBuilder.append("SELECT ac.AccountID, ac.AccountSiteID, ac.AccountNumber, ac.CustomerID, ac.BillingAddressID, ac.AccountNotes, "); //1-6 
-                    sqlBuilder.append(" acs.SiteInformationID, acs.SiteNumber, acs.StreetAddressID, acs.PropertyNotes, acs.CustAtHome, acs.CustomerStatus, "); //7-12
-                    sqlBuilder.append(" si.Feeder, si.Pole, si.TransformerSize, si.ServiceVoltage, si.SubstationID, ectam.EnergyCompanyId"); //13-17
+                    sqlBuilder.append("SELECT ac.AccountID, ac.AccountSiteID, ac.AccountNumber, ac.CustomerID, ac.BillingAddressID, ac.AccountNotes, "); 
+                    sqlBuilder.append(" acs.SiteInformationID, acs.SiteNumber, acs.StreetAddressID, acs.PropertyNotes, acs.CustAtHome, acs.CustomerStatus, ");
+                    sqlBuilder.append(" si.Feeder, si.Pole, si.TransformerSize, si.ServiceVoltage, si.SubstationID, ectam.EnergyCompanyId");
                     sqlBuilder.append(" FROM CustomerAccount ac, AccountSite acs, SiteInformation si, ECToAccountMapping ectam");
                     sqlBuilder.append(" WHERE ac.accountid IN (");
                     sqlBuilder.append(subList);
