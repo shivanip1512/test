@@ -1,13 +1,1627 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/24/2011 10:41:30 AM                        */
+/* Created on:     2/24/2011 11:49:50 AM                        */
 /*==============================================================*/
 
 
 set define off;
 
 
+
+alter table AccountSite
+   drop constraint FK_CUS_CSTS_CUS2;
+
+alter table AccountSite
+   drop constraint FK_AccS_CstAd;
+
+alter table AcctThermostatSchedule
+   drop constraint FK_AcctThermSch_CustAcct;
+
+alter table AcctThermostatScheduleEntry
+   drop constraint FK_AccThermSchEnt_AccThermSch;
+
+alter table AlarmCategory
+   drop constraint FK_ALRMCAT_NOTIFGRP;
+
+alter table ApplianceAirConditioner
+   drop constraint FK_CsLsE_Ac_ty;
+
+alter table ApplianceAirConditioner
+   drop constraint FK_CsLsE_Ac;
+
+alter table ApplianceAirConditioner
+   drop constraint FK_APPLIANC_ISA_CSTLD_APPLIANC;
+
+alter table ApplianceBase
+   drop constraint FK_CUS_CSTA_CUS4;
+
+alter table ApplianceBase
+   drop constraint FK_APPLIANC_CSTLDTY_C_APPLIANC;
+
+alter table ApplianceBase
+   drop constraint FK_AppBs_LMPrPub;
+
+alter table ApplianceBase
+   drop constraint FK_CsLsEn_ApB;
+
+alter table ApplianceBase
+   drop constraint FK_CsLsEn_ApB2;
+
+alter table ApplianceCategory
+   drop constraint FK_CstLs_ApCt;
+
+alter table ApplianceCategory
+   drop constraint FK_YkWC_ApCt;
+
+alter table ApplianceChiller
+   drop constraint FK_APPLCHILL_APPLNCBSE;
+
+alter table ApplianceChiller
+   drop constraint FK_APPLCHILL_TONNTRY;
+
+alter table ApplianceChiller
+   drop constraint FK_APPLCHILL_TYPENTRY;
+
+alter table ApplianceDualFuel
+   drop constraint FK_AppDuF_YkLst1;
+
+alter table ApplianceDualFuel
+   drop constraint FK_AppDuF_YkLst2;
+
+alter table ApplianceDualFuel
+   drop constraint FK_AppDlF_AppB;
+
+alter table ApplianceDualStageAirCond
+   drop constraint FK_DUALSTAGE_APPLNCBSE;
+
+alter table ApplianceDualStageAirCond
+   drop constraint FK_DUALSTAGE_STGTWONTRY;
+
+alter table ApplianceDualStageAirCond
+   drop constraint FK_DUALSTAGE_STNENTRY;
+
+alter table ApplianceDualStageAirCond
+   drop constraint FK_DUALSTAGE_TYPENTRY;
+
+alter table ApplianceGenerator
+   drop constraint FK_AppGn_YkLst1;
+
+alter table ApplianceGenerator
+   drop constraint FK_AppGn_YkLst2;
+
+alter table ApplianceGenerator
+   drop constraint FK_AppGen_AppB;
+
+alter table ApplianceGrainDryer
+   drop constraint FK_AppGrDr_YkLst1;
+
+alter table ApplianceGrainDryer
+   drop constraint FK_AppGrDr_YkLst2;
+
+alter table ApplianceGrainDryer
+   drop constraint FK_AppGrDr_YkLst3;
+
+alter table ApplianceGrainDryer
+   drop constraint FK_AppGrDr_YkLst5;
+
+alter table ApplianceGrainDryer
+   drop constraint FK_AppGrDr_YkLst6;
+
+alter table ApplianceGrainDryer
+   drop constraint FK_AppGrD_AppB;
+
+alter table ApplianceHeatPump
+   drop constraint FK_AppHtPm_YkLst1;
+
+alter table ApplianceHeatPump
+   drop constraint FK_AppHtPm_YkLst2;
+
+alter table ApplianceHeatPump
+   drop constraint FK_AppHtP_AppB;
+
+alter table ApplianceHeatPump
+   drop constraint FK_AppHtPm_YkLst3;
+
+alter table ApplianceIrrigation
+   drop constraint FK_AppIrr_YkLst1;
+
+alter table ApplianceIrrigation
+   drop constraint FK_AppIrr_YkLst2;
+
+alter table ApplianceIrrigation
+   drop constraint FK_AppIrr_YkLst3;
+
+alter table ApplianceIrrigation
+   drop constraint FK_AppIrr_YkLst6;
+
+alter table ApplianceIrrigation
+   drop constraint FK_AppIrr_YkLst5;
+
+alter table ApplianceIrrigation
+   drop constraint FK_AppIrr_AppB;
+
+alter table ApplianceIrrigation
+   drop constraint FK_AppIrr_YkLst4;
+
+alter table ApplianceStorageHeat
+   drop constraint FK_AppStHt_AppB;
+
+alter table ApplianceStorageHeat
+   drop constraint FK_AppStHt_YkLst;
+
+alter table ApplianceWaterHeater
+   drop constraint FK_AppWtHt_YkLst;
+
+alter table ApplianceWaterHeater
+   drop constraint FK_ApWtrHt_YkLsE;
+
+alter table ApplianceWaterHeater
+   drop constraint FK_AppWtHt_AppB;
+
+alter table BaseLine
+   drop constraint FK_BASELINE_HOLIDAYS;
+
+alter table CALCBASE
+   drop constraint SYS_C0013434;
+
+alter table CALCCOMPONENT
+   drop constraint FK_ClcCmp_ClcBs;
+
+alter table CALCCOMPONENT
+   drop constraint FK_ClcCmp_Pt;
+
+alter table CAPBANK
+   drop constraint SYS_C0013453;
+
+alter table CAPBANK
+   drop constraint SYS_C0013454;
+
+alter table CAPBANK
+   drop constraint SYS_C0013455;
+
+alter table CAPBANKADDITIONAL
+   drop constraint FK_CAPBANKA_CAPBANK;
+
+alter table CAPCONTROLAREA
+   drop constraint FK_CAPCONTR_REFERENCE_YUKONPAO;
+
+alter table CAPCONTROLCOMMENT
+   drop constraint FK_CapContCom_PAO;
+
+alter table CAPCONTROLCOMMENT
+   drop constraint FK_CapContCom_YukonUser;
+
+alter table CAPCONTROLSPECIALAREA
+   drop constraint FK_CAPCONTR_YUKONPAO2;
+
+alter table CAPCONTROLSUBSTATION
+   drop constraint FK_CAPCONTR_REF_YUKONPA2;
+
+alter table CAPCONTROLSUBSTATIONBUS
+   drop constraint FK_CAPCONTR_SWPTID;
+
+alter table CAPCONTROLSUBSTATIONBUS
+   drop constraint FK_CAPCONTR_CVOLTPTID;
+
+alter table CAPCONTROLSUBSTATIONBUS
+   drop constraint FK_CpSbBus_YPao;
+
+alter table CAPCONTROLSUBSTATIONBUS
+   drop constraint SYS_C0013478;
+
+alter table CAPCONTROLSUBSTATIONBUS
+   drop constraint SYS_C0013479;
+
+alter table CCEventLog
+   drop constraint FK_CCEventLog_Point;
+
+alter table CCFeederBankList
+   drop constraint FK_CB_CCFeedLst;
+
+alter table CCFeederBankList
+   drop constraint FK_CCFeed_CCBnk;
+
+alter table CCFeederSubAssignment
+   drop constraint FK_CCFeed_CCFass;
+
+alter table CCFeederSubAssignment
+   drop constraint FK_CCSub_CCFeed;
+
+alter table CCHOLIDAYSTRATEGYASSIGNMENT
+   drop constraint FK_CCHSA_PAOID;
+
+alter table CCHOLIDAYSTRATEGYASSIGNMENT
+   drop constraint FK_CCHSA_SCHEDID;
+
+alter table CCHOLIDAYSTRATEGYASSIGNMENT
+   drop constraint FK_CCHOLIDAY_CAPCONTR;
+
+alter table CCMONITORBANKLIST
+   drop constraint FK_CCMONBNKLIST_BNKID;
+
+alter table CCMONITORBANKLIST
+   drop constraint FK_CCMONBNKLST_PTID;
+
+alter table CCSEASONSTRATEGYASSIGNMENT
+   drop constraint FK_CCSSA_PAOID;
+
+alter table CCSEASONSTRATEGYASSIGNMENT
+   drop constraint FK_CCSSA_SCHEDID;
+
+alter table CCSEASONSTRATEGYASSIGNMENT
+   drop constraint FK_ccssa_season;
+
+alter table CCSEASONSTRATEGYASSIGNMENT
+   drop constraint FK_CCSEASON_REFERENCE_CAPCONTR;
+
+alter table CCSUBAREAASSIGNMENT
+   drop constraint FK_CCSUBARE_CAPSUBAREAASSGN;
+
+alter table CCSUBAREAASSIGNMENT
+   drop constraint FK_CCSUBARE_REFERENCE_CAPCONTR;
+
+alter table CCSUBSPECIALAREAASSIGNMENT
+   drop constraint FK_CCSUBSPE_CAPCONTR2;
+
+alter table CCSUBSPECIALAREAASSIGNMENT
+   drop constraint FK_CCSUBSPE_REFERENCE_CAPCONTR;
+
+alter table CCSUBSTATIONSUBBUSLIST
+   drop constraint FK_CCSUBSTA_CAPCONTR;
+
+alter table CCSUBSTATIONSUBBUSLIST
+   drop constraint FK_CCSUBSTA_REFERENCE_CAPCONTR;
+
+alter table CCStrategyTargetSettings
+   drop constraint FK_CCStratTarSet_CapContStrat;
+
+alter table CCURTACCTEVENT
+   drop constraint FK_CCURTACC_CCURTPRO;
+
+alter table CCURTACCTEVENTPARTICIPANT
+   drop constraint FK_CCURTACCTEVENTID;
+
+alter table CCURTACCTEVENTPARTICIPANT
+   drop constraint FK_CCURTACC_CICUSTOM;
+
+alter table CCurtCENotif
+   drop constraint FK_CCCURTCE_NOTIF_PART;
+
+alter table CCurtCEParticipant
+   drop constraint FK_CCURTCE_PART_CURTEVT;
+
+alter table CCurtCEParticipant
+   drop constraint FK_CCURTCURTEVENTCICUST_CICUST;
+
+alter table CCurtCurtailmentEvent
+   drop constraint FK_CCURTCURTEVT_CCURTPGM;
+
+alter table CCurtEEParticipant
+   drop constraint FK_CCURTEEPART_CCURTEE;
+
+alter table CCurtEEParticipant
+   drop constraint FK_CCURTEEPART_CUST;
+
+alter table CCurtEEParticipantSelection
+   drop constraint FK_CCURTEEPARTSEL_CCURTEEPR;
+
+alter table CCurtEEParticipantSelection
+   drop constraint FK_CCURTEEPARTSEL_CCURTPART;
+
+alter table CCurtEEParticipantWindow
+   drop constraint FK_CCRTEEPRTWIN_CCRTEEPRTSEL;
+
+alter table CCurtEEParticipantWindow
+   drop constraint FK_CCRTEEPRTWN_CCRTEEPRIWN;
+
+alter table CCurtEEPricing
+   drop constraint FK_CCURTEEPR_CCURTECONEVT;
+
+alter table CCurtEEPricingWindow
+   drop constraint FK_CCURTEEPRWIN_CCURTEEPR;
+
+alter table CCurtEconomicEvent
+   drop constraint FK_CCURTEEVT_CCURTPGM;
+
+alter table CCurtEconomicEvent
+   drop constraint FK_CCURTINITEVT_CCURTECONEVT;
+
+alter table CCurtEconomicEventNotif
+   drop constraint FK_CCURTEENOTIF_CCURTEEPARTID;
+
+alter table CCurtEconomicEventNotif
+   drop constraint FK_CCURTEENOTIF_CCURTEEPR;
+
+alter table CCurtGroupCustomerNotif
+   drop constraint FK_CCURTGRO_FK_CCURTG_CCURTGRO;
+
+alter table CCurtGroupCustomerNotif
+   drop constraint FK_CCURTGRPCUSTNOTIF_CUST;
+
+alter table CCurtProgram
+   drop constraint FK_CCURTPRG_CCURTPRGTYPE;
+
+alter table CCurtProgramGroup
+   drop constraint FK_CCURTPRGGRP_CCURTGRP;
+
+alter table CCurtProgramGroup
+   drop constraint FK_CCURTPRGGRP_CCURTPRG;
+
+alter table CCurtProgramNotifGroup
+   drop constraint FK_CCURTPNG_CCURTP;
+
+alter table CCurtProgramNotifGroup
+   drop constraint FK_CCURTPNG_NG;
+
+alter table CCurtProgramParameter
+   drop constraint FK_CCURTPRGPARAM_CCURTPRGID;
+
+alter table CICUSTOMERPOINTDATA
+   drop constraint FK_CICstPtD_CICst;
+
+alter table CICUSTOMERPOINTDATA
+   drop constraint FK_CICUSTOM_REF_CICST_POINT;
+
+alter table CICustomerBase
+   drop constraint FK_CUSTTYPE_ENTRYID;
+
+alter table CICustomerBase
+   drop constraint FK_CICstBas_CstAddrs;
+
+alter table CICustomerBase
+   drop constraint FK_CstCI_Cst;
+
+alter table CalcPointBaseline
+   drop constraint FK_CLCBS_BASL;
+
+alter table CalcPointBaseline
+   drop constraint FK_ClcPtBs_ClcBs;
+
+alter table CallReportBase
+   drop constraint FK_CstAc_ClRpB;
+
+alter table CallReportBase
+   drop constraint FK_CstELs_ClRB;
+
+alter table CapBankToZoneMapping
+   drop constraint FK_CapBankZoneMap_CapBank;
+
+alter table CapBankToZoneMapping
+   drop constraint FK_CapBankZoneMap_Zone;
+
+alter table CapControlFeeder
+   drop constraint FK_CAPCONTR_VARPTID;
+
+alter table CapControlFeeder
+   drop constraint FK_CAPCONTR_VOLTPTID;
+
+alter table CapControlFeeder
+   drop constraint FK_CAPCONTR_WATTPTID;
+
+alter table CapControlFeeder
+   drop constraint FK_PAObj_CCFeed;
+
+alter table CarrierRoute
+   drop constraint SYS_C0013264;
+
+alter table CommErrorHistory
+   drop constraint FK_ComErrHis_YPAO;
+
+alter table CommPort
+   drop constraint FK_COMMPORT_REF_COMPO_YUKONPAO;
+
+alter table CommandRequestExecResult
+   drop constraint FK_ComReqExecResult_ComReqExec;
+
+alter table CommandSchedule
+   drop constraint FK_CommSche_EnergyComp;
+
+alter table Contact
+   drop constraint FK_CONTACT_REF_CNT_A_ADDRESS;
+
+alter table Contact
+   drop constraint FK_RefCstLg_CustCont;
+
+alter table ContactNotifGroupMap
+   drop constraint FK_CNTNOFGM;
+
+alter table ContactNotifGroupMap
+   drop constraint FK_CNTNOFGM_NTFG;
+
+alter table ContactNotification
+   drop constraint FK_Cnt_CntNot;
+
+alter table ContactNotification
+   drop constraint FK_CntNot_YkLs;
+
+alter table Customer
+   drop constraint FK_Cst_Cnt;
+
+alter table Customer
+   drop constraint FK_Cust_YkLs;
+
+alter table CustomerAccount
+   drop constraint FK_CUS_CSTA_CUS2;
+
+alter table CustomerAccount
+   drop constraint FK_CstBs_CstAcc;
+
+alter table CustomerAccount
+   drop constraint FK_CustAcc_Add;
+
+alter table CustomerAdditionalContact
+   drop constraint FK_CstCont_CICstCont;
+
+alter table CustomerAdditionalContact
+   drop constraint FK_Cust_CustAddCnt;
+
+alter table CustomerBaseLinePoint
+   drop constraint FK_CstBseLn_CICust;
+
+alter table CustomerBaseLinePoint
+   drop constraint FK_CstBseLn_ClcBse;
+
+alter table CustomerLoginSerialGroup
+   drop constraint FK_CsLgSG_CsL;
+
+alter table CustomerLoginSerialGroup
+   drop constraint FK_CsLgSG_LMG;
+
+alter table CustomerNotifGroupMap
+   drop constraint FK_CST_CSTNOFGM;
+
+alter table CustomerNotifGroupMap
+   drop constraint FK_NTFG_CSTNOFGM;
+
+alter table CustomerResidence
+   drop constraint FK_CstRes_AccSt;
+
+alter table CustomerResidence
+   drop constraint FK_CstRes_YkLst1;
+
+alter table CustomerResidence
+   drop constraint FK_CstRes_YkLst10;
+
+alter table CustomerResidence
+   drop constraint FK_CstRes_YkLst11;
+
+alter table CustomerResidence
+   drop constraint FK_CstRes_YkLst2;
+
+alter table CustomerResidence
+   drop constraint FK_CstRes_YkLst3;
+
+alter table CustomerResidence
+   drop constraint FK_CstRes_YkLst4;
+
+alter table CustomerResidence
+   drop constraint FK_CUSTOMER_REF_CSTRE_YUKONLIS;
+
+alter table CustomerResidence
+   drop constraint FK_CstRes_YkLst6;
+
+alter table CustomerResidence
+   drop constraint FK_CstRes_YkLst7;
+
+alter table CustomerResidence
+   drop constraint FK_CstRes_YkLst8;
+
+alter table CustomerResidence
+   drop constraint FK_CstRes_YkLst9;
+
+alter table DEVICE
+   drop constraint FK_Dev_YukPAO;
+
+alter table DEVICECARRIERSETTINGS
+   drop constraint SYS_C0013216;
+
+alter table DEVICECONFIGURATIONDEVICEMAP
+   drop constraint FK_DEVICECO_REFERENCE_DEVICECO;
+
+alter table DEVICECONFIGURATIONDEVICEMAP
+   drop constraint FK_DEVICECO_REFERENCE_YUKONPAO;
+
+alter table DEVICECONFIGURATIONITEM
+   drop constraint FK_DevConfItem_DevConf;
+
+alter table DEVICEDIALUPSETTINGS
+   drop constraint SYS_C0013193;
+
+alter table DEVICEGROUP
+   drop constraint FK_DEVICEGROUP_DEVICEGROUP;
+
+alter table DEVICEGROUPMEMBER
+   drop constraint FK_DeviceGroupMember_DEVICE;
+
+alter table DEVICEGROUPMEMBER
+   drop constraint FK_DevGrpMember_DeviceGroup;
+
+alter table DEVICEIDLCREMOTE
+   drop constraint SYS_C0013241;
+
+alter table DEVICEIED
+   drop constraint SYS_C0013245;
+
+alter table DEVICELOADPROFILE
+   drop constraint SYS_C0013234;
+
+alter table DEVICEMCTIEDPORT
+   drop constraint SYS_C0013253;
+
+alter table DEVICEMETERGROUP
+   drop constraint SYS_C0013213;
+
+alter table DEVICEREADLOG
+   drop constraint FK_DEVICERE_FK_DRLOGR_DEVICERE;
+
+alter table DEVICEREADREQUESTLOG
+   drop constraint FK_DEVICERE_FK_DRREQL_DEVICERE;
+
+alter table DEVICESCANRATE
+   drop constraint SYS_C0013198;
+
+alter table DEVICETAPPAGINGSETTINGS
+   drop constraint SYS_C0013237;
+
+alter table DISPLAY2WAYDATA
+   drop constraint FK_DISPLAY2W_REF_POINT;
+
+alter table DISPLAY2WAYDATA
+   drop constraint SYS_C0013422;
+
+alter table DISPLAYCOLUMNS
+   drop constraint SYS_C0013418;
+
+alter table DISPLAYCOLUMNS
+   drop constraint SYS_C0013419;
+
+alter table DYNAMICACCUMULATOR
+   drop constraint SYS_C0015129;
+
+alter table DYNAMICBILLINGFIELD
+   drop constraint FK_DBF_REF_BFF;
+
+alter table DYNAMICBILLINGFORMAT
+   drop constraint FK_DYNAMICB_REF_BILLI_BILLINGF;
+
+alter table DYNAMICCCAREA
+   drop constraint FK_ccarea_Dynccarea;
+
+alter table DYNAMICCCOPERATIONSTATISTICS
+   drop constraint FK_DYNAMICC_REFERENCE_YUKONPAO;
+
+alter table DYNAMICCCSPECIALAREA
+   drop constraint FK_DynCCSpecA_CapContSpecA;
+
+alter table DYNAMICCCSUBSTATION
+   drop constraint FK_DYNAMICC_REFERENCE_CAPCONTR;
+
+alter table DYNAMICCCTWOWAYCBC
+   drop constraint FK_DYNAMICC_DEVICECB;
+
+alter table DYNAMICDEVICESCANDATA
+   drop constraint SYS_C0015139;
+
+alter table DYNAMICPAOSTATISTICSHISTORY
+   drop constraint FK_DYNPAOSTHIST_YKNPAO;
+
+alter table DYNAMICPOINTDISPATCH
+   drop constraint SYS_C0013331;
+
+alter table DateOfHoliday
+   drop constraint FK_HolSchID;
+
+alter table DateOfSeason
+   drop constraint FK_DaOfSe_SeSc;
+
+alter table DeliverySchedule
+   drop constraint FK_DS_REF_PP;
+
+alter table DeliverySchedule
+   drop constraint FK_DS_REF_YKNLSTNTRY;
+
+alter table DeviceAddress
+   drop constraint FK_Dev_DevDNP;
+
+alter table DeviceCBC
+   drop constraint SYS_C0013459;
+
+alter table DeviceCBC
+   drop constraint SYS_C0013460;
+
+alter table DeviceCustomerList
+   drop constraint FK_DvStLsCst;
+
+alter table DeviceCustomerList
+   drop constraint FK_DvStLsDev;
+
+alter table DeviceDirectCommSettings
+   drop constraint SYS_C0013186;
+
+alter table DeviceDirectCommSettings
+   drop constraint SYS_C0013187;
+
+alter table DeviceGroupComposed
+   drop constraint FK_DevGroupComp_DevGroup;
+
+alter table DeviceGroupComposedGroup
+   drop constraint FK_DevGrpCompGrp_DevGrpComp;
+
+alter table DeviceMCT400Series
+   drop constraint FK_Dev4_DevC;
+
+alter table DeviceMCT400Series
+   drop constraint FK_Dev4_TOU;
+
+alter table DevicePagingReceiverSettings
+   drop constraint FK_DevPaRec_Dev;
+
+alter table DeviceRTC
+   drop constraint FK_Dev_DevRTC;
+
+alter table DeviceRoutes
+   drop constraint SYS_C0013219;
+
+alter table DeviceRoutes
+   drop constraint SYS_C0013220;
+
+alter table DeviceSeries5RTU
+   drop constraint FK_DeviceSer5RTU_Device;
+
+alter table DeviceTNPPSettings
+   drop constraint FK_DevTNPP_Dev;
+
+alter table DeviceTypeCommand
+   drop constraint FK_DevCmd_Cmd;
+
+alter table DeviceTypeCommand
+   drop constraint FK_DevCmd_Grp;
+
+alter table DeviceVerification
+   drop constraint FK_DevV_Dev1;
+
+alter table DeviceVerification
+   drop constraint FK_DevV_Dev2;
+
+alter table DeviceWindow
+   drop constraint FK_DevScWin_Dev;
+
+alter table DynamicCCCapBank
+   drop constraint FK_CpBnk_DynCpBnk;
+
+alter table DynamicCCFeeder
+   drop constraint FK_CCFeed_DyFeed;
+
+alter table DynamicCCMonitorBankHistory
+   drop constraint FK_DYN_CCMONBNKHIST_BNKID;
+
+alter table DynamicCCMonitorBankHistory
+   drop constraint FK_DYN_CCMONBNKHIST_PTID;
+
+alter table DynamicCCMonitorPointResponse
+   drop constraint FK_DYN_CCMONPTRSP_BNKID;
+
+alter table DynamicCCMonitorPointResponse
+   drop constraint FK_DYN_CCMONPTRSP_PTID;
+
+alter table DynamicCCOriginalParent
+   drop constraint FK_DynCCOrigParent_YukonPAO;
+
+alter table DynamicCCSubstationBus
+   drop constraint FK_CCSubBs_DySubBs;
+
+alter table DynamicCalcHistorical
+   drop constraint FK_DynClc_ClcB;
+
+alter table DynamicLMControlArea
+   drop constraint FK_LMCntlAr_DynLMCntAr;
+
+alter table DynamicLMControlAreaTrigger
+   drop constraint FK_LMCntArTr_DyLMCnArTr;
+
+alter table DynamicLMControlHistory
+   drop constraint FK_DYNLMCNT_PAO;
+
+alter table DynamicLMGroup
+   drop constraint FK_LMGrp_DynLmGrp;
+
+alter table DynamicLMProgram
+   drop constraint FK_LMProg_DynLMPrg;
+
+alter table DynamicLMProgramDirect
+   drop constraint FK_DYNAMICL_LMPROGDIR_LMPROGRA;
+
+alter table DynamicPAOInfo
+   drop constraint FK_DynPAOInfo_YukPAO;
+
+alter table DynamicPAOStatistics
+   drop constraint FK_PASt_YkPA;
+
+alter table DynamicPointAlarming
+   drop constraint FK_DynPtAl_Pt;
+
+alter table DynamicTags
+   drop constraint FK_DynTgs_Pt;
+
+alter table DynamicTags
+   drop constraint FK_DYNAMICT_REF_DYNTG_TAGS;
+
+alter table DynamicVerification
+   drop constraint FK_DynV_Dev1;
+
+alter table DynamicVerification
+   drop constraint FK_DynV_Dev2;
+
+alter table ECToAccountMapping
+   drop constraint FK_ECTAcc_CstAcc;
+
+alter table ECToAccountMapping
+   drop constraint FK_ECTAcc_Enc;
+
+alter table ECToAcctThermostatSchedule
+   drop constraint FK_ECToAccThermSch_AccThermSch;
+
+alter table ECToAcctThermostatSchedule
+   drop constraint FK_ECToAccThermSch_EC;
+
+alter table ECToCallReportMapping
+   drop constraint FK_ECTSrv_Call;
+
+alter table ECToCallReportMapping
+   drop constraint FK_ECTSrv_Enc;
+
+alter table ECToGenericMapping
+   drop constraint FK_ECTGn_Enc;
+
+alter table ECToInventoryMapping
+   drop constraint FK_ECTInv_Enc;
+
+alter table ECToInventoryMapping
+   drop constraint FK_ECTInv_Enc2;
+
+alter table ECToLMCustomerEventMapping
+   drop constraint FK_EnCm_ECLmCs;
+
+alter table ECToLMCustomerEventMapping
+   drop constraint FK_LCsEv_ECLmCs;
+
+alter table ECToRouteMapping
+   drop constraint FK_ECToRouteMap_EC;
+
+alter table ECToRouteMapping
+   drop constraint FK_ECToRouteMap_Route;
+
+alter table ECToSubstationMapping
+   drop constraint FK_ECToSubMap_EC;
+
+alter table ECToSubstationMapping
+   drop constraint FK_ECToSubMap_Sub;
+
+alter table ECToWorkOrderMapping
+   drop constraint FK_ECTWrk_Enc2;
+
+alter table ECToWorkOrderMapping
+   drop constraint FK_ECTWrk_Enc;
+
+alter table EnergyCompany
+   drop constraint FK_EnCm_Cnt;
+
+alter table EnergyCompany
+   drop constraint FK_EngCmp_YkUs;
+
+alter table EnergyCompanyCustomerList
+   drop constraint FK_CICstBsEnCmpCsLs;
+
+alter table EnergyCompanyCustomerList
+   drop constraint FK_EnCmpEnCmpCsLs;
+
+alter table EnergyCompanyOperatorLoginList
+   drop constraint FK_EnCmpEnCmpOpLs;
+
+alter table EnergyCompanyOperatorLoginList
+   drop constraint FK_OpLgEnCmpOpLs;
+
+alter table EventAccount
+   drop constraint FK_EVENTACCT_CUSTACCT;
+
+alter table EventAccount
+   drop constraint FK_EVENTACCT_EVNTBSE;
+
+alter table EventBase
+   drop constraint FK_EVNTBSE_ACTNTRY;
+
+alter table EventBase
+   drop constraint FK_EVNTBSE_SYSCATNTRY;
+
+alter table EventBase
+   drop constraint FK_EVNTBSE_YUKUSR;
+
+alter table EventInventory
+   drop constraint FK_EVENTINV_EVNTBSE;
+
+alter table EventInventory
+   drop constraint FK_EVENTINV_INVENBSE;
+
+alter table EventWorkOrder
+   drop constraint FK_EVENTWO_EVNTBSE;
+
+alter table EventWorkOrder
+   drop constraint FK_EVENTWO_WOBASE;
+
+alter table ExtraPaoPointAssignment
+   drop constraint FK_ExtraPAOPointAsgmt_Point;
+
+alter table ExtraPaoPointAssignment
+   drop constraint FK_ExtraPAOPointAsgmt_YukonPAO;
+
+alter table FDRInterfaceOption
+   drop constraint FK_FDRINTER_REFERENCE_FDRINTER;
+
+alter table FDRTRANSLATION
+   drop constraint SYS_C0015066;
+
+alter table GRAPHDATASERIES
+   drop constraint GrphDSeri_GrphDefID;
+
+alter table GRAPHDATASERIES
+   drop constraint GrphDSeris_ptID;
+
+alter table GraphCustomerList
+   drop constraint FK_GRAPHCUS_REFGRPHCU_GRAPHDEF;
+
+alter table GraphCustomerList
+   drop constraint FK_GrphCstLst_Cst;
+
+alter table GroupPaoPermission
+   drop constraint FK_GROUPPAO_REF_YKGRP_YUKONGRO;
+
+alter table GroupPaoPermission
+   drop constraint FK_GROUPPAO_REF_YUKPA_YUKONPAO;
+
+alter table ImportPendingComm
+   drop constraint FK_ImpPC_PAO;
+
+alter table InventoryBase
+   drop constraint FK_CUS_CSTA_CUS3;
+
+alter table InventoryBase
+   drop constraint FK_CUS_HRDI_HAR2;
+
+alter table InventoryBase
+   drop constraint FK_INVENTOR_REF_CSTLS_YUKONLIS;
+
+alter table InventoryBase
+   drop constraint FK_Dev_InvB;
+
+alter table InventoryBase
+   drop constraint FK_InvB_YkLstEvlt;
+
+alter table InventoryConfigTask
+   drop constraint FK_InvConfTask_EC;
+
+alter table InventoryConfigTask
+   drop constraint FK_InvConfTask_YukonUser;
+
+alter table InventoryConfigTaskItem
+   drop constraint FK_InvConfTaskItem_InvBase;
+
+alter table InventoryConfigTaskItem
+   drop constraint FK_InvConfTaskItem_InvConfTask;
+
+alter table InventoryToAcctThermostatSch
+   drop constraint FK_InvToAccThermSch_AccThermSc;
+
+alter table InventoryToAcctThermostatSch
+   drop constraint FK_InvToAcctThermSch_InvBase;
+
+alter table InventoryToWarehouseMapping
+   drop constraint FK_INVTOWAREMAP_INVENBASE;
+
+alter table InventoryToWarehouseMapping
+   drop constraint FK_INVTOWAREMAP_WAREHOUSE;
+
+alter table Invoice
+   drop constraint FK_INVC_REF_PP;
+
+alter table InvoiceShipmentMapping
+   drop constraint FK_INVCSHPMNTMAP_INVC;
+
+alter table InvoiceShipmentMapping
+   drop constraint FK_INVCSHPMNTMAP_SHPMNT;
+
+alter table JOB
+   drop constraint FK_Job_YukonUser;
+
+alter table JOBPROPERTY
+   drop constraint FK_JobProperty_Job;
+
+alter table JOBSCHEDULEDONETIME
+   drop constraint FK_JobScheduledOneTime_Job;
+
+alter table JOBSCHEDULEDREPEATING
+   drop constraint FK_JOBSCHED_REFERENCE_JOB;
+
+alter table JOBSTATUS
+   drop constraint FK_JobStatus_Job;
+
+alter table LMCONTROLAREAPROGRAM
+   drop constraint FK_LMCntlArea_LMCntlArProg;
+
+alter table LMCONTROLAREAPROGRAM
+   drop constraint FK_LMPrg_LMCntlArProg;
+
+alter table LMConfigurationExpressCom
+   drop constraint FK_LMCfgXcom_LMCfg;
+
+alter table LMConfigurationSA205
+   drop constraint FK_LmCf2_LmCBs;
+
+alter table LMConfigurationSA305
+   drop constraint FK_LMCfg305_LMCfg;
+
+alter table LMConfigurationSASimple
+   drop constraint FK_LMCfgS_LMCfgB;
+
+alter table LMConfigurationVersacom
+   drop constraint FK_LMCfgVcom_LMCfg;
+
+alter table LMControlArea
+   drop constraint FK_LmCntAr_YukPAO;
+
+alter table LMControlAreaTrigger
+   drop constraint FK_LMCntlArea_LMCntlArTrig;
+
+alter table LMControlAreaTrigger
+   drop constraint FK_Point_LMCntlArTrig;
+
+alter table LMControlAreaTrigger
+   drop constraint FK_Point_LMCtrlArTrigPk;
+
+alter table LMControlHistory
+   drop constraint FK_LmCtrlHis_YPAO;
+
+alter table LMControlScenarioProgram
+   drop constraint FK_LmCScP_YkPA;
+
+alter table LMControlScenarioProgram
+   drop constraint FK_LMCONTRO_REF_LMSCP_LMPROGRA;
+
+alter table LMCurtailCustomerActivity
+   drop constraint FK_CICBas_LMCrtCstAct;
+
+alter table LMCurtailCustomerActivity
+   drop constraint FK_LMCURTAI_REFLMCST__LMCURTAI;
+
+alter table LMCurtailProgramActivity
+   drop constraint FK_LMPrgCrt_LMCrlPAct;
+
+alter table LMCustomerEventBase
+   drop constraint FK_CsLsE_LCstE;
+
+alter table LMCustomerEventBase
+   drop constraint FK_CsLsE_LCstE_a;
+
+alter table LMDirectCustomerList
+   drop constraint FK_LMDirCustList_CICustBase;
+
+alter table LMDirectCustomerList
+   drop constraint FK_LMDirCustList_LMProgDir;
+
+alter table LMDirectNotifGrpList
+   drop constraint FK_LMDi_DNGrpL;
+
+alter table LMDirectNotifGrpList
+   drop constraint FK_NtGr_DNGrpL;
+
+alter table LMEnergyExchangeCustomerList
+   drop constraint FK_ExCsLs_CstBs;
+
+alter table LMEnergyExchangeCustomerList
+   drop constraint FK_ExCsLs_PrEx;
+
+alter table LMEnergyExchangeCustomerReply
+   drop constraint FK_ExCsRp_CstBs;
+
+alter table LMEnergyExchangeCustomerReply
+   drop constraint FK_LMENERGY_REFEXCSTR_LMENERGY;
+
+alter table LMEnergyExchangeHourlyCustomer
+   drop constraint FK_ExHrCs_ExCsRp;
+
+alter table LMEnergyExchangeHourlyOffer
+   drop constraint FK_ExHrOff_ExOffRv;
+
+alter table LMEnergyExchangeOfferRevision
+   drop constraint FK_EExOffR_ExPrOff;
+
+alter table LMEnergyExchangeProgramOffer
+   drop constraint FK_EnExOff_PrgEnEx;
+
+alter table LMGroup
+   drop constraint FK_Device_LMGrpBase2;
+
+alter table LMGroupEmetcon
+   drop constraint SYS_C0013356;
+
+alter table LMGroupEmetcon
+   drop constraint SYS_C0013357;
+
+alter table LMGroupExpressCom
+   drop constraint FK_ExCG_LMExCm;
+
+alter table LMGroupExpressCom
+   drop constraint FK_ExCP_LMExCm;
+
+alter table LMGroupExpressCom
+   drop constraint FK_ExCSb_LMExCm;
+
+alter table LMGroupExpressCom
+   drop constraint FK_ExCSp_LMExCm;
+
+alter table LMGroupExpressCom
+   drop constraint FK_ExCad_LMExCm;
+
+alter table LMGroupExpressCom
+   drop constraint FK_LGrEx_LMG;
+
+alter table LMGroupExpressCom
+   drop constraint FK_LGrEx_Rt;
+
+alter table LMGroupMCT
+   drop constraint FK_LMGrMC_Grp;
+
+alter table LMGroupMCT
+   drop constraint FK_LMGrMC_Rt;
+
+alter table LMGroupMCT
+   drop constraint FK_LMGrMC_YkP;
+
+alter table LMGroupPoint
+   drop constraint FK_LMGrpPt_Dev;
+
+alter table LMGroupPoint
+   drop constraint FK_LMGrpPt_LMGrp;
+
+alter table LMGroupPoint
+   drop constraint FK_LMGrpPt_Pt;
+
+alter table LMGroupRipple
+   drop constraint FK_LmGr_LmGrpRip;
+
+alter table LMGroupRipple
+   drop constraint FK_LmGrpRip_Rout;
+
+alter table LMGroupSA205105
+   drop constraint FK_LGrS205_LmG;
+
+alter table LMGroupSA205105
+   drop constraint FK_LGrS205_Rt;
+
+alter table LMGroupSA305
+   drop constraint FK_LGrS305_LmGrp;
+
+alter table LMGroupSA305
+   drop constraint FK_LGrS305_Rt;
+
+alter table LMGroupSASimple
+   drop constraint FK_LmGrSa_LmG;
+
+alter table LMGroupSASimple
+   drop constraint FK_LmGrSa_Rt;
+
+alter table LMGroupVersacom
+   drop constraint FK_LMGrp_LMGrpVers;
+
+alter table LMGroupVersacom
+   drop constraint SYS_C0013367;
+
+alter table LMGroupXMLParameter
+   drop constraint FK_LMGroupXml_LMGroup;
+
+alter table LMHardwareBase
+   drop constraint FK_LMHrdB_Rt;
+
+alter table LMHardwareBase
+   drop constraint FK_LMHARDWA_REF_CSTLS_YUKONLIS;
+
+alter table LMHardwareBase
+   drop constraint FK_LMHrdB_LMCfg;
+
+alter table LMHardwareBase
+   drop constraint FK_LMHARDWA_ISA_CSTHR_INVENTOR;
+
+alter table LMHardwareConfiguration
+   drop constraint FK_LMH_CSTL_CUS2;
+
+alter table LMHardwareConfiguration
+   drop constraint FK_LMHARDWA_LMHRD_LMH_LMHARDWA;
+
+alter table LMHardwareConfiguration
+   drop constraint FK_LMHrd_LMGr;
+
+alter table LMHardwareEvent
+   drop constraint FK_IvB_LMHrEv;
+
+alter table LMHardwareEvent
+   drop constraint FK_LmHrEv_LmCsEv;
+
+alter table LMHardwareToMeterMapping
+   drop constraint FK_LMMETMAP_LMHARDBASE;
+
+alter table LMHardwareToMeterMapping
+   drop constraint FK_LMMETMAP_METERHARDBASE;
+
+alter table LMMacsScheduleCustomerList
+   drop constraint FK_McSchCstLst_MCSched;
+
+alter table LMMacsScheduleCustomerList
+   drop constraint FK_McsSchdCusLst_CICBs;
+
+alter table LMPROGRAM
+   drop constraint FK_LMPr_PrgCon;
+
+alter table LMPROGRAM
+   drop constraint FK_LmProg_YukPAO;
+
+alter table LMProgramConstraints
+   drop constraint FK_HlSc_LmPrC;
+
+alter table LMProgramConstraints
+   drop constraint FK_SesSch_LmPrC;
+
+alter table LMProgramControlWindow
+   drop constraint FK_LMPrg_LMPrgCntWind;
+
+alter table LMProgramCurtailCustomerList
+   drop constraint FK_CICstBase_LMProgCList;
+
+alter table LMProgramCurtailCustomerList
+   drop constraint FK_LMPrgCrt_LMPrCstLst;
+
+alter table LMProgramCurtailment
+   drop constraint FK_LMPrg_LMPrgCurt;
+
+alter table LMProgramDirect
+   drop constraint FK_LMPrg_LMPrgDirect;
+
+alter table LMProgramDirectGear
+   drop constraint FK_LMProgD_LMProgDGr;
+
+alter table LMProgramDirectGroup
+   drop constraint FK_LMGrp_LMPrgDGrp;
+
+alter table LMProgramDirectGroup
+   drop constraint FK_LMPrgD_LMPrgDGrp;
+
+alter table LMProgramEnergyExchange
+   drop constraint FK_LmPrg_LmPrEEx;
+
+alter table LMProgramEvent
+   drop constraint FK_CstAc_LMPrEv;
+
+alter table LMProgramEvent
+   drop constraint FK_LMPrEv_LMPrPub;
+
+alter table LMProgramEvent
+   drop constraint FK_LmCsEv_LmPrEv;
+
+alter table LMProgramGearHistory
+   drop constraint FK_LMProgGearHist_LMProgHist;
+
+alter table LMProgramWebPublishing
+   drop constraint FK_CsLEn_LPWbP;
+
+alter table LMProgramWebPublishing
+   drop constraint FK_LMPrgW_LMPr;
+
+alter table LMProgramWebPublishing
+   drop constraint FK_LMprApp_App;
+
+alter table LMProgramWebPublishing
+   drop constraint FK_YkWC_LMPrWPb;
+
+alter table LMThermoStatGear
+   drop constraint FK_ThrmStG_PrDiGe;
+
+alter table LMThermostatManualEvent
+   drop constraint FK_CsLsE_LThMnO2;
+
+alter table LMThermostatManualEvent
+   drop constraint FK_CsLsE_LThMnO1;
+
+alter table LMThermostatManualEvent
+   drop constraint FK_LMTh_InvB;
+
+alter table LMThermostatManualEvent
+   drop constraint FK_LmThrS_LmCstEv;
+
+alter table LMThermostatSeason
+   drop constraint FK_LMThermSea_LMThermSch;
+
+alter table LMThermostatSeasonEntry
+   drop constraint FK_LMThermSeaEntry_LMThermSea;
+
+alter table MACROROUTE
+   drop constraint SYS_C0013274;
+
+alter table MACROROUTE
+   drop constraint SYS_C0013275;
+
+alter table MACSchedule
+   drop constraint FK_MACSCHED_HOLIDAYS;
+
+alter table MACSchedule
+   drop constraint FK_SchdID_PAOID;
+
+alter table MACSimpleSchedule
+   drop constraint FK_MACSimpSch_PAO;
+
+alter table MACSimpleSchedule
+   drop constraint FK_MACSIMPLE_MACSCHED_ID;
+
+alter table MCTBroadCastMapping
+   drop constraint FK_MCTBCM_Device_MCTId;
+
+alter table MCTBroadCastMapping
+   drop constraint FK_MCTB_MAPDEV;
+
+alter table MCTConfigMapping
+   drop constraint FK_McCfgM_Dev;
+
+alter table MCTConfigMapping
+   drop constraint FK_McCfgM_McCfg;
+
+alter table MSPInterface
+   drop constraint FK_Intrfc_Vend;
+
+alter table MeterHardwareBase
+   drop constraint FK_METERHARD_INVENBSE;
+
+alter table MeterHardwareBase
+   drop constraint FK_METERHARD_YUKONLSTNTRY;
+
+alter table MspLMInterfaceMapping
+   drop constraint FK_MspLMInterMap_YukonPAObj;
+
+alter table NotificationDestination
+   drop constraint FK_NotifDest_NotifGrp;
+
+alter table NotificationDestination
+   drop constraint FK_CntNt_NtDst;
+
+alter table OperatorLoginGraphList
+   drop constraint FK_OpLgOpLgGrLs;
+
+alter table OperatorLoginGraphList
+   drop constraint FK_OpLgOpLgGrLs2;
+
+alter table OptOutEvent
+   drop constraint FK_OptOutEvent_CustAcct;
+
+alter table OptOutSurvey
+   drop constraint FK_OptOutSurv_Surv;
+
+alter table OptOutSurveyProgram
+   drop constraint FK_OptOutSurvProg_LMProg;
+
+alter table OptOutSurveyProgram
+   drop constraint FK_OptOutSurvProg_OptOutSurv;
+
+alter table OptOutSurveyResult
+   drop constraint FK_OptOutSurvRes_OptOutEventLo;
+
+alter table OptOutSurveyResult
+   drop constraint FK_OptOutSurvRes_SurvRes;
+
+alter table OptOutTemporaryOverride
+   drop constraint FK_OptOutTempOver_LMProgWebPub;
+
+alter table PAOExclusion
+   drop constraint FK_PAOEx_Pt;
+
+alter table PAOExclusion
+   drop constraint FK_PAOEx_YkPAO;
+
+alter table PAOExclusion
+   drop constraint FK_PAOEXCLU_REF_PAOEX_YUKONPAO;
+
+alter table PAOFavorites
+   drop constraint FK_PAOFav_YukonPAO;
+
+alter table PAOFavorites
+   drop constraint FK_PAOFav_YukonUser;
+
+alter table PAOProperty
+   drop constraint FK_PAOProp_YukonPAO;
+
+alter table PAORecentViews
+   drop constraint FK_PAORecentViews_YukonPAO;
+
+alter table PAOScheduleAssignment
+   drop constraint FK_PAOSCHASS_PAOSCH;
+
+alter table PAOScheduleAssignment
+   drop constraint FK_PAOSch_YukPAO;
+
+alter table PAOowner
+   drop constraint FK_YukPAO_PAOOwn;
+
+alter table PAOowner
+   drop constraint FK_YukPAO_PAOid;
+
+alter table POINT
+   drop constraint FK_Pt_YukPAO;
+
+alter table POINT
+   drop constraint Ref_STATGRP_PT;
+
+alter table POINTACCUMULATOR
+   drop constraint SYS_C0013317;
+
+alter table POINTANALOG
+   drop constraint SYS_C0013300;
+
+alter table POINTLIMITS
+   drop constraint SYS_C0013289;
+
+alter table POINTPROPERTYVALUE
+   drop constraint FK_POINTPRO_REFERENCE_POINT;
+
+alter table POINTSTATUS
+   drop constraint Ref_ptstatus_pt;
+
+alter table POINTTRIGGER
+   drop constraint FK_PTTRIGGERTRIGGERPT_PT;
+
+alter table POINTTRIGGER
+   drop constraint FK_PTTRIGGERVERIF_PT;
+
+alter table POINTTRIGGER
+   drop constraint FK_PTTRIGGER_PT;
+
+alter table POINTUNIT
+   drop constraint FK_PtUnit_UoM;
+
+alter table POINTUNIT
+   drop constraint Ref_ptunit_point;
+
+alter table PORTDIALUPMODEM
+   drop constraint SYS_C0013175;
+
+alter table PORTLOCALSERIAL
+   drop constraint SYS_C0013147;
+
+alter table PORTRADIOSETTINGS
+   drop constraint SYS_C0013169;
+
+alter table PORTSETTINGS
+   drop constraint SYS_C0013156;
+
+alter table PORTTERMINALSERVER
+   drop constraint SYS_C0013151;
+
+alter table PROFILEPEAKRESULT
+   drop constraint FK_PROFILEPKRSLT_DEVICE;
+
+alter table PointAlarming
+   drop constraint FK_POINTALAARM_POINT_POINTID;
+
+alter table PointAlarming
+   drop constraint FK_POINTALARMING;
+
+alter table PointToZoneMapping
+   drop constraint FK_PointZoneMap_Point;
+
+alter table PointToZoneMapping
+   drop constraint FK_PointZoneMap_Zone;
+
+alter table PortTiming
+   drop constraint SYS_C0013163;
+
+alter table PorterResponseMonitor
+   drop constraint FK_PortRespMon_StateGroup;
+
+alter table PorterResponseMonitorErrorCode
+   drop constraint FK_PortRespMonErr_PortRespMonR;
+
+alter table PorterResponseMonitorRule
+   drop constraint FK_PortRespMonRule_PortRespMon;
+
+alter table PurchasePlan
+   drop constraint FK_PRCHSPL_REF_EC;
+
+alter table RFNAddress
+   drop constraint FK_RFNAdd_Device;
+
+alter table RPHTag
+   drop constraint FK_RPHTag_RPH;
+
+alter table RepeaterRoute
+   drop constraint SYS_C0013269;
+
+alter table RepeaterRoute
+   drop constraint SYS_C0013270;
+
+alter table Route
+   drop constraint FK_Route_DevID;
+
+alter table Route
+   drop constraint FK_Route_YukPAO;
+
+alter table STATE
+   drop constraint FK_YkIm_St;
+
+alter table STATE
+   drop constraint SYS_C0013342;
+
+alter table ScheduleShipmentMapping
+   drop constraint FK_SCHDSHPMNTMAP_DS;
+
+alter table ScheduleShipmentMapping
+   drop constraint FK_SCHDSHPMNTMAP_SHPMNT;
+
+alter table ScheduleTimePeriod
+   drop constraint FK_SCHDTMPRD_REF_DS;
+
+alter table ScheduledGrpCommandRequest
+   drop constraint FK_SchGrpComReq_Job;
+
+alter table ServiceCompany
+   drop constraint FK_CstAdd_SrC;
+
+alter table ServiceCompany
+   drop constraint FK_CstCnt_SrvC;
+
+alter table ServiceCompanyDesignationCode
+   drop constraint FK_SRVCODSGNTNCODES_SRVCO;
+
+alter table Shipment
+   drop constraint FK_SHPMNT_WRHSE;
+
+alter table SiteInformation
+   drop constraint FK_Sub_Si;
+
+alter table StaticPAOInfo
+   drop constraint FK_StatPAOInfo;
+
+alter table StatusPointMonitor
+   drop constraint FK_StatPointMon_StateGroup;
+
+alter table StatusPointMonitorProcessor
+   drop constraint FK_StatPointMonProc_StatPointM;
+
+alter table SubstationToRouteMapping
+   drop constraint FK_Sub_Rte_Map_RteID;
+
+alter table SubstationToRouteMapping
+   drop constraint FK_Sub_Rte_Map_SubID;
+
+alter table Survey
+   drop constraint FK_Surv_EC;
+
+alter table SurveyQuestion
+   drop constraint FK_SurvQuest_Surv;
+
+alter table SurveyQuestionAnswer
+   drop constraint FK_SurvQuestAns_SurvQuest;
+
+alter table SurveyResult
+   drop constraint FK_SurvRes_CustAcct;
+
+alter table SurveyResult
+   drop constraint FK_SurvRes_Surv;
+
+alter table SurveyResultAnswer
+   drop constraint FK_SurvResAns_SurQuestAns;
+
+alter table SurveyResultAnswer
+   drop constraint FK_SurvResAns_SurvQuest;
+
+alter table SurveyResultAnswer
+   drop constraint FK_SurvResAns_SurvRes;
+
+alter table TEMPLATECOLUMNS
+   drop constraint SYS_C0013429;
+
+alter table TEMPLATECOLUMNS
+   drop constraint SYS_C0013430;
+
+alter table TOUDayMapping
+   drop constraint FK_TOUd_TOUSc;
+
+alter table TOUDayMapping
+   drop constraint FK_TOUm_TOUd;
+
+alter table TOUDayRateSwitches
+   drop constraint FK_TOUdRS_TOUd;
+
+alter table TagLog
+   drop constraint FK_TagLg_Pt;
+
+alter table TagLog
+   drop constraint FK_TagLg_Tgs;
+
+alter table TemplateDisplay
+   drop constraint FK_TemplateDisplay_DISPLAY;
+
+alter table TemplateDisplay
+   drop constraint FK_TemplateDisplay_TEMPLATE;
+
+alter table ThermostatEventHistory
+   drop constraint FK_ThermEventHist_AcctThermSch;
+
+alter table ThermostatEventHistory
+   drop constraint FK_ThermEventHist_InvBase;
+
+alter table UserPaoPermission
+   drop constraint FK_USERPAOP_REF_YKUSR_YUKONUSE;
+
+alter table UserPaoPermission
+   drop constraint FK_USERPAOP_REF_YUKPA_YUKONPAO;
+
+alter table VersacomRoute
+   drop constraint FK_VERSACOM_ROUTE_VER_ROUTE;
+
+alter table Warehouse
+   drop constraint FK_WAREHOUSE_ADDRESS;
+
+alter table Warehouse
+   drop constraint FK_WAREHOUSE_EC;
+
+alter table WorkOrderBase
+   drop constraint FK_CsLsE_WkB_c;
+
+alter table WorkOrderBase
+   drop constraint FK_CsLsE_WkB;
+
+alter table WorkOrderBase
+   drop constraint Ref_WrkOB_CstAc;
+
+alter table WorkOrderBase
+   drop constraint FK_WrkOr_SrvC;
+
+alter table YukonGroupRole
+   drop constraint FK_YkGrRl_YkGrp;
+
+alter table YukonGroupRole
+   drop constraint FK_YkGrRl_YkRle;
+
+alter table YukonGroupRole
+   drop constraint FK_YkGrpR_YkRlPr;
+
+alter table YukonListEntry
+   drop constraint FK_LstEnty_SelLst;
+
+alter table YukonRoleProperty
+   drop constraint FK_YkRlPrp_YkRle;
+
+alter table YukonSelectionList
+   drop constraint FK_YukonSelList_EnergyComp;
+
+alter table YukonUserGroup
+   drop constraint FK_YkUsGr_YkGr;
+
+alter table YukonUserGroup
+   drop constraint FK_YUKONUSE_REF_YKUSG_YUKONUSE;
+
+alter table YukonUserRole
+   drop constraint FK_YkUsRl_RlPrp;
+
+alter table YukonUserRole
+   drop constraint FK_YkUsRl_YkRol;
+
+alter table YukonUserRole
+   drop constraint FK_YkUsRlr_YkUsr;
+
+alter table Zone
+   drop constraint FK_ZONE_CapContSubBus;
+
+alter table Zone
+   drop constraint FK_Zone_PAO;
+
+alter table Zone
+   drop constraint FK_Zone_Zone;
 
 drop view TempMovedCapBanks_View;
 
@@ -7962,7 +9576,7 @@ create table Substation  (
    constraint PK_SUBSTATION primary key (SubstationID)
 );
 
-INSERT INTO Substation VALUES (0,'(none)',0);
+INSERT INTO Substation VALUES (0,'(none)');
 
 /*==============================================================*/
 /* Table: SubstationToRouteMapping                              */
