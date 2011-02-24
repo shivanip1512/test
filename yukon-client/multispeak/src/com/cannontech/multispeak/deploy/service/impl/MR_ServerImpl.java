@@ -178,6 +178,9 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
                                                                           lastReceived,
                                                                           vendor.getMaxReturnRecords());
         
+        int numRemaining = (meterReads.length < vendor.getMaxReturnRecords() ? 0:1); //at least one item remaining, bad assumption.
+        multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
+
         return meterReads;
     }
     
