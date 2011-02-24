@@ -39,7 +39,4 @@
 	<entry key="yukon.web.modules.operator.contactNotificationEnum.VOICE_PIN">Voice PIN</entry>
 	<entry key="yukon.web.modules.operator.contactNotificationEnum.WORK_PHONE">Work Phone</entry>
 	
-	<!-- FAQ -->
-	<entry key="yukon.web.modules.operator.faq.title">FAQ</entry>
-	
 </properties>
