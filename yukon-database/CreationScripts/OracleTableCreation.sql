@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/24/2011 11:49:50 AM                        */
+/* Created on:     2/24/2011 12:04:27 PM                        */
 /*==============================================================*/
 
 
@@ -2258,8 +2258,6 @@ drop table FDRTRANSLATION cascade constraints;
 drop table GRAPHDATASERIES cascade constraints;
 
 drop table GRAPHDEFINITION cascade constraints;
-
-drop table GatewayEndDevice cascade constraints;
 
 drop table GenericMacro cascade constraints;
 
@@ -7056,17 +7054,6 @@ create table GRAPHDEFINITION  (
 
 alter table GRAPHDEFINITION
    add constraint AK_GRNMUQ_GRAPHDEF unique (NAME);
-
-/*==============================================================*/
-/* Table: GatewayEndDevice                                      */
-/*==============================================================*/
-create table GatewayEndDevice  (
-   SerialNumber         VARCHAR2(30)                    not null,
-   HardwareType         NUMBER                          not null,
-   DataType             NUMBER                          not null,
-   DataValue            VARCHAR2(100),
-   constraint PK_GATEWAYENDDEVICE primary key (SerialNumber, HardwareType, DataType)
-);
 
 /*==============================================================*/
 /* Table: GenericMacro                                          */

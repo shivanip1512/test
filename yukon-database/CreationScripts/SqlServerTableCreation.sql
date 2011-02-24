@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/24/2011 11:40:15 AM                        */
+/* Created on:     2/24/2011 12:07:02 PM                        */
 /*==============================================================*/
 
 
@@ -4603,13 +4603,6 @@ if exists (select 1
            where  id = object_id('GRAPHDEFINITION')
             and   type = 'U')
    drop table GRAPHDEFINITION
-go
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('GatewayEndDevice')
-            and   type = 'U')
-   drop table GatewayEndDevice
 go
 
 if exists (select 1
@@ -10578,18 +10571,6 @@ go
 
 alter table GRAPHDEFINITION
    add constraint AK_GRNMUQ_GRAPHDEF unique (NAME)
-go
-
-/*==============================================================*/
-/* Table: GatewayEndDevice                                      */
-/*==============================================================*/
-create table GatewayEndDevice (
-   SerialNumber         varchar(30)          not null,
-   HardwareType         numeric              not null,
-   DataType             numeric              not null,
-   DataValue            varchar(100)         null,
-   constraint PK_GATEWAYENDDEVICE primary key (SerialNumber, HardwareType, DataType)
-)
 go
 
 /*==============================================================*/

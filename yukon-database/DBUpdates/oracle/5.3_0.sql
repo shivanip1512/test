@@ -264,7 +264,7 @@ OR EventType LIKE 'account.thermostat%';
 /* End YUK-9455 */
 
 /* Start YUK-9448 */
-DELETE FROM GatewayEndDevice; 
+DROP TABLE GatewayEndDevice; 
 
 DELETE FROM YukonListEntry
 WHERE ListId = 1050; 
