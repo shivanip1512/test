@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/23/2011 1:56:20 PM                         */
+/* Created on:     2/23/2011 3:15:12 PM                         */
 /*==============================================================*/
 
 
@@ -12208,18 +12208,6 @@ insert into YukonListEntry values (1222,1019,0,'Auto',2502);
 insert into YukonListEntry values (1223,1019,0,'On',2503);
 INSERT INTO YukonListEntry VALUES (1224,1019,0,'Circulate',2504); 
 
-insert into YukonListEntry values (1251,1050,0,'Last Updated Time',3201);
-insert into YukonListEntry values (1252,1050,0,'Setpoint',3202);
-insert into YukonListEntry values (1253,1050,0,'Fan',3203);
-insert into YukonListEntry values (1254,1050,0,'System',3204);
-insert into YukonListEntry values (1255,1050,0,'Room,Unit',3205);
-insert into YukonListEntry values (1256,1050,0,'Outdoor',3234);
-insert into YukonListEntry values (1257,1050,0,'Filter Remaining,Filter Restart',3236);
-insert into YukonListEntry values (1258,1050,0,'Lower CoolSetpoint Limit,Upper HeatSetpoint Limit',3237);
-insert into YukonListEntry values (1259,1050,0,'Information String',3299);
-insert into YukonListEntry values (1260,1050,0,'Cool Runtime,Heat Runtime',3238);
-insert into YukonListEntry values (1261,1050,0,'Battery',3239);
-
 insert into YukonListEntry values (1301,1051,0,'Serial #',2701);
 insert into YukonListEntry values (1302,1051,0,'Acct #',2702);
 insert into YukonListEntry values (1303,1051,0,'Phone #',2703);
@@ -13170,7 +13158,6 @@ INSERT INTO YukonSelectionList VALUES(1045,'N','(none)','Heat pump standby sourc
 INSERT INTO YukonSelectionList VALUES(1046,'N','(none)','Irrigation type selection','IrrigationType','Y',-1);
 INSERT INTO YukonSelectionList VALUES(1047,'N','(none)','Irrigation soil type selection','IRRSoilType','Y',-1);
 INSERT INTO YukonSelectionList VALUES(1048,'N','(none)','Device location selection','DeviceLocation','N',-1);
-INSERT INTO YukonSelectionList VALUES(1050,'N','(none)','Gateway end device data description','GatewayEndDeviceDataDesc','N',-1);
 INSERT INTO YukonSelectionList VALUES(1051,'N','(none)','Hardware Inventory search by selection','InvSearchBy','N',-1);
 INSERT INTO YukonSelectionList VALUES(1052,'N','(none)','Hardware Inventory sort by selection','InvSortBy','N',-1);
 INSERT INTO YukonSelectionList VALUES(1053,'N','(none)','Hardware Inventory filter by selection','InvFilterBy','N',-1);

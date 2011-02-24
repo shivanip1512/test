@@ -263,6 +263,20 @@ OR EventType LIKE 'account.contactInfo%'
 OR EventType LIKE 'account.thermostat%';
 /* End YUK-9455 */
 
+/* Start YUK-9448 */
+DELETE FROM GatewayEndDevice; 
+
+DELETE FROM YukonListEntry
+WHERE ListId = 1050; 
+
+DELETE FROM YukonSelectionList
+WHERE ListId = 1050; 
+
+DELETE FROM ECToGenericMapping
+WHERE ItemId = 1050 
+AND MappingCategory = 'YukonSelectionList';
+/* End YUK-9448 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
