@@ -23,7 +23,8 @@ public class RolePropertyChangeHelper {
 
             @Override
             public void dbChangeReceived(DBChangeMsg dbChange) {
-                 if (dbChange.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB && dbChange.getDbChangeType() == DbChangeType.UPDATE) {
+                 if (dbChange.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB && (dbChange.getDbChangeType() == DbChangeType.UPDATE || 
+                                                                                    dbChange.getDbChangeType() == DbChangeType.DELETE)) {
                      if (log.isDebugEnabled()) {
                          log.debug("sending clearCache to RolePropertyDao because: " + dbChange);
                      }
