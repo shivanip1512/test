@@ -12,6 +12,7 @@ import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.optout.exception.OptOutException;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
@@ -57,11 +58,11 @@ public interface OptOutService {
      * @param request - Contains info about the opt out such as start date and duration
      * @param user - User requesting opt out
      * @param optOutCounts - Determines if the opt out counts towards the user's opt out limit
-     * @throws CommandCompletionException, OptOutException, NotAuthorizedException
+     * @throws CommandCompletionException, OptOutException
      */
     public void optOutWithValidation(CustomerAccount customerAccount, OptOutRequest request,
                                           LiteYukonUser user, OptOutCounts optOutCounts) 
-        throws CommandCompletionException;
+        throws CommandCompletionException, OptOutException;
 
 	/**
 	 * Method to cancel an opt out or a scheduled opt out

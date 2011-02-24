@@ -331,8 +331,8 @@ public class OptOutServiceImpl implements OptOutService {
     @Override
     @Transactional
     public void optOutWithValidation(final CustomerAccount customerAccount,
-                                          final OptOutRequest request,
-                                          final LiteYukonUser user, final OptOutCounts optOutCounts)
+                                     final OptOutRequest request,
+                                     final LiteYukonUser user, final OptOutCounts optOutCounts)
         throws CommandCompletionException, OptOutException {
         if (request.getStartDate() != null) {
             Instant currentTime = new Instant();
