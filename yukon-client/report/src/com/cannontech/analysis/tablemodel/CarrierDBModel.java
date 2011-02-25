@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;

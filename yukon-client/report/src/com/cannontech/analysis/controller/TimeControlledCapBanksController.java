@@ -1,10 +1,10 @@
 package com.cannontech.analysis.controller;
 
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.report.TimeControlledCapBanksReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.TimeControlledCapBanksModel;
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.spring.YukonSpringHook;
 
 public class TimeControlledCapBanksController extends CapControlReportControllerBase {

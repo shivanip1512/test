@@ -8,6 +8,8 @@ package com.cannontech.analysis.tablemodel;
 
 import java.util.Date;
 
+import com.cannontech.analysis.ReportFilter;
+
 /**
  * @author stacey
  *

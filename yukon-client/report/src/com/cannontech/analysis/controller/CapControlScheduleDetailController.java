@@ -4,11 +4,11 @@ import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.report.CapControlScheduleDetailReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.CapControlScheduleDetailModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.util.ServletUtil;
 
 public class CapControlScheduleDetailController extends CapControlReportControllerBase {

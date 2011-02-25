@@ -8,10 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.ServletRequestUtils;
 
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.tablemodel.CapControlFilterable;
 import com.cannontech.analysis.tablemodel.FilterObjectsReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.web.util.ServletRequestEnumUtils;
 
 public abstract class CapControlReportControllerBase extends ReportControllerBase {

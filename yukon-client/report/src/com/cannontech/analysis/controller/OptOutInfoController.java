@@ -6,12 +6,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.ServletRequestUtils;
 
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.report.OptOutInfoReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.EnergyCompanyModelAttributes;
 import com.cannontech.analysis.tablemodel.OptOutInfoModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.web.util.ServletRequestEnumUtils;
 import com.google.common.collect.Sets;

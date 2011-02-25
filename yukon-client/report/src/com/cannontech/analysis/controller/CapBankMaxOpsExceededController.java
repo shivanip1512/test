@@ -2,11 +2,11 @@ package com.cannontech.analysis.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.report.CapBankMaxOpsExceededReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.CapBankMaxOpsExceededModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
 public class CapBankMaxOpsExceededController extends CapControlReportControllerBase {
     

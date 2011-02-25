@@ -22,8 +22,8 @@ import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.tablemodel.MeterReadModel;
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
 /**
  * Created on Dec 15, 2003

@@ -16,12 +16,12 @@ import org.apache.commons.lang.StringUtils;
 import org.jfree.report.JFreeReport;
 import org.jfree.report.function.FunctionInitializeException;
 
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.ReportGroup;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.controller.ReportController;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;

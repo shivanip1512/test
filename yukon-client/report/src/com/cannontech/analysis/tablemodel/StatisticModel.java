@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.data.statistic.StatisticData;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlFragmentSource;

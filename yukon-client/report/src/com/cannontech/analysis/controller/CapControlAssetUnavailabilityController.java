@@ -5,11 +5,11 @@ import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.report.CapControlAssetUnavailabilityReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.CapControlAssetUnavailabilityModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.util.ServletUtil;
 
 public class CapControlAssetUnavailabilityController extends CapControlReportControllerBase {

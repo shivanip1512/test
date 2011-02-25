@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.report.YukonReportBase;
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
 
 public interface ReportController {

@@ -18,8 +18,8 @@ import org.jfree.report.elementfactory.TextFieldElementFactory;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 
 import com.cannontech.analysis.ReportFactory;
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.tablemodel.StarsAMRDetailModel;
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
 /**
  * Created on May 22, 2005

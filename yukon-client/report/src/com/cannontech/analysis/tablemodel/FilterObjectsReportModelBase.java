@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.controller.FilterObjectsMapSource;
 import com.cannontech.cbc.cache.CapControlCache;

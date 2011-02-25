@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.data.device.capcontrol.MaxDailyOpsData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;

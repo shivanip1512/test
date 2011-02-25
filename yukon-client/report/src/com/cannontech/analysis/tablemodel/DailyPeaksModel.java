@@ -15,6 +15,7 @@ import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.data.lm.DailyPeak;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.point.PointQuality;

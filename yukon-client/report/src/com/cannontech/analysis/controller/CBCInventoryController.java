@@ -1,10 +1,10 @@
 package com.cannontech.analysis.controller;
 
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.report.CBCInventoryReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.CBCInventoryModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
 public class CBCInventoryController extends CapControlReportControllerBase {
 

@@ -1,5 +1,7 @@
 package com.cannontech.analysis.tablemodel;
 
+import com.cannontech.analysis.ReportFilter;
+
 
 public class StatisticHistoryPortModel extends StatisticHistoryModel
 {

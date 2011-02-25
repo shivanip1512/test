@@ -26,8 +26,8 @@ import org.jfree.ui.FloatDimension;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.analysis.ReportFactory;
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.tablemodel.ScheduledMeterReadModel;
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.spring.YukonSpringHook;
 
 /**

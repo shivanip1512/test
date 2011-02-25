@@ -7,11 +7,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.ServletRequestUtils;
 
+import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.report.ProgramAndGearControlReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.ProgramAndGearControlModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
