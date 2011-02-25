@@ -15,6 +15,9 @@
     <c:when test="${pao.paoIdentifier.paoType == 'LM_DIRECT_PROGRAM'}">
         <dr:programState programId="${paoId}"/>
     </c:when>
+    <c:when test="${pao.paoIdentifier.paoType == 'LM_SEP_PROGRAM'}">
+        <dr:programState programId="${paoId}"/>
+    </c:when>
     <c:otherwise>
         <dr:loadGroupState loadGroupId="${paoId}"/>
     </c:otherwise>

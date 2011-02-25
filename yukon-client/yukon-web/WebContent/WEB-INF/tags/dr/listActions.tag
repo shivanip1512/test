@@ -17,6 +17,9 @@
     <c:when test="${pao.paoIdentifier.paoType == 'LM_DIRECT_PROGRAM'}">
         <dr:programListActions pao="${pao}"/>
     </c:when>
+    <c:when test="${pao.paoIdentifier.paoType == 'LM_SEP_PROGRAM'}">
+        <dr:programListActions pao="${pao}"/>
+    </c:when>
     <c:otherwise>
         <dr:loadGroupListActions pao="${pao}"/>
     </c:otherwise>
