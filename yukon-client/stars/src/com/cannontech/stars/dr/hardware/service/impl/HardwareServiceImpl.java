@@ -2,7 +2,6 @@ package com.cannontech.stars.dr.hardware.service.impl;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
