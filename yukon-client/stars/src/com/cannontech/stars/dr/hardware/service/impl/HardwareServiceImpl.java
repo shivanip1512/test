@@ -37,6 +37,7 @@ import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Lists;
 
 public class HardwareServiceImpl implements HardwareService {
 
@@ -67,7 +68,7 @@ public class HardwareServiceImpl implements HardwareService {
         
         List<OptOutEventDto> optOutEvents = optOutEventDao.getCurrentOptOuts(accountId, inventoryId);
         
-        LinkedList<Integer> optOutEventIdList = new LinkedList<Integer>();
+        List<Integer> optOutEventIdList = Lists.newArrayListWithCapacity(optOutEvents.size());
         
         for(OptOutEventDto event : optOutEvents){
             optOutEventIdList.add(event.getEventId());
