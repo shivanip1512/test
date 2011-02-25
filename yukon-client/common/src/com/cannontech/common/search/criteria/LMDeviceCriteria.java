@@ -18,7 +18,8 @@ public class LMDeviceCriteria extends YukonPaoTypeCriteriaHelper {
     	PaoType.LM_GROUP_EXPRESSCOMM, 
     	PaoType.LM_GROUP_VERSACOM,
     	PaoType.LM_GROUP_EMETCON,
-    	PaoType.MACRO_GROUP
+    	PaoType.MACRO_GROUP,
+    	PaoType.LM_GROUP_DIGI_SEP
     );
 
     public LMDeviceCriteria() {

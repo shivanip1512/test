@@ -35,7 +35,8 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
         PaoType.LM_GROUP_MCT,
         PaoType.LM_GROUP_POINT,
         PaoType.LM_GROUP_RIPPLE,
-        PaoType.LM_GROUP_VERSACOM
+        PaoType.LM_GROUP_VERSACOM,
+        PaoType.LM_GROUP_DIGI_SEP
     };  
 
 	private static final PaoType[] GROUP_LIST_SA = {
@@ -49,7 +50,8 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
         PaoType.LM_GROUP_SA205,
         PaoType.LM_GROUP_SA305,
         PaoType.LM_GROUP_SADIGITAL,
-        PaoType.LM_GROUP_VERSACOM
+        PaoType.LM_GROUP_VERSACOM,
+        PaoType.LM_GROUP_DIGI_SEP
     };
 	
 /**

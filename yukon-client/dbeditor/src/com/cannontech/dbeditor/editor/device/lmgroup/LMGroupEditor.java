@@ -62,7 +62,9 @@ public class LMGroupEditor extends com.cannontech.common.editor.PropertyPanel im
 		{ PAOGroups.LM_GROUP_GOLAY },
 		
 		//com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupXMLEditorPanel
-		{ PAOGroups.LM_GROUP_INTEGRATION }
+		{ PAOGroups.LM_GROUP_INTEGRATION },
+		
+		{ PAOGroups.LM_GROUP_DIGI_SEP }
 	};
 
 	
@@ -152,6 +154,11 @@ public Object[] createNewPanel(int panelIndex)
 		case 12:
             objs[0] = new com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupXMLEditorPanel();
             objs[1] = "Integration Settings";
+            break;
+            
+		case 13:
+            objs[0] = new com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupDigiSepPanel();
+            objs[1] = "Addressing";
             break;
 	}
 		

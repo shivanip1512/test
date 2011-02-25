@@ -22,6 +22,7 @@ public class LMGroupWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private SpecialRippleMessagePanel specialRippleMessagePanel = null;
 	private LMGroupExpressComEditorPanel lmGroupExpressComEditorPanel = null;
 	private LMGroupXMLEditorPanel lmGroupXMLEditorPanel = null;
+	private LMGroupDigiSepPanel lmGroupDigiSepEditorPanel = null;
 	private LMGroupPointEditorPanel lmGroupPointEditorPanel = null;
 	
 	private LMGroupMCTEditorPanel lmGroupMCTEditorPanel = null;
@@ -85,6 +86,14 @@ public LMGroupXMLEditorPanel getLMGroupXMLEditorPanel()
 		lmGroupXMLEditorPanel = new LMGroupXMLEditorPanel();
 	
 	return lmGroupXMLEditorPanel;
+}
+
+public LMGroupDigiSepPanel getlmGroupDigiSepEditorPanel()
+{
+    if( lmGroupDigiSepEditorPanel == null )
+        lmGroupDigiSepEditorPanel = new LMGroupDigiSepPanel();
+    
+    return lmGroupDigiSepEditorPanel;
 }
 
 public SA205EditorPanel getSA205EditorPanel() 
@@ -339,7 +348,13 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	{
 		getGolayEditorPanel().setFirstFocus();
         return getGolayEditorPanel();
-	}	
+	}
+	else if ( currentInputPanel == getLMGroupBasePanel()
+            && getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_DIGI_SEP )
+    {
+	    getlmGroupDigiSepEditorPanel().setFirstFocus();
+       return getlmGroupDigiSepEditorPanel();
+    }
 	
 	System.err.println(getClass() + "::getNextInputPanel() - currentInputPanel was not recognized.");
 	return null;
@@ -401,6 +416,7 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 			  || currentPanel == aSA205EditorPanel
 			  || currentPanel == aSADigitalEditorPanel
 			  || currentPanel == golayEditorPanel
-			  || currentPanel == lmGroupMCTEditorPanel );
+			  || currentPanel == lmGroupMCTEditorPanel
+			  || currentPanel == lmGroupDigiSepEditorPanel);
 }
 }

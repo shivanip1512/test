@@ -1173,7 +1173,8 @@ public void setSwitchType(String type)
 	//do not show the route panel if the type is one of the following
 	getCommunicationPanel().setVisible( 
 		!(com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP
-	     || com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT) );
+	     || com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT
+	     || com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_DIGI_SEP) );
 
 	//dont show the following options if this group is a MACRO
 	getJLabelKWCapacity().setVisible( 
