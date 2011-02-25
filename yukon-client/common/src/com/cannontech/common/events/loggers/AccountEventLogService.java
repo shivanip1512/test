@@ -219,11 +219,14 @@ public interface AccountEventLogService {
                                                ReadableInstant optOutStopDate);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
-    public void optOutCancelAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser user,
-                                                @Arg(ArgEnum.accountNumber) String accountNumber,
-                                                @Arg(ArgEnum.deviceName) String serialNumber,
-                                                ReadableInstant optOutStartDate,
-                                                ReadableInstant optOutStopDate);
+    public void scheduledOptOutCancelAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser user,
+                                                         @Arg(ArgEnum.accountNumber) String accountNumber,
+                                                         @Arg(ArgEnum.deviceName) String serialNumber);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
+    public void activeOptOutCancelAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser user,
+                                                      @Arg(ArgEnum.accountNumber) String accountNumber,
+                                                      @Arg(ArgEnum.deviceName) String serialNumber);
     
     // Opt Out Service Level
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.optOut")

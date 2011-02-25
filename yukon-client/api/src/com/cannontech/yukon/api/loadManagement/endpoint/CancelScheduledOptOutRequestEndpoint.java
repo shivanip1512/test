@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.jdom.Element;
 import org.jdom.Namespace;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -15,9 +14,8 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
@@ -29,6 +27,7 @@ import com.cannontech.stars.dr.optout.exception.OptOutException;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.dr.optout.service.OptOutService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.yukon.api.loadManagement.endpoint.endpointmappers.CancelOptOutRequestMapper;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -46,6 +45,7 @@ public class CancelScheduledOptOutRequestEndpoint {
     private LMHardwareBaseDao lmHardwareBaseDao;
     private RolePropertyDao rolePropertyDao;
     private OptOutEventDao optOutEventDao;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
 
     private Namespace ns = YukonXml.getYukonNamespace();
 
@@ -68,13 +68,15 @@ public class CancelScheduledOptOutRequestEndpoint {
         LMHardwareBase lmHardwareBase = null;
         
         try {
+            accountEventLogService.scheduledOptOutCancelAttemptedThroughApi(user, cancelOptOutHelper.getAccountNumber(), 
+                                                                            cancelOptOutHelper.getSerialNumber());
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
-            LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompanyByUser(user);
+            YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
             customerAccount = 
                 customerAccountDao.getByAccountNumberForDescendentsOfEnergyCompany(cancelOptOutHelper.getAccountNumber(), 
                                                                                    energyCompany);
             lmHardwareBase = lmHardwareBaseDao.getBySerialNumber(cancelOptOutHelper.getSerialNumber());
-            
+           
             List<OptOutEventDto> events =
                 optOutEventDao.getCurrentOptOuts(customerAccount.getAccountId(), lmHardwareBase.getInventoryId());
             
@@ -86,12 +88,9 @@ public class CancelScheduledOptOutRequestEndpoint {
                 if (event.getState() == OptOutEventState.SCHEDULED) {
                     scheduledFound = true;
                     eventIdList.add(event.getEventId());
-                    accountEventLogService.optOutCancelAttemptedThroughApi(user, customerAccount.getAccountNumber(), 
-                                                                           lmHardwareBase.getManufacturerSerialNumber(),
-                                                                           new Instant(event.getStartDate()),
-                                                                           new Instant(event.getStopDate()));
                 }
             }
+            
             if (scheduledFound) {
                 optOutService.cancelOptOut(eventIdList, user);
                 resp.addContent(XmlUtils.createStringElement("success", ns, ""));
@@ -143,4 +142,11 @@ public class CancelScheduledOptOutRequestEndpoint {
     public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
         this.accountEventLogService = accountEventLogService;
     }
+    
+    @Autowired
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    }
+    
+    
 }
