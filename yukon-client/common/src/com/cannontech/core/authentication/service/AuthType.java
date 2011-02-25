@@ -1,6 +1,9 @@
 package com.cannontech.core.authentication.service;
 
-public enum AuthType {
+import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.util.DatabaseRepresentationSource;
+
+public enum AuthType implements DatabaseRepresentationSource, DisplayableEnum {
     PLAIN("Normal"),
     HASH_SHA("Hashed"),
     RADIUS("Radius"),
@@ -12,12 +15,29 @@ public enum AuthType {
 
     private AuthType(String title) {
         this.title = title;
-        
     }
     
     @Override
     public String toString() {
         return title;
+    }
+    
+    public String getKey() {
+        return name();
+    }
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.common.authType." + name();
+    }
+    
+    @Override
+    public Object getDatabaseRepresentation() {
+        return name();
+    }
+    
+    public AuthType getValue() {
+        return this;
     }
     
 }

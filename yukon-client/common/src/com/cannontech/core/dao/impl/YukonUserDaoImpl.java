@@ -1,26 +1,36 @@
 package com.cannontech.core.dao.impl;
 
+import java.util.Arrays;
 import java.util.List;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.model.UpdatableYukonUser;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authorization.dao.PaoPermissionDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.FieldMapper;
 import com.cannontech.database.MappingRowCallbackHandler;
+import com.cannontech.database.PagingResultSetExtractor;
+import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.TransactionType;
-import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -32,7 +42,6 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.Lists;
 
 /**
  * @author rneuharth
@@ -45,12 +54,42 @@ public class YukonUserDaoImpl implements YukonUserDao {
     private static final String selectByUsernameSql;
     private static final ParameterizedRowMapper<LiteYukonUser> rowMapper;
     
+    private AuthenticationService authenticationService;
     private DBPersistentDao dbPersistantDao;
     private IDatabaseCache databaseCache;
     private NextValueHelper nextValueHelper;
     private PaoPermissionDao<LiteYukonUser> userPaoPermissionDao = null;
     private SystemEventLogService systemEventLogService;
-    private YukonJdbcOperations yukonJdbcOperations;
+    private YukonJdbcTemplate yukonJdbcTemplate;
+    private SimpleTableAccessTemplate<LiteYukonUser> simpleTableTemplate;
+    private final static FieldMapper<LiteYukonUser> fieldMapper = new FieldMapper<LiteYukonUser>() {
+        @Override
+        public Number getPrimaryKey(LiteYukonUser user) {
+            return user.getUserID();
+        }
+
+        @Override
+        public void setPrimaryKey(LiteYukonUser user, int userId) {
+            user.setUserID(userId);
+        }
+
+        @Override
+        public void extractValues(MapSqlParameterSource parameterHolder, LiteYukonUser user) {
+            parameterHolder.addValue("Username", user.getUsername());
+            parameterHolder.addValue("Password", SqlUtils.convertStringToDbValue("")); /* Just incase this ever changes */
+            parameterHolder.addValue("Status", user.getLoginStatus());
+            parameterHolder.addValue("AuthType", user.getAuthType());
+        }
+    };
+    
+    @PostConstruct
+    public void init() {
+        simpleTableTemplate = new SimpleTableAccessTemplate<LiteYukonUser>(yukonJdbcTemplate, nextValueHelper);
+        simpleTableTemplate.setTableName("YukonUser");
+        simpleTableTemplate.setFieldMapper(fieldMapper);
+        simpleTableTemplate.setPrimaryKeyField("UserId");
+        simpleTableTemplate.setPrimaryKeyValidOver(UserUtils.USER_DEFAULT_ID -1);
+    }
     
     public static final int numberOfRandomChars = 5;
     
@@ -69,7 +108,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	public void changeUsername(LiteYukonUser changingUser, int modifiedUserId, String newUsername) 
 	throws NotAuthorizedException {
 	    
-	    LiteYukonUser existingUser = getLiteYukonUser(newUsername); 
+	    LiteYukonUser existingUser = findUserByUsername(newUsername); 
 	    if (existingUser != null) {
 	        throw new NotAuthorizedException("Username with " + newUsername + " already exists");
 	    }
@@ -78,12 +117,37 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	    modifiedUser.setUsername(newUsername);
 	    
 	    final String sql = "UPDATE YukonUser SET UserName = ? WHERE UserID = ?";
-	    yukonJdbcOperations.update(sql, newUsername, modifiedUserId);
+	    yukonJdbcTemplate.update(sql, newUsername, modifiedUserId);
 
 	    systemEventLogService.usernameChanged(changingUser,
 	                                          modifiedUser.getUsername(),
 	                                          newUsername);
 	}
+	
+	@Override
+	@Transactional
+    public void save(UpdatableYukonUser user) {
+	    /* YukonUser */
+	    simpleTableTemplate.save(user);
+	    
+	    /* Update password */
+	    if (authenticationService.supportsPasswordSet(user.getAuthType())) {
+	        authenticationService.setPassword(user, user.getPassword());
+	    }
+	    
+	    /* EnergyCompanyOperatorLoginList */
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+	    sql.append("DELETE FROM EnergyCompanyOperatorLoginList");
+	    sql.append("WHERE EnergyCompanyId").eq(user.getEnergyCompanyId());
+	    yukonJdbcTemplate.update(sql);
+
+	    if (user.getEnergyCompanyId() != null) {
+	        sql = new SqlStatementBuilder("INSERT INTO EnergyCompanyOperatorLoginList");
+	        sql.values(user.getUserID(), user.getEnergyCompanyId());
+	        yukonJdbcTemplate.update(sql);
+	    }
+	    
+    }
 	
 	@Override
     @Transactional
@@ -98,7 +162,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	    user.setUserID(userId);
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
 	    sql.append("INSERT INTO YukonUser VALUES (?,?,?,?,?)");
-	    yukonJdbcOperations.update(sql.toString(), user.getUserID(), user.getUsername(), SqlUtils.convertStringToDbValue(password), user.getLoginStatus().getDatabaseRepresentation(), user.getAuthType().name());
+	    yukonJdbcTemplate.update(sql.toString(), user.getUserID(), user.getUsername(), SqlUtils.convertStringToDbValue(password), user.getLoginStatus().getDatabaseRepresentation(), user.getAuthType().name());
 	    
 	    for(LiteYukonGroup group : groups) {
 	        sql = new SqlStatementBuilder();
@@ -108,7 +172,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
     	    sql.append(group.getGroupID());
     	    sql.append(")");
     	    
-    	    yukonJdbcOperations.update(sql.toString());
+    	    yukonJdbcTemplate.update(sql.toString());
 	    }
 	}
 	
@@ -116,7 +180,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
     @Transactional
     public void update(LiteYukonUser user) {
         final String sql = "update yukonuser set username = ?, status = ?, AuthType = ? where userid = ?";
-        yukonJdbcOperations.update(sql, user.getUsername(),
+        yukonJdbcTemplate.update(sql, user.getUsername(),
                                    user.getLoginStatus().getDatabaseRepresentation(),
                                    user.getAuthType().name(), user.getUserID());
     }
@@ -130,22 +194,22 @@ public class YukonUserDaoImpl implements YukonUserDao {
         sql.append("SET Status").eq(loginStatusEnum);
         sql.append("WHERE UserId").eq(user.getUserID());
         
-        yukonJdbcOperations.update(sql);
+        yukonJdbcTemplate.update(sql);
         
     }    
 	
 	public LiteYukonUser getLiteYukonUser(final int userId) {
 	    try {
-	        LiteYukonUser user = yukonJdbcOperations.queryForObject(selectByIdSql, rowMapper, userId);
+	        LiteYukonUser user = yukonJdbcTemplate.queryForObject(selectByIdSql, rowMapper, userId);
 	        return user;
 	    } catch (DataRetrievalFailureException e) {
             return null;
         }
 	}
 
-	public LiteYukonUser getLiteYukonUser(final String userName) {
+	public LiteYukonUser findUserByUsername(final String userName) {
 		try {
-		    LiteYukonUser user = yukonJdbcOperations.queryForObject(selectByUsernameSql, rowMapper, userName);
+		    LiteYukonUser user = yukonJdbcTemplate.queryForObject(selectByUsernameSql, rowMapper, userName);
 		    return user;
 		} catch (DataRetrievalFailureException e) {
 		    return null;
@@ -179,7 +243,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
         }
         
         //If the username is not unique, we will try once to generate a unique one.
-        if (getLiteYukonUser(newUsername) != null) {
+        if (findUserByUsername(newUsername) != null) {
             String extraDigits = RandomStringUtils.randomAlphanumeric(numberOfRandomChars);
             String uniqueUsername;
             
@@ -193,7 +257,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
             
             uniqueUsername += extraDigits;
 
-            if (getLiteYukonUser(uniqueUsername) != null) {
+            if (findUserByUsername(uniqueUsername) != null) {
                 throw new RuntimeException("Failed to generate unique username, please retry");
             } else {
             	newUsername = uniqueUsername;
@@ -209,7 +273,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
         zeroOutEventBaseUserIdsSql.append("UPDATE EventBase");
         zeroOutEventBaseUserIdsSql.append("SET UserId").eq(UserUtils.USER_DEFAULT_ID);
         zeroOutEventBaseUserIdsSql.append("WHERE UserId").eq(userId);
-        yukonJdbcOperations.update(zeroOutEventBaseUserIdsSql);
+        yukonJdbcTemplate.update(zeroOutEventBaseUserIdsSql);
     }
 	
 	@Override
@@ -221,22 +285,22 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	    detachContactFromLogin.append("UPDATE Contact");
         detachContactFromLogin.append("SET LoginId").eq(UserUtils.USER_DEFAULT_ID);
         detachContactFromLogin.append("WHERE LoginId").eq(userId);
-        yukonJdbcOperations.update(detachContactFromLogin);
+        yukonJdbcTemplate.update(detachContactFromLogin);
         
         String deleteUserRole = "DELETE FROM YukonUserRole WHERE UserId = ?";
-        yukonJdbcOperations.update(deleteUserRole, userId);
+        yukonJdbcTemplate.update(deleteUserRole, userId);
 
         String deleteYukonUserGroup = "DELETE FROM YukonUserGroup WHERE UserId = ?";
-        yukonJdbcOperations.update(deleteYukonUserGroup, userId);
+        yukonJdbcTemplate.update(deleteYukonUserGroup, userId);
 
         String deleteEnergyCompanyOperatorLoginList = "DELETE FROM EnergyCompanyOperatorLoginList WHERE OperatorLoginId = ?";
-        yukonJdbcOperations.update(deleteEnergyCompanyOperatorLoginList, userId);
+        yukonJdbcTemplate.update(deleteEnergyCompanyOperatorLoginList, userId);
         userPaoPermissionDao.removeAllPermissions(userId);
         
         removeUserFromEventBase(userId);
         
         String deleteYukonUser = "DELETE FROM YukonUser WHERE UserId = ?";
-        yukonJdbcOperations.update(deleteYukonUser, userId);
+        yukonJdbcTemplate.update(deleteYukonUser, userId);
 
         
         sendUserDbChangeMsg(userId, DbChangeType.DELETE);        
@@ -245,14 +309,14 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	@Override
 	public int getAllYukonUserCount() {
 	    String sql = "select count(*) from YukonUser";
-	    int count = yukonJdbcOperations.queryForInt(sql);
+	    int count = yukonJdbcTemplate.queryForInt(sql);
 	    return count;
 	}
 	
 	@Override
 	public void callbackWithAllYukonUsers(SimpleCallback<LiteYukonUser> callback) {
 	    String sql = "select * from yukonuser order by username";
-	    yukonJdbcOperations.getJdbcOperations().query(sql, new MappingRowCallbackHandler<LiteYukonUser>(new LiteYukonUserMapper(), callback));
+	    yukonJdbcTemplate.getJdbcOperations().query(sql, new MappingRowCallbackHandler<LiteYukonUser>(new LiteYukonUserMapper(), callback));
 	}
 	
 	@Override
@@ -264,47 +328,60 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	    sql.append("  join yukonuser yu on yug.userid = yu.userid");
 	    sql.append("where groupid = ").appendArgument(group.getGroupID());
 	    sql.append("order by yu.username");
-	    yukonJdbcOperations.query(sql, new MappingRowCallbackHandler<LiteYukonUser>(new LiteYukonUserMapper(), callback));
+	    yukonJdbcTemplate.query(sql, new MappingRowCallbackHandler<LiteYukonUser>(new LiteYukonUserMapper(), callback));
 	}
 
-    public void removeUserFromGroup(LiteYukonUser user, LiteYukonGroup... yukonGroups){
-        List<Integer> yukonGroupIds = Lists.newArrayList();
-        for (LiteYukonGroup yukonGroup : yukonGroups) {
-            yukonGroupIds.add(yukonGroup.getGroupID());
-        }
-
+    public void removeUserFromGroup(int userId, Integer... groupIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM YukonUserGroup");
-        sql.append("WHERE UserId").eq(user.getUserID());
-        sql.append("AND GroupId").in(yukonGroupIds);
-        yukonJdbcOperations.update(sql);
+        sql.append("WHERE UserId").eq(userId);
+        sql.append("AND GroupId").in(Arrays.asList(groupIds));
+        yukonJdbcTemplate.update(sql);
 
-        sendUserDbChangeMsg(user.getUserID(), DbChangeType.DELETE);
+        sendUserDbChangeMsg(userId, DbChangeType.DELETE);
     }
 	
-    public void addUserToGroup(LiteYukonUser user, LiteYukonGroup... yukonGroups){
+    public void addUserToGroup(int userId, Integer... groupIds) {
         
-        for (LiteYukonGroup yukonGroup : yukonGroups) {
+        for (int groupId : groupIds) {
 
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("INSERT INTO YukonUserGroup (UserId, GroupId)");
             sql.append("VALUES (? , ?)");
             
-            yukonJdbcOperations.update(sql.getSql(), user.getUserID(), yukonGroup.getGroupID());
+            yukonJdbcTemplate.update(sql.getSql(), userId, groupId);
         }
 
-        sendUserDbChangeMsg(user.getUserID(), DbChangeType.ADD);
+        sendUserDbChangeMsg(userId, DbChangeType.ADD);
     }
     
     @Override
-    public List<LiteYukonUser> getUsersForGroup(int groupId) {
+    public SearchResult<LiteYukonUser> getUsersForGroup(int groupId, final int start, final int count) {
+        /* Get Total Count */
         SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM YukonUserGroup yug");
+        sql.append("  JOIN YukonUser yu ON yug.UserId = yu.UserId");
+        sql.append("WHERE GroupId").eq(groupId);
+        
+        int totalCount = yukonJdbcTemplate.queryForInt(sql);
+        
+        PagingResultSetExtractor<LiteYukonUser> pagingExtractor = new PagingResultSetExtractor<LiteYukonUser>(start, count, createRowMapper());
+        
+        sql = new SqlStatementBuilder();
         sql.append("SELECT yu.*");
         sql.append("FROM yukonusergroup yug");
         sql.append("  JOIN yukonuser yu ON yug.userid = yu.userid");
         sql.append("WHERE groupid").eq(groupId);
         
-        return yukonJdbcOperations.query(sql, createRowMapper());
+        yukonJdbcTemplate.query(sql, pagingExtractor);
+        
+        List<LiteYukonUser> users = pagingExtractor.getResultList();
+        SearchResult<LiteYukonUser> searchResult = new SearchResult<LiteYukonUser>();
+        searchResult.setResultList(users);
+        searchResult.setBounds(start, count, totalCount);
+        
+        return searchResult;
     }
     
     /**
@@ -349,7 +426,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
         sql.append("JOIN EnergyCompanyOperatorLoginList ECOLL ON ECOLL.OperatorLoginId = YU.UserId");
         sql.append("WHERE ECOLL.EnergyCompanyId").in(energyCompanyIds);
         
-        List<LiteYukonUser> operators = yukonJdbcOperations.query(sql, rowMapper);
+        List<LiteYukonUser> operators = yukonJdbcTemplate.query(sql, rowMapper);
         
         return operators;
     }
@@ -365,7 +442,6 @@ public class YukonUserDaoImpl implements YukonUserDao {
         this.nextValueHelper = nextValueHelper;
     }
     
-    
     @Autowired
     public void setSystemEventLogService(SystemEventLogService systemEventLogService) {
         this.systemEventLogService = systemEventLogService;
@@ -377,7 +453,8 @@ public class YukonUserDaoImpl implements YukonUserDao {
     }
 
     @Autowired
-    public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
-        this.yukonJdbcOperations = yukonJdbcOperations;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
+
 }

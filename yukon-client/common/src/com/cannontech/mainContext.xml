@@ -127,6 +127,7 @@
                <value>classpath:com/cannontech/yukon/common/dateFormatting</value>
                <value>classpath:com/cannontech/yukon/common/durationFormatting</value>
                <value>classpath:com/cannontech/yukon/common/point</value>
+               <value>classpath:com/cannontech/yukon/common/role</value>
                <value>classpath:com/cannontech/yukon/common/phoneNumberFormatting</value>
                <value>classpath:com/cannontech/yukon/common/alerts</value>
                <value>classpath:com/cannontech/yukon/common/calendarControl</value>

@@ -9,8 +9,8 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="path" required="true" type="java.lang.String"%>
 <%@ attribute name="items" required="true" type="java.lang.Object"%>
-<%@ attribute name="itemValue" required="true" type="java.lang.String"%>
-<%@ attribute name="itemLabel" required="true" type="java.lang.String"%>
+<%@ attribute name="itemValue" required="false" type="java.lang.String"%>
+<%@ attribute name="itemLabel" required="false" type="java.lang.String"%>
 <%@ attribute name="defaultItemValue" required="false" type="java.lang.String"%>
 <%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>
 <%@ attribute name="emptyValueKey" required="false" type="java.lang.String"%>
@@ -33,44 +33,41 @@
 	<c:set var="inputClass" value="error"/>
 </c:if>
 
-<c:choose>
-    <c:when test="${not empty pageScope.onchange}">
-        <form:select path="${path}" id="${path}" onchange="${onchange}" cssClass="${inputClass}">
-            <c:if test="${not empty pageScope.defaultItemLabel}">
-                <form:option value="${pageScope.defaultItemValue}">${pageScope.defaultItemLabel}</form:option>
-            </c:if>
-            <c:forEach var="item" items="${items}">
-                <form:option value="${item[itemValue]}"><cti:formatObject value="${item[itemLabel]}"/></form:option>
-            </c:forEach>
-        </form:select>
-    </c:when>
-    <c:otherwise>
-        <form:select path="${path}" id="${path}" cssClass="${inputClass}">
-            <c:if test="${not empty pageScope.defaultItemLabel}">
-                <form:option value="${pageScope.defaultItemValue}">${pageScope.defaultItemLabel}</form:option>
-            </c:if>
-            <c:forEach var="item" items="${items}">
-                <form:option value="${item[itemValue]}">
+<form:select path="${path}" id="${path}" cssClass="${inputClass}" onchange="${pageScope.onchange}">
+    <c:if test="${not empty pageScope.defaultItemLabel}">
+        <form:option value="${pageScope.defaultItemValue}">${pageScope.defaultItemLabel}</form:option>
+    </c:if>
+    <c:forEach var="item" items="${items}">
+        
+        <c:set var="valueArg" value="${pageScope.itemValue}"/>
+        <c:if test="${itemValue != null}">
+            <c:set var="valueArg" value="${item[itemValue]}"/>
+        </c:if>
+    
+        <c:set var="labelArg" value="${pageScope.itemLabel}"/>
+        <c:if test="${itemLabel != null}">
+            <c:set var="labelArg" value="${item[itemLabel]}"/>
+        </c:if>
+        
+        <form:option value="${valueArg}">
+            <c:choose>
+                <c:when test="${not empty fn:trim(item[itemLabel])}">
+                    <cti:formatObject value="${item[itemLabel]}"/>
+                </c:when>
+                <c:otherwise>
                     <c:choose>
-                        <c:when test="${not empty fn:trim(item[itemLabel])}">
-                            <cti:formatObject value="${item[itemLabel]}"/>
+                        <c:when test="${not empty pageScope.emptyValueKey}">
+                            <i:inline key="${pageScope.emptyValueKey}"/>
                         </c:when>
                         <c:otherwise>
-                            <c:choose>
-                                <c:when test="${not empty pageScope.emptyValueKey}">
-                                    <i:inline key="${pageScope.emptyValueKey}"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <i:inline key="defaults.na"/>
-                                </c:otherwise>
-                            </c:choose>
+                            <i:inline key="defaults.na"/>
                         </c:otherwise>
                     </c:choose>
-                </form:option>
-            </c:forEach>
-        </form:select>
-    </c:otherwise>
-</c:choose>
+                </c:otherwise>
+            </c:choose>
+        </form:option>
+    </c:forEach>
+</form:select>
 
 <c:if test="${status.error}">
 	<br>

@@ -8,7 +8,7 @@
 
 <cti:standardPage module="adminSetup" page="home">
 
-    <cti:dataGrid cols="2" tableClasses="energyCompanyHomeLayout">
+    <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
     
         <%-- LEFT SIDE COLUMN --%>
         <cti:dataGridCell>

@@ -7,6 +7,7 @@
 <%@ attribute name="isFiltered" type="java.lang.Boolean" %>
 <%@ attribute name="showAllUrl" %>
 <%@ attribute name="pageByHundereds" %>
+<%@ attribute name="styleClass" %>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -14,11 +15,11 @@
 
 <cti:includeScript link="/JavaScript/simpleCookies.js"/>
 
-<div class="pagedBox" <c:if test="${!empty pageScope.id}" >id="${pageScope.id}"</c:if>>
+<div class="pagedBox<c:if test="${!empty pageScope.styleClass}"> ${pageScope.styleClass}</c:if>"<c:if test="${!empty pageScope.id}"> id="${pageScope.id}"</c:if>>
 
     <div class="title">
         <table class="boxTable">
-            <tr style="vertical-align: bottom;">
+            <tr style="vertical-align: middle;">
                 <td class="titleArea">${pageScope.title}</td>
                 <td class="filterArea">
                     <c:if test="${!empty pageScope.filterDialog}">

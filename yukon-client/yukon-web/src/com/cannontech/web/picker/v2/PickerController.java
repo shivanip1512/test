@@ -34,7 +34,7 @@ public class PickerController {
     @RequestMapping
     public String build(HttpServletResponse response, Model model, String type,
             String id, Boolean multiSelectMode, Boolean immediateSelectMode,
-            String extraArgs, YukonUserContext userContext) {
+            String extraArgs, String mode, YukonUserContext userContext) {
         Picker<?> picker = pickerService.getPicker(type);
 
         model.addAttribute("title", picker.getDialogTitle());
@@ -49,7 +49,7 @@ public class PickerController {
 
         response.addHeader("X-JSON", object.toString());
 
-        return "pickerDialog";
+        return "inline".equals(mode) ? "inlinePicker" : "pickerDialog";
     }
 
     @RequestMapping

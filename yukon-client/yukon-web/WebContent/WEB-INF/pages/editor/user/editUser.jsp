@@ -3,33 +3,46 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage title="User Assignment for Load Management Visibility" module="userlm">
-<cti:standardMenu/>
-<cti:breadCrumbs>
-    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    <cti:crumbLink url="/spring/editor/userGroupSelector" title="User/Group Editor"  />
-	&gt; User Editor
-</cti:breadCrumbs>
+<cti:standardPage module="adminSetup" page="userPermissions">
 
-
-  <h2>${user.username}</h2>
-  <tags:widgetContainer userId="${param.userId}" width="600px" identify="true">
+  <tags:widgetContainer userId="${param.userId}" identify="true">
   
-    <br><br>
-  	<div style="width: 600px;">
-  		Use this permission for Load Management.  Select the objects to ALLOW access to for the user.
-  	</div>
-    <tags:widget bean="userPermissionEditorWidget" pickerType="lmDevicePicker"
-        permission="LM_VISIBLE" allow="true"/>
-    
-    <br><br>
-  	<div style="width: 600px;">
-	    Use this permission for Cap Control.  Select the objects to DENY access to for the user.
-  	</div>
-    <tags:widget bean="userPermissionEditorWidget" pickerType="capControlAreaPicker"
-        permission="PAO_VISIBLE" allow="false"/>
-
-  </tags:widgetContainer>
+    <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
+            
+            <cti:dataGridCell>
+                <table>
+                    <tr>
+                        <td class="instructionsLabel">
+                            <span class="smallBoldLabel"><i:inline key=".instructions"/></span>
+                        </td>
+                        <td>
+                            <span class="smallBoldLabel notes">
+                                Use this permission for Load Management.<br>Select the objects to ALLOW access to for the user.
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+                <tags:widget bean="userPermissionEditorWidget" pickerType="lmDevicePicker" permission="LM_VISIBLE" allow="true"/>
+            </cti:dataGridCell>
+            
+            <cti:dataGridCell>
+                <table>
+                    <tr>
+                        <td class="instructionsLabel">
+                            <span class="smallBoldLabel"><i:inline key=".instructions"/></span>
+                        </td>
+                        <td>
+                            <span class="smallBoldLabel notes">
+                                Use this permission for Cap Control.<br>Select the objects to DENY access to for the user.
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+                <tags:widget bean="userPermissionEditorWidget" pickerType="capControlAreaPicker" permission="PAO_VISIBLE" allow="false"/>
+            </cti:dataGridCell>
+            
+        </cti:dataGrid>
+    </tags:widgetContainer>
   
   <c:if test="${!empty authThrottleDto}">
     <br/>

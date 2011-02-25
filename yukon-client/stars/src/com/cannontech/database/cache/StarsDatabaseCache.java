@@ -164,6 +164,12 @@ public class StarsDatabaseCache implements DBChangeListener {
 		return starsYukonUsers;
 	}
 
+	/**
+	 *@deprecated To get a LiteStarsEnergyCompany by user, 
+	 *    use YukonEnergyCompanyService.getEnergyCompanyByOperator(),
+	 *    then StarsDatabaseCache.getEnergyCompany(YukonEnergyCompany yukonEnergyCompany).
+	 */
+	@Deprecated
 	public LiteStarsEnergyCompany getEnergyCompanyByUser(final LiteYukonUser user) {
 		StarsYukonUser starsYukonUser = getStarsYukonUser(user);
 		LiteStarsEnergyCompany energyCompany = getEnergyCompany(starsYukonUser.getEnergyCompanyID());

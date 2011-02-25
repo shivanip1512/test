@@ -8,7 +8,6 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class RoleDaoAdapter implements RoleDao {
     @Override
@@ -68,17 +67,18 @@ public class RoleDaoAdapter implements RoleDao {
     }
 
     @Override
-    public Map<YukonRole, LiteYukonGroup> getRolesAndGroupsForUser(LiteYukonUser user) {
+    public Map<YukonRole, LiteYukonGroup> getRolesAndGroupsForUser(int userId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Set<YukonRole> getRolesForUser(LiteYukonUser user) {
+    public Set<YukonRole> getRolesForUser(int userId) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public Set<YukonRole> getRolesForGroup(int groupId) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Set<YukonRole> getRolesForGroup(LiteYukonGroup liteYukonGroup) {
-        throw new UnsupportedOperationException();
-    }
 }

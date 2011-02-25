@@ -25,7 +25,7 @@ Picker.prototype = {
 	 *   this HTML element (using innerHTML).
 	 */
 	initialize: function (pickerType, destinationFieldName, pickerId,
-			extraDestinationFields) {
+			extraDestinationFields, containerDiv) {
 		this.pickerType = pickerType;
 		this.destinationFieldName = destinationFieldName;
 		this.pickerId = pickerId;
@@ -56,6 +56,7 @@ Picker.prototype = {
 		this.errorHolderId = 'picker_' + this.pickerId + '_errorHolder';
 		this.primed = false;
 		this.useInitialIdsIfEmpty = false;
+		this.containerDiv = containerDiv;
 	},
 
 	/**
@@ -190,8 +191,13 @@ Picker.prototype = {
 	 */
 	prime: function(showPicker, initialIds) {
 		var bodyElem = document.documentElement.getElementsByTagName('body')[0];
-		var pickerDialogDivContainer = document.createElement('div');
-		bodyElem.appendChild(pickerDialogDivContainer);
+		var pickerDialogDivContainer;
+		if (this.containerDiv) {
+		    pickerDialogDivContainer = this.containerDiv;
+		} else {
+		    pickerDialogDivContainer = document.createElement('div');
+	        bodyElem.appendChild(pickerDialogDivContainer);
+		}
 		var parameters = {
 				'type' : this.pickerType,
 				'id' : this.pickerId,
@@ -201,6 +207,9 @@ Picker.prototype = {
 		if (this.extraArgs) {
 			parameters.extraArgs = this.extraArgs;
 		}
+        if (this.containerDiv) {
+            parameters.mode = 'inline';
+        }
 
 		new Ajax.Updater(pickerDialogDivContainer, '/picker/v2/build', {
 			'parameters': parameters,
@@ -232,13 +241,17 @@ Picker.prototype = {
 	},
 
 	doShow : function() {
-		adjustDialogSizeAndPosition(this.pickerId);
+		if (!this.containerDiv) {
+		    adjustDialogSizeAndPosition(this.pickerId);
+		}
 		if (this.memoryGroup && Picker.rememberedSearches[this.memoryGroup]) {
 			this.ssInput.value =
 				Picker.rememberedSearches[this.memoryGroup];
 		}
 		this.nothingSelectedDiv.hide();
-		$(this.pickerId).show();
+		if (!this.containerDiv) {
+		    $(this.pickerId).show();
+		}
 		this.ssInput.focus();
 		this.doSearch();
 	},
@@ -295,7 +308,9 @@ Picker.prototype = {
 	 */
 	cancel: function() {
 		this.selectedItems = this.lastSelectedItems;
-		$(this.pickerId).hide();
+		if (!this.containerDiv) {
+		    $(this.pickerId).hide();
+		}
 	},
 
 	okPressed: function() {
@@ -318,7 +333,9 @@ Picker.prototype = {
 			}
 
 			if (this.updateOutsideFields(false)) {
-				$(this.pickerId).hide();
+			    if (!this.containerDiv) {
+			        $(this.pickerId).hide();
+			    }
 			}
 		}
 	},

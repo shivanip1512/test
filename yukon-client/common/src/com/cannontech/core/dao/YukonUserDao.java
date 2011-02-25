@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 
+import com.cannontech.common.model.UpdatableYukonUser;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.data.lite.LiteContact;
@@ -14,14 +16,19 @@ public interface YukonUserDao {
 
     public void changeUsername(LiteYukonUser changingUser, int modifiedUserId, String newUsername);
 
+    /**
+     * Returns a LiteYukonUser by user id or null if none exists.
+     * @param userId
+     * @return the LiteYukonUser or null if no user with that id exists
+     */
     public LiteYukonUser getLiteYukonUser(int userId);
 
     /**
-     * Gets LiteYukonUser by username.
+     * Returns a LiteYukonUser by username or null if none exists.
      * @param userName
-     * @return the LiteYukonUser or null if userName doesn't exist
+     * @return the LiteYukonUser or null if username doesn't exist
      */
-    public LiteYukonUser getLiteYukonUser(String userName);
+    public LiteYukonUser findUserByUsername(String userName);
     
     /**
      * Gets the cached contact for the given user id.
@@ -37,7 +44,9 @@ public interface YukonUserDao {
      * @param energyCompanyId
      * @param groups
      * @throws DataAccessException
+     * @deprecated If you don't need to set login groups, use save(UpdatableYukonUser user)
      */
+    @Deprecated
     public void addLiteYukonUserWithPassword(LiteYukonUser user, String password, int energyCompanyId, List<LiteYukonGroup> groups) throws DataAccessException;
 
     /**
@@ -46,7 +55,9 @@ public interface YukonUserDao {
      * @param password
      * @param groups
      * @throws DataAccessException
+     * @deprecated If you don't need to set login groups, use save(UpdatableYukonUser user)
      */
+    @Deprecated
     public void addLiteYukonUserWithPassword(LiteYukonUser user, String password, List<LiteYukonGroup> groups) throws DataAccessException;
 
     /**
@@ -100,7 +111,7 @@ public interface YukonUserDao {
      * @param user
      * @param yukonGroups
      */
-    public void removeUserFromGroup(LiteYukonUser user, LiteYukonGroup... yukonGroups);
+    public void removeUserFromGroup(int userId, Integer... groupIds);
 
     /**
      * This method adds a user to the supplied groups and sends out the necessary db change messages
@@ -108,7 +119,7 @@ public interface YukonUserDao {
      * @param user
      * @param yukonGroups
      */
-    public void addUserToGroup(LiteYukonUser user, LiteYukonGroup... yukonGroups);
+    public void addUserToGroup(int userId, Integer... groupIds);
 
     /**
      * Creates a login for an additional contact on a stars account. This login will user the first and last name in
@@ -118,17 +129,21 @@ public interface YukonUserDao {
      */
     public LiteYukonUser createLoginForAdditionalContact(String firstName, String lastName, LiteYukonGroup group);
 
-    /** 
-     * Returns a list of LiteYukonUser for all users in the group.
-     * @param groupId
-     * @return List<LiteYukonUser> users
+    /**
+     * Returns a SearchResult<LiteYukonUser> of the users that are members of the group provided
      */
-    public List<LiteYukonUser> getUsersForGroup(int groupId);
+    public SearchResult<LiteYukonUser> getUsersForGroup(int groupId, final int start, final int count);
 
     /**
      * This method returns all of the operators that are directly associated with the given energy
      * company ids.
      */
     public List<LiteYukonUser> getOperatorLoginsByEnergyCompanyIds(Iterable<Integer> energyCompanyIds);
+
+    /**
+     * Inserts or updates a yukon user.
+     * Will update the password (AuthenticationService) and energy company association.
+     */
+    public void save(UpdatableYukonUser user);
  
 }

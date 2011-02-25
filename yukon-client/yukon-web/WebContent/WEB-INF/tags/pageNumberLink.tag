@@ -41,17 +41,37 @@ will be used.
 
 <c:if test="${pageScope.direction == 'next'}">
     <c:if test="${pageScope.enabled}">
-        <a href="${pageUrl}"><cti:msg key="yukon.common.paging.next"/><cti:logo key="yukon.common.paging.nextIcon"/></a>
+        <a href="${pageUrl}">
+            <span style="white-space: nowrap;">
+                <span style="vertical-align: middle;">
+                    <cti:msg key="yukon.common.paging.next"/>
+                </span>
+                <cti:logo key="yukon.common.paging.nextIcon"/>
+            </span>
+        </a>
     </c:if>
     <c:if test="${!pageScope.enabled}">
-        <cti:msg key="yukon.common.paging.next"/><cti:logo key="yukon.common.paging.nextIcon.disabled"/></a>
+        <span style="white-space: nowrap;">
+            <span style="vertical-align: middle;">
+                <cti:msg key="yukon.common.paging.next"/>
+            </span>
+            <cti:logo key="yukon.common.paging.nextIcon.disabled"/></a>
+        </span>
     </c:if>
 </c:if>
 <c:if test="${pageScope.direction == 'previous'}">
     <c:if test="${pageScope.enabled}">
-        <a href="${pageUrl}"><cti:logo key="yukon.common.paging.previousIcon"/><cti:msg key="yukon.common.paging.previous"/></a>
+        <a href="${pageUrl}">
+            <span style="white-space: nowrap;">
+                <cti:logo key="yukon.common.paging.previousIcon"/>
+                <span style="vertical-align: middle;"><cti:msg key="yukon.common.paging.previous"/></span>
+            </span>
+        </a>
     </c:if>
     <c:if test="${!pageScope.enabled}">
-        <cti:logo key="yukon.common.paging.previousIcon.disabled"/><cti:msg key="yukon.common.paging.previous"/>
+        <span style="white-space: nowrap;">
+            <cti:logo key="yukon.common.paging.previousIcon.disabled"/>
+            <span style="vertical-align: middle;"><cti:msg key="yukon.common.paging.previous"/></span>
+        </span>
     </c:if>
 </c:if>

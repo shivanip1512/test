@@ -8,6 +8,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * This DAO is used to access role and property information for users.
@@ -308,4 +309,15 @@ public interface RolePropertyDao {
      * @return an unmodifiable Set, never null
      */
     public Set<YukonRoleCategory> getRoleCategoriesForUser(LiteYukonUser user);
+
+    /**
+     * Returns true if this role property does not exist in the database.
+     */
+    public boolean isMissingProperty(YukonRoleProperty roleProperty);
+
+    /**
+     * Returns the set of role properties that do not exist in the database
+     * @return
+     */
+    public ImmutableSet<YukonRoleProperty> getMissingProperties();
 }

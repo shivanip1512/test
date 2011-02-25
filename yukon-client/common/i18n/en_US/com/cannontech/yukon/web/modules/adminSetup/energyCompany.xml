@@ -17,7 +17,7 @@
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.name">Company Name</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.email">Email</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorLogin.title">Default Operator Login</entry>
-    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorLogin.note">The default login belongs to the primary operator group selected and can also edit energy company settings.</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorLogin.note">The default login belongs to the primary operator group selected and can therefore edit energy company settings.</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.note">Note:</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.secondaryOperatorLogin.title">Secondary Operator Login (Optional)</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.secondaryOperatorLogin.note">The secondary login belongs to the primary operator group selected.</entry>

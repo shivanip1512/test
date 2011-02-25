@@ -973,7 +973,6 @@
                 <menu>substationToRouteMapping|home</menu>
                 <link>/spring/multispeak/setup/routemapping/mappings</link>
             </page>
-        
             <page name="interfaces" type="BASIC">
                 <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
                 <menu>multispeak|interfaces</menu>
@@ -999,7 +998,7 @@
                 <menu>userGroupEditor|home</menu>
                 <link>/spring/adminSetup/userGroupEditor/home</link>
                 <pages>
-                    <page name="groupEditor.VIEW" type="DETAIL">
+                    <page name="groupEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
                         <menu>userGroupEditor|home</menu>
                         <link>/spring/adminSetup/groupEditor/view?groupId=${groupId}</link>
                         <labelArgument>${groupName}</labelArgument>
@@ -1008,6 +1007,43 @@
                                 <menu>userGroupEditor|home</menu>
                                 <link>/spring/adminSetup/groupEditor/edit?groupId=${groupId}</link>
                                 <labelArgument>${groupName}</labelArgument>
+                            </page>
+                            <page name="roles" type="DETAIL">
+                                <menu>userGroupEditor|home</menu>
+                                <link>/spring/adminSetup/roleEditor/view?groupId=${groupId}&amp;roleId=${roleId}</link>
+                                <labelArgument>${roleName}</labelArgument>
+                            </page>
+                            <page name="groupPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>userGroupEditor|home</menu>
+                                <link>/spring/editor/group/editGroup?groupId=${groupId}</link>
+                                <labelArgument>${groupName}</labelArgument>
+                            </page>
+                            <page name="users" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>userGroupEditor|home</menu>
+                                <link>/spring/adminSetup/groupEditor/users?groupId=${groupId}</link>
+                                <labelArgument>${groupName}</labelArgument>
+                            </page>
+                        </pages>
+                    </page>
+                    <page name="userEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
+                        <menu>userGroupEditor|home</menu>
+                        <link>/spring/adminSetup/userEditor/view?userId=${userId}</link>
+                        <labelArgument>${username}</labelArgument>
+                        <pages>
+                            <page name="userEditor.EDIT" type="DETAIL_CHILD">
+                                <menu>userGroupEditor|home</menu>
+                                <link>/spring/adminSetup/userEditor/edit?userId=${userId}</link>
+                                <labelArgument>${username}</labelArgument>
+                            </page>
+                            <page name="userPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>userGroupEditor|home</menu>
+                                <link>/spring/editor/user/editUser?userId=${userId}</link>
+                                <labelArgument>${username}</labelArgument>
+                            </page>
+                            <page name="groups" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <menu>userGroupEditor|home</menu>
+                                <link>/spring/adminSetup/userEditor/groups?userId=${userId}</link>
+                                <labelArgument>${username}</labelArgument>
                             </page>
                         </pages>
                     </page>

@@ -5,28 +5,19 @@
     <!-- home.jsp -->
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.pageName">User/Group Editor</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.pageDescription">User/Group Editor</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.selectUserOrGroup.title">Select User or Group</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.selectRole.title">Select a Role</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.selectEditor.title">Select an Editor</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.yukonRole">Yukon Role</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.group">Login Group</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.user">Yukon User</entry>
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.groupPicker.title">Select A Group To Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.userPicker.title">Select A User To Edit</entry>
     
-    <!-- Group Editor -->
-    <entry key="yukon.web.modules.adminSetup.groupEditor.VIEW.pageName">Group Editor</entry>
+    <!-- Group Editor group.jsp-->
+    <entry key="yukon.web.modules.adminSetup.groupEditor.VIEW.pageName">Group Info</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.VIEW.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.EDIT.pageName">Edit</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.EDIT.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.groupSettings.title">Group Information</entry>
-    <entry key="yukon.web.modules.adminSetup.groupEditor.membersContainer.title">Members of this Group</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.rolesContainer.title">Roles</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.otherActions.title">Other Actions</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.name">Name</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.description">Description</entry>
-    <entry key="yukon.web.modules.adminSetup.groupEditor.username">Username</entry>
-    <entry key="yukon.web.modules.adminSetup.groupEditor.authtype">Auth Type</entry>
-    <entry key="yukon.web.modules.adminSetup.groupEditor.loginStatus">Login Status</entry>
-    <entry key="yukon.web.modules.adminSetup.groupEditor.noMembers">No Members</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.editPermissions.label">Edit Permissions</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.editPermissions.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.editPermissions.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
@@ -34,7 +25,74 @@
     <entry key="yukon.web.modules.adminSetup.groupEditor.editRoleProperties.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.editRoleProperties.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.updateSuccessful">Group Updated Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.deletedSuccessful">Group Deleted Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.confirmDelete.title">Delete Group {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.confirmDelete.message">Are you sure you want to delete group {0}?</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.error.required.groupName">Name is required.</entry>
-    <entry key="yukon.web.modules.adminSetup.groupEditor.roleCategory">{0} ({1} of {2} Selected)</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.error.unavailable.groupName">Name is already in user by another group.</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.noRoles">No roles assigned for this group.</entry>
+    
+    <!-- Role Editor roles.jsp -->
+    <entry key="yukon.web.modules.adminSetup.roles.pageName">Role Editor</entry>
+    <entry key="yukon.web.modules.adminSetup.roles.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.roles.loginGroupRoleUpdated">Login Group Role Updated Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.roles.confirmDelete.title">Remove Role From {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.roles.confirmDelete.message">Are you sure you want to remove this role from {0}?</entry>
+    
+    <!-- Group Permission Editor -->
+    <entry key="yukon.web.modules.adminSetup.groupPermissions.pageName">Permissions</entry>
+    <entry key="yukon.web.modules.adminSetup.groupPermissions.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.groupPermissions.instructions">Instructions: </entry>
+    
+    <!-- User Permission Editor -->
+    <entry key="yukon.web.modules.adminSetup.userPermissions.pageName">Permissions</entry>
+    <entry key="yukon.web.modules.adminSetup.userPermissions.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.userPermissions.instructions">Instructions: </entry>
+    
+    <!-- Users Editor users.jsp -->
+    <entry key="yukon.web.modules.adminSetup.users.pageName">Users</entry>
+    <entry key="yukon.web.modules.adminSetup.users.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.users.usersUpdated">Login Group Users Updated Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.users.usersContainer">Users of this Group</entry>
+    <entry key="yukon.web.modules.adminSetup.users.username">Username</entry>
+    <entry key="yukon.web.modules.adminSetup.users.authtype">Auth Type</entry>
+    <entry key="yukon.web.modules.adminSetup.users.loginStatus">Login Status</entry>
+    <entry key="yukon.web.modules.adminSetup.users.remove">Remove</entry>
+    <entry key="yukon.web.modules.adminSetup.users.noUsers">No Users In This Group</entry>
+    <entry key="yukon.web.modules.adminSetup.users.addUsers.label">Add Users</entry>
+    <entry key="yukon.web.modules.adminSetup.users.addUsers.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+    <entry key="yukon.web.modules.adminSetup.users.addUsers.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
+    
+    <!-- User Editor user.jsp-->
+    <entry key="yukon.web.modules.adminSetup.userEditor.VIEW.pageName">User Info</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.VIEW.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.EDIT.pageName">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.EDIT.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.username">Username</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.authentication">Authentication</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.loginStatus">Login Status</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.energyCompany">Link to Energy Company</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.password">Password</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.confirmPassword">Confirm Password</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.rolesContainer.title">Roles Derived From Login Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.noRoles">No roles assigned for this user.</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.required.username">Username is required</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.unavailable.username">Username is unavailable</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.password.mismatch">Password fields do not match</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.updateSuccessful">User Updated Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.groupConflict">Could not add user to group(s). The groups this user is already a member of and the new group(s) {0} have conflicting roles.</entry>
+    
+    <!-- Groups Editor groups.jsp -->
+    <entry key="yukon.web.modules.adminSetup.groups.pageName">Login Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.groups.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.groups.userUpdated">User Updated Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.groups.groupsContainer.title">Login Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.groups.groupName">Group Name</entry>
+    <entry key="yukon.web.modules.adminSetup.groups.description">Description</entry>
+    <entry key="yukon.web.modules.adminSetup.groups.remove">Remove</entry>
+    <entry key="yukon.web.modules.adminSetup.groups.addGroups.label">Add Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.groups.addGroups.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+    <entry key="yukon.web.modules.adminSetup.groups.addGroups.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.groups.noGroups">This user is not a member of any groups.</entry>
     
 </properties>

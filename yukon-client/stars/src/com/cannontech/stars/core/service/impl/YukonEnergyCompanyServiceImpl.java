@@ -1,5 +1,7 @@
 package com.cannontech.stars.core.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -10,6 +12,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.google.common.collect.Lists;
 
 
 public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService {
@@ -42,6 +45,12 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         int energyCompanyId = ecMappingDao.getEnergyCompanyIdForInventoryId(inventoryId);
         YukonEnergyCompany yukonEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId); 
         return yukonEnergyCompany;
+    }
+    
+    @Override
+    public List<YukonEnergyCompany> getAllEnergyCompanies() {
+        List<YukonEnergyCompany> energyCompanies = Lists.<YukonEnergyCompany>newArrayList(starsDatabaseCache.getAllEnergyCompanies());
+        return energyCompanies;
     }
     
     // DI Setters

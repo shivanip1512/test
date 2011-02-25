@@ -7,7 +7,6 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface RoleDao {
 
@@ -118,18 +117,18 @@ public interface RoleDao {
      * This method should not be used for user validation.
      * This method will return an empty map if the user is not apart of any groups.
      */
-    public Map<YukonRole, LiteYukonGroup> getRolesAndGroupsForUser(LiteYukonUser user);
+    public Map<YukonRole, LiteYukonGroup> getRolesAndGroupsForUser(int userId);
     
     /**
      * This method returns all of the roles for a given user.  This method should not be
      * used for user validation. This method will return an empty set if the user does not have any YukonRoles.
      */
-    public Set<YukonRole> getRolesForUser(LiteYukonUser user);
+    public Set<YukonRole> getRolesForUser(int userId);
 
     /**
      * This method returns all of the roles for a given login group.  This method should not be
      * used for user validation. This method will return an empty set if the user is not apart of any groups.
      */
-    public Set<YukonRole> getRolesForGroup(LiteYukonGroup liteYukonGroup);
+    public Set<YukonRole> getRolesForGroup(int groupId);
 
 }

@@ -25,4 +25,6 @@ public interface YukonGroupDao {
      */
     public void save(LiteYukonGroup group);
 
+    public void delete(int groupId);
+
 }

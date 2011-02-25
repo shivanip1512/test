@@ -123,11 +123,6 @@ div.boxedLink a:visited {
     color: #000000;
 }
 
-a div.boxedLink {
-    text-decoration: none;
-    color: #000000;
-}
-
 div.boxedLink a:link {
     text-decoration: none;
     color: #000000;
@@ -147,8 +142,13 @@ div.boxedLink:hover {
     -webkit-box-shadow: #777 1px 1px 5px;
     -moz-box-shadow: #777 1px 1px 5px;
     box-shadow: #777 1px 1px 5px;
+    cursor: pointer;
 }
 
+div.boxedLink a {
+    display: block;
+}
+    
 .sectionForm {
 	float: right;
 	margin-right: 15px;

@@ -4,8 +4,8 @@
 
 <cti:includeScript link="/JavaScript/tableCreation.js" />
 
-<c:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
-<c:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
+<c:url var="delete" value="/WebConfig/yukon/Icons/delete.png"/>
+<c:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.png"/>
 
 <c:set var="pickerId" value="${widgetParameters.widgetId}_${widgetParameters.pickerType}" scope="page"/>
 <c:set var="addPao" value="addPao_${pageScope.pickerId}" scope="page"/>
@@ -21,52 +21,61 @@ ${pageScope.addPao} = function() {
     <tags:widgetState paoIdsList="${paoIds}"/>
     
     <div id="paoTable">
-	
-		Select Objects that <b>${instructionText}</b> have this permission.
+	   <span>Select Objects that <b>${instructionText}</b> have this permission.</span>
 		<br><br>
-		<table width="100%" border="0" cellspacing="0" cellpadding="3">
-			<tr class="<tags:alternateRow odd="" even="altRow"/>">
-				<th>Name</th>
-				<th>Type</th>
-				<th style="text-align:center">
-                <span class="widgetActionLink">
+        <c:choose>
+            <c:when test="${empty paoList}">
+                No Existing Permissions
+            </c:when>
+            <c:otherwise>
+                <div class="permissionsContainer">
+                    <table class="compactResultsTable">
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th class="removeColumn">Remove</th>
+                        </tr>
+                        <c:forEach var="pao" items="${paoList}">
+                            <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                <td>
+                                    <c:out value="${pao.paoName}" />
+                                </td>
+                                <td>
+                                    <c:out value="${pao.type}" />
+                                </td>
+                                <td class="removeColumn">
+                                    <tags:widgetActionRefreshImage paoId="${pao.paoId}" method="removePao" title="Remove this PAO" imgSrc="${delete}" imgSrcHover="${deleteOver}"/>
+                                </td>
+                            </tr>
+                            
+                        </c:forEach>
+                    </table>
+                </div>
+            </c:otherwise>
+        </c:choose>
+		
+        <div class="actionArea">
+            <c:if test="${showSave}">
+                <span id="${widgetParameters.widgetId}_results">
+                    <tags:widgetActionUpdate method="save" label="Save" labelBusy="Saving" container="${widgetParameters.widgetId}_results"/>
+                </span>
+            </c:if>
+            <span class="widgetActionLink">
                     <tags:pickerDialog type="${widgetParameters.pickerType}" id="${pageScope.pickerId}"
                        destinationFieldId="${pageScope.newPaoId}" endAction="${pageScope.addPao}"
-                       multiSelectMode="true" memoryGroup="${pageScope.pickerId}">Add</tags:pickerDialog>
+                       multiSelectMode="true" memoryGroup="${pageScope.pickerId}" linkType="button" nameKey="add"/>
                     <input id="${pageScope.newPaoId}" name="newPaoId" type="hidden">
-					<script type="text/javascript">
-						${pageScope.pickerId}.excludeIds = [
-						<c:forEach var="pao" varStatus="status" items="${paoList}">
-						    ${pao.paoId}<c:if test="${!status.last}">,</c:if>
-						</c:forEach> ];
-					</script>
+                    <script type="text/javascript">
+                        ${pageScope.pickerId}.excludeIds = [
+                        <c:forEach var="pao" varStatus="status" items="${paoList}">
+                            ${pao.paoId}<c:if test="${!status.last}">,</c:if>
+                        </c:forEach> ];
+                    </script>
                 </span>
                 <span id="${pageScope.addPaoSpanId}">
                     <span class="widgetAction_waiting" style="display:none">
                         <img src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
                     </span>
                 </span>
-            </th>
-			</tr>
-			<c:forEach var="pao" items="${paoList}">
-				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td>
-						<c:out value="${pao.paoName}" />
-					</td>
-					<td>
-						<c:out value="${pao.type}" />
-					</td>
-					<td align="center">
-                        <tags:widgetActionRefreshImage paoId="${pao.paoId}" method="removePao" title="Remove this PAO" imgSrc="${delete}" imgSrcHover="${deleteOver}"/>
-					</td>
-				</tr>
-				
-			</c:forEach>
-		</table>
+        </div>
     </div>
-    <br>
-<c:if test="${showSave}">
-<div id="${widgetParameters.widgetId}_results">
-  <tags:widgetActionUpdate method="save" label="Save" labelBusy="Saving" container="${widgetParameters.widgetId}_results"/>
-</div>
-</c:if>

@@ -306,11 +306,11 @@
 	<tags:operationSection sectionName="Administration" sectionImageName="AdministrationLogo">
         
         <c:if test="${showSystemAdmin}">
-            <a href="/spring/adminSetup/systemAdmin">
-                <tags:sectionLink>
+            <tags:sectionLink>
+                <a href="/spring/adminSetup/systemAdmin">
                     <cti:msg key="yukon.web.menu.portal.administration.systemAdministration"/>
-                </tags:sectionLink>
-            </a>
+                </a>
+            </tags:sectionLink>
         </c:if>
         
 		<cti:checkProperty property="operator.AdministratorRole.ADMIN_EDIT_ENERGY_COMPANY">

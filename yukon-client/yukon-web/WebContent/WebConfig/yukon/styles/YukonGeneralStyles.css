@@ -18,6 +18,15 @@ h2 { /*Page Header*/
   margin: 0;
 }
 
+table.twoColumnLayout td.first,
+table.twoColumnLayout td.last {
+    vertical-align: top;
+}
+
+table.twoColumnLayout td.last {
+    padding-left: 30px;
+}
+
 .contentArea {
 	font-family: Arial, Helvetica, sans-serif;
 }
@@ -215,7 +224,7 @@ table.resultsTable th a {
 }
 
 table.activeResultsTable tr.hover {
-	background-color: yellow;
+	background-color: #FFFFAA;
 	cursor: pointer;
 }
 
@@ -977,7 +986,11 @@ a.imgLink {
 }
 
 table.rowHighlighting tr:hover td {
-    background-color: yellow;
+    background-color: #FFFFAA;
+}
+
+table.rowHighlighting tr:hover {
+    outline: #ccc solid thin;
 }
 
 .editable:hover {
@@ -1181,6 +1194,10 @@ input.formSubmit,
 button.formSubmit img {
 	padding-right: 3px;
 	vertical-align: top;
+}
+
+.formSubmit {
+    white-space: nowrap;
 }
 
 #logOutput { 

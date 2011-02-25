@@ -16,6 +16,8 @@ import com.cannontech.web.input.type.InputType;
 import com.cannontech.web.input.type.IntegerType;
 import com.cannontech.web.input.type.LongType;
 import com.cannontech.web.input.type.StringType;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 
 /**
  * This class should never have any bean dependencies.
@@ -34,10 +36,23 @@ public class InputTypeFactory {
 
     public static <T extends Enum<T>> InputType<T> enumType(final Class<T> enumClass) {
         BaseEnumeratedType<T> type = new BaseEnumeratedType<T>() {
+            
+            private ImmutableList<InputOption> optionList;
+            {
+                Builder<InputOption> builder = ImmutableList.builder();
+                T[] enumConstants = enumClass.getEnumConstants();
+                for (T entry : enumConstants) {
+                    InputOption inputOption = new InputOption();
+                    inputOption.setText(entry.name());
+                    inputOption.setValue(entry.name());
+                    builder.add(inputOption);
+                }
+                optionList = builder.build();
+            }
 
             @Override
             public List<InputOption> getOptionList() {
-                return null;
+                return optionList;
             }
 
             @Override

@@ -9,6 +9,7 @@ import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.google.common.collect.ImmutableSet;
 
 public class RolePropertyDaoAdapter implements RolePropertyDao {
 
@@ -137,5 +138,15 @@ public class RolePropertyDaoAdapter implements RolePropertyDao {
 			throws NotAuthorizedException {
 		throw new UnsupportedOperationException("not implemented");
 	}
+
+    @Override
+    public boolean isMissingProperty(YukonRoleProperty roleProperty) throws NotAuthorizedException {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public ImmutableSet<YukonRoleProperty> getMissingProperties() throws NotAuthorizedException {
+        throw new UnsupportedOperationException("not implemented");
+    }
 
 }

@@ -1,19 +1,9 @@
-table.energyCompanyHomeLayout {
-    width: 100%;
-}
-
-table.energyCompanyHomeLayout td.first,
-table.energyCompanyHomeLayout td.last {
-    vertical-align: top;
-    width: 50%;
-}
-
-table.energyCompanyHomeLayout td.last {
-    padding-left: 30px;
+div.membersContainer {
+    min-width: 400px;
 }
 
 div.ecContainer {
-    max-height: 193px;
+    max-height: 400px;
     overflow: auto;
     overflow-x: hidden;
 }
@@ -22,21 +12,43 @@ ul.groupLists li {
     list-style: disc;
 }
 
-div.membersContainer {
-    max-height: 300px;
-    overflow: auto;
-    overflow-x: hidden;
-}
-
-div.membersContainer ul li {
-    padding-bottom: 2px;
-}
-
 div.notes {
     padding-bottom: 5px;
 }
 
-tr.pickerRow td.value span[id^='picker_'] {
+#applianceCategoryPrograms {
+    margin-top: 20px;
+}
+
+table.userGroupHomeLayout {
+    width: 100%;
+}
+
+table.userGroupHomeLayout td {
+    width: 50%;
+}
+
+div.rolesContainer {
+    font-size: 12px;
+    overflow: auto;
+    max-height: 400px;
+    min-width: 500px;
+}
+
+ul.category {
+    padding-top: 5px;
+}
+
+ul.role li {
+    padding-left: 10px;
+    padding-top: 2px;
+}
+
+span.categoryLabel {
+    font-weight: bold;
+}
+
+td.instructionsLabel {
     vertical-align: top;
 }
 
@@ -84,7 +96,13 @@ input.default {
     width: 150px;
 }
 
-#applianceCategoryPrograms {
-    margin-top: 20px;
+div.groupsContainer,
+div.usersContainer {
+    max-width: 800px;
+    min-width: 500px;
 }
 
+div.permissionsContainer {
+    max-height: 500px;
+    overflow: auto;
+}

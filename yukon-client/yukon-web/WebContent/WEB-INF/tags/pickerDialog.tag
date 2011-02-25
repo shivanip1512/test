@@ -18,6 +18,8 @@
 <%@ attribute name="initialId" description="Id of item selected at the start." rtexprvalue="true"%>
 <%@ attribute name="initialIds" type="java.lang.Object" description="Ids of items selected at the start." rtexprvalue="true"%>
 <%@ attribute name="useInitialIdsIfEmpty" type="java.lang.Boolean" description="Clears selection if initial id(s) is empty." rtexprvalue="true"%>
+<%@ attribute name="mode" description="mode (inline or dialog; dialog is default)" rtexprvalue="true"%>
+<%@ attribute name="containerDiv" description="causes picker to be inlined; placed in this div" rtexprvalue="true"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -28,12 +30,17 @@
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
 <cti:includeScript link="/JavaScript/tableCreation.js"/>
 
+<c:set var="containerDivArg" value="null"/>
+<c:if test="${!empty  pageScope.containerDiv}">
+    <c:set var="containerDivArg" value="$('${pageScope.containerDiv}')"/>
+</c:if>
+
 <script type="text/javascript">
     // Only create picker if not already created.  This tag gets called more than
     // once if it's used inside a widget and the widget is updated.  Since the user
     // isn't navigating off the page, we want to keep the same picker.
     if (window.${id} == undefined) {
-        ${id} = new Picker('${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}');
+        ${id} = new Picker('${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}', ${containerDivArg});
 
         <c:if test="${pageScope.multiSelectMode}">
             ${id}.multiSelectMode = true;

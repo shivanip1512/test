@@ -6,14 +6,25 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="value" required="true" type="java.lang.String"%>
 <%@ attribute name="items" required="true" type="java.lang.Object"%>
-<%@ attribute name="itemValue" required="true" type="java.lang.String"%>
-<%@ attribute name="itemLabel" required="true" type="java.lang.String"%>
+<%@ attribute name="itemValue" required="false" type="java.lang.String"%>
+<%@ attribute name="itemLabel" required="false" type="java.lang.String"%>
 <%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>
 
 <c:set var="labelFound" value="false"/>
 <c:forEach var="item" items="${items}">
-    <c:if test="${value == item[itemValue]}">
-        <cti:formatObject value="${item[itemLabel]}"/>
+
+    <c:set var="valueArg" value="${pageScope.itemValue}"/>
+    <c:if test="${itemValue != null}">
+        <c:set var="valueArg" value="${item[itemValue]}"/>
+    </c:if>
+
+    <c:set var="labelArg" value="${pageScope.itemLabel}"/>
+    <c:if test="${itemLabel != null}">
+        <c:set var="labelArg" value="${item[itemLabel]}"/>
+    </c:if>
+    
+    <c:if test="${value == valueArg}">
+        <cti:formatObject value="${labelArg}"/>
         <c:set var="labelFound" value="true"/>
     </c:if>
 </c:forEach>

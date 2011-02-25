@@ -1,16 +1,18 @@
 package com.cannontech.core.roleproperties.dao.impl;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.roleproperties.DescriptiveRoleProperty;
@@ -30,21 +32,34 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.Sets;
 
 public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
     
+    private final class RolePredicate implements Predicate<YukonRoleProperty> {
+        private final YukonRole role;
+
+        private RolePredicate(YukonRole role) {
+            this.role = role;
+        }
+
+        public boolean apply(YukonRoleProperty input) {
+            return input.getRole() == role;
+        }
+    }
+
     private RolePropertyDaoImpl rolePropertyDao;
     private YukonJdbcOperations yukonJdbcOperations;
     private ImmutableMap<YukonRoleProperty, DescriptiveRoleProperty> descriptiveRoleProperties;
     private NextValueHelper nextValueHelper;
     private DBPersistentDao dbPersistentDao;
     private static boolean WRITE_NULL_FOR_DEFAULTS = false; // set to true when db editor support is no longer needed
+    private static final Logger log = YukonLogManager.getLogger(RolePropertyEditorDaoImpl.class);
     
     @PostConstruct
     public void initialize() {
@@ -63,8 +78,10 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
 
                 try {
                     YukonRoleProperty roleProperty = YukonRoleProperty.getForId(rolePropertyId);
-                    MessageSourceResolvable keyNameMsr = YukonMessageSourceResolvable.createDefaultWithoutCode(keyName);
-                    MessageSourceResolvable descriptionMsr = YukonMessageSourceResolvable.createDefaultWithoutCode(description);
+                    MessageSourceResolvable keyNameMsr = 
+                        YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty." + roleProperty.name() + ".name", keyName);
+                    MessageSourceResolvable descriptionMsr = 
+                        YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty." + roleProperty.name() + ".description",description);
 
                     DescriptiveRoleProperty descriptiveRoleProperty = new DescriptiveRoleProperty(roleProperty, defaultValueLookup.get(roleProperty), keyNameMsr, descriptionMsr);
                     descriptiveRolePropertyLookup.put(roleProperty, descriptiveRoleProperty);
@@ -79,7 +96,9 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         for (YukonRoleProperty yukonRoleProperty : YukonRoleProperty.values()) {
             DescriptiveRoleProperty value = descriptiveRolePropertyLookup.get(yukonRoleProperty);
             if (value == null) {
-                value = new DescriptiveRoleProperty(yukonRoleProperty);
+                /* TODO Do this the right way */
+//                value = new DescriptiveRoleProperty(yukonRoleProperty);
+                continue; // skip rp's that don't exist in the database
             }
             builder.put(yukonRoleProperty, value);
         }
@@ -99,18 +118,8 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
     }
 
     @Override
-    public GroupRolePropertyValueCollection getForGroup(LiteYukonGroup group, boolean defaultForBlank) {
-        GroupRolePropertyValueCollection result = getForGroupAndPredicate(group, defaultForBlank, Predicates.<YukonRoleProperty>alwaysTrue());
-        return result;
-    }
-
-    @Override
     public GroupRolePropertyValueCollection getForGroupAndRole(LiteYukonGroup group, final YukonRole role, boolean defaultForBlank) {
-        Predicate<YukonRoleProperty> predicate = new Predicate<YukonRoleProperty>() {
-            public boolean apply(YukonRoleProperty input) {
-                return input.getRole() == role;
-            }
-        };
+        Predicate<YukonRoleProperty> predicate = new RolePredicate(role);
         
         GroupRolePropertyValueCollection result = getForGroupAndPredicate(group, defaultForBlank, predicate);
         return result;
@@ -155,9 +164,37 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
     }
 
     private Iterable<YukonRoleProperty> getFilteredRoleProperties(Predicate<YukonRoleProperty> predicate) {
-        return Iterables.filter(Arrays.asList(YukonRoleProperty.values()), predicate);
+        Set<YukonRoleProperty> expected = Sets.newHashSet(YukonRoleProperty.values());
+        Set<YukonRoleProperty> missing = rolePropertyDao.getMissingProperties();
+        Set<YukonRoleProperty> existingSet = Sets.difference(expected, missing);
+        return Iterables.filter(existingSet , predicate);
     }
-
+    
+    @Override
+    @Transactional
+    public void addRoleToGroup(LiteYukonGroup liteYukonGroup, YukonRole role) {
+        Iterable<YukonRoleProperty> roleProperties = getFilteredRoleProperties(new RolePredicate(role));
+        for (YukonRoleProperty yukonRoleProperty : roleProperties) {
+            String dbTextValue = getStringToStoreForValue(yukonRoleProperty, null);
+            
+            insertGroupRoleProperty(liteYukonGroup, yukonRoleProperty, dbTextValue);
+        }
+        
+        sendGroupDbChange(liteYukonGroup.getGroupID(), DbChangeType.UPDATE);
+    }
+    
+    @Override
+    @Transactional
+    public void removeRoleFromGroup(int groupId, int roleId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM YukonGroupRole");
+        sql.append("WHERE GroupId").eq(groupId);
+        sql.append(  "AND RoleId").eq(roleId);
+        
+        yukonJdbcOperations.update(sql);
+        sendGroupDbChange(groupId, DbChangeType.UPDATE);
+    }
+    
     @Override
     @Transactional
     public void save(GroupRolePropertyValueCollection collection) {
@@ -178,15 +215,8 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
     private void save(LiteYukonGroup liteYukonGroup, RolePropertyValue rolePropertyValue) {
         // find default value
         YukonRoleProperty yukonRoleProperty = rolePropertyValue.getYukonRoleProperty();
-        DescriptiveRoleProperty descriptiveRoleProperty = descriptiveRoleProperties.get(yukonRoleProperty);
-        Object defaultValue = descriptiveRoleProperty.getDefaultValue();
         Object valueToStore = rolePropertyValue.getValue();
-        if (WRITE_NULL_FOR_DEFAULTS && defaultValue.equals(valueToStore)) {
-            valueToStore = null;
-        }
-        
-        String dbTextValue = InputTypeFactory.convertPropertyValue(valueToStore, descriptiveRoleProperty.getYukonRoleProperty().getType());
-        dbTextValue = SqlUtils.convertStringToDbValue(dbTextValue);
+        String dbTextValue = getStringToStoreForValue(yukonRoleProperty, valueToStore);
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("update YukonGroupRole");
@@ -196,14 +226,40 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         
         int updated = yukonJdbcOperations.update(sql);
         if (updated == 0) {
-            int nextValue = nextValueHelper.getNextValue("YukonGroupRole");
-            
-            SqlStatementBuilder sql2 = new SqlStatementBuilder();
-            sql2.append("insert into YukonGroupRole");
-            sql2.values(nextValue, liteYukonGroup.getGroupID(), yukonRoleProperty.getRole().getRoleId(), yukonRoleProperty.getPropertyId(), dbTextValue);
-            
-            yukonJdbcOperations.update(sql2);
+            insertGroupRoleProperty(liteYukonGroup, yukonRoleProperty, dbTextValue);
         }
+    }
+
+    private void insertGroupRoleProperty(LiteYukonGroup liteYukonGroup,
+                                          YukonRoleProperty yukonRoleProperty, String dbTextValue) {
+        int nextValue = nextValueHelper.getNextValue("YukonGroupRole");
+        
+        SqlStatementBuilder sql2 = new SqlStatementBuilder();
+        sql2.append("insert into YukonGroupRole");
+        sql2.values(nextValue, liteYukonGroup.getGroupID(), yukonRoleProperty.getRole().getRoleId(), yukonRoleProperty.getPropertyId(), dbTextValue);
+        
+        yukonJdbcOperations.update(sql2);
+    }
+
+    private String getStringToStoreForValue(YukonRoleProperty yukonRoleProperty, Object valueToStore) {
+        DescriptiveRoleProperty descriptiveRoleProperty = descriptiveRoleProperties.get(yukonRoleProperty);
+        Object defaultValue = descriptiveRoleProperty.getDefaultValue();
+        if (WRITE_NULL_FOR_DEFAULTS && defaultValue.equals(valueToStore)) {
+            valueToStore = null;
+        }
+        
+        String dbTextValue = InputTypeFactory.convertPropertyValue(valueToStore, descriptiveRoleProperty.getYukonRoleProperty().getType());
+        dbTextValue = SqlUtils.convertStringToDbValue(dbTextValue);
+        return dbTextValue;
+    }
+    
+    private void sendGroupDbChange(int groupId, DbChangeType type) {
+        DBChangeMsg dbChangeMsg = new DBChangeMsg(groupId,
+                                                  DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                                  DBChangeMsg.CAT_YUKON_USER_GROUP,
+                                                  "",
+                                                  type);
+        dbPersistentDao.processDBChange(dbChangeMsg);
     }
 
     @Autowired

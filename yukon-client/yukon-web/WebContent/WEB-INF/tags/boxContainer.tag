@@ -15,6 +15,9 @@
 <cti:includeScript link="/JavaScript/hideReveal.js"/>
 
 <cti:uniqueIdentifier prefix="titledContainer_" var="thisId"/>
+<c:if test="${!empty pageScope.id}">
+    <c:set var="thisId" value="${pageScope.id}"/>
+</c:if>
 
 <div class="titledContainer boxContainer ${pageScope.styleClass}" <c:if test="${!empty pageScope.id}" >id="${pageScope.id}"</c:if>>
 

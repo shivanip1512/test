@@ -10,7 +10,7 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.YukonGroupService;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.google.common.collect.Sets;
 
 public class YukonGroupServiceImpl implements YukonGroupService {
     
@@ -18,30 +18,39 @@ public class YukonGroupServiceImpl implements YukonGroupService {
     private YukonUserDao yukonUserDao;
     
     @Override
-    public LiteYukonGroup getGroupByYukonRoleAndUser(YukonRole yukonRole, LiteYukonUser user) {
+    public LiteYukonGroup getGroupByYukonRoleAndUser(YukonRole yukonRole, int userId) {
 
-        Map<YukonRole, LiteYukonGroup> rolesAndGroupsForUser = roleDao.getRolesAndGroupsForUser(user);
+        Map<YukonRole, LiteYukonGroup> rolesAndGroupsForUser = roleDao.getRolesAndGroupsForUser(userId);
         return rolesAndGroupsForUser.get(yukonRole);
         
     }
     
     @Override
-    public void  addUserToGroup(LiteYukonGroup newUserGroup, LiteYukonUser user){
+    public void  addUserToGroup(int groupId, int userId){
  
-        Map<YukonRole, LiteYukonGroup> currentRoleWithUsersGroups = roleDao.getRolesAndGroupsForUser(user);
+        Map<YukonRole, LiteYukonGroup> currentRoleWithUsersGroups = roleDao.getRolesAndGroupsForUser(userId);
         
-        Set<YukonRole> yukonRolesForNewGroup = roleDao.getRolesForGroup(newUserGroup);
+        Set<YukonRole> yukonRolesForNewGroup = roleDao.getRolesForGroup(groupId);
         for (YukonRole yukonRoleForNewGroup : yukonRolesForNewGroup)  {
             
             if (!currentRoleWithUsersGroups.containsKey(yukonRoleForNewGroup)) continue;
             
             LiteYukonGroup currentConflictingGroup = currentRoleWithUsersGroups.get(yukonRoleForNewGroup);
-            yukonUserDao.removeUserFromGroup(user, currentConflictingGroup);
+            yukonUserDao.removeUserFromGroup(userId, currentConflictingGroup.getGroupID());
             
         }
         
         // Add the new login group
-        yukonUserDao.addUserToGroup(user, newUserGroup);
+        yukonUserDao.addUserToGroup(userId, groupId);
+    }
+    
+    @Override
+    public boolean addToGroupWillHaveConflicts(int userId, int groupId) {
+        Map<YukonRole, LiteYukonGroup> currentGroupsAndRoles = roleDao.getRolesAndGroupsForUser(userId);
+        Set<YukonRole> potentialRoles = roleDao.getRolesForGroup(groupId);
+        Set<YukonRole> conflictingRoles = Sets.intersection(potentialRoles, currentGroupsAndRoles.keySet());
+        if (!conflictingRoles.isEmpty()) return true;
+        return false;
     }
     
     // DI Setter

@@ -15,7 +15,7 @@
             <input type="hidden" name="parentId" value="${parentId}">
         </c:if>
     
-        <cti:dataGrid cols="2" tableClasses="energyCompanyHomeLayout">
+        <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
         
             <%-- LEFT SIDE COLUMN --%>
             <cti:dataGridCell>

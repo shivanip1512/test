@@ -6,30 +6,43 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage module="adminSetup" page="groupEditor.${mode}">
+<cti:standardPage module="adminSetup" page="userEditor.${mode}">
     
     <tags:setFormEditMode mode="${mode}"/>
+    <cti:msg2 var="none" key="yukon.web.defaults.none"/>
 
     <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
 
         <cti:dataGridCell>
 
-            <form:form commandName="group" action="/spring/adminSetup/groupEditor/edit" method="post">
-                <form:hidden path="groupID"/>
-                <input type="hidden" value="${group.groupID}" name="groupId">
+            <form:form commandName="updatableUser" action="/spring/adminSetup/userEditor/edit" method="post">
+                <form:hidden path="userID"/>
+                <input type="hidden" value="${userId}" name="userId">
                 
                 <tags:nameValueContainer2>
 
-                    <tags:inputNameValue nameKey=".name" path="groupName"/>
-                    <tags:textareaNameValue nameKey=".description" rows="3" cols="35" path="groupDescription"/>
+                    <tags:inputNameValue nameKey=".username" path="username"/>
+                    <tags:selectNameValue nameKey=".authentication" items="${authTypes}" path="authType" itemValue="key" 
+                        itemLabel="value"/>
+                    <tags:selectNameValue nameKey=".loginStatus" items="${loginStatusTypes}" path="loginStatus" itemValue="key" 
+                        itemLabel="value"/>
+                    <tags:selectNameValue nameKey=".energyCompany" items="${energyCompanies}" path="energyCompanyId" 
+                        itemValue="energyCompanyId" itemLabel="name" defaultItemValue="" defaultItemLabel="${none}"/>
+                    <cti:displayForPageEditModes modes="EDIT,CREATE">
+                        <tags:nameValue2 nameKey=".password">
+                            <tags:password path="password"/>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".confirmPassword">
+                            <tags:password path="confirmPassword"/>
+                        </tags:nameValue2>
+                    </cti:displayForPageEditModes>
                 
                 </tags:nameValueContainer2>
                 
                 <div class="pageActionArea">
-                    <cti:displayForPageEditModes modes="EDIT">
+                    <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <cti:button key="save" name="update" type="submit"/>
-                        <cti:button key="delete" id="deleteButton" type="button"/>
-                        <tags:confirmDialog nameKey=".confirmDelete" argument="${groupName}" on="#deleteButton" submitName="delete"/>
+                        <cti:button key="delete" name="delete" type="submit"/>
                         <cti:button key="cancel" name="cancel" type="submit"/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
@@ -39,29 +52,30 @@
             </form:form>
                 
         </cti:dataGridCell>
-            
+        
         <cti:dataGridCell>
             
             <cti:displayForPageEditModes modes="VIEW">
                 
-                <tags:boxContainer2 nameKey="rolesContainer" styleClass="">
+                <tags:boxContainer2 nameKey="rolesContainer">
                     <c:choose>
-                        <c:when test="${empty categoryRoleMap}">
+                        <c:when test="${empty roles}">
                             <i:inline key=".noRoles"/>
                         </c:when>
                         <c:otherwise>
                             <div class="rolesContainer">
-                                <c:forEach var="category" items="${categoryRoleMap}">
+                                <c:forEach var="category" items="${roles}">
                                     <ul class="category">
                                         <li><span class="categoryLabel">${category.key}</span>
                                             <ul class="role">
-                                                <c:forEach var="role" items="${category.value}">
+                                                <c:forEach var="roleGroupPair" items="${category.value}">
                                                     <li>
                                                         <cti:url value="/spring/adminSetup/roleEditor/view" var="roleUrl">
-                                                            <cti:param name="roleId" value="${role.roleId}"/>
-                                                            <cti:param name="groupId" value="${groupId}"/>
+                                                            <cti:param name="roleId" value="${roleGroupPair.first.roleId}"/>
+                                                            <cti:param name="groupId" value="${roleGroupPair.second.groupID}"/>
                                                         </cti:url>
-                                                        <a href="${roleUrl}"><cti:formatObject value="${role}"/></a>
+                                                        <a href="${roleUrl}"><cti:formatObject value="${roleGroupPair.first}"/></a>
+                                                        &nbsp;<span class="subtleGray"><spring:escapeBody htmlEscape="true">(${roleGroupPair.second})</spring:escapeBody></span>
                                                     </li>
                                                 </c:forEach>
                                             </ul>
@@ -71,21 +85,6 @@
                             </div>
                         </c:otherwise>
                     </c:choose>
-                    <div class="actionArea">
-                        <form action="/spring/adminSetup/groupEditor/addRole" method="post">
-                            <input type="hidden" value="${groupId}" name="groupId">
-                            <select name="newRoleId">
-                                <c:forEach var="availableCategory" items="${availableRolesMap}">
-                                    <optgroup label="<cti:formatObject value="${availableCategory.key}"/>">
-                                        <c:forEach var="availableRole" items="${availableCategory.value}">
-                                            <option value="${availableRole.roleId}"><cti:formatObject value="${availableRole}"/></option>
-                                        </c:forEach>
-                                    </optgroup>
-                                </c:forEach>
-                            </select>
-                            <cti:button key="add" type="submit" id="addButton"/>
-                        </form>
-                    </div>
                 </tags:boxContainer2>
                 
             </cti:displayForPageEditModes>

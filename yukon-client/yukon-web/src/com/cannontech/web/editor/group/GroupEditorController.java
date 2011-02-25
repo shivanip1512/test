@@ -36,6 +36,8 @@ public class GroupEditorController extends MultiActionController {
         int groupId = ServletRequestUtils.getRequiredIntParameter(request, "groupId");
         LiteYukonGroup group = yukonGroupDao.getLiteYukonGroup(groupId);
         mav.addObject("group", group);
+        mav.addObject("groupId", groupId);
+        mav.addObject("groupName", group.getGroupName());
 
         return mav;
     }

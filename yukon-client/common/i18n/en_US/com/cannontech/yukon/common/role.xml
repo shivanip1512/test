@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <!-- Application Role Category -->
+    <entry key="yukon.common.role.APPLICATION_BILLING">Billing</entry>
+    <entry key="yukon.common.role.COMMANDER">Commander</entry>
+    <entry key="yukon.common.role.DATABASE_EDITOR">Database Editor</entry>
+    <entry key="yukon.common.role.APPLICATION_ESUBSTATION_EDITOR">Esubstation Editor</entry>
+    <entry key="yukon.common.role.REPORTING">Reporting</entry>
+    <entry key="yukon.common.role.TABULAR_DISPLAY_CONSOLE">Tabular Data Console</entry>
+    <entry key="yukon.common.role.TRENDING">Trending</entry>
+    <entry key="yukon.common.role.WEB_CLIENT">Web Client</entry>
+    
+    <!-- CapControl Role Category -->
+    <entry key="yukon.common.role.CBC_SETTINGS">Cap Bank Display</entry>
+    <entry key="yukon.common.role.CBC_ONELINE_CAP_SETTINGS">CapControl Settings</entry>
+    <entry key="yukon.common.role.CBC_ONELINE_FEEDER_SETTINGS">Feeder Display</entry>
+    <entry key="yukon.common.role.CBC_ONELINE_SUB_SETTINGS">Substation Display</entry>
+    
+    <!-- Consumer Role Category -->
+    <entry key="yukon.common.role.RESIDENTIAL_CUSTOMER">Residential Customer</entry>
+    
+    <!-- LoadControl Role Category -->
+    <entry key="yukon.common.role.LM_DIRECT_LOADCONTROL">Direct Loadcontrol</entry>
+    
+    <!-- Notifications Role Category -->
+    <entry key="yukon.common.role.NOTIFICATION_CONFIGURATION">Configuration</entry>
+    <entry key="yukon.common.role.IVR">IVR</entry>
+    
+    <!-- Operator Role Category -->
+    <entry key="yukon.common.role.OPERATOR_ADMINISTRATOR">Administrator</entry>
+    <entry key="yukon.common.role.CI_CURTAILMENT">CI Curtailment</entry>
+    <entry key="yukon.common.role.CONSUMER_INFO">Consumer Info</entry>
+    <entry key="yukon.common.role.DEVICE_ACTIONS">Device Actions</entry>
+    <entry key="yukon.common.role.ENERGY_COMPANY">Energy Company</entry>
+    <entry key="yukon.common.role.OPERATOR_ESUBSTATION_DRAWINGS">Esubstation Drawings</entry>
+    <entry key="yukon.common.role.INVENTORY">Inventory</entry>
+    <entry key="yukon.common.role.METERING">Metering</entry>
+    <entry key="yukon.common.role.ODDS_FOR_CONTROL">Odds For Control</entry>
+    <entry key="yukon.common.role.SCHEDULER">Scheduler</entry>
+    <entry key="yukon.common.role.WORK_ORDER">Work Order</entry>
+    
+    <!-- System Role Category -->
+    <entry key="yukon.common.role.AUTHENTICATION">Authentication</entry>
+    <entry key="yukon.common.role.SYSTEM_BILLING">Billing Configuration</entry>
+    <entry key="yukon.common.role.CALC_HISTORICAL">Calc Historical</entry>
+    <entry key="yukon.common.role.SYSTEM_CONFIGURATION">Configuration</entry>
+    <entry key="yukon.common.role.MULTISPEAK">MultiSpeak</entry>
+    <entry key="yukon.common.role.VOICE_SERVER">Voice Server</entry>
+    <entry key="yukon.common.role.WEB_GRAPH">Web Graph</entry>
+    <entry key="yukon.common.role.SYSTEM">Yukon</entry>
+
+</properties>

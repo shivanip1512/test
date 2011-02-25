@@ -33,7 +33,6 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Maps;
@@ -207,14 +206,14 @@ public class RoleDaoImpl implements RoleDao {
      * @return
      */
     public YukonGroupRole findYukonGroupRole(int groupId, int rolePropertyId) {
-
-        String sql = " SELECT YGR.groupRoleId, YGR.groupId, YGR.roleId, "+
-                     " YGR.rolePropertyId, YGR.value "+
-                     " FROM YukonGroupRole YGR "+
-                     " WHERE YGR.GroupId = ? "+
-                     " AND YGR.rolePropertyId = ? ";
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT YGR.groupRoleId, YGR.groupId, YGR.roleId, YGR.rolePropertyId, YGR.value");
+        sql.append("FROM YukonGroupRole YGR");
+        sql.append("WHERE YGR.GroupId").eq(groupId);
+        sql.append(  "AND YGR.rolePropertyId").eq(rolePropertyId);
+        
         try {
-            YukonGroupRole groupRole = yukonJdbcTemplate.queryForObject(sql, new YukonGroupRoleRowMapper(), groupId, rolePropertyId);
+            YukonGroupRole groupRole = yukonJdbcTemplate.queryForObject(sql, new YukonGroupRoleRowMapper());
             return groupRole;
         } catch (EmptyResultDataAccessException e) {
             // return null when result is _empty_
@@ -229,10 +228,10 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
-    public Map<YukonRole, LiteYukonGroup> getRolesAndGroupsForUser(LiteYukonUser user) {
+    public Map<YukonRole, LiteYukonGroup> getRolesAndGroupsForUser(int userId) {
         
         Map<YukonRole, LiteYukonGroup> results = Maps.newHashMap();
-        Set<YukonRole> userRoles = getRolesForUser(user);
+        Set<YukonRole> userRoles = getRolesForUser(userId);
         
         for (YukonRole userRole : userRoles) {
 
@@ -241,7 +240,7 @@ public class RoleDaoImpl implements RoleDao {
             sql.append("FROM YukonGroupRole YGR");
             sql.append("JOIN YukonUserGroup YUG ON YGR.GroupId = YUG.GroupId");
             sql.append("WHERE YGR.RoleId").eq(userRole.getRoleId());
-            sql.append("  AND YUG.UserId").eq(user.getUserID());
+            sql.append("  AND YUG.UserId").eq(userId);
 
             List<Integer> groupIdList = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
             Map<Integer, LiteYukonGroup> liteYukonGroups = yukonGroupDao.getLiteYukonGroups(groupIdList);
@@ -254,25 +253,25 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
-    public Set<YukonRole> getRolesForUser(LiteYukonUser user) {
+    public Set<YukonRole> getRolesForGroup(int groupId) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT RoleId");
         sql.append("FROM YukonGroupRole YGR");
-        sql.append("JOIN YukonUserGroup YUG ON YGR.GroupId = YUG.GroupId");
-        sql.append("WHERE YUG.UserId").eq(user.getUserID());
+        sql.append("WHERE YGR.GroupId").eq(groupId);
         List<YukonRole> rolesForGroup = yukonJdbcTemplate.query(sql, new YukonRoleRowMapper());
         
         return Sets.newHashSet(rolesForGroup);
     }
     
     @Override
-    public Set<YukonRole> getRolesForGroup(LiteYukonGroup liteYukonGroup) {
+    public Set<YukonRole> getRolesForUser(int userId) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT RoleId");
         sql.append("FROM YukonGroupRole YGR");
-        sql.append("WHERE YGR.GroupId").eq(liteYukonGroup.getGroupID());
+        sql.append("JOIN YukonUserGroup YUG ON YGR.GroupId = YUG.GroupId");
+        sql.append("WHERE YUG.UserId").eq(userId);
         List<YukonRole> rolesForGroup = yukonJdbcTemplate.query(sql, new YukonRoleRowMapper());
         
         return Sets.newHashSet(rolesForGroup);
@@ -326,4 +325,5 @@ public class RoleDaoImpl implements RoleDao {
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
+    
 }

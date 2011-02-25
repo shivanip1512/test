@@ -40,8 +40,9 @@ import com.cannontech.roles.YukonGroupRoleDefs;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 
 /**
  * The class handles all aspects of Yukon's Role/Property system.
@@ -116,6 +117,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     private LeastRecentlyUsedCacheMap<Integer, Set<YukonRole>> userRoleCache = new LeastRecentlyUsedCacheMap<Integer, Set<YukonRole>>(1000);
     private Set<YukonRoleProperty> propertyExceptions = EnumSet.noneOf(YukonRoleProperty.class);
     private boolean allowRoleConflicts = false;
+    private ImmutableSet<YukonRoleProperty> missingProperties;
     
     // statistics
     private AtomicLong totalAccesses = new AtomicLong(0);
@@ -140,7 +142,6 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         }
     }
 
-    
     @PostConstruct
     public void initialize() {
         final Builder<YukonRoleProperty, Object> builder = ImmutableMap.builder();
@@ -181,6 +182,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         });
         
         defaultValueLookup = builder.build();
+        missingProperties = ImmutableSet.copyOf(unseenProperties);
         
         // let's see what we missed
         for (YukonRoleProperty property : unseenProperties) {
@@ -633,6 +635,16 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         if (!checkRole(role, user)) throw NotAuthorizedException.role(user, role);
     }
     
+    @Override
+    public boolean isMissingProperty(YukonRoleProperty roleProperty) {
+        return missingProperties.contains(roleProperty);
+    }
+    
+    @Override
+    public ImmutableSet<YukonRoleProperty> getMissingProperties() {
+        return missingProperties;
+    }
+    
     /**
      * This is public but not in the interface. Designed to be used by other 
      * role property DAO implementations.
@@ -675,4 +687,5 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     public long getRoleCacheSize() {
     	return userRoleCache.size();
     }
+
 }

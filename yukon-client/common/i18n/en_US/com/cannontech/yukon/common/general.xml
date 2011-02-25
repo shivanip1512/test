@@ -7,4 +7,14 @@
 <entry key="yukon.common.disable">Disable</entry>
 <entry key="yukon.common.enable">Enable</entry>
 
+<entry key="yukon.common.loginStatus.ENABLED">Enabled</entry>
+<entry key="yukon.common.loginStatus.DISABLED">Disabled</entry>
+
+<entry key="yukon.common.authType.PLAIN">Normal</entry>
+<entry key="yukon.common.authType.HASH_SHA">Hashed</entry>
+<entry key="yukon.common.authType.RADIUS">Radius</entry>
+<entry key="yukon.common.authType.NONE">No Login</entry>
+<entry key="yukon.common.authType.AD">Active Directory</entry>
+<entry key="yukon.common.authType.LDAP">LDAP</entry>
+
 </properties>

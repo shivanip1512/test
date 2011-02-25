@@ -5,19 +5,32 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.authorization.dao.PaoPermissionDao;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonGroupDao;
+import com.cannontech.database.FieldMapper;
+import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
@@ -25,43 +38,29 @@ import com.google.common.collect.Maps;
 public class YukonGroupDaoImpl implements YukonGroupDao {
 
     private YukonJdbcTemplate yukonJdbcTemplate;
-
-    @Override
-    public List<LiteYukonGroup> getGroupsForUser(LiteYukonUser user) {
-    	return getGroupsForUser(user.getUserID());
-    }
+    private SimpleTableAccessTemplate<LiteYukonGroup> simpleTableTemplate;
+    private NextValueHelper nextValueHelper;
+    private PaoPermissionDao<LiteYukonGroup> groupPaoPermissionDao;
+    private DBPersistentDao dbPersistantDao;
     
-    @Override
-    public List<LiteYukonGroup> getGroupsForUser(int userID) {
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT yug.userid, yug.groupid, yg.groupname ");
-        sql.append("FROM YukonUserGroup yug, YukonGroup yg");
-        sql.append("WHERE userid").eq(userID);
-        sql.append(  "AND yug.groupid = yg.groupid");
-        
-        List<LiteYukonGroup> groupList = yukonJdbcTemplate.query(sql, new LiteYukonGroupMapper());
-        
-        return groupList;
-    }
-
-    /**
-     * Mapping class to process a result set row into a LiteYukonGroup
-     */
-    private class LiteYukonGroupMapper implements ParameterizedRowMapper<LiteYukonGroup>{
-
-        public LiteYukonGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
-
-            LiteYukonGroup group = new LiteYukonGroup();
-            group.setGroupID(rs.getInt("groupid"));
-            String groupName = rs.getString("groupname");
-            if(groupName != null)
-                group.setGroupName(groupName);
-            return group;
+    private final static FieldMapper<LiteYukonGroup> fieldMapper = new FieldMapper<LiteYukonGroup>() {
+        @Override
+        public Number getPrimaryKey(LiteYukonGroup group) {
+            return group.getGroupID();
         }
 
-    }
+        @Override
+        public void setPrimaryKey(LiteYukonGroup group, int groupId) {
+            group.setGroupID(groupId);
+        }
 
+        @Override
+        public void extractValues(MapSqlParameterSource parameterHolder, LiteYukonGroup group) {
+            parameterHolder.addValue("groupName", group.getGroupName());
+            parameterHolder.addValue("groupDescription", group.getGroupDescription());
+        }
+    };
+    
     private ParameterizedRowMapper<Map.Entry<Integer, LiteYukonGroup>> mapEntryRowMapper =
         new ParameterizedRowMapper<Map.Entry<Integer, LiteYukonGroup>>() {
         public Map.Entry<Integer, LiteYukonGroup> mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -75,15 +74,66 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
             return Maps.immutableEntry(groupId, group);
         }
     };
+    
+    /**
+     * Mapping class to process a result set row into a LiteYukonGroup
+     */
+    private class LiteYukonGroupMapper implements YukonRowMapper<LiteYukonGroup>{
+
+        @Override
+        public LiteYukonGroup mapRow(YukonResultSet rs) throws SQLException {
+            LiteYukonGroup group = new LiteYukonGroup();
+            group.setGroupID(rs.getInt("GroupId"));
+            String groupName = rs.getString("GroupName");
+            String groupDescription = rs.getString("GroupDescription");
+            if (groupName != null) {
+                group.setGroupName(groupName);
+            }
+            group.setGroupDescription(groupDescription);
+            
+            return group;
+        }
+
+    }
+    
+    @PostConstruct
+    public void init() {
+        simpleTableTemplate = new SimpleTableAccessTemplate<LiteYukonGroup>(yukonJdbcTemplate, nextValueHelper);
+        simpleTableTemplate.setTableName("YukonGroup");
+        simpleTableTemplate.setFieldMapper(fieldMapper);
+        simpleTableTemplate.setPrimaryKeyField("GroupId");
+        simpleTableTemplate.setPrimaryKeyValidOver(-305);
+    }
 
     @Override
-    public LiteYukonGroup getLiteYukonGroup( int groupID ) {
-        SqlStatementBuilder sql = new SqlStatementBuilder(); 
-        sql.append("SELECT groupid, groupname FROM YukonGroup WHERE groupid").eq(groupID);
+    public List<LiteYukonGroup> getGroupsForUser(LiteYukonUser user) {
+    	return getGroupsForUser(user.getUserID());
+    }
+    
+    @Override
+    public List<LiteYukonGroup> getGroupsForUser(int userID) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT yug.UserId, yug.GroupId, yg.GroupName, yg.GroupDescription ");
+        sql.append("FROM YukonUserGroup yug, YukonGroup yg");
+        sql.append("WHERE UserId").eq(userID);
+        sql.append(  "AND yug.GroupId = yg.GroupId");
         
         List<LiteYukonGroup> groupList = yukonJdbcTemplate.query(sql, new LiteYukonGroupMapper());
         
-        return groupList.get(0);
+        return groupList;
+    }
+
+    @Override
+    public LiteYukonGroup getLiteYukonGroup(int groupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder(); 
+        sql.append("SELECT GroupId, GroupName, GroupDescription");
+        sql.append("FROM YukonGroup");
+        sql.append("WHERE GroupId").eq(groupId);
+        
+        LiteYukonGroup group = yukonJdbcTemplate.queryForObject(sql, new LiteYukonGroupMapper());
+        
+        return group;
     }
 
     @Override
@@ -110,10 +160,14 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
 
     @Override
     public LiteYukonGroup getLiteYukonGroupByName(String groupName) {
-        String sql = "SELECT GroupId, GroupName FROM YukonGroup WHERE GroupName = ?";
-        LiteYukonGroup group;        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT GroupId, GroupName, GroupDescription");
+        sql.append("FROM YukonGroup");
+        sql.append("WHERE GroupName").eq(groupName);
+        
+        LiteYukonGroup group;
         try {
-            group = yukonJdbcTemplate.queryForObject(sql, new LiteYukonGroupMapper(), groupName);
+            group = yukonJdbcTemplate.queryForObject(sql, new LiteYukonGroupMapper());
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Login group name: " + groupName + " not found.", e);
         }        
@@ -122,13 +176,68 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
     
     @Override
     public void save(LiteYukonGroup group) {
-        /*TODO*/
+        boolean update = simpleTableTemplate.saveWillUpdate(group);
+        simpleTableTemplate.save(group);
+        
+        DbChangeType changeType = update ? DbChangeType.UPDATE : DbChangeType.ADD;
+        sendGroupDbChangeMsg(group.getGroupID(), changeType);
     }
     
-    // DI Setters
+    @Override
+    @Transactional
+    public void delete(int groupId) {
+        /* YukonGroupRole */
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM YukonGroupRole");
+        sql.append("WHERE GroupId").eq(groupId);
+        yukonJdbcTemplate.update(sql);
+        
+        /* YukonUserGroup */
+        sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM YukonUserGroup");
+        sql.append("WHERE GroupId").eq(groupId);
+        yukonJdbcTemplate.update(sql);
+        
+        /* PaoPermissions */
+        groupPaoPermissionDao.removeAllPermissions(groupId);
+        
+        /* YukonGroup */
+        sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM YukonGroup");
+        sql.append("WHERE GroupId").eq(groupId);
+        yukonJdbcTemplate.update(sql);
+        
+        sendGroupDbChangeMsg(groupId, DbChangeType.DELETE);
+    }
+    
+    private void sendGroupDbChangeMsg(Integer groupId, DbChangeType dbChangeType) {
+        DBChangeMsg changeMsg = new DBChangeMsg(groupId,
+                                                DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                                DBChangeMsg.CAT_YUKON_USER_GROUP,
+                                                DBChangeMsg.CAT_YUKON_USER,
+                                                dbChangeType);
+        dbPersistantDao.processDBChange(changeMsg);
+    }
+    
+    /* Depenencies */
+    
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
+    
+    @Autowired
+    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+        this.nextValueHelper = nextValueHelper;
+    }
+    
+    public void setGroupPaoPermissionDao(PaoPermissionDao<LiteYukonGroup> groupPaoPermissionDao) {
+        this.groupPaoPermissionDao = groupPaoPermissionDao;
+    }
+    
+    @Autowired
+    public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
+        this.dbPersistantDao = dbPersistantDao;
     }
     
 }

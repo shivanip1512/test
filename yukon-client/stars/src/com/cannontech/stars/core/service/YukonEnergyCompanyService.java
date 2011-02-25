@@ -1,5 +1,7 @@
 package com.cannontech.stars.core.service;
 
+import java.util.List;
+
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
@@ -24,4 +26,8 @@ public interface YukonEnergyCompanyService {
      */
     public YukonEnergyCompany getEnergyCompanyByInventoryId(int inventoryId);
     
+    /**
+     * Returns a list of all energy companies
+     */
+    public List<YukonEnergyCompany> getAllEnergyCompanies();
 }

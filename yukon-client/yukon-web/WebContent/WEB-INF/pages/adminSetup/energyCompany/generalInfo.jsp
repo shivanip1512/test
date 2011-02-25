@@ -10,56 +10,52 @@
 
     <tags:setFormEditMode mode="${mode}"/>
     
-        <cti:dataGrid cols="2" tableClasses="energyCompanyHomeLayout">
+        <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
         
             <%-- LEFT SIDE COLUMN --%>
             <cti:dataGridCell>
                 <form:form commandName="generalInfo" method="post" action="/spring/adminSetup/energyCompany/general/update">
                     <form:hidden path="ecId"/>
                     
-                    <tags:formElementContainer nameKey="infoContainer">
-                    
-                        <tags:nameValueContainer2>
-                            <tags:inputNameValue nameKey=".name" path="name" size="35" maxlength="60"/>
-                            
-                            <cti:displayForPageEditModes modes="EDIT">
-                                <tags:inputNameValue nameKey=".streetAddress1" path="address.locationAddress1" size="35" maxlength="40"/>
-                                <tags:inputNameValue nameKey=".streetAddress2" path="address.locationAddress2" size="35" maxlength="40"/>
-                                <tags:inputNameValue nameKey=".city" path="address.cityName" size="32" maxlength="32"/>
-                                <tags:inputNameValue nameKey=".stateCode" path="address.stateCode" size="2" maxlength="2"/>
-                                <tags:inputNameValue nameKey=".zipCode" path="address.zipCode" size="12" maxlength="12"/>
-                                <tags:inputNameValue nameKey=".county" path="address.county" size="30" maxlength="30"/>
-                            </cti:displayForPageEditModes>
-                            
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <tags:nameValue2 nameKey=".address">
-                                    <tags:address address="${generalInfo.address}" inLine="true" />
-                                </tags:nameValue2>
-                            </cti:displayForPageEditModes>
-                            
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <tags:nameValue2 nameKey=".phone"><cti:formatPhoneNumber value="${generalInfo.phone}"/></tags:nameValue2>
-                            </cti:displayForPageEditModes>
-                            
-                            <cti:displayForPageEditModes modes="EDIT">
-                                <tags:inputNameValue nameKey=".phone" path="phone"/>
-                            </cti:displayForPageEditModes>
-                            
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <tags:nameValue2 nameKey=".fax"><cti:formatPhoneNumber value="${generalInfo.fax}"/></tags:nameValue2>
-                            </cti:displayForPageEditModes>
-                            
-                            <cti:displayForPageEditModes modes="EDIT">
-                                <tags:inputNameValue nameKey=".fax" path="fax"/>
-                            </cti:displayForPageEditModes>
+                    <tags:nameValueContainer2>
+                        <tags:inputNameValue nameKey=".name" path="name" size="35" maxlength="60"/>
+                        
+                        <cti:displayForPageEditModes modes="EDIT">
+                            <tags:inputNameValue nameKey=".streetAddress1" path="address.locationAddress1" size="35" maxlength="40"/>
+                            <tags:inputNameValue nameKey=".streetAddress2" path="address.locationAddress2" size="35" maxlength="40"/>
+                            <tags:inputNameValue nameKey=".city" path="address.cityName" size="32" maxlength="32"/>
+                            <tags:inputNameValue nameKey=".stateCode" path="address.stateCode" size="2" maxlength="2"/>
+                            <tags:inputNameValue nameKey=".zipCode" path="address.zipCode" size="12" maxlength="12"/>
+                            <tags:inputNameValue nameKey=".county" path="address.county" size="30" maxlength="30"/>
+                        </cti:displayForPageEditModes>
+                        
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <tags:nameValue2 nameKey=".address">
+                                <tags:address address="${generalInfo.address}" inLine="true" />
+                            </tags:nameValue2>
+                        </cti:displayForPageEditModes>
+                        
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <tags:nameValue2 nameKey=".phone"><cti:formatPhoneNumber value="${generalInfo.phone}"/></tags:nameValue2>
+                        </cti:displayForPageEditModes>
+                        
+                        <cti:displayForPageEditModes modes="EDIT">
+                            <tags:inputNameValue nameKey=".phone" path="phone"/>
+                        </cti:displayForPageEditModes>
+                        
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <tags:nameValue2 nameKey=".fax"><cti:formatPhoneNumber value="${generalInfo.fax}"/></tags:nameValue2>
+                        </cti:displayForPageEditModes>
+                        
+                        <cti:displayForPageEditModes modes="EDIT">
+                            <tags:inputNameValue nameKey=".fax" path="fax"/>
+                        </cti:displayForPageEditModes>
 
-                            <tags:inputNameValue nameKey=".email" path="email" size="35" maxlength="130"/>
-                            <tags:selectNameValue items="${routes}" itemLabel="paoName" itemValue="yukonID" 
-                                nameKey=".route" path="defaultRouteId" defaultItemLabel="${none}" defaultItemValue="-1"/>
-                            
-                        </tags:nameValueContainer2>
-                    
-                    </tags:formElementContainer>
+                        <tags:inputNameValue nameKey=".email" path="email" size="35" maxlength="130"/>
+                        <tags:selectNameValue items="${routes}" itemLabel="paoName" itemValue="yukonID" 
+                            nameKey=".route" path="defaultRouteId" defaultItemLabel="${none}" defaultItemValue="-1"/>
+                        
+                    </tags:nameValueContainer2>
                     
                     <div class="pageActionArea">
                         <cti:displayForPageEditModes modes="VIEW">

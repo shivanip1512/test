@@ -12,9 +12,12 @@ public interface RolePropertyEditorDao {
     
     public Map<YukonRoleProperty, DescriptiveRoleProperty> getDescriptiveRoleProperties(YukonRole role);
     
-    public GroupRolePropertyValueCollection getForGroup(LiteYukonGroup group, boolean defaultForBlank);
     public GroupRolePropertyValueCollection getForGroupAndRole(LiteYukonGroup group, YukonRole role, boolean defaultForBlank);
 
     public void save(GroupRolePropertyValueCollection collection);
+
+    public void addRoleToGroup(LiteYukonGroup group, YukonRole role);
+
+    public void removeRoleFromGroup(int groupId, int roleId);
     
 }

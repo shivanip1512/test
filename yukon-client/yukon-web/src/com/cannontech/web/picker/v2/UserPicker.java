@@ -16,10 +16,6 @@ public class UserPicker extends LucenePicker<UltraLightYukonUser> {
         column.setMaxCharsDisplayed(18);
         columns.add(column);
 
-        column = new OutputColumn("groupName", titleKeyPrefix + "groupName");
-        column.setMaxCharsDisplayed(48);
-        columns.add(column);
-
         columns.add(new OutputColumn("userId", titleKeyPrefix + "userId"));
 
         outputColumns = Collections.unmodifiableList(columns);

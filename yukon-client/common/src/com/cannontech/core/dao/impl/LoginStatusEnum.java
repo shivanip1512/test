@@ -1,8 +1,9 @@
 package com.cannontech.core.dao.impl;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
-public enum LoginStatusEnum implements DatabaseRepresentationSource {
+public enum LoginStatusEnum implements DatabaseRepresentationSource, DisplayableEnum {
     ENABLED("Enabled"),
     DISABLED("Disabled");
 
@@ -34,6 +35,19 @@ public enum LoginStatusEnum implements DatabaseRepresentationSource {
     
     public boolean isDisabled() {
         return this == DISABLED;
+    }
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.common.loginStatus." + name();
+    }
+    
+    public String getKey() {
+        return name();
+    }
+    
+    public LoginStatusEnum getValue() {
+        return this;
     }
 
 }
