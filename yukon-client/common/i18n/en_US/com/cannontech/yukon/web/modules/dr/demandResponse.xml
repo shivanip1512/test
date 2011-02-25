@@ -40,6 +40,7 @@
 <entry key="yukon.web.modules.dr.paoType.LM_SCENARIO">Scenario</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_CONTROL_AREA">Control Area</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_DIRECT_PROGRAM">Program</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_SEP_PROGRAM">SEP Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_EMETCON">Emetcon Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_EXPRESSCOMM">Expresscom Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_GOLAY">Golay Group</entry>

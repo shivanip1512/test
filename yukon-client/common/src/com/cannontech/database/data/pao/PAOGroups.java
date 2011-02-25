@@ -308,6 +308,8 @@ public final static int getDeviceType(String typeString)
 	  return VIRTUAL_SYSTEM;
    else if (isStringDevice(compareString, STRING_LM_DIRECT_PROGRAM))
 	  return LM_DIRECT_PROGRAM;
+   else if (isStringDevice(compareString, STRING_LM_SEP_PROGRAM))
+	  return LM_SEP_PROGRAM;
    else if (isStringDevice(compareString, STRING_LM_CURTAIL_PROGRAM))
 	  return LM_CURTAIL_PROGRAM;
    else if (isStringDevice(compareString, STRING_LM_ENERGY_EXCHANGE_PROGRAM))
@@ -644,6 +646,8 @@ public final static String getPAOTypeString(int type)
 		  	return STRING_VIRTUAL_SYSTEM[0];
 	  	case LM_DIRECT_PROGRAM:
 		  	return STRING_LM_DIRECT_PROGRAM[0];
+	  	case LM_SEP_PROGRAM:
+		  	return STRING_LM_SEP_PROGRAM[0];
 	  	case LM_CURTAIL_PROGRAM:
 		  	return STRING_LM_CURTAIL_PROGRAM[0];
 	  	case LM_ENERGY_EXCHANGE_PROGRAM:
