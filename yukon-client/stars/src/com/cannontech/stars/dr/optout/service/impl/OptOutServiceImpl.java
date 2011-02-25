@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
@@ -660,34 +661,29 @@ public class OptOutServiceImpl implements OptOutService {
 	@Override
 	public OptOutCountHolder getCurrentOptOutCount(int inventoryId, int customerAccountId) {
 
-		DateTime dateTime = new DateTime();
-		int currentMonth = dateTime.getMonthOfYear();
-		
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccountId);
+        DateTimeZone energyCompanyTimeZone = ((LiteStarsEnergyCompany) yukonEnergyCompany).getDefaultDateTimeZone();
+
 		// Get the Opt Out limits for the user
 		CustomerAccount customerAccount = customerAccountDao.getById(customerAccountId);
 		LiteContact contact = customerDao.getPrimaryContact(customerAccount.getCustomerId());
-
-		// Get the consumer user's time zone for date calculation
 		int userId = contact.getLoginID();
-		LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
 		
 		int optOutLimit = OptOutService.NO_OPT_OUT_LIMIT;
-		Date startDate = new Date(0);
+		Instant startDate = new Instant(0);
 
 		// The account we are looking at doesn't have a login, therefore there are no limits
-		if(user.getUserID() != UserUtils.USER_DEFAULT_ID) {
-			TimeZone userTimeZone = authDao.getUserTimeZone(user);
-			OptOutLimit currentOptOutLimit = this.getCurrentOptOutLimit(user);
+		if(userId != UserUtils.USER_DEFAULT_ID) {
+			OptOutLimit currentOptOutLimit = getCurrentOptOutLimit(customerAccountId, energyCompanyTimeZone);
 			if(currentOptOutLimit != null) {
 				optOutLimit = currentOptOutLimit.getLimit();
-				startDate = currentOptOutLimit.getOptOutLimitStartDate(currentMonth, userTimeZone);
+				startDate = currentOptOutLimit.getOptOutLimitStartDate(energyCompanyTimeZone);
 			}
 		}
 		
 		// Get the number of opt outs used from the start of the limit (if there is a limit)
 		// till now
-		Integer usedOptOuts = optOutEventDao.getNumberOfOptOutsUsed(
-				inventoryId, customerAccountId, startDate, new Date());
+		Integer usedOptOuts = optOutEventDao.getNumberOfOptOutsUsed(inventoryId, customerAccountId, startDate, new Instant());
 		
 		// Get opt out limit for group
 		int remainingOptOuts = 0;
@@ -985,21 +981,25 @@ public class OptOutServiceImpl implements OptOutService {
 	@Override
 	public OptOutLimit getCurrentOptOutLimit(int customerAccountId) {
 		
-		CustomerAccount customerAccount = customerAccountDao.getById(customerAccountId);
-		LiteContact contact = customerDao.getPrimaryContact(customerAccount.getCustomerId());
+	    // Get the energy company time zone to figure out how many opt outs a user has left.
+	    YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccountId);
+	    DateTimeZone energyCompanyTimeZone = ((LiteStarsEnergyCompany) yukonEnergyCompany).getDefaultDateTimeZone();
 
-		// Get the consumer user's time zone for date calculation
-		int userId = contact.getLoginID();
-		LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
-		
-		return this.getCurrentOptOutLimit(user);
+	    return this.getCurrentOptOutLimit(customerAccountId, energyCompanyTimeZone);
 	};
 	
-	private OptOutLimit getCurrentOptOutLimit(LiteYukonUser user) {
+	private OptOutLimit getCurrentOptOutLimit(int customerAccountId, DateTimeZone energyCompanyTimeZone) {
 		
+	    CustomerAccount customerAccount = customerAccountDao.getById(customerAccountId);
+        LiteContact contact = customerDao.getPrimaryContact(customerAccount.getCustomerId());
+        
+        // Get the consumer user to get their opt out limit.
+        int userId = contact.getLoginID();
+        LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
+	    
 		// The account we are looking at doesn't have a login, therefore there are no limits
 		if(user.getUserID() != UserUtils.USER_DEFAULT_ID) {
-			DateTime dateTime = new DateTime();
+			DateTime dateTime = new DateTime(energyCompanyTimeZone);
 			int currentMonth = dateTime.getMonthOfYear();
 			
 			String optOutLimitString = 

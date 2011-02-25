@@ -1,10 +1,8 @@
 package com.cannontech.stars.dr.optout.model;
 
-import java.util.Date;
-import java.util.TimeZone;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Instant;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -97,28 +95,29 @@ public class OptOutLimit {
      * @return startDate of the OptOutLimit
      * @throws IllegalArgumentException if currentMonth not under this OptOutLimit
      */
-    public Date getOptOutLimitStartDate(int currentMonth, TimeZone userTimeZone) {
+    public Instant getOptOutLimitStartDate(DateTimeZone energyCompanyTimeZone) {
+        DateTime dateTime = new DateTime(energyCompanyTimeZone);
+        int currentMonth = dateTime.getMonthOfYear();
+        
         if (!isMonthUnderLimit(currentMonth)) {
             throw new IllegalArgumentException("currentMonth=[" + currentMonth + "], is not under this OptOutLimit [" + toString() + "]");
         }
-        Date startDate = new Date(0);
+
         // Get the first day of the start month of the limit at midnight
-        DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(userTimeZone);
-        DateTime startDateTime = new DateTime(dateTimeZone);
+        DateTime startDateTime = new DateTime(energyCompanyTimeZone);
         startDateTime = startDateTime.withMonthOfYear(startMonth);
         startDateTime = startDateTime.withDayOfMonth(1);
         startDateTime = startDateTime.withTime(0, 0, 0, 0);
 
         // See if the OptOutLimit started in the current or last year
         if (startMonth > stopMonth) {
-            if (currentMonth >= 1 && currentMonth <= stopMonth) {
+            if (currentMonth <= stopMonth) {
                 // OptOutLimit started last year
-                startDateTime = startDateTime.withYear(startDateTime.getYear() - 1);
+                startDateTime = startDateTime.minusYears(1);
             }
         }
-        startDate = startDateTime.toDate();
-
-        return startDate;
+        
+        return startDateTime.toInstant();
     }
     
     public String toString() {

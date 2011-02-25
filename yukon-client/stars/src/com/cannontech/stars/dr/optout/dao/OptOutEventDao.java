@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.Instant;
+
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.optout.model.OptOutAction;
@@ -161,8 +163,7 @@ public interface OptOutEventDao {
 	 * @param endDate - End of time period to count opt outs
 	 * @return Number of opt outs used in time period
 	 */
-	public Integer getNumberOfOptOutsUsed(int inventoryId,
-			int customerAccountId, Date startDate, Date endDate);
+	public Integer getNumberOfOptOutsUsed(int inventoryId, int customerAccountId, Instant startDate, Instant endDate);
 	
 	/**
 	 * Method to get a count of all currently active Opt Outs

@@ -501,29 +501,21 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 
 	@Override
-	public Integer getNumberOfOptOutsUsed(int inventoryId,
-			int customerAccountId, Date startDate, Date endDate) {
+	public Integer getNumberOfOptOutsUsed(int inventoryId, int customerAccountId, Instant startDate, Instant endDate) {
 		
 		// Count the number of opt outs used in the time period
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT COUNT(*)");
 		sql.append("FROM OptOutEvent");
-		sql.append("WHERE InventoryId = ?");
-		sql.append("	AND CustomerAccountId = ?");
-		sql.append("	AND (EventState = ?");
-		sql.append("		OR EventState = ?)");
-		sql.append("	AND EventCounts = ?");
-		sql.append("	AND StartDate <= ?");
-		sql.append("	AND StopDate >= ?");
+		sql.append("WHERE InventoryId").eq(inventoryId);
+		sql.append("	AND CustomerAccountId").eq(customerAccountId);
+		sql.append("	AND (EventState").eq(OptOutEventState.START_OPT_OUT_SENT);
+		sql.append("		OR EventState").eq(OptOutEventState.CANCEL_SENT).append(")");
+		sql.append("	AND EventCounts").eq(OptOutCounts.COUNT);
+		sql.append("	AND StartDate").lte(endDate);
+		sql.append("	AND StopDate").gte(startDate);
 		
-		int usedOptOuts = yukonJdbcTemplate.queryForInt(sql.toString(), 
-												inventoryId, 
-												customerAccountId, 
-												OptOutEventState.START_OPT_OUT_SENT.toString(), 
-												OptOutEventState.CANCEL_SENT.toString(),
-												OptOutCounts.COUNT.toString(),
-												endDate,
-												startDate);
+		int usedOptOuts = yukonJdbcTemplate.queryForInt(sql);
 		
 		return usedOptOuts;
 	}
