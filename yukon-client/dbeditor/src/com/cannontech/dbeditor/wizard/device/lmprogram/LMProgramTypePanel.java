@@ -91,7 +91,7 @@ private javax.swing.JRadioButton getJRadioButtonEnergyExchange() {
 public int getLMSelectedType() 
 {
 	if( getJRadioButtonDirectControl().isSelected() )
-	{
+	{	//TODO WHAT TO DO HERE FOR LM_SEP_PROGRAM????
 		return com.cannontech.database.data.pao.PAOGroups.LM_DIRECT_PROGRAM;
 	}
 	else if( getJRadioButtonCurtailment().isSelected() )

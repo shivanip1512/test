@@ -19,6 +19,9 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrTranslation;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.FdrTranslationDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -42,12 +45,12 @@ import com.cannontech.multispeak.dao.MspLMGroupDao;
 import com.cannontech.multispeak.dao.MspLMInterfaceMappingDao;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.db.MspLMGroupCommunications;
+import com.cannontech.multispeak.db.MspLMGroupCommunications.MspLMGroupStatus;
+import com.cannontech.multispeak.db.MspLMGroupCommunications.MspLMProgramMode;
 import com.cannontech.multispeak.db.MspLMInterfaceMapping;
 import com.cannontech.multispeak.db.MspLMInterfaceMappingStrategyNameComparator;
 import com.cannontech.multispeak.db.MspLmInterfaceMappingColumnEnum;
 import com.cannontech.multispeak.db.MspLoadControl;
-import com.cannontech.multispeak.db.MspLMGroupCommunications.MspLMGroupStatus;
-import com.cannontech.multispeak.db.MspLMGroupCommunications.MspLMProgramMode;
 import com.cannontech.multispeak.deploy.service.ControlEventType;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.LoadManagementEvent;
@@ -71,6 +74,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     public LoadControlClientConnection loadControlClientConnection;
     public LoadControlProgramDao loadControlProgramDao;
     public MspLMGroupDao mspLMGroupDao;
+    public PaoDefinitionDao paoDefinitionDao;
 
     private List<? extends String> strategyNames;
     private List<? extends String> strategiesToExcludeInReport;
@@ -129,7 +133,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
         for (MspLMInterfaceMapping mspLMInterfaceMapping : mspLoadControl.getMspLmInterfaceMappings()) {
 			try {
 				LiteYukonPAObject liteYukonPAObject = paoDao.getLiteYukonPAO(mspLMInterfaceMapping.getPaobjectId());
-				if ( liteYukonPAObject.getType() == DeviceTypes.LM_DIRECT_PROGRAM) {
+				if (paoDefinitionDao.isTagSupported(PaoType.getForId(liteYukonPAObject.getType()), PaoTag.LM_PROGRAM)) {
 					String programName = liteYukonPAObject.getPaoName();
 					ProgramStatus programStatus = null;
 			    	if(mspLoadControl.getControlEventType() == ControlEventType.Initiate) {
@@ -300,7 +304,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	        	lmProgramBases = new ArrayList<LMProgramBase>();
 	        	int paobjectId = mspLMInterfaceMapping.getPaobjectId();
 				LiteYukonPAObject liteYukonPAObject = paoDao.getLiteYukonPAO(paobjectId);
-	        	if ( liteYukonPAObject.getType() == DeviceTypes.LM_DIRECT_PROGRAM) {
+				if (paoDefinitionDao.isTagSupported(PaoType.getForId(liteYukonPAObject.getType()), PaoTag.LM_PROGRAM)) {
 					LMProgramBase program = loadControlClientConnection.getProgram(paobjectId);
 					lmProgramBases.add(program);
 	        	} else if ( liteYukonPAObject.getType() == DeviceTypes.LM_SCENARIO) {
@@ -513,6 +517,11 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     public void setMspLMGroupDao(MspLMGroupDao mspLMGroupDao) {
 		this.mspLMGroupDao = mspLMGroupDao;
 	}
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+		this.paoDefinitionDao = paoDefinitionDao;
+	}
+    
     @Required
     public void setStrategyNames(List<? extends String> strategyNames) {
 		this.strategyNames = strategyNames;

@@ -13,6 +13,8 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.dr.controlarea.model.ControlAreaState;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
@@ -29,8 +31,8 @@ import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Ordering;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.Ordering;
 
 public class DemandResponseServiceImpl implements DemandResponseService {
     private SystemDateFormattingService systemDateFormattingService;
@@ -38,7 +40,7 @@ public class DemandResponseServiceImpl implements DemandResponseService {
     private ProgramService programService;
     private LoadGroupService loadGroupService;
     private YukonUserContextMessageSourceResolver messageSourceResolver = null;
-
+    private PaoDefinitionDao paoDefinitionDao;
     final Map<CombinedSortableField, Comparator<DisplayablePao>> sorters;
 
     private static class PaoStateInfo implements Comparable<PaoStateInfo>{
@@ -130,7 +132,7 @@ public class DemandResponseServiceImpl implements DemandResponseService {
                                     CombinedState.forControlAreaState(state));
         }
 
-        if (pao.getPaoIdentifier().getPaoType() == PaoType.LM_DIRECT_PROGRAM) {
+        if (paoDefinitionDao.isTagSupported(pao.getPaoIdentifier().getPaoType(), PaoTag.LM_PROGRAM)) {
             LMProgramBase program = programService.getProgramForPao(pao);
             if (program == null) {
                 return null;
@@ -205,4 +207,9 @@ public class DemandResponseServiceImpl implements DemandResponseService {
             YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
     }
+    
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+		this.paoDefinitionDao = paoDefinitionDao;
+	}
 }

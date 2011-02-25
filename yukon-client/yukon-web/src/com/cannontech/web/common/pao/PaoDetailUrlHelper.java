@@ -44,6 +44,11 @@ public class PaoDetailUrlHelper {
                 return "/spring/dr/program/detail?programId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
+        paoBuilder.put(PaoType.LM_SEP_PROGRAM, new Function<YukonPao, String>() {
+            public String apply(YukonPao pao) {
+                return "/spring/dr/program/detail?programId=" + pao.getPaoIdentifier().getPaoId();
+            }
+        });
         
         Function<YukonPao, String> loadGroupFunction = new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {

@@ -1,5 +1,6 @@
 package com.cannontech.database.data.device.lm;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList;
 /**
  * Insert the type's description here.
@@ -14,9 +15,13 @@ public class LMProgramEnergyExchange extends LMProgramBase
  */
 public LMProgramEnergyExchange() {
 	super();
-
-	getYukonPAObject().setType( com.cannontech.database.data.pao.PAOGroups.STRING_LM_ENERGY_EXCHANGE_PROGRAM[0] );
 }
+
+@Override
+protected PaoType getProgramPaoType() {
+	return PaoType.LM_ENERGY_EXCHANGE_PROGRAM;
+}
+
 /**
  * This method was created in VisualAge.
  */

@@ -623,6 +623,7 @@ public synchronized List<LiteYukonPAObject> getAllLMPrograms()
 		{
 			if( getAllLoadManagement().get(i).getType() == PAOGroups.LM_CURTAIL_PROGRAM
 				 || getAllLoadManagement().get(i).getType() == PAOGroups.LM_DIRECT_PROGRAM
+				 || getAllLoadManagement().get(i).getType() == PAOGroups.LM_SEP_PROGRAM
 				 || getAllLoadManagement().get(i).getType() == PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM )
 				allLMPrograms.add( getAllLoadManagement().get(i) );				
 		}
@@ -645,7 +646,8 @@ public synchronized List<LiteYukonPAObject> getAllLMDirectPrograms()
 
         for( int i = 0; i < getAllLoadManagement().size(); i++ )
         {
-            if(getAllLoadManagement().get(i).getType() == PAOGroups.LM_DIRECT_PROGRAM)
+            if(getAllLoadManagement().get(i).getType() == PAOGroups.LM_DIRECT_PROGRAM ||
+            		getAllLoadManagement().get(i).getType() == PAOGroups.LM_SEP_PROGRAM)
                 allLMPrograms.add( getAllLoadManagement().get(i) );             
         }
 

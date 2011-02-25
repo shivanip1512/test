@@ -26,6 +26,8 @@ import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatedObject;
@@ -64,24 +66,29 @@ public class ProgramServiceImpl implements ProgramService {
     private DemandResponseEventLogService demandResponseEventLogService;
     private SystemDateFormattingService systemDateFormattingService;
     private DateFormattingService dateFormattingService;
-
-    private static RowMapperWithBaseQuery<DisplayablePao> rowMapper =
+    private PaoDefinitionDao paoDefinitionDao;
+    
+    private RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
 
             @Override
             public SqlFragmentSource getBaseQuery() {
+            	List<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_PROGRAM);
                 SqlStatementBuilder retVal = new SqlStatementBuilder();
-                retVal.append("SELECT paObjectId, paoName FROM yukonPAObject"
-                    + " WHERE type = ");
-                retVal.appendArgument(PaoType.LM_DIRECT_PROGRAM.getDbString());
+                retVal.append("SELECT paObjectId, paoName, type");
+                retVal.append("FROM yukonPAObject");
+                retVal.append("WHERE type").in(paoTypes);
+
                 return retVal;
             }
 
             @Override
             public DisplayablePao mapRow(ResultSet rs, int rowNum)
                     throws SQLException {
-                PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
-                                                        PaoType.LM_DIRECT_PROGRAM);
+            	int paobjectId = rs.getInt("paObjectId");
+            	String paoTypeStr = rs.getString("type");
+            	PaoType paoType = PaoType.getForDbString(paoTypeStr);
+                PaoIdentifier paoId = new PaoIdentifier(paobjectId, paoType);
                 DisplayablePao retVal = new DisplayablePaoBase(paoId,
                                                                rs.getString("paoName"));
                 return retVal;
@@ -451,6 +458,11 @@ public class ProgramServiceImpl implements ProgramService {
     public void setDateFormattingService(DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;
     }
+    
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+		this.paoDefinitionDao = paoDefinitionDao;
+	}
 
     private LMManualControlRequest getManualControlMessage(
             int programId, int gearNumber, Date startDate, Date stopDate, int constraintId) {

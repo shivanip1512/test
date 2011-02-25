@@ -3,9 +3,12 @@ package com.cannontech.core.authorization.support.pao;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.DemandResponseDao;
 import com.google.common.collect.Lists;
 import com.google.common.collect.SetMultimap;
@@ -17,10 +20,11 @@ import com.google.common.collect.SetMultimap;
 public class LMProgramParentAuthorization extends LMParentBaseAuthorization {
 
     private DemandResponseDao demandResponseDao;
+    private PaoDefinitionDao paoDefinitionDao;
     
     @Override
     protected boolean checkPaoType(YukonPao pao) {
-        return pao.getPaoIdentifier().getPaoType() == PaoType.LM_DIRECT_PROGRAM;
+    	return paoDefinitionDao.isTagSupported(pao.getPaoIdentifier().getPaoType(), PaoTag.LM_PROGRAM);
     }
 
     @Override
@@ -46,13 +50,17 @@ public class LMProgramParentAuthorization extends LMParentBaseAuthorization {
         return demandResponseDao.getControlAreasAndScenariosForProgram(pao);
     }
     
-    public void setDemandResponseDao(DemandResponseDao demandResponseDao) {
-        this.demandResponseDao = demandResponseDao;
-    }
-    
     @Override
     public String toString() {
         return permission + " and  program parent authorization";
     }
 
+    public void setDemandResponseDao(DemandResponseDao demandResponseDao) {
+        this.demandResponseDao = demandResponseDao;
+    }
+    
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+		this.paoDefinitionDao = paoDefinitionDao;
+	}
 }

@@ -27,9 +27,10 @@ public class QuickSearchRowMapper implements RowMapperWithBaseQuery<DisplayableP
         fragment.append("WHERE ((PAO.Category").eq(PaoCategory.LOADMANAGEMENT.toString());
         fragment.append("       AND PAO.PAOClass").eq(PaoClass.LOADMANAGEMENT.toString());
         fragment.append("       AND PAO.Type").in(
-            Arrays.asList(PaoType.LM_CONTROL_AREA.getDbString(), 
-                          PaoType.LM_SCENARIO.getDbString(), 
-                          PaoType.LM_DIRECT_PROGRAM.getDbString()));
+            Arrays.asList(PaoType.LM_CONTROL_AREA, 
+                          PaoType.LM_SCENARIO, 
+                          PaoType.LM_DIRECT_PROGRAM,
+                          PaoType.LM_SEP_PROGRAM));
         fragment.append("       )");
         fragment.append("       OR (PAO.Category").eq(PaoCategory.DEVICE.toString());
         fragment.append("    AND PAO.PAOClass").eq(PaoClass.GROUP.toString());

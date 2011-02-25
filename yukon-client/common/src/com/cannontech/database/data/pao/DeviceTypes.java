@@ -1,7 +1,5 @@
 package com.cannontech.database.data.pao;
 
-import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoClass;
 
 /**
  * Insert the type's description here.
@@ -163,8 +161,10 @@ public interface DeviceTypes extends TypeBase
     public final static int RFN430A3 = DEVICE_OFFSET + 123;
     public final static int RFN430KV = DEVICE_OFFSET + 124;
     
+    public final static int LM_SEP_PROGRAM = DEVICE_OFFSET + 125;
+    
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 124;
+	public final static int DEVICE_TYPES_COUNT = 125;
 	
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
@@ -251,6 +251,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_SYSTEM = {"SYSTEM"};
 	public static final String[] STRING_VIRTUAL_SYSTEM = {"VIRTUAL SYSTEM", "VIRTUALSYSTEM"};
 	public static final String[] STRING_LM_DIRECT_PROGRAM = {"LM DIRECT PROGRAM"};
+	public static final String[] STRING_LM_SEP_PROGRAM = {"LM SEP PROGRAM"};
 	public static final String[] STRING_LM_CURTAIL_PROGRAM = {"LM CURTAIL PROGRAM"};
 	public static final String[] STRING_LM_CONTROL_AREA = {"LM CONTROL AREA"};
 	public static final String[] STRING_LM_SCENARIO = {"LMSCENARIO"};

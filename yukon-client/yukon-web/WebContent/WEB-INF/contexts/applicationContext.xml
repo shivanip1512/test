@@ -1605,8 +1605,8 @@
         <property name="permission" value="LM_VISIBLE"/>
         <property name="sqlFilters">
             <list>
-                <bean class="com.cannontech.common.search.pao.db.PaoTypeFilter">
-                    <property name="paoType" value="LM_DIRECT_PROGRAM"/>
+                <bean class="com.cannontech.common.search.pao.db.PaoTagFilter">
+                    <property name="paoTag" value="LM_PROGRAM"/>
                 </bean>
                 <bean class="com.cannontech.common.search.pao.db.ApplianceCategoryUsableFilter"/>
             </list>
@@ -1619,8 +1619,8 @@
     	<property name="permission" value="LM_VISIBLE"/>
     	<property name="sqlFilters">
             <list>
-                <bean class="com.cannontech.common.search.pao.db.PaoTypeFilter">
-                    <property name="paoType" value="LM_DIRECT_PROGRAM"/>
+                <bean class="com.cannontech.common.search.pao.db.PaoTagFilter">
+                    <property name="paoTag" value="LM_PROGRAM"/>
                 </bean>
             </list>
         </property>

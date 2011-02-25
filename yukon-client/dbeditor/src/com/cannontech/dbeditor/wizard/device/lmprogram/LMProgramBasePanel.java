@@ -541,6 +541,7 @@ public Object getValue(Object o)
     LMProgramBase  program;
 	if (isAWizardOp) {
         program = (LMProgramBase)LMFactory.createLoadManagement( PAOGroups.LM_DIRECT_PROGRAM );
+        //TODO WHAT TO DO HERE FOR LM_SEP_PROGRAM???
     }else {
         program = (LMProgramBase)o;
     }
@@ -551,7 +552,7 @@ public Object getValue(Object o)
 		program.getProgram().setConstraintID( new Integer(((com.cannontech.database.data.lite.LiteLMConstraint)getJComboBoxConstraint().getSelectedItem()).getConstraintID() ));
 
 	if(program.getPAOType().compareTo(DeviceTypes.STRING_LM_DIRECT_PROGRAM[0]) == 0)
-	{
+	{	//TODO WHAT TO DO HERE FOR LM_SEP_PROGRAM????
 		LMProgramDirect prog = (LMProgramDirect)program;
 		if(getJTextFieldTriggerOffset().getText().length() > 0)
 			prog.getDirectProgram().setTriggerOffset(new Double(getJTextFieldTriggerOffset().getText()));
@@ -684,7 +685,7 @@ public void setValue(Object o)
     			}
     			
     	if(program.getPAOType().compareTo(DeviceTypes.STRING_LM_DIRECT_PROGRAM[0]) == 0)
-    	{
+    	{	//TODO WHAT TO DO HERE FOR LM_SEP_PROGRAM????
     		getJPanelTriggerThreshold().setVisible(true);
     		getJTextFieldTriggerOffset().setText(((LMProgramDirect)program).getDirectProgram().getTriggerOffset().toString());
     		getJTextFieldOffset().setText(((LMProgramDirect)program).getDirectProgram().getRestoreOffset().toString());

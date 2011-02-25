@@ -22,7 +22,10 @@ public class LMProgramEditor extends com.cannontech.common.editor.PropertyPanel 
 	private static final int[][] EDITOR_TYPES =
 	{
 		//LMProgramBasePanel
-		{ PAOGroups.LM_CURTAIL_PROGRAM, PAOGroups.LM_DIRECT_PROGRAM, PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM },
+		{ PAOGroups.LM_CURTAIL_PROGRAM, 
+			PAOGroups.LM_DIRECT_PROGRAM,
+			PAOGroups.LM_SEP_PROGRAM,
+			PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM },
 
 		//LMProgramCurtailmentPanel
 		{ PAOGroups.LM_CURTAIL_PROGRAM },
@@ -30,15 +33,15 @@ public class LMProgramEditor extends com.cannontech.common.editor.PropertyPanel 
 		{ PAOGroups.LM_CURTAIL_PROGRAM },
 
 		//LMProgramDirectPanel
-		{ PAOGroups.LM_DIRECT_PROGRAM },
+		{ PAOGroups.LM_DIRECT_PROGRAM, PAOGroups.LM_SEP_PROGRAM },
 		//LMProgramControlWindowPanel
-		{ PAOGroups.LM_DIRECT_PROGRAM },
+		{ PAOGroups.LM_DIRECT_PROGRAM, PAOGroups.LM_SEP_PROGRAM },
 		//LMProgramListPanel
-		{ PAOGroups.LM_DIRECT_PROGRAM },
+		{ PAOGroups.LM_DIRECT_PROGRAM, PAOGroups.LM_SEP_PROGRAM },
 		//LMProgramDirectCustomerListPanel
-		{ PAOGroups.LM_DIRECT_PROGRAM },
+		{ PAOGroups.LM_DIRECT_PROGRAM, PAOGroups.LM_SEP_PROGRAM },
 		//LMProgramDirectMemberControlPanel
-		{ PAOGroups.LM_DIRECT_PROGRAM },
+		{ PAOGroups.LM_DIRECT_PROGRAM, PAOGroups.LM_SEP_PROGRAM },
 		
 		//LMProgramEnergyExchangePanel
 		{ PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM},

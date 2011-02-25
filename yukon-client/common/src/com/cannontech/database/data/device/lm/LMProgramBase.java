@@ -7,6 +7,7 @@ package com.cannontech.database.data.device.lm;
  */
 import java.util.Vector;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.db.device.lm.DeviceListItem;
@@ -33,7 +34,11 @@ public abstract class LMProgramBase extends com.cannontech.database.data.pao.Yuk
  */
 public LMProgramBase() {
 	super();
+	getYukonPAObject().setType(getProgramPaoType().getDbString());
 }
+
+protected abstract PaoType getProgramPaoType();
+
 /**
  * This method was created in VisualAge.
  */

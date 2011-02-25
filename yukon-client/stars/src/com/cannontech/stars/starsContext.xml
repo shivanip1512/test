@@ -213,10 +213,7 @@
     
     <bean id="lmConfigurationBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.LMConfigurationBaseDaoImpl"/>
         
-    <bean id="applianceAndProgramDao"
-        class="com.cannontech.stars.dr.account.dao.impl.ApplianceAndProgramDaoImpl">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
-    </bean>
+    <bean id="applianceAndProgramDao" class="com.cannontech.stars.dr.account.dao.impl.ApplianceAndProgramDaoImpl"/>
 
     <bean id="customerResidenceDaoImpl" class="com.cannontech.stars.dr.account.dao.impl.CustomerResidenceDaoImpl"/>
 

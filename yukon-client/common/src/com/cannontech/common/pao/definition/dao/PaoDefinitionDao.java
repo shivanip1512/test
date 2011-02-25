@@ -1,5 +1,6 @@
 package com.cannontech.common.pao.definition.dao;
 
+import java.util.List;
 import java.util.Set;
 
 import com.cannontech.common.pao.PaoType;
@@ -90,6 +91,7 @@ public interface PaoDefinitionDao {
     public abstract Set<PaoTag> getSupportedTags(PaoDefinition paoDefiniton);
     
     public abstract Set<PaoDefinition> getPaosThatSupportTag(PaoTag feature);
+    public abstract List<PaoType> getPaoTypesThatSupportTag(PaoTag feature);
     
     public abstract boolean isTagSupported(PaoType paoType, PaoTag feature);
     public abstract boolean isTagSupported(PaoDefinition paoDefiniton, PaoTag feature);

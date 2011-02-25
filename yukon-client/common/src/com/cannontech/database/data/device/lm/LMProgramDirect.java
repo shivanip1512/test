@@ -2,7 +2,7 @@ package com.cannontech.database.data.device.lm;
 
 import java.util.Vector;
 
-import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.NestedDBPersistentComparators;
 import com.cannontech.database.db.device.lm.DeviceListItem;
 import com.cannontech.database.db.device.lm.LMDirectNotificationGroupList;
@@ -20,10 +20,13 @@ public class LMProgramDirect extends LMProgramBase {
 	 */
 	public LMProgramDirect() {
 		super();
-
-		getYukonPAObject().setType(PAOGroups.STRING_LM_DIRECT_PROGRAM[0]);
 	}
 
+	@Override
+	protected PaoType getProgramPaoType() {
+		return PaoType.LM_DIRECT_PROGRAM;
+	}
+	
 	/**
 	 * This method was created in VisualAge.
 	 */

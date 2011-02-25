@@ -5046,7 +5046,22 @@
     <pao id="MACRO_GROUP">
         <displayName>MACRO GROUP</displayName>
     </pao>
-    
+
+    <!--  LM Programs -->
+    <pao id="LM_PROGRAM_BASE" abstract="true">
+		<tags>
+        	<tag name="LM_PROGRAM">
+        		<value>true</value>
+        	</tag>
+        </tags>
+    </pao>
+    <pao id="LM_DIRECT_PROGRAM" inherits="LM_PROGRAM_BASE">
+        <displayName>LM DIRECT PROGRAM</displayName>
+    </pao>
+    <pao id="LM_SEP_PROGRAM" inherits="LM_PROGRAM_BASE">
+        <displayName>LM SEP PROGRAM</displayName>
+    </pao>
+        
     <!-- CBCs -->
     <pao id="CAPBANKCONTROLLER" inherits="CBC_1WAY_BASE">
         <displayName>CBC Versacom</displayName>

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DaoFactory;
@@ -89,8 +92,8 @@ public class StarsLMPermissionBean
     private List<Integer> determineTypeAndReturnChildIDs(Integer paoID, List<Integer> currentList) {
         LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(paoID);
         List<Integer> unconvertedYukonPaoIDs = new ArrayList<Integer>();
-        
-        if(litePao.getType() == DeviceTypes.LM_DIRECT_PROGRAM) {
+        PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
+        if(paoDefinitionDao.isTagSupported(PaoType.getForId(litePao.getType()), PaoTag.LM_PROGRAM)) {
             unconvertedYukonPaoIDs.add(paoID);
         }
         else if(litePao.getType() == DeviceTypes.LM_CONTROL_AREA) {

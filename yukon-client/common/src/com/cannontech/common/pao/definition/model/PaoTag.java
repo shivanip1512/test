@@ -27,7 +27,8 @@ public enum PaoTag {
 	MCT_200_SERIES("MCT 200 Series"),
 	MCT_300_SERIES("MCT 300 Series"),
 	USES_METER_NUMBER_FOR_MSP("Uses meter number for Msp"),
-	VOLTAGE_REGULATOR("Voltage Regulator")
+	VOLTAGE_REGULATOR("Voltage Regulator"),
+	LM_PROGRAM("LM Program"),
 	;
 
 	private String description;

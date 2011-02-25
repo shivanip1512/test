@@ -78,8 +78,9 @@ public class DemandResponseDaoImpl implements DemandResponseDao {
             public SqlFragmentSource generate(List<Integer> subList) {
 
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT deviceId, lmGroupDeviceId");
+                sql.append("SELECT deviceId, lmGroupDeviceId, type");
                 sql.append("FROM lmProgramDirectGroup");
+                sql.append("	JOIN YukonPaobject ON paObjectId = deviceId");
                 sql.append("WHERE lmGroupDeviceId").in(subList);
                 return sql;
             }
@@ -88,7 +89,9 @@ public class DemandResponseDaoImpl implements DemandResponseDao {
             new ParameterizedRowMapper<Map.Entry<Integer, PaoIdentifier>>() {
             public Entry<Integer, PaoIdentifier> mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Integer programId = rs.getInt("deviceId");
-                PaoIdentifier program = new PaoIdentifier(programId, PaoType.LM_DIRECT_PROGRAM);
+                String paoTypeStr = rs.getString("type");
+                PaoType paoType = PaoType.getForDbString(paoTypeStr);                
+                PaoIdentifier program = new PaoIdentifier(programId, paoType);
                 
                 Integer groupId = rs.getInt("lmGroupDeviceId");
                 return Maps.immutableEntry(groupId, program);

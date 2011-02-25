@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
@@ -19,13 +18,12 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
-import com.cannontech.database.data.lite.LiteUnitMeasure;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 /**
  * Insert the type's description here. Creation date: (3/26/2001 9:40:33 AM)
@@ -150,7 +148,11 @@ public final class LMDaoImpl implements LMDao {
     }
 
     public Set<LiteYukonPAObject> getAllLMDirectPrograms() {
-        return new HashSet<LiteYukonPAObject>(paoDao.getLiteYukonPAObjectByType(DeviceTypes.LM_DIRECT_PROGRAM));
+    	List<LiteYukonPAObject> directPrograms = paoDao.getLiteYukonPAObjectByType(DeviceTypes.LM_DIRECT_PROGRAM);
+    	List<LiteYukonPAObject> sepPrograms = paoDao.getLiteYukonPAObjectByType(DeviceTypes.LM_SEP_PROGRAM);
+    	List<LiteYukonPAObject> allPrograms = Lists.newArrayList(Iterables.concat(directPrograms, sepPrograms));
+    	
+        return new HashSet<LiteYukonPAObject>(allPrograms);
     }
     
     public int getStartingGearForScenarioAndProgram(int programId, int scenarioId) {

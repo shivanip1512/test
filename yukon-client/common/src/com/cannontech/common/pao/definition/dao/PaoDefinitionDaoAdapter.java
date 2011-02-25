@@ -1,5 +1,6 @@
 package com.cannontech.common.pao.definition.dao;
 
+import java.util.List;
 import java.util.Set;
 
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -74,6 +75,11 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
+	@Override
+	public List<PaoType> getPaoTypesThatSupportTag(PaoTag feature) {
+		throw new UnsupportedOperationException("not implemented");
+	}
+	
 	@Override
 	public Set<PointTemplate> getInitPointTemplates(PaoType paoType) {
 		throw new UnsupportedOperationException("not implemented");

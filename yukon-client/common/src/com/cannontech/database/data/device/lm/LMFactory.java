@@ -91,6 +91,10 @@ public final static com.cannontech.database.data.pao.YukonPAObject createLoadMan
 			retLm = new LMProgramDirect();			
 			retLm.setPAOClass(DeviceClasses.STRING_CLASS_LOADMANAGER);
 			break;
+		case PAOGroups.LM_SEP_PROGRAM:
+			retLm = new LmProgramSep();			
+			retLm.setPAOClass(DeviceClasses.STRING_CLASS_LOADMANAGER);
+			break;
 		case PAOGroups.LM_CURTAIL_PROGRAM:
 			retLm = new LMProgramCurtailment();
 			retLm.setPAOClass(DeviceClasses.STRING_CLASS_LOADMANAGER);

@@ -1,32 +1,34 @@
 package com.cannontech.dr.program.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.dr.program.dao.ProgramDao;
 
 public class ProgramDaoImpl implements ProgramDao {
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
+    private PaoDefinitionDao paoDefinitionDao;
 
-    private final static String singleProgramByIdQuery =
-        "SELECT paObjectId, paoName FROM yukonPAObject"
-        + " WHERE type = 'LM DIRECT PROGRAM' AND paObjectId = ?";
-
-    private final static ParameterizedRowMapper<DisplayablePao> programRowMapper =
-        new ParameterizedRowMapper<DisplayablePao>() {
+    private final static YukonRowMapper<DisplayablePao> programRowMapper =
+        new YukonRowMapper<DisplayablePao>() {
         @Override
-        public DisplayablePao mapRow(ResultSet rs, int rowNum)
+        public DisplayablePao mapRow(YukonResultSet rs)
                 throws SQLException {
-            PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
-                                                    PaoType.LM_DIRECT_PROGRAM);
+        	int paobjectId = rs.getInt("paObjectId");
+        	PaoType paoType = rs.getEnum("type", PaoType.class);
+            PaoIdentifier paoId = new PaoIdentifier(paobjectId, paoType);
             DisplayablePao retVal = new DisplayablePaoBase(paoId,
                                                            rs.getString("paoName"));
             return retVal;
@@ -34,13 +36,23 @@ public class ProgramDaoImpl implements ProgramDao {
 
     @Override
     public DisplayablePao getProgram(int programId) {
-        return simpleJdbcTemplate.queryForObject(singleProgramByIdQuery,
-                                                 programRowMapper,
-                                                 programId);
+    	List<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_PROGRAM);
+    	
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT paObjectId, paoName, type FROM yukonPAObject");
+        sql.append("WHERE type").in(paoTypes);
+        sql.append("AND paObjectId").eq(programId);
+    	
+        return yukonJdbcTemplate.queryForObject(sql, programRowMapper);
     }
 
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+		this.yukonJdbcTemplate = yukonJdbcTemplate;
+	}
+    
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+		this.paoDefinitionDao = paoDefinitionDao;
+	}
 }

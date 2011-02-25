@@ -42,6 +42,7 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -70,6 +71,8 @@ import com.cannontech.common.pao.definition.model.castor.Tag;
 import com.cannontech.common.pao.definition.model.castor.TypeFilter;
 import com.cannontech.common.search.FilterType;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.MappingList;
+import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
@@ -89,6 +92,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 
 /**
  * Implementation class for PaoDefinitionDao
@@ -168,14 +172,17 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
     }
     
+    @Override
     public Set<PointTemplate> getAllPointTemplates(PaoDefinition paoDefinition) {
         return this.getAllPointTemplates(paoDefinition.getType());
     }
 
+    @Override
     public Set<PointTemplate> getInitPointTemplates(PaoDefinition paoDefinition) {
         return this.getInitPointTemplates(paoDefinition.getType());
     }
     
+    @Override
     public PointTemplate getPointTemplateByTypeAndOffset(PaoType paoType, PointIdentifier pointIdentifier) {
 
     	int pointType = pointIdentifier.getPointType().getPointTypeId();
@@ -195,6 +202,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         throw new NotFoundException("Point template not found for pao type: " + paoType + ", point type: " + pointTypeString + ", offset: " + offset);
     }
     
+    @Override
     public Set<PointTemplate> getAllPointTemplates(PaoType paoType) {
         if (this.paoAllPointTemplateMap.containsKey(paoType)) {
             Set<PointTemplate> templates = this.paoAllPointTemplateMap.get(paoType);
@@ -209,6 +217,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
     }
 
+    @Override
     public Set<PointTemplate> getInitPointTemplates(PaoType paoType) {
 
         if (this.paoInitPointTemplateMap.containsKey(paoType)) {
@@ -225,6 +234,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     
     // COMMANDS
     //============================================
+    @Override
     public Set<CommandDefinition> getCommandsThatAffectPoints(PaoType paoType, Set<? extends PointIdentifier> pointSet) {
 
         Set<CommandDefinition> commandSet = new HashSet<CommandDefinition>();
@@ -243,6 +253,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         return commandSet;
     }
     
+    @Override
     public Set<CommandDefinition> getAvailableCommands(PaoDefinition newDefinition) {
     	
     	PaoType paoType = newDefinition.getType();
@@ -256,11 +267,14 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     	
     	return getSupportedTagsForPaoType(paoType);
     }
+    
+    @Override
     public Set<PaoTag> getSupportedTags(PaoDefinition paoDefiniton) {
     	
     	return getSupportedTagsForPaoType(paoDefiniton.getType());
     }
     
+    @Override
     public Set<PaoDefinition> getPaosThatSupportTag(PaoTag feature) {
     	
     	Set<PaoDefinition> definitions = new HashSet<PaoDefinition>();
@@ -276,6 +290,20 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     		}
     	}
     	return definitions;
+    }
+    
+    @Override
+    public List<PaoType> getPaoTypesThatSupportTag(PaoTag feature) {
+    	
+        Set<PaoDefinition> definitions = getPaosThatSupportTag(feature);
+        ObjectMapper<PaoDefinition, PaoType> objectMapper = new ObjectMapper<PaoDefinition, PaoType>() {
+            public PaoType map(PaoDefinition from) throws ObjectMappingException {
+                PaoType paoType = from.getType();
+                return paoType;
+            }
+        };
+        List<PaoType> paoTypes = new MappingList<PaoDefinition, PaoType>(Lists.newArrayList(definitions), objectMapper);
+        return paoTypes;
     }
     
     @Override
@@ -295,10 +323,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         return creatablePaoDefinitions;
     }
     
+    @Override
     public boolean isTagSupported(PaoDefinition paoDefiniton, PaoTag feature) {
     	return isTagSupported(paoDefiniton.getType(), feature);
     }
     
+    @Override
     public boolean isTagSupported(PaoType paoType, PaoTag feature) {
     	
     	Set<PaoTagDefinition> allPaoFeatureDefinitionsSet = this.paoFeatureMap.get(paoType);
@@ -329,16 +359,19 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     
     // DEFINITIONS
     //============================================
+    @Override
     public Set<PaoDefinition> getAllPaoDefinitions() {
     	
     	Set<PaoDefinition> allDefinitions = Collections.unmodifiableSet(new LinkedHashSet<PaoDefinition>(this.paoTypeMap.values()));
     	return allDefinitions;
     }
     
+    @Override
     public ListMultimap<String, PaoDefinition> getPaoDisplayGroupMap() {
         return this.paoDisplayGroupMap;
     }
     
+    @Override
     public PaoDefinition getPaoDefinition(PaoType paoType) {
         
         if (this.paoTypeMap.containsKey(paoType)) {
@@ -349,6 +382,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
     }
     
+    @Override
     public Set<PaoDefinition> getPaosThatPaoCanChangeTo(PaoDefinition paoDefinition) {
 
         String changeGroup = paoDefinition.getChangeGroup();
@@ -370,6 +404,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     
     // MISC
     //============================================
+    @Override
     public String getPointLegendHtml(String displayGroup) {
         try {
             log.debug("Transforming notification");

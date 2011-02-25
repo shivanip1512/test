@@ -1,5 +1,7 @@
 package com.cannontech.database.data.device.lm;
 
+import com.cannontech.common.pao.PaoType;
+
 /**
  * Insert the type's description here.
  * Creation date: (12/6/00 3:54:11 PM)
@@ -13,9 +15,13 @@ public class LMProgramCurtailment extends LMProgramBase
  */
 public LMProgramCurtailment() {
 	super();
-
-	getYukonPAObject().setType( com.cannontech.database.data.pao.PAOGroups.STRING_LM_CURTAIL_PROGRAM[0] );
 }
+
+@Override
+protected PaoType getProgramPaoType() {
+	return PaoType.LM_CURTAIL_PROGRAM;
+}
+
 /**
  * This method was created in VisualAge.
  */

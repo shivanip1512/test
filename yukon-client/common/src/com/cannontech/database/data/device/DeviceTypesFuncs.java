@@ -453,6 +453,7 @@ public final static boolean isLMProgram(int deviceType)
 	switch(deviceType)
 	{
 		case LM_DIRECT_PROGRAM:
+		case LM_SEP_PROGRAM:
 		case LM_CURTAIL_PROGRAM:
 		case LM_ENERGY_EXCHANGE_PROGRAM:
 			return true;
@@ -467,6 +468,7 @@ public final static boolean isLMProgramDirect(int deviceType)
 	switch(deviceType)
 	{
 		case LM_DIRECT_PROGRAM:
+		case LM_SEP_PROGRAM:
 			return true;
 	
 		default:
@@ -1053,11 +1055,12 @@ public final static boolean isReceiver(int deviceType)
 	return false;
 }
 
-
+@Deprecated /** use ChangeDeviceTypeService */
 public static  ICapBankController changeCBCType (String newType, ICapBankController val) {
 	return (ICapBankController) changeType (newType, val, null, null, false, false, false, false, false, false, false, false, null);
 }
 
+@Deprecated /** use ChangeDeviceTypeService */
 public static Object changeType (String newType, 
         Object val, 
         DBPersistent extraObj, 
