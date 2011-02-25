@@ -274,6 +274,8 @@ public final static int getDeviceType(String typeString)
       return RDS_TERMINAL;
    else if (isStringDevice(compareString, STRING_EMETCON_GROUP))
 	  return LM_GROUP_EMETCON;
+   else if (isStringDevice(compareString, STRING_DIGI_SEP_GROUP))
+       return LM_GROUP_DIGI_SEP;
    else if (isStringDevice(compareString, STRING_SA305_GROUP))
    	  return LM_GROUP_SA305;
    else if (isStringDevice(compareString, STRING_SA205_GROUP))
@@ -610,6 +612,8 @@ public final static String getPAOTypeString(int type)
 			
 	  	case LM_GROUP_EMETCON:
 		  	return STRING_EMETCON_GROUP[0];
+	  	case LM_GROUP_DIGI_SEP:
+            return STRING_DIGI_SEP_GROUP[0];
 	  	case LM_GROUP_VERSACOM:
 		  	return STRING_VERSACOM_GROUP[0];
 	  	case LM_GROUP_EXPRESSCOMM:

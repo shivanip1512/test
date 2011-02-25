@@ -162,9 +162,10 @@ public interface DeviceTypes extends TypeBase
     public final static int RFN430KV = DEVICE_OFFSET + 124;
     
     public final static int LM_SEP_PROGRAM = DEVICE_OFFSET + 125;
+    public final static int LM_GROUP_DIGI_SEP  = DEVICE_OFFSET + 126;
     
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 125;
+	public final static int DEVICE_TYPES_COUNT = 126;
 	
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
@@ -242,6 +243,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_VERSACOM_GROUP = {"VERSACOM GROUP"};
 	public static final String[] STRING_EXPRESSCOMM_GROUP = {"EXPRESSCOM GROUP"};
 	public static final String[] STRING_INTEGRATION_GROUP = {"INTEGRATION GROUP"};
+	public static final String[] STRING_DIGI_SEP_GROUP = {"DIGI SEP GROUP"};
 	public static final String[] STRING_POINT_GROUP = {"POINT GROUP"};
 	public static final String[] STRING_RIPPLE_GROUP = {"RIPPLE GROUP"};
 	public static final String[] STRING_MACRO_GROUP = {"MACRO GROUP"};

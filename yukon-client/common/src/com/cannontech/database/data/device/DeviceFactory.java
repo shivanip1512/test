@@ -269,6 +269,11 @@ public final class DeviceFactory {
             returnDevice.setDeviceType( PAOGroups.STRING_EMETCON_GROUP[0] );
             returnDevice.setDeviceClass( DeviceClasses.STRING_CLASS_GROUP );
             break;
+        case LM_GROUP_DIGI_SEP:
+            returnDevice = new com.cannontech.database.data.device.lm.LMGroupDigiSep();
+            returnDevice.setDeviceType( PAOGroups.STRING_DIGI_SEP_GROUP[0] );
+            returnDevice.setDeviceClass( DeviceClasses.STRING_CLASS_GROUP );
+            break;
         case LM_GROUP_VERSACOM:
             returnDevice = new com.cannontech.database.data.device.lm.LMGroupVersacom();
             returnDevice.setDeviceType( PAOGroups.STRING_VERSACOM_GROUP[0] );

@@ -56,6 +56,7 @@ public class PaoDetailUrlHelper {
             }
         };
         paoBuilder.put(PaoType.LM_GROUP_EMETCON, loadGroupFunction);
+        paoBuilder.put(PaoType.LM_GROUP_DIGI_SEP, loadGroupFunction);
         paoBuilder.put(PaoType.LM_GROUP_EXPRESSCOMM, loadGroupFunction);
         paoBuilder.put(PaoType.LM_GROUP_GOLAY, loadGroupFunction);
         paoBuilder.put(PaoType.LM_GROUP_INTEGRATION, loadGroupFunction);
