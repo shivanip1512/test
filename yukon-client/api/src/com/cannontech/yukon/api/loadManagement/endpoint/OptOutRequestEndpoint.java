@@ -14,9 +14,8 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
@@ -25,6 +24,7 @@ import com.cannontech.stars.dr.optout.OptOutHelper;
 import com.cannontech.stars.dr.optout.exception.OptOutException;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.dr.optout.service.OptOutService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.yukon.api.loadManagement.endpoint.endpointmappers.OptOutRequestElementMapper;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -40,6 +40,7 @@ public class OptOutRequestEndpoint {
     private CustomerAccountDao customerAccountDao;
     private LMHardwareBaseDao lmHardwareBaseDao; 
     private RolePropertyDao rolePropertyDao;
+    private YukonEnergyCompanyService yukonEnergyCompanyService;
 
     private Namespace ns = YukonXml.getYukonNamespace();
 
@@ -58,7 +59,7 @@ public class OptOutRequestEndpoint {
         Element fe = null;
         try {
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
-            LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompanyByUser(user);
+            YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
             CustomerAccount customerAccount = 
                 customerAccountDao.getByAccountNumberForDescendentsOfEnergyCompany(optOutHelper.getAccountNumber(), 
                                                                                    energyCompany);
@@ -119,4 +120,10 @@ public class OptOutRequestEndpoint {
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
     }
+
+    @Autowired
+    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
+        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    }
+    
 }
