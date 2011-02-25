@@ -1,24 +1,16 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.dao.DataAccessException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
-import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
@@ -29,9 +21,8 @@ import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
 
-public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadingsModel.ModelRow> 
+public class DeviceReadingsModel extends DeviceReportModelBase<DeviceReadingsModel.ModelRow> 
                                    implements UserContextModelAttributes {
 
     private Logger log = YukonLogManager.getLogger(DeviceReadingsModel.class);
@@ -39,18 +30,8 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
     // member variables
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private Attribute attribute;
-    private List<String> groupsFilter;
-    private List<String> deviceFilter;
-
-    private DeviceGroupService deviceGroupService;
-
-    private DeviceGroupEditorDao deviceGroupEditorDao;
-
     private boolean getAll = true;
-
     private boolean excludeDisabledDevices = false;
-
-    private DeviceDao deviceDao;
 
     private PointFormattingService pointFormattingService;
     private PaoLoadingService paoLoadingService;
@@ -75,14 +56,17 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
         return ModelRow.class;
     }
 
+    @Override
     public String getTitle() {
         return "Device Readings Report";
     }
 
+    @Override
     public int getRowCount() {
         return data.size();
     }
 
+    @Override
     public void doLoadData() {
         List<SimpleDevice> devices = getDeviceList();
         List<DisplayablePao> displayableDevices = paoLoadingService.getDisplayableDevices(devices);
@@ -115,29 +99,6 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
         log.info("Report Records Collected from Database: " + data.size());
     }
 
-    private List<SimpleDevice> getDeviceList() {
-        if (groupsFilter != null && !groupsFilter.isEmpty()) {
-            Set<? extends DeviceGroup> groups = deviceGroupService.resolveGroupNames(groupsFilter);
-            return Lists.newArrayList(deviceGroupService.getDevices(groups));
-        } else if (deviceFilter != null && !deviceFilter.isEmpty()) {
-            List<SimpleDevice> devices = Lists.newArrayList();
-            for(String deviceName : deviceFilter){
-                try {
-                    devices.add(deviceDao.getYukonDeviceObjectByName(deviceName));
-                } catch (DataAccessException e) {
-                    log.error("Unable to find device with name: " + deviceName + ". This device will be skipped.");
-                    continue;
-                }
-            }
-            return devices;
-        } else {
-            /* If they didn't pick anything to filter on, assume all devices. */
-            /* Use contents of SystemGroupEnum.DEVICETYPES. */
-            DeviceGroup group = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DEVICETYPES);
-            return Lists.newArrayList(deviceGroupService.getDevices(Collections.singletonList(group)));
-        }
-    }
-
     public void setAttribute(Attribute attribute) {
         this.attribute = attribute;
     }
@@ -149,15 +110,8 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
     public void setRetrieveAll(boolean all) {
         this.getAll = all;
     }
-
-    public void setGroupsFilter(List<String> namesList) {
-        this.groupsFilter = namesList;
-    }
-
-    public void setDeviceFilter(List<String> idsSet) {
-        this.deviceFilter = idsSet;
-    }
-
+    
+    @Override
     public void setUserContext(YukonUserContext userContext){
         this.userContext = userContext;
     }
@@ -170,32 +124,17 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
         this.excludeDisabledDevices = excludeDisabledDevices;
     }
     
-    @Required
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-
-    @Required
-    public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
-        this.deviceGroupEditorDao = deviceGroupEditorDao;
-    }
-
-    @Required
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-
-    @Required
+    @Autowired
     public void setPointFormattingService(PointFormattingService pointFormattingService){
         this.pointFormattingService = pointFormattingService;
     }
     
-    @Required
+    @Autowired
     public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
         this.paoLoadingService = paoLoadingService;
     }
     
-    @Required
+    @Autowired
     public void setRawPointHistoryDao(RawPointHistoryDao rawPointHistoryDao) {
         this.rawPointHistoryDao = rawPointHistoryDao;
     }

@@ -1,7 +1,5 @@
 package com.cannontech.analysis.controller;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,18 +16,15 @@ import com.cannontech.analysis.report.DeviceReadingsReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.DeviceReadingsModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.util.ServletRequestEnumUtils;
 
-public class DeviceReadingsController extends ReportControllerBase{
+public class DeviceReadingsController extends DeviceReportControllerBase {
 
-    private ReportFilter[] filterModelTypes = new ReportFilter[] {ReportFilter.GROUPS, ReportFilter.DEVICE};
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
     public DeviceReadingsController() {
@@ -38,19 +33,17 @@ public class DeviceReadingsController extends ReportControllerBase{
         report = new DeviceReadingsReport(model);
     }
 
+    @Override
     public YukonReportBase getReport() {
         return report;
     }
 
     @SuppressWarnings("unchecked")
-    public ReportModelBase getModel() {
+    public ReportModelBase<DeviceReadingsModel> getModel() {
         return report.getModel();
     }
 
-    public ReportFilter[] getFilterModelTypes() {
-        return filterModelTypes;
-    }
-
+    @Override
     public void setRequestParameters(HttpServletRequest request) {
         super.setRequestParameters(request);
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -88,27 +81,11 @@ public class DeviceReadingsController extends ReportControllerBase{
             DateTime stopTime = stopLocalTime.toDateTime(newStopDateTime);
             deviceReadingsModel.setStopDate(stopTime.toDate());
         }
-        
-        ReportFilter filter = ServletRequestEnumUtils.getEnumParameter(request, ReportFilter.class, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE);
-        
-        if (filter == ReportFilter.GROUPS) {
-            String names[] = ServletRequestUtils.getStringParameters(request, ReportModelBase.ATT_FILTER_MODEL_VALUES);
-            List<String> namesList = Arrays.asList(names); 
-            deviceReadingsModel.setGroupsFilter(namesList);
-            deviceReadingsModel.setDeviceFilter(null);
-        } else if(filter == ReportFilter.DEVICE){
-            String filterValueList = request.getParameter(ReportModelBase.ATT_FILTER_DEVICE_VALUES).trim();
-            String names[] = filterValueList.split(", ");
-            List<String> namesList = Arrays.asList(names); 
-            deviceReadingsModel.setGroupsFilter(null);
-            deviceReadingsModel.setDeviceFilter(namesList);
-        }
-        
+
         if(StringUtils.isNotBlank(resultType)){
             boolean all = resultType.equalsIgnoreCase("all");
             deviceReadingsModel.setRetrieveAll(all);
-        }
-        
+        }        
     }
     
     @Override
@@ -116,6 +93,7 @@ public class DeviceReadingsController extends ReportControllerBase{
         return true;
     }
 
+    @Override
     public String getHTMLOptionsTable() {
         final StringBuilder sb = new StringBuilder();
         sb.append("<table style='padding: 10px;' class='TableCell'>" + LINE_SEPARATOR);

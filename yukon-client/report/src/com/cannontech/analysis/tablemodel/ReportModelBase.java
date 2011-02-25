@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
 
@@ -22,6 +21,8 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.analysis.ReportFilter;
+import com.cannontech.analysis.ReportFilterType;
 import com.cannontech.analysis.Reportable;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
@@ -30,13 +31,10 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SqlFragmentSource;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.util.ServletRequestEnumUtils;
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 
@@ -58,149 +56,6 @@ import com.google.common.collect.Lists;
  */
 public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTableModel implements Reportable
 {
-	public enum ReportFilter{ NONE("", ReportFilterType.NONE),
-			METER("Meter Number", ReportFilterType.METERNUMBER),
-			DEVICE("Device", ReportFilterType.DEVICENAME),
-			GROUPS("Groups", ReportFilterType.DEVICEGROUP),
-			ROUTE("Route", ReportFilterType.PAOBJECTID),
-			RECEIVER("Receiver", ReportFilterType.PAOBJECTID),
-			LMGROUP("LM Group", ReportFilterType.PAOBJECTID),
-			LMCONTROLAREA("LM Control Area", ReportFilterType.PAOBJECTID),
-			LMSCENARIO("LM Scenario", ReportFilterType.PAOBJECTID),
-			TRANSMITTER("Transmitter", ReportFilterType.PAOBJECTID),
-			RTU("RTU", ReportFilterType.PAOBJECTID),
-			CAPCONTROLSUBBUS("Substation Bus", ReportFilterType.PAOBJECTID),
-            CAPCONTROLSUBSTATION("Substation", ReportFilterType.PAOBJECTID),
-			CAPCONTROLFEEDER("Feeder", ReportFilterType.PAOBJECTID),
-			CAPBANK("Cap Bank", ReportFilterType.PAOBJECTID),
-            SCHEDULE("Schedule (Script)", ReportFilterType.PAOBJECTID),
-            AREA("Area", ReportFilterType.PAOBJECTID),
-            PORT("Port", ReportFilterType.PAOBJECTID),
-            PROGRAM("Program", ReportFilterType.PAOBJECTID),
-            PROGRAM_SINGLE_SELECT("Program", ReportFilterType.PAOBJECTID, false),
-            STRATEGY("Strategy", ReportFilterType.PAOBJECTID),
-            ACCOUNT_NUMBER("Account Number", ReportFilterType.ACCOUNTNUMBER), 
-            SERIAL_NUMBER("Serial Number", ReportFilterType.SERIALNUMBER),
-            USER("User", ReportFilterType.USER),
-            ;
-
-		private String filterTitle;
-		private ReportFilterType reportFilterType;
-		private boolean multiSelect = true;
-		
-		private ReportFilter(String filterTitle, ReportFilterType reportFilterType){
-		    this.filterTitle = filterTitle;
-		    this.reportFilterType = reportFilterType;
-		}
-
-		private ReportFilter(String filterTitle, ReportFilterType reportFilterType, boolean multiSelect){
-		    this.filterTitle = filterTitle;
-		    this.reportFilterType = reportFilterType;
-		    this.multiSelect = multiSelect;
-		}
-		
-		public String getFilterTitle() {
-		    return filterTitle;
-		}
-		
-		public boolean isMultiSelect() {
-		    return multiSelect;
-		}
-		
-		public ReportFilterType getReportFilterType() {
-			return reportFilterType;
-		}
-	}
-	
-	private enum ReportFilterType {
-	    NONE {
-	        @Override
-	        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
-	        }
-	    },
-		METERNUMBER {
-	        @Override
-	        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
-	            model.loadPao(model, request, new Function<String, LiteYukonPAObject>() {
-	                @Override
-	                public LiteYukonPAObject apply(String from) {
-	                    return DaoFactory.getDeviceDao().getLiteYukonPaobjectByMeterNumber(from);
-	                }
-	            });
-	        }
-	    }
-		,
-		DEVICENAME {
-	        @Override
-	        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
-	            model.loadPao(model, request, new Function<String, LiteYukonPAObject>() {
-	                @Override
-	                public LiteYukonPAObject apply(String from) {
-	                    return DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(from);
-	                }
-	            });
-	        }
-	    }
-		,
-		DEVICEGROUP {
-			@Override
-	        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
-	            String[] paramArray = request.getParameterValues(ATT_FILTER_MODEL_VALUES);
-	            if( paramArray != null) {
-	                model.setBillingGroups(paramArray);
-	            }
-	        }
-		}
-		,
-		PAOBJECTID {
-			@Override
-	        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
-	            int[] idsArray = ServletRequestUtils.getIntParameters(request, ATT_FILTER_MODEL_VALUES);
-	            if (idsArray.length > 0) {
-	                model.setPaoIDs(idsArray);
-	            }
-	        }
-	    }
-		,
-		ACCOUNTNUMBER {
-	        @Override
-	        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
-	        }
-	    }
-	    ,
-		USER {
-	        @Override
-	        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
-	        }
-	    }
-	    ,
-		SERIALNUMBER {
-	        @Override
-	        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
-	        }
-	    },
-	    ;
-		
-		 public abstract void applyParameters(ReportModelBase<?> model, HttpServletRequest request);
-	}
-
-	private void loadPao(ReportModelBase<?> model, HttpServletRequest request, Function<String, LiteYukonPAObject> lookup) {
-	    String filterValueList = request.getParameter(ATT_FILTER_METER_VALUES).trim();
-	    StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
-	    int[] idsArray = new int[st.countTokens()];
-	    int i = 0;
-	    while (st.hasMoreTokens()) {
-	        String meterNumber = st.nextToken().trim();
-	        LiteYukonPAObject lPao = lookup.apply(meterNumber);
-	        if( lPao != null) {
-	            idsArray[i++] = lPao.getYukonID();
-	        }
-	    }
-	    if( idsArray.length > 0 ) {
-	        model.setPaoIDs(idsArray);
-	    }
-	}
-	
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	private String fieldSeparator = ",";
 	

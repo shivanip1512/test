@@ -79,23 +79,11 @@
     </bean>
     
     <!-- Device Readings Model -->
-   <bean id="deviceReadingsModel" class="com.cannontech.analysis.tablemodel.DeviceReadingsModel" scope="prototype">
-        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
-        <property name="deviceGroupService" ref="deviceGroupService" />
-        <property name="pointFormattingService" ref="pointFormattingService" />
-        <property name="deviceDao" ref="deviceDao" />
-        <property name="paoLoadingService" ref="paoLoadingService" />
-        <property name="rawPointHistoryDao" ref="rphDao" />
-    </bean>
+   <bean id="deviceReadingsModel" class="com.cannontech.analysis.tablemodel.DeviceReadingsModel" scope="prototype"/>
     
      <!-- Device Request Detail Model -->
-   <bean id="deviceRequestDetailModel" class="com.cannontech.analysis.tablemodel.DeviceRequestDetailModel" scope="prototype">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
-        <property name="deviceGroupService" ref="deviceGroupService" />
-        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
-        <property name="deviceDao" ref="deviceDao" />
-    </bean>
-    
+   <bean id="deviceRequestDetailModel" class="com.cannontech.analysis.tablemodel.DeviceRequestDetailModel" scope="prototype"/>
+
     <!-- Device Read Statistics Summary Model -->
    <bean id="deviceReadStatisticsSummaryModel" class="com.cannontech.analysis.tablemodel.DeviceReadStatisticsSummaryModel" scope="prototype">
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
