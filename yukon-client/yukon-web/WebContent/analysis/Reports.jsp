@@ -9,7 +9,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteDeviceMeterNumber"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.db.capcontrol.LiteCapControlStrategy" %>
-<%@ page import="com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter"%>
+<%@ page import="com.cannontech.analysis.ReportFilter"%>
 <%@ page import="com.cannontech.roles.application.CommanderRole" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.roles.application.ReportingRole" %>
@@ -25,7 +25,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 
-<%@page import="com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter"%>
 <%@page import="com.cannontech.analysis.controller.ReportController"%>
 <cti:verifyRolesAndProperties value="REPORTING"/>
 
