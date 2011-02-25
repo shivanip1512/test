@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <y:cancelOptOutResponse xmlns:y="http://yukon.cannontech.com/api" version="1.0">
-    <y:success/>
-  </y:cancelOptOutResponse>
+
+<cancelActiveOptOutResponse xmlns="http://yukon.cannontech.com/api"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://yukon.cannontech.com/api ../CancelActiveOptOutResponse.xsd"
+    version="1.0">
+    <success />
+</cancelActiveOptOutResponse>

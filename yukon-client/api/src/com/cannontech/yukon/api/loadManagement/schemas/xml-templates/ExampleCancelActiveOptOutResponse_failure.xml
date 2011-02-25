@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<y:cancelOptOutResponse xmlns:y="http://yukon.cannontech.com/api" version="1.0">
-  <y:failure>
-    <y:errorCode>CancelFailed</y:errorCode>
-    <y:errorReference>FK9632937774</y:errorReference>
-    <y:errorDescription>Device 3453070372 has no active optout</y:errorDescription>
-  </y:failure>
-</y:cancelOptOutResponse>
+<cancelActiveOptOutResponse xmlns="http://yukon.cannontech.com/api" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://yukon.cannontech.com/api ../CancelActiveOptOutResponse.xsd"
+    version="1.0">
+  <failure>
+    <errorCode>CancelFailed</errorCode>
+    <errorReference>FK9632937774</errorReference>
+    <errorDescription>Device 3453070372 has no active optout</errorDescription>
+  </failure>
+</cancelActiveOptOutResponse>
