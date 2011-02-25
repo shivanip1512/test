@@ -5043,6 +5043,9 @@
     <pao id="LM_GROUP_INTEGRATION">
         <displayName>INTEGRATION GROUP</displayName>
     </pao>
+    <pao id="LM_GROUP_DIGI_SEP">
+        <displayName>DIGI SEP GROUP</displayName>
+    </pao>
     <pao id="MACRO_GROUP">
         <displayName>MACRO GROUP</displayName>
     </pao>
