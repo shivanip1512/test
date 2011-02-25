@@ -40,7 +40,7 @@ public abstract class DeviceReportControllerBase extends ReportControllerBase {
             StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
     	    List<String> deviceNames = new ArrayList<String>(st.countTokens());
     	    while (st.hasMoreTokens()) {
-    	    	deviceNames.add(st.nextToken());
+    	    	deviceNames.add(st.nextToken().trim());
     	    }
     	    deviceReportModel.setGroupsFilter(null);
             deviceReportModel.setDeviceFilter(deviceNames);
